@@ -86,31 +86,19 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
 
                                   //Assemble the script that creates the Test_compile_run script
 
-    text_file = "printf '#!/usr/bin bash\n\ncd $HOME && source picongpu.profile && pic-create "
+    text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu.profile && pic-create "
                         +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
                         +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > $HOME/Test_compile_run";
 
     if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
         {
-        text_file = "printf '#!/usr/bin bash\n\ncd $HOME && source picongpu.profile && pic-create "
+        text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu.profile && pic-create "
                   +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
                   +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl $HOME/scratch/runs/SST &' > $HOME/Test_compile_run";
         }
 
-/*
-*/
-    cout<<"Debug 3: sim_output is "<<sim_output<<"\n";
-    cout<<"Debug 3: reRun is "<<reRun<<"\n";
     if(reRun==0)
         {
-        string str_2="rm -rf "+sim_output;
-        cout<<"Debug 3: str_2 is "<<str_2<<"\n";
-        const char *command_2=str_2.c_str();
-        system(command_2);
-
-        text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu_reRun.profile && \ncd "+sim_clone+" && tbg -s bash -c "
-                  +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > $HOME/Test_compile_run";
-
         if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
             {
             string str_3="rm -rf $HOME/scratch/runs/SST";
@@ -118,8 +106,13 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
             const char *command_3=str_3.c_str();
             system(command_3);
 
-            text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu_reRun.profile && \ncd "+sim_clone+" && tbg -s bash -c "
+            text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu_reRun.profile && rm -rf $HOME/scratch/runs/SST && cd "+sim_clone+" && tbg -s bash -c "
                       +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl $HOME/scratch/runs/SST &' > $HOME/Test_compile_run";
+            }
+        else
+            {
+            text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu_reRun.profile && rm -rf "+sim_output+" && cd "+sim_clone+" && tbg -s bash -c "
+                      +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > $HOME/Test_compile_run";
             }
         }
 
@@ -130,9 +123,9 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
 
                                   //Run the Test1.py program that runs the Test_compile_run script
 
-    string str="cd $HOME && python3 Test1.py";
-    const char *command_1=str.c_str();
-    system(command_1);
+    string str_py="cd $HOME && python3 Test1.py";
+    const char *command_py=str_py.c_str();
+    system(command_py);
 
     return true;
     }
