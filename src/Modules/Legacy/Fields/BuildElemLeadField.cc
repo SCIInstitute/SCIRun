@@ -82,7 +82,7 @@ public:
 }
 
 BuildElemLeadField::BuildElemLeadField() :
-  Module(staticInfo_), impl_(new BuildElemLeadFieldImpl)
+  Module(staticInfo_, false), impl_(new BuildElemLeadFieldImpl)
 {
   INITIALIZE_PORT(DomainMesh);
   INITIALIZE_PORT(ElectrodeInterpolant);
@@ -116,6 +116,7 @@ void BuildElemLeadField::execute()
       std::ostringstream ostr;
       ostr << "update_progress " << counter << " / " << nelecs - 1;
       remark(ostr.str());
+      //TODO
       //update_progress(counter, nelecs - 1);
     }
     DenseColumnMatrixHandle rhs(new DenseColumnMatrix(nnodes));
