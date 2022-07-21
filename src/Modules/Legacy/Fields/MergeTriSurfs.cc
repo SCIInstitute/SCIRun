@@ -32,17 +32,20 @@
 ///   University of Utah
 /// @date  July 2004
 
-#include <Core/Geometry/CompGeom.h>
+#include <Modules/Legacy/Fields/MergeTriSurfs.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
 
-#include <Core/Util/StringUtil.h>
-#include <Core/Containers/Handle.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <iostream>
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+MODULE_INFO_DEF(MergeTriSurfs, NewField, SCIRun)
 
 namespace SCIRun {
 
@@ -147,9 +150,6 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
   tfield->resize_fdata();
 }
 
-
-
-
 class MergeTriSurfs : public Module {
 public:
   MergeTriSurfs(GuiContext* ctx);
@@ -178,7 +178,6 @@ MergeTriSurfs::execute()
     return;
   }
 
-  /// @todo: Verify that it's a trisurf that we're testing.
   update_state(Executing);
 
   MergeTriSurfsAlgo algo;

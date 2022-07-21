@@ -103,6 +103,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateNodeNormals.h
   CalculateFieldDataMetric.h
   BuildElemLeadField.h
+  MergeTriSurfs.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -161,7 +162,7 @@ SET(Modules_Legacy_Fields_SRCS
   ConvertHexVolToTetVol.cc
   #MergeFields.cc
   #InsertHexVolSheetAlongSurface.cc
-  #MergeTriSurfs.cc
+  MergeTriSurfs.cc
   #ClipVolumeByIsovalue.cc
   RefineMesh.cc
   SwapFieldDataWithMatrixEntries.cc
