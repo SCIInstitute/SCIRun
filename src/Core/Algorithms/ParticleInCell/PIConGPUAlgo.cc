@@ -101,10 +101,10 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
         {
         if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
             {
-            string str_3="rm -rf $HOME/scratch/runs/SST";
-            cout<<"Debug 3: str_3 is "<<str_3<<"\n";
-            const char *command_3=str_3.c_str();
-            system(command_3);
+//            string str_3="rm -rf $HOME/scratch/runs/SST";
+//            cout<<"Debug 3: str_3 is "<<str_3<<"\n";
+//            const char *command_3=str_3.c_str();
+//            system(command_3);
 
             text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu_reRun.profile && rm -rf $HOME/scratch/runs/SST && cd "+sim_clone+" && tbg -s bash -c "
                       +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl $HOME/scratch/runs/SST &' > $HOME/Test_compile_run";
