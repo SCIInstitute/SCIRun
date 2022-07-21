@@ -69,10 +69,10 @@ ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
 
 PIConGPUAlgo::PIConGPUAlgo()
     {
-    addParameter(Parameters::SimulationFile, std::string("[Enter the path to your PIConGPU Simulation here]"));
-    addParameter(Parameters::ConfigFile, std::string("[Enter the path to your .config file here]"));
-    addParameter(Parameters::CloneDir, std::string("[Enter the path to the simulation clone directory here]"));
-    addParameter(Parameters::OutputDir, std::string("[Enter the path to the output directory here]"));
+    addParameter(Parameters::SimulationFile, std::string("$PIC_EXAMPLES/LaserWakefield"));
+    addParameter(Parameters::ConfigFile, std::string("$PIC_CFG/sst.cfg"));
+    addParameter(Parameters::CloneDir, std::string("$PIC_CLONE/myLWFA"));
+    addParameter(Parameters::OutputDir, std::string("$PIC_OUTPUT/SST"));
     addParameter(Variables::Method,1);
 //    addParameter(Parameters::IterationIndex, 0);
 //    simulationstarted_ = false;
