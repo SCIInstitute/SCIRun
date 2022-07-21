@@ -19,6 +19,9 @@ export PIC_OUTPUT=$SCRATCH/runs
 export PATH=$PATH:$PICSRC:$PICSRC/bin:$PICSRC/src/tools/bin
 export PYTHONPATH=$PICSRC/lib/python:$PYTHONPATH
 
+export BOOST_ROOT=$HOME/lib/boost
+export LD_LIBRARY_PATH=$HOME/lib/boost/lib:$LD_LIBRARY_PATH
+
 #Un-comment the next 2 lines if HDF5 was installed from source
 #export CMAKE_PREFIX_PATH=$HOME/lib/hdf5:$CMAKE_PREFIX_PATH
 #export LD_LIBRARY_PATH=$HOME/lib/hdf5/lib:$LD_LIBRARY_PATH
