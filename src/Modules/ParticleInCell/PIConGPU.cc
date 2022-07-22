@@ -150,9 +150,9 @@ void PIConGPU::execute()
             auto E_x = mesh["x"].loadChunk<float>();
             auto E_y = mesh["y"].loadChunk<float>();
             auto E_z = mesh["z"].loadChunk<float>();
-            iteration.seriesFlush();
+            iteration.seriesFlush();                    //Data is now available
 
-            iteration.close();                          //Data is now available
+//            iteration.close();
 
                                                         //Output some useful information to the terminal
 
@@ -167,6 +167,7 @@ void PIConGPU::execute()
             cout << "\nParticle sample_rate is " << particle_sample_rate << "\n";
             cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
 
+            iteration.close();
     /*
     ***************************************************** Set up and load the module output buffers
     */
