@@ -202,7 +202,7 @@
 									<name>InputCenterX</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>  0.4814</value>
+										<value>  0.5000</value>
 									</value>
 								</second>
 							</item>
@@ -214,7 +214,7 @@
 									<name>InputCenterY</name>
 									<value object_id="_13">
 										<which>2</which>
-										<value>  0.4411</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -226,7 +226,7 @@
 									<name>InputCenterZ</name>
 									<value object_id="_14">
 										<which>2</which>
-										<value>  0.5799</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -238,7 +238,7 @@
 									<name>InputSizeX</name>
 									<value object_id="_15">
 										<which>2</which>
-										<value>  0.7467</value>
+										<value>  1.0000</value>
 									</value>
 								</second>
 							</item>
@@ -250,7 +250,7 @@
 									<name>InputSizeY</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>  0.6952</value>
+										<value>  2.0000</value>
 									</value>
 								</second>
 							</item>
@@ -262,7 +262,7 @@
 									<name>InputSizeZ</name>
 									<value object_id="_17">
 										<which>2</which>
-										<value>  0.6164</value>
+										<value>  1.0000</value>
 									</value>
 								</second>
 							</item>
@@ -274,7 +274,7 @@
 									<name>InverseFieldTransformMatrix</name>
 									<value object_id="_18">
 										<which>2</which>
-										<value>[2.67839, -0, 0, -0;-0, 2.87686, -0, 0;0, -0, 3.24469, -0;-1.28934, -1.26885, -1.88174, 1;]</value>
+										<value>[2, -0, 0, -0;-0, 1, -0, 0;0, -0, 2, -0;-1, 0, -0, 1;]</value>
 									</value>
 								</second>
 							</item>
@@ -650,7 +650,7 @@
 									<name>RNGSeed</name>
 									<value object_id="_48">
 										<which>0</which>
-										<value>41</value>
+										<value>43</value>
 									</value>
 								</second>
 							</item>
@@ -702,7 +702,7 @@
 									<name>GeometryIndex</name>
 									<value object_id="_51">
 										<which>0</which>
-										<value>3</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -814,7 +814,7 @@
 									<name>Method</name>
 									<value object_id="_59">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2565,7 +2565,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_219">
 										<which>0</which>
-										<value>1116</value>
+										<value>1219</value>
 									</value>
 								</second>
 							</item>
@@ -2577,7 +2577,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_220">
 										<which>0</which>
-										<value>195</value>
+										<value>358</value>
 									</value>
 								</second>
 							</item>
@@ -2589,7 +2589,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_221">
 										<which>0</which>
-										<value>659</value>
+										<value>657</value>
 									</value>
 								</second>
 							</item>
@@ -2601,7 +2601,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_222">
 										<which>0</which>
-										<value>532</value>
+										<value>593</value>
 									</value>
 								</second>
 							</item>
@@ -2646,7 +2646,19 @@
 				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>6</id>
+					<id>8</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GeneratePointSamplesFromFieldOrWidget:1</moduleId1_>
+				<port1_>
+					<name>Samples</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EditMeshBoundingBox:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -2670,7 +2682,7 @@
 				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>5</id>
+					<id>7</id>
 				</port2_>
 			</item>
 			<item>
@@ -2715,18 +2727,6 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>EditMeshBoundingBox:0</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>SetFieldNodes:0</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
 				<moduleId2_>ShowField:1</moduleId2_>
 				<port2_>
 					<name>Field</name>
@@ -2753,107 +2753,79 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>AppendMatrix:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-4.52000000000000000e+02</first>
-				<second>-4.51000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>CreateLatVol:0</first>
-			<second>
 				<first>-7.60000000000000000e+02</first>
 				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
+			<first>CreateLatVol:0</first>
+			<second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-6.08000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>EditMeshBoundingBox:0</first>
 			<second>
-				<first>-3.76000000000000000e+02</first>
-				<second>-2.98000000000000000e+02</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GeneratePointSamplesFromFieldOrWidget:1</first>
 			<second>
-				<first>-7.60000000000000000e+02</first>
+				<first>-6.08000000000000000e+02</first>
 				<second>-4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GeometryBuffer:0</first>
 			<second>
-				<first>-6.05000000000000000e+02</first>
-				<second>-2.25000000000000000e+02</second>
+				<first>-7.59000000000000000e+02</first>
+				<second>-2.26000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>PIConGPU:1</first>
 			<second>
-				<first>-4.52000000000000000e+02</first>
-				<second>-5.26000000000000000e+02</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>-6.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldNodes:0</first>
 			<second>
-				<first>-6.05000000000000000e+02</first>
-				<second>-3.77000000000000000e+02</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>-3.79000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-6.05000000000000000e+02</first>
-				<second>-3.01000000000000000e+02</second>
+				<first>-7.59000000000000000e+02</first>
+				<second>-3.02000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-6.05000000000000000e+02</first>
-				<second>-7.30000000000000000e+01</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="19" tracking_level="0" version="0">
-		<count>2</count>
+		<count>0</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
-			<first>GeometryBuffer:0</first>
-			<second class_id="21" tracking_level="0" version="0">
-				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Ubuntu&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:16pt;&quot;&gt;click play here to &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:16pt;&quot;&gt;show animation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>click play here to 
-show animation</noteText>
-				<position>5</position>
-				<fontSize>10</fontSize>
-			</second>
-		</item>
-		<item>
-			<first>ShowField:1</first>
-			<second>
-				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Ubuntu&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.AppleSystemUIFont&apos;; font-size:13pt; color:#ffffff;&quot;&gt;ID: 1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>ID: 1</noteText>
-				<position>0</position>
-				<fontSize>10</fontSize>
-			</second>
-		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="22" tracking_level="0" version="0">
+	<moduleTags class_id="20" tracking_level="0" version="0">
 		<count>9</count>
 		<item_version>0</item_version>
-		<item class_id="23" tracking_level="0" version="0">
+		<item class_id="21" tracking_level="0" version="0">
 			<first>AppendMatrix:0</first>
 			<second>-1</second>
 		</item>
@@ -2890,7 +2862,7 @@ p, li { white-space: pre-wrap; }
 			<second>-1</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="24" tracking_level="0" version="0">
+	<disabledModules class_id="22" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
@@ -2898,12 +2870,12 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
-	<moduleTagLabels class_id="25" tracking_level="0" version="0">
+	<moduleTagLabels class_id="23" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleTagLabels>
 	<loadTagGroups>0</loadTagGroups>
-	<subnetworks class_id="26" tracking_level="0" version="0">
+	<subnetworks class_id="24" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</subnetworks>

@@ -88,9 +88,12 @@ void PIConGPU::execute()
 ************************************************Start the openPMD Reader function and loop
 */
                                                         //Wait for simulation output data to be generated and posted via SST
+                                                        // TODO: figure out how to use a general reference for the home directory in these two lines of code
         while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+//        while(!std::filesystem::exists("scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
 
         Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+//        Series series = Series("scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
 
         for (IndexedIteration iteration : series.readIterations())
             {
