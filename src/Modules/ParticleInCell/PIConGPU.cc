@@ -194,8 +194,9 @@ void PIConGPU::execute()
             cout << "\nNumber of particles is " << num_particles;
 
                                                         //Set the particle sample rate (this may eventually be a config file setting)
-            int particle_sample_rate = 1000000;
-    //        int particle_sample_rate = 100;
+//            int particle_sample_rate = 1000000;         //Number of samples in the final frame is 4
+//            int particle_sample_rate = 100000;          //Number of samples in the final frame is 38
+            int particle_sample_rate = 100;             //Number of samples in the final frame is 37154
             cout << "\nParticle sample_rate is " << particle_sample_rate << "\n";
             cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
 
