@@ -156,35 +156,10 @@ void PIConGPU::execute()
             auto E_z = mesh["z"].loadChunk<float>();
             iteration.seriesFlush();                    //Data is now available
 
-/*
-            cout << "\nAfter loading Mesh data\n";
-            auto extent_x = mesh["x"].getExtent();
-            for (size_t i = 0; i < extent_x[0]; ++i)
-                {
-                for (size_t j = 0; j < extent_x[1]; ++j)
-                    {
-                    for (size_t k = 0; k < extent_x[2]; ++k)
-                        {
-                        size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
-                        E_x.get()[flat_index];
-                        E_y.get()[flat_index];
-                        E_z.get()[flat_index];
 
-                                                        //Output xyz values at mesh E node point (1,1,1) to the terminal
-
-                        if (i == 1 && j == 1 && k ==1) //implement (flat_index % something) == 0 here to get a sample set
-                            { 
-                            cout << "\nxyz values at mesh E node point (1,1,1) are\n";
-                            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
-                            }
-                        }
-                    }
-                }
-*/
                                                         //Add code to extract scalar values from e_all_chargeDensity mesh here
 
 
-//            iteration.close();
                                                         //Output some useful particle information to the terminal
 
             cout << "\nAfter loading particle position data\n";
@@ -201,27 +176,16 @@ void PIConGPU::execute()
 
             iteration.close();
 
-                                                      //testing and debug: Output the single 3 dim vector from E field data at (1,1,1)
+                                                      //testing and debug: Output the single 3 dim vector from E field data at a single point
             cout << "\nAfter loading Mesh data\n";
+
             auto extent_x = mesh["x"].getExtent();
-            for (size_t i = 0; i < extent_x[0]; ++i)
-                {
-                for (size_t j = 0; j < extent_x[1]; ++j)
-                    {
-                    for (size_t k = 0; k < extent_x[2]; ++k)
-                        {
-                        size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
-
-                                                        //Output xyz values at mesh E node point (1,1,1) to the terminal
-
-                        if (i == 1 && j == 1 && k ==1) //implement (flat_index % something) == 0 here to get a sample set
-                            { 
-                            cout << "\nxyz values at mesh E node point (1,1,1) are\n";
-                            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
-                            }
-                        }
-                    }
-                }
+            size_t i = 6;
+            size_t j = 512;
+            size_t k = 86;
+            size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
+            cout << "\nxyz values at mesh E node point (" << i << ", " << j << ", " << k << ") are:\n";
+            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
 
     /*
     ***************************************************** Set up and load the module output buffers
@@ -238,8 +202,9 @@ void PIConGPU::execute()
                 auto chunk = loadedChunks[i_pos];
 
                 cout <<"\nThe sampled values for particle position in dimension " << dim << " are\n";
-                for (size_t j = 0; j<num_particles ; j+=particle_sample_rate) cout << "\t" << chunk.get()[j] << ", ";
-                cout << "\n----------" << std::endl;
+                cout <<"not printed\n";
+//                for (size_t j = 0; j<num_particles ; j+=particle_sample_rate) cout << "\t" << chunk.get()[j] << ", ";
+//                cout << "\n----------" << std::endl;
 
                 if(i_pos==0) for (size_t k = 0; k<num_particles ; k+=particle_sample_rate) buffer_pos_x[k/particle_sample_rate]=chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles ; i+=particle_sample_rate) buffer_pos_y[i/particle_sample_rate]=chunk.get()[i];
