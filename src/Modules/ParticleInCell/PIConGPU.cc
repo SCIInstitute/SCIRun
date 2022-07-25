@@ -133,6 +133,7 @@ void PIConGPU::execute()
             cout << "\nField E_charge_density has shape (";
             for (auto const &dim : extent_cd) cout << dim << ',';
             cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
+            cout << "\n----------" << std::endl;
 
                                                  //Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
             Record electronPositions = iteration.particles["e"]["position"];
@@ -155,9 +156,37 @@ void PIConGPU::execute()
             auto E_z = mesh["z"].loadChunk<float>();
             iteration.seriesFlush();                    //Data is now available
 
-//            iteration.close();
+            cout << "\nAfter loading Mesh data\n";
+            auto extent_x = mesh["x"].getExtent();
+            for (size_t i = 0; i < extent_x[0]; ++i)
+                {
+                for (size_t j = 0; j < extent_x[1]; ++j)
+                    {
+                    for (size_t k = 0; k < extent_x[2]; ++k)
+                        {
+                        size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
+                        E_x.get()[flat_index];
+                        E_y.get()[flat_index];
+                        E_z.get()[flat_index];
+//                        }
+//                    }
+//                }
+                                                        //Output xyz values at mesh E node point (1,1,1) to the terminal
 
-                                                        //Output some useful information to the terminal
+                        if (i == 1 && j == 1 && k ==1) //implement (flat_index % something) == 0 here to get a sample set
+                            { 
+                            cout << "\nxyz values at mesh E node point (1,1,1) are\n";
+                            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
+                            }
+                        }
+                    }
+                }
+
+                                                        //Add code to extract scalar values from e_all_chargeDensity mesh here
+
+
+//            iteration.close();
+                                                        //Output some useful particle information to the terminal
 
             cout << "\nAfter loading particle position data\n";
             Extent const &extent_0 = extents[0];
