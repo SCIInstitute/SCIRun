@@ -202,6 +202,7 @@ void PIConGPU::execute()
             iteration.close();
 
                                                       //testing and debug: Output the single 3 dim vector from E field data at (1,1,1)
+            cout << "\nAfter loading Mesh data\n";
             auto extent_x = mesh["x"].getExtent();
             for (size_t i = 0; i < extent_x[0]; ++i)
                 {
@@ -210,6 +211,9 @@ void PIConGPU::execute()
                     for (size_t k = 0; k < extent_x[2]; ++k)
                         {
                         size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
+
+                                                        //Output xyz values at mesh E node point (1,1,1) to the terminal
+
                         if (i == 1 && j == 1 && k ==1) //implement (flat_index % something) == 0 here to get a sample set
                             { 
                             cout << "\nxyz values at mesh E node point (1,1,1) are\n";
