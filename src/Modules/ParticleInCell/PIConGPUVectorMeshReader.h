@@ -44,7 +44,7 @@ namespace ParticleInCell {
                 virtual void execute();
                 virtual void setStateDefaults();
 
-                static const Core::Algorithms::AlgorithmOutputName x_coords;  //I don't think these 3 variable names are used
+                static const Core::Algorithms::AlgorithmOutputName x_coords;
                 static const Core::Algorithms::AlgorithmOutputName y_coords;
                 static const Core::Algorithms::AlgorithmOutputName z_coords;
 

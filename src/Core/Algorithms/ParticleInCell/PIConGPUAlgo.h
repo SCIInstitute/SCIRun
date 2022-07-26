@@ -1,6 +1,6 @@
 
-#ifndef CORE_ALGORITHMS_ParticleInCell_PIConGPU_H
-#define CORE_ALGORITHMS_ParticleInCell_PIConGPU_H
+#ifndef CORE_ALGORITHMS_ParticleInCell_PIConGPUAlgo_H
+#define CORE_ALGORITHMS_ParticleInCell_PIConGPUAlgo_H
 
 #include <string>
 #include <sstream>

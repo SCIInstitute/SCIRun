@@ -25,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPU_H
-#define MODULES_PARTICLEINCELL_PIConGPU_H
+#ifndef MODULES_PARTICLEINCELL_PIConGPUScalarMeshReader_H
+#define MODULES_PARTICLEINCELL_PIConGPUScalarMeshReader_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
@@ -35,26 +35,23 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
-    class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
+    class SCISHARE PIConGPUScalarMeshReader : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
             {
             public:
-                PIConGPU();
+                PIConGPUScalarMeshReader();
                 virtual void execute();
                 virtual void setStateDefaults();
+//                static const Core::Algorithms::AlgorithmOutputName ScalarMesh_value;
+//                static const Core::Algorithms::AlgorithmOutputName ScalarMesh_unused1;
+//                static const Core::Algorithms::AlgorithmOutputName ScalarMesh_unused2;
 
-                static const Core::Algorithms::AlgorithmOutputName x_coords;  //I don't think these 3 variable names are used
-                static const Core::Algorithms::AlgorithmOutputName y_coords;
-                static const Core::Algorithms::AlgorithmOutputName z_coords;
+                OUTPUT_PORT(0, ScalarMesh_value, Matrix);
+                OUTPUT_PORT(1, ScalarMesh_unused1, Matrix);
+                OUTPUT_PORT(2, ScalarMesh_unused2, Matrix);
 
-                OUTPUT_PORT(0, x_coordinates, Matrix);
-                OUTPUT_PORT(1, y_coordinates, Matrix);
-                OUTPUT_PORT(2, z_coordinates, Matrix);
-
-                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-            private:
-                bool running_ = true;
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasAlgorithm);
             };
 }}}
 #endif

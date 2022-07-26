@@ -31,6 +31,7 @@ SET(Modules_ParticleInCell_SRCS
   ElectroStatic.cc
   GravitySimulation.cc
   PIConGPU.cc
+  PIConGPUScalarMeshReader.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -38,6 +39,7 @@ SET(Modules_ParticleInCell_HEADERS
   ElectroStatic.h
   GravitySimulation.h
   PIConGPU.h
+  PIConGPUScalarMeshReader.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell
