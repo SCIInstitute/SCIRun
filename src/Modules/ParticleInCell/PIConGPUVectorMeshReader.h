@@ -25,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPU_H
-#define MODULES_PARTICLEINCELL_PIConGPU_H
+#ifndef MODULES_PARTICLEINCELL_PIConGPUVectorMeshReader_H
+#define MODULES_PARTICLEINCELL_PIConGPUVectorMeshReader_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
@@ -35,26 +35,20 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
-    class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
+    class SCISHARE PIConGPUVectorMeshReader : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
             {
             public:
-                PIConGPU();
+                PIConGPUVectorMeshReader();
                 virtual void execute();
                 virtual void setStateDefaults();
 
-                static const Core::Algorithms::AlgorithmOutputName x_coords;
-                static const Core::Algorithms::AlgorithmOutputName y_coords;
-                static const Core::Algorithms::AlgorithmOutputName z_coords;
+                OUTPUT_PORT(0, VectorMesh_X, Matrix);
+                OUTPUT_PORT(1, VectorMesh_Y, Matrix);
+                OUTPUT_PORT(2, VectorMesh_Z, Matrix);
 
-                OUTPUT_PORT(0, x_coordinates, Matrix);
-                OUTPUT_PORT(1, y_coordinates, Matrix);
-                OUTPUT_PORT(2, z_coordinates, Matrix);
-
-                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-            private:
-                bool running_ = true;
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasAlgorithm);
             };
 }}}
 #endif

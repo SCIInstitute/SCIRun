@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "PIConGPUVectorMeshReader",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "PIConGPU openPMD Vector Mesh Reader module",
+    "header": "Modules/ParticleInCell/PIConGPUVectorMeshReader.h"
+     },
+
+"algorithm":
+    {
+    "name": "PIConGPUVectorMeshReaderAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/PIConGPUVectorMeshReaderAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "N/A",
+    "header": "N/A"
+    }
+}

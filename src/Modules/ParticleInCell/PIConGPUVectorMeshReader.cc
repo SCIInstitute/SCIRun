@@ -31,7 +31,7 @@
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <chrono>
 #include<Core/Algorithms/ParticleInCell/PIConGPUVectorMeshReaderAlgo.h>
-#include <Modules/ParticleInCell/PIConGPU.h>
+#include <Modules/ParticleInCell/PIConGPUVectorMeshReader.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
@@ -42,46 +42,31 @@ using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 using std::cout;
 using namespace openPMD;
-using position_t = float; // TODO: move to header file
 
-MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
+MODULE_INFO_DEF(PIConGPUVectorMeshReader,ParticleInCell,SCIRun);
 
-const AlgorithmOutputName PIConGPUAlgo::x_coordinates("x_coordinates");
-const AlgorithmOutputName PIConGPUAlgo::y_coordinates("y_coordinates");
-const AlgorithmOutputName PIConGPUAlgo::z_coordinates("z_coordinates");
+const AlgorithmOutputName PIConGPUVectorMeshReaderAlgo::VectorMesh_X("VectorMesh_X");
+const AlgorithmOutputName PIConGPUVectorMeshReaderAlgo::VectorMesh_Y("VectorMesh_Y");
+const AlgorithmOutputName PIConGPUVectorMeshReaderAlgo::VectorMesh_Z("VectorMesh_Z");
 
-PIConGPU::PIConGPU() : Module(staticInfo_)
+PIConGPUVectorMeshReader::PIConGPUVectorMeshReader() : Module(staticInfo_)
     {
-    INITIALIZE_PORT(x_coordinates);
-    INITIALIZE_PORT(y_coordinates);
-    INITIALIZE_PORT(z_coordinates);
+    INITIALIZE_PORT(VectorMesh_X);
+    INITIALIZE_PORT(VectorMesh_Y);
+    INITIALIZE_PORT(VectorMesh_Z);
     }
 
-void PIConGPU::setStateDefaults()
+void PIConGPUVectorMeshReader::setStateDefaults()
     {
-    setStateStringFromAlgo(Parameters::SimulationFile);
-    setStateStringFromAlgo(Parameters::ConfigFile);
-    setStateStringFromAlgo(Parameters::CloneDir);
-    setStateStringFromAlgo(Parameters::OutputDir);
-    setStateIntFromAlgo(Variables::Method);
- //    setStateIntFromAlgo(Parameters::MaxIndex);
+
     }
 
-void PIConGPU::execute()
+void PIConGPUVectorMeshReader::execute()
     {
     AlgorithmInput input;
     if(needToExecute())
         {
         auto state = get_state();
-
-        setAlgoStringFromState(Parameters::SimulationFile);
-        setAlgoStringFromState(Parameters::ConfigFile);
-        setAlgoStringFromState(Parameters::CloneDir);
-        setAlgoStringFromState(Parameters::OutputDir);
-        setAlgoIntFromState(Variables::Method);
-//        setAlgoIntFromState(Parameters::IterationIndex);
-//        setAlgoIntFromState(Parameters::MaxIndex);
-
         auto output=algo().run(input);
 
 /*
@@ -97,8 +82,8 @@ void PIConGPU::execute()
 
         for (IndexedIteration iteration : series.readIterations())
             {
-            cout << "\nCurrent iteration is: " << iteration.iterationIndex << std::endl;
-
+            cout << "\nFrom PIConGPUVectorMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
+/*
                                                         //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
             Iteration iter = series.iterations[iteration.iterationIndex];
             cout << "Iteration " << iteration.iterationIndex << " contains "
@@ -187,9 +172,9 @@ void PIConGPU::execute()
             cout << "\nxyz values at mesh E node point (" << i << ", " << j << ", " << k << ") are:\n";
             cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
 
-    /*
-    ***************************************************** Set up and load the module output buffers
-    */
+
+//    ***************************************************** Set up and load the module output buffers
+
 
             const int buffer_size   = 1+(num_particles/particle_sample_rate);
             auto buffer_pos_x       = new double[buffer_size];
@@ -211,9 +196,9 @@ void PIConGPU::execute()
                 if(i_pos==2) for (size_t m = 0; m<num_particles ; m+=particle_sample_rate) buffer_pos_z[m/particle_sample_rate]=chunk.get()[m];
                 }
 
-    /*
-    *****************************************************  Set up the output data
-    */
+
+//    *****************************************************  Set up the output data
+
 
             DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size, 1));
             DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size, 1));
@@ -227,14 +212,14 @@ void PIConGPU::execute()
             std::copy(buffer_pos_y, buffer_pos_y+buffer_size, data1);
             std::copy(buffer_pos_z, buffer_pos_z+buffer_size, data2);
 
-    /*
-    *****************************************************  Send data to the output ports
-    */
+
+//    *****************************************************  Send data to the output ports
+
 
             sendOutput(x_coordinates, output_mat_0);
             sendOutput(y_coordinates, output_mat_1);
             sendOutput(z_coordinates, output_mat_2);
-                
+*/
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
     }  //end of the "PIConGPU::execute()" function

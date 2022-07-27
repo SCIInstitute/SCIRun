@@ -43,9 +43,6 @@ namespace ParticleInCell {
                 PIConGPUScalarMeshReader();
                 virtual void execute();
                 virtual void setStateDefaults();
-//                static const Core::Algorithms::AlgorithmOutputName ScalarMesh_value;
-//                static const Core::Algorithms::AlgorithmOutputName ScalarMesh_unused1;
-//                static const Core::Algorithms::AlgorithmOutputName ScalarMesh_unused2;
 
                 OUTPUT_PORT(0, ScalarMesh_value, Matrix);
                 OUTPUT_PORT(1, ScalarMesh_unused1, Matrix);
