@@ -179,6 +179,8 @@ QWidgetList ctkBasePopupWidgetPrivate::focusWidgets(bool onlyVisible)const
 QWidget* ctkBasePopupWidgetPrivate::mouseOver()
 {
   QList<QWidget*> widgets = this->focusWidgets(true);
+    #if 0
+    //TODO DAN: this part is the buggy part!
   Q_FOREACH(QWidget* widget, widgets)
     {
     if (widget->underMouse())
@@ -186,7 +188,10 @@ QWidget* ctkBasePopupWidgetPrivate::mouseOver()
       return widget;
       }
     }
+    #endif
   // Warning QApplication::widgetAt(QCursor::pos()) can be a bit slow...
+
+
   const QPoint pos = QCursor::pos();
   QWidget* widgetUnderCursor = qApp->widgetAt(pos);
   Q_FOREACH(const QWidget* focusWidget, widgets)
@@ -202,7 +207,8 @@ QWidget* ctkBasePopupWidgetPrivate::mouseOver()
       return widgetUnderCursor;
       }
     }
-  return 0;
+
+  return nullptr;
 }
 
 // -------------------------------------------------------------------------

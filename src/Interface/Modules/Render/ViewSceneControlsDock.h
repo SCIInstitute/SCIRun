@@ -52,6 +52,8 @@
 
 class QwtKnob;
 class ctkColorPickerButton;
+class QToolBar;
+class ctkPopupWidget;
 
 namespace SCIRun {
 namespace Gui {
@@ -301,6 +303,22 @@ namespace Gui {
    private Q_SLOTS:
     void viewAxisSelected(const QString& name);
   };
+
+  class SCISHARE ViewSceneToolBarController : public QObject
+  {
+    Q_OBJECT
+   public:
+     explicit ViewSceneToolBarController(ViewSceneDialog* dialog);
+     void setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup);
+     void registerPopup(QToolBar* toolbar, ctkPopupWidget* popup);
+     void registerDirectionButton(QToolBar* toolbar, QPushButton* button);
+     static constexpr const char* DirectionProperty = "dir";
+     static constexpr const char* FlipProperty = "flip";
+   private:
+     ViewSceneDialog* dialog_;
+     void updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup, bool flipped);
+     std::map<QToolBar*, std::vector<ctkPopupWidget*>> toolBarPopups_;
+   };
 }
 }
 

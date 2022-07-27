@@ -32,7 +32,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <Interface/Modules/Render/share.h>
 
-#include <iosfwd>
 namespace SCIRun {
 namespace Render {
 namespace Gui {
