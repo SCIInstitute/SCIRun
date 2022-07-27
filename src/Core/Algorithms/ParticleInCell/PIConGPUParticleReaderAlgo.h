@@ -1,6 +1,6 @@
 
-#ifndef CORE_ALGORITHMS_ParticleInCell_PIConGPUScalarMeshReaderAlgo_H
-#define CORE_ALGORITHMS_ParticleInCell_PIConGPUScalarMeshReaderAlgo_H
+#ifndef CORE_ALGORITHMS_ParticleInCell_PIConGPUParticleReaderAlgo_H
+#define CORE_ALGORITHMS_ParticleInCell_PIConGPUParticleReaderAlgo_H
 
 #include <string>
 #include <sstream>
@@ -16,13 +16,13 @@ namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
 
-class SCISHARE PIConGPUScalarMeshReaderAlgo : public AlgorithmBase
+class SCISHARE PIConGPUParticleReaderAlgo : public AlgorithmBase
     {
     public:
         AlgorithmOutput run(const AlgorithmInput& input) const;
-        static const AlgorithmOutputName ScalarMesh_value;
-        static const AlgorithmOutputName ScalarMesh_unused1;
-        static const AlgorithmOutputName ScalarMesh_unused2;
+        static const AlgorithmOutputName x_coordinates;
+        static const AlgorithmOutputName y_coordinates;
+        static const AlgorithmOutputName z_coordinates;
     };
 
 }}}}

@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "PIConGPUParticleReader",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "PIConGPU openPMD Particle Reader module",
+    "header": "Modules/ParticleInCell/PIConGPUParticleReader.h"
+     },
+
+"algorithm":
+    {
+    "name": "PIConGPUParticleReaderAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/PIConGPUParticleReaderAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "N/A",
+    "header": "N/A"
+    }
+}
