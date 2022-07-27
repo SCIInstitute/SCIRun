@@ -20,20 +20,18 @@ ALGORITHM_PARAMETER_DECL(SimulationFile);
 ALGORITHM_PARAMETER_DECL(ConfigFile);
 ALGORITHM_PARAMETER_DECL(CloneDir);
 ALGORITHM_PARAMETER_DECL(OutputDir);
-//ALGORITHM_PARAMETER_DECL(IterationIndex);
-//ALGORITHM_PARAMETER_DECL(MaxIndex);
 
 class SCISHARE PIConGPUAlgo : public AlgorithmBase
     {
     public:
         PIConGPUAlgo();
         AlgorithmOutput run(const AlgorithmInput& input) const;
-            static const AlgorithmOutputName x_coordinates;
-            static const AlgorithmOutputName y_coordinates;
-            static const AlgorithmOutputName z_coordinates;
+//            static const AlgorithmOutputName x_coordinates;
+//            static const AlgorithmOutputName y_coordinates;
+//            static const AlgorithmOutputName z_coordinates;
     private:
         bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int) const;
-        bool simulationstarted_;
+ //       bool simulationstarted_;
     };
 
 }}}}

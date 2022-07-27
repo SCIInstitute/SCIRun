@@ -64,8 +64,6 @@ ALGORITHM_PARAMETER_DEF(ParticleInCell, SimulationFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, CloneDir);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
-//ALGORITHM_PARAMETER_DEF(ParticleInCell, IterationIndex);
-//ALGORITHM_PARAMETER_DEF(ParticleInCell, MaxIndex);
 
 PIConGPUAlgo::PIConGPUAlgo()
     {
@@ -74,8 +72,6 @@ PIConGPUAlgo::PIConGPUAlgo()
     addParameter(Parameters::CloneDir, std::string("$PIC_CLONE/myLWFA"));
     addParameter(Parameters::OutputDir, std::string("$PIC_OUTPUT/SST"));
     addParameter(Variables::Method,1);
-//    addParameter(Parameters::IterationIndex, 0);
-//    simulationstarted_ = false;
     }
 
 bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string cfg_input, const std::string sim_clone, const std::string sim_output, const int reRun) const
@@ -101,11 +97,6 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
         {
         if(cfg_input.compare("$PIC_CFG/sst.cfg")==0)
             {
-//            string str_3="rm -rf $HOME/scratch/runs/SST";
-//            cout<<"Debug 3: str_3 is "<<str_3<<"\n";
-//            const char *command_3=str_3.c_str();
-//            system(command_3);
-
             text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu_reRun.profile && rm -rf $HOME/scratch/runs/SST && cd "+sim_clone+" && tbg -s bash -c "
                       +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl $HOME/scratch/runs/SST &' > $HOME/Test_compile_run";
             }
