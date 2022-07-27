@@ -883,7 +883,6 @@ void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
 
 ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog) : QObject(dialog), dialog_(dialog)
 {
-
 }
 
 namespace
