@@ -43,6 +43,7 @@ using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using std::cout;
 using namespace openPMD;
 
+
 MODULE_INFO_DEF(PIConGPUScalarMeshReader,ParticleInCell,SCIRun);
 
 const AlgorithmOutputName PIConGPUScalarMeshReaderAlgo::ScalarMesh_value("ScalarMesh_value");

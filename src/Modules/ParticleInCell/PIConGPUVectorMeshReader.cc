@@ -43,6 +43,7 @@ using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using std::cout;
 using namespace openPMD;
 
+
 MODULE_INFO_DEF(PIConGPUVectorMeshReader,ParticleInCell,SCIRun);
 
 const AlgorithmOutputName PIConGPUVectorMeshReaderAlgo::VectorMesh_X("VectorMesh_X");

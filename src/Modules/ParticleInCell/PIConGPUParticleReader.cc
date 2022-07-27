@@ -85,6 +85,8 @@ void PIConGPUParticleReader::execute()
             {
             cout << "\nFrom PIConGPUVectorMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
+//*********************Preamble: Output information about the Series content to the terminal
+/*
                                                         //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
             Iteration iter = series.iterations[iteration.iterationIndex];
             cout << "Iteration " << iteration.iterationIndex << " contains "
@@ -120,6 +122,8 @@ void PIConGPUParticleReader::execute()
             for (auto const &dim : extent_cd) cout << dim << ',';
             cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
             cout << "\n----------" << std::endl;
+*/
+//*********************End of Preamble
 
                                                  //Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
             Record electronPositions = iteration.particles["e"]["position"];
@@ -134,7 +138,7 @@ void PIConGPUParticleReader::execute()
                 loadedChunks[i_dim] = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
                 extents[i_dim] = rc.getExtent();
                 }
-
+/*
                                                         //Load mesh data; ijk values at xyz node points (from Franz Poschel email, 17 May 2022)
             auto mesh = iteration.meshes["E"];
             auto E_x = mesh["x"].loadChunk<float>();
@@ -145,33 +149,62 @@ void PIConGPUParticleReader::execute()
 
                                                         //Add code to extract scalar values from e_all_chargeDensity mesh here
 
+*/
+                                                        //Extract the number of particles and set a particle sampling rate
 
-                                                        //Output some useful particle information to the terminal
-
-            cout << "\nAfter loading particle position data\n";
             Extent const &extent_0 = extents[0];
             int num_particles = extent_0[0];
-            cout << "\nNumber of particles is " << num_particles;
-
-                                                        //Set the particle sample rate (this may eventually be a config file setting)
 //            int particle_sample_rate = 1000000;         //Number of samples in the final frame is 4
 //            int particle_sample_rate = 100000;          //Number of samples in the final frame is 38
-            int particle_sample_rate = 100;             //Number of samples in the final frame is 37154
-            cout << "\nParticle sample_rate is " << particle_sample_rate << "\n";
-            cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
+            int particle_sample_rate = 100;             //Number of samples in the final frame is 37154 on WS1, 37149 on the laptop
 
+//*********************Debug: Number of particles and sampling rate are output to the terminal
+/*
+            cout << "\nAfter loading particle position data\n";
+            cout << "\nNumber of particles is " << num_particles;
+            cout << "\nParticle sample_rate is " << particle_sample_rate << "\n";
+*/
+//*********************End of Debug
+
+            cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n"; // This may be needed to set up the visualization
             iteration.close();
 
-                                                      //testing and debug: Output the single 3 dim vector from E field data at a single point
+//*********************Testing and debug: Output the single 3 dim vector from E field data at a single point
+/*
             cout << "\nAfter loading Mesh data\n";
 
+
+
             auto extent_x = mesh["x"].getExtent();
+            for (size_t i = 0; i < extent_x[0]; ++i)
+                {
+                for (size_t j = 0; j < extent_x[1]; ++j)
+                    {
+                    for (size_t k = 0; k < extent_x[2]; ++k)
+                        {
+                        size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
+                        E_x.get()[flat_index];
+                        E_y.get()[flat_index];
+                        E_z.get()[flat_index];
+                        if (i == 1 && j == 1 && k ==1) //implement (flat_index % something) == 0 here to get a sample set
+                            { 
+                            cout << "\nxyz values at mesh E node point (1,1,1) are\n";
+                            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
+                            }
+                        }
+                    }
+                }
+
+
+
             size_t i = 6;
             size_t j = 512;
             size_t k = 86;
             size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
             cout << "\nxyz values at mesh E node point (" << i << ", " << j << ", " << k << ") are:\n";
             cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
+*/
+//*********************End of Testing and debug
 
 
 //    ***************************************************** Set up and load the module output buffers
@@ -187,10 +220,14 @@ void PIConGPUParticleReader::execute()
                 std::string dim = dimensions[i_pos];
                 auto chunk = loadedChunks[i_pos];
 
+//*********************Debug: Sampled particle position data sent to the terminal
+/*
                 cout <<"\nThe sampled values for particle position in dimension " << dim << " are\n";
                 cout <<"not printed\n";
 //                for (size_t j = 0; j<num_particles ; j+=particle_sample_rate) cout << "\t" << chunk.get()[j] << ", ";
 //                cout << "\n----------" << std::endl;
+*/
+//*********************End of Debug
 
                 if(i_pos==0) for (size_t k = 0; k<num_particles ; k+=particle_sample_rate) buffer_pos_x[k/particle_sample_rate]=chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles ; i+=particle_sample_rate) buffer_pos_y[i/particle_sample_rate]=chunk.get()[i];
