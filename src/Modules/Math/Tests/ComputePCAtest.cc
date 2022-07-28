@@ -34,6 +34,7 @@
 #include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
@@ -85,4 +86,23 @@ TEST_F(ComputePCAtest, CheckInputSparse)
     stubPortNWithThisData(pcaMod, 0, sparseMatrix);
 
     EXPECT_NO_THROW(pcaMod -> execute());
+}
+
+TEST_F(ComputePCAtest, NewStaticDescriptionLanguage)
+{
+  //auto inputs = ComputePCA::inputs();
+  std::cout << ComputePCA::NumIPorts << std::endl;
+  EXPECT_EQ(1, ComputePCA::NumIPorts);
+  std::cout << ComputePCA::NumIPorts2 << std::endl;
+  EXPECT_EQ(1, ComputePCA::NumIPorts2);
+  auto inputsClassic = IPortDescriber<ComputePCA::NumIPorts, ComputePCA>::inputs();
+  std::cout << inputsClassic.size() << std::endl;
+  EXPECT_EQ(1, inputsClassic.size());
+
+
+  auto inputsNew = ComputePCA::inputPortDescriptions();
+  std::cout << inputsNew.size() << std::endl;
+  EXPECT_EQ(1, inputsNew.size());
+
+  //FAIL() << "todo";
 }
