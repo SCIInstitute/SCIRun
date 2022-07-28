@@ -704,11 +704,11 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
 
           if (dis1 > identical_node_location_differce && dis2 > identical_node_location_differce &&
               dis3 > identical_node_location_differce)
-          { tmp_fld->set_value(static_cast<uint64_t>(special_label), idx); }
+          { tmp_fld->set_value(static_cast<int>(special_label), idx); }
         }
         else
         {
-          tmp_fld->set_value(static_cast<uint64_t>(0), idx);
+          tmp_fld->set_value(static_cast<int>(0), idx);
         }
       }
       /// use SplitFieldByDomainAlgo to find only labeled (based on elc. normal criteria) surfaces
