@@ -25,40 +25,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
-#include <openPMD/openPMD.hpp>
-#include <filesystem>
-*/
-
-//#include<Core/Datatypes/MatrixTypeConversions.h>
-//#include <chrono>
-#include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 #include <Modules/ParticleInCell/PIConGPU.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-
-//using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
-
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
-//using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
-PIConGPU::PIConGPU() : Module(staticInfo_)
-    {
-
-    }
+PIConGPU::PIConGPU() : Module(staticInfo_) {}
 
 void PIConGPU::setStateDefaults()
     {
-    setStateStringFromAlgo(Parameters::SimulationFile);
-    setStateStringFromAlgo(Parameters::ConfigFile);
+    setStateIntFromAlgo(Variables::Method);
     setStateStringFromAlgo(Parameters::CloneDir);
     setStateStringFromAlgo(Parameters::OutputDir);
-    setStateIntFromAlgo(Variables::Method);
+    setStateStringFromAlgo(Parameters::ConfigFile);
+    setStateStringFromAlgo(Parameters::SimulationFile);
     }
 
 void PIConGPU::execute()
@@ -67,11 +53,11 @@ void PIConGPU::execute()
     if(needToExecute())
         {
         auto state = get_state();
-        setAlgoStringFromState(Parameters::SimulationFile);
-        setAlgoStringFromState(Parameters::ConfigFile);
+        setAlgoIntFromState(Variables::Method);
         setAlgoStringFromState(Parameters::CloneDir);
         setAlgoStringFromState(Parameters::OutputDir);
-        setAlgoIntFromState(Variables::Method);
+        setAlgoStringFromState(Parameters::ConfigFile);
+        setAlgoStringFromState(Parameters::SimulationFile);
         auto output=algo().run(input);
         }
     }

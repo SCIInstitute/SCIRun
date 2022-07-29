@@ -26,8 +26,8 @@
 */
 
 #include <Interface/Modules/ParticleInCell/PIConGPUDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,9 +41,10 @@ PIConGPUDialog::PIConGPUDialog(const std::string& name, ModuleStateHandle state,
     setWindowTitle(QString::fromStdString(name));
     fixSize();
 
+    addLineEditManager({inputClone_},      Variables::CloneDir);
+    addLineEditManager({outputData_},      Variables::OutputDir);
+    addLineEditManager({inputConfig_},     Variables::ConfigFile);
     addLineEditManager({inputSimulation_}, Variables::SimulationFile);
-    addLineEditManager({inputConfig_}, Variables::ConfigFile);
-    addLineEditManager({inputClone_}, Variables::CloneDir);
-    addLineEditManager({outputData_}, Variables::OutputDir);
+
     addRadioButtonGroupManager({reRunButton_}, Variables::Method);
     }

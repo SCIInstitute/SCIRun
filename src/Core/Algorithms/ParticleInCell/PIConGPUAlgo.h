@@ -4,22 +4,20 @@
 
 #include <string>
 #include <sstream>
-//#include <vector>
-//#include <algorithm>
 
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/ParticleInCell/share.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 namespace SCIRun         {
 namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
 
-ALGORITHM_PARAMETER_DECL(SimulationFile);
-ALGORITHM_PARAMETER_DECL(ConfigFile);
 ALGORITHM_PARAMETER_DECL(CloneDir);
 ALGORITHM_PARAMETER_DECL(OutputDir);
+ALGORITHM_PARAMETER_DECL(ConfigFile);
+ALGORITHM_PARAMETER_DECL(SimulationFile);
 
 class SCISHARE PIConGPUAlgo : public AlgorithmBase
     {

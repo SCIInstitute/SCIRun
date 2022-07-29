@@ -28,8 +28,8 @@
 #ifndef MODULES_PARTICLEINCELL_PIConGPU_H
 #define MODULES_PARTICLEINCELL_PIConGPU_H
 
-#include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
 
 namespace SCIRun         {
 namespace Modules        {

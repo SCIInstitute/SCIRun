@@ -83,7 +83,7 @@ void PIConGPUParticleReader::execute()
 
         for (IndexedIteration iteration : series.readIterations())
             {
-            cout << "\nFrom PIConGPUVectorMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
+            cout << "\nFrom PIConGPUParticleReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
 //*********************Preamble: Output information about the Series content to the terminal
 /*

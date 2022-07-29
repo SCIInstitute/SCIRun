@@ -44,20 +44,17 @@ I have successfully tested the following PIConGPU module UI entries for Simulati
     $PIC_CFG/1.cfg
 */
 
-#include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
-//#include<Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-//using position_t = float; // TODO: move to header file
-
-ALGORITHM_PARAMETER_DEF(ParticleInCell, SimulationFile);
-ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, CloneDir);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
+ALGORITHM_PARAMETER_DEF(ParticleInCell, SimulationFile);
 
 PIConGPUAlgo::PIConGPUAlgo()
     {
@@ -118,12 +115,11 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
 AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
-
-    auto sim_input  = get(Parameters::SimulationFile).toString();
-    auto cfg_input  = get(Parameters::ConfigFile).toString();
+    auto reRun      = get(Variables::Method).toInt();
     auto sim_clone  = get(Parameters::CloneDir).toString();
     auto sim_output = get(Parameters::OutputDir).toString();
-    auto reRun = get(Variables::Method).toInt();
+    auto cfg_input  = get(Parameters::ConfigFile).toString();
+    auto sim_input  = get(Parameters::SimulationFile).toString();
 
     StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output, reRun);
     return output;
