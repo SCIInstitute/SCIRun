@@ -25,33 +25,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/*
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
+*/
 
-#include<Core/Datatypes/MatrixTypeConversions.h>
-#include <chrono>
+//#include<Core/Datatypes/MatrixTypeConversions.h>
+//#include <chrono>
 #include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 #include <Modules/ParticleInCell/PIConGPU.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Dataflow::Networks;
+
+//using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
-using namespace openPMD;
+//using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
-//const AlgorithmOutputName PIConGPUAlgo::x_coordinates("x_coordinates");
-//const AlgorithmOutputName PIConGPUAlgo::y_coordinates("y_coordinates");
-//const AlgorithmOutputName PIConGPUAlgo::z_coordinates("z_coordinates");
-
 PIConGPU::PIConGPU() : Module(staticInfo_)
     {
-//    INITIALIZE_PORT(x_coordinates);
-//    INITIALIZE_PORT(y_coordinates);
-//    INITIALIZE_PORT(z_coordinates);
+
     }
 
 void PIConGPU::setStateDefaults()
@@ -69,15 +67,12 @@ void PIConGPU::execute()
     if(needToExecute())
         {
         auto state = get_state();
-
         setAlgoStringFromState(Parameters::SimulationFile);
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::CloneDir);
         setAlgoStringFromState(Parameters::OutputDir);
         setAlgoIntFromState(Variables::Method);
-
         auto output=algo().run(input);
-
-        }  //end of the "needToExecute" block
-    }  //end of the "PIConGPU::execute()" function
+        }
+    }
 

@@ -44,21 +44,15 @@ I have successfully tested the following PIConGPU module UI entries for Simulati
     $PIC_CFG/1.cfg
 */
 
-#include <openPMD/openPMD.hpp>
-#include <filesystem>
-
 #include<Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
-#include<Core/Datatypes/MatrixTypeConversions.h>
-#include <chrono>
+//#include<Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-using std::cout;
-using namespace openPMD;
-using position_t = float; // TODO: move to header file
+//using position_t = float; // TODO: move to header file
 
 ALGORITHM_PARAMETER_DEF(ParticleInCell, SimulationFile);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
@@ -124,6 +118,7 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
 AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
+
     auto sim_input  = get(Parameters::SimulationFile).toString();
     auto cfg_input  = get(Parameters::ConfigFile).toString();
     auto sim_clone  = get(Parameters::CloneDir).toString();
@@ -131,7 +126,5 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     auto reRun = get(Variables::Method).toInt();
 
     StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output, reRun);
-
     return output;
-
-    } //end of the PIConGPUAlgo algorithm run
+    }
