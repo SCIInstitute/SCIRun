@@ -28,21 +28,18 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-#include<Core/Datatypes/MatrixTypeConversions.h>
-#include <chrono>
-#include<Core/Algorithms/ParticleInCell/PIConGPUScalarMeshReaderAlgo.h>
 #include <Modules/ParticleInCell/PIConGPUScalarMeshReader.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUScalarMeshReaderAlgo.h>
+
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 using std::cout;
 using namespace openPMD;
-
 
 MODULE_INFO_DEF(PIConGPUScalarMeshReader,ParticleInCell,SCIRun);
 
@@ -57,10 +54,7 @@ PIConGPUScalarMeshReader::PIConGPUScalarMeshReader() : Module(staticInfo_)
     INITIALIZE_PORT(ScalarMesh_unused2);
     }
 
-void PIConGPUScalarMeshReader::setStateDefaults()
-    {
-
-    }
+void PIConGPUScalarMeshReader::setStateDefaults() {}
 
 void PIConGPUScalarMeshReader::execute()
     {
@@ -84,6 +78,8 @@ void PIConGPUScalarMeshReader::execute()
         for (IndexedIteration iteration : series.readIterations())
             {
             cout << "\nFrom PIConGPUScalarMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
+
+//*********************Preamble: Output information about the Series content to the terminal
 /*
                                                         //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
             Iteration iter = series.iterations[iteration.iterationIndex];
@@ -120,6 +116,8 @@ void PIConGPUScalarMeshReader::execute()
             for (auto const &dim : extent_cd) cout << dim << ',';
             cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
             cout << "\n----------" << std::endl;
+
+//*********************End of Preamble
 
                                                  //Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
             Record electronPositions = iteration.particles["e"]["position"];

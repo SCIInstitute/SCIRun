@@ -28,8 +28,10 @@
 #ifndef MODULES_PARTICLEINCELL_PIConGPUParticleReader_H
 #define MODULES_PARTICLEINCELL_PIConGPUParticleReader_H
 
-#include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+
+using position_t = float;
 
 namespace SCIRun         {
 namespace Modules        {

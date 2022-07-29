@@ -28,21 +28,18 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-#include<Core/Datatypes/MatrixTypeConversions.h>
-#include <chrono>
-#include<Core/Algorithms/ParticleInCell/PIConGPUParticleReaderAlgo.h>
 #include <Modules/ParticleInCell/PIConGPUParticleReader.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUParticleReaderAlgo.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::ParticleInCell;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 using std::cout;
 using namespace openPMD;
-using position_t = float; // TODO: move to header file
 
 MODULE_INFO_DEF(PIConGPUParticleReader,ParticleInCell,SCIRun);
 
@@ -57,10 +54,7 @@ PIConGPUParticleReader::PIConGPUParticleReader() : Module(staticInfo_)
     INITIALIZE_PORT(z_coordinates);
     }
 
-void PIConGPUParticleReader::setStateDefaults()
-    {
-
-    }
+void PIConGPUParticleReader::setStateDefaults() {}
 
 void PIConGPUParticleReader::execute()
     {
