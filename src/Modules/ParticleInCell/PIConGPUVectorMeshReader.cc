@@ -81,26 +81,7 @@ void PIConGPUVectorMeshReader::execute()
         for (IndexedIteration iteration : series.readIterations())
             {
             cout << "\nFrom PIConGPUVectorMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
-//            cout << "The Series contains " << series.iterations.size() << " iterations\n";
-/*
-                                                        //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
-            Iteration iter = series.iterations[iteration.iterationIndex];
-            cout << "Iteration " << iteration.iterationIndex << " contains "
-                 << iter.meshes.size()    << " meshes " << "\n";
 
-                                                        //Output data about meshes
-            cout << "\nMesh data \n";
-
-            for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
-            cout << "\n";
-
-            MeshRecordComponent B_x = iter.meshes["B"]["x"];
-            Extent extent_B = B_x.getExtent();
-            cout << "\nField B_x has shape (";
-            for (auto const &dim : extent_B) cout << dim << ',';
-            cout << ") and has datatype " << B_x.getDatatype() << '\n';
-            cout << "\n----------" << std::endl;
-*/
                                                       //Load mesh data; ijk values at xyz node points (from Franz Poschel email, 17 May 2022)
             auto mesh = iteration.meshes["E"];
             auto E_x = mesh["x"].loadChunk<float>();
