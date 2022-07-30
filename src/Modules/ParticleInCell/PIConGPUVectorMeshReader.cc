@@ -71,6 +71,7 @@ void PIConGPUVectorMeshReader::execute()
 
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
+
         while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
 //        while(!std::filesystem::exists("scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
 
@@ -81,7 +82,7 @@ void PIConGPUVectorMeshReader::execute()
             {
             cout << "\nFrom PIConGPUVectorMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 //            cout << "The Series contains " << series.iterations.size() << " iterations\n";
-
+/*
                                                         //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
             Iteration iter = series.iterations[iteration.iterationIndex];
             cout << "Iteration " << iteration.iterationIndex << " contains "
@@ -99,7 +100,7 @@ void PIConGPUVectorMeshReader::execute()
             for (auto const &dim : extent_B) cout << dim << ',';
             cout << ") and has datatype " << B_x.getDatatype() << '\n';
             cout << "\n----------" << std::endl;
-
+*/
                                                       //Load mesh data; ijk values at xyz node points (from Franz Poschel email, 17 May 2022)
             auto mesh = iteration.meshes["E"];
             auto E_x = mesh["x"].loadChunk<float>();
@@ -114,7 +115,7 @@ void PIConGPUVectorMeshReader::execute()
 
             auto extent_x = mesh["x"].getExtent();
             const int buffer_size   = extent_x[0] * extent_x[1] * extent_x[2];
-            cout << "\nVector Mesh Buffer size is " << buffer_size <<"\n";
+            cout << "\nE Field buffer_size is " << buffer_size <<"\n";
             auto buffer_pos_x       = new double[buffer_size];
             auto buffer_pos_y       = new double[buffer_size];
             auto buffer_pos_z       = new double[buffer_size];
