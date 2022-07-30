@@ -28,10 +28,9 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-//#include <chrono>
-#include<Core/Datatypes/MatrixTypeConversions.h>                     //possible duplicate for Dataflow::Networks below
+#include <Core/Datatypes/MatrixTypeConversions.h>                     //possible duplicate for Dataflow::Networks below
 #include <Modules/ParticleInCell/PIConGPUVectorMeshReader.h>
-#include<Core/Algorithms/ParticleInCell/PIConGPUVectorMeshReaderAlgo.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUVectorMeshReaderAlgo.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -40,8 +39,8 @@ using namespace SCIRun::Dataflow::Networks;                          //possible 
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-using std::cout;
 using namespace openPMD;
+using std::cout;
 
 MODULE_INFO_DEF(PIConGPUVectorMeshReader,ParticleInCell,SCIRun);
 
@@ -66,7 +65,6 @@ void PIConGPUVectorMeshReader::execute()
         auto state = get_state();
         auto output=algo().run(input);
 
-
 //************************************************Start the openPMD Reader function and loop
 
                                                         //Wait for simulation output data to be generated and posted via SST
@@ -88,11 +86,9 @@ void PIConGPUVectorMeshReader::execute()
             auto E_y = mesh["y"].loadChunk<float>();
             auto E_z = mesh["z"].loadChunk<float>();
             iteration.seriesFlush();
-                                                      //Data is now available
-            iteration.close();
+            iteration.close();                        //Data is now available
 
 //    ***************************************************** Set up and load the output buffers
-
 
             auto extent_x = mesh["x"].getExtent();
             const int buffer_size   = extent_x[0] * extent_x[1] * extent_x[2];

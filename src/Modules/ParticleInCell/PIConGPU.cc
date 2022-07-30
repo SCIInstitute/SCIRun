@@ -24,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
@@ -75,11 +76,11 @@ void PIConGPU::execute()
 
         for (IndexedIteration iteration : series.readIterations())
             {
-            cout << "\nFrom PIConGPUScalarMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
-
-//*********************Preamble: Output information about the Series content to the terminal
+            cout << "\nFrom PIConGPU: Current iteration is: " << iteration.iterationIndex << std::endl;
 
                                                         //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
+                                                        //Output data about the Series
+
             Iteration iter = series.iterations[iteration.iterationIndex];
             cout << "Iteration " << iteration.iterationIndex << " contains "
                  << iter.meshes.size()    << " meshes " << "and "
@@ -95,7 +96,6 @@ void PIConGPU::execute()
                 for (auto const &r : ps.second) cout << "\n\t" << r.first;
                 }
             cout << '\n';
-
                                                         //Output data about meshes
             cout << "\nMesh data \n";
 
@@ -104,20 +104,17 @@ void PIConGPU::execute()
 
             MeshRecordComponent B_x = iter.meshes["B"]["x"];
             Extent extent_B = B_x.getExtent();
-            cout << "\nField B_x has shape (";
+            cout << "\nB Field has shape (";
             for (auto const &dim : extent_B) cout << dim << ',';
             cout << ") and has datatype " << B_x.getDatatype() << '\n';
 
             MeshRecordComponent E_charge_density = iter.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
             Extent extent_cd = E_charge_density.getExtent();
-            cout << "\nField E_charge_density has shape (";
+            cout << "\nField E_charge_density is scalar valued and has shape (";
             for (auto const &dim : extent_cd) cout << dim << ',';
             cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
             cout << "\n----------" << std::endl;
-
-//*********************End of Preamble
-
-            }  //end of the openPMD reader loop
+            }
 /**/
         }
     }
