@@ -37,7 +37,7 @@ namespace ParticleInCell {
 
     class SCISHARE PIConGPUScalarMeshReader : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
-        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+        public Has1OutputPort<MatrixPortTag>
             {
             public:
                 PIConGPUScalarMeshReader();
@@ -45,8 +45,6 @@ namespace ParticleInCell {
                 virtual void setStateDefaults();
 
                 OUTPUT_PORT(0, ScalarMesh_value, Matrix);
-                OUTPUT_PORT(1, ScalarMesh_unused1, Matrix);
-                OUTPUT_PORT(2, ScalarMesh_unused2, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasAlgorithm);
             };

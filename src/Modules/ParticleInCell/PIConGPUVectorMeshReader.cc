@@ -92,7 +92,6 @@ void PIConGPUVectorMeshReader::execute()
 
             auto extent_x = mesh["x"].getExtent();
             const int buffer_size   = extent_x[0] * extent_x[1] * extent_x[2];
-            cout << "\nE Field buffer_size is " << buffer_size <<"\n";
             auto buffer_pos_x       = new double[buffer_size];
             auto buffer_pos_y       = new double[buffer_size];
             auto buffer_pos_z       = new double[buffer_size];
@@ -107,13 +106,13 @@ void PIConGPUVectorMeshReader::execute()
                         buffer_pos_x[flat_index]=E_x.get()[flat_index];
                         buffer_pos_y[flat_index]=E_y.get()[flat_index];
                         buffer_pos_z[flat_index]=E_z.get()[flat_index];
-
+/*
                         if (i == 1 && j == 1 && k ==1)  //implement (ijk % something) == 0 here to get a sample set
                             {
                                                       //testing and debug: Output 3 dim vector from E field
                             cout << "\nxyz values at mesh E node point(s) are\n";
                             cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
-                            }
+                            }*/
                         }
                     }
                 }

@@ -45,14 +45,10 @@ using std::cout;
 MODULE_INFO_DEF(PIConGPUScalarMeshReader,ParticleInCell,SCIRun);
 
 const AlgorithmOutputName PIConGPUScalarMeshReaderAlgo::ScalarMesh_value("ScalarMesh_value");
-const AlgorithmOutputName PIConGPUScalarMeshReaderAlgo::ScalarMesh_unused1("ScalarMesh_unused1");
-const AlgorithmOutputName PIConGPUScalarMeshReaderAlgo::ScalarMesh_unused2("ScalarMesh_unused2");
 
 PIConGPUScalarMeshReader::PIConGPUScalarMeshReader() : Module(staticInfo_)
     {
     INITIALIZE_PORT(ScalarMesh_value);
-    INITIALIZE_PORT(ScalarMesh_unused1);
-    INITIALIZE_PORT(ScalarMesh_unused2);
     }
 
 void PIConGPUScalarMeshReader::setStateDefaults() {}
@@ -80,26 +76,20 @@ void PIConGPUScalarMeshReader::execute()
             {
             cout << "\nFrom PIConGPUScalarMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
-                                                      //Load mesh data; ijk values at xyz node points (from Franz Poschel email, 17 May 2022)
+                                                      //Load mesh data; ijk values at xyz node points (modified from code provided by Franz Poschel email, 17 May 2022)
             auto E_charge_density = iteration.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
             auto E_cd_buffer = E_charge_density.loadChunk<float>();
 
-/*
-            auto mesh = iteration.meshes["E_charge_density"];
-//            auto mesh = iteration.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
-            auto E_cd_buffer = mesh["e_all_chargeDensity"].loadChunk<float>();
-*/
 
             iteration.seriesFlush();
             iteration.close();                        //Data is now available
 
-//    ***************************************************** Set up and load the module output buffers
+//    ***************************************************** Set up and load the output buffers
 
             auto extent_cd = E_charge_density.getExtent();
             const int buffer_size = extent_cd[0] * extent_cd[1] * extent_cd[2];
-            cout << "\nField E_charge_density buffer_size is " << buffer_size <<"\n";
+            cout << "\nField e_all_chargeDensity buffer_size is " << buffer_size <<"\n";
             auto buffer_cd        = new double[buffer_size];
-
 
 
             for (size_t i = 0; i < extent_cd[0]; ++i)
@@ -112,13 +102,13 @@ void PIConGPUScalarMeshReader::execute()
                         buffer_cd[flat_index]=E_cd_buffer.get()[flat_index];
 
 
-
+/*
                         if (i == 1 && j == 1 && k ==1)  //implement (ijk % something) == 0 here to get a sample set
                             {
                                                       //testing and debug: Output 3 dim vector from E field
-                            cout << "\nxyz values at mesh E node point(s) are\n";
+                            cout << "\nxyz values at Field e_all_chargeDensity node point(s) are\n";
                             cout << "\t x: " << E_cd_buffer.get()[flat_index] << "\t y: " << E_cd_buffer.get()[flat_index] << "\t z: " << E_cd_buffer.get()[flat_index] << "\n----------\n";
-                            }
+                            }*/
                         }
                     }
                 }
