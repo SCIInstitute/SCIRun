@@ -25,32 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPUParticleReader_H
-#define MODULES_PARTICLEINCELL_PIConGPUParticleReader_H
+#ifndef INTERFACE_MODULES_ParticleInCell_PIConGPUParticleReaderDialog_H
+#define INTERFACE_MODULES_ParticleInCell_PIConGPUParticleReaderDialog_H
 
-#include <Modules/Fields/share.h>
-#include <Dataflow/Network/Module.h>
+#include <Interface/Modules/ParticleInCell/ui_PIConGPUParticleReaderDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-using position_t = float;
+namespace SCIRun {
+namespace Gui    {
 
-namespace SCIRun         {
-namespace Modules        {
-namespace ParticleInCell {
+class SCISHARE PIConGPUParticleReaderDialog : public ModuleDialogGeneric,
+    public Ui::PIConGPUParticleReaderDialog
+        {
+        Q_OBJECT
 
-    class SCISHARE PIConGPUParticleReader : public SCIRun::Dataflow::Networks::Module,
-        public HasNoInputPorts,
-        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-            {
-            public:
-                PIConGPUParticleReader();
-                virtual void execute();
-                virtual void setStateDefaults();
-
-                OUTPUT_PORT(0, x_coordinates, Matrix);
-                OUTPUT_PORT(1, y_coordinates, Matrix);
-                OUTPUT_PORT(2, z_coordinates, Matrix);
-
-                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-            };
-}}}
+        public:
+            PIConGPUParticleReaderDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+        };
+}}
 #endif

@@ -31,6 +31,7 @@
 #include <Modules/ParticleInCell/PIConGPU.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
 
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
