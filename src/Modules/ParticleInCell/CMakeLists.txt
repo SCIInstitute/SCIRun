@@ -33,7 +33,7 @@ SET(Modules_ParticleInCell_SRCS
   PIConGPU.cc
   PIConGPUScalarMeshReader.cc
   PIConGPUVectorMeshReader.cc
-  PIConGPUParticleReader.cc
+  ParticleReader.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -43,7 +43,7 @@ SET(Modules_ParticleInCell_HEADERS
   PIConGPU.h
   PIConGPUScalarMeshReader.h
   PIConGPUVectorMeshReader.h
-  PIConGPUParticleReader.h
+  ParticleReader.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell

@@ -25,23 +25,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ParticleInCell_PIConGPUParticleReaderDialog_H
-#define INTERFACE_MODULES_ParticleInCell_PIConGPUParticleReaderDialog_H
+#ifndef INTERFACE_MODULES_ParticleInCell_ParticleReaderDialog_H
+#define INTERFACE_MODULES_ParticleInCell_ParticleReaderDialog_H
 
-#include <Interface/Modules/ParticleInCell/ui_PIConGPUParticleReaderDialog.h>
+#include <Interface/Modules/ParticleInCell/ui_ParticleReaderDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
+//#include <Interface/Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
 namespace Gui    {
 
-class SCISHARE PIConGPUParticleReaderDialog : public ModuleDialogGeneric,
-    public Ui::PIConGPUParticleReaderDialog
+class SCISHARE ParticleReaderDialog : public ModuleDialogGeneric,
+    public Ui::ParticleReaderDialog
         {
         Q_OBJECT
 
         public:
-            PIConGPUParticleReaderDialog(const std::string& name,
+            ParticleReaderDialog(const std::string& name,
             SCIRun::Dataflow::Networks::ModuleStateHandle state,
             QWidget* parent = nullptr);
         };

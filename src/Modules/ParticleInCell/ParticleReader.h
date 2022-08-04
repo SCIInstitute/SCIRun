@@ -25,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPUParticleReader_H
-#define MODULES_PARTICLEINCELL_PIConGPUParticleReader_H
+#ifndef MODULES_PARTICLEINCELL_ParticleReader_H
+#define MODULES_PARTICLEINCELL_ParticleReader_H
 
 #include <Modules/Fields/share.h>
 #include <Dataflow/Network/Module.h>
@@ -37,12 +37,12 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
-    class SCISHARE PIConGPUParticleReader : public SCIRun::Dataflow::Networks::Module,
+    class SCISHARE ParticleReader : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
             {
             public:
-                PIConGPUParticleReader();
+                ParticleReader();
                 virtual void execute();
                 virtual void setStateDefaults();
 

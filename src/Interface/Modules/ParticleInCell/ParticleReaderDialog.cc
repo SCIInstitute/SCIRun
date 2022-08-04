@@ -25,15 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/ParticleInCell/PIConGPUParticleReaderDialog.h>
-#include <Core/Algorithms/ParticleInCell/PIConGPUParticleReaderAlgo.h>
+#include <Interface/Modules/ParticleInCell/ParticleReaderDialog.h>
+#include <Core/Algorithms/ParticleInCell/ParticleReaderAlgo.h>
+//#include <Modules/ParticleInCell/ParticleReader.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Modules::ParticleInCell;
 
-PIConGPUParticleReaderDialog::PIConGPUParticleReaderDialog(const std::string& name, ModuleStateHandle state,
+ParticleReaderDialog::ParticleReaderDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = nullptr */)
   : ModuleDialogGeneric(state, parent)
     {
@@ -41,16 +43,7 @@ PIConGPUParticleReaderDialog::PIConGPUParticleReaderDialog(const std::string& na
     setWindowTitle(QString::fromStdString(name));
     fixSize();
 
-	addComboBoxManager({particleType_},      Variables::ParticleType);       //need to add ParticleType to the Variables list
-	addComboBoxManager({particleAttribute_}, Variables::ParticleAttribute);  //need to add ParticleAttribute to the Variables list
-	addSpinBoxManager({sampleRate_},         Variables::SampleRate);         //need to add SampleRate to the Variables list
-/*
-	addComboBoxManager(particleType_,      Parameters::ParticleType);       //need to add ParticleType to the Parameters list
-	addComboBoxManager(particleAttribute_, Parameters::ParticleAttribute);  //need to add ParticleAttribute to the Parameters list
-	addSpinBoxManager(sampleRate_,         Parameters::SampleRate);         //need to add SampleRate to the Parameters list
-
-	addComboBoxManager({particleType_},      Parameters::ParticleType);       //need to add ParticleType to the Parameters list
-	addComboBoxManager({particleAttribute_}, Parameters::ParticleAttribute);  //need to add ParticleAttribute to the Parameters list
-	addSpinBoxManager({sampleRate_},         Parameters::SampleRate);         //need to add SampleRate to the Parameters list
-*/
+//    addComboBoxManager({particleType_},      Variables::ParticleType);
+//    addComboBoxManager({particleAttribute_}, Variables::ParticleAttribute);
+//    addSpinBoxManager({sampleRate_},         Variables::SampleRate);
     }

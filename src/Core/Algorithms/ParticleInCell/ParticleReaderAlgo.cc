@@ -44,21 +44,30 @@ I have successfully tested the following PIConGPU module UI entries for Simulati
     $PIC_CFG/1.cfg
 */
 
-#include <openPMD/openPMD.hpp>
-#include <filesystem>
-
-#include<Core/Algorithms/ParticleInCell/PIConGPUParticleReaderAlgo.h>
-#include<Core/Datatypes/MatrixTypeConversions.h>
-#include <chrono>
+#include <Core/Algorithms/ParticleInCell/ParticleReaderAlgo.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
-using namespace openPMD;
 
-AlgorithmOutput PIConGPUParticleReaderAlgo::run(const AlgorithmInput&) const
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleType);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleAttribute);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, SampleRate);
+
+ParticleReaderAlgo::ParticleReaderAlgo()
+    {
+//    addParameter(Parameters::ParticleType, std::string("$PIC_EXAMPLES/LaserWakefield"));
+//    addParameter(Parameters::ParticleAttribute, std::string("$PIC_CFG/sst.cfg"));
+//    addParameter(Parameters::SamoleRate, std::string("$PIC_CLONE/myLWFA"));
+    }
+
+AlgorithmOutput ParticleReaderAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
+//    auto sim_clone  = get(Parameters::ParticleType).toInt();
+//    auto sim_output = get(Parameters::ParticleType).toInt();
+//    auto cfg_input  = get(Parameters::SampleRate).toInt();
+
     return output;
-    } //end of the PIConGPUParticleReaderAlgo algorithm run
+    }

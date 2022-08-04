@@ -28,8 +28,8 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-#include <Modules/ParticleInCell/PIConGPUParticleReader.h>
-#include <Core/Algorithms/ParticleInCell/PIConGPUParticleReaderAlgo.h>
+#include <Modules/ParticleInCell/ParticleReader.h>
+#include <Core/Algorithms/ParticleInCell/ParticleReaderAlgo.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
@@ -41,22 +41,27 @@ using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using std::cout;
 using namespace openPMD;
 
-MODULE_INFO_DEF(PIConGPUParticleReader,ParticleInCell,SCIRun);
+MODULE_INFO_DEF(ParticleReader,ParticleInCell,SCIRun);
 
-const AlgorithmOutputName PIConGPUParticleReaderAlgo::x_coordinates("x_coordinates");
-const AlgorithmOutputName PIConGPUParticleReaderAlgo::y_coordinates("y_coordinates");
-const AlgorithmOutputName PIConGPUParticleReaderAlgo::z_coordinates("z_coordinates");
+const AlgorithmOutputName ParticleReaderAlgo::x_coordinates("x_coordinates");
+const AlgorithmOutputName ParticleReaderAlgo::y_coordinates("y_coordinates");
+const AlgorithmOutputName ParticleReaderAlgo::z_coordinates("z_coordinates");
 
-PIConGPUParticleReader::PIConGPUParticleReader() : Module(staticInfo_)
+ParticleReader::ParticleReader() : Module(staticInfo_)
     {
     INITIALIZE_PORT(x_coordinates);
     INITIALIZE_PORT(y_coordinates);
     INITIALIZE_PORT(z_coordinates);
     }
 
-void PIConGPUParticleReader::setStateDefaults() {}
+void ParticleReader::setStateDefaults()
+    {
+//    setStateStringFromAlgo(Parameters::ParticleType);
+//    setStateStringFromAlgo(Parameters::ParticleAttribute);
+//    setStateIntFromAlgo(Parameters::SampleRate);
+    }
 
-void PIConGPUParticleReader::execute()
+void ParticleReader::execute()
     {
     AlgorithmInput input;
     if(needToExecute())
@@ -160,7 +165,7 @@ void PIConGPUParticleReader::execute()
 */
 //*********************End of Debug
 
-            cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n"; // This may be needed to set up the visualization
+            cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
             iteration.close();
 
 //*********************Testing and debug: Output the single 3 dim vector from E field data at a single point
