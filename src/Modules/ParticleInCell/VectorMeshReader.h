@@ -25,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPUScalarMeshReader_H
-#define MODULES_PARTICLEINCELL_PIConGPUScalarMeshReader_H
+#ifndef MODULES_PARTICLEINCELL_VectorMeshReader_H
+#define MODULES_PARTICLEINCELL_VectorMeshReader_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
@@ -35,16 +35,18 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
-    class SCISHARE PIConGPUScalarMeshReader : public SCIRun::Dataflow::Networks::Module,
+    class SCISHARE VectorMeshReader : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
-        public Has1OutputPort<MatrixPortTag>
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
             {
             public:
-                PIConGPUScalarMeshReader();
+                VectorMeshReader();
                 virtual void execute();
                 virtual void setStateDefaults();
 
-                OUTPUT_PORT(0, ScalarMesh_value, Matrix);
+                OUTPUT_PORT(0, VectorMesh_X, Matrix);
+                OUTPUT_PORT(1, VectorMesh_Y, Matrix);
+                OUTPUT_PORT(2, VectorMesh_Z, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasAlgorithm);
             };

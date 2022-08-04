@@ -47,7 +47,7 @@ I have successfully tested the following PIConGPU module UI entries for Simulati
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-#include<Core/Algorithms/ParticleInCell/PIConGPUVectorMeshReaderAlgo.h>
+#include<Core/Algorithms/ParticleInCell/ScalarMeshReaderAlgo.h>
 #include<Core/Datatypes/MatrixTypeConversions.h>
 #include <chrono>
 
@@ -57,7 +57,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using namespace openPMD;
 
-AlgorithmOutput PIConGPUVectorMeshReaderAlgo::run(const AlgorithmInput&) const
+AlgorithmOutput ScalarMeshReaderAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
     return output;

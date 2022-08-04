@@ -27,13 +27,11 @@
 
 #include <Interface/Modules/ParticleInCell/ParticleReaderDialog.h>
 #include <Core/Algorithms/ParticleInCell/ParticleReaderAlgo.h>
-//#include <Modules/ParticleInCell/ParticleReader.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Modules::ParticleInCell;
 
 ParticleReaderDialog::ParticleReaderDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = nullptr */)

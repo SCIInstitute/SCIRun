@@ -1,6 +1,6 @@
 
-#ifndef CORE_ALGORITHMS_ParticleInCell_PIConGPUVectorMeshReaderAlgo_H
-#define CORE_ALGORITHMS_ParticleInCell_PIConGPUVectorMeshReaderAlgo_H
+#ifndef CORE_ALGORITHMS_ParticleInCell_VectorMeshReaderAlgo_H
+#define CORE_ALGORITHMS_ParticleInCell_VectorMeshReaderAlgo_H
 
 #include <string>
 #include <sstream>
@@ -16,10 +16,9 @@ namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
 
-class SCISHARE PIConGPUVectorMeshReaderAlgo : public AlgorithmBase
+class SCISHARE VectorMeshReaderAlgo : public AlgorithmBase
     {
     public:
-//        PIConGPUVectorMeshReaderAlgo();
         AlgorithmOutput run(const AlgorithmInput& input) const;
         static const AlgorithmOutputName VectorMesh_X;
         static const AlgorithmOutputName VectorMesh_Y;

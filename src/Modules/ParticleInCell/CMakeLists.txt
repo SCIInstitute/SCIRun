@@ -31,8 +31,8 @@ SET(Modules_ParticleInCell_SRCS
   ElectroStatic.cc
   GravitySimulation.cc
   PIConGPU.cc
-  PIConGPUScalarMeshReader.cc
-  PIConGPUVectorMeshReader.cc
+  ScalarMeshReader.cc
+  VectorMeshReader.cc
   ParticleReader.cc
 )
 
@@ -41,8 +41,8 @@ SET(Modules_ParticleInCell_HEADERS
   ElectroStatic.h
   GravitySimulation.h
   PIConGPU.h
-  PIConGPUScalarMeshReader.h
-  PIConGPUVectorMeshReader.h
+  ScalarMeshReader.h
+  VectorMeshReader.h
   ParticleReader.h
 )
 

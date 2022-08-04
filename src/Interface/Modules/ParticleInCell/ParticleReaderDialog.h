@@ -31,7 +31,6 @@
 #include <Interface/Modules/ParticleInCell/ui_ParticleReaderDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
-//#include <Interface/Modules/ParticleInCell/share.h>
 
 namespace SCIRun {
 namespace Gui    {

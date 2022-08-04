@@ -29,8 +29,8 @@
 #include <filesystem>
 
 #include <Core/Datatypes/MatrixTypeConversions.h>                     //possible duplicate for Dataflow::Networks below
-#include <Modules/ParticleInCell/PIConGPUVectorMeshReader.h>
-#include <Core/Algorithms/ParticleInCell/PIConGPUVectorMeshReaderAlgo.h>
+#include <Modules/ParticleInCell/ScalarMeshReader.h>
+#include <Core/Algorithms/ParticleInCell/ScalarMeshReaderAlgo.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -42,22 +42,18 @@ using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using namespace openPMD;
 using std::cout;
 
-MODULE_INFO_DEF(PIConGPUVectorMeshReader,ParticleInCell,SCIRun);
+MODULE_INFO_DEF(ScalarMeshReader,ParticleInCell,SCIRun);
 
-const AlgorithmOutputName PIConGPUVectorMeshReaderAlgo::VectorMesh_X("VectorMesh_X");
-const AlgorithmOutputName PIConGPUVectorMeshReaderAlgo::VectorMesh_Y("VectorMesh_Y");
-const AlgorithmOutputName PIConGPUVectorMeshReaderAlgo::VectorMesh_Z("VectorMesh_Z");
+const AlgorithmOutputName ScalarMeshReaderAlgo::ScalarMesh_value("ScalarMesh_value");
 
-PIConGPUVectorMeshReader::PIConGPUVectorMeshReader() : Module(staticInfo_)
+ScalarMeshReader::ScalarMeshReader() : Module(staticInfo_)
     {
-    INITIALIZE_PORT(VectorMesh_X);
-    INITIALIZE_PORT(VectorMesh_Y);
-    INITIALIZE_PORT(VectorMesh_Z);
+    INITIALIZE_PORT(ScalarMesh_value);
     }
 
-void PIConGPUVectorMeshReader::setStateDefaults() {}
+void ScalarMeshReader::setStateDefaults() {}
 
-void PIConGPUVectorMeshReader::execute()
+void ScalarMeshReader::execute()
     {
     AlgorithmInput input;
     if(needToExecute())
@@ -78,40 +74,40 @@ void PIConGPUVectorMeshReader::execute()
 
         for (IndexedIteration iteration : series.readIterations())
             {
-            cout << "\nFrom PIConGPUVectorMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
+            cout << "\nFrom PIConGPUScalarMeshReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
-                                                      //Load mesh data; ijk values at xyz node points (from Franz Poschel email, 17 May 2022)
-            auto mesh = iteration.meshes["E"];
-            auto E_x = mesh["x"].loadChunk<float>();
-            auto E_y = mesh["y"].loadChunk<float>();
-            auto E_z = mesh["z"].loadChunk<float>();
+                                                      //Load mesh data; ijk values at xyz node points (modified from code provided by Franz Poschel email, 17 May 2022)
+            auto E_charge_density = iteration.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
+            auto E_cd_buffer = E_charge_density.loadChunk<float>();
+
+
             iteration.seriesFlush();
             iteration.close();                        //Data is now available
 
 //    ***************************************************** Set up and load the output buffers
 
-            auto extent_x = mesh["x"].getExtent();
-            const int buffer_size   = extent_x[0] * extent_x[1] * extent_x[2];
-            auto buffer_pos_x       = new double[buffer_size];
-            auto buffer_pos_y       = new double[buffer_size];
-            auto buffer_pos_z       = new double[buffer_size];
+            auto extent_cd = E_charge_density.getExtent();
+            const int buffer_size = extent_cd[0] * extent_cd[1] * extent_cd[2];
+            cout << "\nField e_all_chargeDensity buffer_size is " << buffer_size <<"\n";
+            auto buffer_cd        = new double[buffer_size];
 
-            for (size_t i = 0; i < extent_x[0]; ++i)
+
+            for (size_t i = 0; i < extent_cd[0]; ++i)
                 {
-                for (size_t j = 0; j < extent_x[1]; ++j)
+                for (size_t j = 0; j < extent_cd[1]; ++j)
                     {
-                    for (size_t k = 0; k < extent_x[2]; ++k)
+                    for (size_t k = 0; k < extent_cd[2]; ++k)
                         {
-                        size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
-                        buffer_pos_x[flat_index]=E_x.get()[flat_index];
-                        buffer_pos_y[flat_index]=E_y.get()[flat_index];
-                        buffer_pos_z[flat_index]=E_z.get()[flat_index];
+                        size_t flat_index = i * extent_cd[1] * extent_cd[2] + j * extent_cd[2] + k;
+                        buffer_cd[flat_index]=E_cd_buffer.get()[flat_index];
+
+
 /*
                         if (i == 1 && j == 1 && k ==1)  //implement (ijk % something) == 0 here to get a sample set
                             {
                                                       //testing and debug: Output 3 dim vector from E field
-                            cout << "\nxyz values at mesh E node point(s) are\n";
-                            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
+                            cout << "\nxyz values at Field e_all_chargeDensity node point(s) are\n";
+                            cout << "\t x: " << E_cd_buffer.get()[flat_index] << "\t y: " << E_cd_buffer.get()[flat_index] << "\t z: " << E_cd_buffer.get()[flat_index] << "\n----------\n";
                             }*/
                         }
                     }
@@ -120,22 +116,22 @@ void PIConGPUVectorMeshReader::execute()
 //    *****************************************************  Set up the output data
 
             DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size, 1));
-            DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size, 1));
-            DenseMatrixHandle output_mat_2(new DenseMatrix(buffer_size, 1));
+
+
 
             double *data0=output_mat_0->data();
-            double *data1=output_mat_1->data();
-            double *data2=output_mat_2->data();
 
-            std::copy(buffer_pos_x, buffer_pos_x+buffer_size, data0);
-            std::copy(buffer_pos_y, buffer_pos_y+buffer_size, data1);
-            std::copy(buffer_pos_z, buffer_pos_z+buffer_size, data2);
+
+
+            std::copy(buffer_cd, buffer_cd+buffer_size, data0);
+
+
 
 //    *****************************************************  Send data to the output ports
+    
+            sendOutput(ScalarMesh_value, output_mat_0);
 
-            sendOutput(VectorMesh_X, output_mat_0);
-            sendOutput(VectorMesh_Y, output_mat_1);
-            sendOutput(VectorMesh_Z, output_mat_2);
+
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
     }  //end of the "PIConGPU::execute()" function
