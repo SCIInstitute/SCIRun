@@ -134,5 +134,5 @@ void ScalarMeshReader::execute()
 
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
-    }  //end of the "PIConGPU::execute()" function
+    }  //end of the "ScalarMeshReader::execute()" function
 

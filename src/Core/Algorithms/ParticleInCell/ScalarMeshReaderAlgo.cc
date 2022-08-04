@@ -61,4 +61,4 @@ AlgorithmOutput ScalarMeshReaderAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
     return output;
-    } //end of the PIConGPUAlgo algorithm run
+    } //end of the ScalarMeshReaderAlgo algorithm run

@@ -138,5 +138,5 @@ void VectorMeshReader::execute()
             sendOutput(VectorMesh_Z, output_mat_2);
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
-    }  //end of the "PIConGPU::execute()" function
+    }  //end of the "VectorMeshReader::execute()" function
 

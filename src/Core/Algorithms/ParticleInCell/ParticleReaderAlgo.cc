@@ -50,6 +50,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
+using namespace openPMD;
 
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleType);
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleAttribute);

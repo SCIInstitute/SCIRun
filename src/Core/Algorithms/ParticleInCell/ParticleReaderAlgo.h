@@ -20,7 +20,6 @@ namespace ParticleInCell {
 //ALGORITHM_PARAMETER_DECL(ParticleAttribute);
 //ALGORITHM_PARAMETER_DECL(SampleRate);
 
-
 class SCISHARE ParticleReaderAlgo : public AlgorithmBase
     {
     public:
