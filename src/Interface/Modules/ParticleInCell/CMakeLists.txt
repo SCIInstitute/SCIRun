@@ -30,14 +30,20 @@ SET(Interface_Modules_ParticleInCell_FORMS
   ElectroStaticDialog.ui
   GravitySimulationDialog.ui
   PIConGPUDialog.ui
+  PIConGPUReaderDialog.ui
   ParticleReaderDialog.ui
+  ScalarMeshReaderDialog.ui
+  VectorMeshReaderDialog.ui
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
   ElectroStaticDialog.h
   GravitySimulationDialog.h
   PIConGPUDialog.h
+  PIConGPUReaderDialog.h
   ParticleReaderDialog.h
+  ScalarMeshReaderDialog.h
+  VectorMeshReaderDialog.h
   share.h
 )
 
@@ -45,7 +51,10 @@ SET(Interface_Modules_ParticleInCell_SOURCES
   ElectroStaticDialog.cc
   GravitySimulationDialog.cc
   PIConGPUDialog.cc
+  PIConGPUReaderDialog.cc
   ParticleReaderDialog.cc
+  ScalarMeshReaderDialog.cc
+  VectorMeshReaderDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")

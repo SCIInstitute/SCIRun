@@ -38,6 +38,7 @@ SET(Algorithms_ParticleInCell_SRCS
   ScalarMeshReaderAlgo.cc
   VectorMeshReaderAlgo.cc
   ParticleReaderAlgo.cc
+  PIConGPUReaderAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
@@ -51,6 +52,7 @@ SET(Algorithms_ParticleInCell_HEADERS
   ScalarMeshReaderAlgo.h
   VectorMeshReaderAlgo.h
   ParticleReaderAlgo.h
+  PIConGPUReaderAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell

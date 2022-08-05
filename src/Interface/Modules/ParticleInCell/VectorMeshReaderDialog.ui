@@ -30,17 +30,17 @@
        <widget class="QComboBox" name="vectorFieldType_">
         <item>
          <property name="text">
-          <string>Charge Density</string>
+          <string>Electric Field</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Energy Density</string>
+          <string>Magnetic Field</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Momentum</string>
+          <string>Gravity Field</string>
          </property>
         </item>
         <item>

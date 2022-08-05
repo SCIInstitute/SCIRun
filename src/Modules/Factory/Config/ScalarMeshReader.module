@@ -17,7 +17,7 @@
 
 "UI":
     {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "ScalarMeshReaderDialog",
+    "header": "Interface/Modules/ParticleInCell/ScalarMeshReaderDialog.h"
     }
 }

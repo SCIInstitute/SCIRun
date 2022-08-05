@@ -17,7 +17,7 @@
 
 "UI":
     {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "VectorMeshReaderDialog",
+    "header": "Interface/Modules/ParticleInCell/VectorMeshReaderDialog.h"
     }
 }
