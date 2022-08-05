@@ -44,13 +44,15 @@ I have successfully tested the following PIConGPU module UI entries for Simulati
     $PIC_CFG/1.cfg
 */
 
+//#include <openPMD/openPMD.hpp>
+//#include <filesystem>
 #include <Core/Algorithms/ParticleInCell/ParticleReaderAlgo.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
-using namespace openPMD;
+//using namespace openPMD;
 
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleType);
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleAttribute);

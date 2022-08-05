@@ -39,8 +39,8 @@ using namespace SCIRun::Dataflow::Networks;                          //possible 
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-using namespace openPMD;
 using std::cout;
+using namespace openPMD;
 
 MODULE_INFO_DEF(ScalarMeshReader,ParticleInCell,SCIRun);
 

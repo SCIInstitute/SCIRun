@@ -69,9 +69,9 @@ void ParticleReader::execute()
         auto state = get_state();
         auto output=algo().run(input);
 
-/*
-************************************************Start the openPMD Reader function and loop
-*/
+
+//************************************************Start the openPMD Reader function and loop
+
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
         while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);

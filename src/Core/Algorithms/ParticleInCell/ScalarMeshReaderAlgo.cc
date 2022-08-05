@@ -44,8 +44,8 @@ I have successfully tested the following PIConGPU module UI entries for Simulati
     $PIC_CFG/1.cfg
 */
 
-#include <openPMD/openPMD.hpp>
-#include <filesystem>
+//#include <openPMD/openPMD.hpp>
+//#include <filesystem>
 
 #include<Core/Algorithms/ParticleInCell/ScalarMeshReaderAlgo.h>
 #include<Core/Datatypes/MatrixTypeConversions.h>
@@ -55,7 +55,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
-using namespace openPMD;
+//using namespace openPMD;
 
 AlgorithmOutput ScalarMeshReaderAlgo::run(const AlgorithmInput&) const
     {
