@@ -62,8 +62,9 @@ void PIConGPUReader::setStateDefaults()
     }
 
 /*
-void PIConGPUReader::particleData(num_particles, component_x, component_y, component_z)
+void PIConGPUReader::particleData(num_particles_s, component_x, component_y, component_z)
     {
+    //retrieve number of particles here if it can't be obtained prior to the function call
     const int one_Dim = 3*num_particles;                                         //set up the output vector dimension
     auto flat_particle_feature = new double[one_Dim];                            //set up then load the working vector that holds data to be output
     for (size_t k = 0; k<num_particles; k++)
@@ -147,7 +148,6 @@ void PIConGPUReader::execute()
 
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
-        cout << "\nDebug: Prior while(!std::filesystem::exists( ...\n";
 
         while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
 //        while(!std::filesystem::exists("scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
@@ -157,30 +157,51 @@ void PIConGPUReader::execute()
 
         for (IndexedIteration iteration : series.readIterations())
             {
-            cout << "\nFrom PIConGPUParticleReader: Current iteration is: " << iteration.iterationIndex << std::endl;
+            cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
-/*
-// New code.  Use the input variables to determine what data to load and which output function to call
-            auto spec = "e";                          //setting a development input variable
-//            auto particle_feature = "position";                      //setting a development input variable
-            std::string output_option = "particles";
-            Extent extents_s[3];                                                                               //trying something new
-            Extent const &extent_0_s = extents_s[0];
-            int num_particles_s = extent_0_s[0];
+/**/
+// New code  Use the input variables to determine what data to load and which output function to call
+            std::string spec = "e";                                         //set development input variables
+            std::string particle_feature = "position";
+            std::string output_option    = "particles";
+            int particle_sample_rate     = 100;
 
             if(output_option.compare("particles")==0) //output_option is an input data.
                 {
                 Record particlePositions = iteration.particles[spec]["position"];
+
+                std::array<std::shared_ptr<position_t>, 3> loadedChunks;
+                std::array<Extent, 3> extents;
+                std::array<std::string, 3> const dimensions{{"x", "y", "z"}};
+
+                for (size_t i_dim = 0; i_dim < 3; ++i_dim)
+                    {
+                    std::string dim_str = dimensions[i_dim];
+                    RecordComponent rc = particlePositions[dim_str];
+                    loadedChunks[i_dim] = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
+                    extents[i_dim] = rc.getExtent();
+                    }
+
+                Extent const &extent_0 = extents[0];
+                int num_particles = extent_0[0];
                 auto component_x = particlePositions["x"].loadChunk<float>();
                 auto component_y = particlePositions["y"].loadChunk<float>();
                 auto component_z = particlePositions["z"].loadChunk<float>();
+
                 iteration.seriesFlush();                    //Data is now available
-                iteration.close();
+
+//                iteration.close();
+
+
+
+
+
                                                             //Call the output function
-//                particleData(num_particles_s, component_x, component_y, component_z);
+//                particleData(num_particles, component_x, component_y, component_z);
                 }
-*/
+
                                                  // old code Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
+/*
             Record electronPositions = iteration.particles["e"]["position"];
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
             std::array<Extent, 3> extents;
@@ -193,6 +214,7 @@ void PIConGPUReader::execute()
                 loadedChunks[i_dim] = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
                 extents[i_dim] = rc.getExtent();
                 }
+*/
 /*
 
                                                         //Prototype scalar field output function call (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
@@ -223,13 +245,13 @@ void PIConGPUReader::execute()
                 }
 */
 
-                                                        //Extract the number of particles and set a particle sampling rate
+                                                        //old code Extract the number of particles and set a particle sampling rate
 
-            Extent const &extent_0 = extents[0];
-            int num_particles = extent_0[0];
+//            Extent const &extent_0 = extents[0];
+//            int num_particles = extent_0[0];
 //            int particle_sample_rate = 1000000;         //Number of samples in the final frame is 4
 //            int particle_sample_rate = 100000;          //Number of samples in the final frame is 38
-            int particle_sample_rate = 100;             //Number of samples in the final frame is 37154 on WS1, 37149 on the laptop
+//            int particle_sample_rate = 100;             //Number of samples in the final frame is 37154 on WS1, 37149 on the laptop
 
 //*********************Debug: Number of particles and sampling rate are output to the terminal
 /*
@@ -239,12 +261,12 @@ void PIConGPUReader::execute()
 */
 //*********************End of Debug
 
-//            cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
+
             iteration.close();
 
-//    ***************************************************** Set up and load the module output buffers
+//    ***************************************************** old code Set up and load the module output buffers
 
-
+/*
             const int buffer_size   = 1+(num_particles/particle_sample_rate);
             auto buffer_pos_x       = new double[buffer_size];
             auto buffer_pos_y       = new double[buffer_size];
@@ -256,12 +278,12 @@ void PIConGPUReader::execute()
                 auto chunk = loadedChunks[i_pos];
 
 //*********************Debug: Sampled particle position data sent to the terminal
-/*
+
                 cout <<"\nThe sampled values for particle position in dimension " << dim << " are\n";
                 cout <<"not printed\n";
 //                for (size_t j = 0; j<num_particles ; j+=particle_sample_rate) cout << "\t" << chunk.get()[j] << ", ";
 //                cout << "\n----------" << std::endl;
-*/
+
 //*********************End of Debug
 
                 if(i_pos==0) for (size_t k = 0; k<num_particles ; k+=particle_sample_rate) buffer_pos_x[k/particle_sample_rate]=chunk.get()[k];
@@ -292,7 +314,7 @@ void PIConGPUReader::execute()
             sendOutput(x_coordinates, output_mat_0);
             sendOutput(y_coordinates, output_mat_1);
             sendOutput(z_coordinates, output_mat_2);
-
+*/
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
     }  //end of the "PIConGPU::execute()" function
