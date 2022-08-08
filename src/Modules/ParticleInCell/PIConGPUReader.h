@@ -45,6 +45,9 @@ namespace ParticleInCell {
                 PIConGPUReader();
                 virtual void execute();
                 virtual void setStateDefaults();
+//                virtual void vectorField(??datatype?? mesh, component_x, component_y, component_z);  //may need to include openPMD to allow the data type that is used
+//                virtual void scalarField(??datatype?? mesh, node_values);
+//                virtual void particleData(??datatype?? num_particles, component_x, component_y, component_z);
 
                 OUTPUT_PORT(0, x_coordinates, Matrix);
                 OUTPUT_PORT(1, y_coordinates, Matrix);

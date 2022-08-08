@@ -61,6 +61,79 @@ void PIConGPUReader::setStateDefaults()
 //    setStateIntFromAlgo(Parameters::SampleRate);
     }
 
+/*
+void PIConGPUReader::particleData(num_particles, component_x, component_y, component_z)
+    {
+    const int one_Dim = 3*num_particles;                                         //set up the output vector dimension
+    auto flat_particle_feature = new double[one_Dim];                            //set up then load the working vector that holds data to be output
+    for (size_t k = 0; k<num_particles; k++)
+        {
+        flat_particle_feature[k]                =component_x.get()[k];
+        flat_particle_feature[k+num_particles]  =component_y.get()[k];
+        flat_particle_feature[k+2*num_particles]=component_z.get()[k];
+        }
+
+//    *****************************************************  Set up the data to be output
+    DenseMatrixHandle output_mat_0(new DenseMatrix(one_Dim, 1));
+    double *data0=output_mat_0->data();
+    std::copy(flat_particle_feature, flat_particle_feature+one_Dim, data0);
+
+//    *****************************************************  Send data to the output port
+    sendOutput(x_coordinates, output_mat_0);
+    }
+*/
+
+
+/*
+void PIConGPUReader::scalarField(mesh, node_values)
+    {
+//    *****************************************************  Get mesh dimensions, calculate the size of the one dimensional output vector, set up and load the one dimensional vector
+    auto mesh_extent = mesh["x"].getExtent();
+    const int one_Dim = (mesh_extent[0]*mesh_extent[1]*mesh_extent[2]);
+    auto flat_node_values = new double[one_Dim];
+    for(size_t i = 0; i < mesh_extent[0]; ++i) for(size_t j = 0; j < mesh_extent[1]; ++j) for(size_t k = 0; k < mesh_extent[2]; ++k)
+        {
+        size_t flat_index = i * mesh_extent[1] * mesh_extent[2] + j * mesh_extent[2] + k;
+
+        flat_node_values[flat_index] = node_values.get()[flat_index];
+        }
+
+//    *****************************************************  Set up the data to be output
+    DenseMatrixHandle output_mat_0(new DenseMatrix(one_Dim, 1));
+    double *data0=output_mat_0->data();
+    std::copy(flat_node_values, flat_node_values+one_Dim, data0);
+
+//    *****************************************************  Send data to the output port
+    sendOutput(x_coordinates, output_mat_0);
+    }
+*/
+
+/*
+void PIConGPUReader::vectorField(mesh, component_x, component_y, component_z)
+    {
+//    *****************************************************  Get mesh dimensions, calculate the size of the one dimensional output vector, set up and load the one dimensional vector
+    auto mesh_extent = mesh["x"].getExtent();
+    const int one_Dim = 3*(mesh_extent[0]*mesh_extent[1]*mesh_extent[2]);
+    auto XYZ_vec = new double[one_Dim];
+    for(size_t i = 0; i < mesh_extent[0]; ++i) for(size_t j = 0; j < mesh_extent[1]; ++j) for(size_t k = 0; k < mesh_extent[2]; ++k)
+        {
+        size_t flat_index = i * mesh_extent[1] * mesh_extent[2] + j * mesh_extent[2] + k;
+
+        XYZ_vec[flat_index]                                                      = component_x.get()[flat_index];
+        XYZ_vec[flat_index + (mesh_extent[0]*mesh_extent[1]*mesh_extent[2])]     = component_y.get()[flat_index];
+        XYZ_vec[flat_index + (mesh_extent[0]*mesh_extent[1]*mesh_extent[2]) * 2] = component_z.get()[flat_index];
+        }
+
+//    *****************************************************  Set up the data to be output
+    DenseMatrixHandle output_mat_0(new DenseMatrix(one_Dim, 1));
+    double *data0=output_mat_0->data();
+    std::copy(XYZ_vec, XYZ_vec+one_Dim, data0);
+
+//    *****************************************************  Send data to the output port
+    sendOutput(x_coordinates, output_mat_0);
+    }
+*/
+
 void PIConGPUReader::execute()
     {
     AlgorithmInput input;
@@ -74,6 +147,8 @@ void PIConGPUReader::execute()
 
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
+        cout << "\nDebug: Prior while(!std::filesystem::exists( ...\n";
+
         while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
 //        while(!std::filesystem::exists("scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
 
@@ -84,47 +159,28 @@ void PIConGPUReader::execute()
             {
             cout << "\nFrom PIConGPUParticleReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
-//*********************Preamble: Output information about the Series content to the terminal
 /*
-                                                        //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
-            Iteration iter = series.iterations[iteration.iterationIndex];
-            cout << "Iteration " << iteration.iterationIndex << " contains "
-                 << iter.meshes.size()    << " meshes " << "and "
-                 << iter.particles.size() << " particle species\n";
-            cout << "The Series contains " << series.iterations.size() << " iterations\n";
+// New code.  Use the input variables to determine what data to load and which output function to call
+            auto spec = "e";                          //setting a development input variable
+//            auto particle_feature = "position";                      //setting a development input variable
+            std::string output_option = "particles";
+            Extent extents_s[3];                                                                               //trying something new
+            Extent const &extent_0_s = extents_s[0];
+            int num_particles_s = extent_0_s[0];
 
-                                                        //Output data about particles
-            cout << "\nParticle data \n";
-            for (auto const &ps : iter.particles)
+            if(output_option.compare("particles")==0) //output_option is an input data.
                 {
-                cout << "\n\t" << ps.first;
-                cout << "\n";
-                for (auto const &r : ps.second) cout << "\n\t" << r.first;
+                Record particlePositions = iteration.particles[spec]["position"];
+                auto component_x = particlePositions["x"].loadChunk<float>();
+                auto component_y = particlePositions["y"].loadChunk<float>();
+                auto component_z = particlePositions["z"].loadChunk<float>();
+                iteration.seriesFlush();                    //Data is now available
+                iteration.close();
+                                                            //Call the output function
+//                particleData(num_particles_s, component_x, component_y, component_z);
                 }
-            cout << '\n';
-
-                                                        //Output data about meshes
-            cout << "\nMesh data \n";
-
-            for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
-            cout << "\n";
-
-            MeshRecordComponent B_x = iter.meshes["B"]["x"];
-            Extent extent_B = B_x.getExtent();
-            cout << "\nField B_x has shape (";
-            for (auto const &dim : extent_B) cout << dim << ',';
-            cout << ") and has datatype " << B_x.getDatatype() << '\n';
-
-            MeshRecordComponent E_charge_density = iter.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
-            Extent extent_cd = E_charge_density.getExtent();
-            cout << "\nField E_charge_density has shape (";
-            for (auto const &dim : extent_cd) cout << dim << ',';
-            cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
-            cout << "\n----------" << std::endl;
 */
-//*********************End of Preamble
-
-                                                 //Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
+                                                 // old code Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
             Record electronPositions = iteration.particles["e"]["position"];
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
             std::array<Extent, 3> extents;
@@ -138,17 +194,35 @@ void PIConGPUReader::execute()
                 extents[i_dim] = rc.getExtent();
                 }
 /*
-                                                        //Load mesh data; ijk values at xyz node points (from Franz Poschel email, 17 May 2022)
-            auto mesh = iteration.meshes["E"];
-            auto E_x = mesh["x"].loadChunk<float>();
-            auto E_y = mesh["y"].loadChunk<float>();
-            auto E_z = mesh["z"].loadChunk<float>();
-            iteration.seriesFlush();                    //Data is now available
 
-
-                                                        //Add code to extract scalar values from e_all_chargeDensity mesh here
-
+                                                        //Prototype scalar field output function call (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
+            if(output_option=="scalar_field")
+                {
+                auto mesh = iteration.meshes["E"];
+                auto component_x = mesh["x"].loadChunk<float>();
+                iteration.seriesFlush();                    //Data is now available
+                iteration.close();
+                                                            //Call the output function
+                vectorField(mesh, component_x);
+                }
 */
+
+
+/*
+                                                        //Prototype vector field output function call (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
+            if(output_option=="vector_field")
+                {
+                auto mesh = iteration.meshes["E"];
+                auto component_x = mesh["x"].loadChunk<float>();
+                auto component_y = mesh["y"].loadChunk<float>();
+                auto component_z = mesh["z"].loadChunk<float>();
+                iteration.seriesFlush();                    //Data is now available
+                iteration.close();
+                                                            //Call the output function
+                vectorField(mesh, component_x, component_y, component_z);
+                }
+*/
+
                                                         //Extract the number of particles and set a particle sampling rate
 
             Extent const &extent_0 = extents[0];
@@ -165,46 +239,8 @@ void PIConGPUReader::execute()
 */
 //*********************End of Debug
 
-            cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
+//            cout << "The number of particles sampled is " << 1+(num_particles/particle_sample_rate) << "\n";
             iteration.close();
-
-//*********************Testing and debug: Output the single 3 dim vector from E field data at a single point
-/*
-            cout << "\nAfter loading Mesh data\n";
-
-
-
-            auto extent_x = mesh["x"].getExtent();
-            for (size_t i = 0; i < extent_x[0]; ++i)
-                {
-                for (size_t j = 0; j < extent_x[1]; ++j)
-                    {
-                    for (size_t k = 0; k < extent_x[2]; ++k)
-                        {
-                        size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
-                        E_x.get()[flat_index];
-                        E_y.get()[flat_index];
-                        E_z.get()[flat_index];
-                        if (i == 1 && j == 1 && k ==1) //implement (flat_index % something) == 0 here to get a sample set
-                            { 
-                            cout << "\nxyz values at mesh E node point (1,1,1) are\n";
-                            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
-                            }
-                        }
-                    }
-                }
-
-
-
-            size_t i = 6;
-            size_t j = 512;
-            size_t k = 86;
-            size_t flat_index = i * extent_x[1] * extent_x[2] + j * extent_x[2] + k;
-            cout << "\nxyz values at mesh E node point (" << i << ", " << j << ", " << k << ") are:\n";
-            cout << "\t x: " << E_x.get()[flat_index] << "\t y: " << E_y.get()[flat_index] << "\t z: " << E_z.get()[flat_index] << "\n----------\n";
-*/
-//*********************End of Testing and debug
-
 
 //    ***************************************************** Set up and load the module output buffers
 
