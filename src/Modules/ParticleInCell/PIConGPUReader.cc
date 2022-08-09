@@ -62,25 +62,28 @@ void PIConGPUReader::setStateDefaults()
     }
 
 /*
-void PIConGPUReader::particleData(num_particles_s, component_x, component_y, component_z)
+void particleData(int buffer_size, float* component_x, float* component_y, float* component_z)
     {
-    //retrieve number of particles here if it can't be obtained prior to the function call
-    const int one_Dim = 3*num_particles;                                         //set up the output vector dimension
-    auto flat_particle_feature = new double[one_Dim];                            //set up then load the working vector that holds data to be output
-    for (size_t k = 0; k<num_particles; k++)
+
+
+//    *****************************************************  Set up and load the working vector that holds data to be output
+
+    auto flat_particle_feature = new float[buffer_size*3];                            
+    for (int k = 0; k<buffer_size; k++)
         {
-        flat_particle_feature[k]                =component_x.get()[k];
-        flat_particle_feature[k+num_particles]  =component_y.get()[k];
-        flat_particle_feature[k+2*num_particles]=component_z.get()[k];
+        flat_particle_feature[k]              =component_x[k];
+        flat_particle_feature[k+buffer_size]  =component_y[k];
+        flat_particle_feature[k+2*buffer_size]=component_z[k];
         }
 
 //    *****************************************************  Set up the data to be output
-    DenseMatrixHandle output_mat_0(new DenseMatrix(one_Dim, 1));
+    DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size*3, 1));
     double *data0=output_mat_0->data();
-    std::copy(flat_particle_feature, flat_particle_feature+one_Dim, data0);
+    std::copy(flat_particle_feature, flat_particle_feature+buffer_size*3, data0);
 
 //    *****************************************************  Send data to the output port
-    sendOutput(x_coordinates, output_mat_0);
+    sendOutput(flat_particle_feature, output_mat_0);
+
     }
 */
 
@@ -144,7 +147,7 @@ void PIConGPUReader::execute()
         auto output=algo().run(input);
 
 
-//************************************************Start the openPMD Reader function and loop
+//  ************************************************Start the openPMD Reader function and loop
 
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
@@ -182,39 +185,42 @@ void PIConGPUReader::execute()
                     extents[i_dim] = rc.getExtent();
                     }
 
-                Extent const &extent_0 = extents[0];
-                int num_particles = extent_0[0];
-                auto component_x = particlePositions["x"].loadChunk<float>();
-                auto component_y = particlePositions["y"].loadChunk<float>();
-                auto component_z = particlePositions["z"].loadChunk<float>();
-
                 iteration.seriesFlush();                    //Data is now available
 
-//                iteration.close();
 
+                Extent const &extent_0 = extents[0];
+                int num_particles = extent_0[0];
+//                const int one_Dim = 3*num_particles;
 
+                const int buffer_size  = 1+(num_particles/particle_sample_rate);
+                auto component_x       = new float[buffer_size];
+                auto component_y       = new float[buffer_size];
+                auto component_z       = new float[buffer_size];
 
-
-
+                iteration.close();
                                                             //Call the output function
-//                particleData(num_particles, component_x, component_y, component_z);
+//                particleData(buffer_size, component_x, component_y, component_z);
+
+//    *****************************************************  The output function code is moved here for now
+//    *****************************************************  Set up and load the working vector that holds data to be output
+
+                auto flat_particle_feature = new float[buffer_size*3];                            
+                for (int k = 0; k<buffer_size; k++)
+                    {
+                    flat_particle_feature[k]              =component_x[k];
+                    flat_particle_feature[k+buffer_size]  =component_y[k];
+                    flat_particle_feature[k+2*buffer_size]=component_z[k];
+                    }
+
+            //    *****************************************************  Set up the data to be output
+                DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size*3, 1));
+                double *data0=output_mat_0->data();
+                std::copy(flat_particle_feature, flat_particle_feature+buffer_size*3, data0);
+
+            //    *****************************************************  Send data to the output port
+                sendOutput(x_coordinates, output_mat_0);
                 }
 
-                                                 // old code Load particles xyz position (back to https://openpmd-api.readthedocs.io/en/latest/usage/streaming.html#c)
-/*
-            Record electronPositions = iteration.particles["e"]["position"];
-            std::array<std::shared_ptr<position_t>, 3> loadedChunks;
-            std::array<Extent, 3> extents;
-            std::array<std::string, 3> const dimensions{{"x", "y", "z"}};
-
-            for (size_t i_dim = 0; i_dim < 3; ++i_dim)
-                {
-                std::string dim_str = dimensions[i_dim];
-                RecordComponent rc = electronPositions[dim_str];
-                loadedChunks[i_dim] = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
-                extents[i_dim] = rc.getExtent();
-                }
-*/
 /*
 
                                                         //Prototype scalar field output function call (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
@@ -253,16 +259,16 @@ void PIConGPUReader::execute()
 //            int particle_sample_rate = 100000;          //Number of samples in the final frame is 38
 //            int particle_sample_rate = 100;             //Number of samples in the final frame is 37154 on WS1, 37149 on the laptop
 
-//*********************Debug: Number of particles and sampling rate are output to the terminal
+//  *********************Debug: Number of particles and sampling rate are output to the terminal
 /*
             cout << "\nAfter loading particle position data\n";
             cout << "\nNumber of particles is " << num_particles;
             cout << "\nParticle sample_rate is " << particle_sample_rate << "\n";
 */
-//*********************End of Debug
+//  *********************End of Debug
 
 
-            iteration.close();
+//            iteration.close();
 
 //    ***************************************************** old code Set up and load the module output buffers
 
@@ -277,14 +283,14 @@ void PIConGPUReader::execute()
                 std::string dim = dimensions[i_pos];
                 auto chunk = loadedChunks[i_pos];
 
-//*********************Debug: Sampled particle position data sent to the terminal
+//  *********************Debug: Sampled particle position data sent to the terminal
 
                 cout <<"\nThe sampled values for particle position in dimension " << dim << " are\n";
                 cout <<"not printed\n";
 //                for (size_t j = 0; j<num_particles ; j+=particle_sample_rate) cout << "\t" << chunk.get()[j] << ", ";
 //                cout << "\n----------" << std::endl;
 
-//*********************End of Debug
+//  *********************End of Debug
 
                 if(i_pos==0) for (size_t k = 0; k<num_particles ; k+=particle_sample_rate) buffer_pos_x[k/particle_sample_rate]=chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles ; i+=particle_sample_rate) buffer_pos_y[i/particle_sample_rate]=chunk.get()[i];
