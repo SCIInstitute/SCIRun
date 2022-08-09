@@ -246,8 +246,9 @@ void EditMeshBoundingBox::resetToInputField()
   auto trans = Transform(pos_, eigvecs_[0]*eigvals[0], eigvecs_[1]*eigvals[1], eigvecs_[2]*eigvals[2]);
   widgetScale_.pre_scale(eigvals);
 
-  inputFieldInverse_ = Transform(trans);
-  inputFieldInverse_.invert();
+    // set inputfieldtrans to identity
+  inputFieldInverse_ = Transform();
+//  inputFieldInverse_.invert();
 
   updateInputFieldAttributes();
 
