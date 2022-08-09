@@ -152,8 +152,19 @@ void PIConGPUReader::execute()
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
 
-        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-//        while(!std::filesystem::exists("scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+//        std::filesystem::path SST_dir = '$HOME/scratch/runs/SST/simOutput/openPMD/simData.sst';
+//        std::string home = "~";
+//        std::string home = "/home/kj";
+//        std::string home = "../..";
+        std::string SST_dir = "../../../scratch/runs/SST/simOutput/openPMD/simData.sst";
+
+        char pwd[PATH_MAX];
+        getcwd(pwd,sizeof(pwd));
+        cout << "\nDebug: present working directory is " << pwd <<"\n";
+
+//        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+//        while(!std::filesystem::exists("~/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+        while(!std::filesystem::exists(SST_dir)) sleep(1);
 
         Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
 //        Series series = Series("scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
@@ -197,12 +208,12 @@ void PIConGPUReader::execute()
                 auto component_y       = new float[buffer_size];
                 auto component_z       = new float[buffer_size];
 
-                iteration.close();
+//                iteration.close();
                                                             //Call the output function
 //                particleData(buffer_size, component_x, component_y, component_z);
 
 //    *****************************************************  The output function code is moved here for now
-//    *****************************************************  Set up and load the working vector that holds data to be output
+//    *****************************************************  Set up, load and send the data to be output
 
                 auto flat_particle_feature = new float[buffer_size*3];                            
                 for (int k = 0; k<buffer_size; k++)
@@ -214,7 +225,9 @@ void PIConGPUReader::execute()
 
             //    *****************************************************  Set up the data to be output
                 DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size*3, 1));
+
                 double *data0=output_mat_0->data();
+
                 std::copy(flat_particle_feature, flat_particle_feature+buffer_size*3, data0);
 
             //    *****************************************************  Send data to the output port
@@ -229,7 +242,7 @@ void PIConGPUReader::execute()
                 auto mesh = iteration.meshes["E"];
                 auto component_x = mesh["x"].loadChunk<float>();
                 iteration.seriesFlush();                    //Data is now available
-                iteration.close();
+
                                                             //Call the output function
                 vectorField(mesh, component_x);
                 }
@@ -245,11 +258,16 @@ void PIConGPUReader::execute()
                 auto component_y = mesh["y"].loadChunk<float>();
                 auto component_z = mesh["z"].loadChunk<float>();
                 iteration.seriesFlush();                    //Data is now available
-                iteration.close();
+
                                                             //Call the output function
                 vectorField(mesh, component_x, component_y, component_z);
                 }
 */
+                iteration.close();
+
+
+
+
 
                                                         //old code Extract the number of particles and set a particle sampling rate
 
