@@ -64,6 +64,7 @@ namespace Engine {
     std::string importNetwork(const std::string& filename) override;
     std::string runScript(const std::string& filename) override;
     std::string quit(bool force) override;
+    std::string setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable) override;
     void setUnlockFunc(boost::function<void()> unlock) override;
     void setModuleContext(bool inModule) override { inModule_ = inModule; }
     bool isModuleContext() const override { return inModule_; }
@@ -72,7 +73,6 @@ namespace Engine {
     void pythonModuleRemovedSlot(const Networks::ModuleId&);
     void executionFromPythonStart();
     void executionFromPythonFinish(int);
-    SharedPointer<PythonImplImpl> impl_;
     std::map<std::string, SharedPointer<PyModule>> modules_;
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;

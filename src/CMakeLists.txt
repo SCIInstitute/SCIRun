@@ -752,6 +752,9 @@ SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET spire   PROPERTY FOLDER "Graphics")
+
+SET_PROPERTY(TARGET pugixml   PROPERTY FOLDER "Externals")
 
 IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
@@ -796,6 +799,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_IEPlugin_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Graphics_Widgets_Tests         PROPERTY FOLDER "Graphics/Tests")
+  SET_PROPERTY(TARGET Graphics_Datatypes_Tests PROPERTY FOLDER "Graphics/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")

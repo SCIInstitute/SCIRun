@@ -25,24 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
-#define INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
 
-#include <string>
-#include <glm/gtc/quaternion.hpp>
-#include <Interface/Modules/Render/share.h>
+#ifndef INTERFACE_MODULES_REPORTSCALARFIELDSTATS_H
+#define INTERFACE_MODULES_REPORTSCALARFIELDSTATS_H
+
+#include "Interface/Modules/Fields/ui_ReportScalarFieldStats.h"
+#include <Interface/Modules/Base/HasParserHelpDialog.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Render {
 namespace Gui {
-class SCISHARE ViewSceneUtility
+
+class SCISHARE ReportScalarFieldStatsDialog : public ModuleDialogGeneric,
+  public Ui::ReportScalarFieldStats
 {
+	Q_OBJECT
+
 public:
-  static glm::quat stringToQuat(const std::string &s);
-  static std::string quatToString(const glm::quat &q);
+  ReportScalarFieldStatsDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
 };
-} // namespace Gui
-} // namespace Render
-} // namespace SCIRun
+
+}
+}
 
 #endif

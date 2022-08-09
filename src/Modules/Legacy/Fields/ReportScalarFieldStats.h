@@ -25,24 +25,48 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
-#define INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
 
-#include <string>
-#include <glm/gtc/quaternion.hpp>
-#include <Interface/Modules/Render/share.h>
+#ifndef MODULES_LEGACY_FIELDS_REPORTSCALARFIELDSTATS_H__
+#define MODULES_LEGACY_FIELDS_REPORTSCALARFIELDSTATS_H__
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Render {
-namespace Gui {
-class SCISHARE ViewSceneUtility
-{
-public:
-  static glm::quat stringToQuat(const std::string &s);
-  static std::string quatToString(const glm::quat &q);
-};
-} // namespace Gui
-} // namespace Render
-} // namespace SCIRun
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+        ALGORITHM_PARAMETER_DECL(AutoRangeEnabled);
+        ALGORITHM_PARAMETER_DECL(Mean);
+        ALGORITHM_PARAMETER_DECL(Median);
+        ALGORITHM_PARAMETER_DECL(StandardDeviation);
+        ALGORITHM_PARAMETER_DECL(HistogramBinCount);
+      }
+    }
+  }
+  namespace Modules {
+    namespace Fields {
+
+      class SCISHARE ReportScalarFieldStats : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        ReportScalarFieldStats();
+
+        void execute() override;
+        void setStateDefaults() override;
+
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, HistogramData, Matrix);
+
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+      };
+    }
+  }
+}
 
 #endif

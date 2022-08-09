@@ -675,6 +675,7 @@ public:
       widget->hookUpGeneralPortSignals(w);
       QObject::connect(widget, &ModuleWidget::connectionAdded, w, &InputPortWidget::makeConnection);
       QObject::connect(w, &InputPortWidget::incomingConnectionStateChange, widget, &ModuleWidget::incomingConnectionStateChanged);
+      QObject::connect(widget, &ModuleWidget::connectionStatusChanged, w, &InputPortWidget::connectionStatusChanged);
       widget->ports_->addPort(w);
       ++i;
       if (widget->dialogManager_.hasOptions() && port->isDynamic())
@@ -1271,7 +1272,7 @@ void ModuleWidget::toggleOptionsDialog()
         }
         else
         {
-          dockable_->move(400, 200);
+          dockable_->move(isViewScene_ ? 700 : 400, isViewScene_ ? 400 : 200);
         }
         positions_.append(dockable_->pos());
       }

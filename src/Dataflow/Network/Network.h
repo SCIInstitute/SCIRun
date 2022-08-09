@@ -61,7 +61,7 @@ namespace Networks {
     ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&) override;
     bool disconnect(const ConnectionId&) override;
     size_t nconnections() const override;
-    void disable_connection(const ConnectionId&) override;
+    ConnectionHandle lookupConnection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) const override;
     ConnectionDescriptionList connections(bool includeVirtual) const override;
     int errorCode() const override;
     void incrementErrorCode(const ModuleId& moduleId) override;

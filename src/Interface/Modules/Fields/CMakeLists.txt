@@ -82,6 +82,7 @@ SET(Interface_Modules_Fields_FORMS
   CalculateFieldDataMetric.ui
   CalculateBundleDifference.ui
   GenerateElectrode.ui
+  ReportScalarFieldStats.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -141,6 +142,7 @@ SET(Interface_Modules_Fields_HEADERS
   CalculateFieldDataMetricDialog.h
   CalculateBundleDifferenceDialog.h
   GenerateElectrodeDialog.h
+  ReportScalarFieldStatsDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -199,6 +201,7 @@ SET(Interface_Modules_Fields_SOURCES
   CalculateFieldDataMetricDialog.cc
   CalculateBundleDifferenceDialog.cc
   GenerateElectrodeDialog.cc
+  ReportScalarFieldStatsDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS "${Interface_Modules_Fields_FORMS}")

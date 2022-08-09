@@ -25,24 +25,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
-#define INTERFACE_MODULES_VIEW_SCENE_UTILITY_H
 
-#include <string>
-#include <glm/gtc/quaternion.hpp>
-#include <Interface/Modules/Render/share.h>
+#include <Interface/Modules/Fields/ReportScalarFieldStatsDialog.h>
+#include <Modules/Legacy/Fields/ReportScalarFieldStats.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 
-namespace SCIRun {
-namespace Render {
-namespace Gui {
-class SCISHARE ViewSceneUtility
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+ReportScalarFieldStatsDialog::ReportScalarFieldStatsDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-public:
-  static glm::quat stringToQuat(const std::string &s);
-  static std::string quatToString(const glm::quat &q);
-};
-} // namespace Gui
-} // namespace Render
-} // namespace SCIRun
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-#endif
+  addDynamicLabelManager(meanLabel_, Parameters::Mean);
+  addDynamicLabelManager(medianLabel_, Parameters::Median);
+  addDynamicLabelManager(sigmaLabel_, Parameters::StandardDeviation);
+  addDoubleSpinBoxManager(minDoubleSpinBox_, Parameters::MinRange);
+  addDoubleSpinBoxManager(maxDoubleSpinBox_, Parameters::MaxRange);
+  addSpinBoxManager(binsSpinBox_, Parameters::HistogramBinCount);
+  addRadioButtonGroupManager({ autoScaleRadioButton_, fixedScaleRadioButton_ }, Parameters::AutoRangeEnabled);
+}

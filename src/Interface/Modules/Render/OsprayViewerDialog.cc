@@ -182,10 +182,10 @@ void OsprayViewerDialog::addToolBar()
   addControlLockButton();
 }
 
-void OsprayViewerDialog::adjustToolbar()
+void OsprayViewerDialog::adjustToolbar(double factor)
 {
   if (toolBar_)
-    adjustToolbarForHighResolution(toolBar_);
+    adjustToolbarForHighResolution(toolBar_, factor);
 }
 
 void OsprayViewerDialog::addConfigurationButton()

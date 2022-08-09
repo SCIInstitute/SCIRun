@@ -510,6 +510,7 @@ void PortWidget::makeConnection(const ConnectionDescription& cd)
     connect(c, &ConnectionLine::noteChanged, this, &PortWidget::connectionNoteChanged);
     connect(out, &PortWidget::portMoved, c, &ConnectionLine::trackNodes);
     connect(in, &PortWidget::portMoved, c, &ConnectionLine::trackNodes);
+    connect(in, &PortWidget::connectionStatusChanged, c, &ConnectionLine::changeConnectionStatus);
     setConnected(true);
   }
 }

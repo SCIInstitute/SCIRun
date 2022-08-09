@@ -36,7 +36,6 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
-#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Interface/Modules/Render/ViewSceneManager.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/TextBuilder.h>
@@ -56,6 +55,7 @@ namespace SCIRun {
     class GLWidget;
     class ScopedWidgetColorChanger;
     class ViewSceneDialogImpl;
+    class ViewSceneControlPopupWidget;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -67,7 +67,7 @@ namespace SCIRun {
       ~ViewSceneDialog() override;
 
       std::string toString(std::string prefix) const;
-      void adjustToolbar() override;
+      void adjustToolbar(double factor) override;
 
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(float x, float y);
@@ -79,6 +79,8 @@ namespace SCIRun {
       void autoSaveScreenshot();
       void setFloatingState(bool isFloating);
       void vsLog(const QString& msg) const;
+      Qt::ToolBarArea whereIs(QToolBar* toolbar) const;
+      bool isFullScreen() const;
 
       void postMoveEventCallback(const QPoint& p) override;
 
@@ -89,6 +91,8 @@ namespace SCIRun {
       void cameraDistanceChangeForwarder();
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
+      void closeAllNonPinnedPopups();
+      void fullScreenChanged();
 
     public Q_SLOTS:
       void printToString() const {std::cout << toString("");}
@@ -97,6 +101,7 @@ namespace SCIRun {
       void saveNewGeometryChanged(int state);
       void invertZoomClicked(bool value);
       void menuMouseControlChanged(int index);
+      void adaptToFullScreenView(bool fullScreen) override;
     protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
@@ -190,6 +195,7 @@ namespace SCIRun {
       void quickScreenshot();
       void quickScreenshotClicked() { quickScreenshot(); }
       void setScreenshotDirectory();
+      void setToolBarPositions();
 
     protected:
       //---------------- Initialization ------------------------------------------------------------
@@ -215,7 +221,6 @@ namespace SCIRun {
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent*) override {}
 
-
     private:
       //---------------- Initialization ------------------------------------------------------------
       void addToolBar();
@@ -237,8 +242,7 @@ namespace SCIRun {
       void addInputControlButton();
       void addCameraLocksButton();
       void addDeveloperControlButton();
-      void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr);
-      void addConfigurationButton();
+      void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addObjectSelectionButton();
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
@@ -250,6 +254,7 @@ namespace SCIRun {
       bool clickedInViewer(QMouseEvent* e) const;
       void initializeAxes();
       void initializeVisibleObjects();
+      void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, QToolBar* toolbar);
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();

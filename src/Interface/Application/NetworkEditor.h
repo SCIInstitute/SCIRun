@@ -395,6 +395,7 @@ namespace Gui {
     void newModule(const QString& modId, bool hasUI);
     void newSubnetworkCopied(const QString& xml);
     void requestLoadNetwork(const QString& file);
+    void connectionStatusChanged(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
   private Q_SLOTS:
     void bringToFront();
     void sendToBack();

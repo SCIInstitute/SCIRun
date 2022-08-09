@@ -53,6 +53,8 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(SharedPointer<N
     { portAdded(mid, pid); }));
   connections_.emplace_back(controller_->connectPortRemoved([this](const ModuleId& mid, const PortId& pid)
     { portRemoved(mid, pid); }));
+  connections_.emplace_back(controller_->connectConnectionStatusChanged([this](const ConnectionId& id, bool status)
+    { connectionStatusChanged(id, status); }));
   connections_.emplace_back(controller_->connectStaticNetworkExecutionStarts([this]()
     { executionStarted(); }));
   connections_.emplace_back(controller_->connectStaticNetworkExecutionFinished([this](int ret)
