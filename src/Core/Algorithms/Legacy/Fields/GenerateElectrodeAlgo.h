@@ -32,6 +32,16 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/Point.h>
+
+
 namespace SCIRun
 {
   namespace Core
@@ -57,6 +67,23 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
     bool runImpl(FieldHandle input, FieldHandle& seeds) const;
     static const AlgorithmOutputName Samples;
     AlgorithmOutput run(const AlgorithmInput& input) const override;
+    
+    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
+    typedef std::vector<weight_type> table_type;
+
+    bool build_table(VMesh *mesh, VField* vfield,
+                     std::vector<weight_type> &table,
+                     std::string& method);
+    static bool
+    weight_less(const weight_type &a, const weight_type &b)
+    {
+      return (a.first < b.first);
+    }
+    
+    bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
+    
+    bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
+    
 };
 }
 }

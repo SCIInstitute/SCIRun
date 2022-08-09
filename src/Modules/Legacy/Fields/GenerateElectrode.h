@@ -60,24 +60,22 @@ namespace SCIRun
     {
 
       class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
-        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
-        public Has4OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag, MatrixPortTag>
+        public Has1InputPort<FieldPortTag>,
+        public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
       {
       public:
         GenerateElectrode();
         void execute() override;
         void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, Field);
-        INPUT_PORT(1, ParameterMatrixIn, DenseMatrix);
+        INPUT_PORT(0, InputField, Field);\
         OUTPUT_PORT(0, OutputField, Field);
         OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
         OUTPUT_PORT(2, ControlPoints, Field);
-        OUTPUT_PORT(3, ParameterMatrixOut, DenseMatrix);
 
         //MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI);
         //TODO: enable after UI is written
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI);
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgoAndUI);
 
       private:
         SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;

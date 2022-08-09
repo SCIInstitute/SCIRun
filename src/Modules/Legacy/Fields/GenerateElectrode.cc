@@ -152,28 +152,11 @@ namespace SCIRun
 
 GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_),
   impl_(new GenerateElectrodeImpl)
-		//widget_lock_("GenerateElectrode widget lock"),
-		//arrow_widget_(0),
-		//gui_probe_scale_(get_ctx()->subVar("probe_scale"), 3.0),
-		//gui_color_r_(get_ctx()->subVar("color-r"), 1.0),
-		//gui_color_g_(get_ctx()->subVar("color-g"), 1.0),
-		//gui_color_b_(get_ctx()->subVar("color-b"), 1.0),
-		//gui_widget_points_(get_ctx()->subVar("num_points"),5),
-		//gui_length_(get_ctx()->subVar("length"),.1),
-		//gui_width_(get_ctx()->subVar("width"),.02),
-		//gui_thick_(get_ctx()->subVar("thick"),.003),
-		//gui_moveto_(get_ctx()->subVar("moveto"), ""),
-		//gui_project_(get_ctx()->subVar("project"),"midway"),
-		//gui_use_field_(get_ctx()->subVar("use-field"),1),
-		//gui_move_all_(get_ctx()->subVar("move-all"),0),
-		//gui_wire_res_(get_ctx()->subVar("wire_res"),10)
 {
   INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(ParameterMatrixIn);
   INITIALIZE_PORT(OutputField);
   INITIALIZE_PORT(ElectrodeWidget);
   INITIALIZE_PORT(ControlPoints);
-  INITIALIZE_PORT(ParameterMatrixOut);
 }
 
 void GenerateElectrode::setStateDefaults()
@@ -195,9 +178,6 @@ void GenerateElectrode::execute()
   //TODO: enable optional input logic
   auto source = getRequiredInput(InputField);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  const bool input_matrix_p = get_input_handle("Parameter Matrix", source_matrix, false);
-#endif
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   size_type num_para = 0;

@@ -29,11 +29,7 @@
 #include <Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
+
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -64,26 +60,26 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
   
 }
 
-namespace detail
-{
-class GenerateElectrodeAlgoF {
-  public:
-    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
-    typedef std::vector<weight_type> table_type;
-
-    bool build_table(VMesh *mesh, VField* vfield,
-                     std::vector<weight_type> &table,
-                     std::string& method);
-
-    static bool
-    weight_less(const weight_type &a, const weight_type &b)
-    {
-      return (a.first < b.first);
-    }
-};
+//namespace detail
+//{
+//class GenerateElectrodeAlgoF {
+//  public:
+//    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
+//    typedef std::vector<weight_type> table_type;
+//
+//    bool build_table(VMesh *mesh, VField* vfield,
+//                     std::vector<weight_type> &table,
+//                     std::string& method);
+//
+//    static bool
+//    weight_less(const weight_type &a, const weight_type &b)
+//    {
+//      return (a.first < b.first);
+//    }
+//};
 
 bool
-GenerateElectrodeAlgoF::build_table(VMesh *vmesh,
+GenerateElectrodeAlgo::build_table(VMesh *vmesh,
                                                 VField* vfield,
                                                 std::vector<weight_type> &table,
                                                 std::string& method)
@@ -158,7 +154,7 @@ GenerateElectrodeAlgoF::build_table(VMesh *vmesh,
 
   return (false);
 }
-}
+
 
 
 // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
@@ -257,6 +253,7 @@ bool GenerateElectrodeAlgo::CalculateSpline(std::vector<double>& t, std::vector<
 
 bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
+    
   
 }
 
