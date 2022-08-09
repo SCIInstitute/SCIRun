@@ -64,7 +64,7 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
 {
   public:
     GenerateElectrodeAlgo();
-    bool runImpl(FieldHandle input, FieldHandle& seeds) const;
+    bool runImpl(FieldHandle input, FieldHandle&, FieldHandle&) const;
     static const AlgorithmOutputName Samples;
     AlgorithmOutput run(const AlgorithmInput& input) const override;
     

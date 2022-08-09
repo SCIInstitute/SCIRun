@@ -745,7 +745,7 @@ FieldHandle GenerateElectrodeAlgo::Make_Mesh_Wire(std::vector<Point>& final_poin
 bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField, FieldHandle& outputPoints) const
 {
     
-    FieldInformation fis(source);
+    FieldInformation fis(input);
     std::vector<Point> orig_points;
     Vector direction;
     Vector defdir = Vector(-10, 10, 10);
@@ -759,7 +759,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
   #endif
       )
     {
-      VMesh* smesh = source->vmesh();
+      VMesh* smesh = input->vmesh();
 
       smesh->synchronize(Mesh::ELEM_LOCATE_E);
 

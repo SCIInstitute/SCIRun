@@ -76,9 +76,6 @@ namespace SCIRun
         class GenerateElectrodeImpl
         {
         public:
-          void get_points(std::vector<Point>& points);
-          void get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution);
-          FieldHandle Make_Mesh_Wire(std::vector<Point>& points, double thickness, int resolution);
 
           std::vector<Point> Previous_points_;
         };
@@ -106,8 +103,6 @@ namespace SCIRun
 			void create_widgets(std::vector<Point>& points);
 
 			void create_widgets(std::vector<Point>& points,Vector& direction);
-
-			void Make_Mesh_Planar(std::vector<Point>& points, FieldHandle& ofield, Vector& direction);
 
 
 		private:
