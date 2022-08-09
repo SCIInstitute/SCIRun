@@ -83,6 +83,8 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
     bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
     
     bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
+    FieldHandle Make_Mesh_Wire(std::vector<Point>& final_points, double, int);
+    void get_centers(std::vector<Point>&, std::vector<Point>&, double, int);
     
 };
 }

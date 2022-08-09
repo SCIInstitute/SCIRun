@@ -68,8 +68,8 @@ namespace SCIRun
         void execute() override;
         void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, Field);\
-        OUTPUT_PORT(0, OutputField, Field);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, ElectrodeMesh, Field);
         OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
         OUTPUT_PORT(2, ControlPoints, Field);
 
