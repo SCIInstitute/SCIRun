@@ -46,6 +46,7 @@ namespace SCIRun
       ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
       ALGORITHM_PARAMETER_DECL(ElectrodeType);
       ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
+      ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
       ALGORITHM_PARAMETER_DECL(MoveAll);
       ALGORITHM_PARAMETER_DECL(UseFieldNodes);
       

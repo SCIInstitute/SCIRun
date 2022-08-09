@@ -26,7 +26,7 @@
 */
 
 
-#include <Core/Algorithms/Legacy/Fields/SampleField/GenerateElectrodeAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -254,102 +254,10 @@ bool GenerateElectrodeAlgo::CalculateSpline(std::vector<double>& t, std::vector<
 
   return (true);
 }
-}
 
 bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  ScopedAlgorithmStatusReporter asr(this, "GenerateElectrode");
-
-  VField::size_type num_seeds = get(Parameters::NumSamples).toInt();
-  int               rng_seeds = get(Parameters::RNGSeed).toInt();
-  std::string method          = getOption(Parameters::DistributionType);
-  bool              clamp     = get(Parameters::ClampToNodes).toBool();
-
-  if (!input)
-  {
-    error("No input field was given");
-    return (false);
-  }
-
-  VMesh*  mesh  = input->vmesh();
-  VField* field = input->vfield();
-
-  using namespace detail;
-  GenerateElectrodeAlgoF table_algo;
-  GenerateElectrodeAlgoF::table_type table;
-
-  if (method == "uniuni" || method == "uniscat")
-  {
-    if (!table_algo.build_table(mesh, field, table, method))
-    {
-      error("Unable to build unweighted weight table for this mesh. Mesh is likely to be empty.");
-      return (false);
-    }
-  }
-  else if (field->is_scalar() || field->is_vector())
-  {
-    mesh->synchronize(Mesh::LOCATE_E);
-    if (!table_algo.build_table(mesh, field, table, method))
-    {
-      error("Invalid weights in mesh, probably all zero. Try using an unweighted option.");
-      return (false);
-    }
-  }
-  else
-  {
-    error("Mesh contains non-weight data. Try using an unweighted option.");
-    return (false);
-  }
-
-  FieldRNG rng(rng_seeds);
-
-  long double max = table[table.size()-1].first;
-
-  FieldInformation fi("PointCloudMesh",0,"double");
-  output = CreateField(fi);
-
-  if (!output)
-  {
-    error("Could not allocate output field");
-    return (false);
-  }
-
-  VMesh* omesh = output->vmesh();
-  VField* ofield = output->vfield();
-
-  for (VField::index_type i=0; i < num_seeds; i++)
-  {
-    Point p;
-    GenerateElectrodeAlgoF::table_type::iterator loc;
-
-    do
-    {
-      loc = std::lower_bound(table.begin(), table.end(),
-			 GenerateElectrodeAlgoF::weight_type(
-       rng() * max, VMesh::Elem::index_type(0)),
-       GenerateElectrodeAlgoF::weight_less);
-    }
-    while (loc == table.end());
-
-    if (clamp)
-    {
-      // Find a random node in that cell.
-      VMesh::Node::array_type ra;
-      mesh->get_nodes(ra, (*loc).second);
-      auto index = static_cast<size_t>(rng()*ra.size());
-      mesh->get_center(p, ra[index]);
-    }
-    else
-    {
-      // Find random point in that cell.
-      mesh->get_random_point(p, (*loc).second, rng);
-    }
-    omesh->add_point(p);
-  }
-
-  ofield->resize_values();
-
-  return (true);
+  
 }
 
 AlgorithmOutput GenerateElectrodeAlgo::run(const AlgorithmInput& input) const
@@ -365,4 +273,3 @@ AlgorithmOutput GenerateElectrodeAlgo::run(const AlgorithmInput& input) const
   return output;
 }
 
-const AlgorithmOutputName GenerateElectrodeAlgo::Samples("Samples");
