@@ -218,7 +218,7 @@ void EditMeshBoundingBox::sendOutputPorts()
   auto fieldTrans = widgetTrans * inputFieldInverse_;
 
   outputField_->vmesh()->transform(fieldTrans);
-  sendOutput(Transformation_Matrix, MatrixHandle(new DenseMatrix(widgetTrans)));
+  sendOutput(Transformation_Matrix, MatrixHandle(new DenseMatrix(fieldTrans)));
   sendOutput(OutputField, outputField_);
 
   generateGeomsList();
