@@ -251,7 +251,7 @@ bool GenerateElectrodeAlgo::CalculateSpline(std::vector<double>& t, std::vector<
   return (true);
 }
 
-void GenerateElectrodeAlgo::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution)
+void GenerateElectrodeAlgo::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution) const
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //This is only needed to get the positions from the widget
@@ -272,7 +272,7 @@ void GenerateElectrodeAlgo::get_centers(std::vector<Point>& p, std::vector<Point
 }
 
 
-FieldHandle GenerateElectrodeAlgo::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution)
+FieldHandle GenerateElectrodeAlgo::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution) const
 {
     FieldInformation fi("TetVolMesh",0,"double");
     MeshHandle mesh = CreateMesh(fi);
@@ -749,11 +749,10 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
     std::vector<Point> orig_points;
     Vector direction;
     Vector defdir = Vector(-10, 10, 10);
+
+    auto electrode_type = getOption(Parameters::ElectrodeType);
     
-    auto state = get_state();
-    auto electrode_type = state->getValue(Parameters::ElectrodeType).toString();
-    
-    if (source
+    if (input
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_)
   #endif
@@ -767,7 +766,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
       if (num_nodes > 50)
       {
         error("Why would you want to use that many nodes to make an electrode?  Do you want to crash you system?  That's way to many.");
-        return;
+        return false;
       }
 
       VMesh::Node::array_type a;
@@ -818,7 +817,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
   {
     remove_point();
     gui_moveto_.set("");
-    return;
+    return false;
   }
   else
   {
@@ -849,9 +848,9 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
     arrow_widget_ = 0;
 #endif
 
-  if (impl_->Previous_points_.size() < 3)
+  if (Previous_points_.size() < 3)
   {
-    impl_->Previous_points_ = orig_points;
+    Previous_points_ = orig_points;
   }
 
   size_type size = orig_points.size();
@@ -891,7 +890,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
     create_widgets(orig_points, direction);
 #endif
 
-  impl_->Previous_points_ = orig_points;
+  Previous_points_ = orig_points;
 
   FieldInformation pi("PointCloudMesh", 0, "double");
   MeshHandle pmesh = CreateMesh(pi);
@@ -905,19 +904,20 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
   outputPoints = CreateField(pi, pmesh);
     
   get_centers(points, final_points,
-      state->getValue(Parameters::ElectrodeLength).toDouble(),
-      state->getValue(Parameters::ElectrodeResolution).toInt());
+      get(Parameters::ElectrodeLength).toDouble(),
+      get(Parameters::ElectrodeResolution).toInt());
 
     if (electrode_type == "wire")
       outputField = Make_Mesh_Wire(final_points,
-        state->getValue(Parameters::ElectrodeThickness).toDouble(),
-        state->getValue(Parameters::ElectrodeResolution).toInt()));
+        get(Parameters::ElectrodeThickness).toDouble(),
+        get(Parameters::ElectrodeResolution).toInt()));
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (electrode_type == "planar")
         outputField = Make_Mesh_Planar(final_points, ofield, direction);
   #endif
 
+    return true;
     
   
 }
@@ -925,6 +925,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
 AlgorithmOutput GenerateElectrodeAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
+    
 
   FieldHandle outputField;
   FieldHandle outputPoints;

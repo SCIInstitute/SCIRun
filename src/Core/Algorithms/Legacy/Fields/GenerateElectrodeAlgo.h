@@ -65,7 +65,8 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
   public:
     GenerateElectrodeAlgo();
     bool runImpl(FieldHandle input, FieldHandle&, FieldHandle&) const;
-    static const AlgorithmOutputName Samples;
+    static const AlgorithmOutputName ControlPoints, ElectrodeMesh;
+    std::vector<Geometry::Point> Previous_points_;
     AlgorithmOutput run(const AlgorithmInput& input) const override;
     
     typedef std::pair<double, VMesh::Elem::index_type> weight_type;
@@ -83,8 +84,8 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
     bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
     
     bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
-    FieldHandle Make_Mesh_Wire(std::vector<Point>& final_points, double, int);
-    void get_centers(std::vector<Point>&, std::vector<Point>&, double, int);
+    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& final_points, double, int) const;
+    void get_centers(std::vector<Geometry::Point>&, std::vector<Geometry::Point>&, double, int) const;
     
 };
 }

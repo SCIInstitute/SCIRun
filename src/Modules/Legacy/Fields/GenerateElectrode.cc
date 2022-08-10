@@ -156,13 +156,15 @@ GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_),
 
 void GenerateElectrode::setStateDefaults()
 {
-  auto state = get_state();
-
-  state->setValue(Parameters::ElectrodeLength, 0.1);
-  state->setValue(Parameters::ElectrodeThickness, 0.003);
-  state->setValue(Parameters::NumberOfControlPoints, 5);
-  state->setValue(Parameters::ElectrodeResolution, 10);
-  state->setValue(Parameters::ElectrodeType, std::string("wire"));
+    setAlgoDoubleFromState(Parameters::ElectrodeLength);
+    setAlgoDoubleFromState(Parameters::ElectrodeThickness);
+    setAlgoDoubleFromState(Parameters::ElectrodeWidth);
+    setAlgoIntFromState(Parameters::NumberOfControlPoints);
+    setStateIntFromState(Parameters::ElectrodeResolution);
+    setStateBoolFromAlgo(Parameters::UseFieldNodes);
+    setStateBoolFromAlgo(Parameters::MoveAll);
+    setStateStringFromAlgoOption(Parameters::ElectrodeType);
+    setStateStringFromAlgoOption(Parameters::ElectrodeProjection);
 }
 
 void GenerateElectrode::execute()
@@ -171,6 +173,17 @@ void GenerateElectrode::execute()
 
   //TODO: enable optional input logic
   auto source = getRequiredInput(InputField);
+    
+    setAlgoDoubleFromState(Parameters::ElectrodeLength);
+    setAlgoDoubleFromState(Parameters::ElectrodeThickness);
+    setAlgoDoubleFromState(Parameters::ElectrodeWidth);
+    setAlgoIntFromState(Parameters::NumberOfControlPoints);
+    setAlgoIntFromState(Parameters::ElectrodeResolution);
+    setAlgoBoolFromState(Parameters::UseFieldNodes);
+    setAlgoBoolFromState(Parameters::MoveAll);
+    setAlgoOptionFromState(Parameters::ElectrodeType);
+    setAlgoOptionFromState(Parameters::ElectrodeProjection);
+    
 
 //  FieldInformation fis(source);
 //  std::vector<Point> orig_points;
