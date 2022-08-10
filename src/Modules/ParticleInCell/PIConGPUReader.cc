@@ -35,7 +35,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Dataflow::Networks; 
+//using namespace SCIRun::Dataflow::Networks; 
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
@@ -164,10 +164,9 @@ void PIConGPUReader::execute()
             cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
 /**/
-// New code  Use the input variables to determine what data to load and which output function to call
-            std::string spec = "e";                                  //set development input variables
-            std::string output_option    = "particles";
-            int particle_sample_rate     = 100;
+            std::string spec          = "e";                         //set development input variables
+            std::string output_option = "particles";
+            int particle_sample_rate  = 100;
 
                                                                      //Read particle data
             Record particlePositions = iteration.particles[spec]["position"];
@@ -218,7 +217,6 @@ void PIConGPUReader::execute()
             sendOutput(x_coordinates, output_mat_0);
                                                                      //End of Particle data processing
 
-
 /**/
                                                                      //Read Scalar field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
 
@@ -255,97 +253,44 @@ void PIConGPUReader::execute()
                                                                      //End of Scalar Field data processing
 
 
-
-/*
-                                                        //Prototype vector field output (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
-    //        if(output_option=="vector_field")
-    //            {
-            auto mesh = iteration.meshes["E"];
-            auto component_x = mesh["x"].loadChunk<float>();
-            auto component_y = mesh["y"].loadChunk<float>();
-            auto component_z = mesh["z"].loadChunk<float>();
+                                                                     //Read vector field output (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
+            std::string vector_field_type = "E";
+            auto vectorFieldData          = iteration.meshes[vector_field_type];
+            auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
+            auto vFD_component_y          = vectorFieldData["y"].loadChunk<float>();
+            auto vFD_component_z          = vectorFieldData["z"].loadChunk<float>();
             iteration.seriesFlush();                    //Data is now available
 
                                                         //Call the output function
     //            vectorField(mesh, component_x, component_y, component_z);
-    //            }
-*/
-            iteration.close();
 
+//    *****************************************************  The output function code is moved here for now
+//    *****************************************************  Load the data to be output
 
+            auto extent_vFD   = vectorFieldData["x"].getExtent();
+            const int one_Dim = 3*(extent_vFD[0] * extent_vFD[1] * extent_vFD[2]);
+            auto XYZ_vec = new double[one_Dim];
 
-
-
-                                                        //old code Extract the number of particles and set a particle sampling rate
-
-//            Extent const &extent_0 = extents[0];
-//            int num_particles = extent_0[0];
-//            int particle_sample_rate = 1000000;         //Number of samples in the final frame is 4
-//            int particle_sample_rate = 100000;          //Number of samples in the final frame is 38
-//            int particle_sample_rate = 100;             //Number of samples in the final frame is 37154 on WS1, 37149 on the laptop
-
-//  *********************Debug: Number of particles and sampling rate are output to the terminal
-/*
-            cout << "\nAfter loading particle position data\n";
-            cout << "\nNumber of particles is " << num_particles;
-            cout << "\nParticle sample_rate is " << particle_sample_rate << "\n";
-*/
-//  *********************End of Debug
-
-
-//            iteration.close();
-
-//    ***************************************************** old code Set up and load the module output buffers
-
-/*
-            const int buffer_size   = 1+(num_particles/particle_sample_rate);
-            auto buffer_pos_x       = new double[buffer_size];
-            auto buffer_pos_y       = new double[buffer_size];
-            auto buffer_pos_z       = new double[buffer_size];
-
-            for (size_t i_pos = 0; i_pos < 3; ++i_pos)
+            for(size_t i = 0; i < extent_vFD[0]; ++i) for(size_t j = 0; j < extent_vFD[1]; ++j) for(size_t k = 0; k < extent_vFD[2]; ++k)
                 {
-                std::string dim = dimensions[i_pos];
-                auto chunk = loadedChunks[i_pos];
+                size_t flat_index = i * extent_vFD[1] * extent_vFD[2] + j * extent_vFD[2] + k;
 
-//  *********************Debug: Sampled particle position data sent to the terminal
-
-                cout <<"\nThe sampled values for particle position in dimension " << dim << " are\n";
-                cout <<"not printed\n";
-//                for (size_t j = 0; j<num_particles ; j+=particle_sample_rate) cout << "\t" << chunk.get()[j] << ", ";
-//                cout << "\n----------" << std::endl;
-
-//  *********************End of Debug
-
-                if(i_pos==0) for (size_t k = 0; k<num_particles ; k+=particle_sample_rate) buffer_pos_x[k/particle_sample_rate]=chunk.get()[k];
-                if(i_pos==1) for (size_t i = 0; i<num_particles ; i+=particle_sample_rate) buffer_pos_y[i/particle_sample_rate]=chunk.get()[i];
-                if(i_pos==2) for (size_t m = 0; m<num_particles ; m+=particle_sample_rate) buffer_pos_z[m/particle_sample_rate]=chunk.get()[m];
+                XYZ_vec[flat_index]                                                   = vFD_component_x.get()[flat_index];
+                XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2])]     = vFD_component_y.get()[flat_index];
+                XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2]) * 2] = vFD_component_z.get()[flat_index];
                 }
 
+//    *****************************************************  Set up the output data structure
 
-//    *****************************************************  Set up the output data
-
-
-            DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size, 1));
-            DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size, 1));
-            DenseMatrixHandle output_mat_2(new DenseMatrix(buffer_size, 1));
-
-            double *data0=output_mat_0->data();
-            double *data1=output_mat_1->data();
+            DenseMatrixHandle output_mat_2(new DenseMatrix(one_Dim, 1));
             double *data2=output_mat_2->data();
-
-            std::copy(buffer_pos_x, buffer_pos_x+buffer_size, data0);
-            std::copy(buffer_pos_y, buffer_pos_y+buffer_size, data1);
-            std::copy(buffer_pos_z, buffer_pos_z+buffer_size, data2);
-
+            std::copy(XYZ_vec, XYZ_vec+one_Dim, data2);
 
 //    *****************************************************  Send data to the output ports
-
-
-            sendOutput(x_coordinates, output_mat_0);
-            sendOutput(y_coordinates, output_mat_1);
             sendOutput(z_coordinates, output_mat_2);
-*/
+
+            iteration.close();
+
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
     }  //end of the "PIConGPU::execute()" function
