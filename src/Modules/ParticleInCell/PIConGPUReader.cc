@@ -62,82 +62,36 @@ void PIConGPUReader::setStateDefaults()
 //    setStateIntFromAlgo(Parameters::SampleRate);
     }
 
-/*
-void particleData(int buffer_size, float* component_x, float* component_y, float* component_z)
-    {
-
-
-//    *****************************************************  Set up and load the working vector that holds data to be output
-
-    auto flat_particle_feature = new float[buffer_size*3];                            
+void PIConGPUReader::particleData(int buffer_size, float component_x[], float component_y[], float component_z[], float flat_particle_feature[])
+    {                          
     for (int k = 0; k<buffer_size; k++)
         {
         flat_particle_feature[k]              =component_x[k];
         flat_particle_feature[k+buffer_size]  =component_y[k];
         flat_particle_feature[k+2*buffer_size]=component_z[k];
         }
-
-//    *****************************************************  Set up the data to be output
-    DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size*3, 1));
-    double *data0=output_mat_0->data();
-    std::copy(flat_particle_feature, flat_particle_feature+buffer_size*3, data0);
-
-//    *****************************************************  Send data to the output port
-    sendOutput(flat_particle_feature, output_mat_0);
-
     }
-*/
 
-
-/*
-void PIConGPUReader::scalarField(mesh, node_values)
+void PIConGPUReader::scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD, double buffer_sFD[])
     {
-//    *****************************************************  Get mesh dimensions, calculate the size of the one dimensional output vector, set up and load the one dimensional vector
-    auto mesh_extent = mesh["x"].getExtent();
-    const int one_Dim = (mesh_extent[0]*mesh_extent[1]*mesh_extent[2]);
-    auto flat_node_values = new double[one_Dim];
-    for(size_t i = 0; i < mesh_extent[0]; ++i) for(size_t j = 0; j < mesh_extent[1]; ++j) for(size_t k = 0; k < mesh_extent[2]; ++k)
+    for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
         {
-        size_t flat_index = i * mesh_extent[1] * mesh_extent[2] + j * mesh_extent[2] + k;
-
-        flat_node_values[flat_index] = node_values.get()[flat_index];
+        size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
+        buffer_sFD[flat_index] = scalarFieldData_buffer.get()[flat_index];
         }
-
-//    *****************************************************  Set up the data to be output
-    DenseMatrixHandle output_mat_0(new DenseMatrix(one_Dim, 1));
-    double *data0=output_mat_0->data();
-    std::copy(flat_node_values, flat_node_values+one_Dim, data0);
-
-//    *****************************************************  Send data to the output port
-    sendOutput(x_coordinates, output_mat_0);
     }
-*/
 
-/*
-void PIConGPUReader::vectorField(mesh, component_x, component_y, component_z)
+void PIConGPUReader::vectorField(std::vector<long unsigned int> extent_vFD, double XYZ_vec[], std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
     {
-//    *****************************************************  Get mesh dimensions, calculate the size of the one dimensional output vector, set up and load the one dimensional vector
-    auto mesh_extent = mesh["x"].getExtent();
-    const int one_Dim = 3*(mesh_extent[0]*mesh_extent[1]*mesh_extent[2]);
-    auto XYZ_vec = new double[one_Dim];
-    for(size_t i = 0; i < mesh_extent[0]; ++i) for(size_t j = 0; j < mesh_extent[1]; ++j) for(size_t k = 0; k < mesh_extent[2]; ++k)
+    for(size_t i = 0; i < extent_vFD[0]; ++i) for(size_t j = 0; j < extent_vFD[1]; ++j) for(size_t k = 0; k < extent_vFD[2]; ++k)
         {
-        size_t flat_index = i * mesh_extent[1] * mesh_extent[2] + j * mesh_extent[2] + k;
+        size_t flat_index = i * extent_vFD[1] * extent_vFD[2] + j * extent_vFD[2] + k;
 
-        XYZ_vec[flat_index]                                                      = component_x.get()[flat_index];
-        XYZ_vec[flat_index + (mesh_extent[0]*mesh_extent[1]*mesh_extent[2])]     = component_y.get()[flat_index];
-        XYZ_vec[flat_index + (mesh_extent[0]*mesh_extent[1]*mesh_extent[2]) * 2] = component_z.get()[flat_index];
+        XYZ_vec[flat_index]                                                   = vFD_component_x.get()[flat_index];
+        XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2])]     = vFD_component_y.get()[flat_index];
+        XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2]) * 2] = vFD_component_z.get()[flat_index];
         }
-
-//    *****************************************************  Set up the data to be output
-    DenseMatrixHandle output_mat_0(new DenseMatrix(one_Dim, 1));
-    double *data0=output_mat_0->data();
-    std::copy(XYZ_vec, XYZ_vec+one_Dim, data0);
-
-//    *****************************************************  Send data to the output port
-    sendOutput(x_coordinates, output_mat_0);
     }
-*/
 
 void PIConGPUReader::execute()
     {
@@ -165,7 +119,7 @@ void PIConGPUReader::execute()
 
 /**/
             std::string spec          = "e";                         //set development input variables
-            std::string output_option = "particles";
+//            std::string output_option = "particles";
             int particle_sample_rate  = 100;
 
                                                                      //Read particle data
@@ -187,26 +141,14 @@ void PIConGPUReader::execute()
 
             Extent const &extent_0 = extents[0];
             int num_particles = extent_0[0];
-//                const int one_Dim = 3*num_particles;
 
-            const int buffer_size  = 1+(num_particles/particle_sample_rate);
-            auto component_x       = new float[buffer_size];
-            auto component_y       = new float[buffer_size];
-            auto component_z       = new float[buffer_size];
+            const int buffer_size      = 1+(num_particles/particle_sample_rate);
+            auto component_x           = new float[buffer_size];
+            auto component_y           = new float[buffer_size];
+            auto component_z           = new float[buffer_size];
+            auto flat_particle_feature = new float[buffer_size*3];  
 
-                                                        //Call the output function
-//                particleData(buffer_size, component_x, component_y, component_z);
-
-//    *****************************************************  The output function code is moved here for now
-//    *****************************************************  Load the data to be output
-
-            auto flat_particle_feature = new float[buffer_size*3];                            
-            for (int k = 0; k<buffer_size; k++)
-                {
-                flat_particle_feature[k]              =component_x[k];
-                flat_particle_feature[k+buffer_size]  =component_y[k];
-                flat_particle_feature[k+2*buffer_size]=component_z[k];
-                }
+            particleData(buffer_size, component_x, component_y, component_z, flat_particle_feature);
 
         //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_0(new DenseMatrix(buffer_size*3, 1));
@@ -217,25 +159,23 @@ void PIConGPUReader::execute()
             sendOutput(x_coordinates, output_mat_0);
                                                                      //End of Particle data processing
 
-/**/
                                                                      //Read Scalar field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
 
             std::string scalar_field_component = "e_all_chargeDensity";
-
             auto scalarFieldData               = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
             auto scalarFieldData_buffer        = scalarFieldData.loadChunk<float>();
             iteration.seriesFlush();                    //Data is now available
-
-                                                        //Call the output function
-    //            scalarField(mesh, component_x);
-
-//    *****************************************************  The output function code is moved here for now
-//    *****************************************************  Load the data to be output
 
             auto extent_sFD           = scalarFieldData.getExtent();
             const int buffer_size_sFD = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
             auto buffer_sFD           = new double[buffer_size_sFD];
 
+                                                        //Call the output function
+            scalarField(scalarFieldData_buffer, extent_sFD, buffer_sFD);
+
+//    *****************************************************  The output function code is moved here for now
+//    *****************************************************  Load the data to be output
+/**/
             for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
                 {
                 size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
@@ -248,7 +188,7 @@ void PIConGPUReader::execute()
             double *data1=output_mat_1->data();
             std::copy(buffer_sFD, buffer_sFD+buffer_size_sFD, data1);
 
-//    *****************************************************  Send data to the output ports
+//    *****************************************************  Send data to the output port
             sendOutput(y_coordinates, output_mat_1);
                                                                      //End of Scalar Field data processing
 
@@ -261,16 +201,16 @@ void PIConGPUReader::execute()
             auto vFD_component_z          = vectorFieldData["z"].loadChunk<float>();
             iteration.seriesFlush();                    //Data is now available
 
-                                                        //Call the output function
-    //            vectorField(mesh, component_x, component_y, component_z);
-
-//    *****************************************************  The output function code is moved here for now
-//    *****************************************************  Load the data to be output
-
             auto extent_vFD   = vectorFieldData["x"].getExtent();
             const int one_Dim = 3*(extent_vFD[0] * extent_vFD[1] * extent_vFD[2]);
             auto XYZ_vec = new double[one_Dim];
 
+                                                        //Call the output function
+            vectorField(extent_vFD, XYZ_vec, vFD_component_x, vFD_component_y, vFD_component_z);
+
+//    *****************************************************  The output function code is moved here for now
+//    *****************************************************  Load the data to be output
+/**/
             for(size_t i = 0; i < extent_vFD[0]; ++i) for(size_t j = 0; j < extent_vFD[1]; ++j) for(size_t k = 0; k < extent_vFD[2]; ++k)
                 {
                 size_t flat_index = i * extent_vFD[1] * extent_vFD[2] + j * extent_vFD[2] + k;
@@ -286,7 +226,7 @@ void PIConGPUReader::execute()
             double *data2=output_mat_2->data();
             std::copy(XYZ_vec, XYZ_vec+one_Dim, data2);
 
-//    *****************************************************  Send data to the output ports
+//    *****************************************************  Send data to the output port
             sendOutput(z_coordinates, output_mat_2);
 
             iteration.close();
