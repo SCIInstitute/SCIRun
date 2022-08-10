@@ -218,7 +218,7 @@ void EditMeshBoundingBox::sendOutputPorts()
   auto fieldTrans = widgetTrans * inputFieldInverse_;
 
   outputField_->vmesh()->transform(fieldTrans);
-  sendOutput(Transformation_Matrix, MatrixHandle(new DenseMatrix(widgetTrans)));
+  sendOutput(Transformation_Matrix, MatrixHandle(new DenseMatrix(fieldTrans)));
   sendOutput(OutputField, outputField_);
 
   generateGeomsList();
@@ -246,9 +246,8 @@ void EditMeshBoundingBox::resetToInputField()
   auto trans = Transform(pos_, eigvecs_[0]*eigvals[0], eigvecs_[1]*eigvals[1], eigvecs_[2]*eigvals[2]);
   widgetScale_.pre_scale(eigvals);
 
-    // set inputfieldtrans to identity
-  inputFieldInverse_ = Transform();
-//  inputFieldInverse_.invert();
+  inputFieldInverse_ = Transform(trans);
+  inputFieldInverse_.invert();
 
   updateInputFieldAttributes();
 

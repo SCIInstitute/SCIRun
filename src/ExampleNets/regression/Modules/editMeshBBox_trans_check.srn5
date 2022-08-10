@@ -168,7 +168,7 @@
 										<which>2</which>
 										<value>0.5 0 0 500
 0 0.25 0 1000
-0 0 5e-8 -750
+0 0 0.1 -750
 0 0 0 1</value>
 									</value>
 								</second>
@@ -293,7 +293,7 @@
 									<name>InputSizeZ</name>
 									<value object_id="_18">
 										<which>2</which>
-										<value>  0.0002</value>
+										<value>  0.2000</value>
 									</value>
 								</second>
 							</item>
@@ -305,7 +305,7 @@
 									<name>InverseFieldTransformMatrix</name>
 									<value object_id="_19">
 										<which>2</which>
-										<value>[2, -0, 0, -0;-0, 4, -0, 0;0, -0, 10000, -0;-1000, -4000, 7.5e+06, 1;]</value>
+										<value>[2, -0, 0, -0;-0, 4, -0, 0;0, -0, 10, -0;-1000, -4000, 7500, 1;]</value>
 									</value>
 								</second>
 							</item>
@@ -341,7 +341,7 @@
 									<name>OutputCenterX</name>
 									<value object_id="_22">
 										<which>1</which>
-										<value>5.00000000000000000e+02</value>
+										<value>5.00241379052400589e+02</value>
 									</value>
 								</second>
 							</item>
@@ -353,7 +353,7 @@
 									<name>OutputCenterY</name>
 									<value object_id="_23">
 										<which>1</which>
-										<value>1.00000000000000000e+03</value>
+										<value>1.00042948859930038e+03</value>
 									</value>
 								</second>
 							</item>
@@ -365,7 +365,7 @@
 									<name>OutputCenterZ</name>
 									<value object_id="_24">
 										<which>1</which>
-										<value>-7.50000000000000000e+02</value>
+										<value>-7.49993175819516182e+02</value>
 									</value>
 								</second>
 							</item>
@@ -401,7 +401,7 @@
 									<name>OutputSizeZ</name>
 									<value object_id="_27">
 										<which>1</which>
-										<value>2.00000000000000010e-04</value>
+										<value>2.00000000000045475e-01</value>
 									</value>
 								</second>
 							</item>
@@ -521,7 +521,7 @@
 									<name>RotationTransformMatrix</name>
 									<value object_id="_37">
 										<which>2</which>
-										<value>[1, 0, 0, 0;0, 1, 0, 0;0, 0, 1, 0;0, 0, 0, 1;]</value>
+										<value>[-0.394908, 0.77653, 0.490967, 0;0.916932, 0.366463, 0.157922, 0;-0.0572904, 0.512549, -0.856745, 0;0, 0, 0, 1;]</value>
 									</value>
 								</second>
 							</item>
@@ -557,7 +557,7 @@
 									<name>ScaleTransformMatrix</name>
 									<value object_id="_40">
 										<which>2</which>
-										<value>[0.5, 0, 0, 0;0, 0.25, 0, 0;0, 0, 0.0001, 0;0, 0, 0, 1;]</value>
+										<value>[0.37015, 0, 0, 0;0, 0.185075, 0, 0;0, 0, 0.0740299, 0;0, 0, 0, 1;]</value>
 									</value>
 								</second>
 							</item>
@@ -581,7 +581,7 @@
 									<name>TranslationPoint</name>
 									<value object_id="_42">
 										<which>2</which>
-										<value>[500, 1000, -750]</value>
+										<value>[500.241, 1000.43, -749.993]</value>
 									</value>
 								</second>
 							</item>
@@ -1449,7 +1449,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_101">
 										<which>1</which>
-										<value>2.91161561012268066e+00</value>
+										<value>2.38766002655029297e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1480,21 +1480,21 @@
 												<name>listElement</name>
 												<value object_id="_104">
 													<which>1</which>
-													<value>5.00000000000000000e+02</value>
+													<value>5.00241394042968750e+02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_105">
 													<which>1</which>
-													<value>1.00000000000000000e+03</value>
+													<value>1.00042950439453125e+03</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_106">
 													<which>1</which>
-													<value>-7.50000000000000000e+02</value>
+													<value>-7.49993164062500000e+02</value>
 												</value>
 											</item>
 										</value>
@@ -1516,28 +1516,28 @@
 												<name>listElement</name>
 												<value object_id="_108">
 													<which>1</which>
-													<value>9.71437394618988037e-01</value>
+													<value>9.74065601825714111e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_109">
 													<which>1</which>
-													<value>8.60773473978042603e-02</value>
+													<value>8.06892067193984985e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_110">
 													<which>1</which>
-													<value>2.00303763151168823e-01</value>
+													<value>1.86828941106796265e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_111">
 													<which>1</which>
-													<value>9.36943963170051575e-02</value>
+													<value>9.88960787653923035e-02</value>
 												</value>
 											</item>
 										</value>
@@ -2406,27 +2406,30 @@
 												<value object_id="_197">
 													<which>5</which>
 													<value>
-														<count>4</count>
+														<count>1</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowField:1</name>
+															<name>EditMeshBoundingBox:0</name>
 															<value object_id="_198">
 																<which>3</which>
 																<value>1</value>
 															</value>
 														</item>
+													</value>
+												</value>
+											</item>
+											<item>
+												<name>graphicsItem</name>
+												<value object_id="_199">
+													<which>5</which>
+													<value>
+														<count>4</count>
+														<item_version>0</item_version>
 														<item>
-															<name>Nodes</name>
-															<value object_id="_199">
-																<which>3</which>
-																<value>0</value>
-															</value>
-														</item>
-														<item>
-															<name>Faces</name>
+															<name>ShowField:1</name>
 															<value object_id="_200">
 																<which>3</which>
-																<value>0</value>
+																<value>1</value>
 															</value>
 														</item>
 														<item>
@@ -2436,21 +2439,18 @@
 																<value>0</value>
 															</value>
 														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>graphicsItem</name>
-												<value object_id="_202">
-													<which>5</which>
-													<value>
-														<count>1</count>
-														<item_version>0</item_version>
 														<item>
-															<name>EditMeshBoundingBox:0</name>
+															<name>Faces</name>
+															<value object_id="_202">
+																<which>3</which>
+																<value>0</value>
+															</value>
+														</item>
+														<item>
+															<name>Nodes</name>
 															<value object_id="_203">
 																<which>3</which>
-																<value>1</value>
+																<value>0</value>
 															</value>
 														</item>
 													</value>
@@ -2514,7 +2514,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>15</count>
+			<count>16</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ConvertMatrixToString:0</moduleId1_>
@@ -2598,6 +2598,18 @@
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:0</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixSliceMeasure:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -2761,7 +2773,7 @@
 			<first>ReportMatrixSliceMeasure:0</first>
 			<second>
 				<first>5.70000000000000000e+01</first>
-				<second>6.99000000000000000e+02</second>
+				<second>6.85000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
