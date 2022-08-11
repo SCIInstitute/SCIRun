@@ -54,7 +54,7 @@ namespace ParticleInCell {
 //                OUTPUT_PORT(2, z_coordinates, Matrix);
 
                 OUTPUT_PORT(0, Particles, Matrix);
-                OUTPUT_PORT(1, ScalarField, Matrix);
+                OUTPUT_PORT(1, ScalarField, Field);
                 OUTPUT_PORT(2, VectorField, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
