@@ -17,7 +17,6 @@ namespace Algorithms     {
 namespace ParticleInCell {
 
 //ALGORITHM_PARAMETER_DECL(ParticleType);
-//ALGORITHM_PARAMETER_DECL(ParticleAttribute);
 //ALGORITHM_PARAMETER_DECL(SampleRate);
 
 class SCISHARE PIConGPUReaderAlgo : public AlgorithmBase
@@ -25,9 +24,13 @@ class SCISHARE PIConGPUReaderAlgo : public AlgorithmBase
     public:
         PIConGPUReaderAlgo();
         AlgorithmOutput run(const AlgorithmInput& input) const;
-        static const AlgorithmOutputName x_coordinates;
-        static const AlgorithmOutputName y_coordinates;
-        static const AlgorithmOutputName z_coordinates;
+        static const AlgorithmOutputName Particles;
+        static const AlgorithmOutputName ScalarField;
+        static const AlgorithmOutputName VectorField;
+
+//        static const AlgorithmOutputName x_coordinates;
+//        static const AlgorithmOutputName y_coordinates;
+//        static const AlgorithmOutputName z_coordinates;
     };
 
 }}}}

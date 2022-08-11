@@ -44,15 +44,23 @@ using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPUReader,ParticleInCell,SCIRun);
 
-const AlgorithmOutputName PIConGPUReaderAlgo::x_coordinates("x_coordinates");
-const AlgorithmOutputName PIConGPUReaderAlgo::y_coordinates("y_coordinates");
-const AlgorithmOutputName PIConGPUReaderAlgo::z_coordinates("z_coordinates");
+//const AlgorithmOutputName PIConGPUReaderAlgo::x_coordinates("x_coordinates");
+//const AlgorithmOutputName PIConGPUReaderAlgo::y_coordinates("y_coordinates");
+//const AlgorithmOutputName PIConGPUReaderAlgo::z_coordinates("z_coordinates");
+
+const AlgorithmOutputName PIConGPUReaderAlgo::Particles("Particles");
+const AlgorithmOutputName PIConGPUReaderAlgo::ScalarField("ScalarField");
+const AlgorithmOutputName PIConGPUReaderAlgo::VectorField("VectorField");
 
 PIConGPUReader::PIConGPUReader() : Module(staticInfo_)
     {
-    INITIALIZE_PORT(x_coordinates);
-    INITIALIZE_PORT(y_coordinates);
-    INITIALIZE_PORT(z_coordinates);
+//    INITIALIZE_PORT(x_coordinates);
+//    INITIALIZE_PORT(y_coordinates);
+//    INITIALIZE_PORT(z_coordinates);
+
+    INITIALIZE_PORT(Particles);
+    INITIALIZE_PORT(ScalarField);
+    INITIALIZE_PORT(VectorField);
     }
 
 void PIConGPUReader::setStateDefaults()
@@ -156,7 +164,7 @@ void PIConGPUReader::execute()
             std::copy(flat_particle_feature, flat_particle_feature+buffer_size*3, data0);
 
         //    *****************************************************  Send data to the output port
-            sendOutput(x_coordinates, output_mat_0);
+            sendOutput(Particles, output_mat_0);
                                                                      //End of Particle data processing
 
                                                                      //Read Scalar field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
@@ -189,7 +197,7 @@ void PIConGPUReader::execute()
             std::copy(buffer_sFD, buffer_sFD+buffer_size_sFD, data1);
 
 //    *****************************************************  Send data to the output port
-            sendOutput(y_coordinates, output_mat_1);
+            sendOutput(ScalarField, output_mat_1);
                                                                      //End of Scalar Field data processing
 
 
@@ -227,7 +235,7 @@ void PIConGPUReader::execute()
             std::copy(XYZ_vec, XYZ_vec+one_Dim, data2);
 
 //    *****************************************************  Send data to the output port
-            sendOutput(z_coordinates, output_mat_2);
+            sendOutput(VectorField, output_mat_2);
 
             iteration.close();
 

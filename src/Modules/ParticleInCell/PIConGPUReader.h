@@ -49,9 +49,13 @@ namespace ParticleInCell {
                 void scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD, double buffer_sFD[]);
                 void vectorField(std::vector<long unsigned int> extent_vFD, double XYZ_vec[], std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
 
-                OUTPUT_PORT(0, x_coordinates, Matrix);
-                OUTPUT_PORT(1, y_coordinates, Matrix);
-                OUTPUT_PORT(2, z_coordinates, Matrix);
+//                OUTPUT_PORT(0, x_coordinates, Matrix);
+//                OUTPUT_PORT(1, y_coordinates, Matrix);
+//                OUTPUT_PORT(2, z_coordinates, Matrix);
+
+                OUTPUT_PORT(0, Particles, Matrix);
+                OUTPUT_PORT(1, ScalarField, Matrix);
+                OUTPUT_PORT(2, VectorField, Matrix);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
             };

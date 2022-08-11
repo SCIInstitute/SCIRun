@@ -52,13 +52,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleType);
-//ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleAttribute);
 //ALGORITHM_PARAMETER_DEF(ParticleInCell, SampleRate);
 
 PIConGPUReaderAlgo::PIConGPUReaderAlgo()
     {
 //    addParameter(Parameters::ParticleType, std::string("$PIC_EXAMPLES/LaserWakefield"));
-//    addParameter(Parameters::ParticleAttribute, std::string("$PIC_CFG/sst.cfg"));
 //    addParameter(Parameters::SamoleRate, std::string("$PIC_CLONE/myLWFA"));
     }
 
@@ -66,7 +64,6 @@ AlgorithmOutput PIConGPUReaderAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
 //    auto sim_clone  = get(Parameters::ParticleType).toInt();
-//    auto sim_output = get(Parameters::ParticleType).toInt();
 //    auto cfg_input  = get(Parameters::SampleRate).toInt();
 
     return output;

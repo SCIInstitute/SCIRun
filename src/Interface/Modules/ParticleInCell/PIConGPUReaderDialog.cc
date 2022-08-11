@@ -42,6 +42,5 @@ PIConGPUReaderDialog::PIConGPUReaderDialog(const std::string& name, ModuleStateH
     fixSize();
 
 //    addComboBoxManager({particleType_},      Variables::ParticleType);
-//    addComboBoxManager({particleAttribute_}, Variables::ParticleAttribute);
 //    addSpinBoxManager({sampleRate_},         Variables::SampleRate);
     }
