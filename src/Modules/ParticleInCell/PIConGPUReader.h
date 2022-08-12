@@ -45,15 +45,11 @@ namespace ParticleInCell {
                 PIConGPUReader();
                 virtual void execute();
                 virtual void setStateDefaults();
-                FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[], float flat_particle_feature[]);
-                FieldHandle scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD, double buffer_sFD[]);
-                FieldHandle vectorField(std::vector<long unsigned int> extent_vFD, double XYZ_vec[], std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
+                FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[]);
+                FieldHandle scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD);
+                FieldHandle vectorField(std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
 
-//                OUTPUT_PORT(0, x_coordinates, Matrix);
-//                OUTPUT_PORT(1, y_coordinates, Matrix);
-//                OUTPUT_PORT(2, z_coordinates, Matrix);
-
-                OUTPUT_PORT(0, Particles, Matrix);
+                OUTPUT_PORT(0, Particles, Field);
                 OUTPUT_PORT(1, ScalarField, Field);
                 OUTPUT_PORT(2, VectorField, Field);
 
