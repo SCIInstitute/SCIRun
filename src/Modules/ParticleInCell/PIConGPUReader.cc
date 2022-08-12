@@ -39,11 +39,13 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
+#include <Modules/Fields/CalculateNodeLocationFrequency.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Dataflow::Networks; 
+using namespace SCIRun::Dataflow::Networks; 
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using namespace SCIRun::Core::Geometry;
@@ -54,20 +56,12 @@ using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPUReader,ParticleInCell,SCIRun);
 
-//const AlgorithmOutputName PIConGPUReaderAlgo::x_coordinates("x_coordinates");
-//const AlgorithmOutputName PIConGPUReaderAlgo::y_coordinates("y_coordinates");
-//const AlgorithmOutputName PIConGPUReaderAlgo::z_coordinates("z_coordinates");
-
 const AlgorithmOutputName PIConGPUReaderAlgo::Particles("Particles");
 const AlgorithmOutputName PIConGPUReaderAlgo::ScalarField("ScalarField");
 const AlgorithmOutputName PIConGPUReaderAlgo::VectorField("VectorField");
 
 PIConGPUReader::PIConGPUReader() : Module(staticInfo_)
     {
-//    INITIALIZE_PORT(x_coordinates);
-//    INITIALIZE_PORT(y_coordinates);
-//    INITIALIZE_PORT(z_coordinates);
-
     INITIALIZE_PORT(Particles);
     INITIALIZE_PORT(ScalarField);
     INITIALIZE_PORT(VectorField);
@@ -76,112 +70,73 @@ PIConGPUReader::PIConGPUReader() : Module(staticInfo_)
 void PIConGPUReader::setStateDefaults()
     {
 //    setStateStringFromAlgo(Parameters::ParticleType);
-//    setStateStringFromAlgo(Parameters::ParticleAttribute);
 //    setStateIntFromAlgo(Parameters::SampleRate);
     }
 
 FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], float component_y[], float component_z[], float flat_particle_feature[])
     {
-        FieldInformation pcfi("PointCloudMesh",0,"int");
-        MeshHandle mesh = CreateMesh(pcfi);
-        mesh->reserve_nodes(buffer_size);
-        
-        FieldHandle field = CreateField(pcfi,mesh);
-        
-        
-        
-        VField* field = output->vfield();
-        VMesh*  mesh =  output->vmesh();
-        
-        for(VMesh::Node::index_type p=0; p < buffer_size; p++)
+    FieldInformation pcfi("PointCloudMesh",0,"int");
+    MeshHandle mesh = CreateMesh(pcfi);
+    mesh->reserve_nodes(buffer_size);
+    
+    FieldHandle field = CreateField(pcfi,mesh);
+    
+    VField* ofield = output->vfield();
+    VMesh*  omesh =  output->vmesh();
+    
+    for(VMesh::Node::index_type p=0; p < buffer_size; p++)
         {
-          mesh->add_point(Point(component_x[p],component_y[p],component_z[p]));
-          field->set_value(p, p);
+        omesh->add_point(Point(component_x[p],component_y[p],component_z[p]));
+        ofield->set_value(p, p);
         }
-        
-//    for (int k = 0; k<buffer_size; k++)
-//        {
-//        flat_particle_feature[k]              =component_x[k];
-//        flat_particle_feature[k+buffer_size]  =component_y[k];
-//        flat_particle_feature[k+2*buffer_size]=component_z[k];
-//        }
-        return field
+
+    return field;
     }
 
 FieldHandle PIConGPUReader::scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD, double buffer_sFD[])
     {
-        FieldInformation lfi("LatVolMesh",1,"double");
-        MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
-        FieldHandle ofh = CreateField(lfi,mesh);
-        
-//        ofh->vfield()->clear_all_values();
-        
-        VMesh* omesh = ofh->vmesh();
-        VField* ofield = ofh->vfield();
-        
-//        numvals =  extent_sFD[0]*extent_sFD[1]*extent_sFD[2];
-        
-//        std::vector<double> values(numvals);
-        
-//        for (VField::index_type j = 0; j < numvals; j++) values[j] = scalarFieldData_buffer.get()[j];
-        
-        ofield->set_values(scalarFieldData_buffer);
-        
-//    for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
-//        {
-//        size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
-//        buffer_sFD[flat_index] = scalarFieldData_buffer.get()[flat_index];
-//        }
+    FieldInformation lfi("LatVolMesh",1,"double");
+    MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
+    FieldHandle ofh = CreateField(lfi,mesh);
     
-        
-        
-        
-        return ofh
+    VMesh* omesh = ofh->vmesh();
+    VField* ofield = ofh->vfield();
+    
+    ofield->set_values(scalarFieldData_buffer);
+    
+    return ofh;
     }
 
 FieldHandle PIConGPUReader::vectorField(std::vector<long unsigned int> extent_vFD, double XYZ_vec[], std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
     {
         
-        FieldInformation lfi("LatVolMesh",1,"double");
-        lfi.make_vector();
-        MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
-        FieldHandle ofh = CreateField(lfi,mesh);
-        
-//        ofh->vfield()->clear_all_values();
-        
-        VMesh* omesh = ofh->vmesh();
-        VField* ofield = ofh->vfield();
-        
-        numvals =  extent_sFD[0]*extent_sFD[1]*extent_sFD[2];
-                
-        
-        for (VMesh::index_type i = 0; i < numnvals; i++)
+    FieldInformation lfi("LatVolMesh",1,"double");
+    lfi.make_vector();
+    MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
+    FieldHandle ofh = CreateField(lfi,mesh);
+    
+    VMesh* omesh = ofh->vmesh();
+    VField* ofield = ofh->vfield();
+    
+    int numvals =  extent_vFD[0]*extent_vFD[1]*extent_vFD[2];
+    
+    for (VMesh::index_type i = 0; i < numvals; i++)
         {
-          Vector v;
-            v[0] = vFD_component_x.get()[i]; v[1] = vFD_component_y.get()[i]; v[2] = vFD_component_z.get()[i];
-          ofield->set_value(v, i);
+        Vector v;
+        v[0] = vFD_component_x.get()[i];
+        v[1] = vFD_component_y.get()[i];
+        v[2] = vFD_component_z.get()[i];
+        ofield->set_value(v, i);
         }
-        for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
+
+    for (VMesh::index_type i=numvals; i< numvals+numvals; i++)
         {
-            Vector v(vFD_component_x.get()[i],vFD_component_y.get()[i], vFD_component_z.get()[i]);
-          ofield->set_evalue(v,i);
+        Vector v(vFD_component_x.get()[i], vFD_component_y.get()[i], vFD_component_z.get()[i]);
+        ofield->set_evalue(v,i);
         }
         
-        
-//        for(size_t i = 0; i<extent_vFD[0]*extent_vFD[1]*extent_vFD[2]; i++)
-//    for(size_t i = 0; i < extent_vFD[0]; ++i) for(size_t j = 0; j < extent_vFD[1]; ++j) for(size_t k = 0; k < extent_vFD[2]; ++k)
-//        {
-//        size_t flat_index = i * extent_vFD[1] * extent_vFD[2] + j * extent_vFD[2] + k;
-//
-//        XYZ_vec[flat_index]                                                   = vFD_component_x.get()[flat_index];
-//        XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2])]     = vFD_component_y.get()[flat_index];
-//        XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2]) * 2] = vFD_component_z.get()[flat_index];
-//        }
-        
-        return ofh
+    return ofh;
     }
-
-
 
 void PIConGPUReader::execute()
     {
@@ -207,9 +162,7 @@ void PIConGPUReader::execute()
             {
             cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
-/**/
             std::string spec          = "e";                         //set development input variables
-//            std::string output_option = "particles";
             int particle_sample_rate  = 100;
 
                                                                      //Read particle data
@@ -236,17 +189,19 @@ void PIConGPUReader::execute()
             auto component_x           = new float[buffer_size];
             auto component_y           = new float[buffer_size];
             auto component_z           = new float[buffer_size];
-            auto flat_particle_feature = new float[buffer_size*3];  
+            auto flat_particle_feature = new float[buffer_size*3];
 
-            particleData(buffer_size, component_x, component_y, component_z, flat_particle_feature);
-
+                                                                     //Call the output function
+            auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z, flat_particle_feature);
+/*
         //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_0(new DenseMatrix(3,buffer_size));
             double *data0=output_mat_0->data();
             std::copy(flat_particle_feature, flat_particle_feature+buffer_size*3, data0);
+*/
 
         //    *****************************************************  Send data to the output port
-            sendOutput(Particles, output_mat_0);
+            sendOutput(Particles, Particle_Output);
                                                                      //End of Particle data processing
 
                                                                      //Read Scalar field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
@@ -263,21 +218,12 @@ void PIConGPUReader::execute()
                                                         //Call the output function
             auto Scalar_Output = scalarField(scalarFieldData_buffer, extent_sFD, buffer_sFD);
 
-//    *****************************************************  The output function code is moved here for now
-//    *****************************************************  Load the data to be output
-/**/
-            for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
-                {
-                size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
-                buffer_sFD[flat_index] = scalarFieldData_buffer.get()[flat_index];
-                }
-
 //    *****************************************************  Set up the output data structure
-
+/*
             DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size_sFD, 1));
             double *data1=output_mat_1->data();
             std::copy(buffer_sFD, buffer_sFD+buffer_size_sFD, data1);
-
+*/
 //    *****************************************************  Send data to the output port
             sendOutput(ScalarField, Scalar_Output);
                                                                      //End of Scalar Field data processing
@@ -289,18 +235,18 @@ void PIConGPUReader::execute()
             auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
             auto vFD_component_y          = vectorFieldData["y"].loadChunk<float>();
             auto vFD_component_z          = vectorFieldData["z"].loadChunk<float>();
-            iteration.seriesFlush();                    //Data is now available
+            iteration.seriesFlush();                                 //Data is now available
 
             auto extent_vFD   = vectorFieldData["x"].getExtent();
             const int one_Dim = (extent_vFD[0] * extent_vFD[1] * extent_vFD[2]);
             auto XYZ_vec = new double[3*one_Dim];
 
-                                                        //Call the output function
-            vectorField(extent_vFD, XYZ_vec, vFD_component_x, vFD_component_y, vFD_component_z);
+                                                                     //Call the output function
+            auto Vector_Output = vectorField(extent_vFD, XYZ_vec, vFD_component_x, vFD_component_y, vFD_component_z);
 
 //    *****************************************************  The output function code is moved here for now
 //    *****************************************************  Load the data to be output
-/**/
+/*
 //            for(size_t i = 0; i < extent_vFD[0]; ++i) for(size_t j = 0; j < extent_vFD[1]; ++j) for(size_t k = 0; k < extent_vFD[2]; ++k)
 //                {
 //                size_t flat_index = i * extent_vFD[1] * extent_vFD[2] + j * extent_vFD[2] + k;
@@ -315,9 +261,10 @@ void PIConGPUReader::execute()
             DenseMatrixHandle output_mat_2(new DenseMatrix(3,one_Dim));
             double *data2=output_mat_2->data();
             std::copy(XYZ_vec, XYZ_vec+one_Dim*3, data2);
-
+*/
 //    *****************************************************  Send data to the output port
-            sendOutput(VectorField, output_mat_2);
+
+            sendOutput(VectorField, Vector_Output);
 
             iteration.close();
 
