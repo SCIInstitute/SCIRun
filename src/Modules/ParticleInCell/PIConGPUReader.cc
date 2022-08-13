@@ -197,7 +197,7 @@ void PIConGPUReader::execute()
         //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_0(new DenseMatrix(3,buffer_size));
             double *data0=output_mat_0->data();
-            std::copy(flat_particle_feature, flat_particle_feature+buffer_size*3, data0);
+            std::copy(Particle_Output, Particle_Output+buffer_size*3, data0);
 */
 
         //    *****************************************************  Send data to the output port
@@ -211,7 +211,7 @@ void PIConGPUReader::execute()
             auto scalarFieldData_buffer        = scalarFieldData.loadChunk<float>();
             iteration.seriesFlush();                    //Data is now available
 
-            auto extent_sFD           = scalarFieldData.getExtent();
+            auto extent_sFD                    = scalarFieldData.getExtent();
 
                                                         //Call the output function
             auto Scalar_Output = scalarField(scalarFieldData_buffer, extent_sFD);
