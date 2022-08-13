@@ -77,7 +77,9 @@ FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], f
     {
     FieldInformation pcfi("PointCloudMesh",0,"int");
     MeshHandle mesh = CreateMesh(pcfi);
-//    mesh->reserve_nodes(buffer_size);                              //this variable produces a compile error, so I have temporarily made it a comment
+
+//    mesh->reserve_nodes(buffer_size);                              //this variable produces a compile error, I have temporarily made it a comment
+                                                                     //the error is: error: ‘using element_type = class SCIRun::Mesh’ {aka ‘class SCIRun::Mesh’} has no member named ‘reserve_nodes’
     
     FieldHandle field = CreateField(pcfi,mesh);
 
@@ -93,32 +95,30 @@ FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], f
     return field;
     }
 
-FieldHandle PIConGPUReader::scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
+FieldHandle PIConGPUReader::scalarField(const int buffer_size_sFD, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
     {
     FieldInformation lfi("LatVolMesh",1,"double");
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
     
-    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used
-    VField* ofield = ofh->vfield();                                  //This variable is noted as not being used (when I comment the step below)
+    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used - possibly not needed??
+    VField* ofield = ofh->vfield();
 
-//    ofield->set_values(scalarFieldData_buffer);                    //This step causes a compile error, appears to require a data type of const T*, I have temporarily made it a comment
+//    ofield->set_values(scalarFieldData_buffer);                    //This step causes a compile error, appears to require a data type of const T* and may need a secong argument, I have temporarily made it a comment
+                                                                     //the error is: error: no matching function for call to ‘SCIRun::VField::set_values(std::shared_ptr<float>&)’
     
     return ofh;
     }
 
-FieldHandle PIConGPUReader::vectorField(std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
+FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
     {
-        
     FieldInformation lfi("LatVolMesh",1,"double");
     lfi.make_vector();
     MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
     
-    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used
+    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used - possibly not needed??
     VField* ofield = ofh->vfield();
-    
-    int numvals = extent_vFD[0]*extent_vFD[1]*extent_vFD[2];
     
     for (VMesh::index_type i = 0; i < numvals; i++)
         {
@@ -129,7 +129,7 @@ FieldHandle PIConGPUReader::vectorField(std::vector<long unsigned int> extent_vF
         ofield->set_value(v, i);
         }
 
-    for (VMesh::index_type i=numvals; i< numvals+numvals; i++)
+    for (VMesh::index_type i = numvals; i< numvals+numvals; i++)
         {
         Vector v(vFD_component_x.get()[i], vFD_component_y.get()[i], vFD_component_z.get()[i]);
         ofield->set_evalue(v,i);
@@ -162,9 +162,9 @@ void PIConGPUReader::execute()
             {
             cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
-            std::string spec          = "e";                         //set development input variables
+                                                                     //Start Particle data processing
+            std::string spec          = "e";                         //set particle related input variables
             int particle_sample_rate  = 100;
-
                                                                      //Read particle data
             Record particlePositions = iteration.particles[spec]["position"];
 
@@ -194,61 +194,73 @@ void PIConGPUReader::execute()
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
 /*
-        //    *****************************************************  Set up the output data structure
+//    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_0(new DenseMatrix(3,buffer_size));
             double *data0=output_mat_0->data();
-            std::copy(Particle_Output, Particle_Output+buffer_size*3, data0);
+            std::copy(Particle_Output, Particle_Output+buffer_size, data0);    //Need to figure out how to add an integer to a std::shared_ptr<SCIRun::Field> (all 3 functions)
 */
-
-        //    *****************************************************  Send data to the output port
+//    *****************************************************  Send data to the output port
             sendOutput(Particles, Particle_Output);
                                                                      //End of Particle data processing
 
-                                                                     //Read Scalar field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
 
+                                                                     //Start Scalar field data processing
+                                                                     //Note: Reading Scalar field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
+
+                                                                     //set Scalar field related input variables
             std::string scalar_field_component = "e_all_chargeDensity";
+
+                                                                     //Read scalar field data
             auto scalarFieldData               = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
             auto scalarFieldData_buffer        = scalarFieldData.loadChunk<float>();
-            iteration.seriesFlush();                    //Data is now available
+
+            iteration.seriesFlush();                                 //Data is now available
 
             auto extent_sFD                    = scalarFieldData.getExtent();
+            const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
+//            auto buffer_sFD                    = new double[buffer_size_sFD];
 
-                                                        //Call the output function
-            auto Scalar_Output = scalarField(scalarFieldData_buffer, extent_sFD);
-
-//    *****************************************************  Set up the output data structure
+                                                                     //Call the output function
+            auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
 /*
+//    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size_sFD, 1));
             double *data1=output_mat_1->data();
-            std::copy(buffer_sFD, buffer_sFD+buffer_size_sFD, data1);
+            std::copy(Scalar_Output, Scalar_Output+buffer_size_sFD, data1);
 */
 //    *****************************************************  Send data to the output port
             sendOutput(ScalarField, Scalar_Output);
-                                                                     //End of Scalar Field data processing
+                                                                     //End of Scalar field data processing
 
 
-                                                                     //Read vector field output (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
-            std::string vector_field_type = "E";
+                                                                     //Start Vector field data processing
+                                                                     //Note: Reading Vector field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
+
+            std::string vector_field_type = "E";                     //set Vector field related input variables
+
+                                                                     //Read Vector field data
             auto vectorFieldData          = iteration.meshes[vector_field_type];
             auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
             auto vFD_component_y          = vectorFieldData["y"].loadChunk<float>();
             auto vFD_component_z          = vectorFieldData["z"].loadChunk<float>();
+
             iteration.seriesFlush();                                 //Data is now available
 
-            auto extent_vFD   = vectorFieldData["x"].getExtent();
+            auto extent_vFD               = vectorFieldData["x"].getExtent();
+            const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
+ //           auto XYZ_vec                  = new double[buffer_size_vFD*3];
 
                                                                      //Call the output function
-            auto Vector_Output = vectorField(extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
-
-//    *****************************************************  Set up the output data structure
+            auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
 /*
-            DenseMatrixHandle output_mat_2(new DenseMatrix(3,one_Dim));
+//    *****************************************************  Set up the output data structure
+            DenseMatrixHandle output_mat_2(new DenseMatrix(3,buffer_size_vFD);
             double *data2=output_mat_2->data();
-            std::copy(XYZ_vec, XYZ_vec+one_Dim*3, data2);
+            std::copy(Vector_Output, Vector_Output+buffer_size_vFD, data2);
 */
 //    *****************************************************  Send data to the output port
             sendOutput(VectorField, Vector_Output);
-                                                                     //End of Vector Field data processing
+                                                                     //End of Vector field data processing
 
             iteration.close();
 

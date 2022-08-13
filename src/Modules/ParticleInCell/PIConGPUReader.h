@@ -46,8 +46,8 @@ namespace ParticleInCell {
                 virtual void execute();
                 virtual void setStateDefaults();
                 FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[]);
-                FieldHandle scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD);
-                FieldHandle vectorField(std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
+                FieldHandle scalarField(const int buffer_size_sFD, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD);
+                FieldHandle vectorField(const int buffer_size_vFD, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
 
                 OUTPUT_PORT(0, Particles, Field);
                 OUTPUT_PORT(1, ScalarField, Field);
