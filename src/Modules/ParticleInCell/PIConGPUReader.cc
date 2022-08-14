@@ -108,6 +108,39 @@ FieldHandle PIConGPUReader::scalarField(const int buffer_size_sFD, std::shared_p
                                                                      //the error is: error: no matching function for call to ‘SCIRun::VField::set_values(std::shared_ptr<float>&)’
     
     return ofh;
+/*
+                                                                     //The original code for saving a vector field follows
+            std::string vector_field_type = "E";
+            auto vectorFieldData          = iteration.meshes[vector_field_type];
+            auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
+            auto vFD_component_y          = vectorFieldData["y"].loadChunk<float>();
+            auto vFD_component_z          = vectorFieldData["z"].loadChunk<float>();
+            iteration.seriesFlush();                    //Data is now available
+
+            auto extent_vFD   = vectorFieldData["x"].getExtent();
+            const int one_Dim = 3*(extent_vFD[0] * extent_vFD[1] * extent_vFD[2]);
+            auto XYZ_vec      = new double[one_Dim];
+
+//    *****************************************************  The output function
+//    *****************************************************  Load the data to be output
+
+            for(size_t i = 0; i < extent_vFD[0]; ++i) for(size_t j = 0; j < extent_vFD[1]; ++j) for(size_t k = 0; k < extent_vFD[2]; ++k)
+                {
+                size_t flat_index                                                     = i * extent_vFD[1] * extent_vFD[2] + j * extent_vFD[2] + k;
+                XYZ_vec[flat_index]                                                   = vFD_component_x.get()[flat_index];
+                XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2])]     = vFD_component_y.get()[flat_index];
+                XYZ_vec[flat_index + (extent_vFD[0]*extent_vFD[1]*extent_vFD[2]) * 2] = vFD_component_z.get()[flat_index];
+                }
+
+//    *****************************************************  Set up the output data structure
+            DenseMatrixHandle output_mat_2(new DenseMatrix(one_Dim, 1));
+            double *data2=output_mat_2->data();
+            std::copy(XYZ_vec, XYZ_vec+one_Dim, data2);
+
+//    *****************************************************  Send data to the output port
+            sendOutput(z_coordinates, output_mat_2);
+            sendOutput(XYZ_vec, output_mat_2);
+*/
     }
 
 FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
