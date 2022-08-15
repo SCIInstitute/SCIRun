@@ -76,21 +76,23 @@ void PIConGPUReader::setStateDefaults()
 
 FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
     {
+                                                                     //All the commented lines were original code as written by Jess last Thursday
     FieldInformation pcfi("PointCloudMesh",0,"int");
-    MeshHandle mesh = CreateMesh(pcfi);
+//    MeshHandle mesh = CreateMesh(pcfi);
 
 //    mesh->reserve_nodes(buffer_size);                              //this variable produces a compile error, I have temporarily made it a comment, the error is: 
                                                                      //error: ‘using element_type = class SCIRun::Mesh’ {aka ‘class SCIRun::Mesh’} has no member named ‘reserve_nodes’
     
-    FieldHandle field = CreateField(pcfi,mesh);
+//    FieldHandle field = CreateField(pcfi,mesh);
+    FieldHandle field = CreateField(pcfi);                           //I added this as replacement for the line above
 
-    VField* ofield = field->vfield();
+//    VField* ofield = field->vfield();
     VMesh*  omesh =  field->vmesh();
     
     for(VMesh::Node::index_type p=0; p < buffer_size; p++)
         {
         omesh->add_point(Point(component_x[p],component_y[p],component_z[p]));
-        ofield->set_value(p, p);
+//        ofield->set_value(p, p);
         }
 
     return field;
