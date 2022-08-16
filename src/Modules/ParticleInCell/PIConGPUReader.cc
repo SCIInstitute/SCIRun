@@ -216,11 +216,10 @@ void PIConGPUReader::execute()
 
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_0(new DenseMatrix(3,buffer_size));
-//            double *data0=output_mat_0->data();
-/*
+            double *data0=output_mat_0->data();
             std::copy(Particle_Output, Particle_Output+buffer_size, data0);    //Need to figure out how to add an integer to a std::shared_ptr<SCIRun::Field> (all 3 functions)
 
 //    *****************************************************  Send data to the output port
