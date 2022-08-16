@@ -213,18 +213,19 @@ void PIConGPUReader::execute()
             auto component_y           = new float[buffer_size];
             auto component_z           = new float[buffer_size];
 //            auto flat_particle_feature = new float[buffer_size*3];
-/*
+
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_0(new DenseMatrix(3,buffer_size));
             double *data0=output_mat_0->data();
             std::copy(Particle_Output, Particle_Output+buffer_size, data0);    //Need to figure out how to add an integer to a std::shared_ptr<SCIRun::Field> (all 3 functions)
 
 //    *****************************************************  Send data to the output port
-            sendOutput(Particles, output_mat_0);
-*/                                                                     //End of Particle data processing
+*/
+//            sendOutput(Particles, output_mat_0);
+                                                                     //End of Particle data processing
 
 
                                                                      //Start Scalar field data processing
