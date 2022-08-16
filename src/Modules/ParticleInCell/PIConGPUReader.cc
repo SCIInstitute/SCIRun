@@ -224,7 +224,7 @@ void PIConGPUReader::execute()
 
 //    *****************************************************  Send data to the output port
 */
-//            sendOutput(Particles, output_mat_0);
+            sendOutput(Particles, output_mat_0);
                                                                      //End of Particle data processing
 
 
