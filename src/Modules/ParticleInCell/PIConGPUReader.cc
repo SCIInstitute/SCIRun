@@ -175,7 +175,8 @@ void PIConGPUReader::execute()
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
 
-        std::string SST_dir = "../../../scratch/runs/SST/simOutput/openPMD/simData.sst";
+//        std::string SST_dir = "../../../scratch/runs/SST/simOutput/openPMD/simData.sst";
+        std::string SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
         while(!std::filesystem::exists(SST_dir)) sleep(1);
 
@@ -242,18 +243,18 @@ void PIConGPUReader::execute()
             auto extent_sFD                    = scalarFieldData.getExtent();
             const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
 
-                                                                     //Call the output function
+/*                                                                     //Call the output function
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
-/*
+
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size_sFD, 1));
             double *data1=output_mat_1->data();
             std::copy(Scalar_Output, Scalar_Output+buffer_size_sFD, data1);
 
 //    *****************************************************  Send data to the output port
-*/
+
             sendOutput(ScalarField, Scalar_Output);
-                                                                     //End of Scalar field data processing
+*/                                                                     //End of Scalar field data processing
 
 
                                                                      //Start Vector field data processing
@@ -273,18 +274,18 @@ void PIConGPUReader::execute()
             const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
 
-                                                                     //Call the output function
+/*                                                                     //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
-/*
+
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_2(new DenseMatrix(3,buffer_size_vFD);
             double *data2=output_mat_2->data();
             std::copy(Vector_Output, Vector_Output+buffer_size_vFD, data2);
 
 //    *****************************************************  Send data to the output port
-*/
+
             sendOutput(VectorField, Vector_Output);
-                                                                     //End of Vector field data processing
+*/                                                                     //End of Vector field data processing
 
             iteration.close();
 
