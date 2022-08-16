@@ -39,7 +39,7 @@ namespace ParticleInCell {
 
     class SCISHARE PIConGPUReader : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
-        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+        public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
             {
             public:
                 PIConGPUReader();

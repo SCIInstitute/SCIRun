@@ -115,7 +115,7 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
 
 //alternate code that sets up a standard vector called 'values' that holds all the scalarFieldData_buffer data
 
-    FieldInformation lfi("LatVolMesh",1,"double");
+    FieldInformation lfi("LatVolMesh",1,"float");
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
     std::vector<float> values(numvals);
@@ -212,19 +212,19 @@ void PIConGPUReader::execute()
             auto component_x           = new float[buffer_size];
             auto component_y           = new float[buffer_size];
             auto component_z           = new float[buffer_size];
-/*
+
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_0(new DenseMatrix(3,buffer_size));
             double *data0=output_mat_0->data();
             std::copy(Particle_Output, Particle_Output+buffer_size, data0);    //Need to figure out how to add an integer to a std::shared_ptr<SCIRun::Field> (all 3 functions)
 
 //    *****************************************************  Send data to the output port
-
-            sendOutput(Particles, output_mat_0);
-*/                                                                     //End of Particle data processing
+*/
+            sendOutput(Particles, Particle_Output);
+                                                                     //End of Particle data processing
 
 
                                                                      //Start Scalar field data processing
@@ -241,19 +241,19 @@ void PIConGPUReader::execute()
 
             auto extent_sFD                    = scalarFieldData.getExtent();
             const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
-/*
+
                                                                      //Call the output function
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size_sFD, 1));
             double *data1=output_mat_1->data();
             std::copy(Scalar_Output, Scalar_Output+buffer_size_sFD, data1);
 
 //    *****************************************************  Send data to the output port
-
-            sendOutput(ScalarField, output_mat_1);
-*/                                                                     //End of Scalar field data processing
+*/
+            sendOutput(ScalarField, Scalar_Output);
+                                                                     //End of Scalar field data processing
 
 
                                                                      //Start Vector field data processing
@@ -272,19 +272,19 @@ void PIConGPUReader::execute()
             auto extent_vFD               = vectorFieldData["x"].getExtent();
             const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
-/*
+
                                                                      //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_2(new DenseMatrix(3,buffer_size_vFD);
             double *data2=output_mat_2->data();
             std::copy(Vector_Output, Vector_Output+buffer_size_vFD, data2);
 
 //    *****************************************************  Send data to the output port
-
-            sendOutput(VectorField, output_mat_2);
-*/                                                                     //End of Vector field data processing
+*/
+            sendOutput(VectorField, Vector_Output);
+                                                                     //End of Vector field data processing
 
             iteration.close();
 
