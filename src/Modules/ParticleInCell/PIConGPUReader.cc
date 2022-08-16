@@ -198,7 +198,7 @@ void PIConGPUReader::execute()
             for (size_t i_dim = 0; i_dim < 3; ++i_dim)
                 {
                 std::string dim_str = dimensions[i_dim];
-                RecordComponent rc = particlePositions[dim_str];
+                RecordComponent rc  = particlePositions[dim_str];
                 loadedChunks[i_dim] = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
                 extents[i_dim] = rc.getExtent();
                 }
@@ -212,7 +212,6 @@ void PIConGPUReader::execute()
             auto component_x           = new float[buffer_size];
             auto component_y           = new float[buffer_size];
             auto component_z           = new float[buffer_size];
-//            auto flat_particle_feature = new float[buffer_size*3];
 /*
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
@@ -242,7 +241,6 @@ void PIConGPUReader::execute()
 
             auto extent_sFD                    = scalarFieldData.getExtent();
             const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
-//            auto buffer_sFD                    = new double[buffer_size_sFD];
 /*
                                                                      //Call the output function
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
@@ -273,7 +271,6 @@ void PIConGPUReader::execute()
 
             auto extent_vFD               = vectorFieldData["x"].getExtent();
             const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
- //           auto XYZ_vec                  = new double[buffer_size_vFD*3];
 
 /*
                                                                      //Call the output function
