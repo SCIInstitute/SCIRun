@@ -135,7 +135,8 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
 
 FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
     {
-    FieldInformation lfi("LatVolMesh",1,"double");
+    FieldInformation lfi("LatVolMesh",1,"float");
+//    FieldInformation lfi("LatVolMesh",3,"float");
     lfi.make_vector();
     MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
@@ -243,18 +244,18 @@ void PIConGPUReader::execute()
             auto extent_sFD                    = scalarFieldData.getExtent();
             const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
 
-/*                                                                     //Call the output function
+                                                                     //Call the output function
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size_sFD, 1));
             double *data1=output_mat_1->data();
             std::copy(Scalar_Output, Scalar_Output+buffer_size_sFD, data1);
 
 //    *****************************************************  Send data to the output port
-
+*/
             sendOutput(ScalarField, Scalar_Output);
-*/                                                                     //End of Scalar field data processing
+                                                                     //End of Scalar field data processing
 
 
                                                                      //Start Vector field data processing
@@ -274,9 +275,9 @@ void PIConGPUReader::execute()
             const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
 
-/*                                                                     //Call the output function
+                                                                     //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_2(new DenseMatrix(3,buffer_size_vFD);
             double *data2=output_mat_2->data();
