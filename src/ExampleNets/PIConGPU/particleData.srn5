@@ -50,7 +50,7 @@
 									<name>Method</name>
 									<value object_id="_2">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -765,28 +765,28 @@
 												<name>listElement</name>
 												<value object_id="_59">
 													<which>1</which>
-													<value>9.20427501201629639e-01</value>
+													<value>9.20427381992340088e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_60">
 													<which>1</which>
-													<value>-2.66965068876743317e-02</value>
+													<value>-2.66965031623840332e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_61">
 													<which>1</which>
-													<value>-1.93578489124774933e-02</value>
+													<value>-1.93578470498323441e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_62">
 													<which>1</which>
-													<value>3.89520257711410522e-01</value>
+													<value>3.89520198106765747e-01</value>
 												</value>
 											</item>
 										</value>
@@ -1688,7 +1688,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_152">
 										<which>0</which>
-										<value>448</value>
+										<value>446</value>
 									</value>
 								</second>
 							</item>
@@ -1700,7 +1700,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_153">
 										<which>0</which>
-										<value>429</value>
+										<value>408</value>
 									</value>
 								</second>
 							</item>
