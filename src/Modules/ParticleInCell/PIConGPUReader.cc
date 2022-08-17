@@ -55,6 +55,8 @@ using namespace SCIRun::Core::Geometry;
 using std::cout;
 using namespace openPMD;
 
+using position_t = float;                                            //Remove this line when position_t is set in the .h file
+
 MODULE_INFO_DEF(PIConGPUReader,ParticleInCell,SCIRun);
 
 const AlgorithmOutputName PIConGPUReaderAlgo::Particles("Particles");
@@ -213,6 +215,26 @@ void PIConGPUReader::execute()
             auto component_x           = new float[buffer_size];
             auto component_y           = new float[buffer_size];
             auto component_z           = new float[buffer_size];
+
+
+
+
+
+
+            for (size_t i_pos = 0; i_pos < 3; ++i_pos)
+                {
+                std::string dim = dimensions[i_pos];
+                auto chunk = loadedChunks[i_pos];
+
+                if(i_pos==0) for (size_t k = 0; k<num_particles ; k+=particle_sample_rate) component_x[k/particle_sample_rate]=chunk.get()[k];
+                if(i_pos==1) for (size_t i = 0; i<num_particles ; i+=particle_sample_rate) component_y[i/particle_sample_rate]=chunk.get()[i];
+                if(i_pos==2) for (size_t m = 0; m<num_particles ; m+=particle_sample_rate) component_z[m/particle_sample_rate]=chunk.get()[m];
+                }
+
+
+
+
+
 
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
