@@ -265,18 +265,18 @@ void PIConGPUReader::execute()
             auto extent_sFD                    = scalarFieldData.getExtent();
             const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
 
-/*                                                                     //Call the output function
+                                                                     //Call the output function
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
-
+/*
 //    *****************************************************  Set up the output data structure
             DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size_sFD, 1));
             double *data1=output_mat_1->data();
             std::copy(Scalar_Output, Scalar_Output+buffer_size_sFD, data1);
 
 //    *****************************************************  Send data to the output port
-
+*/
             sendOutput(ScalarField, Scalar_Output);
-*/                                                                     //End of Scalar field data processing
+                                                                     //End of Scalar field data processing
 
 
                                                                      //Start Vector field data processing
