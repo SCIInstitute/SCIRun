@@ -78,45 +78,17 @@ void PIConGPUReader::setStateDefaults()
 
 FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
     {
-                                                                     //All the commented lines were original code as written by Jess last Thursday
     FieldInformation pcfi("PointCloudMesh",0,"int");
-//    MeshHandle mesh = CreateMesh(pcfi);
-
-//    mesh->reserve_nodes(buffer_size);                              //this variable produces a compile error, I have temporarily made it a comment, the error is: 
-                                                                     //error: ‘using element_type = class SCIRun::Mesh’ {aka ‘class SCIRun::Mesh’} has no member named ‘reserve_nodes’
-    
-//    FieldHandle field = CreateField(pcfi,mesh);
-    FieldHandle field = CreateField(pcfi);                           //I added this as replacement for the line above
-
-//    VField* ofield = field->vfield();
+    FieldHandle field = CreateField(pcfi);
     VMesh*  omesh =  field->vmesh();
     
-    for(VMesh::Node::index_type p=0; p < buffer_size; p++)
-        {
-        omesh->add_point(Point(component_x[p],component_y[p],component_z[p]));
-//        ofield->set_value(p, p);
-        }
+    for(VMesh::Node::index_type p=0; p < buffer_size; p++) omesh->add_point(Point(component_x[p],component_y[p],component_z[p]));
 
     return field;
     }
 
 FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
     {
-/*Jess original code:
-
-    FieldInformation lfi("LatVolMesh",1,"double");
-    MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
-    FieldHandle ofh = CreateField(lfi,mesh);
-    
-    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used - possibly not needed??
-    VField* ofield = ofh->vfield();
-
-    ofield->set_values(scalarFieldData_buffer);                      //This step causes a compile error (apparently scalarFieldData_buffer is the wrong data type), the error is:
-                                                                     //error: no matching function for call to ‘SCIRun::VField::set_values(std::shared_ptr<float>&)’
-*/
-
-//alternate code that sets up a standard vector called 'values' that holds all the scalarFieldData_buffer data
-
     FieldInformation lfi("LatVolMesh",1,"float");
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
@@ -128,7 +100,6 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
         values[flat_index] = scalarFieldData_buffer.get()[flat_index];
         }
 
-//    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used - possibly not needed??
     VField* ofield = ofh->vfield();
     ofield->set_values(values);
 
@@ -142,7 +113,7 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
     MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
     
-//    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used - possibly not needed??
+//    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used
     VField* ofield = ofh->vfield();
     
     for (VMesh::index_type i = 0; i < numvals; i++)
@@ -153,13 +124,13 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
         v[2] = vFD_component_z.get()[i];
         ofield->set_value(v, i);
         }
-
-    for (VMesh::index_type i = numvals; i< numvals+numvals; i++)
+/*
+    for (VMesh::index_type i = numvals; i< numvals+numvals; i++)     //this is a problem, the vector v defined below is the same vector defined above, but the index, i, is out of scope
         {
         Vector v(vFD_component_x.get()[i], vFD_component_y.get()[i], vFD_component_z.get()[i]);
         ofield->set_evalue(v,i);
         }
-        
+*/        
     return ofh;
     }
 
@@ -238,14 +209,9 @@ void PIConGPUReader::execute()
 
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
-/*
-//    *****************************************************  Set up the output data structure
-            DenseMatrixHandle output_mat_0(new DenseMatrix(3,buffer_size));
-            double *data0=output_mat_0->data();
-            std::copy(Particle_Output, Particle_Output+buffer_size, data0);    //Need to figure out how to add an integer to a std::shared_ptr<SCIRun::Field> (all 3 functions)
 
 //    *****************************************************  Send data to the output port
-*/
+
             sendOutput(Particles, Particle_Output);
                                                                      //End of Particle data processing
 
@@ -267,14 +233,9 @@ void PIConGPUReader::execute()
 
                                                                      //Call the output function
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
-/*
-//    *****************************************************  Set up the output data structure
-            DenseMatrixHandle output_mat_1(new DenseMatrix(buffer_size_sFD, 1));
-            double *data1=output_mat_1->data();
-            std::copy(Scalar_Output, Scalar_Output+buffer_size_sFD, data1);
 
 //    *****************************************************  Send data to the output port
-*/
+
             sendOutput(ScalarField, Scalar_Output);
                                                                      //End of Scalar field data processing
 
@@ -293,16 +254,11 @@ void PIConGPUReader::execute()
             iteration.seriesFlush();                                 //Data is now available
 
             auto extent_vFD               = vectorFieldData["x"].getExtent();
-            const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
+            const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];  //verify this does not need to be multiplied by 3
 
 
 /*                                                                     //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
-
-//    *****************************************************  Set up the output data structure
-            DenseMatrixHandle output_mat_2(new DenseMatrix(3,buffer_size_vFD);
-            double *data2=output_mat_2->data();
-            std::copy(Vector_Output, Vector_Output+buffer_size_vFD, data2);
 
 //    *****************************************************  Send data to the output port
 
