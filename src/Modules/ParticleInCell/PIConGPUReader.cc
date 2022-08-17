@@ -187,11 +187,6 @@ void PIConGPUReader::execute()
             auto component_y           = new float[buffer_size];
             auto component_z           = new float[buffer_size];
 
-
-
-
-
-
             for (size_t i_pos = 0; i_pos < 3; ++i_pos)
                 {
                 std::string dim = dimensions[i_pos];
@@ -201,11 +196,6 @@ void PIConGPUReader::execute()
                 if(i_pos==1) for (size_t i = 0; i<num_particles ; i+=particle_sample_rate) component_y[i/particle_sample_rate]=chunk.get()[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles ; m+=particle_sample_rate) component_z[m/particle_sample_rate]=chunk.get()[m];
                 }
-
-
-
-
-
 
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
@@ -254,16 +244,16 @@ void PIConGPUReader::execute()
             iteration.seriesFlush();                                 //Data is now available
 
             auto extent_vFD               = vectorFieldData["x"].getExtent();
-            const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];  //verify this does not need to be multiplied by 3
+            const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
 
-/*                                                                     //Call the output function
+                                                                     //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
 
 //    *****************************************************  Send data to the output port
 
             sendOutput(VectorField, Vector_Output);
-*/                                                                     //End of Vector field data processing
+                                                                     //End of Vector field data processing
 
             iteration.close();
 
