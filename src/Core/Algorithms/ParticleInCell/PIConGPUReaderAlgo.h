@@ -16,8 +16,10 @@ namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
 
-//ALGORITHM_PARAMETER_DECL(ParticleType);
-//ALGORITHM_PARAMETER_DECL(SampleRate);
+//ALGORITHM_PARAMETER_DECL(particle_type);
+//ALGORITHM_PARAMETER_DECL(particle_sample_rate);
+//ALGORITHM_PARAMETER_DECL(vector_field_type);
+//ALGORITHM_PARAMETER_DECL(scalar_field_component);
 
 class SCISHARE PIConGPUReaderAlgo : public AlgorithmBase
     {
@@ -27,10 +29,6 @@ class SCISHARE PIConGPUReaderAlgo : public AlgorithmBase
         static const AlgorithmOutputName Particles;
         static const AlgorithmOutputName ScalarField;
         static const AlgorithmOutputName VectorField;
-
-//        static const AlgorithmOutputName x_coordinates;
-//        static const AlgorithmOutputName y_coordinates;
-//        static const AlgorithmOutputName z_coordinates;
     };
 
 }}}}

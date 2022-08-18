@@ -51,20 +51,26 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-//ALGORITHM_PARAMETER_DEF(ParticleInCell, ParticleType);
-//ALGORITHM_PARAMETER_DEF(ParticleInCell, SampleRate);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, particle_type);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, particle_sample_rate);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, vector_field_type);
+//ALGORITHM_PARAMETER_DEF(ParticleInCell, scalar_field_component);
 
 PIConGPUReaderAlgo::PIConGPUReaderAlgo()
     {
-//    addParameter(Parameters::ParticleType, std::string("$PIC_EXAMPLES/LaserWakefield"));
-//    addParameter(Parameters::SamoleRate, std::string("$PIC_CLONE/myLWFA"));
+//    addParameter(Parameters::particle_type, std::string("e"));
+//    addParameter(Parameters::particle_sample_rate, int(100));
+//    addParameter(Parameters::vector_field_type, std::string("E"));
+//    addParameter(Parameters::scalar_field_component, std::string("e_all_chargeDensity"));
     }
 
 AlgorithmOutput PIConGPUReaderAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
-//    auto sim_clone  = get(Parameters::ParticleType).toInt();
-//    auto cfg_input  = get(Parameters::SampleRate).toInt();
+//    auto p_t   = get(Parameters::particle_type).toString();
+//    auto p_s_r = get(Parameters::particle_sample_rate).toInt();
+//    auto v_f_t = get(Parameters::vector_field_type).toString();
+//    auto s_f_c = get(Parameters::scalar_field_component).toString();
 
     return output;
     }

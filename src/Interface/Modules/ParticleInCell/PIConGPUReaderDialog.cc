@@ -41,6 +41,8 @@ PIConGPUReaderDialog::PIConGPUReaderDialog(const std::string& name, ModuleStateH
     setWindowTitle(QString::fromStdString(name));
     fixSize();
 
-//    addComboBoxManager({particleType_},      Variables::ParticleType);
-//    addSpinBoxManager({sampleRate_},         Variables::SampleRate);
+//    addSpinBoxManager({sampleRate_},            Variables::particle_sample_rate);
+//    addComboBoxManager({particleType_},         Variables::particle_type);
+//    addComboBoxManager({vectorFieldType_},      Variables::vector_field_type);
+//    addComboBoxManager({scalarFieldComponent_}, Variables::scalar_field_component);
     }

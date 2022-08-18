@@ -28,11 +28,6 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-//#include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-//#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Modules/ParticleInCell/PIConGPUReader.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUReaderAlgo.h>
@@ -72,27 +67,29 @@ PIConGPUReader::PIConGPUReader() : Module(staticInfo_)
 
 void PIConGPUReader::setStateDefaults()
     {
-//    setStateStringFromAlgo(Parameters::ParticleType);
-//    setStateIntFromAlgo(Parameters::SampleRate);
+//    setStateIntFromAlgo(Parameters::particle_sample_rate);
+//    setStateStringFromAlgo(Parameters::particle_type);
+//    setStateStringFromAlgo(Parameters::vector_field_type);
+//    setStateStringFromAlgo(Parameters::scalar_field_component);
     }
 
 FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
     {
     FieldInformation pcfi("PointCloudMesh",0,"int");
-    FieldHandle field = CreateField(pcfi);
-    VMesh*  omesh =  field->vmesh();
+    FieldHandle ofh = CreateField(pcfi);
+    VMesh* omesh    = ofh->vmesh();
     
     for(VMesh::Node::index_type p=0; p < buffer_size; p++) omesh->add_point(Point(component_x[p],component_y[p],component_z[p]));
 
-    return field;
+    return ofh;
     }
 
 FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
     {
     FieldInformation lfi("LatVolMesh",1,"float");
+    std::vector<float> values(numvals);
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
-    std::vector<float> values(numvals);
 
     for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
         {
@@ -112,9 +109,7 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
     lfi.make_vector();
     MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
-    
-//    VMesh* omesh = ofh->vmesh();                                     //This variable is noted as not being used
-    VField* ofield = ofh->vfield();
+    VField* ofield  = ofh->vfield();
     
     for (VMesh::index_type i = 0; i < numvals; i++)
         {
@@ -124,13 +119,7 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
         v[2] = vFD_component_z.get()[i];
         ofield->set_value(v, i);
         }
-/*
-    for (VMesh::index_type i = numvals; i< numvals+numvals; i++)     //this is a problem, the vector v defined below is the same vector defined above, but the index, i, is out of scope
-        {
-        Vector v(vFD_component_x.get()[i], vFD_component_y.get()[i], vFD_component_z.get()[i]);
-        ofield->set_evalue(v,i);
-        }
-*/        
+       
     return ofh;
     }
 
@@ -140,8 +129,11 @@ void PIConGPUReader::execute()
     if(needToExecute())
         {
         auto state = get_state();
+//        setAlgoIntFromState(Parameters::particle_sample_rate);
+//        setAlgoStringFromState(Parameters::particle_type);
+//        setAlgoStringFromState(Parameters::vector_field_type);
+//        setAlgoStringFromState(Parameters::scalar_field_component);
         auto output=algo().run(input);
-
 
 //  ************************************************Start the openPMD Reader function and loop
 
@@ -160,10 +152,10 @@ void PIConGPUReader::execute()
             cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
                                                                      //Start Particle data processing
-            std::string spec          = "e";                         //set particle related input variables
+            std::string particle_type = "e";                         //set particle related input variables
             int particle_sample_rate  = 100;
                                                                      //Read particle data
-            Record particlePositions = iteration.particles[spec]["position"];
+            Record particlePositions = iteration.particles[particle_type]["position"];
 
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
             std::array<Extent, 3> extents;
@@ -199,17 +191,11 @@ void PIConGPUReader::execute()
 
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
-
-//    *****************************************************  Send data to the output port
-
             sendOutput(Particles, Particle_Output);
                                                                      //End of Particle data processing
 
-
-                                                                     //Start Scalar field data processing
-                                                                     //Note: Reading Scalar field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
-
-                                                                     //set Scalar field related input variables
+                                                                     //Start Scalar field data processing Note: See Franz Poschel email, 17 May 2022)
+                                                                     //set Scalar field related input variable
             std::string scalar_field_component = "e_all_chargeDensity";
 
                                                                      //Read scalar field data
@@ -223,17 +209,11 @@ void PIConGPUReader::execute()
 
                                                                      //Call the output function
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
-
-//    *****************************************************  Send data to the output port
-
             sendOutput(ScalarField, Scalar_Output);
                                                                      //End of Scalar field data processing
 
-
-                                                                     //Start Vector field data processing
-                                                                     //Note: Reading Vector field data (ijk values at xyz node points is from Franz Poschel email, 17 May 2022)
-
-            std::string vector_field_type = "E";                     //set Vector field related input variables
+                                                                     //Start Vector field data processing Note: See Franz Poschel email, 17 May 2022)
+            std::string vector_field_type = "E";                     //set Vector field related input variable
 
                                                                      //Read Vector field data
             auto vectorFieldData          = iteration.meshes[vector_field_type];
@@ -249,9 +229,6 @@ void PIConGPUReader::execute()
 
                                                                      //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
-
-//    *****************************************************  Send data to the output port
-
             sendOutput(VectorField, Vector_Output);
                                                                      //End of Vector field data processing
 
