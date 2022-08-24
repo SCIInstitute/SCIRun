@@ -39,6 +39,7 @@ SET(Modules_Visualization_SRCS
   CreateTestingArrow.cc
   ShowMeshBoundingBox.cc
   ShowOrientationAxes.cc
+  ShowUncertaintyGlyphs.cc
   GeometryBuffer.cc
   ReportColorMapInfo.cc
 )
@@ -56,6 +57,7 @@ SET(Modules_Visualization_HEADERS
   CreateTestingArrow.h
   ShowMeshBoundingBox.h
   ShowOrientationAxes.h
+  ShowUncertaintyGlyphs.h
   GeometryBuffer.h
   ReportColorMapInfo.h
   share.h

@@ -52,7 +52,6 @@ TARGET_LINK_LIBRARIES(Graphics_Glyphs
   Core_Math
   Core_Datatypes
   Core_Geometry_Primitives
-  Core_Algorithms_Visualization
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}
   ${SCI_SPIRE_LIBRARY}

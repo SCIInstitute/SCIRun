@@ -29,7 +29,7 @@
 #ifndef Graphics_Graphics_Glyphs_GlyphGeom_H
 #define Graphics_Graphics_Glyphs_GlyphGeom_H
 
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/Math/TrigTable.h>
