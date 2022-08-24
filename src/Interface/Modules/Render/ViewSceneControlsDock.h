@@ -312,6 +312,7 @@ namespace Gui {
      void setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup);
      void registerPopup(QToolBar* toolbar, ctkPopupWidget* popup);
      void registerDirectionButton(QToolBar* toolbar, QPushButton* button);
+     void updateDelays();
      static constexpr const char* DirectionProperty = "dir";
      static constexpr const char* FlipProperty = "flip";
    private:

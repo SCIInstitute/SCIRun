@@ -973,8 +973,22 @@ void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopu
 {
   updatePopupProperties(toolbar, popup, false);
 
+  //TODO: change to preference value
   popup->setShowDelay(200);
   popup->setHideDelay(200);
+}
+
+void ViewSceneToolBarController::updateDelays()
+{
+  //TODO: change to preference value
+  for (const auto& [toolbar, popups] : toolBarPopups_)
+  {
+    for (auto& popup : popups)
+    {
+      popup->setShowDelay(200);
+      popup->setHideDelay(200);
+    }
+  }
 }
 
 void ViewSceneToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget* popup)
