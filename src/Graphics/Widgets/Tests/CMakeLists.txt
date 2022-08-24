@@ -46,6 +46,7 @@ SCIRUN_ADD_UNIT_TEST(Graphics_Widgets_Tests
 
 TARGET_LINK_LIBRARIES(Graphics_Widgets_Tests
   Graphics_Widgets
+  Graphics_Datatypes
   gtest_main
   gtest
   gmock
