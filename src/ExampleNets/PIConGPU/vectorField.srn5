@@ -1566,7 +1566,7 @@
 									<name>VectorsDisplayType</name>
 									<value object_id="_123">
 										<which>2</which>
-										<value>Arrows</value>
+										<value>Lines</value>
 									</value>
 								</second>
 							</item>
@@ -2716,7 +2716,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_235">
 										<which>0</which>
-										<value>442</value>
+										<value>440</value>
 									</value>
 								</second>
 							</item>
@@ -2728,7 +2728,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_236">
 										<which>0</which>
-										<value>388</value>
+										<value>367</value>
 									</value>
 								</second>
 							</item>
@@ -3818,7 +3818,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_343">
 										<which>0</which>
-										<value>444</value>
+										<value>442</value>
 									</value>
 								</second>
 							</item>
@@ -3830,7 +3830,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_344">
 										<which>0</which>
-										<value>387</value>
+										<value>366</value>
 									</value>
 								</second>
 							</item>
@@ -4899,7 +4899,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_448">
 										<which>0</which>
-										<value>448</value>
+										<value>446</value>
 									</value>
 								</second>
 							</item>
@@ -4911,7 +4911,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_449">
 										<which>0</which>
-										<value>429</value>
+										<value>408</value>
 									</value>
 								</second>
 							</item>
