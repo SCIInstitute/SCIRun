@@ -159,6 +159,9 @@ void PIConGPUReader::execute()
             Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];                     //reference 25 August email from Franz
 
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
+
+            std::array<std::shared_ptr<position_t>, 3> loadedChunks1;                                                  //reference 25 August email from Franz
+
             std::array<Extent, 3> extents;
             std::array<std::string, 3> const dimensions{{"x", "y", "z"}};
 
