@@ -155,7 +155,8 @@ void PIConGPUReader::execute()
             std::string particle_type = "e";                         //set particle related input variables
             int particle_sample_rate  = 100;
                                                                      //Read particle data
-            Record particlePositions = iteration.particles[particle_type]["position"];
+            Record particlePositions       = iteration.particles[particle_type]["position"];
+            Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];                     //reference 25 August email from Franz
 
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
             std::array<Extent, 3> extents;
@@ -163,30 +164,31 @@ void PIConGPUReader::execute()
 
             for (size_t i_dim = 0; i_dim < 3; ++i_dim)
                 {
-                std::string dim_str = dimensions[i_dim];
-                RecordComponent rc  = particlePositions[dim_str];
-                loadedChunks[i_dim] = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
-                extents[i_dim] = rc.getExtent();
+                std::string dim_str  = dimensions[i_dim];
+                RecordComponent rc   = particlePositions[dim_str];
+                double currentUnitSI = rc.unitSI();                                                                    //reference 25 August email from Franz
+                loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
+                extents[i_dim]       = rc.getExtent();
                 }
 
             iteration.seriesFlush();                                 //Data is now available
 
             Extent const &extent_0 = extents[0];
-            int num_particles = extent_0[0];
+            int num_particles      = extent_0[0];
 
-            const int buffer_size      = 1+(num_particles/particle_sample_rate);
-            auto component_x           = new float[buffer_size];
-            auto component_y           = new float[buffer_size];
-            auto component_z           = new float[buffer_size];
+            const int buffer_size  = 1+(num_particles/particle_sample_rate);
+            auto component_x       = new float[buffer_size];
+            auto component_y       = new float[buffer_size];
+            auto component_z       = new float[buffer_size];
 
             for (size_t i_pos = 0; i_pos < 3; ++i_pos)
                 {
                 std::string dim = dimensions[i_pos];
-                auto chunk = loadedChunks[i_pos];
+                auto chunk      = loadedChunks[i_pos];
 
-                if(i_pos==0) for (size_t k = 0; k<num_particles ; k+=particle_sample_rate) component_x[k/particle_sample_rate]=chunk.get()[k];
-                if(i_pos==1) for (size_t i = 0; i<num_particles ; i+=particle_sample_rate) component_y[i/particle_sample_rate]=chunk.get()[i];
-                if(i_pos==2) for (size_t m = 0; m<num_particles ; m+=particle_sample_rate) component_z[m/particle_sample_rate]=chunk.get()[m];
+                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk.get()[k];
+                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk.get()[i];
+                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk.get()[m];
                 }
 
                                                                      //Call the output function
