@@ -170,9 +170,10 @@ void PIConGPUReader::execute()
                 RecordComponent rc1 = particlePositionOffsets[dim_str];                                                //reference 25 August email from Franz 
 
                 loadedChunks[i_dim] = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
+                loadedChunks1[i_dim] = rc1.loadChunk<position_t>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
                 extents[i_dim]      = rc.getExtent();
 
-                double position_unit_SI   = rc.unitSI();                                                               //reference 25 August email from Franz
+                double position_unit_SI   = rc.unitSI();                                                               //2 lines, reference 25 August email from Franz
                 double pos_offset_unit_SI = rc1.unitSI();
 
                 }
@@ -192,15 +193,17 @@ void PIConGPUReader::execute()
                 std::string dim = dimensions[i_pos];
                 auto chunk      = loadedChunks[i_pos];
 
+                auto chunk1     = loadedChunks1[i_pos];
+
                 if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk.get()[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk.get()[m];
 
 
 /*                                                                     //Possible code that implements getting the real value for particle position??
-                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = positionOffset * unit_SI(positionOffset) + chunk.get()[k] * unit_SI(chunk.get()[k]);
-                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_x[i/particle_sample_rate] = positionOffset * unit_SI(positionOffset) + chunk.get()[i] * unit_SI(chunk.get()[i]);
-                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_x[m/particle_sample_rate] = positionOffset * unit_SI(positionOffset) + chunk.get()[m] * unit_SI(chunk.get()[m]);
+                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] * pos_offset_unit_SI[k] + chunk.get()[k] * position_unit_SI[k]);
+                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_x[i/particle_sample_rate] = chunk1.get()[i] * pos_offset_unit_SI[i] + chunk.get()[i] * position_unit_SI[k]);
+                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_x[m/particle_sample_rate] = chunk1.get()[m] * pos_offset_unit_SI[m] + chunk.get()[m] * position_unit_SI[k]);
 */
 
                 }
