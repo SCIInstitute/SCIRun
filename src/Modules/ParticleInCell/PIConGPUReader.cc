@@ -170,13 +170,12 @@ void PIConGPUReader::execute()
 
             for (size_t i_dim = 0; i_dim < 3; ++i_dim)
                 {
-                std::string dim_str = dimensions[i_dim];
-                RecordComponent rc  = particlePositions[dim_str];
-
-                RecordComponent rc1 = particlePositionOffsets[dim_str];                                                //reference 25 August email from Franz 
+                std::string dim_str  = dimensions[i_dim];
+                RecordComponent rc   = particlePositions[dim_str];
+                RecordComponent rc1  = particlePositionOffsets[dim_str];                                                //reference 25 August email from Franz 
 
                 loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
-                loadedChunks1[i_dim] = rc1.loadChunk<position_t>(Offset(rc1.getDimensionality(), 0), rc1.getExtent()); //this is the sourcen of execution error
+                loadedChunks1[i_dim] = rc1.loadChunk<position_t>(Offset(rc1.getDimensionality(), 0), rc1.getExtent()); //this is the source of execution error
                 extents[i_dim]       = rc.getExtent();
 
                 position_unit_SI[i_dim]   = rc.unitSI();                                                               //2 lines, reference 25 August email from Franz
@@ -184,7 +183,6 @@ void PIConGPUReader::execute()
                 }
 
             iteration.seriesFlush();                                 //Data is now available
-
 
 
             Extent const &extent_0 = extents[0];
