@@ -1162,13 +1162,19 @@ bool Module::isStoppable() const
 
 void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const
 {
+  std::set<OutputPortHandle> outputPortsNotifed;
   for (const auto& inputPort : inputPorts())
   {
     if (inputPort->nconnections() > 0)
     {
       auto connection = inputPort->connection(0); // only one incoming connection for input ports
       //TODO: extract port method
-      connection->oport_->sendConnectionFeedback(feedback);
+      // one feedback per upstream OUTPUT--see issue #2397
+      if (outputPortsNotifed.find(connection->oport_) == outputPortsNotifed.end())
+      {
+        connection->oport_->sendConnectionFeedback(feedback);
+        outputPortsNotifed.insert(connection->oport_);
+      }
     }
   }
 }
