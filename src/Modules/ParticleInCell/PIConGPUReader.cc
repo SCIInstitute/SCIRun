@@ -158,12 +158,12 @@ void PIConGPUReader::execute()
             Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];                     //reference 25 August email from Franz
 
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
-            std::array<std::shared_ptr<float>, 3> loadedChunks1;                                                       //reference 25 August email from Franz
+            std::array<std::shared_ptr<int>, 3> loadedChunks1;                                                         //reference 25 August email from Franz
 
             std::array<Extent, 3> extents;
             std::array<std::string, 3> const dimensions{{"x", "y", "z"}};
 
-            float position_unit_SI[3];                                                                                 //2 lines, reference 25 August email from Franz
+            float position_unit_SI[3];                                                                                 //print these 2 lines
             float pos_offset_unit_SI[3];
 
             for (size_t i_dim = 0; i_dim < 3; ++i_dim)
@@ -173,11 +173,11 @@ void PIConGPUReader::execute()
                 RecordComponent rc1  = particlePositionOffsets[dim_str];                                                //reference 25 August email from Franz 
 
                 loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
-                loadedChunks1[i_dim] = rc1.loadChunk<position_t>(Offset(rc1.getDimensionality(), 0), rc1.getExtent()); //this is the source of execution error
+                loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent()); //this is the source of execution error
                 extents[i_dim]       = rc.getExtent();
 
                 position_unit_SI[i_dim]   = rc.unitSI();                                                               //2 lines, reference 25 August email from Franz
-//                pos_offset_unit_SI[i_dim] = rc1.unitSI();//maybe rc1.offsetUnitSI() here and in line 180
+                pos_offset_unit_SI[i_dim] = rc1.unitSI();//maybe rc1.offsetUnitSI() here and in line 180
                 }
 
             iteration.seriesFlush();                                 //Data is now available
@@ -196,17 +196,17 @@ void PIConGPUReader::execute()
                 std::string dim = dimensions[i_pos];
                 auto chunk      = loadedChunks[i_pos];
                 auto chunk1     = loadedChunks1[i_pos];
-
+/*
                 if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk.get()[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk.get()[m];
+*/
 
-/*
                                                                      //Possible code to implements getting the real value for particle position
                 if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] * pos_offset_unit_SI[k] + chunk.get()[k] * position_unit_SI[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_x[i/particle_sample_rate] = chunk1.get()[i] * pos_offset_unit_SI[i] + chunk.get()[i] * position_unit_SI[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_x[m/particle_sample_rate] = chunk1.get()[m] * pos_offset_unit_SI[m] + chunk.get()[m] * position_unit_SI[m];
-*/
+
                 }
 
                                                                      //Call the output function
