@@ -881,8 +881,43 @@ void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
   contextMenu.exec(mapToGlobal(pos));
 }
 
-ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog) : QObject(dialog), dialog_(dialog)
+ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog, Dataflow::Networks::ModuleStateHandle state)
+  : QObject(dialog), dialog_(dialog), buttons_(new ViewSceneToolBarButtons), state_(state)
 {
+  toolBars_[MainToolbar] = new ViewSceneToolBar("");
+  toolBars_[RenderToolbar] = new ViewSceneToolBar("");
+  toolBars_[AdvancedToolbar] = new ViewSceneToolBar("");
+
+  toolBarPositionButtons_[MainToolbar] = new QPushButton();
+  toolBarPositionButtons_[MainToolbar]->setToolTip("Switch toolbar 1 popup direction");
+  toolBars_[MainToolbar]->addButton(this, toolBarPositionButtons_[MainToolbar], nullptr);
+
+  toolBarPositionButtons_[RenderToolbar] = new QPushButton();
+  toolBarPositionButtons_[RenderToolbar]->setToolTip("Switch toolbar 2 popup direction");
+  //addToolbarButton(toolBarPositionButtons_[RenderToolbar], Qt::LeftToolBarArea);
+
+  toolBarPositionButtons_[AdvancedToolbar] = new QPushButton();
+  toolBarPositionButtons_[AdvancedToolbar]->setToolTip("Switch toolbar 3 popup direction");
+  //addToolbarButton(toolBarPositionButtons_[AdvancedToolbar], Qt::RightToolBarArea);
+
+  toolBarHolder_ = new QMainWindow;
+  dialog_->setupToolbarHolder(toolBarHolder_);
+
+  addToolBar();
+}
+
+ViewSceneToolBarButtons::ViewSceneToolBarButtons()
+{
+  objectSelectionButton_ = new QPushButton();
+  objectSelectionButton_->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
+}
+
+ViewSceneToolBar::ViewSceneToolBar(const QString& /*name*/, QWidget* parent) : QToolBar(parent)
+{
+  setMovable(true);
+  setFloatable(true);
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  WidgetStyleMixin::toolbarStyle(this);
 }
 
 namespace
@@ -969,7 +1004,7 @@ QStyle::StandardPixmap outArrowForBarAt(Qt::ToolBarArea area)
 
 }
 
-void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup)
+void ViewSceneToolBarController::setDefaultProperties(ViewSceneToolBar* toolbar, ctkPopupWidget* popup)
 {
   updatePopupProperties(toolbar, popup, false);
 
@@ -991,7 +1026,7 @@ void ViewSceneToolBarController::updateDelays()
   }
 }
 
-void ViewSceneToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget* popup)
+void ViewSceneToolBarController::registerPopup(ViewSceneToolBar* toolbar, ctkPopupWidget* popup)
 {
   connect(toolbar, &QToolBar::orientationChanged,
     [this, popup, toolbar](Qt::Orientation /*orientation*/) { updatePopupProperties(toolbar, popup, false); });
@@ -1002,20 +1037,20 @@ void ViewSceneToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget
   toolBarPopups_[toolbar].push_back(popup);
 }
 
-void ViewSceneToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup, bool flipped)
+void ViewSceneToolBarController::updatePopupProperties(ViewSceneToolBar* toolbar, ctkPopupWidget* popup, bool flipped)
 {
-  const auto props = popupPropertiesFor(toolbar->orientation(), dialog_->whereIs(toolbar), dialog_->isFullScreen() || flipped);
+  const auto props = popupPropertiesFor(toolbar->orientation(), whereIs(toolbar), dialog_->isFullScreen() || flipped);
   popup->setAlignment(props.alignment);
   popup->setOrientation(props.orientation);
   popup->setVerticalDirection(props.verticalDirection);
   popup->setHorizontalDirection(props.horizontalDirection);
 }
 
-void ViewSceneToolBarController::registerDirectionButton(QToolBar* toolbar, QPushButton* button)
+void ViewSceneToolBarController::registerDirectionButton(ViewSceneToolBar* toolbar, QPushButton* button)
 {
   button->setProperty(FlipProperty, true);
 
-  auto arrow = outArrowForBarAt(dialog_->whereIs(toolbar));
+  auto arrow = outArrowForBarAt(whereIs(toolbar));
   button->setIcon(QApplication::style()->standardIcon(arrow));
   button->setProperty(DirectionProperty, static_cast<int>(arrow));
 
@@ -1033,8 +1068,16 @@ void ViewSceneToolBarController::registerDirectionButton(QToolBar* toolbar, QPus
   connect(toolbar, &QToolBar::topLevelChanged, [button, toolbar, this](bool /*topLevel*/)
     {
       button->setProperty(FlipProperty, true);
-      auto outArrow = outArrowForBarAt(dialog_->whereIs(toolbar));
+      auto outArrow = outArrowForBarAt(whereIs(toolbar));
       button->setIcon(QApplication::style()->standardIcon(outArrow));
       button->setProperty(DirectionProperty, static_cast<int>(outArrow));
     });
+}
+
+void ViewSceneToolBarController::adjustToolbars(double factor)
+{
+  for (auto& [_, t] : toolBars_)
+  {
+    dialog_->adjustToolbarForHighResolution(t, factor);
+  }
 }

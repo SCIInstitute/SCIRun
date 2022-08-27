@@ -79,8 +79,8 @@ namespace SCIRun {
       void autoSaveScreenshot();
       void setFloatingState(bool isFloating);
       void vsLog(const QString& msg) const;
-      Qt::ToolBarArea whereIs(QToolBar* toolbar) const;
       bool isFullScreen() const;
+      void setupToolbarHolder(QMainWindow* holder);
 
       void postMoveEventCallback(const QPoint& p) override;
 
@@ -195,7 +195,6 @@ namespace SCIRun {
       void quickScreenshot();
       void quickScreenshotClicked() { quickScreenshot(); }
       void setScreenshotDirectory();
-      void setToolBarPositions();
 
     protected:
       //---------------- Initialization ------------------------------------------------------------
@@ -223,7 +222,6 @@ namespace SCIRun {
 
     private:
       //---------------- Initialization ------------------------------------------------------------
-      void addToolBar();
       void setupScaleBar();
       void setInitialLightValues();
       void setupMaterials();
@@ -242,7 +240,7 @@ namespace SCIRun {
       void addInputControlButton();
       void addCameraLocksButton();
       void addDeveloperControlButton();
-      void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
+      //void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addObjectSelectionButton();
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
@@ -254,7 +252,6 @@ namespace SCIRun {
       bool clickedInViewer(QMouseEvent* e) const;
       void initializeAxes();
       void initializeVisibleObjects();
-      void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, QToolBar* toolbar);
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();
@@ -292,6 +289,7 @@ namespace SCIRun {
 
       std::unique_ptr<ViewSceneDialogImpl> impl_;
 
+      friend class ViewSceneToolBarController;
       friend class ViewSceneControlsDock;
       friend class AutoRotateControls;
       friend class ColorOptions;

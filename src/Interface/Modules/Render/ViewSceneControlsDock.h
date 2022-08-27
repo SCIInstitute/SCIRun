@@ -44,6 +44,8 @@
 #include "Interface/Modules/Render/ui_ViewAxisChooser.h"
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
 
+#include <QToolBar>
+
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Modules/Render/ViewScene.h>
@@ -52,7 +54,6 @@
 
 class QwtKnob;
 class ctkColorPickerButton;
-class QToolBar;
 class ctkPopupWidget;
 
 namespace SCIRun {
@@ -304,21 +305,55 @@ namespace Gui {
     void viewAxisSelected(const QString& name);
   };
 
+  class SCISHARE ViewSceneToolBar : public QToolBar
+  {
+    Q_OBJECT
+  public:
+    ViewSceneToolBar(const QString& name, QWidget* parent = nullptr);
+    void addButton(class ViewSceneToolBarController* controller, QWidget* widget, ViewSceneControlPopupWidget* widgetToPopup);
+  };
+
+  struct SCISHARE ViewSceneToolBarButtons
+  {
+    ViewSceneToolBarButtons();
+
+    QPushButton* objectSelectionButton_;
+  };
+
   class SCISHARE ViewSceneToolBarController : public QObject
   {
     Q_OBJECT
    public:
-     explicit ViewSceneToolBarController(ViewSceneDialog* dialog);
-     void setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup);
-     void registerPopup(QToolBar* toolbar, ctkPopupWidget* popup);
-     void registerDirectionButton(QToolBar* toolbar, QPushButton* button);
+     ViewSceneToolBarController(ViewSceneDialog* dialog, Dataflow::Networks::ModuleStateHandle state);
+     void addToolBar();
+     void setToolBarPositions();
+     void setDefaultProperties(ViewSceneToolBar* toolbar, ctkPopupWidget* popup);
+     void registerPopup(ViewSceneToolBar* toolbar, ctkPopupWidget* popup);
+     void registerDirectionButton(ViewSceneToolBar* toolbar, QPushButton* button);
      void updateDelays();
+     void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, ViewSceneToolBar* toolbar);
+     Qt::ToolBarArea whereIs(QToolBar* toolbar) const;
+     void adjustToolbars(double factor);
+
      static constexpr const char* DirectionProperty = "dir";
      static constexpr const char* FlipProperty = "flip";
+
+     // map keys
+     static constexpr const char* MainToolbar = "main";
+     static constexpr const char* RenderToolbar = "render";
+     static constexpr const char* AdvancedToolbar = "advanced";
+
    private:
      ViewSceneDialog* dialog_;
-     void updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup, bool flipped);
-     std::map<QToolBar*, std::vector<ctkPopupWidget*>> toolBarPopups_;
+     ViewSceneToolBarButtons* buttons_;
+     Dataflow::Networks::ModuleStateHandle state_;
+     QMainWindow* toolBarHolder_ {nullptr};
+     std::map<ViewSceneToolBar*, std::vector<ctkPopupWidget*>> toolBarPopups_;
+     std::map<std::string, ViewSceneToolBar*> toolBars_;
+     std::map<std::string, QPushButton*> toolBarPositionButtons_;
+
+     void updatePopupProperties(ViewSceneToolBar* toolbar, ctkPopupWidget* popup, bool flipped);
+     void setupToolbarPosition(const std::string& toolbarLabel, const Core::Algorithms::Name& stateKey);
    };
 }
 }

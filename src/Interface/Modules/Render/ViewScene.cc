@@ -157,15 +157,24 @@ namespace Gui {
   class ViewSceneDialogImpl
   {
   public:
+    explicit ViewSceneDialogImpl(ViewSceneDialog* dialog)
+    {
+      objectSelectionControls_ = new ObjectSelectionControls(dialog);
+      colorOptions_ = new ColorOptions(dialog);
+      materialsControls_ = new MaterialsControls(dialog);
+      autoRotateControls_ = new AutoRotateControls(dialog);
+    }
+
+    friend class ViewSceneToolBarController;
+
     GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
     Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
-    QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
-    QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
     QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
     QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
     ColorOptions* colorOptions_{ nullptr };
     FogControls* fogControls_{ nullptr };
     MaterialsControls* materialsControls_{ nullptr };
+    AutoRotateControls* autoRotateControls_ {nullptr};
     ViewAxisChooserControls* viewAxisChooser_{nullptr};
     ObjectSelectionControls* objectSelectionControls_{nullptr};
     OrientationAxesControls* orientationAxesControls_{nullptr};
@@ -223,8 +232,6 @@ namespace Gui {
     QPushButton*                                      controlLock_        {nullptr};
     QPushButton*                                      autoViewButton_     {nullptr};
     QPushButton*                                      viewBarBtn_         {nullptr};
-    QPushButton* toolBar1Position_ {nullptr};
-    QPushButton* toolBar2Position_ {nullptr};
 
     std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
 
@@ -235,7 +242,6 @@ namespace Gui {
     bool isFullScreen_ {false};
     std::function<bool(bool)> fullScreenSwitcher_ = [this](bool b) { return isFullScreen_ ? !b : b; };
     ViewSceneToolBarController* toolBarController_ {nullptr};
-    QMainWindow* toolbarHolder_ {nullptr};
 
     static const int DIMENSIONS_ = 3;
     static const int QUATERNION_SIZE_ = 4;
@@ -377,7 +383,7 @@ ViewSceneManager ViewSceneDialog::viewSceneManager;
 
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state, QWidget* parent) :
   ModuleDialogGeneric(state, parent),
-  impl_(new ViewSceneDialogImpl)
+  impl_(new ViewSceneDialogImpl(this))
 {
   impl_->clippingPlaneManager_.reset(new ClippingPlaneManager(state));
   impl_->gid_.reset(new DialogIdGenerator(name));
@@ -438,12 +444,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
-  // state->connectSpecificStateChanged(Parameters::HorizontalToolBarPositionDefault,
-  //   [this]() {Q_EMIT horizontalToolBarPopupChanged(state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());});
-  //
-  // state->connectSpecificStateChanged(Parameters::VerticalToolBarPositionDefault,
-  //   [this]() {Q_EMIT verticalToolBarPopupChanged(state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());});
-
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -456,24 +456,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
-  {
-    impl_->toolbarHolder_ = new QMainWindow;
-    impl_->toolbarHolder_->setCentralWidget(impl_->mGLWidget);
+  impl_->toolBarController_ = new ViewSceneToolBarController(this, state_);
 
-    impl_->toolBar1_ = new QToolBar;
-    impl_->toolBar1_->setMovable(true);
-    impl_->toolBar1_->setFloatable(true);
-
-    impl_->toolBar2_ = new QToolBar;
-    impl_->toolBar2_->setMovable(true);
-    impl_->toolBar2_->setFloatable(true);
-
-    layout()->addWidget(impl_->toolbarHolder_);
-
-    impl_->toolBarController_ = new ViewSceneToolBarController(this);
-  }
-  addToolBar();
-  setToolBarPositions();
   addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
 
   viewSceneManager.addViewScene(this);
@@ -505,81 +489,70 @@ std::string ViewSceneDialog::toString(std::string prefix) const
   return output;
 }
 
-void ViewSceneDialog::setToolBarPositions()
+void ViewSceneToolBarController::setToolBarPositions()
 {
-  auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar1Position).toInt());
-  auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar2Position).toInt());
-  impl_->toolbarHolder_->addToolBar(toolBar1Position, impl_->toolBar1_);
-  impl_->toolbarHolder_->addToolBar(toolBar2Position, impl_->toolBar2_);
-  connect(impl_->toolBar1_, &QToolBar::topLevelChanged,
-    [this](bool /*topLevel*/)
-    {
-      state_->setValue(Parameters::ToolBar1Position, static_cast<int>(whereIs(impl_->toolBar1_)));
-    });
-  connect(impl_->toolBar2_, &QToolBar::topLevelChanged,
-    [this](bool /*topLevel*/)
-    {
-      state_->setValue(Parameters::ToolBar2Position, static_cast<int>(whereIs(impl_->toolBar2_)));
-    });
-
-  impl_->toolBarController_->registerDirectionButton(impl_->toolBar1_, impl_->toolBar1Position_);
-  impl_->toolBarController_->registerDirectionButton(impl_->toolBar2_, impl_->toolBar2Position_);
+  setupToolbarPosition(MainToolbar, Parameters::ToolBarMainPosition);
+  setupToolbarPosition(RenderToolbar, Parameters::ToolBarRenderPosition);
+  setupToolbarPosition(AdvancedToolbar, Parameters::ToolBarAdvancedPosition);
 }
 
-void ViewSceneDialog::addToolBar()
+void ViewSceneToolBarController::setupToolbarPosition(const std::string& toolbarLabel, const Name& stateKey)
 {
-  impl_->toolBar1_->setContextMenuPolicy(Qt::CustomContextMenu);
-  WidgetStyleMixin::toolbarStyle(impl_->toolBar1_);
+  auto toolBarPosition = static_cast<Qt::ToolBarArea>(state_->getValue(stateKey).toInt());
 
-  impl_->toolBar2_->setContextMenuPolicy(Qt::CustomContextMenu);
-  impl_->toolBar2_->setOrientation(Qt::Vertical);
-  WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
+  toolBarHolder_->addToolBar(toolBarPosition, toolBars_[toolbarLabel]);
 
-  addObjectSelectionButton();
-  addAutoViewButton();
-  addScreenshotButton();
-  addAutoRotateButton();
-  addColorOptionsButton();
-  addLightButtons();
-  addClippingPlaneButton();
-  addFogOptionsButton();
-  addMaterialOptionsButton();
-  addOrientationAxesButton();
-  addScaleBarButton();
-  addInputControlButton();
-  addCameraLocksButton();
-  addDeveloperControlButton();
-  setupMaterials();
-  addViewBarButton();
-  addControlLockButton();
+  connect(toolBars_[toolbarLabel], &QToolBar::topLevelChanged,
+    [this, stateKey, toolbarLabel](bool /*topLevel*/)
+    {
+      state_->setValue(stateKey, static_cast<int>(whereIs(toolBars_[toolbarLabel])));
+    });
 
-  {
-    impl_->toolBar1Position_ = new QPushButton();
-    impl_->toolBar1Position_->setToolTip("Switch toolbar 1 popup direction");
-    addToolbarButton(impl_->toolBar1Position_, Qt::TopToolBarArea);
-  }
-  {
-    impl_->toolBar2Position_ = new QPushButton();
-    impl_->toolBar2Position_->setToolTip("Switch toolbar 2 popup direction");
-    addToolbarButton(impl_->toolBar2Position_, Qt::LeftToolBarArea);
-  }
-
-  impl_->statusLabel_ = new QLabel("");
-  impl_->toolBar1_->addWidget(impl_->statusLabel_);
+  registerDirectionButton(toolBars_[toolbarLabel], toolBarPositionButtons_[toolbarLabel]);
 }
 
-void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, QToolBar* toolbar)
+void ViewSceneToolBarController::addToolBar()
+{
+//  impl_->toolBar2_->setOrientation(Qt::Vertical);
+
+  //addObjectSelectionButton();
+  toolBars_[MainToolbar]->addButton(this, buttons_->objectSelectionButton_, dialog_->impl_->objectSelectionControls_);
+
+  // addAutoViewButton();
+  // addScreenshotButton();
+  // addAutoRotateButton();
+  // addColorOptionsButton();
+  // addLightButtons();
+  // addClippingPlaneButton();
+  // addFogOptionsButton();
+  // addMaterialOptionsButton();
+  // addOrientationAxesButton();
+  // addScaleBarButton();
+  // addInputControlButton();
+  // addCameraLocksButton();
+  // addDeveloperControlButton();
+  // setupMaterials();
+  // addViewBarButton();
+  // addControlLockButton();
+
+
+
+  // impl_->statusLabel_ = new QLabel("");
+  // impl_->toolBar1_->addWidget(impl_->statusLabel_);
+}
+
+void ViewSceneToolBarController::setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, ViewSceneToolBar* toolbar)
 {
   auto* popup = new ctkPopupWidget(button);
   button->setObjectName("Button: " + underlyingWidget->objectName());
 
-  impl_->toolBarController_->setDefaultProperties(toolbar, popup);
+  setDefaultProperties(toolbar, popup);
 
-  connect(this, &ViewSceneDialog::closeAllNonPinnedPopups, [popup, underlyingWidget]() { if (!underlyingWidget->pinToggleAction()->isChecked()) popup->close(); });
+  connect(dialog_, &ViewSceneDialog::closeAllNonPinnedPopups, [popup, underlyingWidget]() { if (!underlyingWidget->pinToggleAction()->isChecked()) popup->close(); });
   connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
   connect(underlyingWidget->closeAction(), &QAction::triggered, popup, &QWidget::close);
 
-  impl_->toolBarController_->registerPopup(toolbar, popup);
+  registerPopup(toolbar, popup);
 
   auto* popupLayout = new QVBoxLayout(popup);
   popupLayout->addWidget(underlyingWidget);
@@ -588,10 +561,8 @@ void ViewSceneDialog::setupPopupWidget(QPushButton* button, ViewSceneControlPopu
 
 void ViewSceneDialog::addObjectSelectionButton()
 {
-  auto* objectSelectionButton = new QPushButton();
-  objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
-  impl_->objectSelectionControls_ = new ObjectSelectionControls(this);
-  addToolbarButton(objectSelectionButton, Qt::TopToolBarArea, impl_->objectSelectionControls_);
+
+  //addToolbarButton(objectSelectionButton, Qt::TopToolBarArea, impl_->objectSelectionControls_);
 }
 
 void ViewSceneDialog::addAutoRotateButton()
@@ -599,17 +570,16 @@ void ViewSceneDialog::addAutoRotateButton()
   impl_->autoRotateButton_ = new QPushButton();
   impl_->autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
   connect(impl_->autoRotateButton_, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
-  auto arctrls = new AutoRotateControls(this);
-  addToolbarButton(impl_->autoRotateButton_, Qt::LeftToolBarArea, arctrls);
+
+  //addToolbarButton(impl_->autoRotateButton_, Qt::LeftToolBarArea, arctrls);
 }
 
 void ViewSceneDialog::addColorOptionsButton()
 {
+  impl_->colorOptions_->setSampleColor(impl_->bgColor_);
   auto* colorOptionsButton = new QPushButton();
   colorOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
-  impl_->colorOptions_ = new ColorOptions(this);
-  impl_->colorOptions_->setSampleColor(impl_->bgColor_);
-  addToolbarButton(colorOptionsButton, Qt::LeftToolBarArea, impl_->colorOptions_);
+  //addToolbarButton(colorOptionsButton, Qt::LeftToolBarArea, impl_->colorOptions_);
 }
 
 void ViewSceneDialog::addLightButtons()
@@ -624,7 +594,7 @@ void ViewSceneDialog::addLightButtons()
 
     impl_->lightControls_[i] = new LightControls(this, i, lightButton);
     fixSize(impl_->lightControls_[i]);
-    addToolbarButton(lightButton, Qt::TopToolBarArea, impl_->lightControls_[i]);
+    //addToolbarButton(lightButton, Qt::TopToolBarArea, impl_->lightControls_[i]);
   }
 }
 
@@ -633,15 +603,14 @@ void ViewSceneDialog::addFogOptionsButton()
   impl_->fogButton_ = new QPushButton();
   impl_->fogButton_->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
   impl_->fogControls_ = new FogControls(this, impl_->fogButton_);
-  addToolbarButton(impl_->fogButton_, Qt::LeftToolBarArea, impl_->fogControls_);
+  //addToolbarButton(impl_->fogButton_, Qt::LeftToolBarArea, impl_->fogControls_);
 }
 
 void ViewSceneDialog::addMaterialOptionsButton()
 {
   auto* materialOptionsButton = new QPushButton();
   materialOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/materials.png"));
-  impl_->materialsControls_ = new MaterialsControls(this);
-  addToolbarButton(materialOptionsButton, Qt::LeftToolBarArea, impl_->materialsControls_);
+  //addToolbarButton(materialOptionsButton, Qt::LeftToolBarArea, impl_->materialsControls_);
 }
 
 void ViewSceneDialog::addOrientationAxesButton()
@@ -649,7 +618,7 @@ void ViewSceneDialog::addOrientationAxesButton()
   auto* orientationAxesButton = new QPushButton();
   orientationAxesButton->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
   impl_->orientationAxesControls_ = new OrientationAxesControls(this, orientationAxesButton);
-  addToolbarButton(orientationAxesButton, Qt::LeftToolBarArea, impl_->orientationAxesControls_);
+  //addToolbarButton(orientationAxesButton, Qt::LeftToolBarArea, impl_->orientationAxesControls_);
 }
 
 void ViewSceneDialog::addScaleBarButton()
@@ -658,7 +627,7 @@ void ViewSceneDialog::addScaleBarButton()
   scaleBarButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
   impl_->scaleBarControls_ = new ScaleBarControls(this, scaleBarButton);
   fixSize(impl_->scaleBarControls_);
-  addToolbarButton(scaleBarButton, Qt::LeftToolBarArea, impl_->scaleBarControls_);
+  //addToolbarButton(scaleBarButton, Qt::LeftToolBarArea, impl_->scaleBarControls_);
 
   impl_->scaleBarControls_->setScaleBarValues(impl_->scaleBar_);
 }
@@ -669,24 +638,24 @@ void ViewSceneDialog::addCameraLocksButton()
   cameraLocksButton->setIcon(QPixmap(":/general/Resources/ViewScene/link.png"));
   impl_->cameraLockControls_ = new CameraLockControls(this);
   fixSize(impl_->cameraLockControls_);
-  addToolbarButton(cameraLocksButton, Qt::LeftToolBarArea, impl_->cameraLockControls_);
+  //addToolbarButton(cameraLocksButton, Qt::LeftToolBarArea, impl_->cameraLockControls_);
 }
 
-void ViewSceneDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which, ViewSceneControlPopupWidget* widgetToPopup)
+void ViewSceneToolBar::addButton(ViewSceneToolBarController* controller, QWidget* widget, ViewSceneControlPopupWidget* widgetToPopup)
 {
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
   widget->setFixedSize(buttonSize, buttonSize);
-  auto toolbar = (which == Qt::TopToolBarArea ? impl_->toolBar1_ : impl_->toolBar2_);
+  //auto toolbar = (which == Qt::TopToolBarArea ? impl_->toolBar1_ : impl_->toolBar2_);
 
   if (auto* button = qobject_cast<QPushButton*>(widget))
   {
     button->setIconSize(QSize(iconSize, iconSize));
     if (widgetToPopup)
-      setupPopupWidget(button, widgetToPopup, toolbar);
+      controller->setupPopupWidget(button, widgetToPopup, this);
   }
 
-  toolbar->addWidget(widget);
+  addWidget(widget);
 }
 
 void ViewSceneDialog::setupMaterials()
@@ -725,7 +694,7 @@ void ViewSceneDialog::addAutoViewButton()
   impl_->autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   impl_->autoViewButton_->setShortcut(Qt::Key_0);
   connect(impl_->autoViewButton_, &QPushButton::clicked, this, &ViewSceneDialog::autoViewClicked);
-  addToolbarButton(impl_->autoViewButton_, Qt::TopToolBarArea);
+  //addToolbarButton(impl_->autoViewButton_, Qt::TopToolBarArea);
 }
 
 void ViewSceneDialog::addScreenshotButton()
@@ -736,7 +705,7 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, &QPushButton::clicked, this, &ViewSceneDialog::quickScreenshotClicked);
   impl_->screenshotControls_ = new ScreenshotControls(this);
-  addToolbarButton(screenshotButton, Qt::TopToolBarArea, impl_->screenshotControls_);
+  //addToolbarButton(screenshotButton, Qt::TopToolBarArea, impl_->screenshotControls_);
 }
 
 using V = glm::vec3;
@@ -788,7 +757,7 @@ void ViewSceneDialog::addViewBarButton()
   impl_->viewBarBtn_->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
 
   impl_->viewAxisChooser_ = new ViewAxisChooserControls(this);
-  addToolbarButton(impl_->viewBarBtn_, Qt::TopToolBarArea, impl_->viewAxisChooser_);
+  //addToolbarButton(impl_->viewBarBtn_, Qt::TopToolBarArea, impl_->viewAxisChooser_);
   connect(impl_->viewBarBtn_, &QPushButton::clicked, this, &ViewSceneDialog::snapToViewAxis);
 }
 
@@ -821,7 +790,7 @@ void ViewSceneDialog::addControlLockButton()
 
   impl_->controlLock_->setMenu(menu);
 
-  addToolbarButton(impl_->controlLock_, Qt::TopToolBarArea);
+  //addToolbarButton(impl_->controlLock_, Qt::TopToolBarArea);
   impl_->controlLock_->setFixedWidth(45);
   toggleLockColor(false);
 }
@@ -831,7 +800,7 @@ void ViewSceneDialog::addClippingPlaneButton()
   auto* clippingPlaneButton = new QPushButton();
   clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
   impl_->clippingPlaneControls_ = new ClippingPlaneControls(this, clippingPlaneButton);
-  addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea, impl_->clippingPlaneControls_);
+  //addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea, impl_->clippingPlaneControls_);
 }
 
 ClippingPlaneManager::ClippingPlaneManager(ModuleStateHandle state) : state_(state), clippingPlanes_(ClippingPlane::MaxCount)
@@ -869,7 +838,7 @@ void ViewSceneDialog::addInputControlButton()
   auto* inputControlButton = new QPushButton();
   inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/mouse.png"));
   impl_->inputControls_ = new InputControls(this);
-  addToolbarButton(inputControlButton, Qt::LeftToolBarArea, impl_->inputControls_);
+  //addToolbarButton(inputControlButton, Qt::LeftToolBarArea, impl_->inputControls_);
 }
 
 void ViewSceneDialog::addDeveloperControlButton()
@@ -877,7 +846,7 @@ void ViewSceneDialog::addDeveloperControlButton()
   auto* devControlButton = new QPushButton();
   devControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/devel.png"));
   impl_->developerControls_ = new DeveloperControls(this);
-  addToolbarButton(devControlButton, Qt::LeftToolBarArea, impl_->developerControls_);
+  //addToolbarButton(devControlButton, Qt::LeftToolBarArea, impl_->developerControls_);
 }
 
 void ViewSceneDialog::pullCameraState()
@@ -1093,8 +1062,7 @@ void ViewSceneDialog::pullSpecial()
 
 void ViewSceneDialog::adjustToolbar(double factor)
 {
-  adjustToolbarForHighResolution(impl_->toolBar1_, factor);
-  adjustToolbarForHighResolution(impl_->toolBar2_, factor);
+  impl_->toolBarController_->adjustToolbars(factor);
 }
 
 QColor ViewSceneDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)
@@ -2844,7 +2812,13 @@ bool ViewSceneDialog::isFullScreen() const
   return impl_->isFullScreen_;
 }
 
-Qt::ToolBarArea ViewSceneDialog::whereIs(QToolBar* toolbar) const
+Qt::ToolBarArea ViewSceneToolBarController::whereIs(QToolBar* toolbar) const
 {
-  return impl_->toolbarHolder_->toolBarArea(toolbar);
+  return toolBarHolder_->toolBarArea(toolbar);
+}
+
+void ViewSceneDialog::setupToolbarHolder(QMainWindow* holder)
+{
+  holder->setCentralWidget(impl_->mGLWidget);
+  layout()->addWidget(holder);
 }
