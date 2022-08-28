@@ -158,26 +158,28 @@ void PIConGPUReader::execute()
             Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];                     //reference 25 August email from Franz
 
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
-            std::array<std::shared_ptr<int>, 3> loadedChunks1;                                                         //reference 25 August email from Franz
+            std::array<std::shared_ptr<int>,        3> loadedChunks1;                                                  //reference 25 August email from Franz
+            std::array<Extent,                      3> extents;
+            std::array<std::string,                 3> const dimensions{{"x", "y", "z"}};
 
-            std::array<Extent, 3> extents;
-            std::array<std::string, 3> const dimensions{{"x", "y", "z"}};
-
-            float position_unit_SI[3];                                                                                 //print these 2 lines
+            float position_unit_SI[3];
             float pos_offset_unit_SI[3];
 
             for (size_t i_dim = 0; i_dim < 3; ++i_dim)
                 {
                 std::string dim_str  = dimensions[i_dim];
                 RecordComponent rc   = particlePositions[dim_str];
-                RecordComponent rc1  = particlePositionOffsets[dim_str];                                                //reference 25 August email from Franz 
+                RecordComponent rc1  = particlePositionOffsets[dim_str];                                               //reference 25 August email from Franz 
 
                 loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
-                loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent()); //this is the source of execution error
+                loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
                 extents[i_dim]       = rc.getExtent();
 
                 position_unit_SI[i_dim]   = rc.unitSI();                                                               //2 lines, reference 25 August email from Franz
-                pos_offset_unit_SI[i_dim] = rc1.unitSI();//maybe rc1.offsetUnitSI() here and in line 180
+                cout << "\nDebug; position_unit_SI[" << i_dim << "]" << "\n";                                          //Debug seeing exactly what we are getting here
+
+                pos_offset_unit_SI[i_dim] = rc1.unitSI();
+                cout << "\nDebug; pos_offset_unit_SI[" << i_dim << "]" << "\n";                                        //Debug seeing exactly what we are getting here
                 }
 
             iteration.seriesFlush();                                 //Data is now available
