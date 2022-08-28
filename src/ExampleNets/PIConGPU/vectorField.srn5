@@ -662,7 +662,7 @@
 									<name>DefaultMeshColor</name>
 									<value object_id="_49">
 										<which>2</which>
-										<value>Color(0.5,0.5,0.5)</value>
+										<value>Color(1,1,0)</value>
 									</value>
 								</second>
 							</item>
@@ -818,7 +818,7 @@
 									<name>NodeAsSpheres</name>
 									<value object_id="_62">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1022,7 +1022,7 @@
 									<name>SphereScaleValue</name>
 									<value object_id="_79">
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>1.30000000000000004e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2692,7 +2692,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_233">
 										<which>0</which>
-										<value>1366</value>
+										<value>1372</value>
 									</value>
 								</second>
 							</item>
@@ -2716,7 +2716,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_235">
 										<which>0</which>
-										<value>440</value>
+										<value>430</value>
 									</value>
 								</second>
 							</item>
@@ -2728,7 +2728,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_236">
 										<which>0</which>
-										<value>367</value>
+										<value>400</value>
 									</value>
 								</second>
 							</item>
@@ -2828,7 +2828,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_243">
 										<which>1</which>
-										<value>3.02008771896362305e+00</value>
+										<value>2.09230194091796875e+01</value>
 									</value>
 								</second>
 							</item>
@@ -2859,21 +2859,21 @@
 												<name>listElement</name>
 												<value object_id="_246">
 													<which>1</which>
-													<value>4.99997049570083618e-01</value>
+													<value>5.99966669082641602e+00</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_247">
 													<which>1</which>
-													<value>4.99997049570083618e-01</value>
+													<value>-1.88384670764207840e-04</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_248">
 													<which>1</which>
-													<value>5.00010013580322266e-01</value>
+													<value>-1.88384670764207840e-04</value>
 												</value>
 											</item>
 										</value>
@@ -2895,28 +2895,28 @@
 												<name>listElement</name>
 												<value object_id="_250">
 													<which>1</which>
-													<value>1.00000000000000000e+00</value>
+													<value>9.99068856239318848e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_251">
 													<which>1</which>
-													<value>-0.00000000000000000e+00</value>
+													<value>1.01979374885559082e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_252">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>-4.04300279915332794e-02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_253">
 													<which>1</which>
-													<value>0.00000000000000000e+00</value>
+													<value>-1.10818883404135704e-02</value>
 												</value>
 											</item>
 										</value>
@@ -3794,7 +3794,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_341">
 										<which>0</which>
-										<value>900</value>
+										<value>894</value>
 									</value>
 								</second>
 							</item>
@@ -3818,7 +3818,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_343">
 										<which>0</which>
-										<value>442</value>
+										<value>444</value>
 									</value>
 								</second>
 							</item>
@@ -3830,7 +3830,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_344">
 										<which>0</which>
-										<value>366</value>
+										<value>402</value>
 									</value>
 								</second>
 							</item>
@@ -4899,7 +4899,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_448">
 										<which>0</which>
-										<value>446</value>
+										<value>442</value>
 									</value>
 								</second>
 							</item>
@@ -4911,7 +4911,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_449">
 										<which>0</which>
-										<value>408</value>
+										<value>366</value>
 									</value>
 								</second>
 							</item>

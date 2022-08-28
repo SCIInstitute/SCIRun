@@ -202,12 +202,16 @@ void PIConGPUReader::execute()
                 if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk.get()[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk.get()[m];
-*/
+
 
                                                                      //Possible code to implements getting the real value for particle position
                 if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] * pos_offset_unit_SI[k] + chunk.get()[k] * position_unit_SI[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_x[i/particle_sample_rate] = chunk1.get()[i] * pos_offset_unit_SI[i] + chunk.get()[i] * position_unit_SI[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_x[m/particle_sample_rate] = chunk1.get()[m] * pos_offset_unit_SI[m] + chunk.get()[m] * position_unit_SI[m];
+*/
+                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] + chunk.get()[k];
+                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_x[i/particle_sample_rate] = chunk1.get()[i] + chunk.get()[i];
+                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_x[m/particle_sample_rate] = chunk1.get()[m] + chunk.get()[m];
 
                 }
 
