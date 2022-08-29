@@ -161,6 +161,7 @@ namespace Gui {
     Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
     QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
     QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
+    QToolBar*                             toolBar3_                      {nullptr};  ///< Tool bar.
     QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
     QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
     ColorOptions* colorOptions_{ nullptr };
@@ -225,6 +226,7 @@ namespace Gui {
     QPushButton*                                      viewBarBtn_         {nullptr};
     QPushButton* toolBar1Position_ {nullptr};
     QPushButton* toolBar2Position_ {nullptr};
+    QPushButton* toolBar3Position_ {nullptr};
 
     std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
 
@@ -468,6 +470,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     impl_->toolBar2_->setMovable(true);
     impl_->toolBar2_->setFloatable(true);
 
+    impl_->toolBar3_ = new QToolBar;
+    impl_->toolBar3_->setMovable(true);
+    impl_->toolBar3_->setFloatable(true);
+
     layout()->addWidget(impl_->toolbarHolder_);
 
     impl_->toolBarController_ = new ViewSceneToolBarController(this);
@@ -509,8 +515,10 @@ void ViewSceneDialog::setToolBarPositions()
 {
   auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarMainPosition).toInt());
   auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarRenderPosition).toInt());
+  auto toolBar3Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarAdvancedPosition).toInt());
   impl_->toolbarHolder_->addToolBar(toolBar1Position, impl_->toolBar1_);
   impl_->toolbarHolder_->addToolBar(toolBar2Position, impl_->toolBar2_);
+  impl_->toolbarHolder_->addToolBar(toolBar3Position, impl_->toolBar3_);
   connect(impl_->toolBar1_, &QToolBar::topLevelChanged,
     [this](bool /*topLevel*/)
     {
@@ -521,9 +529,15 @@ void ViewSceneDialog::setToolBarPositions()
     {
       state_->setValue(Parameters::ToolBarRenderPosition, static_cast<int>(whereIs(impl_->toolBar2_)));
     });
+  connect(impl_->toolBar3_, &QToolBar::topLevelChanged,
+    [this](bool /*topLevel*/)
+    {
+      state_->setValue(Parameters::ToolBarAdvancedPosition, static_cast<int>(whereIs(impl_->toolBar3_)));
+    });
 
   impl_->toolBarController_->registerDirectionButton(impl_->toolBar1_, impl_->toolBar1Position_);
   impl_->toolBarController_->registerDirectionButton(impl_->toolBar2_, impl_->toolBar2Position_);
+  impl_->toolBarController_->registerDirectionButton(impl_->toolBar3_, impl_->toolBar3Position_);
 }
 
 void ViewSceneDialog::addToolBar()
@@ -534,6 +548,10 @@ void ViewSceneDialog::addToolBar()
   impl_->toolBar2_->setContextMenuPolicy(Qt::CustomContextMenu);
   impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
+
+  impl_->toolBar3_->setContextMenuPolicy(Qt::CustomContextMenu);
+  impl_->toolBar3_->setOrientation(Qt::Vertical);
+  WidgetStyleMixin::toolbarStyle(impl_->toolBar3_);
 
   addObjectSelectionButton();
   addAutoViewButton();
@@ -562,6 +580,11 @@ void ViewSceneDialog::addToolBar()
     impl_->toolBar2Position_ = new QPushButton();
     impl_->toolBar2Position_->setToolTip("Switch toolbar 2 popup direction");
     addToolbarButton(impl_->toolBar2Position_, Qt::LeftToolBarArea);
+  }
+  {
+    impl_->toolBar3Position_ = new QPushButton();
+    impl_->toolBar3Position_->setToolTip("Switch toolbar 3 popup direction");
+    addToolbarButton(impl_->toolBar3Position_, Qt::RightToolBarArea);
   }
 
   impl_->statusLabel_ = new QLabel("");
@@ -677,7 +700,7 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which, V
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
   widget->setFixedSize(buttonSize, buttonSize);
-  auto toolbar = (which == Qt::TopToolBarArea ? impl_->toolBar1_ : impl_->toolBar2_);
+  auto toolbar = (which == Qt::TopToolBarArea ? impl_->toolBar1_ : (which == Qt::LeftToolBarArea ? impl_->toolBar2_ : impl_->toolBar3_)); //TODO refactor obviously
 
   if (auto* button = qobject_cast<QPushButton*>(widget))
   {
@@ -1095,6 +1118,7 @@ void ViewSceneDialog::adjustToolbar(double factor)
 {
   adjustToolbarForHighResolution(impl_->toolBar1_, factor);
   adjustToolbarForHighResolution(impl_->toolBar2_, factor);
+  adjustToolbarForHighResolution(impl_->toolBar3_, factor);
 }
 
 QColor ViewSceneDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)
