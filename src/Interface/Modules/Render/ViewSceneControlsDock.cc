@@ -882,7 +882,7 @@ void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
 }
 
 ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog, Dataflow::Networks::ModuleStateHandle state)
-  : QObject(dialog), dialog_(dialog), buttons_(new ViewSceneToolBarButtons), state_(state)
+  : QObject(dialog), dialog_(dialog), state_(state)
 {
   toolBars_[MainToolbar] = new ViewSceneToolBar("");
   toolBars_[RenderToolbar] = new ViewSceneToolBar("");
@@ -910,6 +910,64 @@ ViewSceneToolBarButtons::ViewSceneToolBarButtons()
 {
   objectSelectionButton_ = new QPushButton();
   objectSelectionButton_->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
+
+  autoViewButton_ = new QPushButton();
+  autoViewButton_->setToolTip("Auto View");
+  autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  autoViewButton_->setShortcut(Qt::Key_0);
+
+  screenshotButton_ = new QPushButton();
+  screenshotButton_->setToolTip("Take Screenshot");
+  screenshotButton_->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
+  screenshotButton_->setShortcut(Qt::Key_F12);
+
+  viewBarBtn_ = new QPushButton();
+  viewBarBtn_->setToolTip("Show View Options");
+  viewBarBtn_->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
+
+  controlLock_ = new QPushButton();
+  controlLock_->setToolTip("Lock specific view controls");
+  controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
+
+  clippingPlaneButton_ = new QPushButton();
+  clippingPlaneButton_->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
+
+  inputControlButton_ = new QPushButton();
+  inputControlButton_->setIcon(QPixmap(":/general/Resources/ViewScene/mouse.png"));
+
+  devControlButton_ = new QPushButton();
+  devControlButton_->setIcon(QPixmap(":/general/Resources/ViewScene/devel.png"));
+
+  autoRotateButton_ = new QPushButton();
+  autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
+
+  colorOptionsButton_ = new QPushButton();
+  colorOptionsButton_->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
+
+  fogButton_ = new QPushButton();
+  fogButton_->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
+
+  materialOptionsButton_ = new QPushButton();
+  materialOptionsButton_->setIcon(QPixmap(":/general/Resources/ViewScene/materials.png"));
+
+  orientationAxesButton_ = new QPushButton();
+  orientationAxesButton_->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
+
+  scaleBarButton_ = new QPushButton();
+  scaleBarButton_->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
+
+  cameraLocksButton_ = new QPushButton();
+  cameraLocksButton_->setIcon(QPixmap(":/general/Resources/ViewScene/link.png"));
+}
+
+ViewSceneControlBundle::ViewSceneControlBundle(ViewSceneDialog* dialog)
+{
+  objectSelectionControls_ = new ObjectSelectionControls(dialog);
+  colorOptions_ = new ColorOptions(dialog);
+  materialsControls_ = new MaterialsControls(dialog);
+  autoRotateControls_ = new AutoRotateControls(dialog);
+
+  statusLabel_ = new QLabel("");
 }
 
 ViewSceneToolBar::ViewSceneToolBar(const QString& /*name*/, QWidget* parent) : QToolBar(parent)

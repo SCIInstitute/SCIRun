@@ -317,7 +317,43 @@ namespace Gui {
   {
     ViewSceneToolBarButtons();
 
-    QPushButton* objectSelectionButton_;
+    QPushButton* objectSelectionButton_ {nullptr};
+    QPushButton* controlLock_        {nullptr};
+    QPushButton* autoViewButton_     {nullptr};
+    QPushButton* viewBarBtn_         {nullptr};
+    QPushButton* autoRotateButton_{nullptr};
+    QPushButton* fogButton_{nullptr};
+    QPushButton* screenshotButton_{nullptr};
+    QPushButton* clippingPlaneButton_{nullptr};
+    QPushButton* inputControlButton_{nullptr};
+    QPushButton* devControlButton_{nullptr};
+    QPushButton* colorOptionsButton_{nullptr};
+    QPushButton* materialOptionsButton_{nullptr};
+    QPushButton* orientationAxesButton_{nullptr};
+    QPushButton* scaleBarButton_{nullptr};
+    QPushButton* cameraLocksButton_{nullptr};
+  };
+
+  struct SCISHARE ViewSceneControlBundle
+  {
+    explicit ViewSceneControlBundle(ViewSceneDialog* dialog);
+
+    ColorOptions* colorOptions_{ nullptr };
+    FogControls* fogControls_{ nullptr };
+    MaterialsControls* materialsControls_{ nullptr };
+    AutoRotateControls* autoRotateControls_ {nullptr};
+    ViewAxisChooserControls* viewAxisChooser_{nullptr};
+    ObjectSelectionControls* objectSelectionControls_{nullptr};
+    OrientationAxesControls* orientationAxesControls_{nullptr};
+    ScreenshotControls* screenshotControls_{nullptr};
+    ScaleBarControls* scaleBarControls_{nullptr};
+    ClippingPlaneControls* clippingPlaneControls_{nullptr};
+    InputControls* inputControls_{nullptr};
+    CameraLockControls* cameraLockControls_{nullptr};
+    DeveloperControls* developerControls_{nullptr};
+    static constexpr int NUM_LIGHTS = 4;
+    LightControls* lightControls_[NUM_LIGHTS];
+    QLabel* statusLabel_{nullptr};
   };
 
   class SCISHARE ViewSceneToolBarController : public QObject
@@ -345,7 +381,6 @@ namespace Gui {
 
    private:
      ViewSceneDialog* dialog_;
-     ViewSceneToolBarButtons* buttons_;
      Dataflow::Networks::ModuleStateHandle state_;
      QMainWindow* toolBarHolder_ {nullptr};
      std::map<ViewSceneToolBar*, std::vector<ctkPopupWidget*>> toolBarPopups_;
