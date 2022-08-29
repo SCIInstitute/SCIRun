@@ -49,11 +49,25 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   connect(viewerWidgetSelectionCorrectionCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateWidgetSelectionCorrection);
   connect(autoRotateViewerOnMouseReleaseCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateAutoRotateViewer);
   connect(moduleExecuteDownstreamOnlyCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleExecuteDownstream);
+  connect(toolBarPopupShowDelaySpinBox_, &QSpinBox::valueChanged, this, &PreferencesWindow::updateToolBarPopupShowDelay);
+  connect(toolBarPopupHideDelaySpinBox_, &QSpinBox::valueChanged, this, &PreferencesWindow::updateToolBarPopupHideDelay);
 }
 
 void PreferencesWindow::updateWidgetSelectionCorrection(int state)
 {
   SCIRun::Core::Preferences::Instance().widgetSelectionCorrection.setValue(state != 0);
+}
+
+void PreferencesWindow::updateToolBarPopupShowDelay(int delay)
+{
+  SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay.setValue(delay);
+  toolBarPopupShowDelaySpinBox_->setValue(delay);
+}
+
+void PreferencesWindow::updateToolBarPopupHideDelay(int delay)
+{
+  SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay.setValue(delay);
+  toolBarPopupHideDelaySpinBox_->setValue(delay);
 }
 
 void PreferencesWindow::updateAutoRotateViewer(int state)
@@ -107,6 +121,16 @@ void PreferencesWindow::setAutoRotateViewerOnMouseRelease(bool mode)
 {
   updateAutoRotateViewer(mode ? 1 : 0);
   autoRotateViewerOnMouseReleaseCheckbox_->setChecked(mode);
+}
+
+void PreferencesWindow::setToolBarPopupShowDelay(int delay)
+{
+  updateToolBarPopupShowDelay(delay);
+}
+
+void PreferencesWindow::setToolBarPopupHideDelay(int delay)
+{
+  updateToolBarPopupHideDelay(delay);
 }
 
 void PreferencesWindow::setWidgetSelectionCorrection(bool mode)
