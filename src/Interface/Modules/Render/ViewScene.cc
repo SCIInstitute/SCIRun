@@ -507,19 +507,19 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 
 void ViewSceneDialog::setToolBarPositions()
 {
-  auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar1Position).toInt());
-  auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar2Position).toInt());
+  auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarMainPosition).toInt());
+  auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarRenderPosition).toInt());
   impl_->toolbarHolder_->addToolBar(toolBar1Position, impl_->toolBar1_);
   impl_->toolbarHolder_->addToolBar(toolBar2Position, impl_->toolBar2_);
   connect(impl_->toolBar1_, &QToolBar::topLevelChanged,
     [this](bool /*topLevel*/)
     {
-      state_->setValue(Parameters::ToolBar1Position, static_cast<int>(whereIs(impl_->toolBar1_)));
+      state_->setValue(Parameters::ToolBarMainPosition, static_cast<int>(whereIs(impl_->toolBar1_)));
     });
   connect(impl_->toolBar2_, &QToolBar::topLevelChanged,
     [this](bool /*topLevel*/)
     {
-      state_->setValue(Parameters::ToolBar2Position, static_cast<int>(whereIs(impl_->toolBar2_)));
+      state_->setValue(Parameters::ToolBarRenderPosition, static_cast<int>(whereIs(impl_->toolBar2_)));
     });
 
   impl_->toolBarController_->registerDirectionButton(impl_->toolBar1_, impl_->toolBar1Position_);
