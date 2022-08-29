@@ -883,6 +883,8 @@ void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
 
 ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog) : QObject(dialog), dialog_(dialog)
 {
+  SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay.connectValueChanged([this](int) { updateDelays(); });
+  SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay.connectValueChanged([this](int) { updateDelays(); });
 }
 
 namespace
@@ -973,20 +975,18 @@ void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopu
 {
   updatePopupProperties(toolbar, popup, false);
 
-  //TODO: change to preference value
-  popup->setShowDelay(200);
-  popup->setHideDelay(200);
+  popup->setShowDelay(SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay);
+  popup->setHideDelay(SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay);
 }
 
 void ViewSceneToolBarController::updateDelays()
 {
-  //TODO: change to preference value
   for (const auto& [toolbar, popups] : toolBarPopups_)
   {
     for (auto& popup : popups)
     {
-      popup->setShowDelay(200);
-      popup->setHideDelay(200);
+      popup->setShowDelay(SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay);
+      popup->setHideDelay(SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay);
     }
   }
 }

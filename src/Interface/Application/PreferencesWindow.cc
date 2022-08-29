@@ -60,13 +60,13 @@ void PreferencesWindow::updateWidgetSelectionCorrection(int state)
 
 void PreferencesWindow::updateToolBarPopupShowDelay(int delay)
 {
-  SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay.setValue(delay);
+  SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay.setValueWithSignal(delay);
   toolBarPopupShowDelaySpinBox_->setValue(delay);
 }
 
 void PreferencesWindow::updateToolBarPopupHideDelay(int delay)
 {
-  SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay.setValue(delay);
+  SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay.setValueWithSignal(delay);
   toolBarPopupHideDelaySpinBox_->setValue(delay);
 }
 
