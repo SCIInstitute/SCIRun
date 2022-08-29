@@ -195,34 +195,59 @@ void PIConGPUReader::execute()
 
             for (size_t i_pos = 0; i_pos < 3; ++i_pos)
                 {
-                std::string dim = dimensions[i_pos];
-                auto chunk      = loadedChunks[i_pos];
-                auto chunk1     = loadedChunks1[i_pos];
+                std::string dim_str = dimensions[i_pos];
+                auto chunk          = loadedChunks[i_pos];
+                auto chunk1         = loadedChunks1[i_pos];
 /*
                 if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk.get()[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk.get()[m];
-
-                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] + chunk.get()[k];
-                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_x[i/particle_sample_rate] = chunk1.get()[i] + chunk.get()[i];
-                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_x[m/particle_sample_rate] = chunk1.get()[m] + chunk.get()[m];
 */
+                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] + chunk.get()[k];
+                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk1.get()[i] + chunk.get()[i];
+                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk1.get()[m] + chunk.get()[m];
+
                                                                      //Possible code to implements getting the real value for particle position
-                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] * pos_offset_unit_SI[k] + chunk.get()[k] * position_unit_SI[k];
-                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_x[i/particle_sample_rate] = chunk1.get()[i] * pos_offset_unit_SI[i] + chunk.get()[i] * position_unit_SI[i];
-                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_x[m/particle_sample_rate] = chunk1.get()[m] * pos_offset_unit_SI[m] + chunk.get()[m] * position_unit_SI[m];
+                if(i_pos==0)
+                    {
+//                    for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] * pos_offset_unit_SI[k] + chunk.get()[k] * position_unit_SI[k];
+                    cout << "\nDebug2; For particle dimension " << dim_str << "\n";
+                    cout << "\nDebug2; position offset of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[0] << "\n";
+                    cout << "\nDebug2; position of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[0] << "\n";
+                    cout << "\nDebug2; component_x[0] is " << component_x[0] << "\n";
+                    }
 
+                if(i_pos==1) 
+                    {
+//                    for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk1.get()[i] * pos_offset_unit_SI[i] + chunk.get()[i] * position_unit_SI[i];
+                    cout << "\nDebug2; For particle dimension " << dim_str << "\n";
+                    cout << "\nDebug2; position offset of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[0] << "\n";
+                    cout << "\nDebug2; position of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[0] << "\n";
+                    cout << "\nDebug2; component_y[0] is " << component_y[0] << "\n";
+                    }
+
+                if(i_pos==2)
+                    {
+//                    for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk1.get()[m] * pos_offset_unit_SI[m] + chunk.get()[m] * position_unit_SI[m];
+                    cout << "\nDebug2; For particle dimension " << dim_str << "\n";
+                    cout << "\nDebug2; position offset of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[0] << "\n";
+                    cout << "\nDebug2; position of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[0] << "\n";
+                    cout << "\nDebug2; component_z[0] is " << component_z[0] << "\n";
+                    }
                 }
+/*
+            auto chunk  = loadedChunks[0];
+            auto chunk1 = loadedChunks1[0];
 
+            cout << "\nDebug2; position offset of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[0] << "\n";
+            cout << "\nDebug2; position of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[0] << "\n";
 
-                cout << "\nDebug2; position offset of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[0] << "\n";
-                cout << "\nDebug2; position of particle 0 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[0] << "\n";
+            cout << "\nDebug2; position offset of particle 100 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[100] << "\n";
+            cout << "\nDebug2; position of particle 100 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[100] << "\n";
 
-                cout << "\nDebug2; position offset of particle 100 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[100] << "\n";
-                cout << "\nDebug2; position of particle 100 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[100] << "\n";
-
-                cout << "\nDebug2; position offset of particle 200 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[200] << "\n";
-                cout << "\nDebug2; position of particle 200 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[200] << "\n";
+            cout << "\nDebug2; position offset of particle 200 in Current iteration " << iteration.iterationIndex << " is " << chunk1.get()[200] << "\n";
+            cout << "\nDebug2; position of particle 200 in Current iteration " << iteration.iterationIndex << " is " << chunk.get()[200] << "\n";
+*/
 
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
