@@ -363,7 +363,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   impl_->name_ = name;
 
   impl_->buttons_ = new ViewSceneToolBarButtons;
-  impl_->controls_ = new ViewSceneControlBundle(this);
+  impl_->controls_ = new ViewSceneControlBundle(this, impl_->buttons_);
 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -557,13 +557,13 @@ void ViewSceneDialog::addLightButtons()
 {
   for (int i = 0; i < ViewSceneControlBundle::NUM_LIGHTS; ++i)
   {
-    auto* lightButton = new QPushButton();
-    if (0 == i)
-      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
-    else
-      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
+    //auto* lightButton = new QPushButton();
+    //if (0 == i)
+    //  lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
+    //else
+    //  lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
 
-    impl_->controls_->lightControls_[i] = new LightControls(this, i, lightButton);
+    //impl_->controls_->lightControls_[i] = new LightControls(this, i, lightButton);
     fixSize(impl_->controls_->lightControls_[i]);
     //addToolbarButton(lightButton, Qt::TopToolBarArea, impl_->lightControls_[i]);
   }
@@ -571,7 +571,7 @@ void ViewSceneDialog::addLightButtons()
 
 void ViewSceneDialog::addFogOptionsButton()
 {
-  impl_->controls_->fogControls_ = new FogControls(this, impl_->buttons_->fogButton_);
+  
   //addToolbarButton(impl_->fogButton_, Qt::LeftToolBarArea, impl_->fogControls_);
 }
 
@@ -582,13 +582,13 @@ void ViewSceneDialog::addMaterialOptionsButton()
 
 void ViewSceneDialog::addOrientationAxesButton()
 {
-  impl_->controls_->orientationAxesControls_ = new OrientationAxesControls(this, impl_->buttons_->orientationAxesButton_);
+  
   //addToolbarButton(orientationAxesButton, Qt::LeftToolBarArea, impl_->orientationAxesControls_);
 }
 
 void ViewSceneDialog::addScaleBarButton()
 {
-  impl_->controls_->scaleBarControls_ = new ScaleBarControls(this, impl_->buttons_->scaleBarButton_);
+  
   fixSize(impl_->controls_->scaleBarControls_);
   //addToolbarButton(scaleBarButton, Qt::LeftToolBarArea, impl_->scaleBarControls_);
 
@@ -597,7 +597,7 @@ void ViewSceneDialog::addScaleBarButton()
 
 void ViewSceneDialog::addCameraLocksButton()
 {
-  impl_->controls_->cameraLockControls_ = new CameraLockControls(this);
+  
   fixSize(impl_->controls_->cameraLockControls_);
   //addToolbarButton(cameraLocksButton, Qt::LeftToolBarArea, impl_->cameraLockControls_);
 }
@@ -657,7 +657,7 @@ void ViewSceneDialog::addScreenshotButton()
 {
 
   connect(impl_->buttons_->screenshotButton_, &QPushButton::clicked, this, &ViewSceneDialog::quickScreenshotClicked);
-  impl_->controls_->screenshotControls_ = new ScreenshotControls(this);
+  
   //addToolbarButton(screenshotButton, Qt::TopToolBarArea, impl_->screenshotControls_);
 }
 
@@ -707,7 +707,7 @@ void ViewSceneDialog::addViewBarButton()
 {
 
 
-  impl_->controls_->viewAxisChooser_ = new ViewAxisChooserControls(this);
+  
   //addToolbarButton(impl_->viewBarBtn_, Qt::TopToolBarArea, impl_->viewAxisChooser_);
   connect(impl_->buttons_->viewBarBtn_, &QPushButton::clicked, this, &ViewSceneDialog::snapToViewAxis);
 }
@@ -746,7 +746,7 @@ void ViewSceneDialog::addControlLockButton()
 void ViewSceneDialog::addClippingPlaneButton()
 {
 
-  impl_->controls_->clippingPlaneControls_ = new ClippingPlaneControls(this, impl_->buttons_->clippingPlaneButton_);
+  
   //addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea, impl_->clippingPlaneControls_);
 }
 
@@ -783,14 +783,14 @@ void ViewSceneDialog::setupScaleBar()
 void ViewSceneDialog::addInputControlButton()
 {
 
-  impl_->controls_->inputControls_ = new InputControls(this);
+  
   //addToolbarButton(inputControlButton, Qt::LeftToolBarArea, impl_->inputControls_);
 }
 
 void ViewSceneDialog::addDeveloperControlButton()
 {
 
-  impl_->controls_->developerControls_ = new DeveloperControls(this);
+  
   //addToolbarButton(devControlButton, Qt::LeftToolBarArea, impl_->developerControls_);
 }
 

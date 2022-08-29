@@ -960,12 +960,34 @@ ViewSceneToolBarButtons::ViewSceneToolBarButtons()
   cameraLocksButton_->setIcon(QPixmap(":/general/Resources/ViewScene/link.png"));
 }
 
-ViewSceneControlBundle::ViewSceneControlBundle(ViewSceneDialog* dialog)
+ViewSceneControlBundle::ViewSceneControlBundle(ViewSceneDialog* dialog, ViewSceneToolBarButtons* buttons)
 {
   objectSelectionControls_ = new ObjectSelectionControls(dialog);
   colorOptions_ = new ColorOptions(dialog);
   materialsControls_ = new MaterialsControls(dialog);
   autoRotateControls_ = new AutoRotateControls(dialog);
+  screenshotControls_ = new ScreenshotControls(dialog);
+  clippingPlaneControls_ = new ClippingPlaneControls(dialog, buttons->clippingPlaneButton_);
+  inputControls_ = new InputControls(dialog);
+  developerControls_ = new DeveloperControls(dialog);
+  viewAxisChooser_ = new ViewAxisChooserControls(dialog);
+  orientationAxesControls_ = new OrientationAxesControls(dialog, buttons->orientationAxesButton_);
+  scaleBarControls_ = new ScaleBarControls(dialog, buttons->scaleBarButton_);
+  cameraLockControls_ = new CameraLockControls(dialog);
+  fogControls_ = new FogControls(dialog, buttons->fogButton_);
+
+  for (int i = 0; i < ViewSceneControlBundle::NUM_LIGHTS; ++i)
+  {
+    auto* lightButton = new QPushButton();
+    if (0 == i)
+      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
+    else
+      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
+
+    lightControls_[i] = new LightControls(dialog, i, lightButton);
+    ModuleDialogGeneric::fixSize(lightControls_[i]);
+  }
+
 
   statusLabel_ = new QLabel("");
 }

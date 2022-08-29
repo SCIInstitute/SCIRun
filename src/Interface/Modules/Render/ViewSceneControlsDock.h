@@ -336,7 +336,7 @@ namespace Gui {
 
   struct SCISHARE ViewSceneControlBundle
   {
-    explicit ViewSceneControlBundle(ViewSceneDialog* dialog);
+    ViewSceneControlBundle(ViewSceneDialog* dialog, ViewSceneToolBarButtons* buttons);
 
     ColorOptions* colorOptions_{ nullptr };
     FogControls* fogControls_{ nullptr };

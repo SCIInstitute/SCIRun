@@ -100,6 +100,7 @@ namespace Gui {
     //TODO
     static ModuleDialogFactoryInterfaceHandle factory();
     static void setFactory(ModuleDialogFactoryInterfaceHandle f);
+    static void fixSize(QWidget* widget);
   public Q_SLOTS:
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
@@ -128,7 +129,6 @@ namespace Gui {
     void contextMenuEvent(QContextMenuEvent* e) override;
     void keyPressEvent(QKeyEvent* e) override;
     void fixSize();
-    static void fixSize(QWidget* widget);
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
