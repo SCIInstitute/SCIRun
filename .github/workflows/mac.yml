@@ -17,7 +17,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.14.0
+      uses: jurplel/install-qt-action@v3
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -75,7 +75,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.14.0
+      uses: jurplel/install-qt-action@v3
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -118,7 +118,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.14.0
+      uses: jurplel/install-qt-action@v3
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
