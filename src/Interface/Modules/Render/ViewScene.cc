@@ -440,12 +440,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
-  // state->connectSpecificStateChanged(Parameters::HorizontalToolBarPositionDefault,
-  //   [this]() {Q_EMIT horizontalToolBarPopupChanged(state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());});
-  //
-  // state->connectSpecificStateChanged(Parameters::VerticalToolBarPositionDefault,
-  //   [this]() {Q_EMIT verticalToolBarPopupChanged(state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());});
-
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -479,6 +473,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     impl_->toolBarController_ = new ViewSceneToolBarController(this);
   }
   addToolBar();
+  setupMaterials();
   setToolBarPositions();
   addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
 
@@ -553,23 +548,29 @@ void ViewSceneDialog::addToolBar()
   impl_->toolBar3_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar3_);
 
-  addObjectSelectionButton();
+  //TODO: main toolbar members
   addAutoViewButton();
+  addObjectSelectionButton();
+  addViewBarButton();
+  addControlLockButton();
   addScreenshotButton();
   addAutoRotateButton();
+
+  //TODO: render toolbar members
   addColorOptionsButton();
-  addLightButtons();
+  addOrientationAxesButton();
   addClippingPlaneButton();
   addFogOptionsButton();
   addMaterialOptionsButton();
-  addOrientationAxesButton();
+
+  addLightButtons();
   addScaleBarButton();
-  addInputControlButton();
+
+  // TODO: advanced tool bar members
   addCameraLocksButton();
+  addInputControlButton();
   addDeveloperControlButton();
-  setupMaterials();
-  addViewBarButton();
-  addControlLockButton();
+
 
   {
     impl_->toolBar1Position_ = new QPushButton();
@@ -623,7 +624,7 @@ void ViewSceneDialog::addAutoRotateButton()
   impl_->autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
   connect(impl_->autoRotateButton_, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
   auto arctrls = new AutoRotateControls(this);
-  addToolbarButton(impl_->autoRotateButton_, Qt::LeftToolBarArea, arctrls);
+  addToolbarButton(impl_->autoRotateButton_, Qt::TopToolBarArea, arctrls);
 }
 
 void ViewSceneDialog::addColorOptionsButton()
@@ -647,7 +648,7 @@ void ViewSceneDialog::addLightButtons()
 
     impl_->lightControls_[i] = new LightControls(this, i, lightButton);
     fixSize(impl_->lightControls_[i]);
-    addToolbarButton(lightButton, Qt::TopToolBarArea, impl_->lightControls_[i]);
+    addToolbarButton(lightButton, Qt::LeftToolBarArea, impl_->lightControls_[i]);
   }
 }
 
@@ -692,7 +693,7 @@ void ViewSceneDialog::addCameraLocksButton()
   cameraLocksButton->setIcon(QPixmap(":/general/Resources/ViewScene/link.png"));
   impl_->cameraLockControls_ = new CameraLockControls(this);
   fixSize(impl_->cameraLockControls_);
-  addToolbarButton(cameraLocksButton, Qt::LeftToolBarArea, impl_->cameraLockControls_);
+  addToolbarButton(cameraLocksButton, Qt::RightToolBarArea, impl_->cameraLockControls_);
 }
 
 void ViewSceneDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which, ViewSceneControlPopupWidget* widgetToPopup)
@@ -892,7 +893,7 @@ void ViewSceneDialog::addInputControlButton()
   auto* inputControlButton = new QPushButton();
   inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/mouse.png"));
   impl_->inputControls_ = new InputControls(this);
-  addToolbarButton(inputControlButton, Qt::LeftToolBarArea, impl_->inputControls_);
+  addToolbarButton(inputControlButton, Qt::RightToolBarArea, impl_->inputControls_);
 }
 
 void ViewSceneDialog::addDeveloperControlButton()
@@ -900,7 +901,7 @@ void ViewSceneDialog::addDeveloperControlButton()
   auto* devControlButton = new QPushButton();
   devControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/devel.png"));
   impl_->developerControls_ = new DeveloperControls(this);
-  addToolbarButton(devControlButton, Qt::LeftToolBarArea, impl_->developerControls_);
+  addToolbarButton(devControlButton, Qt::RightToolBarArea, impl_->developerControls_);
 }
 
 void ViewSceneDialog::pullCameraState()
