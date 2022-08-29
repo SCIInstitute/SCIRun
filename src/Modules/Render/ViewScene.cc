@@ -158,8 +158,9 @@ ALGORITHM_PARAMETER_DEF(Render, AxesSize);
 ALGORITHM_PARAMETER_DEF(Render, AxesX);
 ALGORITHM_PARAMETER_DEF(Render, AxesY);
 ALGORITHM_PARAMETER_DEF(Render, VisibleItemListState);
-ALGORITHM_PARAMETER_DEF(Render, ToolBar1Position);
-ALGORITHM_PARAMETER_DEF(Render, ToolBar2Position);
+ALGORITHM_PARAMETER_DEF(Render, ToolBarMainPosition);
+ALGORITHM_PARAMETER_DEF(Render, ToolBarRenderPosition);
+ALGORITHM_PARAMETER_DEF(Render, ToolBarAdvancedPosition);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotDirectory);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
@@ -258,8 +259,9 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesX, 100);
   state->setValue(Parameters::AxesY, 100);
 
-  state->setValue(Parameters::ToolBar1Position, 4);  //TopToolBarArea
-  state->setValue(Parameters::ToolBar2Position, 1);  //LeftToolBarArea
+  state->setValue(Parameters::ToolBarMainPosition, 4);  //TopToolBarArea
+  state->setValue(Parameters::ToolBarRenderPosition, 1);  //LeftToolBarArea
+  state->setValue(Parameters::ToolBarAdvancedPosition, 2);  //RightToolBarArea
 
   state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
 
