@@ -90,15 +90,16 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
     std::vector<float> values(numvals);
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
-/*
+
     for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
         {
         size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
         values[flat_index] = scalarFieldData_buffer.get()[flat_index];
+ //       if(j == 512 && k == 96) cout << "\nDebug: i is " << i << " and values[flat_index] is " << values[flat_index] << "\n"; //Debug
         }
+/*
+    for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];                                  //experimental encoding for numvals (didn't make any difference)
 */
-    for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];
-
     VField* ofield = ofh->vfield();
     ofield->set_values(values);
 
