@@ -108,6 +108,7 @@ ALGORITHM_PARAMETER_DEF(Render, ScaleBarMultiplier);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarNumTicks);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarLineWidth);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarFontSize);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarLineColor);
 //ALGORITHM_PARAMETER_DEF(Render, Lighting);
 //ALGORITHM_PARAMETER_DEF(Render, ShowBBox);
 // ALGORITHM_PARAMETER_DEF(Render, UseClip);
@@ -206,6 +207,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::ScaleBarNumTicks, 11);
   state->setValue(Parameters::ScaleBarLineWidth, 1.0);
   state->setValue(Parameters::ScaleBarFontSize, 8);
+  state->setValue(Parameters::ScaleBarLineColor, 1.0);
   // state->setValue(Parameters::Lighting, true);
   //state->setValue(Parameters::ShowBBox, false);
   // state->setValue(Parameters::UseClip, true);

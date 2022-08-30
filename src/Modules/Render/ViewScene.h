@@ -80,6 +80,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ScaleBarNumTicks);
         ALGORITHM_PARAMETER_DECL(ScaleBarLineWidth);
         ALGORITHM_PARAMETER_DECL(ScaleBarFontSize);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLineColor);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneEnabled);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneNormalReversed);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneX);

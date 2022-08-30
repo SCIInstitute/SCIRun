@@ -879,6 +879,7 @@ void ViewSceneDialog::setupScaleBar()
     impl_->scaleBar_.numTicks = state_->getValue(Parameters::ScaleBarNumTicks).toInt();
     impl_->scaleBar_.lineWidth = state_->getValue(Parameters::ScaleBarLineWidth).toDouble();
     impl_->scaleBar_.fontSize = state_->getValue(Parameters::ScaleBarFontSize).toInt();
+    impl_->scaleBar_.lineColor = state_->getValue(Parameters::ScaleBarLineColor).toDouble();
   }
   else
   {
@@ -890,6 +891,7 @@ void ViewSceneDialog::setupScaleBar()
     impl_->scaleBar_.numTicks = 11;
     impl_->scaleBar_.lineWidth = 1.0;
     impl_->scaleBar_.fontSize = 8;
+    impl_->scaleBar_.lineColor = 1.0;
   }
 }
 
@@ -2392,6 +2394,13 @@ void ViewSceneDialog::setScaleBarNumTicks(int value)
   setScaleBar();
 }
 
+void ViewSceneDialog::setScaleBarLineColor(double value)
+{
+  impl_->scaleBar_.lineColor = value;
+  state_->setValue(Parameters::ScaleBarLineColor, value);
+  setScaleBar();
+}
+
 void ViewSceneDialog::setScaleBarLineWidth(double value)
 {
   impl_->scaleBar_.lineWidth = value;
@@ -2496,7 +2505,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   }
 
   ss.str("");
-  ss << "_scaleBar::" << impl_->scaleBar_.fontSize << impl_->scaleBar_.length << impl_->scaleBar_.height << impl_->scaleBar_.numTicks << impl_->scaleBar_.projLength;
+  ss << "_scaleBar::" << impl_->scaleBar_.fontSize << impl_->scaleBar_.length << impl_->scaleBar_.height << impl_->scaleBar_.numTicks << impl_->scaleBar_.projLength << impl_->scaleBar_.lineColor;
   auto uniqueNodeID = ss.str();
   auto vboName = uniqueNodeID + "VBO";
   auto iboName = uniqueNodeID + "IBO";
@@ -2508,7 +2517,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   attribs.emplace_back("aPos", 3 * sizeof(float));
   std::vector<SpireSubPass::Uniform> uniforms;
   uniforms.emplace_back("uTrans", glm::vec4(1.9, 0.1, 0.0, 0.0));
-  uniforms.emplace_back("uColor", glm::vec4(1.0));
+  uniforms.emplace_back("uColor", glm::vec4(impl_->scaleBar_.lineColor));
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, BBox(Point{}, Point{}), true);
 

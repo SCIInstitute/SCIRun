@@ -154,6 +154,7 @@ void ScaleBarControls::setScaleBarValues(const ScaleBarData& scale)
   scaleBarMultiplierDoubleSpinBox_->setValue(scale.multiplier);
   numTicksSpinBox_->setValue(scale.numTicks);
   scaleBarUnitLineEdit_->setText(QString::fromStdString(scale.unit));
+  grayLineColorDoubleSpinBox_->setValue(scale.lineColor);
   if (scale.visible)
     updateToolbarButton(ScaleBarControls::buttonOutlineColor);
 }
@@ -610,6 +611,7 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
   connect(scaleBarHeightDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarHeight);
   connect(numTicksSpinBox_, qOverload<int>(&QSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarNumTicks);
   connect(scaleBarMultiplierDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarMultiplier);
+  connect(grayLineColorDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarLineColor);
   connect(scaleBarUnitLineEdit_, &QLineEdit::textEdited, parent, &ViewSceneDialog::setScaleBarUnitValue);
 }
 

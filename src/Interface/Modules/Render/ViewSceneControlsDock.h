@@ -212,7 +212,7 @@ namespace Gui {
   {
     bool visible;
     int fontSize;
-    double length, height, multiplier, numTicks, lineWidth;
+    double length, height, multiplier, numTicks, lineWidth, lineColor;
     std::string unit;
     double projLength;
   };
