@@ -95,6 +95,7 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
         {
         size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
         values[flat_index] = scalarFieldData_buffer.get()[flat_index];
+        if (flat_index < 10) cout << "Debug: flat_index is " << flat_index << "\n";                                             //Debug
  //       if(j == 512 && k == 96) cout << "\nDebug: i is " << i << " and values[flat_index] is " << values[flat_index] << "\n"; //Debug
         }
 /*
