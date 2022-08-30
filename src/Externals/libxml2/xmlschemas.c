@@ -2194,7 +2194,7 @@ xmlSchemaComplexTypeErr(xmlSchemaAbstractCtxtPtr actxt,
     xmlChar *str = NULL, *msg = NULL;
     xmlChar *localName, *nsName;
     const xmlChar *cur, *end;
-    int i, is_not;
+    int i;
 
     xmlSchemaFormatNodeForError(&msg, actxt, node);
     msg = xmlStrcat(msg, (const xmlChar *) message);
@@ -2217,11 +2217,11 @@ xmlSchemaComplexTypeErr(xmlSchemaAbstractCtxtPtr actxt,
 	        continue;
 	    if ((cur[0] == 'n') && (cur[1] == 'o') && (cur[2] == 't') &&
 	        (cur[3] == ' ')) {
-	        is_not = 1;
+	        //is_not = 1;
 		cur += 4;
 		str = xmlStrcat(str, BAD_CAST "##other");
 	    } else {
-	        is_not = 0;
+	        //is_not = 0;
 	    }
 	    /*
 	    * Get the local name.
@@ -7165,7 +7165,7 @@ xmlSchemaCheckCSelectorXPath(xmlSchemaParserCtxtPtr ctxt,
 	*/
 	if (nsList != NULL) {
 	    int i, count = 0;
-	    xmlNsPtr ns;
+	    //xmlNsPtr ns;
 
 	    for (i = 0; nsList[i] != NULL; i++)
 		count++;
@@ -7178,7 +7178,7 @@ xmlSchemaCheckCSelectorXPath(xmlSchemaParserCtxtPtr ctxt,
 		return (-1);
 	    }
 	    for (i = 0; i < count; i++) {
-		ns = nsList[i];
+		//ns = nsList[i];
 		nsArray[2 * i] = nsList[i]->href;
 		nsArray[2 * i + 1] = nsList[i]->prefix;
 	    }
@@ -10053,7 +10053,7 @@ xmlSchemaParseIncludeOrRedefine(xmlSchemaParserCtxtPtr pctxt,
 {
     xmlNodePtr child = NULL;
     const xmlChar *schemaLocation = NULL;
-    int res = 0, /* docRes = 0, located = 0, */ hasRedefinitions = 0;
+    int res = 0 /*, docRes = 0, located = 0, hasRedefinitions = 0*/;
     int isChameleon = 0, wasChameleon = 0;
     xmlSchemaBucketPtr bucket = NULL;
 
@@ -10219,15 +10219,15 @@ xmlSchemaParseIncludeOrRedefine(xmlSchemaParserCtxtPtr pctxt,
 		    xmlSchemaParseSimpleType(pctxt, schema, child, 1);
 		} else if (IS_SCHEMA(child, "complexType")) {
 		    xmlSchemaParseComplexType(pctxt, schema, child, 1);
-		    hasRedefinitions = 1;
+		    //hasRedefinitions = 1;
 		} else if (IS_SCHEMA(child, "group")) {
 		    TODO
-		    hasRedefinitions = 1;
+		    //hasRedefinitions = 1;
 		    /* xmlSchemaParseModelGroupDefinition(pctxt,
 			schema, child); */
 		} else if (IS_SCHEMA(child, "attributeGroup")) {
 		    TODO
-		    hasRedefinitions = 1;
+		    //hasRedefinitions = 1;
 		    /* xmlSchemaParseAttributeGroup(pctxt, schema,
 			child, 1); */
 		}
@@ -12060,7 +12060,7 @@ static void
 xmlSchemaBuildContentModel(xmlSchemaTypePtr type,
 			   xmlSchemaParserCtxtPtr ctxt)
 {
-    xmlAutomataStatePtr start;
+    //xmlAutomataStatePtr start;
 
     if ((type->type != XML_SCHEMA_TYPE_COMPLEX) ||
 	(type->contModel != NULL) ||
@@ -12079,7 +12079,8 @@ xmlSchemaBuildContentModel(xmlSchemaTypePtr type,
 	    "Cannot create automata for complex type %s\n", type->name);
         return;
     }
-    start = ctxt->state = xmlAutomataGetInitState(ctxt->am);
+    //start =
+    ctxt->state = xmlAutomataGetInitState(ctxt->am);
     xmlSchemaBuildAContentModel(ctxt, (xmlSchemaParticlePtr) type->subtypes);
     xmlAutomataSetFinalState(ctxt->am, ctxt->state);
     type->contModel = xmlAutomataCompile(ctxt->am);
@@ -13169,11 +13170,12 @@ xmlSchemaBuildAttributeValidation(xmlSchemaParserCtxtPtr pctxt,
     xmlSchemaAttributeLinkPtr cur, base, tmp, id = NULL,
 	prev = NULL, localUses = NULL, lastUse = NULL, lastBaseUse = NULL;
     xmlSchemaAttributePtr attrs;
-    xmlSchemaTypePtr anyType;
+    //xmlSchemaTypePtr anyType;
     xmlChar *str = NULL;
     int err = 0, hasProhibitions = 0;
 
-    anyType = xmlSchemaGetBuiltInType(XML_SCHEMAS_ANYTYPE);
+    //anyType =
+    xmlSchemaGetBuiltInType(XML_SCHEMAS_ANYTYPE);
     /*
      * Complex Type Definition with complex content Schema Component.
      *
@@ -13544,7 +13546,7 @@ inherit_start:
 	if (IS_ANYTYPE(baseType)) {
 	    type->attributeUses = localUses;
 	} else {
-	    int found, valid;
+	    int found;
 	    const xmlChar *bEffValue;
 	    int effFixed;
 
@@ -13556,7 +13558,7 @@ inherit_start:
 		    continue;
 		}
 		found = 0;
-		valid = 1;
+		//valid = 1;
 		base = type->attributeUses;
 		while (base != NULL) {
 		    if (xmlStrEqual(xmlSchemaGetAttrName(cur->attr),
@@ -16133,7 +16135,7 @@ xmlSchemaDeriveAndValidateFacets(xmlSchemaParserCtxtPtr pctxt,
 	bfmaxlen = NULL, bfminlen = NULL, /* facets of the base type */
 	bfmininc = NULL, bfmaxinc = NULL,
 	bfminexc = NULL, bfmaxexc = NULL;
-    int res, err = 0, fixedErr;
+    int res;
 
     /*
     * SPEC st-restrict-facets 1:
@@ -16217,7 +16219,7 @@ xmlSchemaDeriveAndValidateFacets(xmlSchemaParserCtxtPtr pctxt,
 		break;
 	}
     }
-    err = 0;
+    //err = 0;
     /*
     * length and minLength or maxLength (2.2) + (3.2)
     */
@@ -16599,8 +16601,8 @@ xmlSchemaDeriveAndValidateFacets(xmlSchemaParserCtxtPtr pctxt,
 	* Search for a duplicate facet in the current type.
 	*/
 	link = type->facetSet;
-	err = 0;
-	fixedErr = 0;
+	//err = 0;
+	//fixedErr = 0;
 	while (link != NULL) {
 	    facet = link->facet;
 	    if (facet->type == bfacet->type) {
@@ -21621,7 +21623,7 @@ xmlSchemaVCheckCVCSimpleType(xmlSchemaAbstractCtxtPtr actxt,
 {
     int ret = 0, valNeeded = (retVal) ? 1 : 0;
     xmlSchemaValPtr val = NULL;
-    xmlSchemaWhitespaceValueType ws;
+    //xmlSchemaWhitespaceValueType ws;
     xmlChar *normValue = NULL;
 
 #define NORMALIZE(atype) \
@@ -21706,7 +21708,8 @@ xmlSchemaVCheckCVCSimpleType(xmlSchemaAbstractCtxtPtr actxt,
 			value, &val, valNeeded);
 		    break;
 		default:
-		    ws = xmlSchemaGetWhiteSpaceFacetValue(type);
+		    //ws =
+                xmlSchemaGetWhiteSpaceFacetValue(type);
 		    if (valNeeded)
 			ret = xmlSchemaValPredefTypeNodeNoNorm(biType,
 			    value, &val, NULL);
@@ -21723,7 +21726,8 @@ xmlSchemaVCheckCVCSimpleType(xmlSchemaAbstractCtxtPtr actxt,
 			value, &val, valNeeded);
 		    break;
 		default:
-		    ws = xmlSchemaGetWhiteSpaceFacetValue(type);
+		    //ws =
+                xmlSchemaGetWhiteSpaceFacetValue(type);
 		    if (valNeeded)
 			ret = xmlSchemaValPredefTypeNodeNoNorm(biType,
 			    value, &val, node);
@@ -22767,7 +22771,7 @@ xmlSchemaVAttributesComplex(xmlSchemaValidCtxtPtr vctxt)
 	}
 
 	if (fixed) {
-	    int ws;
+	    //int ws;
 	    /*
 	    * SPEC Attribute Locally Valid (Use) (cvc-au)
 	    * "For an attribute information item to be�valid�
@@ -22784,7 +22788,8 @@ xmlSchemaVAttributesComplex(xmlSchemaValidCtxtPtr vctxt)
 	    * (4) "The item's *actual* value� must match the *value* of
 	    * the {value constraint}, if it is present and fixed."
 	    */
-	    ws = xmlSchemaGetWhiteSpaceFacetValue(attr->typeDef);
+	    //ws =
+        xmlSchemaGetWhiteSpaceFacetValue(attr->typeDef);
 	    if (attr->val == NULL) {
 		/* VAL TODO: A value was not precomputed. */
 		TODO

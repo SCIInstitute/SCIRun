@@ -766,7 +766,6 @@ bool find_normal2_v(SCIRun::ArrayMathProgramCode& pc)
   {
     double a0,a1,a2;
     double b0,b1,b2;
-    double c0,c1,c2;
     a0 = std::fabs(data1[0]);
     a1 = std::fabs(data1[1]);
     a2 = std::fabs(data1[2]);
@@ -791,8 +790,7 @@ bool find_normal2_v(SCIRun::ArrayMathProgramCode& pc)
        b0 = -data1[2]; b1 = -data1[2]; b2 = data1[0]+data1[1];
       }
 
-      double s = 1.0/::sqrt(b0*b0+b1*b1+b2*b2);
-      c0 = b0*s; c1 = b1*s; c2 = b2*s;
+      //double s = 1.0/::sqrt(b0*b0+b1*b1+b2*b2);
 
       data0[0] = a1*b2-a2*b1;
       data0[1] = a2*b0-a0*b2;

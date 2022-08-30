@@ -1945,9 +1945,9 @@ xmlCharEncOutFunc(xmlCharEncodingHandler *handler, xmlBufferPtr out,
                   xmlBufferPtr in) {
     int ret = -2;
     int written;
-    int writtentot = 0;
+    //int writtentot = 0;
     int toconv;
-    int output = 0;
+    //int output = 0;
 
     if (handler == NULL) return(-1);
     if (out == NULL) return(-1);
@@ -2002,7 +2002,7 @@ retry:
 	                      in->content, &toconv);
 	xmlBufferShrink(in, toconv);
 	out->use += written;
-	writtentot += written;
+	//writtentot += written;
 	out->content[out->use] = 0;
     }
 #ifdef LIBXML_ICONV_ENABLED
@@ -2030,7 +2030,7 @@ retry:
 	return(-1);
     }
 
-    if (ret >= 0) output += ret;
+    //if (ret >= 0) output += ret;
 
     /*
      * Attempt to handle error cases

@@ -38,6 +38,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowAndEditDipoles.ui
   ShowMeshBoundingBox.ui
   ShowOrientationAxes.ui
+  ShowUncertaintyGlyphs.ui
   GeometryBuffer.ui
   ReportColorMapInfo.ui
 )
@@ -55,6 +56,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowAndEditDipolesDialog.h
   ShowMeshBoundingBoxDialog.h
   ShowOrientationAxesDialog.h
+  ShowUncertaintyGlyphsDialog.h
   GeometryBufferDialog.h
   ReportColorMapInfoDialog.h
 )
@@ -71,6 +73,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowAndEditDipolesDialog.cc
   ShowMeshBoundingBoxDialog.cc
   ShowOrientationAxesDialog.cc
+  ShowUncertaintyGlyphsDialog.cc
   GeometryBufferDialog.cc
   ReportColorMapInfoDialog.cc
 )

@@ -226,14 +226,13 @@ RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
   mesh->begin(bi); mesh->end(ei);
 
   unsigned int cnt = 0;
-  unsigned int loopcnt = 0;
 
   VMesh::Elem::size_type sz; mesh->size(sz);
 
 
   while (bi != ei)
   {
-			cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0;}// algo->update_progress(loopcnt,sz);  }
+			cnt++; if (cnt == 100) { cnt = 0;}// algo->update_progress(loopcnt,sz);  }
     mesh->get_nodes(onodes, *bi);
     mesh->get_edges(oedges, *bi);
 
