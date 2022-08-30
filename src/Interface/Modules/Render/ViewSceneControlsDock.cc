@@ -783,6 +783,21 @@ void LightControls::resetAngles()
     lightInclinationSlider_->setValue(90);
 }
 
+CompositeLightControls::CompositeLightControls(ViewSceneDialog* parent, const std::vector<LightControls*>& secondaryLights)
+  : ViewSceneControlPopupWidget(parent), lights_(secondaryLights)
+{
+  tabs_ = new QTabWidget(this);
+  WidgetStyleMixin::tabStyle(tabs_);
+  int i = 0;
+  for (auto& light : lights_)
+  {
+    tabs_->addTab(light, "Secondary light #" + QString::number(++i));
+  }
+  auto layout = new QHBoxLayout;
+  setLayout(layout);
+  layout->addWidget(tabs_);
+}
+
 QColor LightButtonUpdater::color() const
 {
   return lightColor_;

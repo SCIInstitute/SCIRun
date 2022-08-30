@@ -294,6 +294,16 @@ namespace Gui {
     void lightColorUpdated() override;
   };
 
+  class SCISHARE CompositeLightControls : public ViewSceneControlPopupWidget
+  {
+    Q_OBJECT
+  public:
+    explicit CompositeLightControls(ViewSceneDialog* parent, const std::vector<LightControls*>& secondaryLights);
+  private:
+    std::vector<LightControls*> lights_;
+    QTabWidget* tabs_;
+  };
+
   class SCISHARE ViewAxisChooserControls : public ViewSceneControlPopupWidget, public Ui::ViewAxisChooser
   {
     Q_OBJECT

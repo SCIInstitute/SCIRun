@@ -177,7 +177,8 @@ namespace Gui {
     CameraLockControls* cameraLockControls_{nullptr};
     DeveloperControls* developerControls_{nullptr};
     static constexpr int NUM_LIGHTS = 4;
-    LightControls* lightControls_[NUM_LIGHTS];
+    std::array<LightControls*, NUM_LIGHTS> lightControls_;
+    CompositeLightControls* secondaryLightControlContainer_{nullptr};
     QLabel* statusLabel_{nullptr};
     QPushButton* autoRotateButton_{nullptr};
     QPushButton* fogButton_{nullptr};
@@ -641,15 +642,19 @@ void ViewSceneDialog::addLightButtons()
   for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
   {
     auto* lightButton = new QPushButton();
-    if (0 == i)
-      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
-    else
-      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
-
     impl_->lightControls_[i] = new LightControls(this, i, lightButton);
     fixSize(impl_->lightControls_[i]);
-    addToolbarButton(lightButton, Qt::LeftToolBarArea, impl_->lightControls_[i]);
+
+    if (0 == i)
+    {
+      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
+      addToolbarButton(lightButton, Qt::LeftToolBarArea, impl_->lightControls_[i]);
+    }
   }
+  auto* secondaryLightButton = new QPushButton();
+  secondaryLightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
+  impl_->secondaryLightControlContainer_ = new CompositeLightControls(this, {impl_->lightControls_.begin() + 1, impl_->lightControls_.end()});
+  addToolbarButton(secondaryLightButton, Qt::LeftToolBarArea, impl_->secondaryLightControlContainer_);
 }
 
 void ViewSceneDialog::addFogOptionsButton()
