@@ -930,6 +930,7 @@ PopupProperties popupPropertiesFor(Qt::Orientation toolbarOrientation, Qt::ToolB
       }
     }
   }
+  return {};
 }
 
 QStyle::StandardPixmap oppositeArrow(const QPushButton* button)

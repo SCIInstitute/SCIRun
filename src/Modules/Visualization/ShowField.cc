@@ -534,8 +534,8 @@ void GeometryBuilder::renderFacesLinear(
   bool isScalar = fld->is_scalar();
   bool isVector = fld->is_vector();
   bool isTensor = fld->is_tensor();
-  int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
-  colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
+  //int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
+  //colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
 

@@ -177,7 +177,6 @@ FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
-  bool has_header = false;
   bool first_line = true;
 
   std::vector<double> values;
@@ -212,11 +211,11 @@ FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
           {
             if (line_ncols == 1)
             {
-              has_header = true;
+              //has_header = true;
             }
             else if ((line_ncols == 3)||(line_ncols == 2))
             {
-              has_header = false;
+              //has_header = false;
               first_line = false;
               nrows++;
               ncols = line_ncols;
@@ -296,11 +295,11 @@ FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
           {
             if (line_ncols == 1)
             {
-              has_header = true;
+              //has_header = true;
             }
             else if (line_ncols > 1)
             {
-              has_header = false;
+              //has_header = false;
               first_line = false;
               nrows++;
               ncols = line_ncols;

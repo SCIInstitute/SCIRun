@@ -152,6 +152,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runMorph(FieldHandle input, F
   icors1->size(num_cors1);
   icors2->size(num_cors2);
   imesh->size(num_pts);
+  const auto num_cors1i = static_cast<int>(num_cors1);
 
   std::vector<double> coefs;//(3*num_cors1+9);
   std::vector<double> rside;//(3*num_cors1+9);
@@ -247,10 +248,10 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runMorph(FieldHandle input, F
     Bm(3, L1) = 1;
 
     //vertical x,y,z
-    Bm(L1 + 4, num_cors1) = P.x();
-    Bm(L1 + 4, num_cors1 + 1) = P.y();
-    Bm(L1 + 4, num_cors1 + 2) = P.z();
-    Bm(L1 + 4, num_cors1 + 3) = 1;
+    Bm(L1 + 4, num_cors1i) = P.x();
+    Bm(L1 + 4, num_cors1i + 1) = P.y();
+    Bm(L1 + 4, num_cors1i + 2) = P.z();
+    Bm(L1 + 4, num_cors1i + 3) = 1;
   }
 
   for (int L1 = num_cors1; L1 < num_cors1 + 4; ++L1)
@@ -294,14 +295,14 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runMorph(FieldHandle input, F
   {
     for (int j = 0; j < (num_cors1 + 4); ++j)
     {
-      BigMat(num_cors1 + 4 + i, num_cors1 + 4 + j) = Bm(i, j);
+      BigMat(num_cors1i + 4 + i, num_cors1i + 4 + j) = Bm(i, j);
     }
   }
   for (int i = 0; i < (num_cors1 + 4); ++i)
   {
     for (int j = 0; j < (num_cors1 + 4); ++j)
     {
-      BigMat(2 * num_cors1 + 8 + i, 2 * num_cors1 + 8 + j) = Bm(i, j);
+      BigMat(2 * num_cors1i + 8 + i, 2 * num_cors1i + 8 + j) = Bm(i, j);
     }
   }
 
@@ -962,8 +963,6 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runNone(FieldHandle input, Fi
     return nullptr;
   }
 
-  FieldHandle input_cp;
-
   output.reset(input->deep_clone());
 
   if (!output)
@@ -971,11 +970,6 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runNone(FieldHandle input, Fi
     error("Could not allocate output field");
     return nullptr;
   }
-
-  VMesh* imesh = input->vmesh();
-  VMesh* omesh = output->vmesh();
-
-  omesh = imesh;
 
   return makeShared<DenseMatrix>(Eigen::MatrixXd::Identity(4,4));
 

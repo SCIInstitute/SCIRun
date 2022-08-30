@@ -680,20 +680,17 @@ void GetSliceFromStructuredFieldByIndices::execute()
       if (imesh->is_regularmesh())
       {
         Transform trans = imesh->get_transform();
-        double offset = 0.0;
         if (axis == 0)
         {
           trans.post_permute(2, 3, 1);
-          offset = index / (double)old_i;
         }
         else if (axis == 1)
         {
           trans.post_permute(1, 3, 2);
-          offset = index / (double)old_j;
         }
         else
         {
-          offset = index / (double)old_k;
+          //offset = index / (double)old_k;
         }
         trans.post_translate(Vector(0.0, 0.0, index));
 
