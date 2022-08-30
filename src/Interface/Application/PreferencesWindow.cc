@@ -49,8 +49,8 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   connect(viewerWidgetSelectionCorrectionCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateWidgetSelectionCorrection);
   connect(autoRotateViewerOnMouseReleaseCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateAutoRotateViewer);
   connect(moduleExecuteDownstreamOnlyCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleExecuteDownstream);
-  connect(toolBarPopupShowDelaySpinBox_, &QSpinBox::valueChanged, this, &PreferencesWindow::updateToolBarPopupShowDelay);
-  connect(toolBarPopupHideDelaySpinBox_, &QSpinBox::valueChanged, this, &PreferencesWindow::updateToolBarPopupHideDelay);
+  connect(toolBarPopupShowDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupShowDelay);
+  connect(toolBarPopupHideDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupHideDelay);
 }
 
 void PreferencesWindow::updateWidgetSelectionCorrection(int state)
