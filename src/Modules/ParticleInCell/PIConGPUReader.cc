@@ -90,12 +90,14 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
     std::vector<float> values(numvals);
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
-
+/*
     for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
         {
         size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
         values[flat_index] = scalarFieldData_buffer.get()[flat_index];
         }
+*/
+    for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];
 
     VField* ofield = ofh->vfield();
     ofield->set_values(values);
@@ -176,11 +178,11 @@ void PIConGPUReader::execute()
                 loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
                 extents[i_dim]       = rc.getExtent();
 
-                position_unit_SI[i_dim]   = rc.unitSI();                                                               //2 lines, reference 25 August email from Franz
-                cout << "\nDebug; position_unit_SI[" << i_dim << "] is " << position_unit_SI[i_dim] << "\n";           //Debug seeing exactly what we are getting here
+//                position_unit_SI[i_dim]   = rc.unitSI();                                                               //2 lines, reference 25 August email from Franz
+//                cout << "\nDebug; position_unit_SI[" << i_dim << "] is " << position_unit_SI[i_dim] << "\n";           //Debug seeing exactly what we are getting here
 
-                pos_offset_unit_SI[i_dim] = rc1.unitSI();
-                cout << "\nDebug; pos_offset_unit_SI[" << i_dim << "] is " << pos_offset_unit_SI[i_dim] << "\n";       //Debug seeing exactly what we are getting here
+//                pos_offset_unit_SI[i_dim] = rc1.unitSI();
+//                cout << "\nDebug; pos_offset_unit_SI[" << i_dim << "] is " << pos_offset_unit_SI[i_dim] << "\n";       //Debug seeing exactly what we are getting here
                 }
 
             iteration.seriesFlush();                                 //Data is now available
