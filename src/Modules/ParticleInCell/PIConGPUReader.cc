@@ -91,16 +91,8 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
     FieldHandle ofh = CreateField(lfi,mesh);
 
-    for (size_t i = 0; i < extent_sFD[0]; ++i) for (size_t j = 0; j < extent_sFD[1]; ++j) for (size_t k = 0; k < extent_sFD[2]; ++k)
-        {
-        size_t flat_index = i * extent_sFD[1] * extent_sFD[2] + j * extent_sFD[2] + k;
-        values[flat_index] = scalarFieldData_buffer.get()[flat_index];
-        if (flat_index < 10) cout << "Debug: flat_index is " << flat_index << "\n";                                             //Debug
- //       if(j == 512 && k == 96) cout << "\nDebug: i is " << i << " and values[flat_index] is " << values[flat_index] << "\n"; //Debug
-        }
-/*
-    for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];                                  //experimental encoding for numvals (didn't make any difference)
-*/
+    for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];
+
     VField* ofield = ofh->vfield();
     ofield->set_values(values);
 
@@ -160,10 +152,10 @@ void PIConGPUReader::execute()
             int particle_sample_rate  = 10;
                                                                      //Read particle data
             Record particlePositions       = iteration.particles[particle_type]["position"];
-            Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];                     //reference 25 August email from Franz
+            Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];                     //see 25 August email from Franz
 
             std::array<std::shared_ptr<position_t>, 3> loadedChunks;
-            std::array<std::shared_ptr<int>,        3> loadedChunks1;                                                  //reference 25 August email from Franz
+            std::array<std::shared_ptr<int>,        3> loadedChunks1;
             std::array<Extent,                      3> extents;
             std::array<std::string,                 3> const dimensions{{"x", "y", "z"}};
 
@@ -174,17 +166,14 @@ void PIConGPUReader::execute()
                 {
                 std::string dim_str  = dimensions[i_dim];
                 RecordComponent rc   = particlePositions[dim_str];
-                RecordComponent rc1  = particlePositionOffsets[dim_str];                                               //reference 25 August email from Franz 
+                RecordComponent rc1  = particlePositionOffsets[dim_str];
 
                 loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
                 loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
                 extents[i_dim]       = rc.getExtent();
 
-//                position_unit_SI[i_dim]   = rc.unitSI();                                                               //2 lines, reference 25 August email from Franz
-//                cout << "\nDebug; position_unit_SI[" << i_dim << "] is " << position_unit_SI[i_dim] << "\n";           //Debug seeing exactly what we are getting here
-
+//                position_unit_SI[i_dim]   = rc.unitSI();           //Units correction for position and position offset are not currently used
 //                pos_offset_unit_SI[i_dim] = rc1.unitSI();
-//                cout << "\nDebug; pos_offset_unit_SI[" << i_dim << "] is " << pos_offset_unit_SI[i_dim] << "\n";       //Debug seeing exactly what we are getting here
                 }
 
             iteration.seriesFlush();                                 //Data is now available
