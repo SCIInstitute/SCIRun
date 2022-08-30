@@ -738,6 +738,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
   auto nnodes = auto_P.rows();
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
 
+    std::cout<<"mult: "<< mult <<std::endl;
   VMesh::Node::array_type nodes;
   DenseMatrix coef(1, 3);
 
@@ -765,11 +766,13 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
         Vector v3 = hsurf->get_point(nodes[2]) - pp;
 
         getOmega(v1, v2, v3, coef);
-
+//      std::cout<<"index: "<< ppi << ", "<< *fi << " (" << nodes[0] << ", " << nodes[1] << ", " << nodes[2] << "). Omega: " << coef <<std::endl;
         for (i=0; i<3; ++i)
           auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))-=coef(0,i)*mult;
       }
     }
+      for (VMesh::Node::index_type i=0; i < *nie; i++)
+      std::cout<<"index: "<< ppi << ", "<< i << ". Omega: " << auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(i)) <<std::endl;
   }
 
   //! accounting for autosolid angle
@@ -777,6 +780,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
   for (i=0; i<nnodes; ++i)
   {
     auto_P(i,i) = out_cond - sumOfRows(i);
+      std::cout<< "sum of rows: (" << i <<") " << sumOfRows(i) << std::endl;
   }
 }
 
@@ -1021,12 +1025,27 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   }
 }
 
-static void printInfo(const DenseMatrix&, const std::string&)
+static void printInfo(const DenseMatrix& m , const std::string& name)
 {
-#if 0
+#if 1
   std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
   std::cout << name << " min: " << m.minCoeff() << std::endl;
   std::cout << name << " max: " << m.maxCoeff() << std::endl;
+    bool nan_check = m.array().isNaN().any();
+//    std::cout << name < " nans: " << std::string(nan_check) << std::endl;
+    std::cout << nan_check << std::endl;
+#endif
+}
+
+static void saveMatrix(const DenseMatrix& m , const std::string& name)
+{
+#if 1
+    std::ofstream file(name);
+  if (file.is_open())
+  {
+    file << m << "\n";
+      file.close();
+  }
 #endif
 }
 
@@ -1104,6 +1123,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   }
 
   printInfo(EE.matrix(), "EE");
+    saveMatrix(EE.matrix(), "EE_mat.txt");
 
   std::vector<int> sourceFieldNodeSize(sourcefieldindices.size());
   auto sourceFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.source; });
@@ -1140,6 +1160,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   }
 
   printInfo(EJ.matrix(), "EJ");
+    saveMatrix(EJ.matrix(), "EJ_mat.txt");
 
   // This needs to be checked.  It was taken out because the deflation was producing errors
   // Jeroen's matlab code, which was the basis of this code, only does a defation in test cases.
@@ -1168,6 +1189,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
   printInfo(Pmm.matrix(), "Pmm");
+    saveMatrix(Pmm.matrix(), "Pmm_mat.txt");
 
   // Pss:
   DenseBlockMatrix Pss(sourceFieldNodeSize, sourceFieldNodeSize);
@@ -1179,6 +1201,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
   printInfo(Pss.matrix(), "Pss");
+    saveMatrix(Pss.matrix(), "Pss_mat.txt");
 
   // Pms:
   DenseBlockMatrix Pms(measurementNodeSize, sourceFieldNodeSize);
@@ -1190,6 +1213,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
   printInfo(Pms.matrix(), "Pms");
+    saveMatrix(Pms.matrix(), "Pms_mat.txt");
 
 
   // Psm:
@@ -1202,6 +1226,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
   printInfo(Psm.matrix(), "Psm");
+    saveMatrix(Psm.matrix(), "Psm_mat.txt");
 
   // Split EJ apart into Gms and Gss (see ALL-CAPS note above about differences in block row vs column indexing in EJ matrix)
   // -----------------------------------------------
@@ -1215,6 +1240,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
   printInfo(Gms.matrix(), "Gms");
+    saveMatrix(Gms.matrix(), "Gms_mat.txt");
 
   // Gss:
   DenseBlockMatrix Gss(sourceFieldNodeSize, sourceFieldNodeSize);
@@ -1226,6 +1252,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
   printInfo(Gss.matrix(), "Gss");
+    saveMatrix(Gss.matrix(), "Gss_mat.txt");
 
   // TODO: add deflation step
 
@@ -1235,8 +1262,17 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   auto Y = Gms.matrix() * Gss.matrix().inverse();
   auto C = Pmm.matrix() - Y * Psm.matrix();
   auto D = Y * Pss.matrix() - Pms.matrix();
+    
+    printInfo(Y, "Y");
+    printInfo(C, "C");
+    printInfo(D, "D");
+
+    saveMatrix(Y, "Y_mat.txt");
+    saveMatrix(C, "C_mat.txt");
+    saveMatrix(D, "D_mat.txt");
 
   auto T = C.inverse() * D; // T = inv(C)*D
+    printInfo(T,"T");
   return makeShared<DenseMatrix>(T);
 
   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
