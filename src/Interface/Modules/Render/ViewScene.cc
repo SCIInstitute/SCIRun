@@ -161,6 +161,7 @@ namespace Gui {
     Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
     QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
     QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
+    QToolBar*                             toolBar3_                      {nullptr};  ///< Tool bar.
     QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
     QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
     ColorOptions* colorOptions_{ nullptr };
@@ -176,7 +177,8 @@ namespace Gui {
     CameraLockControls* cameraLockControls_{nullptr};
     DeveloperControls* developerControls_{nullptr};
     static constexpr int NUM_LIGHTS = 4;
-    LightControls* lightControls_[NUM_LIGHTS];
+    std::array<LightControls*, NUM_LIGHTS> lightControls_;
+    CompositeLightControls* secondaryLightControlContainer_{nullptr};
     QLabel* statusLabel_{nullptr};
     QPushButton* autoRotateButton_{nullptr};
     QPushButton* fogButton_{nullptr};
@@ -225,6 +227,7 @@ namespace Gui {
     QPushButton*                                      viewBarBtn_         {nullptr};
     QPushButton* toolBar1Position_ {nullptr};
     QPushButton* toolBar2Position_ {nullptr};
+    QPushButton* toolBar3Position_ {nullptr};
 
     std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
 
@@ -438,12 +441,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
-  // state->connectSpecificStateChanged(Parameters::HorizontalToolBarPositionDefault,
-  //   [this]() {Q_EMIT horizontalToolBarPopupChanged(state_->getValue(Parameters::HorizontalToolBarPositionDefault).toBool());});
-  //
-  // state->connectSpecificStateChanged(Parameters::VerticalToolBarPositionDefault,
-  //   [this]() {Q_EMIT verticalToolBarPopupChanged(state_->getValue(Parameters::VerticalToolBarPositionDefault).toBool());});
-
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -468,11 +465,16 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     impl_->toolBar2_->setMovable(true);
     impl_->toolBar2_->setFloatable(true);
 
+    impl_->toolBar3_ = new QToolBar;
+    impl_->toolBar3_->setMovable(true);
+    impl_->toolBar3_->setFloatable(true);
+
     layout()->addWidget(impl_->toolbarHolder_);
 
     impl_->toolBarController_ = new ViewSceneToolBarController(this);
   }
   addToolBar();
+  setupMaterials();
   setToolBarPositions();
   addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
 
@@ -507,23 +509,31 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 
 void ViewSceneDialog::setToolBarPositions()
 {
-  auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar1Position).toInt());
-  auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBar2Position).toInt());
+  auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarMainPosition).toInt());
+  auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarRenderPosition).toInt());
+  auto toolBar3Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarAdvancedPosition).toInt());
   impl_->toolbarHolder_->addToolBar(toolBar1Position, impl_->toolBar1_);
   impl_->toolbarHolder_->addToolBar(toolBar2Position, impl_->toolBar2_);
+  impl_->toolbarHolder_->addToolBar(toolBar3Position, impl_->toolBar3_);
   connect(impl_->toolBar1_, &QToolBar::topLevelChanged,
     [this](bool /*topLevel*/)
     {
-      state_->setValue(Parameters::ToolBar1Position, static_cast<int>(whereIs(impl_->toolBar1_)));
+      state_->setValue(Parameters::ToolBarMainPosition, static_cast<int>(whereIs(impl_->toolBar1_)));
     });
   connect(impl_->toolBar2_, &QToolBar::topLevelChanged,
     [this](bool /*topLevel*/)
     {
-      state_->setValue(Parameters::ToolBar2Position, static_cast<int>(whereIs(impl_->toolBar2_)));
+      state_->setValue(Parameters::ToolBarRenderPosition, static_cast<int>(whereIs(impl_->toolBar2_)));
+    });
+  connect(impl_->toolBar3_, &QToolBar::topLevelChanged,
+    [this](bool /*topLevel*/)
+    {
+      state_->setValue(Parameters::ToolBarAdvancedPosition, static_cast<int>(whereIs(impl_->toolBar3_)));
     });
 
   impl_->toolBarController_->registerDirectionButton(impl_->toolBar1_, impl_->toolBar1Position_);
   impl_->toolBarController_->registerDirectionButton(impl_->toolBar2_, impl_->toolBar2Position_);
+  impl_->toolBarController_->registerDirectionButton(impl_->toolBar3_, impl_->toolBar3Position_);
 }
 
 void ViewSceneDialog::addToolBar()
@@ -535,23 +545,33 @@ void ViewSceneDialog::addToolBar()
   impl_->toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(impl_->toolBar2_);
 
-  addObjectSelectionButton();
+  impl_->toolBar3_->setContextMenuPolicy(Qt::CustomContextMenu);
+  impl_->toolBar3_->setOrientation(Qt::Vertical);
+  WidgetStyleMixin::toolbarStyle(impl_->toolBar3_);
+
+  //TODO: main toolbar members
   addAutoViewButton();
+  addObjectSelectionButton();
+  addViewBarButton();
+  addControlLockButton();
   addScreenshotButton();
   addAutoRotateButton();
+
+  //TODO: render toolbar members
   addColorOptionsButton();
-  addLightButtons();
+  addOrientationAxesButton();
   addClippingPlaneButton();
   addFogOptionsButton();
   addMaterialOptionsButton();
-  addOrientationAxesButton();
+
+  addLightButtons();
   addScaleBarButton();
-  addInputControlButton();
+
+  // TODO: advanced tool bar members
   addCameraLocksButton();
+  addInputControlButton();
   addDeveloperControlButton();
-  setupMaterials();
-  addViewBarButton();
-  addControlLockButton();
+
 
   {
     impl_->toolBar1Position_ = new QPushButton();
@@ -562,6 +582,11 @@ void ViewSceneDialog::addToolBar()
     impl_->toolBar2Position_ = new QPushButton();
     impl_->toolBar2Position_->setToolTip("Switch toolbar 2 popup direction");
     addToolbarButton(impl_->toolBar2Position_, Qt::LeftToolBarArea);
+  }
+  {
+    impl_->toolBar3Position_ = new QPushButton();
+    impl_->toolBar3Position_->setToolTip("Switch toolbar 3 popup direction");
+    addToolbarButton(impl_->toolBar3Position_, Qt::RightToolBarArea);
   }
 
   impl_->statusLabel_ = new QLabel("");
@@ -600,7 +625,7 @@ void ViewSceneDialog::addAutoRotateButton()
   impl_->autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate2.png"));
   connect(impl_->autoRotateButton_, &QPushButton::clicked, this, &ViewSceneDialog::toggleAutoRotate);
   auto arctrls = new AutoRotateControls(this);
-  addToolbarButton(impl_->autoRotateButton_, Qt::LeftToolBarArea, arctrls);
+  addToolbarButton(impl_->autoRotateButton_, Qt::TopToolBarArea, arctrls);
 }
 
 void ViewSceneDialog::addColorOptionsButton()
@@ -617,15 +642,19 @@ void ViewSceneDialog::addLightButtons()
   for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
   {
     auto* lightButton = new QPushButton();
-    if (0 == i)
-      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
-    else
-      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
-
     impl_->lightControls_[i] = new LightControls(this, i, lightButton);
     fixSize(impl_->lightControls_[i]);
-    addToolbarButton(lightButton, Qt::TopToolBarArea, impl_->lightControls_[i]);
+
+    if (0 == i)
+    {
+      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
+      addToolbarButton(lightButton, Qt::LeftToolBarArea, impl_->lightControls_[i]);
+    }
   }
+  auto* secondaryLightButton = new QPushButton();
+  secondaryLightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
+  impl_->secondaryLightControlContainer_ = new CompositeLightControls(this, {impl_->lightControls_.begin() + 1, impl_->lightControls_.end()});
+  addToolbarButton(secondaryLightButton, Qt::LeftToolBarArea, impl_->secondaryLightControlContainer_);
 }
 
 void ViewSceneDialog::addFogOptionsButton()
@@ -669,7 +698,7 @@ void ViewSceneDialog::addCameraLocksButton()
   cameraLocksButton->setIcon(QPixmap(":/general/Resources/ViewScene/link.png"));
   impl_->cameraLockControls_ = new CameraLockControls(this);
   fixSize(impl_->cameraLockControls_);
-  addToolbarButton(cameraLocksButton, Qt::LeftToolBarArea, impl_->cameraLockControls_);
+  addToolbarButton(cameraLocksButton, Qt::RightToolBarArea, impl_->cameraLockControls_);
 }
 
 void ViewSceneDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which, ViewSceneControlPopupWidget* widgetToPopup)
@@ -677,7 +706,7 @@ void ViewSceneDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which, V
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
   widget->setFixedSize(buttonSize, buttonSize);
-  auto toolbar = (which == Qt::TopToolBarArea ? impl_->toolBar1_ : impl_->toolBar2_);
+  auto toolbar = (which == Qt::TopToolBarArea ? impl_->toolBar1_ : (which == Qt::LeftToolBarArea ? impl_->toolBar2_ : impl_->toolBar3_)); //TODO refactor obviously
 
   if (auto* button = qobject_cast<QPushButton*>(widget))
   {
@@ -850,6 +879,7 @@ void ViewSceneDialog::setupScaleBar()
     impl_->scaleBar_.numTicks = state_->getValue(Parameters::ScaleBarNumTicks).toInt();
     impl_->scaleBar_.lineWidth = state_->getValue(Parameters::ScaleBarLineWidth).toDouble();
     impl_->scaleBar_.fontSize = state_->getValue(Parameters::ScaleBarFontSize).toInt();
+    impl_->scaleBar_.lineColor = state_->getValue(Parameters::ScaleBarLineColor).toDouble();
   }
   else
   {
@@ -861,6 +891,7 @@ void ViewSceneDialog::setupScaleBar()
     impl_->scaleBar_.numTicks = 11;
     impl_->scaleBar_.lineWidth = 1.0;
     impl_->scaleBar_.fontSize = 8;
+    impl_->scaleBar_.lineColor = 1.0;
   }
 }
 
@@ -869,7 +900,7 @@ void ViewSceneDialog::addInputControlButton()
   auto* inputControlButton = new QPushButton();
   inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/mouse.png"));
   impl_->inputControls_ = new InputControls(this);
-  addToolbarButton(inputControlButton, Qt::LeftToolBarArea, impl_->inputControls_);
+  addToolbarButton(inputControlButton, Qt::RightToolBarArea, impl_->inputControls_);
 }
 
 void ViewSceneDialog::addDeveloperControlButton()
@@ -877,7 +908,7 @@ void ViewSceneDialog::addDeveloperControlButton()
   auto* devControlButton = new QPushButton();
   devControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/devel.png"));
   impl_->developerControls_ = new DeveloperControls(this);
-  addToolbarButton(devControlButton, Qt::LeftToolBarArea, impl_->developerControls_);
+  addToolbarButton(devControlButton, Qt::RightToolBarArea, impl_->developerControls_);
 }
 
 void ViewSceneDialog::pullCameraState()
@@ -1095,6 +1126,7 @@ void ViewSceneDialog::adjustToolbar(double factor)
 {
   adjustToolbarForHighResolution(impl_->toolBar1_, factor);
   adjustToolbarForHighResolution(impl_->toolBar2_, factor);
+  adjustToolbarForHighResolution(impl_->toolBar3_, factor);
 }
 
 QColor ViewSceneDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)
@@ -2362,6 +2394,13 @@ void ViewSceneDialog::setScaleBarNumTicks(int value)
   setScaleBar();
 }
 
+void ViewSceneDialog::setScaleBarLineColor(double value)
+{
+  impl_->scaleBar_.lineColor = value;
+  state_->setValue(Parameters::ScaleBarLineColor, value);
+  setScaleBar();
+}
+
 void ViewSceneDialog::setScaleBarLineWidth(double value)
 {
   impl_->scaleBar_.lineWidth = value;
@@ -2466,7 +2505,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   }
 
   ss.str("");
-  ss << "_scaleBar::" << impl_->scaleBar_.fontSize << impl_->scaleBar_.length << impl_->scaleBar_.height << impl_->scaleBar_.numTicks << impl_->scaleBar_.projLength;
+  ss << "_scaleBar::" << impl_->scaleBar_.fontSize << impl_->scaleBar_.length << impl_->scaleBar_.height << impl_->scaleBar_.numTicks << impl_->scaleBar_.projLength << impl_->scaleBar_.lineColor;
   auto uniqueNodeID = ss.str();
   auto vboName = uniqueNodeID + "VBO";
   auto iboName = uniqueNodeID + "IBO";
@@ -2478,7 +2517,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   attribs.emplace_back("aPos", 3 * sizeof(float));
   std::vector<SpireSubPass::Uniform> uniforms;
   uniforms.emplace_back("uTrans", glm::vec4(1.9, 0.1, 0.0, 0.0));
-  uniforms.emplace_back("uColor", glm::vec4(1.0));
+  uniforms.emplace_back("uColor", glm::vec4(impl_->scaleBar_.lineColor));
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, BBox(Point{}, Point{}), true);
 

@@ -56,6 +56,8 @@ Preferences::Preferences() :
   moduleExecuteDownstreamOnly("moduleExecuteDownstreamOnly", true),
   forceGridBackground("forceGridBackground", false),
   modulesAreDockable("modulesAreDockable", true),
+  toolBarPopupShowDelay("toolBarPopupShowDelay", 200),
+  toolBarPopupHideDelay("toolBarPopupHideDelay", 200),
   networkBackgroundColor("backgroundColor", "#808080"),
   postModuleAdd("postModuleAdd"),
   onNetworkLoad("onNetworkLoad"),

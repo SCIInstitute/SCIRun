@@ -212,7 +212,7 @@ namespace Gui {
   {
     bool visible;
     int fontSize;
-    double length, height, multiplier, numTicks, lineWidth;
+    double length, height, multiplier, numTicks, lineWidth, lineColor;
     std::string unit;
     double projLength;
   };
@@ -294,6 +294,16 @@ namespace Gui {
     void lightColorUpdated() override;
   };
 
+  class SCISHARE CompositeLightControls : public ViewSceneControlPopupWidget
+  {
+    Q_OBJECT
+  public:
+    explicit CompositeLightControls(ViewSceneDialog* parent, const std::vector<LightControls*>& secondaryLights);
+  private:
+    std::vector<LightControls*> lights_;
+    QTabWidget* tabs_;
+  };
+
   class SCISHARE ViewAxisChooserControls : public ViewSceneControlPopupWidget, public Ui::ViewAxisChooser
   {
     Q_OBJECT
@@ -312,6 +322,7 @@ namespace Gui {
      void setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup);
      void registerPopup(QToolBar* toolbar, ctkPopupWidget* popup);
      void registerDirectionButton(QToolBar* toolbar, QPushButton* button);
+     void updateDelays();
      static constexpr const char* DirectionProperty = "dir";
      static constexpr const char* FlipProperty = "flip";
    private:
