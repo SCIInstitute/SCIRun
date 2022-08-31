@@ -43,12 +43,10 @@
 #include <string>
 #include <fstream>
 #include <numeric>
-//#include <math>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
-//#include <Core/Algorithms/Base/AlgorithmBase.h>
-//#include <Core/Logging/ConsoleLogger.h>
+
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/BlockMatrix.h>
 #include <Core/Basis/TriLinearLgn.h>
@@ -1105,29 +1103,27 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   }
 }
 
-static void printInfo(const DenseMatrix& m , const std::string& name)
-{
-#if 0
-  std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
-  std::cout << name << " min: " << m.minCoeff() << std::endl;
-  std::cout << name << " max: " << m.maxCoeff() << std::endl;
-    bool nan_check = m.array().isNaN().any();
-//    std::cout << name < " nans: " << std::string(nan_check) << std::endl;
-    std::cout << nan_check << std::endl;
-#endif
-}
-
-static void saveMatrix(const DenseMatrix& m , const std::string& name)
-{
-#if 0
-    std::ofstream file(name);
-  if (file.is_open())
-  {
-    file << m << "\n";
-      file.close();
-  }
-#endif
-}
+//static void printInfo(const DenseMatrix& m , const std::string& name)
+//{
+//#if 1
+//  std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
+//  std::cout << name << " min: " << m.minCoeff() << std::endl;
+//  std::cout << name << " max: " << m.maxCoeff() << std::endl;
+//    std::cout << m.array().isNaN().any() << std::endl;
+//#endif
+//}
+//
+//static void saveMatrix(const DenseMatrix& m , const std::string& name)
+//{
+//#if 1
+//    std::ofstream file(name);
+//  if (file.is_open())
+//  {
+//    file << m << "\n";
+//      file.close();
+//  }
+//#endif
+//}
 
 MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 {
@@ -1210,8 +1206,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 //        warning("Nan detected in EE");
     }
 
-  printInfo(EE.matrix(), "EE");
-    saveMatrix(EE.matrix(), "EE_mat.txt");
+//  printInfo(EE.matrix(), "EE");
+//    saveMatrix(EE.matrix(), "EE_mat.txt");
 
   std::vector<int> sourceFieldNodeSize(sourcefieldindices.size());
   auto sourceFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.source; });
@@ -1253,8 +1249,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 //        warning("Nan detected in EJ");
     }
 
-  printInfo(EJ.matrix(), "EJ");
-    saveMatrix(EJ.matrix(), "EJ_mat.txt");
+//  printInfo(EJ.matrix(), "EJ");
+//    saveMatrix(EJ.matrix(), "EJ_mat.txt");
 
   // This needs to be checked.  It was taken out because the deflation was producing errors
   // Jeroen's matlab code, which was the basis of this code, only does a defation in test cases.
@@ -1282,8 +1278,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       Pmm.blockRef(i,j) = EE.blockRef(measurementfieldindices[i], measurementfieldindices[j]);
     }
   }
-  printInfo(Pmm.matrix(), "Pmm");
-    saveMatrix(Pmm.matrix(), "Pmm_mat.txt");
+//  printInfo(Pmm.matrix(), "Pmm");
+//    saveMatrix(Pmm.matrix(), "Pmm_mat.txt");
 
   // Pss:
   DenseBlockMatrix Pss(sourceFieldNodeSize, sourceFieldNodeSize);
@@ -1294,8 +1290,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       Pss.blockRef(i,j) = EE.blockRef(sourcefieldindices[i],sourcefieldindices[j]);
     }
   }
-  printInfo(Pss.matrix(), "Pss");
-    saveMatrix(Pss.matrix(), "Pss_mat.txt");
+//  printInfo(Pss.matrix(), "Pss");
+//    saveMatrix(Pss.matrix(), "Pss_mat.txt");
 
   // Pms:
   DenseBlockMatrix Pms(measurementNodeSize, sourceFieldNodeSize);
@@ -1306,8 +1302,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       Pms.blockRef(i,j) = EE.blockRef(measurementfieldindices[i],sourcefieldindices[j]);
     }
   }
-  printInfo(Pms.matrix(), "Pms");
-    saveMatrix(Pms.matrix(), "Pms_mat.txt");
+//  printInfo(Pms.matrix(), "Pms");
+//    saveMatrix(Pms.matrix(), "Pms_mat.txt");
 
 
   // Psm:
@@ -1319,8 +1315,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       Psm.blockRef(i,j) = EE.blockRef(sourcefieldindices[i],measurementfieldindices[j]);
     }
   }
-  printInfo(Psm.matrix(), "Psm");
-    saveMatrix(Psm.matrix(), "Psm_mat.txt");
+//  printInfo(Psm.matrix(), "Psm");
+//    saveMatrix(Psm.matrix(), "Psm_mat.txt");
 
   // Split EJ apart into Gms and Gss (see ALL-CAPS note above about differences in block row vs column indexing in EJ matrix)
   // -----------------------------------------------
@@ -1333,8 +1329,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       Gms.blockRef(i,j) = EJ.blockRef(measurementfieldindices[i],j);
     }
   }
-  printInfo(Gms.matrix(), "Gms");
-    saveMatrix(Gms.matrix(), "Gms_mat.txt");
+//  printInfo(Gms.matrix(), "Gms");
+//    saveMatrix(Gms.matrix(), "Gms_mat.txt");
 
   // Gss:
   DenseBlockMatrix Gss(sourceFieldNodeSize, sourceFieldNodeSize);
@@ -1345,8 +1341,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       Gss.blockRef(i,j) = EJ.blockRef(sourcefieldindices[i],j);
     }
   }
-  printInfo(Gss.matrix(), "Gss");
-    saveMatrix(Gss.matrix(), "Gss_mat.txt");
+//  printInfo(Gss.matrix(), "Gss");
+//    saveMatrix(Gss.matrix(), "Gss_mat.txt");
 
   // TODO: add deflation step
 
@@ -1357,16 +1353,16 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   auto C = Pmm.matrix() - Y * Psm.matrix();
   auto D = Y * Pss.matrix() - Pms.matrix();
     
-    printInfo(Y, "Y");
-    printInfo(C, "C");
-    printInfo(D, "D");
-
-    saveMatrix(Y, "Y_mat.txt");
-    saveMatrix(C, "C_mat.txt");
-    saveMatrix(D, "D_mat.txt");
+//    printInfo(Y, "Y");
+//    printInfo(C, "C");
+//    printInfo(D, "D");
+//
+//    saveMatrix(Y, "Y_mat.txt");
+//    saveMatrix(C, "C_mat.txt");
+//    saveMatrix(D, "D_mat.txt");
 
   auto T = C.inverse() * D; // T = inv(C)*D
-    printInfo(T,"T");
+//    printInfo(T,"T");
   return makeShared<DenseMatrix>(T);
 
   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
