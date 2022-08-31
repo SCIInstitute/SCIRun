@@ -43,9 +43,12 @@
 #include <string>
 #include <fstream>
 #include <numeric>
+//#include <math>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
+//#include <Core/Algorithms/Base/AlgorithmBase.h>
+//#include <Core/Logging/ConsoleLogger.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/BlockMatrix.h>
 #include <Core/Basis/TriLinearLgn.h>
@@ -56,9 +59,12 @@
 #include <Core/GeometryPrimitives/PointVectorOperators.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Forward;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Logging;
 
 ALGORITHM_PARAMETER_DEF(Forward, FieldNameList);
 ALGORITHM_PARAMETER_DEF(Forward, FieldTypeList);
@@ -89,23 +95,30 @@ void BuildBEMatrixBase::getOmega(
   Vector Ny( y1.length() , y2.length() , y3.length() );
 
   Vector Nyij( y21.length() , y32.length() , y13.length() );
+    
 
   Vector gamma( 0 , 0 , 0 );
   double NomGamma , DenomGamma;
 
   NomGamma = Ny[0]*Nyij[0] + Dot(y1,y21);
   DenomGamma = Ny[1]*Nyij[0] + Dot(y2,y21);
-  if (fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 ){
+    
+    bool gammacheck0, gammacheck1, gammacheck2;
+    
+    gammacheck0 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0;
+  if ( gammacheck0){
     gamma[0] = -1/Nyij[0] * log(NomGamma/DenomGamma);
   }
   NomGamma = Ny[1]*Nyij[1] + Dot(y2,y32);
   DenomGamma = Ny[2]*Nyij[1] + Dot(y3,y32);
-  if (fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 ){
+    gammacheck1 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0;
+  if (gammacheck1){
     gamma[1] = -1/Nyij[1] * log(NomGamma/DenomGamma);
   }
   NomGamma = Ny[2]*Nyij[2] + Dot(y3,y13);
   DenomGamma = Ny[0]*Nyij[2] + Dot(y1,y13);
-  if (fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 ){
+    gammacheck2 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0;
+  if (gammacheck2 ){
     gamma[2] = -1/Nyij[2] * log(NomGamma/DenomGamma);
   }
 
@@ -113,7 +126,50 @@ void BuildBEMatrixBase::getOmega(
 
   Vector OmegaVec = (gamma[2]-gamma[0])*y1 + (gamma[0]-gamma[1])*y2 + (gamma[1]-gamma[2])*y3;
 
+    if (isnan(OmegaVec[0]) || isnan(OmegaVec[1]) || isnan(OmegaVec[2]) )
+    {
+        
+        std::cout << "OmegaVec: " <<OmegaVec<<std::endl;
+        std::cout << "Omega check: " ;
+        std::cout<<(isnan(OmegaVec[0]) || isnan(OmegaVec[1]) || isnan(OmegaVec[2]))<<std::endl;
+        std::cout<< "Nyij : " << Nyij << std::endl;
+        std::cout<< "Ny : " << Ny << std::endl;
+        
+        std::cout<<"y: (" << y1 << ", " << y2 << ", " << y3 << ")" <<std::endl;
 
+        
+        std::cout << "y21: " <<y21<<std::endl;
+        std::cout << "y32: " <<y32<<std::endl;
+        std::cout << "y13: " <<y13<<std::endl;
+        
+        std::cout<<"dim checks: (";
+        std::cout<< gammacheck0;
+        std::cout<< ", ";
+        std::cout<< gammacheck1;
+        std::cout<< ", ";
+        std::cout<< gammacheck2;
+        std::cout<< ")"<<std::endl;
+        
+        std::cout<<"test log : " << log (1.0e-11/(-1.0e-11-epsilon)) <<std::endl;
+        std::cout<< "DenomGamma0 : " << Ny[1]*Nyij[0] + Dot(y2,y21) << std::endl;
+        std::cout<< "NomGamma0 : " << Ny[0]*Nyij[0] + Dot(y1,y21) << std::endl;
+        std::cout<< "ratio0 : " << ((Ny[0]*Nyij[0] + Dot(y1,y21))/ (Ny[1]*Nyij[0] + Dot(y2,y21))) << std::endl;
+        std::cout<< "log0 : " << log((Ny[0]*Nyij[0] + Dot(y1,y21))/ (Ny[1]*Nyij[0] + Dot(y2,y21))) << std::endl;
+        std::cout<< "diff0 : " << (Ny[1]*Nyij[0] + Dot(y2,y21)) - (Ny[0]*Nyij[0] + Dot(y1,y21)) << std::endl;
+        
+        std::cout<< "DenomGamma1 : " << Ny[2]*Nyij[1] + Dot(y3,y32) << std::endl;
+        std::cout<< "NomGamma1 : " << Ny[1]*Nyij[1] + Dot(y2,y32) << std::endl;
+        std::cout<< "ratio1 : " << (( Ny[1]*Nyij[1] + Dot(y2,y32))/ (Ny[2]*Nyij[1] + Dot(y3,y32))) << std::endl;
+        std::cout<< "log1 : " << log(( Ny[1]*Nyij[1] + Dot(y2,y32))/ (Ny[2]*Nyij[1] + Dot(y3,y32))) << std::endl;
+        std::cout<< "diff1 : " << (Ny[2]*Nyij[1] + Dot(y3,y32)) - ( Ny[1]*Nyij[1] + Dot(y2,y32)) << std::endl;
+        std::cout<< "DenomGamma2 : " << DenomGamma << std::endl;
+        std::cout<< "NomGamma2 : " << NomGamma << std::endl;
+        std::cout<< "log2 : " <<  log(NomGamma/DenomGamma) << std::endl;
+        std::cout<< "ratio2 : " <<  (NomGamma/DenomGamma) << std::endl;
+        std::cout<< "diff1 : " << DenomGamma-NomGamma << std::endl;
+        std::cout<< "Gamma : " << gamma << std::endl;
+        
+    }
 
   /*
   In order to avoid problems with the arctan used in de Muncks paper
@@ -145,9 +201,33 @@ void BuildBEMatrixBase::getOmega(
   double Zn3 = Dot(Cross(y1, y2) , N);
 
   double A2 = N.length2();
+    
+    if (Nyij.length() < epsilon || fabs(Nn) < epsilon || fabs(fabs(d / Nn) - 0.5 * M_PI) < epsilon || fabs(A2) < epsilon )
+    {
+        std::cout<<"================================================================="<<std::endl;
+        std::cout<<"zero denom: (" << y1 << ", " << y2 << ", " << y3 << ")" <<std::endl;
+        std::cout<<"================================================================="<<std::endl;
+    }
+    
   coef(0,0) = (1/A2) * ( Zn1*Omega + d * Dot(y32, OmegaVec) );
   coef(0,1) = (1/A2) * ( Zn2*Omega + d * Dot(y13, OmegaVec) );
   coef(0,2) = (1/A2) * ( Zn3*Omega + d * Dot(y21, OmegaVec) );
+    
+    if (coef.array().isNaN().any())
+    {
+    std::cout << "all values: " <<std::endl;
+    std::cout << "A2: " <<A2<<std::endl;
+    std::cout << "d: " <<d<<std::endl;
+    std::cout << "Omega: " <<Omega<<std::endl;
+    std::cout << "OmegaVec: " <<OmegaVec<<std::endl;
+    std::cout << "Zn1: " <<Zn1<<std::endl;
+    std::cout << "Zn2: " <<Zn2<<std::endl;
+    std::cout << "Zn3: " <<Zn3<<std::endl;
+    std::cout << "y32: " <<y32<<std::endl;
+    std::cout << "y13: " <<y13<<std::endl;
+    std::cout << "y21: " <<y21<<std::endl;
+    }
+    
 
 }
 
@@ -772,7 +852,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
       }
     }
       for (VMesh::Node::index_type i=0; i < *nie; i++)
-      std::cout<<"index: "<< ppi << ", "<< i << ". Omega: " << auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(i)) <<std::endl;
+      std::cout<<"index: "<< ppi << ", "<< i << ". Omega sum: " << auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(i)) <<std::endl;
   }
 
   //! accounting for autosolid angle
@@ -780,7 +860,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
   for (i=0; i<nnodes; ++i)
   {
     auto_P(i,i) = out_cond - sumOfRows(i);
-      std::cout<< "sum of rows: (" << i <<") " << sumOfRows(i) << std::endl;
+//      std::cout<< "sum of rows: (" << i <<") " << sumOfRows(i) << std::endl;
   }
 }
 
@@ -1103,6 +1183,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   std::vector<int> fieldNodeSize(fields.size());
   std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [](const bemfield& f) { return numNodes(f.field_); } );
   DenseBlockMatrix EE(fieldNodeSize, fieldNodeSize);
+    
+    
 
   // Calculate EE in block matrix form
   for(int i = 0; i < Nfields; i++)
@@ -1121,6 +1203,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       }
     }
   }
+    
+    if (EE.matrix().array().isNaN().any())
+    {
+        std::cout<<"Nan detected in EE"<<std::endl;
+//        warning("Nan detected in EE");
+    }
 
   printInfo(EE.matrix(), "EE");
     saveMatrix(EE.matrix(), "EE_mat.txt");
@@ -1158,6 +1246,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       }
     }
   }
+    
+    if (EJ.matrix().array().isNaN().any())
+    {
+        std::cout<<"Nan detected in EJ"<<std::endl;
+//        warning("Nan detected in EJ");
+    }
 
   printInfo(EJ.matrix(), "EJ");
     saveMatrix(EJ.matrix(), "EJ_mat.txt");
