@@ -851,7 +851,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
           auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))-=coef(0,i)*mult;
       }
     }
-      for (VMesh::Node::index_type i=0; i < *nie; i++)
+//      for (VMesh::Node::index_type i=0; i < *nie; i++)
 //      std::cout<<"index: "<< ppi << ", "<< i << ". Omega sum: " << auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(i)) <<std::endl;
   }
 
