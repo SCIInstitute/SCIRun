@@ -1107,7 +1107,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
 
 static void printInfo(const DenseMatrix& m , const std::string& name)
 {
-#if 1
+#if 0
   std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
   std::cout << name << " min: " << m.minCoeff() << std::endl;
   std::cout << name << " max: " << m.maxCoeff() << std::endl;
@@ -1119,7 +1119,7 @@ static void printInfo(const DenseMatrix& m , const std::string& name)
 
 static void saveMatrix(const DenseMatrix& m , const std::string& name)
 {
-#if 1
+#if 0
     std::ofstream file(name);
   if (file.is_open())
   {
