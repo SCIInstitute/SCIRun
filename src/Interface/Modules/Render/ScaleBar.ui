@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>358</width>
-    <height>155</height>
+    <width>400</width>
+    <height>181</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>358</width>
-    <height>155</height>
+    <width>400</width>
+    <height>181</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,6 @@
     <widget class="QGroupBox" name="showScaleBarTextGroupBox_">
      <property name="font">
       <font>
-       <weight>50</weight>
        <bold>false</bold>
       </font>
      </property>
