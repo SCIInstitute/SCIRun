@@ -171,13 +171,11 @@ void PIConGPUReader::execute()
                 loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
                 loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
                 extents[i_dim]       = rc.getExtent();
-
 //                position_unit_SI[i_dim]   = rc.unitSI();           //Units correction for position and position offset are not currently used
 //                pos_offset_unit_SI[i_dim] = rc1.unitSI();
                 }
 
             iteration.seriesFlush();                                 //Data is now available
-
 
             Extent const &extent_0 = extents[0];
             int num_particles      = extent_0[0];
@@ -192,13 +190,11 @@ void PIConGPUReader::execute()
                 std::string dim_str = dimensions[i_pos];
                 auto chunk          = loadedChunks[i_pos];
                 auto chunk1         = loadedChunks1[i_pos];
-
-                                                                     //Code to load particle position real (dimensionless) values
+                                                                     //Load (dimensionless) particle xyz position
                 if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] + chunk.get()[k];
                 if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk1.get()[i] + chunk.get()[i];
                 if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk1.get()[m] + chunk.get()[m];
                 }
-
                                                                      //Call the output function
             auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
             sendOutput(Particles, Particle_Output);
@@ -236,14 +232,12 @@ void PIConGPUReader::execute()
             auto extent_vFD               = vectorFieldData["x"].getExtent();
             const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
-
                                                                      //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
             sendOutput(VectorField, Vector_Output);
                                                                      //End of Vector field data processing
 
             iteration.close();
-
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
     }  //end of the "PIConGPU::execute()" function
