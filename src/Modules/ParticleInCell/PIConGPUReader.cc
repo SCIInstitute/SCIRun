@@ -88,7 +88,7 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
     {
     FieldInformation lfi("LatVolMesh",1,"float");
     std::vector<float> values(numvals);
-    MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
+    MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(192.0,1024.0,12.0));
     FieldHandle ofh = CreateField(lfi,mesh);
 
     for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];
@@ -103,7 +103,7 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
     {
     FieldInformation lfi("LatVolMesh",1,"float");
     lfi.make_vector();
-    MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(1.0,1.0,1.0));
+    MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(192.0,1024.0,12.0));
     FieldHandle ofh = CreateField(lfi,mesh);
     VField* ofield  = ofh->vfield();
     
