@@ -105,19 +105,19 @@ void BuildBEMatrixBase::getOmega(
     
     bool gammacheck0, gammacheck1, gammacheck2;
     
-    gammacheck0 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 && NomGamma/DenomGamma >= epsilon ;
+    gammacheck0 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 && NomGamma/DenomGamma > 0 ;
   if ( gammacheck0){
     gamma[0] = -1/Nyij[0] * log(NomGamma/DenomGamma);
   }
   NomGamma = Ny[1]*Nyij[1] + Dot(y2,y32);
   DenomGamma = Ny[2]*Nyij[1] + Dot(y3,y32);
-    gammacheck1 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 && NomGamma/DenomGamma >= epsilon ;
+    gammacheck1 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 && NomGamma/DenomGamma > 0  ;
   if (gammacheck1){
     gamma[1] = -1/Nyij[1] * log(NomGamma/DenomGamma);
   }
   NomGamma = Ny[2]*Nyij[2] + Dot(y3,y13);
   DenomGamma = Ny[0]*Nyij[2] + Dot(y1,y13);
-    gammacheck2 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 && NomGamma/DenomGamma >= epsilon ;
+    gammacheck2 = fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 && NomGamma/DenomGamma > 0 ;
   if (gammacheck2 ){
     gamma[2] = -1/Nyij[2] * log(NomGamma/DenomGamma);
   }
