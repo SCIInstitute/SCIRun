@@ -88,7 +88,7 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
     {
     FieldInformation lfi("LatVolMesh",1,"float");
     std::vector<float> values(numvals);
-    MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(192.0,1024.0,12.0)); //replace the numbers here with variables
+    MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(extent_sFD[2],extent_sFD[1],extent_sFD[0]));
     FieldHandle ofh = CreateField(lfi,mesh);
 
     for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];
@@ -103,12 +103,11 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
     {
     FieldInformation lfi("LatVolMesh",1,"float");
     lfi.make_vector();
-    MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(192.0,1024.0,12.0)); //replace the numbers here with variables
+    MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(extent_vFD[2],extent_vFD[1],extent_vFD[0]));
     FieldHandle ofh = CreateField(lfi,mesh);
     VField* ofield  = ofh->vfield();
     
-//    for (VMesh::index_type i = 0; i < numvals; i++)
-    for (VMesh::index_type i = 0; i < numvals; i+=10000)        //lay the groundwork for this to be a user input or undo this and find out how to filter the data using SCIRun modules or settings
+    for (VMesh::index_type i = 0; i < numvals; i++)
         {
         Vector v;
         v[0] = vFD_component_x.get()[i];
@@ -160,9 +159,6 @@ void PIConGPUReader::execute()
             std::array<Extent,                      3> extents;
             std::array<std::string,                 3> const dimensions{{"x", "y", "z"}};
 
-            float position_unit_SI[3];
-            float pos_offset_unit_SI[3];
-
             for (size_t i_dim = 0; i_dim < 3; ++i_dim)
                 {
                 std::string dim_str  = dimensions[i_dim];
@@ -172,8 +168,6 @@ void PIConGPUReader::execute()
                 loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
                 loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
                 extents[i_dim]       = rc.getExtent();
-//                position_unit_SI[i_dim]   = rc.unitSI();           //Units correction for position and position offset are not currently used
-//                pos_offset_unit_SI[i_dim] = rc1.unitSI();
                 }
 
             iteration.seriesFlush();                                 //Data is now available

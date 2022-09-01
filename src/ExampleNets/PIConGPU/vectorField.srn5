@@ -469,7 +469,7 @@
 									<name>Method</name>
 									<value object_id="_32">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1577,7 +1577,7 @@
 									<name>NormalizeVectors</name>
 									<value object_id="_119">
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1613,7 +1613,7 @@
 									<name>RenderBidirectionaly</name>
 									<value object_id="_122">
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1757,7 +1757,7 @@
 									<name>SecondaryVectorParameterScale</name>
 									<value object_id="_134">
 										<which>1</which>
-										<value>2.50000000000000111e-01</value>
+										<value>5.25000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1769,7 +1769,7 @@
 									<name>SecondaryVectorParameterScalingType</name>
 									<value object_id="_135">
 										<which>0</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1985,7 +1985,7 @@
 									<name>VectorsDisplayType</name>
 									<value object_id="_153">
 										<which>2</which>
-										<value>Needles</value>
+										<value>Lines</value>
 									</value>
 								</second>
 							</item>
@@ -2009,7 +2009,7 @@
 									<name>VectorsScale</name>
 									<value object_id="_155">
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>5.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2219,14 +2219,14 @@
 												<name>listElement</name>
 												<value object_id="_173">
 													<which>1</which>
-													<value>7.07106769084930420e-01</value>
+													<value>7.07106828689575195e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_174">
 													<which>1</which>
-													<value>7.07106769084930420e-01</value>
+													<value>7.07106828689575195e-01</value>
 												</value>
 											</item>
 											<item>
@@ -3135,7 +3135,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_265">
 										<which>0</which>
-										<value>428</value>
+										<value>422</value>
 									</value>
 								</second>
 							</item>
@@ -3147,7 +3147,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_266">
 										<which>0</which>
-										<value>357</value>
+										<value>300</value>
 									</value>
 								</second>
 							</item>
@@ -4237,7 +4237,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_373">
 										<which>0</which>
-										<value>431</value>
+										<value>425</value>
 									</value>
 								</second>
 							</item>
@@ -4249,7 +4249,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_374">
 										<which>0</which>
-										<value>361</value>
+										<value>300</value>
 									</value>
 								</second>
 							</item>
@@ -4349,7 +4349,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_381">
 										<which>1</which>
-										<value>1.81679968261718750e+03</value>
+										<value>1.83744018554687500e+03</value>
 									</value>
 								</second>
 							</item>
@@ -4380,21 +4380,21 @@
 												<name>listElement</name>
 												<value object_id="_384">
 													<which>1</which>
-													<value>9.60002212524414062e+01</value>
+													<value>9.60000000000000000e+01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_385">
 													<which>1</which>
-													<value>5.11999938964843750e+02</value>
+													<value>5.12000427246093750e+02</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_386">
 													<which>1</which>
-													<value>5.99952840805053711e+00</value>
+													<value>6.19585275650024414e+00</value>
 												</value>
 											</item>
 										</value>
@@ -4423,14 +4423,14 @@
 												<name>listElement</name>
 												<value object_id="_389">
 													<which>1</which>
-													<value>7.07106769084930420e-01</value>
+													<value>7.07106828689575195e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_390">
 													<which>1</which>
-													<value>7.07106769084930420e-01</value>
+													<value>7.07106828689575195e-01</value>
 												</value>
 											</item>
 											<item>
@@ -5306,7 +5306,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_477">
 										<which>0</which>
-										<value>564</value>
+										<value>497</value>
 									</value>
 								</second>
 							</item>
@@ -5318,7 +5318,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_478">
 										<which>0</which>
-										<value>426</value>
+										<value>420</value>
 									</value>
 								</second>
 							</item>
@@ -5330,7 +5330,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_479">
 										<which>0</which>
-										<value>342</value>
+										<value>346</value>
 									</value>
 								</second>
 							</item>
