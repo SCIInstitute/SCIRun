@@ -91,7 +91,12 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(extent_sFD[0],extent_sFD[1],extent_sFD[2]));
     FieldHandle ofh = CreateField(lfi,mesh);
 
-    for (size_t i = 0; i < numvals; i++) values[i] = scalarFieldData_buffer.get()[i];
+    for(int i=0; i<extent_sFD[0]; i++) for(int j=0; j<extent_sFD[1]; j++) for(int k=0; k<extent_sFD[2]; k++)
+        {
+        int flat_index    = i*extent_sFD[1]*extent_sFD[2]+j*extent_sFD[2]+k;
+        int c_m_index     = k*extent_sFD[0]*extent_sFD[1]+j*extent_sFD[0]+i;
+        values[c_m_index] = scalarFieldData_buffer.get()[flat_index];
+        }
 
     VField* ofield = ofh->vfield();
     ofield->set_values(values);
