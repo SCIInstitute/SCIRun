@@ -79,7 +79,7 @@ FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], f
     FieldHandle ofh = CreateField(pcfi);
     VMesh* omesh    = ofh->vmesh();
     
-    for(VMesh::Node::index_type p=0; p < buffer_size; p++) omesh->add_point(Point(component_x[p],component_y[p],component_z[p]));
+    for(VMesh::Node::index_type p=0; p < buffer_size; p++) omesh->add_point(Point(component_z[p],component_y[p],component_x[p]));
 
     return ofh;
     }
