@@ -111,7 +111,8 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
     MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(extent_vFD[0],extent_vFD[1],extent_vFD[2]));
     FieldHandle ofh = CreateField(lfi,mesh);
     VField* ofield  = ofh->vfield();
-    
+
+/*
     for (VMesh::index_type i = 0; i < numvals; i++)
         {
         Vector v;
@@ -120,7 +121,20 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
         v[2] = vFD_component_z.get()[i];
         ofield->set_value(v, i);
         }
-       
+*/
+
+    for(int i=0; i<extent_vFD[0]; i++) for(int j=0; j<extent_vFD[1]; j++) for(int k=0; k<extent_vFD[2]; k++)
+        {
+        int flat_index = i*extent_vFD[1]*extent_vFD[2]+j*extent_vFD[2]+k;
+        int c_m_index  = k*extent_vFD[0]*extent_vFD[1]+j*extent_vFD[0]+i;
+
+        Vector v;
+        v[0] = vFD_component_x.get()[flat_index];
+        v[1] = vFD_component_y.get()[flat_index];
+        v[2] = vFD_component_z.get()[flat_index];
+        ofield->set_value(v, c_m_index);
+        }
+
     return ofh;
     }
 
