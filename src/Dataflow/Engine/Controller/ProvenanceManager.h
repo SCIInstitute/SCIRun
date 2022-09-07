@@ -130,11 +130,13 @@ namespace Engine {
       //clear and load previous memento
       if (restore)
       {
-        networkIO_->clear();
-        if (!undo_.empty())
-          networkIO_->loadNetwork(undo_.top()->memento());
-        else if (initialState_)
-          networkIO_->loadNetwork(*initialState_);
+        logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
+
+        //networkIO_->clear();
+        //if (!undo_.empty())
+        //  networkIO_->loadNetwork(undo_.top()->memento());
+        //else if (initialState_)
+        //  networkIO_->loadNetwork(*initialState_);
       }
 
       return undone;
@@ -160,8 +162,9 @@ namespace Engine {
       //clear and load redone memento
       if (restore)
       {
-        networkIO_->clear();
-        networkIO_->loadNetwork(redone->memento());
+        logCritical("TODO: memento-based redo is disabled while a python-based implementation is developed.");
+        //networkIO_->clear();
+        //networkIO_->loadNetwork(redone->memento());
       }
 
       return redone;
@@ -172,6 +175,7 @@ namespace Engine {
   template <class Memento>
   typename ProvenanceManager<Memento>::List ProvenanceManager<Memento>::undoAll()
   {
+    logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
     List undone;
     while (0 != undoSize())
       undone.push_back(undo(false));
@@ -184,6 +188,7 @@ namespace Engine {
   template <class Memento>
   typename ProvenanceManager<Memento>::List ProvenanceManager<Memento>::redoAll()
   {
+    logCritical("TODO: memento-based redo is disabled while a python-based implementation is developed.");
     List redone;
     while (0 != redoSize())
       redone.push_back(redo(false));
