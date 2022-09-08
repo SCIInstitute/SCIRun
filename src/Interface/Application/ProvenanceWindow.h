@@ -86,7 +86,7 @@ public Q_SLOTS:
   void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&);
   void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
-  void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
+  void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, const QPointF& oldPos, double newX, double newY);
   void networkBeingModifiedByProvenanceManager(bool inProgress);
 Q_SIGNALS:
   void provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);

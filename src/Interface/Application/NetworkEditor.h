@@ -383,7 +383,7 @@ namespace Gui {
     void networkExecutionFinished();
     void networkEditorMouseButtonPressed();
     void middleMouseClicked();
-    void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
+    void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, const QPointF& oldPos, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
     void defaultNoteSizeChanged(int size);
     void snapToModules();

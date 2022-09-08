@@ -326,15 +326,19 @@ void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Net
   if (!provenanceManagerModifyingNetwork_)
   {
     ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
+    qDebug() << "REDO CODE: scirun_remove_connection(\"" << id.id_.c_str() << "\")";
+    qDebug() << "UNDO CODE: scirun_add_connection(\"" << id.id_.c_str() << "\")";
     Q_EMIT provenanceItemCreated(item);
   }
 }
 
-void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY)
+void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, const QPointF& oldPos, double newX, double newY)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
     ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, editor_->saveNetwork()));
+    qDebug() << "REDO CODE: scirun_move_module(\"" << id.id_.c_str() << newX << newY << "\")";
+    qDebug() << "UNDO CODE: scirun_move_module(\"" << id.id_.c_str() << oldPos.x() << oldPos.y() << "\")";
     Q_EMIT provenanceItemCreated(item);
   }
 }
