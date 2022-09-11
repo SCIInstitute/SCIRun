@@ -470,6 +470,10 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   LOG_TRACE("NetworkEditor connecting to state.");
   module->getModule()->get_state()->connectStateChanged([this]() { modified(); });
+  module->getModule()->get_state()->connectProvenanceStateChanged([](const Name& n, const AlgorithmParameter::Value& oldV, const AlgorithmParameter::Value& newV) 
+    { 
+      std::cout << "provenance state listener triggered: " << n.name() << " " << oldV << "->" << newV << std::endl;
+    });
 
   connect(this, &NetworkEditor::networkExecuted, module, &ModuleWidget::resetLogButtonColor);
   connect(this, &NetworkEditor::networkExecuted, module, &ModuleWidget::resetProgressBar);

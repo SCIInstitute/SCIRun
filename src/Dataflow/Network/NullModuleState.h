@@ -49,6 +49,7 @@ namespace State {
     TransientValueOption getTransientValue(const Name& name) const override;
     void setTransientValue(const Name& name, const TransientValue& value, bool b) override;
     boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) override;
+    boost::signals2::connection connectProvenanceStateChanged(provenance_state_changed_sig_t::slot_function_type subscriber) override { return {}; }
     boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) override;
     void fireTransientStateChangeSignal() override {}
     void disconnectAll() override {}
