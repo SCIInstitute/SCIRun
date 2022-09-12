@@ -311,6 +311,8 @@ namespace Gui {
         inEditingContext_ = nullptr;
       }
     };
+
+    void connectCommandConverterEvents(class GuiActionProvenanceConverter* gapc);
   protected:
     void dropEvent(QDropEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;

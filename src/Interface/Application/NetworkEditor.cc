@@ -48,6 +48,7 @@
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/ProvenanceWindow.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -2446,6 +2447,20 @@ void NetworkEditor::showStateViewer()
   //TODO: make non-modal, but needs update slot
   StateViewer viewer(this);
   viewer.exec();
+}
+
+void NetworkEditor::connectCommandConverterEvents(GuiActionProvenanceConverter* gapc)
+{
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::moduleAdded,
+    gapc, &GuiActionProvenanceConverter::moduleAdded);
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
+    gapc, &GuiActionProvenanceConverter::moduleRemoved);
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::connectionAdded,
+    gapc, &GuiActionProvenanceConverter::connectionAdded);
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::connectionRemoved,
+    gapc, &GuiActionProvenanceConverter::connectionRemoved);
+  connect(this, &NetworkEditor::moduleMoved,
+    gapc, &GuiActionProvenanceConverter::moduleMoved);
 }
 
 ErrorItem::ErrorItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)

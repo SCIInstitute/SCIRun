@@ -192,16 +192,8 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
     networkEditor_, &NetworkEditor::removeModuleWidget);
 
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleAdded,
-    commandConverter_.get(), &GuiActionProvenanceConverter::moduleAdded);
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
-    commandConverter_.get(), &GuiActionProvenanceConverter::moduleRemoved);
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::connectionAdded,
-    commandConverter_.get(), &GuiActionProvenanceConverter::connectionAdded);
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::connectionRemoved,
-    commandConverter_.get(), &GuiActionProvenanceConverter::connectionRemoved);
-  connect(networkEditor_, &NetworkEditor::moduleMoved,
-    commandConverter_.get(), &GuiActionProvenanceConverter::moduleMoved);
+  networkEditor_->connectCommandConverterEvents(commandConverter_.get());
+
   connect(provenanceWindow_, &ProvenanceWindow::modifyingNetwork, commandConverter_.get(), &GuiActionProvenanceConverter::networkBeingModifiedByProvenanceManager);
   connect(networkEditor_, &NetworkEditor::newModule, this, &SCIRunMainWindow::addModuleToWindowList);
   connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
