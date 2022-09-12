@@ -92,6 +92,7 @@ namespace Algorithms {
   SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
   SCISHARE bool operator!=(const Variable& lhs, const Variable& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
+  SCISHARE std::string to_string(const Variable::Value& v);
 }}}
 
 #endif
