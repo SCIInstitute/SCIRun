@@ -199,7 +199,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
   const double invalidDouble = std::numeric_limits<double>::quiet_NaN();
 
   /// efficient way to compute std dev. in just one loop over all mesh elements: sqrt ( 1/(n-1) (Sx^2 - avr Sx + n avr^2 )
-  for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; ++j)
+  for (auto j=0; j < number_of_atlas_materials; ++j)
   {
     double Sx=value_avr[j];
 

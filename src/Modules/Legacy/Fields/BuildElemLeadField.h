@@ -26,40 +26,40 @@
 */
 
 
-#ifndef INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
-#define INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
+#ifndef MODULES_LEGACY_FIELDS_BUILDELEMLEADFIELD_H__
+#define MODULES_LEGACY_FIELDS_BUILDELEMLEADFIELD_H__
 
-#include <gl-shaders/GLShader.hpp>
-#include <es-cereal/ComponentSerialize.hpp>
-#include <es-render/util/Shader.hpp>
-#include <es-render/comp/StaticVBOMan.hpp>
-#include <Graphics/Datatypes/RenderFieldState.h>
-#include <Core/Datatypes/Geometry.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Render {
+  namespace Modules {
+    namespace Fields {
 
-/// \todo Transition this class to use the template ShaderVBOAttribs class
-///       under utils (utils/Shader.hpp).
-struct SRRenderState
-{
-  // -- Data --
-  RenderState state;
+      class SCISHARE BuildElemLeadField : public Dataflow::Networks::Module,
+        public Has3InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
+      {
+      public:
+        BuildElemLeadField();
+        ~BuildElemLeadField();
 
-  // -- Functions --
-  SRRenderState() {}
+        void execute() override;
+        void setStateDefaults() override {}
 
-  static const char* getName() {return "SRRenderState";}
+        INPUT_PORT(0, DomainMesh, Field);
+        INPUT_PORT(1, ElectrodeInterpolant, SparseRowMatrix);
+        INPUT_PORT(2, SolutionVectors, DenseMatrix);
+        OUTPUT_PORT(0, LeadField, DenseMatrix);
+        OUTPUT_PORT(1, RHSVector, DenseMatrix);
 
-  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
-  {
-    // Shouldn't need to serialize these values. They are context specific.
-    // Maybe? Will need to figure out as I go along.
-    return true;
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+      private:
+        std::unique_ptr<class BuildElemLeadFieldImpl> impl_;
+      };
+
+    }
   }
-};
-
-} // namespace Render
-} // namespace SCIRun
+}
 
 #endif

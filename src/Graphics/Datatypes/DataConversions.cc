@@ -26,8 +26,8 @@
 */
 
 
-#include <Core/Algorithms/Visualization/DataConversions.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/DataConversions.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 
 namespace SCIRun {
 

@@ -32,19 +32,28 @@
 ///   University of Utah
 /// @date  July 2004
 
-#include <Core/Geometry/CompGeom.h>
+#include <Modules/Legacy/Fields/MergeTriSurfs.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
 
-#include <Core/Util/StringUtil.h>
-#include <Core/Containers/Handle.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <iostream>
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 
-namespace SCIRun {
+MODULE_INFO_DEF(MergeTriSurfs, NewField, SCIRun)
+
+//TODO: move to algo layer
+namespace detail
+{
 
 /// @class MergeTriSurfsAlgo
 /// @brief This module self intersects all the triangles in a trisurf with each other so that none overlap.
@@ -54,15 +63,14 @@ class MergeTriSurfsAlgo
 public:
 
   /// virtual interface.
-  void execute(ProgressReporter *reporter,
+  void execute(AlgorithmStatusReporter::UpdaterFunc reporter,
                FieldHandle tris,
                std::vector<index_type> &new_nodes,
                std::vector<index_type> &new_elems);
 };
 
-
 void
-MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
+MergeTriSurfsAlgo::execute(AlgorithmStatusReporter::UpdaterFunc reporter,
                            FieldHandle tris_h,
                            std::vector<index_type> &new_nodes,
                            std::vector<index_type> &new_elems)
@@ -85,7 +93,7 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
   int cnt = 0;
   for(VMesh::Elem::index_type idx=0; idx<num_elems;idx++)
   {
-    cnt++; if (cnt == 100) { cnt = 0; reporter->update_progress(idx, num_elems * 2); }
+    cnt++; if (cnt == 100) { cnt = 0; reporter(static_cast<double>(idx) / num_elems * 2); }
 
     VMesh::Node::array_type anodes;
     tmesh->get_nodes(anodes, idx);
@@ -125,7 +133,7 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
   cnt = 0;
   for (size_t i = 0; i < newpoints.size(); i++)
   {
-    cnt++; if (cnt == 100) { cnt = 0; reporter->update_progress(i, newpoints.size()); }
+    cnt++; if (cnt == 100) { cnt = 0; reporter(static_cast<double>(i) / newpoints.size()); }
 
     Point closest;
     VMesh::Elem::array_type elem;
@@ -146,50 +154,32 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
   tmesh->synchronize(Mesh::EDGES_E);
   tfield->resize_fdata();
 }
-
-
-
-
-class MergeTriSurfs : public Module {
-public:
-  MergeTriSurfs(GuiContext* ctx);
-  virtual ~MergeTriSurfs() {}
-  virtual void execute();
-};
-
-DECLARE_MAKER(MergeTriSurfs)
-MergeTriSurfs::MergeTriSurfs(GuiContext* ctx)
-  : Module("MergeTriSurfs", ctx, Filter, "NewField", "SCIRun")
-{
 }
 
-void
-MergeTriSurfs::execute()
+MergeTriSurfs::MergeTriSurfs() : Module(staticInfo_, false)
 {
-  // Get input field.
-  FieldHandle ifieldhandle;
-  get_input_handle("Input Field", ifieldhandle,true);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
+
+void MergeTriSurfs::execute()
+{
+  auto ifieldhandle = getRequiredInput(InputField);
 
   FieldInformation fi(ifieldhandle);
 
-  if (!(fi.is_trisurfmesh()))
+  if (!fi.is_trisurfmesh())
   {
     error("This module has only been implemented for Trisurf meshes.");
     return;
   }
 
-  /// @todo: Verify that it's a trisurf that we're testing.
-  update_state(Executing);
-
-  MergeTriSurfsAlgo algo;
-  ifieldhandle.detach();
-  ifieldhandle->mesh_detach();
+  detail::MergeTriSurfsAlgo algo;
+  auto output = FieldHandle(ifieldhandle->deep_clone());
 
   std::vector<index_type> new_nodes;
   std::vector<index_type> new_elems;
-  algo.execute(this, ifieldhandle, new_nodes, new_elems);
+  algo.execute(getUpdaterFunc(), output, new_nodes, new_elems);
 
-  send_output_handle("Output Field", ifieldhandle, true);
+  sendOutput(OutputField, output);
 }
-
-} // End namespace SCIRun

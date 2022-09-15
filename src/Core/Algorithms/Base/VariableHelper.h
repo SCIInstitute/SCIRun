@@ -127,10 +127,12 @@ public:\
 };
 
 TYPED_VARIABLE_CLASS(bool, toBool)
+TYPED_VARIABLE_CLASS(int, toInt)
 TYPED_VARIABLE_CLASS(std::string, toString)
 
 using BooleanVariable = TypedVariable<bool>;
 using StringVariable = TypedVariable<std::string>;
+using IntVariable = TypedVariable<int>;
 
 }}
 

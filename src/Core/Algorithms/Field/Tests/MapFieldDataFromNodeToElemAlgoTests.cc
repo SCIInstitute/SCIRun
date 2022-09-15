@@ -125,7 +125,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -140,7 +140,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 
  ASSERT_TRUE(result2->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result2->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result2->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result2->vfield()->get_value(tmp,idx);
@@ -181,7 +181,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMin)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -206,7 +206,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMax)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -231,7 +231,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestSum)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -256,7 +256,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMedian)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);

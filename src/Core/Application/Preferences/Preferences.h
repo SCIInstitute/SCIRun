@@ -91,6 +91,8 @@ namespace SCIRun
       TrackedVariable<BooleanVariable> moduleExecuteDownstreamOnly;
       TrackedVariable<BooleanVariable> forceGridBackground;
       TrackedVariable<BooleanVariable> modulesAreDockable;
+      TrackedVariable<IntVariable> toolBarPopupShowDelay;
+      TrackedVariable<IntVariable> toolBarPopupHideDelay;
       StringVariable networkBackgroundColor;
 
       TriggeredScriptInfo postModuleAdd;
@@ -100,7 +102,7 @@ namespace SCIRun
       std::string dataDirectoryPlaceholder() const;
 
       boost::filesystem::path dataDirectory() const;
-      
+
       // returns python command to set the dataDir in the correct format
       [[nodiscard]]
       std::string setDataDirectory(const boost::filesystem::path& path);

@@ -8107,7 +8107,8 @@ xmlXPathCompFilterExpr(xmlXPathParserContextPtr ctxt) {
 
 static xmlChar *
 xmlXPathScanName(xmlXPathParserContextPtr ctxt) {
-    int len = 0, l;
+    //int len = 0,
+    int l;
     int c;
     const xmlChar *cur;
     xmlChar *ret;
@@ -8127,7 +8128,7 @@ xmlXPathScanName(xmlXPathParserContextPtr ctxt) {
 	    (c == '_') || (c == ':') ||
 	    (IS_COMBINING(c)) ||
 	    (IS_EXTENDER(c)))) {
-	len += l;
+	//len += l;
 	NEXTL(l);
 	c = CUR_CHAR(l);
     }

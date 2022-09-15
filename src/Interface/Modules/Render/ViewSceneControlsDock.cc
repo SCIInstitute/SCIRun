@@ -154,6 +154,7 @@ void ScaleBarControls::setScaleBarValues(const ScaleBarData& scale)
   scaleBarMultiplierDoubleSpinBox_->setValue(scale.multiplier);
   numTicksSpinBox_->setValue(scale.numTicks);
   scaleBarUnitLineEdit_->setText(QString::fromStdString(scale.unit));
+  grayLineColorDoubleSpinBox_->setValue(scale.lineColor);
   if (scale.visible)
     updateToolbarButton(ScaleBarControls::buttonOutlineColor);
 }
@@ -610,6 +611,7 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
   connect(scaleBarHeightDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarHeight);
   connect(numTicksSpinBox_, qOverload<int>(&QSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarNumTicks);
   connect(scaleBarMultiplierDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarMultiplier);
+  connect(grayLineColorDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), parent, &ViewSceneDialog::setScaleBarLineColor);
   connect(scaleBarUnitLineEdit_, &QLineEdit::textEdited, parent, &ViewSceneDialog::setScaleBarUnitValue);
 }
 
@@ -783,6 +785,21 @@ void LightControls::resetAngles()
     lightInclinationSlider_->setValue(90);
 }
 
+CompositeLightControls::CompositeLightControls(ViewSceneDialog* parent, const std::vector<LightControls*>& secondaryLights)
+  : ViewSceneControlPopupWidget(parent), lights_(secondaryLights)
+{
+  tabs_ = new QTabWidget(this);
+  WidgetStyleMixin::tabStyle(tabs_);
+  int i = 0;
+  for (auto& light : lights_)
+  {
+    tabs_->addTab(light, "Secondary light #" + QString::number(++i));
+  }
+  auto layout = new QHBoxLayout;
+  setLayout(layout);
+  layout->addWidget(tabs_);
+}
+
 QColor LightButtonUpdater::color() const
 {
   return lightColor_;
@@ -883,6 +900,8 @@ void ViewSceneControlPopupWidget::showContextMenu(const QPoint& pos)
 
 ViewSceneToolBarController::ViewSceneToolBarController(ViewSceneDialog* dialog) : QObject(dialog), dialog_(dialog)
 {
+  SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay.connectValueChanged([this](int) { updateDelays(); });
+  SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay.connectValueChanged([this](int) { updateDelays(); });
 }
 
 namespace
@@ -930,6 +949,7 @@ PopupProperties popupPropertiesFor(Qt::Orientation toolbarOrientation, Qt::ToolB
       }
     }
   }
+  return {};
 }
 
 QStyle::StandardPixmap oppositeArrow(const QPushButton* button)
@@ -972,8 +992,20 @@ void ViewSceneToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopu
 {
   updatePopupProperties(toolbar, popup, false);
 
-  popup->setShowDelay(200);
-  popup->setHideDelay(200);
+  popup->setShowDelay(SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay);
+  popup->setHideDelay(SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay);
+}
+
+void ViewSceneToolBarController::updateDelays()
+{
+  for (const auto& [toolbar, popups] : toolBarPopups_)
+  {
+    for (auto& popup : popups)
+    {
+      popup->setShowDelay(SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay);
+      popup->setHideDelay(SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay);
+    }
+  }
 }
 
 void ViewSceneToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget* popup)
