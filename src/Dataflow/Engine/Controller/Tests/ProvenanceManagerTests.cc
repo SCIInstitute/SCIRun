@@ -30,8 +30,10 @@
 #include <gmock/gmock.h>
 #include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
@@ -49,7 +51,14 @@ public:
   MOCK_METHOD0(clear, void());
 };
 
+class MockPython : public PythonCommandInterpreterInterface
+{
+public:
+  MOCK_METHOD1(run_string, bool(const std::string&));
+};
+
 typedef SharedPointer<MockNetworkIO> MockNetworkIOPtr;
+typedef SharedPointer<MockPython> MockPyPtr;
 
 class ProvenanceManagerTests : public ::testing::Test
 {
@@ -57,6 +66,7 @@ protected:
   void SetUp() override
   {
     controller_.reset(new NiceMock<MockNetworkIO>);
+    py_.reset(new NiceMock<MockPython>);
   }
 
   class DummyProvenanceItem : public ProvenanceItem<std::string>
@@ -77,6 +87,7 @@ protected:
   }
 
   MockNetworkIOPtr controller_;
+  MockPyPtr py_;
   SerialNetworkExecutorHandle null_;
 };
 
@@ -122,8 +133,9 @@ TEST_F(ProvenanceManagerTests, CanUndoItem)
   EXPECT_EQ(2, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 
-  EXPECT_CALL(*controller_, clear()).Times(1);
-  EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
+  EXPECT_CALL(*controller_, clear()).Times(0);
+  EXPECT_CALL(*controller_, loadNetwork("1")).Times(0);
+  EXPECT_CALL(*py_, run_string("1")).Times(1);
   auto undone = manager.undo();
 
   EXPECT_EQ("2", undone->name());
