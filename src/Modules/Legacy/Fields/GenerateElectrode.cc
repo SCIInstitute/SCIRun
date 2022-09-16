@@ -29,6 +29,9 @@
 ///@brief This module makes a mesh that looks like a wire
 
 #include <Modules/Legacy/Fields/GenerateElectrode.h>
+//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+//#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -40,52 +43,22 @@
 #include <Core/Logging/Log.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/WidgetFactory.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
+
 
 using namespace SCIRun;
-using namespace Core;
-using namespace Logging;
-using namespace Datatypes;
-using namespace Algorithms;
-using namespace Geometry;
-using namespace Graphics;
-using namespace Modules::Fields;
-using namespace Dataflow::Networks;
-using namespace Graphics::Datatypes;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace Graphics;
+using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
 
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeWidth);
-ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
-ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
-ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
-ALGORITHM_PARAMETER_DEF(Fields, GEProbeColor);
-ALGORITHM_PARAMETER_DEF(Fields, GEProbeLabel);
-ALGORITHM_PARAMETER_DEF(Fields, GEProbeSize);
-
-namespace SCIRun
-{
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Fields
-      {
-        class GenerateElectrodeImpl
-        {
-        public:
-
-          std::vector<Point> Previous_points_;
-        };
-      }
-    }
-  }
-}
 
 #if 0
 	class GenerateElectrode : public Module
@@ -148,8 +121,7 @@ namespace SCIRun
 		};
 #endif
 
-GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_),
-  impl_(new GenerateElectrodeImpl)
+GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(ElectrodeMesh);
@@ -168,9 +140,9 @@ void GenerateElectrode::setStateDefaults()
     setAlgoBoolFromState(Parameters::MoveAll);
     setAlgoStringFromState(Parameters::ElectrodeType);
     setAlgoStringFromState(Parameters::ElectrodeProjection);
-    setAlgoStringFromState(Parameters::GEProbeColor);
-    setAlgoStringFromState(Parameters::GEProbeLabel);
-    setAlgoDoubleFromState(Parameters::GEProbeSize);
+    setAlgoStringFromState(Parameters::ProbeColor);
+    setAlgoStringFromState(Parameters::ProbeLabel);
+    setAlgoDoubleFromState(Parameters::ProbeSize);
 }
 
 void GenerateElectrode::execute()
@@ -189,9 +161,9 @@ void GenerateElectrode::execute()
     setAlgoBoolFromState(Parameters::MoveAll);
     setAlgoOptionFromState(Parameters::ElectrodeType);
     setAlgoOptionFromState(Parameters::ElectrodeProjection);
-    setAlgoDoubleFromState(Parameters::GEProbeSize);
-    setAlgoStringFromState(Parameters::GEProbeLabel);
-    setAlgoStringFromState(Parameters::GEProbeColor);
+    setAlgoDoubleFromState(Parameters::ProbeSize);
+    setAlgoStringFromState(Parameters::ProbeLabel);
+    setAlgoStringFromState(Parameters::ProbeColor);
     
 
 //  FieldInformation fis(source);

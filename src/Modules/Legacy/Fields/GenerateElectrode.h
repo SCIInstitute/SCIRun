@@ -29,34 +29,12 @@
 #ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
 #define MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
 
+#include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun
 {
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Fields
-      {
-        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
-        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
-        ALGORITHM_PARAMETER_DECL(ElectrodeWidth);
-        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
-        ALGORITHM_PARAMETER_DECL(ElectrodeType);
-        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
-        ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
-        ALGORITHM_PARAMETER_DECL(MoveAll);
-        ALGORITHM_PARAMETER_DECL(UseFieldNodes);
-        ALGORITHM_PARAMETER_DECL( GEProbeColor);
-        ALGORITHM_PARAMETER_DECL( GEProbeLabel);
-        ALGORITHM_PARAMETER_DECL( GEProbeSize);
-        class GenerateElectrodeImpl;
-      }
-    }
-  }
-
   namespace Modules
   {
     namespace Fields
@@ -75,16 +53,12 @@ namespace SCIRun
         OUTPUT_PORT(0, ElectrodeMesh, Field);
         OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
         OUTPUT_PORT(2, ControlPoints, Field);
-
-        //MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI);
-        //TODO: enable after UI is written
+          
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
 
-      private:
-        SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
       };
     }
   }
-};
+}
 
 #endif

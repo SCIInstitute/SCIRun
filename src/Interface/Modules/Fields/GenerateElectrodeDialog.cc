@@ -54,7 +54,7 @@ GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, Module
   addSpinBoxManager(ResolutionSpinBox_, Parameters::ElectrodeResolution);
   addCheckBoxManager(MoveAllCheckBox_, Parameters::MoveAll);
   addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
-  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::GEProbeSize);
+  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ProbeSize);
 
   connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeDialog::enableWidgets);
   connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::assignDefaultMeshColor);
@@ -73,7 +73,7 @@ void GenerateElectrodeDialog::enableWidgets(const QString& mode)
 
 void GenerateElectrodeDialog::pullSpecial()
 {
-  ColorRGB color(state_->getValue(Parameters::GEProbeColor).toString());
+  ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
   // check for old saved color format: integers 0-255.
   defaultMeshColor_ = QColor(
     static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
@@ -95,7 +95,7 @@ void GenerateElectrodeDialog::assignDefaultMeshColor()
 
 void GenerateElectrodeDialog::pushColor()
 {
-  state_->setValue(Parameters::GEProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+  state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
 }
 
 //void GenerateElectrodeDialog::toggleSpinBoxes()

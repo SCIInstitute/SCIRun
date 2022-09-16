@@ -33,6 +33,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Legacy/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgo.h>
 
 namespace SCIRun {
 
@@ -49,9 +50,9 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(FieldValue);
         ALGORITHM_PARAMETER_DECL(FieldNode);
         ALGORITHM_PARAMETER_DECL(FieldElem);
-        ALGORITHM_PARAMETER_DECL(ProbeSize);
-        ALGORITHM_PARAMETER_DECL(ProbeLabel);
-        ALGORITHM_PARAMETER_DECL(ProbeColor);
+//        ALGORITHM_PARAMETER_DECL(ProbeSize);
+//        ALGORITHM_PARAMETER_DECL(ProbeLabel);
+//        ALGORITHM_PARAMETER_DECL(ProbeColor);
         ALGORITHM_PARAMETER_DECL(SnapToNode);
         ALGORITHM_PARAMETER_DECL(SnapToElement);
         ALGORITHM_PARAMETER_DECL(BBoxSize);
