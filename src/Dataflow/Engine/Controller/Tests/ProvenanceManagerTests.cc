@@ -65,6 +65,8 @@ protected:
     explicit DummyProvenanceItem(const std::string& name) : name_(name) {}
     std::string name() const override { return name_; }
     std::string memento() const override { return name_; }
+    std::string undoCode() const override { throw "not implemented"; }
+    std::string redoCode() const override { throw "not implemented"; }
   private:
     std::string name_;
   };
