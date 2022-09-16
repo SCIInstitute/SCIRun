@@ -149,7 +149,7 @@ GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_),
   impl_(new GenerateElectrodeImpl)
 {
   INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(ElectrodeMesh);
   INITIALIZE_PORT(ElectrodeWidget);
   INITIALIZE_PORT(ControlPoints);
 }
@@ -160,11 +160,11 @@ void GenerateElectrode::setStateDefaults()
     setAlgoDoubleFromState(Parameters::ElectrodeThickness);
     setAlgoDoubleFromState(Parameters::ElectrodeWidth);
     setAlgoIntFromState(Parameters::NumberOfControlPoints);
-    setStateIntFromState(Parameters::ElectrodeResolution);
-    setStateBoolFromAlgo(Parameters::UseFieldNodes);
-    setStateBoolFromAlgo(Parameters::MoveAll);
-    setStateStringFromAlgoOption(Parameters::ElectrodeType);
-    setStateStringFromAlgoOption(Parameters::ElectrodeProjection);
+    setAlgoIntFromState(Parameters::ElectrodeResolution);
+    setAlgoBoolFromState(Parameters::UseFieldNodes);
+    setAlgoBoolFromState(Parameters::MoveAll);
+    setAlgoStringFromState(Parameters::ElectrodeType);
+    setAlgoStringFromState(Parameters::ElectrodeProjection);
 }
 
 void GenerateElectrode::execute()
@@ -352,8 +352,11 @@ void GenerateElectrode::execute()
 //
 //  pi.make_double();
 //  pfield = CreateField(pi, pmesh);
+    
+    auto output = algo().run(withInputData((InputField, source)));
 
-  sendOutputFromAlgo;
+  sendOutputFromAlgorithm(ElectrodeMesh, output);
+    sendOutputFromAlgorithm(ControlPoints, output);
 
 //  impl_->get_centers(points, final_points,
 //    state->getValue(Parameters::ElectrodeLength).toDouble(),
@@ -458,29 +461,6 @@ void GenerateElectrode::execute()
 	}
 #endif
 
-void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
-{
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-	size_t s=0,n=widget_.size();
-	points.resize(n);
-
-
-	if(gui_type_.get()=="planar")
-	{
-		n+=1;
-		s=1;
-		points.resize(n);
-		points[0]=arrow_widget_->GetPosition();
-	}
-
-
-	for (size_t k = s; k < n; k++)
-    points[k] = widget_[k-s]->GetPosition();
-#endif
-  //TODO: defaulting widget positions to hard-coded values.
-  // Use input field points instead.
-  points = { {0,0,0}, {1,0,0}, {2,0,0}, {3,0,0}, {4,0,0} };
-}
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 	void

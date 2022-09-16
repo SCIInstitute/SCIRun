@@ -75,7 +75,7 @@ namespace SCIRun
 
         //MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI);
         //TODO: enable after UI is written
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgoAndUI);
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
 
       private:
         SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
