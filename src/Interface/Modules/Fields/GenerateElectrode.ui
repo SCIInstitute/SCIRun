@@ -34,7 +34,7 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QDoubleSpinBox" name="WidthSpinBox_">
+       <widget class="QDoubleSpinBox" name="WidthDoubleSpinBox_">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -89,7 +89,7 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="LengthSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="LengthDoubleSpinBox_"/>
       </item>
       <item row="7" column="1">
        <widget class="QSpinBox" name="ResolutionSpinBox_">
@@ -150,7 +150,7 @@
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QDoubleSpinBox" name="ThicknessSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="ThicknessDoubleSpinBox_"/>
       </item>
       <item row="8" column="1">
        <widget class="QSpinBox" name="NumberOfControlPointsSpinBox_"/>
@@ -243,7 +243,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="RemovePiontPushButton_">
+      <widget class="QPushButton" name="RemovePointPushButton_">
        <property name="text">
         <string>Remove Point</string>
        </property>

@@ -54,6 +54,8 @@ namespace SCIRun {
       void pushColor();
       void assignDefaultMeshColor();
       void toggleSpinBoxes();
+      void AddPoint();
+      void RemovePoint();
 
     private:
       QColor defaultMeshColor_;

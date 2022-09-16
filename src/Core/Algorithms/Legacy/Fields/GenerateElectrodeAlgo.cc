@@ -29,12 +29,14 @@
 #include <Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Color.h>
 
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
+//using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
@@ -45,6 +47,9 @@ ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
 ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
+ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
+ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
+ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 
 const AlgorithmOutputName GenerateElectrodeAlgo::ControlPoints("ControlPoints");
 const AlgorithmOutputName GenerateElectrodeAlgo::ElectrodeMesh("ElectrodeMesh");
@@ -60,6 +65,10 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
   addParameter(Parameters::ElectrodeResolution,10);
   addParameter(Parameters::UseFieldNodes,true);
   addParameter(Parameters::MoveAll,false);
+  addParameter(Parameters::MoveAll,false);
+  addParameter(Parameters::ProbeColor, "Color(1.0, 1.0, 1.0)");
+  addParameter(Parameters::ProbeLabel, std::string());
+  addParameter(Parameters::ProbeSize, 1.0);
   
 }
 

@@ -53,7 +53,7 @@ GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, Module
   addSpinBoxManager(NumberOfControlPointsSpinBox_, Parameters::NumberOfControlPoints);
   addSpinBoxManager(ResolutionSpinBox_, Parameters::ElectrodeResolution);
   addCheckBoxManager(MoveAllCheckBox_, Parameters::MoveAll);
-  addCheckBoxManager(UseFieldNodeCheckBox_, Parameters::UseFieldNodes);
+  addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
 
   connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeDialog::enableWidgets);
   connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::assignDefaultMeshColor);
@@ -79,7 +79,7 @@ void GenerateElectrodeDialog::pullSpecial()
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-  enableWidgets(QString::fromStdString(state_->getValue(Parameters::MoveMethod).toString()));
+//  enableWidgets(QString::fromStdString(state_->getValue(Parameters::MoveMethod).toString()));
 }
 
 void GenerateElectrodeDialog::assignDefaultMeshColor()
