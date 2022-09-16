@@ -45,6 +45,8 @@ namespace Engine {
   public:
     explicit ProvenanceItemBase(Networks::NetworkFileHandle state);
     Networks::NetworkFileHandle memento() const override;
+    std::string undoCode() const override { throw "not implemented"; }
+    std::string redoCode() const override { throw "not implemented"; }
   protected:
     Networks::NetworkFileHandle state_;
   };
