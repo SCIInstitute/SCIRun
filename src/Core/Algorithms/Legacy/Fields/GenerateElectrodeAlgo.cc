@@ -46,6 +46,9 @@ ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
 ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
 
+const AlgorithmOutputName GenerateElectrodeAlgo::ControlPoints("ControlPoints");
+const AlgorithmOutputName GenerateElectrodeAlgo::ElectrodeMesh("ElectrodeMesh");
+
 GenerateElectrodeAlgo::GenerateElectrodeAlgo()
 {
   addParameter(Parameters::ElectrodeLength, 0.1);
@@ -159,7 +162,7 @@ GenerateElectrodeAlgo::build_table(VMesh *vmesh,
 
 // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
 
-bool GenerateElectrodeAlgo::CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
+bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
 {
   // need to have at least 3 nodes
   if (t.size() < 3) return (false);
@@ -223,7 +226,7 @@ bool GenerateElectrodeAlgo::CalculateSpline(std::vector<double>& t, std::vector<
 // this is a spline function.  pp is the final points that are in between the original points p.
 // t and tt are the original and final desired spacing, respectively.
 
-bool GenerateElectrodeAlgo::CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
+bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
 {
   // need to have at least 3 nodes
   if (t.size() < 3) return (false);
@@ -251,7 +254,31 @@ bool GenerateElectrodeAlgo::CalculateSpline(std::vector<double>& t, std::vector<
   return (true);
 }
 
-void GenerateElectrodeAlgo::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution) const
+void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
+{
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    size_t s=0,n=widget_.size();
+    points.resize(n);
+
+
+    if(gui_type_.get()=="planar")
+    {
+        n+=1;
+        s=1;
+        points.resize(n);
+        points[0]=arrow_widget_->GetPosition();
+    }
+
+
+    for (size_t k = s; k < n; k++)
+    points[k] = widget_[k-s]->GetPosition();
+#endif
+  //TODO: defaulting widget positions to hard-coded values.
+  // Use input field points instead.
+  points = { {0,0,0}, {1,0,0}, {2,0,0}, {3,0,0}, {4,0,0} };
+}
+
+void GenerateElectrodeImpl::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution)
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //This is only needed to get the positions from the widget
@@ -272,7 +299,7 @@ void GenerateElectrodeAlgo::get_centers(std::vector<Point>& p, std::vector<Point
 }
 
 
-FieldHandle GenerateElectrodeAlgo::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution) const
+FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution)
 {
     FieldInformation fi("TetVolMesh",0,"double");
     MeshHandle mesh = CreateMesh(fi);
@@ -848,9 +875,9 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
     arrow_widget_ = 0;
 #endif
 
-  if (Previous_points_.size() < 3)
+  if (impl_->Previous_points_.size() < 3)
   {
-    Previous_points_ = orig_points;
+      impl_->Previous_points_ = orig_points;
   }
 
   size_type size = orig_points.size();
@@ -863,9 +890,11 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
   {
     for (size_t k = 0; k < size; k++)
     {
+//      if (orig_points[k] != getPreviousPoints(k))
       if (orig_points[k] != Previous_points_[k])
       {
-        move_dist = orig_points[k] - Previous_points_[k];
+//        move_dist = orig_points[k] - getPreviousPoints(k);
+          move_dist = orig_points[k] - Previous_points_[k];
         move_idx = k;
       }
     }
@@ -890,7 +919,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
     create_widgets(orig_points, direction);
 #endif
 
-  Previous_points_ = orig_points;
+    impl_->Previous_points_ = orig_points;
 
   FieldInformation pi("PointCloudMesh", 0, "double");
   MeshHandle pmesh = CreateMesh(pi);
@@ -903,18 +932,18 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
   pi.make_double();
   outputPoints = CreateField(pi, pmesh);
     
-  get_centers(points, final_points,
+  impl_ -> get_centers(points, final_points,
       get(Parameters::ElectrodeLength).toDouble(),
       get(Parameters::ElectrodeResolution).toInt());
 
     if (electrode_type == "wire")
-      outputField = Make_Mesh_Wire(final_points,
+      outputField = impl_ -> Make_Mesh_Wire(final_points,
         get(Parameters::ElectrodeThickness).toDouble(),
-        get(Parameters::ElectrodeResolution).toInt()));
+        get(Parameters::ElectrodeResolution).toInt());
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (electrode_type == "planar")
-        outputField = Make_Mesh_Planar(final_points, ofield, direction);
+        outputField = impl_ -> Make_Mesh_Planar(final_points, ofield, direction);
   #endif
 
     return true;
@@ -938,3 +967,4 @@ AlgorithmOutput GenerateElectrodeAlgo::run(const AlgorithmInput& input) const
   return output;
 }
 
+ 

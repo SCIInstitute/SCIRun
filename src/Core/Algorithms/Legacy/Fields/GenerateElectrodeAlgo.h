@@ -60,13 +60,29 @@ namespace SCIRun
       ALGORITHM_PARAMETER_DECL(MoveAll);
       ALGORITHM_PARAMETER_DECL(UseFieldNodes);
       
+
+      class GenerateElectrodeImpl
+      {
+      public:
+        void get_points(std::vector<Geometry::Point>& points);
+        void get_centers(std::vector<Geometry::Point>& , std::vector<Geometry::Point>& , double , int );
+        FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& , double , int );
+          
+          bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
+          
+          bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
+
+        std::vector<Geometry::Point> Previous_points_;
+      };
+           
+      
 class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
 {
   public:
     GenerateElectrodeAlgo();
     bool runImpl(FieldHandle input, FieldHandle&, FieldHandle&) const;
     static const AlgorithmOutputName ControlPoints, ElectrodeMesh;
-    std::vector<Geometry::Point> Previous_points_;
+    
     AlgorithmOutput run(const AlgorithmInput& input) const override;
     
     typedef std::pair<double, VMesh::Elem::index_type> weight_type;
@@ -81,11 +97,11 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
       return (a.first < b.first);
     }
     
-    bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
-    
-    bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
-    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& final_points, double, int) const;
-    void get_centers(std::vector<Geometry::Point>&, std::vector<Geometry::Point>&, double, int) const;
+
+//    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& final_points, double, int) const;
+//    void get_centers(std::vector<Geometry::Point>&, std::vector<Geometry::Point>&, double, int) const;
+    private:
+      SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
     
 };
 }
