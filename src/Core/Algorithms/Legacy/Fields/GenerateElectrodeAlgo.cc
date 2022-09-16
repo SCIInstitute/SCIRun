@@ -51,6 +51,9 @@ ALGORITHM_PARAMETER_DEF(Fields, GEProbeColor);
 ALGORITHM_PARAMETER_DEF(Fields, GEProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, GEProbeSize);
 
+// TODO: better param names than GEProbe*
+
+
 const AlgorithmOutputName GenerateElectrodeAlgo::ControlPoints("ControlPoints");
 const AlgorithmOutputName GenerateElectrodeAlgo::ElectrodeMesh("ElectrodeMesh");
 
