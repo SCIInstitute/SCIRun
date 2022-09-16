@@ -54,6 +54,7 @@ GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, Module
   addSpinBoxManager(ResolutionSpinBox_, Parameters::ElectrodeResolution);
   addCheckBoxManager(MoveAllCheckBox_, Parameters::MoveAll);
   addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
+  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::GEProbeSize);
 
   connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeDialog::enableWidgets);
   connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::assignDefaultMeshColor);
@@ -67,19 +68,19 @@ GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, Module
 void GenerateElectrodeDialog::enableWidgets(const QString& mode)
 {
   WidthDoubleSpinBox_->setReadOnly(mode != "planar");
-  ProjectionComboBox_->setReadOnly(mode != "planar");
+  ProjectionComboBox_->setEnabled(mode == "planar");
 }
 
 void GenerateElectrodeDialog::pullSpecial()
 {
-  ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
+  ColorRGB color(state_->getValue(Parameters::GEProbeColor).toString());
   // check for old saved color format: integers 0-255.
   defaultMeshColor_ = QColor(
     static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-//  enableWidgets(QString::fromStdString(state_->getValue(Parameters::MoveMethod).toString()));
+  enableWidgets(QString::fromStdString(state_->getValue(Parameters::ElectrodeType).toString()));
 }
 
 void GenerateElectrodeDialog::assignDefaultMeshColor()
@@ -94,24 +95,24 @@ void GenerateElectrodeDialog::assignDefaultMeshColor()
 
 void GenerateElectrodeDialog::pushColor()
 {
-  state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+  state_->setValue(Parameters::GEProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
 }
 
-void GenerateElectrodeDialog::toggleSpinBoxes()
-{
-  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
-  sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
-}
+//void GenerateElectrodeDialog::toggleSpinBoxes()
+//{
+//  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
+//  sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
+//}
 
 void GenerateElectrodeDialog::AddPoint()
 {
-    double numpoints = state_->getValue(Parameters::NumberOfControlPoints);
+    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
     state_->setValue(Parameters::NumberOfControlPoints,numpoints+1);
 }
 
 
 void GenerateElectrodeDialog::RemovePoint()
 {
-    double numpoints = state_->getValue(Parameters::NumberOfControlPoints);
+    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
     state_->setValue(Parameters::NumberOfControlPoints,numpoints-1);
 }

@@ -64,9 +64,9 @@ ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
 ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
+ALGORITHM_PARAMETER_DEF(Fields, GEProbeColor);
+ALGORITHM_PARAMETER_DEF(Fields, GEProbeLabel);
+ALGORITHM_PARAMETER_DEF(Fields, GEProbeSize);
 
 namespace SCIRun
 {
@@ -168,9 +168,9 @@ void GenerateElectrode::setStateDefaults()
     setAlgoBoolFromState(Parameters::MoveAll);
     setAlgoStringFromState(Parameters::ElectrodeType);
     setAlgoStringFromState(Parameters::ElectrodeProjection);
-    setAlgoStringFromState(Parameters::ProbeColor);
-    setAlgoStringFromState(Parameters::ProbeLabel);
-    setAlgoDoubleFromState(Parameters::ProbeSize);
+    setAlgoStringFromState(Parameters::GEProbeColor);
+    setAlgoStringFromState(Parameters::GEProbeLabel);
+    setAlgoDoubleFromState(Parameters::GEProbeSize);
 }
 
 void GenerateElectrode::execute()
@@ -189,9 +189,9 @@ void GenerateElectrode::execute()
     setAlgoBoolFromState(Parameters::MoveAll);
     setAlgoOptionFromState(Parameters::ElectrodeType);
     setAlgoOptionFromState(Parameters::ElectrodeProjection);
-    setAlgoDoubleFromState(Parameters::ProbeSize);
-    setAlgoStringFromState(Parameters::ProbeLabel);
-    setAlgoStringFromState(Parameters::ProbeColor);
+    setAlgoDoubleFromState(Parameters::GEProbeSize);
+    setAlgoStringFromState(Parameters::GEProbeLabel);
+    setAlgoStringFromState(Parameters::GEProbeColor);
     
 
 //  FieldInformation fis(source);

@@ -53,7 +53,7 @@ namespace SCIRun {
       void enableWidgets(const QString& mode);
       void pushColor();
       void assignDefaultMeshColor();
-      void toggleSpinBoxes();
+//      void toggleSpinBoxes();
       void AddPoint();
       void RemovePoint();
 

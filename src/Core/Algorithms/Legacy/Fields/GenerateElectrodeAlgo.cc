@@ -47,9 +47,9 @@ ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
 ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
+ALGORITHM_PARAMETER_DEF(Fields, GEProbeColor);
+ALGORITHM_PARAMETER_DEF(Fields, GEProbeLabel);
+ALGORITHM_PARAMETER_DEF(Fields, GEProbeSize);
 
 const AlgorithmOutputName GenerateElectrodeAlgo::ControlPoints("ControlPoints");
 const AlgorithmOutputName GenerateElectrodeAlgo::ElectrodeMesh("ElectrodeMesh");
@@ -66,9 +66,9 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
   addParameter(Parameters::UseFieldNodes,true);
   addParameter(Parameters::MoveAll,false);
   addParameter(Parameters::MoveAll,false);
-  addParameter(Parameters::ProbeColor, "Color(1.0, 1.0, 1.0)");
-  addParameter(Parameters::ProbeLabel, std::string());
-  addParameter(Parameters::ProbeSize, 1.0);
+  addParameter(Parameters::GEProbeColor, "Color(1.0, 1.0, 1.0)");
+  addParameter(Parameters::GEProbeLabel, std::string());
+  addParameter(Parameters::GEProbeSize, 1.0);
   
 }
 

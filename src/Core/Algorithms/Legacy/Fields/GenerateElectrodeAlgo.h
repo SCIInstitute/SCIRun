@@ -59,9 +59,9 @@ namespace SCIRun
       ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
       ALGORITHM_PARAMETER_DECL(MoveAll);
       ALGORITHM_PARAMETER_DECL(UseFieldNodes);
-      ALGORITHM_PARAMETER_DECL( ProbeColor);
-      ALGORITHM_PARAMETER_DECL( ProbeLabel);
-      ALGORITHM_PARAMETER_DECL( ProbeSize);
+      ALGORITHM_PARAMETER_DECL( GEProbeColor);
+      ALGORITHM_PARAMETER_DECL( GEProbeLabel);
+      ALGORITHM_PARAMETER_DECL( GEProbeSize);
 
       class GenerateElectrodeImpl
       {
