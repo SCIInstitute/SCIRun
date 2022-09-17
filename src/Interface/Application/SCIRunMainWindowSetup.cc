@@ -56,6 +56,7 @@
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
+#include <Core/Python/PythonInterpreter.h>
 #endif
 
 using namespace SCIRun;
@@ -363,7 +364,7 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
 
 void SCIRunMainWindow::setupProvenanceWindow()
 {
-  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_));
+  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_, &Core::PythonInterpreter::Instance()));
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
 
   connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);

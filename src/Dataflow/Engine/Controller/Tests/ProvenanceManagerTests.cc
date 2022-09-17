@@ -75,8 +75,8 @@ protected:
     explicit DummyProvenanceItem(const std::string& name) : name_(name) {}
     std::string name() const override { return name_; }
     std::string memento() const override { return name_; }
-    std::string undoCode() const override { throw "not implemented"; }
-    std::string redoCode() const override { throw "not implemented"; }
+    std::string undoCode() const override { return "undo " + name_; }
+    std::string redoCode() const override { return "redo " + name_; }
   private:
     std::string name_;
   };
@@ -93,7 +93,7 @@ protected:
 
 TEST_F(ProvenanceManagerTests, CanAddItems)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -106,7 +106,7 @@ TEST_F(ProvenanceManagerTests, CanAddItems)
 
 TEST_F(ProvenanceManagerTests, CanClear)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -125,7 +125,7 @@ TEST_F(ProvenanceManagerTests, CanClear)
 
 TEST_F(ProvenanceManagerTests, CanUndoItem)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -135,17 +135,17 @@ TEST_F(ProvenanceManagerTests, CanUndoItem)
 
   EXPECT_CALL(*controller_, clear()).Times(0);
   EXPECT_CALL(*controller_, loadNetwork("1")).Times(0);
-  EXPECT_CALL(*py_, run_string("1")).Times(1);
+  EXPECT_CALL(*py_, run_string("undo 1")).Times(1);
   auto undone = manager.undo();
 
-  EXPECT_EQ("2", undone->name());
+  EXPECT_EQ("1", undone->name());
   EXPECT_EQ(1, manager.undoSize());
   EXPECT_EQ(1, manager.redoSize());
 }
 
 TEST_F(ProvenanceManagerTests, CanRedoUndoneItem)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -172,7 +172,7 @@ TEST_F(ProvenanceManagerTests, CanRedoUndoneItem)
 
 TEST_F(ProvenanceManagerTests, CannotUndoWhenEmpty)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -185,7 +185,7 @@ TEST_F(ProvenanceManagerTests, CannotUndoWhenEmpty)
 
 TEST_F(ProvenanceManagerTests, CannotRedoWhenEmpty)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   manager.addItem(item("1"));
   EXPECT_EQ(1, manager.undoSize());
@@ -199,7 +199,7 @@ TEST_F(ProvenanceManagerTests, CannotRedoWhenEmpty)
 /// @todo: need test case (no situation for it yet) for "undo all does not completely clear the network"
 TEST_F(ProvenanceManagerTests, CanUndoAll)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -219,7 +219,7 @@ TEST_F(ProvenanceManagerTests, CanUndoAll)
 
 TEST_F(ProvenanceManagerTests, CanRedoAll)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -251,7 +251,7 @@ TEST_F(ProvenanceManagerTests, CanRedoAll)
 
 TEST_F(ProvenanceManagerTests, AddItemWipesOutRedoStack)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -273,7 +273,7 @@ TEST_F(ProvenanceManagerTests, AddItemWipesOutRedoStack)
 
 TEST_F(ProvenanceManagerTests, LoadFileSetsInitialState)
 {
-  ProvenanceManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get(), py_.get());
 
   manager.setInitialState("initial");
 

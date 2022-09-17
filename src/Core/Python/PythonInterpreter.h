@@ -53,14 +53,6 @@ namespace Core
 class PythonInterpreterPrivate;
 typedef SharedPointer< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
-class SCISHARE PythonCommandInterpreterInterface
-{
-public:
-	virtual ~PythonCommandInterpreterInterface() {}
-	virtual bool run_string( const std::string& command ) = 0;
-};
-
-
 class SCISHARE PythonInterpreter : public PythonCommandInterpreterInterface
 {
 	CORE_SINGLETON( PythonInterpreter )

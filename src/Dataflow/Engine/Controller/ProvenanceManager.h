@@ -51,7 +51,7 @@ namespace Engine {
     using List = typename Stack::container_type;
     using IOType = Engine::NetworkIOInterface<Memento>;
 
-    explicit ProvenanceManager(IOType* networkIO);
+    ProvenanceManager(IOType* networkIO, Core::PythonCommandInterpreterInterface* py);
     void setInitialState(const Memento& initialState);
     void addItem(ItemHandle item);
     ItemHandle undo();
@@ -68,9 +68,9 @@ namespace Engine {
     const IOType* networkIO() const;
 
   private:
-    ItemHandle undo(bool restore);
     ItemHandle redo(bool restore);
     IOType* networkIO_;
+    Core::PythonCommandInterpreterInterface* py_;
     Stack undo_, redo_;
     std::optional<Memento> initialState_;
   };
@@ -78,7 +78,8 @@ namespace Engine {
 
 
   template <class Memento>
-  ProvenanceManager<Memento>::ProvenanceManager(IOType* networkIO) : networkIO_(networkIO) {}
+  ProvenanceManager<Memento>::ProvenanceManager(IOType* networkIO, Core::PythonCommandInterpreterInterface* py)
+    : networkIO_(networkIO), py_(py) {}
 
   template <class Memento>
   void ProvenanceManager<Memento>::setInitialState(const Memento& initialState)
@@ -115,20 +116,13 @@ namespace Engine {
   template <class Memento>
   typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::undo()
   {
-    return undo(true);
-  }
-
-  template <class Memento>
-  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::undo(bool restore)
-  {
     if (!undo_.empty())
     {
       auto undone = undo_.top();
+      py_->run_string(undone->undoCode());
       undo_.pop();
       redo_.push(undone);
 
-      //clear and load previous memento
-      if (restore)
       {
         logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
 
@@ -141,7 +135,7 @@ namespace Engine {
 
       return undone;
     }
-    return ItemHandle();
+    return nullptr;
   }
 
   template <class Memento>
@@ -178,7 +172,7 @@ namespace Engine {
     logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
     List undone;
     while (0 != undoSize())
-      undone.push_back(undo(false));
+      undone.push_back(undo());
     networkIO_->clear();
     if (initialState_)
       networkIO_->loadNetwork(*initialState_);
