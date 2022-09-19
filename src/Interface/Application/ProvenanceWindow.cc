@@ -292,7 +292,7 @@ void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, mod->id().id_, editor_->saveNetwork()));
     logCritical("REDO CODE: scirun_add_module(\"{}\")", mod->name());
     logCritical("UNDO CODE: scirun_remove_module(\"{}\")", mod->id().id_);
     Q_EMIT provenanceItemCreated(item);

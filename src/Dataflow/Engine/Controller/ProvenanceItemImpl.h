@@ -54,10 +54,12 @@ namespace Engine {
   class SCISHARE ModuleAddedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleAddedProvenanceItem(const std::string& moduleName, Networks::NetworkFileHandle state);
+    ModuleAddedProvenanceItem(const std::string& moduleName, const std::string& modId, Networks::NetworkFileHandle state);
     std::string name() const override;
+    std::string undoCode() const override;
+    std::string redoCode() const override;
   private:
-    std::string moduleName_;
+    std::string moduleName_, moduleId_;
   };
 
   class SCISHARE ModuleRemovedProvenanceItem : public ProvenanceItemBase

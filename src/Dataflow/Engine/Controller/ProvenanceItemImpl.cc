@@ -31,6 +31,7 @@
 #include <string>
 #include <sstream>
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
+#include <spdlog/fmt/fmt.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -45,14 +46,24 @@ NetworkFileHandle ProvenanceItemBase::memento() const
   return state_;
 }
 
-ModuleAddedProvenanceItem::ModuleAddedProvenanceItem(const std::string& moduleName, NetworkFileHandle state)
-  : ProvenanceItemBase(state), moduleName_(moduleName)
+ModuleAddedProvenanceItem::ModuleAddedProvenanceItem(const std::string& moduleName, const std::string& modId, NetworkFileHandle state)
+  : ProvenanceItemBase(state), moduleName_(moduleName), moduleId_(modId)
 {
 }
 
 std::string ModuleAddedProvenanceItem::name() const
 {
   return "Module Added: " + moduleName_;
+}
+
+std::string ModuleAddedProvenanceItem::undoCode() const
+{
+  return fmt::format("scirun_remove_module(\"{}\")", moduleId_);
+}
+
+std::string ModuleAddedProvenanceItem::redoCode() const
+{
+  return fmt::format("scirun_add_module(\"{}\")", moduleName_);
 }
 
 ModuleRemovedProvenanceItem::ModuleRemovedProvenanceItem(const ModuleId& moduleId, NetworkFileHandle state)

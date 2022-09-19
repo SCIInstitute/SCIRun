@@ -62,9 +62,11 @@ protected:
 TEST_F(ProvenanceItemTests, CanCreateAddModule)
 {
   const std::string name = "ComputeSVD";
-  ModuleAddedProvenanceItem item(name, NetworkFileHandle());
+  ModuleAddedProvenanceItem item(name, name + ":0", NetworkFileHandle());
 
   EXPECT_EQ("Module Added: " + name, item.name());
+  EXPECT_EQ("scirun_add_module(\"ComputeSVD\")", item.redoCode());
+  EXPECT_EQ("scirun_remove_module(\"ComputeSVD:0\")", item.undoCode());
 }
 
 TEST_F(ProvenanceItemTests, CanCreateRemoveModule)
