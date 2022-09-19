@@ -135,10 +135,10 @@ TEST_F(ProvenanceManagerTests, CanUndoItem)
 
   EXPECT_CALL(*controller_, clear()).Times(0);
   EXPECT_CALL(*controller_, loadNetwork("1")).Times(0);
-  EXPECT_CALL(*py_, run_string("undo 1")).Times(1);
+  EXPECT_CALL(*py_, run_string("undo 2")).Times(1);
   auto undone = manager.undo();
 
-  EXPECT_EQ("1", undone->name());
+  EXPECT_EQ("2", undone->name());
   EXPECT_EQ(1, manager.undoSize());
   EXPECT_EQ(1, manager.redoSize());
 }
@@ -151,8 +151,9 @@ TEST_F(ProvenanceManagerTests, CanRedoUndoneItem)
   manager.addItem(item("2"));
 
   {
-    EXPECT_CALL(*controller_, clear()).Times(1);
-    EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(0);
+    EXPECT_CALL(*controller_, loadNetwork("1")).Times(0);
+    EXPECT_CALL(*py_, run_string("undo 2")).Times(1);
     auto undone = manager.undo();
 
     EXPECT_EQ("2", undone->name());
@@ -161,8 +162,9 @@ TEST_F(ProvenanceManagerTests, CanRedoUndoneItem)
   }
 
   {
-    EXPECT_CALL(*controller_, clear()).Times(1);
-    EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(0);
+    EXPECT_CALL(*controller_, loadNetwork("1")).Times(0);
+    EXPECT_CALL(*py_, run_string("redo 2")).Times(1);
     auto redone = manager.redo();
     EXPECT_EQ("2", redone->name());
     EXPECT_EQ(2, manager.undoSize());
@@ -208,7 +210,7 @@ TEST_F(ProvenanceManagerTests, CanUndoAll)
   EXPECT_EQ(3, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 
-  EXPECT_CALL(*controller_, clear()).Times(1);
+  EXPECT_CALL(*controller_, clear()).Times(0);
   EXPECT_CALL(*controller_, loadNetwork(_)).Times(0);
   auto undone = manager.undoAll();
   EXPECT_EQ(3, undone.size());
@@ -229,7 +231,7 @@ TEST_F(ProvenanceManagerTests, CanRedoAll)
   EXPECT_EQ(0, manager.redoSize());
 
   {
-    EXPECT_CALL(*controller_, clear()).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(0);
     EXPECT_CALL(*controller_, loadNetwork(_)).Times(0);
     auto undone = manager.undoAll();
     EXPECT_EQ(3, undone.size());
@@ -239,8 +241,8 @@ TEST_F(ProvenanceManagerTests, CanRedoAll)
   }
 
   {
-    EXPECT_CALL(*controller_, clear()).Times(1);
-    EXPECT_CALL(*controller_, loadNetwork("3")).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(0);
+    EXPECT_CALL(*controller_, loadNetwork("3")).Times(0);
     auto redone = manager.redoAll();
     EXPECT_EQ(3, redone.size());
 
@@ -279,7 +281,7 @@ TEST_F(ProvenanceManagerTests, LoadFileSetsInitialState)
 
   manager.addItem(item("1"));
 
-  EXPECT_CALL(*controller_, clear()).Times(1);
-  EXPECT_CALL(*controller_, loadNetwork("initial")).Times(1);
+  EXPECT_CALL(*controller_, clear()).Times(0);
+  EXPECT_CALL(*controller_, loadNetwork("initial")).Times(0);
   manager.undo();
 }

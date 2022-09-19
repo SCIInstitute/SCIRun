@@ -68,7 +68,6 @@ namespace Engine {
     const IOType* networkIO() const;
 
   private:
-    ItemHandle redo(bool restore);
     IOType* networkIO_;
     Core::PythonCommandInterpreterInterface* py_;
     Stack undo_, redo_;
@@ -124,7 +123,7 @@ namespace Engine {
       redo_.push(undone);
 
       {
-        logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
+        //logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
 
         //networkIO_->clear();
         //if (!undo_.empty())
@@ -141,29 +140,24 @@ namespace Engine {
   template <class Memento>
   typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::redo()
   {
-    return redo(true);
-  }
-
-  template <class Memento>
-  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::redo(bool restore)
-  {
     if (!redo_.empty())
     {
       auto redone = redo_.top();
+      py_->run_string(redone->redoCode());
       redo_.pop();
       undo_.push(redone);
 
       //clear and load redone memento
-      if (restore)
-      {
-        logCritical("TODO: memento-based redo is disabled while a python-based implementation is developed.");
-        //networkIO_->clear();
-        //networkIO_->loadNetwork(redone->memento());
-      }
+      // if (true)
+      // {
+      //   logCritical("TODO: memento-based redo is disabled while a python-based implementation is developed.");
+      //   //networkIO_->clear();
+      //   //networkIO_->loadNetwork(redone->memento());
+      // }
 
       return redone;
     }
-    return ItemHandle();
+    return nullptr;
   }
 
   template <class Memento>
@@ -173,9 +167,9 @@ namespace Engine {
     List undone;
     while (0 != undoSize())
       undone.push_back(undo());
-    networkIO_->clear();
-    if (initialState_)
-      networkIO_->loadNetwork(*initialState_);
+    // networkIO_->clear();
+    // if (initialState_)
+    //   networkIO_->loadNetwork(*initialState_);
     return undone;
   }
 
@@ -185,9 +179,9 @@ namespace Engine {
     logCritical("TODO: memento-based redo is disabled while a python-based implementation is developed.");
     List redone;
     while (0 != redoSize())
-      redone.push_back(redo(false));
-    networkIO_->clear();
-    networkIO_->loadNetwork(undo_.top()->memento());
+      redone.push_back(redo());
+    // networkIO_->clear();
+    // networkIO_->loadNetwork(undo_.top()->memento());
     return redone;
   }
 
