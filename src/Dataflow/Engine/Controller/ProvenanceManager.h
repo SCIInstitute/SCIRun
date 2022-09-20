@@ -118,7 +118,10 @@ namespace Engine {
     if (!undo_.empty())
     {
       auto undone = undo_.top();
-      py_->run_string(undone->undoCode());
+      if (py_)
+        py_->run_string(undone->undoCode());
+      else
+        logCritical("Undo/redo not available without Python enabled.");
       undo_.pop();
       redo_.push(undone);
 
@@ -143,7 +146,10 @@ namespace Engine {
     if (!redo_.empty())
     {
       auto redone = redo_.top();
-      py_->run_string(redone->redoCode());
+      if (py_)
+        py_->run_string(redone->redoCode());
+      else
+        logCritical("Undo/redo not available without Python enabled.");
       redo_.pop();
       undo_.push(redone);
 
