@@ -364,7 +364,11 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
 
 void SCIRunMainWindow::setupProvenanceWindow()
 {
-  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_, &Core::PythonInterpreter::Instance()));
+  Core::PythonCommandInterpreterInterface* py = nullptr;
+#ifdef BUILD_WITH_PYTHON
+  py = &Core::PythonInterpreter::Instance();
+#endif
+  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_, py));
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
 
   connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
