@@ -41,10 +41,11 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
-ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QWidget* parent /* = 0 */) : QDockWidget(parent),
+ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, NetworkEditor* editor, QWidget* parent /* = 0 */) : QDockWidget(parent),
   provenanceManager_(provenanceManager),
   lastUndoRow_(-1),
-  networkEditor_(provenanceManager->networkIO())
+  networkEditor_(provenanceManager->networkIO()),
+  editor_(editor)
 {
   setupUi(this);
   // TODO deprecated
@@ -200,11 +201,14 @@ void ProvenanceWindow::undo()
 
     {
       Q_EMIT modifyingNetwork(true);
-      auto undone = provenanceManager_->undo();
+      {
+        NetworkEditor::InEditingContext iec(editor_);
+        auto undone = provenanceManager_->undo();
+        if (undone->name() != provenanceItem->name())
+          std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
+      }
       Q_EMIT modifyingNetwork(false);
       Q_EMIT networkModified();
-      if (undone->name() != provenanceItem->name())
-        std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
 
     lastUndoRow_--;
@@ -228,11 +232,14 @@ void ProvenanceWindow::redo()
 
     {
       Q_EMIT modifyingNetwork(true);
-      auto redone = provenanceManager_->redo();
+      {
+        NetworkEditor::InEditingContext iec(editor_);
+        auto redone = provenanceManager_->redo();
+        if (redone->name() != provenanceItem->name())
+          std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
+      }
       Q_EMIT modifyingNetwork(false);
       Q_EMIT networkModified();
-      if (redone->name() != provenanceItem->name())
-        std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
 
     lastUndoRow_++;
@@ -256,7 +263,10 @@ void ProvenanceWindow::undoAll()
   lastUndoRow_ = -1;
 
   Q_EMIT modifyingNetwork(true);
-  provenanceManager_->undoAll();
+  {
+    NetworkEditor::InEditingContext iec(editor_);
+    provenanceManager_->undoAll();
+  }
   Q_EMIT modifyingNetwork(false);
   Q_EMIT networkModified();
   setUndoEnabled(false);
@@ -273,7 +283,10 @@ void ProvenanceWindow::redoAll()
   lastUndoRow_ = provenanceListWidget_->count() - 1;
 
   Q_EMIT modifyingNetwork(true);
-  provenanceManager_->redoAll();
+  {
+    NetworkEditor::InEditingContext iec(editor_);
+    provenanceManager_->redoAll();
+  }
   Q_EMIT modifyingNetwork(false);
   Q_EMIT networkModified();
   setUndoEnabled(true);

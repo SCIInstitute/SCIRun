@@ -48,7 +48,7 @@ class ProvenanceWindow : public QDockWidget, public Ui::ProvenanceWindow
 	Q_OBJECT
 
 public:
-  explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, QWidget* parent = nullptr);
+  explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, NetworkEditor* editor, QWidget* parent = nullptr);
   void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
   int maxItems() const { return maxItems_; }
 public Q_SLOTS:
@@ -70,6 +70,7 @@ private:
   SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
   int lastUndoRow_, maxItems_{10};
   const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::element_type::IOType* networkEditor_;
+  NetworkEditor* editor_;
 
   void setUndoEnabled(bool enable);
   void setRedoEnabled(bool enable);

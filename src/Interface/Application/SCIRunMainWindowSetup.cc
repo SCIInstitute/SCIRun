@@ -369,7 +369,7 @@ void SCIRunMainWindow::setupProvenanceWindow()
   py = &Core::PythonInterpreter::Instance();
 #endif
   ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_, py));
-  provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
+  provenanceWindow_ = new ProvenanceWindow(provenanceManager, networkEditor_, this);
 
   connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
   connect(actionRedo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::redo);
