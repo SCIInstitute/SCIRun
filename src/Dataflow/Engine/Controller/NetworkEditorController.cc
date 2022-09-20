@@ -293,14 +293,15 @@ ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info
   return realModule;
 }
 
-void NetworkEditorController::removeModule(const ModuleId& id)
+bool NetworkEditorController::removeModule(const ModuleId& id)
 {
-  collabs_.theNetwork_->remove_module(id);
+  auto ret = collabs_.theNetwork_->remove_module(id);
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
   /*emit*/ signals_.moduleRemoved_(id);
 
   printNetwork();
+  return ret;
 }
 
 namespace

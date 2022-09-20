@@ -59,7 +59,9 @@ namespace Engine {
     std::string undoCode() const override;
     std::string redoCode() const override;
   private:
-    std::string moduleName_, moduleId_;
+    std::string moduleName_;
+    mutable std::string moduleId_;
+    mutable bool redone_ {false};
   };
 
   class SCISHARE ModuleRemovedProvenanceItem : public ProvenanceItemBase

@@ -58,11 +58,15 @@ std::string ModuleAddedProvenanceItem::name() const
 
 std::string ModuleAddedProvenanceItem::undoCode() const
 {
+  // here is where i need to pull the most recently added id
+  if (redone_)
+    moduleId_ = "TODO";
   return fmt::format("scirun_remove_module(\"{}\")", moduleId_);
 }
 
 std::string ModuleAddedProvenanceItem::redoCode() const
 {
+  redone_ = true;
   return fmt::format("scirun_add_module(\"{}\")", moduleName_);
 }
 

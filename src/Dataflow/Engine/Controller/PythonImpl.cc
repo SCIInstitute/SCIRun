@@ -529,10 +529,10 @@ SharedPointer<PyModule> PythonImpl::addModule(const std::string& name)
 {
   auto m = nec_.addModule(name);
   if (m)
-    std::cout << "Module added: " + m->id().id_ << std::endl;
+    logInfo("Module added: {}", m->id().id_);
   else
-    std::cout << "Module add failed, no such module type" << std::endl;
-
+    logWarning("Module add failed, no such module type ({})", name);
+// here i have the most recent added id
   return modules_[m->id().id_];
 }
 
@@ -546,12 +546,15 @@ std::string PythonImpl::removeModule(const std::string& id)
 {
   try
   {
-    nec_.removeModule(ModuleId(id));
-    return "Module removed";
+    auto result = nec_.removeModule(ModuleId(id));
+    if (result)
+      return "Module removed: " + id;
+    else
+      return "No module by that id (" + id + ")";
   }
   catch (...)
   {
-    return "No module by that id";
+    return "No module by that id (" + id + ")";
   }
 }
 

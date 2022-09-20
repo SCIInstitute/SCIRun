@@ -351,7 +351,9 @@ SharedPointer<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 std::string SimplePythonAPI::scirun_add_module(const std::string& name)
 {
   auto mod = NetworkEditorPythonAPI::addModule(name);
-  return mod ? mod->id() : "<Null module--function not available or module not defined>";
+  return mod ?
+    "Module added: " + mod->id() :
+    "Error: null module--function not available or module not defined (" + name + ")";
 }
 
 std::string SimplePythonAPI::scirun_quit()
