@@ -30,6 +30,7 @@
 #define CORE_UTILS_SMARTPOINTERS_H
 
 #include <memory>
+#include <string>
 #include <Core/Utils/share.h>
 
 namespace SCIRun
