@@ -71,7 +71,11 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   collabs_.algoFactory_ = af;
   collabs_.reexFactory_ = reex;
   collabs_.executorFactory_ = executorFactory;
+  #ifndef BUILD_HEADLESS
   collabs_.executionManager_.reset(new ExecutionQueueManager);
+  #else
+  collabs_.executionManager_.reset(new SimpleExecutionManager);
+  #endif
   collabs_.cmdFactory_ = cmdFactory;
   collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
   collabs_.serializationManager_ = nesm;

@@ -798,6 +798,8 @@ CompositeLightControls::CompositeLightControls(ViewSceneDialog* parent, const st
   auto layout = new QHBoxLayout;
   setLayout(layout);
   layout->addWidget(tabs_);
+  if (!lights_.empty())
+    setMinimumSize(lights_[0]->minimumSize());
 }
 
 QColor LightButtonUpdater::color() const
