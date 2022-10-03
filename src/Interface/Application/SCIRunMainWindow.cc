@@ -51,6 +51,7 @@
 #include <Core/Logging/Log.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
+#include <chrono>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
@@ -398,12 +399,45 @@ QString SCIRunMainWindow::strippedName(const QString& fullFileName)
   return info.fileName();
 }
 
+namespace 
+{
+bool fileExistCheck(const std::string& filename)
+{
+  bool fileExists;
+  //TODO: boost upgrade to 1.80 should remove the need for the try/catch--see issue #2407
+  try
+  {
+    fileExists = boost::filesystem::exists(filename);
+  }
+  catch (...)
+  {
+    fileExists = false;
+  }
+  return fileExists;
+}
+
+bool superFileExistCheck(const std::string& filename)
+{
+  auto check = std::async([filename]() { return fileExistCheck(filename); });
+  auto status = check.wait_for(std::chrono::seconds(1));
+  if (status == std::future_status::ready)
+    return check.get();
+  return false;
+}
+}
+
 void SCIRunMainWindow::updateRecentFileActions()
 {
   QMutableStringListIterator i(recentFiles_);
-  while (i.hasNext()) {
-    if (!QFile::exists(i.next()))
+  while (i.hasNext()) 
+  {
+    const auto file = i.next().toStdString();
+    
+    if (!superFileExistCheck(file))
+    {
+      logWarning("Network file {} not found, removing entry from recent list.", file);
       i.remove();
+    }
   }
 
   for (int j = 0; j < MaxRecentFiles; ++j)
