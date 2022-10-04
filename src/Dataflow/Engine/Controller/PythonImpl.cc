@@ -532,7 +532,10 @@ SharedPointer<PyModule> PythonImpl::addModule(const std::string& name)
     logInfo("Module added: {}", m->id().id_);
   else
     logWarning("Module add failed, no such module type ({})", name);
-// here i have the most recent added id
+
+logCritical("here i have the most recent added id: {}", m->id().id_);
+mostRecentAddModuleId_ = m->id().id_;
+
   return modules_[m->id().id_];
 }
 

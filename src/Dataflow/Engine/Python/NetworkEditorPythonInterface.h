@@ -142,6 +142,7 @@ namespace SCIRun
     virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
     virtual void setModuleContext(bool inModule) = 0;
     virtual bool isModuleContext() const = 0;
+    virtual std::string mostRecentAddModuleId() const = 0;
   };
 }
 

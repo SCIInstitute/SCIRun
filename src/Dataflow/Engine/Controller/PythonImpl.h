@@ -68,6 +68,7 @@ namespace Engine {
     void setUnlockFunc(boost::function<void()> unlock) override;
     void setModuleContext(bool inModule) override { inModule_ = inModule; }
     bool isModuleContext() const override { return inModule_; }
+    std::string mostRecentAddModuleId() const override { return mostRecentAddModuleId_; }
   private:
     void pythonModuleAddedSlot(const std::string&, Networks::ModuleHandle, ModuleCounter);
     void pythonModuleRemovedSlot(const Networks::ModuleId&);
@@ -79,6 +80,7 @@ namespace Engine {
     boost::function<void()> unlock_;
     std::vector<boost::signals2::connection> connections_;
     bool inModule_ = false;
+    std::string mostRecentAddModuleId_;
   };
 
 }}}

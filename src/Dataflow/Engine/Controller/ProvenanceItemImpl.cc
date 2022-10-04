@@ -31,6 +31,7 @@
 #include <string>
 #include <sstream>
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
+#include <Core/Logging/Log.h>
 #include <spdlog/fmt/fmt.h>
 
 using namespace SCIRun;
@@ -58,9 +59,11 @@ std::string ModuleAddedProvenanceItem::name() const
 
 std::string ModuleAddedProvenanceItem::undoCode() const
 {
-  // here is where i need to pull the most recently added id
   if (redone_)
+  {
+    logCritical("here is where i need to pull the most recently added id");
     moduleId_ = "TODO";
+  }
   return fmt::format("scirun_remove_module(\"{}\")", moduleId_);
 }
 
