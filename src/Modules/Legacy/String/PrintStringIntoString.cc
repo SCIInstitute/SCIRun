@@ -138,7 +138,7 @@ PrintStringIntoString::execute()
                   }
                   else
                   {
-                    currentstring = stringsH[inputport]; inputport++;
+                    currentstring = stringsH[inputport++];
                     if (currentstring)
                     {
                       str = currentstring->value();
