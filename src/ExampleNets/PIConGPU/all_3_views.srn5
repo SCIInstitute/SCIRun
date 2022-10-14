@@ -428,14 +428,14 @@
 									<name>IsovalueListString</name>
 									<value object_id="_29">
 										<which>2</which>
-										<value>-1.14126
--0.998599
--0.855942
--0.713285
--0.570628
--0.427971
--0.285314
--0.142657
+										<value>-1.14266
+-0.999827
+-0.856995
+-0.714162
+-0.57133
+-0.428497
+-0.285665
+-0.142832
 </value>
 									</value>
 								</second>
@@ -753,7 +753,7 @@
 									<name>FixedMax</name>
 									<value object_id="_50">
 										<which>1</which>
-										<value>8.27225428938437035e-02</value>
+										<value>8.27084050692746681e-02</value>
 									</value>
 								</second>
 							</item>
@@ -765,7 +765,7 @@
 									<name>FixedMin</name>
 									<value object_id="_51">
 										<which>1</which>
-										<value>-8.27225428938437035e-02</value>
+										<value>-8.27084050692746681e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2401,7 +2401,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_182">
 										<which>1</which>
-										<value>1.80242663574218750e+03</value>
+										<value>1.18608886718750000e+03</value>
 									</value>
 								</second>
 							</item>
@@ -3391,7 +3391,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_282">
 										<which>0</which>
-										<value>512</value>
+										<value>508</value>
 									</value>
 								</second>
 							</item>
@@ -3403,7 +3403,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_283">
 										<which>0</which>
-										<value>366</value>
+										<value>324</value>
 									</value>
 								</second>
 							</item>
@@ -3503,7 +3503,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_290">
 										<which>1</which>
-										<value>1.81746850585937500e+03</value>
+										<value>1.18395507812500000e+03</value>
 									</value>
 								</second>
 							</item>
@@ -4493,7 +4493,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_390">
 										<which>0</which>
-										<value>501</value>
+										<value>497</value>
 									</value>
 								</second>
 							</item>
@@ -4505,7 +4505,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_391">
 										<which>0</which>
-										<value>361</value>
+										<value>319</value>
 									</value>
 								</second>
 							</item>
@@ -5574,7 +5574,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_495">
 										<which>0</which>
-										<value>1224</value>
+										<value>1220</value>
 									</value>
 								</second>
 							</item>
@@ -5586,7 +5586,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_496">
 										<which>0</which>
-										<value>430</value>
+										<value>388</value>
 									</value>
 								</second>
 							</item>
@@ -5774,99 +5774,99 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateLatVol:1</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-6.84000000000000000e+02</first>
-				<second>-3.04000000000000000e+02</second>
+				<first>-1.06500000000000000e+03</first>
+				<second>-3.01000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:2</first>
 			<second>
-				<first>-1.14000000000000000e+03</first>
-				<second>-3.04000000000000000e+02</second>
+				<first>-1.52100000000000000e+03</first>
+				<second>-3.01000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:3</first>
 			<second>
-				<first>-9.12000000000000000e+02</first>
-				<second>-3.04000000000000000e+02</second>
+				<first>-1.29300000000000000e+03</first>
+				<second>-3.01000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ExtractIsosurface:1</first>
 			<second>
-				<first>-1.06400000000000000e+03</first>
-				<second>-2.27000000000000000e+02</second>
+				<first>-1.44500000000000000e+03</first>
+				<second>-2.24000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoNodes:1</first>
 			<second>
-				<first>-7.60000000000000000e+02</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>-1.14100000000000000e+03</first>
+				<second>-2.25000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>PIConGPU:0</first>
 			<second>
-				<first>-1.06400000000000000e+03</first>
+				<first>-1.44400000000000000e+03</first>
 				<second>-6.84000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>PIConGPUReader:0</first>
 			<second>
-				<first>-1.06500000000000000e+03</first>
-				<second>-6.07000000000000000e+02</second>
+				<first>-1.44600000000000000e+03</first>
+				<second>-6.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:1</first>
 			<second>
-				<first>-9.12000000000000000e+02</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>-1.29300000000000000e+03</first>
+				<second>-2.25000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-1.06400000000000000e+03</first>
-				<second>-1.51000000000000000e+02</second>
+				<first>-1.44500000000000000e+03</first>
+				<second>-1.48000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-1.21500000000000000e+03</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>-1.59600000000000000e+03</first>
+				<second>-1.49000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowFieldGlyphs:0</first>
 			<second>
-				<first>-9.12000000000000000e+02</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>-1.29300000000000000e+03</first>
+				<second>-1.49000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-1.06300000000000000e+03</first>
-				<second>-7.30000000000000000e+01</second>
+				<first>-1.44400000000000000e+03</first>
+				<second>-7.00000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:1</first>
 			<second>
-				<first>-1.21600000000000000e+03</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>-1.59700000000000000e+03</first>
+				<second>-7.30000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:3</first>
 			<second>
-				<first>-9.12000000000000000e+02</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>-1.29300000000000000e+03</first>
+				<second>-7.30000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
