@@ -30,7 +30,7 @@
 #define ComputePCA_ComputePCA_h
 
 #include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/ModulePortDescriptionTagsVariadic.h>
+//#include <Dataflow/Network/ModulePortDescriptionTagsVariadic.h>
 #include <Modules/Math/share.h>
 
 namespace SCIRun {
@@ -38,7 +38,7 @@ namespace SCIRun {
         namespace Math {
 
             class SCISHARE ComputePCA : public Dataflow::Networks::Module,
-            public HasInputPorts<MatrixPortTag>,
+            //public HasInputPorts<MatrixPortTag>,
             public Has1InputPort<MatrixPortTag>,
             public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
             {

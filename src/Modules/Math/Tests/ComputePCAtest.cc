@@ -88,6 +88,7 @@ TEST_F(ComputePCAtest, CheckInputSparse)
     EXPECT_NO_THROW(pcaMod -> execute());
 }
 
+#if 0
 TEST_F(ComputePCAtest, NewStaticDescriptionLanguage)
 {
   //auto inputs = ComputePCA::inputs();
@@ -106,3 +107,4 @@ TEST_F(ComputePCAtest, NewStaticDescriptionLanguage)
 
   //FAIL() << "todo";
 }
+#endif
