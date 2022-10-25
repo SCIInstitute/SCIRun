@@ -529,15 +529,15 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
 void ctkPopupWidget::updatePopup()
 {
   Q_D(ctkPopupWidget);
-  d->updateCalled.fetch_add(1);
-  const bool logggg = (layout()->itemAt(0)->widget()->objectName().contains("Object"));
-  if (logggg)
-    qDebug() << __FUNCTION__ << __LINE__ << layout()->itemAt(0)->widget() << d->updateCalled;
+  //d->updateCalled.fetch_add(1);
+  constexpr bool shouldLogPopup = false; //(layout()->itemAt(0)->widget()->objectName().contains("Object"));
+  if constexpr (shouldLogPopup)
+    qDebug() << __FUNCTION__ << __LINE__ << layout()->itemAt(0)->widget();// << d->updateCalled;
 
   // Querying mouseOver can be slow, don't do it if not needed.
   QWidget* mouseOver = (d->AutoShow || d->AutoHide) ? d->mouseOver() : 0;
 
-if (logggg)
+if constexpr (shouldLogPopup)
 {
    qDebug() << "\t\t(AutoShow:" << d->AutoShow;
   qDebug() << "\t\t||(AutoHide:" << d->AutoHide;
@@ -558,14 +558,14 @@ if (logggg)
      // disable opening the popup when the popup is disabled
       (d->BaseWidget.isNull() || d->BaseWidget->isEnabled()))
     {
-      if (logggg)
+      if constexpr (shouldLogPopup)
       qDebug() << "\t>>>>showPopup";
 
     this->showPopup();
     }
   else if (d->AutoHide && !mouseOver)
     {
-      if (logggg)
+      if constexpr (shouldLogPopup)
       qDebug() << "\t\t<<<<hidePopup" << d->AutoHide << !mouseOver;
     this->hidePopup();
     }
