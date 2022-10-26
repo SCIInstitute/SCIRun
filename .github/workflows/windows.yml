@@ -8,10 +8,6 @@ on:
     paths-ignore:
       - 'docs/**'
 
-strategy:
-  matrix:
-    qtver: ["5.15.2", "6.3.*"]
-
 jobs:
   windows-build-headless:
     runs-on: windows-2019
@@ -40,6 +36,9 @@ jobs:
 
   windows-build-gui:
     runs-on: windows-2019
+    strategy:
+      matrix:
+        qtver: ["5.15.2", "6.3.*"]
 
     steps:
 
