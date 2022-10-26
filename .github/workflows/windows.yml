@@ -15,7 +15,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.5
 
     - name: Configure
       working-directory: bin
@@ -43,7 +43,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.5
       with:
         fetch-depth: 0
 
@@ -60,12 +60,12 @@ jobs:
         install-deps: true
 
     - name: Print out Qt directory
-      run: echo $Env:Qt_Dir
+      run: echo $Env:Qt${{ matrix.qtver[0] }}_Dir
 
     - name: Configure
       working-directory: bin
       run: |
-        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt_PATH:PATH="$env:Qt_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt_PATH:PATH="$env:Qt${{ matrix.qtver[0] }}_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
 
     - name: Compile
       working-directory: bin
@@ -83,7 +83,7 @@ jobs:
       continue-on-error: true
       with:
         name: SCIRunWindowsInstaller
-        path: bin/SCIRun/SCIRun-5.0.beta.*-win64-${{ matrix.qtver }}.exe
+        path: bin/SCIRun/SCIRun-5.0.beta.*-win64-qt${{ matrix.qtver[0] }}.exe
 
   windows-build-gui-python:
     runs-on: windows-2019
@@ -91,7 +91,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.5
       with:
         fetch-depth: 0
 
@@ -147,7 +147,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.5
       with:
         fetch-depth: 0
 
