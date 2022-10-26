@@ -8,6 +8,10 @@ on:
     paths-ignore:
       - 'docs/**'
 
+strategy:
+  matrix:
+    qtver: ["5.15.2", "6.3.*"]
+
 jobs:
   windows-build-headless:
     runs-on: windows-2019
@@ -49,7 +53,7 @@ jobs:
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
-        version: 5.15.2
+        version: ${{ matrix.qtver }}
         target: desktop
         host: windows
         arch: win64_msvc2019_64
@@ -57,12 +61,12 @@ jobs:
         install-deps: true
 
     - name: Print out Qt directory
-      run: echo $Env:Qt5_Dir
+      run: echo $Env:Qt_Dir
 
     - name: Configure
       working-directory: bin
       run: |
-        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt_PATH:PATH="$env:Qt5_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DQt_PATH:PATH="$env:Qt_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
 
     - name: Compile
       working-directory: bin
@@ -80,7 +84,7 @@ jobs:
       continue-on-error: true
       with:
         name: SCIRunWindowsInstaller
-        path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+        path: bin/SCIRun/SCIRun-5.0.beta.*-win64-${{ matrix.qtver }}.exe
 
   windows-build-gui-python:
     runs-on: windows-2019
