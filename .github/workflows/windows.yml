@@ -15,7 +15,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2.5
+      uses: actions/checkout@v3
 
     - name: Configure
       working-directory: bin
@@ -43,7 +43,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2.5
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -91,7 +91,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2.5
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -147,7 +147,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2.5
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
