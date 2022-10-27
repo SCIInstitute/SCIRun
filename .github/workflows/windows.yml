@@ -76,12 +76,12 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       continue-on-error: true
       with:
         name: SCIRunWindowsInstaller_qt5
         path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
-            
+
   windows-build-gui-qt6:
     runs-on: windows-2019
 
@@ -124,7 +124,7 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       continue-on-error: true
       with:
         name: SCIRunWindowsInstaller_qt6
@@ -169,7 +169,7 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       continue-on-error: true
       with:
         name: SCIRunWindowsPythonInstaller
@@ -225,7 +225,7 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       continue-on-error: true
       with:
         name: SCIRunWindowsOsprayInstaller
@@ -256,9 +256,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Print out config command
       run: echo "cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -DWITH_OSPRAY:BOOL=${{ matrix.osp }} -DQt_PATH:STRING=${{ matrix.qt }}  -DBUILD_HEADLESS:BOOL=${{ matrix.hl }} -DBUILD_WITH_PYTHON:BOOL=${{ matrix.py }} -DBUILD_TESTING:BOOL=${{ matrix.tst }}"
-      
-        
