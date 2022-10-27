@@ -350,6 +350,12 @@ struct DummyPortName : Dataflow::Networks::StaticPortName<Core::Datatypes::Datat
   template <size_t numPorts, class ModuleType>
   struct IPortDescriber
   {
+    static std::vector<Dataflow::Networks::InputPortDescription> inputs();
+  };
+
+  template <class ModuleType>
+  struct IPortDescriber<0, ModuleType>
+  {
     static std::vector<Dataflow::Networks::InputPortDescription> inputs()
     {
       return {};
