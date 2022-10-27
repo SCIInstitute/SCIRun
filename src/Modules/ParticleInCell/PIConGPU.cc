@@ -57,7 +57,7 @@ void PIConGPU::setStateDefaults()
 void PIConGPU::execute()
     {
     AlgorithmInput input;
-    if(needToExecute())
+//    if(needToExecute())
         {
         auto state = get_state();
         setAlgoIntFromState(Variables::Method);

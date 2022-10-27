@@ -130,7 +130,7 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
 void PIConGPUReader::execute()
     {
     AlgorithmInput input;
-    if(needToExecute())
+//    if(needToExecute())
         {
         auto state = get_state();
 //        setAlgoIntFromState(Parameters::particle_sample_rate);
