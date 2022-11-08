@@ -26,6 +26,7 @@
 */
 
 #include <Modules/Basic/AsyncPortTestModule.h>
+#include <Modules/Basic/AsyncStreamingTestModule.h>
 #include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Basic/LoggingTester.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
@@ -222,4 +223,5 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<PortFeedbackSender>("...", "...");
   addModuleDesc<LoggingTester>("...", "...");
   addModuleDesc<CreateTestingArrow>("...", "...");
+  addModuleDesc<AsyncStreamingTest>("...", "...");
 }
