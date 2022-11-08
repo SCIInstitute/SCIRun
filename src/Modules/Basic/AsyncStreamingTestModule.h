@@ -42,6 +42,7 @@ namespace Basic {
   {
   public:
     AsyncStreamingTest();
+    ~AsyncStreamingTest();
     void execute() override;
     void setStateDefaults() override {}
 
@@ -51,6 +52,7 @@ namespace Basic {
     MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   private:
     boost::atomic<int> counter_;
+    std::unique_ptr<class Impl> impl_;
   };
 
 }}}
