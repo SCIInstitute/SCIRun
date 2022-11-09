@@ -38,7 +38,7 @@ namespace Basic {
 
   class SCISHARE AsyncStreamingTest : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+    public Has1OutputPort<BundlePortTag>
   {
   public:
     AsyncStreamingTest();
@@ -47,12 +47,15 @@ namespace Basic {
     void setStateDefaults() override {}
 
     INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, OutputSlice, Matrix);
+    OUTPUT_PORT(0, OutputSlice, Bundle);
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+  protected:
+    void outputAsyncData(Core::Datatypes::BundleHandle data);
+    Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
   private:
-    boost::atomic<int> counter_;
-    std::unique_ptr<class Impl> impl_;
+    friend class StreamAppender;
+    std::unique_ptr<class StreamAppender> impl_;
   };
 
 }}}

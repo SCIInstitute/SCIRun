@@ -28,6 +28,7 @@
 #include <queue>
 #include <future>
 #include <Modules/Basic/AsyncStreamingTestModule.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -42,22 +43,20 @@ using namespace SCIRun::Core::Thread;
 
 MODULE_INFO_DEF(AsyncStreamingTest, Testing, SCIRun)
 
-namespace detail
+namespace SCIRun::Modules::Basic
 {
   using DataChunk = DenseMatrixHandle;
   //TODO: need thread-safe container to share
   using DataStream = std::queue<DataChunk>;
-  static Mutex dataMutex("test");
+  
 
   class StreamAppender
   {
   public:
-    explicit StreamAppender(DenseMatrixHandle input) : input_(input), hasData_(true) {}
+    StreamAppender(AsyncStreamingTest* module, DenseMatrixHandle input) : module_(module), input_(input) {}
 
     bool hasData() const
     {
-      //auto ret = hasData_ || !stream_.empty();
-      //logInfo("__SR__ hasData returns {}", ret);
       return sliceIndex_ < input_->nrows();
     }
 
@@ -65,11 +64,11 @@ namespace detail
 
     DataStream& stream() { return stream_; }
 
-    void start()
+    void pushDataToStream()
     {
       logInfo("__SR__ ........starting streaming reader");
 
-      while (sliceIndex_ < input_->nrows())
+      while (hasData())
       {
         auto value = makeShared<DenseMatrix>(input_->row(sliceIndex_));
 
@@ -82,40 +81,53 @@ namespace detail
         logInfo("__SR__ : waiting for {} ms", appendWaitTime_);
         std::this_thread::sleep_for(std::chrono::milliseconds(appendWaitTime_));
       }
-      hasData_ = false;
     }
+
+    void beginPushDataAsync()
+    {
+      f_ = std::async([this]() { pushDataToStream(); });
+    }
+
+    void waitAndOutputEach()
+    {
+      if (hasData())
+      {
+        //wait for result. 
+        while (stream().empty())
+        {
+          logInfo("__MAIN__ Waiting for data");
+          std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+
+        //once data is available, output to ports 
+        auto data = stream().front();
+        {
+          Guard g(dataMutex.get());
+          stream().pop();
+        }
+
+        logInfo("__MAIN__ Received data: [{}] outputting matrix.", (*data)(0, 0));
+        module_->outputAsyncData(module_->bundleOutputs({ "Slice" }, { data }));
+
+        logInfo("__MAIN__ Enqueue execute again");
+        module_->enqueueExecuteAgain(false);
+      }
+    }
+
   private:
+    AsyncStreamingTest* module_;
     DenseMatrixHandle input_;
     DataStream stream_;
-    bool hasData_;
     const int appendWaitTime_ = 2000;
     int sliceIndex_{ 0 };
-  };
-
-
-}
-
-namespace SCIRun::Modules::Basic
-{
-  class Impl
-  {
-  public:
-    Impl(DenseMatrixHandle input) : appender_(input) {}
 
     std::future<void> f_;
-
-    detail::StreamAppender appender_;
-
-    void start()
-    {
-      f_ = std::async([this]() { appender_.start(); });
-    }
+    Mutex dataMutex{ "test" };
   };
 }
 
 AsyncStreamingTest::AsyncStreamingTest()
-  : Module(staticInfo_, false),
-  counter_(0)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputSlice);
@@ -127,62 +139,33 @@ void AsyncStreamingTest::execute()
 {
   SCIRun::Core::Logging::GeneralLog::Instance().setVerbose(true);
 
+  logCritical("AsyncStreamingTest Execute called");
 
   auto input = getRequiredInput(InputMatrix);
+
   if (needToExecute())
   {
     logInfo("__MAIN__ Resetting impl/async thread");
-    impl_ = std::make_unique<Impl>(castMatrix::toDense(input));
-    impl_->start();
+    impl_ = std::make_unique<StreamAppender>(this, castMatrix::toDense(input));
+    impl_->beginPushDataAsync();
   }
-
-  {
-    logCritical("AsyncStreamingTest received input");
-
    
+  impl_->waitAndOutputEach();
+}
 
+void AsyncStreamingTest::outputAsyncData(BundleHandle data)
+{
+  sendOutput(OutputSlice, data);
+}
 
-    //this will be launched on a separate thread
-  /*  if (!impl_)
-    {
-      impl_ = std::make_unique<Impl>(castMatrix::toDense(input));
-      impl_->start();
-    }*/
-
-    if (impl_->appender_.hasData())
-    {
-      //wait for result. 
-      while (impl_->appender_.stream().empty())
-      {
-        logInfo("__MAIN__ Waiting for data");
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      }
-      {
-        logInfo("__MAIN__ Execute called");
-
-        //once data is available, output to ports 
-        {
-          auto data = impl_->appender_.stream().front();
-          {
-            Guard g(detail::dataMutex.get());
-            impl_->appender_.stream().pop();
-            //readCount_++;
-          }
-          logInfo("__MAIN__ Received data: [{}] outputting matrix.", (*data)(0,0));
-          //logInfo("__MAIN__ Processing data: waiting for {} ms", processWaitTime_);
-          //std::this_thread::sleep_for(std::chrono::milliseconds(processWaitTime_));
-          sendOutput(OutputSlice, data);
-          logInfo("__MAIN__ Enqueue execute again");
-          enqueueExecuteAgain(false);
-        }
-      }
-
-      //while (stream_.empty() && tries_++ < maxTries_)
-      //{
-      //  logInfo("__MAIN__ Waiting for data...attempt {} out of {}", tries_, maxTries_);
-      //  std::this_thread::sleep_for(std::chrono::milliseconds(readWaitTime_));
-      //}
-      //this artificial loop represents the network execution loop via enqueueExecuteAgain
-    }
+Core::Datatypes::BundleHandle AsyncStreamingTest::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
+{
+  auto bundle = makeShared<Bundle>();
+  auto nIter = names.begin();
+  auto dIter = dataList.begin();
+  for (; nIter != names.end(); ++nIter, ++dIter)
+  {
+    bundle->set(*nIter, *dIter);
   }
+  return bundle;
 }
