@@ -28,6 +28,7 @@
 #include <queue>
 #include <future>
 #include <Modules/Basic/AsyncStreamingTestModule.h>
+#include <Modules/Basic/SimulationReaderBaseModule.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -48,7 +49,7 @@ namespace SCIRun::Modules::Basic
   using DataChunk = DenseMatrixHandle;
   //TODO: need thread-safe container to share
   using DataStream = std::queue<DataChunk>;
-  
+
 
   class StreamAppender
   {
@@ -92,14 +93,14 @@ namespace SCIRun::Modules::Basic
     {
       if (hasData())
       {
-        //wait for result. 
+        //wait for result.
         while (stream().empty())
         {
           logInfo("__MAIN__ Waiting for data");
           std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 
-        //once data is available, output to ports 
+        //once data is available, output to ports
         auto data = stream().front();
         {
           Guard g(dataMutex.get());
@@ -107,7 +108,7 @@ namespace SCIRun::Modules::Basic
         }
 
         logInfo("__MAIN__ Received data: [{}] outputting matrix.", (*data)(0, 0));
-        module_->outputAsyncData(module_->bundleOutputs({ "Slice" }, { data }));
+        module_->sendOutput(module_->OutputSlice, bundleOutputs({ "Slice" }, { data }));
 
         logInfo("__MAIN__ Enqueue execute again");
         module_->enqueueExecuteAgain(false);
@@ -149,23 +150,6 @@ void AsyncStreamingTest::execute()
     impl_ = std::make_unique<StreamAppender>(this, castMatrix::toDense(input));
     impl_->beginPushDataAsync();
   }
-   
+
   impl_->waitAndOutputEach();
-}
-
-void AsyncStreamingTest::outputAsyncData(BundleHandle data)
-{
-  sendOutput(OutputSlice, data);
-}
-
-Core::Datatypes::BundleHandle AsyncStreamingTest::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
-{
-  auto bundle = makeShared<Bundle>();
-  auto nIter = names.begin();
-  auto dIter = dataList.begin();
-  for (; nIter != names.end(); ++nIter, ++dIter)
-  {
-    bundle->set(*nIter, *dIter);
-  }
-  return bundle;
 }

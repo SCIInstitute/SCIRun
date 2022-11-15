@@ -26,33 +26,31 @@
 */
 
 
-#ifndef MODULES_BASIC_ASYNCSTREAMINGTESTMODULE_H
-#define MODULES_BASIC_ASYNCSTREAMINGTESTMODULE_H
+#ifndef MODULES_DATAIO_SIMULATIONREADERBASEMODULE_H
+#define MODULES_DATAIO_SIMULATIONREADERBASEMODULE_H
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/AsyncStreamingTestModule.h>
 #include <Modules/Basic/share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace Basic {
 
-  class SCISHARE AsyncStreamingTest : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
+  SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
+
+  class SCISHARE SimulationReaderBase : public SCIRun::Dataflow::Networks::Module,
+    public HasNoInputPorts,
     public Has1OutputPort<BundlePortTag>
   {
   public:
-    AsyncStreamingTest();
-    ~AsyncStreamingTest();
+    SimulationReaderBase();
+    ~SimulationReaderBase();
     void execute() override;
     void setStateDefaults() override {}
 
-    INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, OutputSlice, Bundle);
+    OUTPUT_PORT(0, OutputData, Bundle);
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
-  private:
-    friend class StreamAppender;
-    std::unique_ptr<class StreamAppender> impl_;
   };
 
 }}}

@@ -40,6 +40,7 @@ SET(Modules_Basic_SRCS
   LoggingTester.cc
   CompositeModuleWithStaticPorts.cc
   CompositeModuleWithTypedStaticPorts.cc
+  SimulationReaderBaseModule.cc
 )
 
 SET(Modules_Basic_HEADERS
@@ -56,6 +57,7 @@ SET(Modules_Basic_HEADERS
   PlaceholderModule.h
   CompositeModuleWithStaticPorts.h
   CompositeModuleWithTypedStaticPorts.h
+  SimulationReaderBaseModule.h
   share.h
 )
 
