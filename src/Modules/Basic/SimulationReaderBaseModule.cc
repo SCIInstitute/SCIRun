@@ -159,9 +159,9 @@ public:
 
 class PIConGPUReader_Stub
 {
-  SimulationReaderBase* module_;
+  SimulationStreamingReaderBase* module_;
 public:
-  explicit PIConGPUReader_Stub(SimulationReaderBase* module) : module_(module) {}
+  explicit PIConGPUReader_Stub(SimulationStreamingReaderBase* module) : module_(module) {}
 
   FieldHandle particleData(/*int buffer_size, float component_x[], float component_y[], float component_z[]*/)
   {
@@ -373,17 +373,22 @@ public:
 };
 }
 
-MODULE_INFO_DEF(SimulationReaderBase, Basic, SCIRun)
+MODULE_INFO_DEF(SimulationStreamingReaderBase, Basic, SCIRun)
 
-SimulationReaderBase::SimulationReaderBase()
+SimulationStreamingReaderBase::SimulationStreamingReaderBase()
   : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(OutputData);
 }
 
-SimulationReaderBase::~SimulationReaderBase() = default;
+SimulationStreamingReaderBase::~SimulationStreamingReaderBase() = default;
 
-void SimulationReaderBase::execute()
+void SimulationStreamingReaderBase::setStateDefaults()
+{
+
+}
+
+void SimulationStreamingReaderBase::execute()
 {
   // SCIRun::Core::Logging::GeneralLog::Instance().setVerbose(true);
   //

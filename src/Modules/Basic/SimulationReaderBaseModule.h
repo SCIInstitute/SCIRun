@@ -38,15 +38,15 @@ namespace Basic {
 
   SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
-  class SCISHARE SimulationReaderBase : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE SimulationStreamingReaderBase : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
     public Has1OutputPort<BundlePortTag>
   {
   public:
-    SimulationReaderBase();
-    ~SimulationReaderBase();
+    SimulationStreamingReaderBase();
+    ~SimulationStreamingReaderBase();
     void execute() override;
-    void setStateDefaults() override {}
+    void setStateDefaults() override;
 
     OUTPUT_PORT(0, OutputData, Bundle);
 
