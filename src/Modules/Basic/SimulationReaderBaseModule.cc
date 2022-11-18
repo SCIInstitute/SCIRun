@@ -88,15 +88,17 @@ namespace SCIRun::Modules::Basic
 
     void waitAndOutputEach()
     {
+      logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
       if (module_->hasData())
       {
+        logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
         //wait for result.
         while (stream().empty())
         {
           logInfo("__MAIN__ Waiting for data");
           std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-
+logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
         //once data is available, output to ports
         auto data = stream().front();
         {
@@ -130,6 +132,7 @@ namespace openPMDStub
   {
   public:
     int iterationIndex;
+    IndexedIteration(int i) : iterationIndex(i) {}
     void seriesFlush() const {}
     void close() const {}
   };
@@ -147,7 +150,9 @@ namespace openPMDStub
   public:
     Series() {}
     Series(const std::string&, Access) {}
-    IndexedIterationContainer readIterations() const { return {}; }
+    IndexedIterationContainer readIterations() const { return dummySeriesData_; }
+  private:
+    IndexedIterationContainer dummySeriesData_ {1,2,3,4,5,6};
   };
 }
 
@@ -176,10 +181,10 @@ public:
     return ofh;
   }
 
-  FieldHandle scalarField(const int numvals, /*std::shared_ptr<float> scalarFieldData_buffer,*/ std::vector<long unsigned int> extent_sFD)
+  FieldHandle scalarField(const int numvals, /*std::shared_ptr<float> scalarFieldData_buffer,*/ std::vector<long unsigned int> extent_sFD, double dataStub)
   {
     FieldInformation lfi("LatVolMesh",1,"float");
-    std::vector<float> values(numvals);
+    std::vector<float> values(numvals, dataStub);
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(extent_sFD[0],extent_sFD[1],extent_sFD[2]));
     FieldHandle ofh = CreateField(lfi,mesh);
     /*
@@ -227,8 +232,10 @@ public:
   openPMDStub::Series getSeries(const std::string& SST_dir)
   {
     //Wait for simulation output data to be generated and posted via SST
+#if openPMDIsAvailable
     while (!std::filesystem::exists(SST_dir))
       std::this_thread::sleep_for(std::chrono::seconds(1));
+#endif
     return openPMDStub::Series(SST_dir, openPMDStub::Access::READ_ONLY);
   }
 
@@ -338,7 +345,7 @@ public:
 
     std::vector<long unsigned int> extent_sFD {2,3,4};
     auto buffer_size_sFD = std::accumulate(extent_sFD.begin(), extent_sFD.end(), 1, std::multiplies<long unsigned int>());
-    return scalarField(buffer_size_sFD, extent_sFD/*, scalarFieldData_buffer*/);
+    return scalarField(buffer_size_sFD, extent_sFD/*, scalarFieldData_buffer*/, static_cast<double>(iteration.iterationIndex));
   }
 
   FieldHandle makeVectorOutput(const openPMDStub::IndexedIteration& iteration)
@@ -399,38 +406,54 @@ void SimulationStreamingReaderBase::execute()
 
   setupStream();
 
+logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
   if (needToExecute())
   {
+    logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
     logInfo("__MAIN__ Resetting impl/async thread");
     streamer_ = std::make_unique<StreamAppender>(this);
+    logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
     streamer_->beginPushDataAsync();
+    logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
   }
 
+logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
+if (!streamer_)
+{
+  logCritical("????SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
+}
   streamer_->waitAndOutputEach();
+  logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
 }
 
 void SimulationStreamingReaderBase::setupStream()
 {
+  logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
   impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
 }
 
 void SimulationStreamingReaderBase::shutdownStream()
 {
+  logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
   impl_->series = {};
 }
 
 bool SimulationStreamingReaderBase::hasData() const
 {
+  logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
   if (!impl_->iterationIterator)
     impl_->iterationIterator = impl_->series.readIterations().begin();
-
+logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
   return *(impl_->iterationIterator) != impl_->series.readIterations().end();
 }
 
 BundleHandle SimulationStreamingReaderBase::nextData() const
 {
+  logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
   ++(*(impl_->iterationIterator));
   const auto& ii = *(*(impl_->iterationIterator));
+
+logCritical("SimulationStreamingReaderBase {} {}", __FUNCTION__, __LINE__);
 
   return bundleOutputs({"Particles", "ScalarField", "VectorField"},
     {impl_->makeParticleOutput(ii), impl_->makeScalarOutput(ii), impl_->makeVectorOutput(ii)});
