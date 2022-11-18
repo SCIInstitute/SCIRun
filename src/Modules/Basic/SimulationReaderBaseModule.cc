@@ -49,9 +49,9 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-namespace Impl2Duplicated
+namespace SCIRun::Modules::Basic
 {
-  using DataChunk = DenseMatrixHandle;
+  using DataChunk = BundleHandle;
   //TODO: need thread-safe container to share
   using DataStream = std::queue<DataChunk>;
 
@@ -59,14 +59,7 @@ namespace Impl2Duplicated
   class StreamAppender
   {
   public:
-    StreamAppender(AsyncStreamingTest* module, DenseMatrixHandle input) : module_(module), input_(input) {}
-
-    bool hasData() const
-    {
-      return sliceIndex_ < input_->nrows();
-    }
-
-    int numDataAppended() const { return sliceIndex_; }
+    explicit StreamAppender(SimulationStreamingReaderBase* module) : module_(module) {}
 
     DataStream& stream() { return stream_; }
 
@@ -74,15 +67,14 @@ namespace Impl2Duplicated
     {
       logInfo("__SR__ ........starting streaming reader");
 
-      while (hasData())
+      while (module_->hasData())
       {
-        auto value = makeShared<DenseMatrix>(input_->row(sliceIndex_));
+        auto value = module_->nextData();
 
-        logInfo("__SR__ >>> pushing new data object: [{}]", sliceIndex_);
+        logInfo("__SR__ >>> pushing new data object: bundleOfSize {}", value->size());
         {
-          Guard g(dataMutex.get());
+          Guard g(dataMutex_.get());
           stream_.push(value);
-          sliceIndex_++;
         }
         logInfo("__SR__ : waiting for {} ms", appendWaitTime_);
         std::this_thread::sleep_for(std::chrono::milliseconds(appendWaitTime_));
@@ -96,7 +88,7 @@ namespace Impl2Duplicated
 
     void waitAndOutputEach()
     {
-      if (hasData())
+      if (module_->hasData())
       {
         //wait for result.
         while (stream().empty())
@@ -108,60 +100,70 @@ namespace Impl2Duplicated
         //once data is available, output to ports
         auto data = stream().front();
         {
-          Guard g(dataMutex.get());
+          Guard g(dataMutex_.get());
           stream().pop();
         }
 
-        logInfo("__MAIN__ Received data: [{}] outputting matrix.", (*data)(0, 0));
-        module_->sendOutput(module_->OutputSlice, bundleOutputs({ "Slice" }, { data }));
+        logInfo("__MAIN__ Received data: outputting bundle of size {}.", data->size());
+        module_->sendOutput(module_->OutputData, data);
 
         logInfo("__MAIN__ Enqueue execute again");
         module_->enqueueExecuteAgain(false);
       }
+      else
+        module_->shutdownStream();
     }
 
   private:
-    AsyncStreamingTest* module_;
-    DenseMatrixHandle input_;
+    SimulationStreamingReaderBase* module_;
     DataStream stream_;
     const int appendWaitTime_ = 2000;
-    int sliceIndex_{ 0 };
 
     std::future<void> f_;
-    Mutex dataMutex{ "test" };
+    Mutex dataMutex_{ "streamingData" };
   };
 }
 
-namespace algo
+namespace openPMDStub
 {
+  class IndexedIteration
+  {
+  public:
+    int iterationIndex;
+    void seriesFlush() const {}
+    void close() const {}
+  };
 
-class IndexedIteration
-{
-public:
-  int iterationIndex;
-  void seriesFlush() const {}
-  void close() const {}
-};
+  enum class Access
+  {
+    READ_ONLY
+  };
 
-enum class Access
-{
-  READ_ONLY
-};
+  using IndexedIterationContainer = std::vector<IndexedIteration>;
+  using IndexedIterationIterator = IndexedIterationContainer::iterator;
 
-class Series
-{
-public:
-  Series(const std::string&, Access) {}
-  std::vector<IndexedIteration> readIterations() const { return {}; }
-};
+  class Series
+  {
+  public:
+    Series() {}
+    Series(const std::string&, Access) {}
+    IndexedIterationContainer readIterations() const { return {}; }
+  };
+}
 
 #define openPMDIsAvailable 0
 
-class PIConGPUReader_Stub
+namespace SCIRun::Modules::Basic
 {
-  SimulationStreamingReaderBase* module_;
+
+class SimulationStreamingReaderBaseImpl
+{
+  //SimulationStreamingReaderBase* module_;
 public:
-  explicit PIConGPUReader_Stub(SimulationStreamingReaderBase* module) : module_(module) {}
+  //explicit SimulationStreamingReaderBaseImpl(SimulationStreamingReaderBase* module) : module_(module) {}
+
+  openPMDStub::Series series;
+  std::optional<openPMDStub::IndexedIterationIterator> iterationIterator;
 
   FieldHandle particleData(/*int buffer_size, float component_x[], float component_y[], float component_z[]*/)
   {
@@ -222,15 +224,15 @@ public:
     return ofh;
   }
 
-  Series getSeries(const std::string& SST_dir)
+  openPMDStub::Series getSeries(const std::string& SST_dir)
   {
     //Wait for simulation output data to be generated and posted via SST
     while (!std::filesystem::exists(SST_dir))
       std::this_thread::sleep_for(std::chrono::seconds(1));
-    return Series(SST_dir, Access::READ_ONLY);
+    return openPMDStub::Series(SST_dir, openPMDStub::Access::READ_ONLY);
   }
 
-  void setupStuff(const IndexedIteration& iteration)
+  void setupStuff(const openPMDStub::IndexedIteration& iteration)
   {
     std::cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
@@ -283,7 +285,7 @@ public:
 #endif
   }
 
-  void scalarFieldSetup1(const IndexedIteration& /*iteration*/)
+  void scalarFieldSetup1(const openPMDStub::IndexedIteration& /*iteration*/)
   {
 #if openPMDIsAvailable
     std::string scalar_field_component = "e_all_chargeDensity";
@@ -320,7 +322,7 @@ public:
 #endif
   }
 
-  FieldHandle makeParticleOutput(const IndexedIteration& iteration)
+  FieldHandle makeParticleOutput(const openPMDStub::IndexedIteration& iteration)
   {
     setupStuff(iteration);
     iteration.seriesFlush();
@@ -328,7 +330,7 @@ public:
     return particleData(/*buffer_size, component_x, component_y, component_z*/);
   }
 
-  FieldHandle makeScalarOutput(const IndexedIteration& iteration)
+  FieldHandle makeScalarOutput(const openPMDStub::IndexedIteration& iteration)
   {
     scalarFieldSetup1(iteration);
     iteration.seriesFlush();
@@ -339,7 +341,7 @@ public:
     return scalarField(buffer_size_sFD, extent_sFD/*, scalarFieldData_buffer*/);
   }
 
-  FieldHandle makeVectorOutput(const IndexedIteration& iteration)
+  FieldHandle makeVectorOutput(const openPMDStub::IndexedIteration& iteration)
   {
     vectorFieldSetup1();
     iteration.seriesFlush();
@@ -349,11 +351,12 @@ public:
     return vectorField(extent_vFD /*, vFD_component_x, vFD_component_y, vFD_component_z*/);
   }
 
+#if 0
   void executeImpl()
   {
     if (module_->needToExecute())
     {
-      auto series = getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+
 
       for (const auto& iteration : series.readIterations())
       {
@@ -362,21 +365,21 @@ public:
         // sendOutput(module_->VectorField, );
 
         module_->sendOutput(module_->OutputData,
-          bundleOutputs({"Particles", "ScalarField", "VectorField"},
-            {makeParticleOutput(iteration), makeScalarOutput(iteration), makeVectorOutput(iteration)}
-        ));
+          );
 
         iteration.close();
       }
     }
   }
+  #endif
 };
 }
 
 MODULE_INFO_DEF(SimulationStreamingReaderBase, Basic, SCIRun)
 
 SimulationStreamingReaderBase::SimulationStreamingReaderBase()
-  : Module(staticInfo_, false)
+  : Module(staticInfo_, false),
+  impl_(new SimulationStreamingReaderBaseImpl)
 {
   INITIALIZE_PORT(OutputData);
 }
@@ -390,20 +393,47 @@ void SimulationStreamingReaderBase::setStateDefaults()
 
 void SimulationStreamingReaderBase::execute()
 {
-  // SCIRun::Core::Logging::GeneralLog::Instance().setVerbose(true);
-  //
-  // logCritical("AsyncStreamingTest Execute called");
-  //
-  // auto input = getRequiredInput(InputMatrix);
-  //
-  // if (needToExecute())
-  // {
-  //   logInfo("__MAIN__ Resetting impl/async thread");
-  //   impl_ = std::make_unique<StreamAppender>(this, castMatrix::toDense(input));
-  //   impl_->beginPushDataAsync();
-  // }
-  //
-  // impl_->waitAndOutputEach();
+  SCIRun::Core::Logging::GeneralLog::Instance().setVerbose(true);
+
+  logCritical("SimulationStreamingReaderBase Execute called");
+
+  setupStream();
+
+  if (needToExecute())
+  {
+    logInfo("__MAIN__ Resetting impl/async thread");
+    streamer_ = std::make_unique<StreamAppender>(this);
+    streamer_->beginPushDataAsync();
+  }
+
+  streamer_->waitAndOutputEach();
+}
+
+void SimulationStreamingReaderBase::setupStream()
+{
+  impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+}
+
+void SimulationStreamingReaderBase::shutdownStream()
+{
+  impl_->series = {};
+}
+
+bool SimulationStreamingReaderBase::hasData() const
+{
+  if (!impl_->iterationIterator)
+    impl_->iterationIterator = impl_->series.readIterations().begin();
+
+  return *(impl_->iterationIterator) != impl_->series.readIterations().end();
+}
+
+BundleHandle SimulationStreamingReaderBase::nextData() const
+{
+  ++(*(impl_->iterationIterator));
+  const auto& ii = *(*(impl_->iterationIterator));
+
+  return bundleOutputs({"Particles", "ScalarField", "VectorField"},
+    {impl_->makeParticleOutput(ii), impl_->makeScalarOutput(ii), impl_->makeVectorOutput(ii)});
 }
 
 Core::Datatypes::BundleHandle SCIRun::Modules::Basic::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)

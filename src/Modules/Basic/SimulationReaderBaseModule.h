@@ -48,9 +48,18 @@ namespace Basic {
     void execute() override;
     void setStateDefaults() override;
 
+    // override these methods in subclass
+    virtual void setupStream();
+    virtual bool hasData() const;
+    virtual Core::Datatypes::BundleHandle nextData() const;
+    virtual void shutdownStream();
+
     OUTPUT_PORT(0, OutputData, Bundle);
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+  private:
+    std::unique_ptr<class StreamAppender> streamer_;
+    std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
   };
 
 }}}
