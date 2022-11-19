@@ -226,7 +226,7 @@ public:
     return openPMDStub::Series(SST_dir, openPMDStub::Access::READ_ONLY);
   }
 
-  void setupStuff(const openPMDStub::IndexedIteration& iteration)
+  void setupStuff(const openPMDStub::IndexedIteration& /*iteration*/)
   {
     //std::cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
