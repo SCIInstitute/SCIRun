@@ -38,7 +38,7 @@
 									<name>field1-name</name>
 									<value object_id="_1">
 										<which>2</which>
-										<value>field0</value>
+										<value>Particles</value>
 									</value>
 								</second>
 							</item>
@@ -50,7 +50,7 @@
 									<name>field2-name</name>
 									<value object_id="_2">
 										<which>2</which>
-										<value>field1</value>
+										<value>ScalarField</value>
 									</value>
 								</second>
 							</item>
@@ -62,7 +62,7 @@
 									<name>field3-name</name>
 									<value object_id="_3">
 										<which>2</which>
-										<value>field2</value>
+										<value>VectorField</value>
 									</value>
 								</second>
 							</item>

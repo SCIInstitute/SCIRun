@@ -58,7 +58,7 @@ namespace Basic {
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
   private:
-    std::unique_ptr<class StreamAppender> streamer_;
+    std::unique_ptr<class StreamAppenderImpl> streamer_;
     std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
   };
 
