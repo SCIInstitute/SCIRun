@@ -86,7 +86,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   }
 
   // connecting all table cell positions (int = row, int = col)
-  connect(electrode_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+  connect(electrode_tableWidget, &QTableWidget::cellChanged, this, &SetupRHSforTDCSandTMSDialog::push);
 }
 
 void SetupRHSforTDCSandTMSDialog::push()

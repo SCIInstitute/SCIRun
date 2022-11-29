@@ -42,8 +42,8 @@ CreateComplexMatrixDialog::CreateComplexMatrixDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
-  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
+  connect(editCheckBox_, &QCheckBox::stateChanged, this, &CreateComplexMatrixDialog::pushMatrixToState);
+  connect(matrixTextEdit_, &QPlainTextEdit::textChanged, this, &CreateComplexMatrixDialog::editBoxUnsaved);
 }
 
 void CreateComplexMatrixDialog::pushMatrixToState(int state)

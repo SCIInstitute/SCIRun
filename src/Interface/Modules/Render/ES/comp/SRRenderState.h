@@ -33,7 +33,7 @@
 #include <es-cereal/ComponentSerialize.hpp>
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Geometry.h>
 
 namespace SCIRun {

@@ -146,14 +146,16 @@ void GenericWriter<HType, PortTag, PortDescriber>::execute()
   {
     MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "No filename specified.");
   }
-  if (needToExecute())
+
+  if (!boost::filesystem::exists(filename_) || needToExecute())
   {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
 #endif
     remark("saving file " + filename_);
 
-    if (!overwrite()) return;
+    if (!overwrite())
+      return;
 
     if (useCustomExporter(filename_))
     {

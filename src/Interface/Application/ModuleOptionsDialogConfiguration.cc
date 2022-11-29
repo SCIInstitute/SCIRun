@@ -81,7 +81,7 @@ ModuleDialogDockWidget* ModuleOptionsDialogConfiguration::config(ModuleDialogGen
   }
 
   if (ModuleWidget::highResolutionExpandFactor_ > 1 && moduleWidget_->isViewScene_)
-    options->adjustToolbar();
+    options->adjustToolbar(ModuleWidget::highResolutionExpandFactor_);
 
   options->pull();
 
@@ -95,6 +95,7 @@ ModuleDialogDockWidget* ModuleOptionsDialogConfiguration::configDockable(ModuleD
   dockable->setObjectName(options->windowTitle());
   dockable->setWidget(options);
   options->setDockable(dockable);
+  QObject::connect(dockable, &ModuleDialogDockWidget::movedToFullScreen, options, &ModuleDialogGeneric::adaptToFullScreenView);
 
   dockable->setMinimumSize(options->minimumSize());
   dockable->setAllowedAreas(moduleWidget_->allowedDockArea());

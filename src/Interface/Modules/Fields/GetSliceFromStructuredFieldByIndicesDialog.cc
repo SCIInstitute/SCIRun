@@ -50,15 +50,15 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   addCheckBoxManager(axisExecuteCheckBox_, AxisReexecute);
   addCheckBoxManager(sliderExecuteCheckBox_, SliderReexecute);
 
-  connect(iAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(jAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(kAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(iAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(jAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(kAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(iAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
-  connect(jAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
-  connect(kAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
+  connect(iAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(jAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(kAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(iAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(jAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(kAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(iAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
+  connect(jAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
+  connect(kAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
 }
 
 void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()

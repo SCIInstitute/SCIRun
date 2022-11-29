@@ -28,7 +28,7 @@
 
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -534,8 +534,8 @@ void GeometryBuilder::renderFacesLinear(
   bool isScalar = fld->is_scalar();
   bool isVector = fld->is_vector();
   bool isTensor = fld->is_tensor();
-  int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
-  colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
+  //int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
+  //colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
 

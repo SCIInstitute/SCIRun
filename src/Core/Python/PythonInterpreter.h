@@ -25,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifdef BUILD_WITH_PYTHON
 #ifndef CORE_PYTHON_PYTHONINTERPRETER_H
 #define CORE_PYTHON_PYTHONINTERPRETER_H
+
+
+#ifdef BUILD_WITH_PYTHON
 
 #include <boost/python.hpp>
 #include <boost/filesystem/path.hpp>
@@ -126,4 +127,17 @@ public:
 }}
 
 #endif
+
+namespace SCIRun::Core
+{
+  inline void runPythonString(const std::string& cmd)
+  {
+    #ifdef BUILD_WITH_PYTHON
+    PythonInterpreter::Instance().run_string(cmd);
+    #else
+    (void)cmd;
+    #endif
+  }
+}
+
 #endif

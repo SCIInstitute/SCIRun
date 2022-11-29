@@ -47,9 +47,9 @@ WriteBundleDialog::WriteBundleDialog(const std::string& name, ModuleStateHandle 
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  connect(saveFileButton_, &QPushButton::clicked, this, &WriteBundleDialog::saveFile);
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &WriteBundleDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &WriteBundleDialog::pushFileNameToState);
   WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(saveFileButton_, Variables::FileTypeName.name());

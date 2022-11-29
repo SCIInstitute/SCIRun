@@ -42,8 +42,8 @@ GetDomainBoundaryDialog::GetDomainBoundaryDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(compartmentRadioButton_, &QPushButton::clicked, this, &GetDomainBoundaryDialog::push);
+  connect(compartmentsRangeRadioButton_, &QPushButton::clicked, this, &GetDomainBoundaryDialog::push);
 
   using namespace Parameters;
   addCheckBoxManager(disconnectBoundariesCheckBox_, DisconnectBoundaries);

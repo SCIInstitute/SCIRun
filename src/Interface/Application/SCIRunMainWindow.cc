@@ -35,6 +35,7 @@
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
+#include <Interface/Application/MacroEditor.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
@@ -50,6 +51,7 @@
 #include <Core/Logging/Log.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
+#include <chrono>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
@@ -94,18 +96,15 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   setTipsAndWhatsThis();
 
-  connect(actionExecuteAll_, SIGNAL(triggered()), this, SLOT(executeAll()));
-  connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
-
-  setActionIcons();
+  connect(actionExecuteAll_, &QAction::triggered, this, &SCIRunMainWindow::executeAll);
+  connect(actionNew_, &QAction::triggered, this, &SCIRunMainWindow::newNetwork);
 
   createStandardToolbars();
   createExecuteToolbar();
   createAdvancedToolbar();
-  createMacroToolbar();
 
   #ifdef __APPLE__
-  connect(actionLaunchNewInstance_, SIGNAL(triggered()), this, SLOT(launchNewInstance()));
+  connect(actionLaunchNewInstance_, &QAction::triggered, this, &SCIRunMainWindow::launchNewInstance);
   #else
   menuFile_->removeAction(actionLaunchNewInstance_);
   #endif
@@ -118,8 +117,8 @@ SCIRunMainWindow::SCIRunMainWindow()
     searchBar->setObjectName("SearchToolBar");
     WidgetStyleMixin::toolbarStyle(searchBar);
     searchBar->addAction(searchAction);
-    connect(actionSearchBar_, SIGNAL(toggled(bool)), searchBar, SLOT(setVisible(bool)));
-    connect(searchBar, SIGNAL(visibilityChanged(bool)), actionSearchBar_, SLOT(setChecked(bool)));
+    connect(actionSearchBar_, &QAction::toggled, searchBar, &QToolBar::setVisible);
+    connect(searchBar, &QToolBar::visibilityChanged, actionSearchBar_, &QAction::setChecked);
     searchBar->setVisible(false);
   }
 
@@ -129,18 +128,18 @@ SCIRunMainWindow::SCIRunMainWindow()
   scrollArea_->viewport()->setAutoFillBackground(true);
   scrollArea_->setStyleSheet(styleSheet());
 
-  connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
-  connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
-  connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
-  connect(actionImportNetwork_, SIGNAL(triggered()), this, SLOT(importLegacyNetwork()));
-  connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
-  connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
+  connect(actionSave_As_, &QAction::triggered, this, &SCIRunMainWindow::saveNetworkAs);
+  connect(actionSave_, &QAction::triggered, this, &SCIRunMainWindow::saveNetwork);
+  connect(actionLoad_, &QAction::triggered, this, &SCIRunMainWindow::loadNetwork);
+  connect(actionImportNetwork_, &QAction::triggered, this, &SCIRunMainWindow::importLegacyNetwork);
+  connect(actionQuit_, &QAction::triggered, this, &SCIRunMainWindow::close);
+  connect(actionRunScript_, &QAction::triggered, this, &SCIRunMainWindow::runScript);
 
-  connect(actionRunMacro1_, SIGNAL(triggered()), this, SLOT(runMacro()));
-  connect(actionRunMacro2_, SIGNAL(triggered()), this, SLOT(runMacro()));
-  connect(actionRunMacro3_, SIGNAL(triggered()), this, SLOT(runMacro()));
-  connect(actionRunMacro4_, SIGNAL(triggered()), this, SLOT(runMacro()));
-  connect(actionRunMacro5_, SIGNAL(triggered()), this, SLOT(runMacro()));
+  connect(actionRunMacro1_, &QAction::triggered, this, &SCIRunMainWindow::runMacro);
+  connect(actionRunMacro2_, &QAction::triggered, this, &SCIRunMainWindow::runMacro);
+  connect(actionRunMacro3_, &QAction::triggered, this, &SCIRunMainWindow::runMacro);
+  connect(actionRunMacro4_, &QAction::triggered, this, &SCIRunMainWindow::runMacro);
+  connect(actionRunMacro5_, &QAction::triggered, this, &SCIRunMainWindow::runMacro);
 
   {
     QFile importerXML(":/general/Resources/LegacyModuleImporter.xml");
@@ -169,23 +168,23 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   actionDelete_->setShortcuts(QList<QKeySequence>() << QKeySequence::Delete << Qt::Key_Backspace);
 
-	connect(actionRunNewModuleWizard_, SIGNAL(triggered()), this, SLOT(runNewModuleWizard()));
+	connect(actionRunNewModuleWizard_, &QAction::triggered, this, &SCIRunMainWindow::runNewModuleWizard);
 	actionRunNewModuleWizard_->setDisabled(true);
 
-  connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
-  connect(actionCreateToolkitFromDirectory_, SIGNAL(triggered()), this, SLOT(helpWithToolkitCreation()));
+  connect(actionAbout_, &QAction::triggered, this, &SCIRunMainWindow::displayAcknowledgement);
+  connect(actionCreateToolkitFromDirectory_, &QAction::triggered, this, &SCIRunMainWindow::helpWithToolkitCreation);
 
-  connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
-  connect(helpActionModuleFuzzySearch_, SIGNAL(triggered()), this, SLOT(showModuleFuzzySearchHelp()));
-  connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
-  connect(helpActionClipboard_, SIGNAL(triggered()), this, SLOT(showClipboardHelp()));
-	connect(helpActionTagLayer_, SIGNAL(triggered()), this, SLOT(showTagHelp()));
-	connect(helpActionTriggeredScripts_, SIGNAL(triggered()), this, SLOT(showTriggerHelp()));
-  connect(helpActionNewUserWizard_, SIGNAL(triggered()), this, SLOT(launchNewUserWizard()));
-  connect(helpActionPythonWizard_, SIGNAL(triggered()), this, SLOT(launchPythonWizard()));
+  connect(helpActionPythonAPI_, &QAction::triggered, this, &SCIRunMainWindow::loadPythonAPIDoc);
+  connect(helpActionModuleFuzzySearch_, &QAction::triggered, this, &SCIRunMainWindow::showModuleFuzzySearchHelp);
+  connect(helpActionSnippets_, &QAction::triggered, this, &SCIRunMainWindow::showSnippetHelp);
+  connect(helpActionClipboard_, &QAction::triggered, this, &SCIRunMainWindow::showClipboardHelp);
+	connect(helpActionTagLayer_, &QAction::triggered, this, &SCIRunMainWindow::showTagHelp);
+	connect(helpActionTriggeredScripts_, &QAction::triggered, this, &SCIRunMainWindow::showTriggerHelp);
+  connect(helpActionNewUserWizard_, &QAction::triggered, this, &SCIRunMainWindow::launchNewUserWizard);
+  connect(helpActionPythonWizard_, &QAction::triggered, this, &SCIRunMainWindow::launchPythonWizard);
 
-  connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
-  connect(actionToggleFullScreenMode_, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
+  connect(actionReset_Window_Layout, &QAction::triggered, this, &SCIRunMainWindow::resetWindowLayout);
+  connect(actionToggleFullScreenMode_, &QAction::triggered, this, &SCIRunMainWindow::toggleFullScreen);
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
@@ -196,51 +195,54 @@ SCIRunMainWindow::SCIRunMainWindow()
     recentFileActions_.push_back(new QAction(this));
     recentFileActions_[i]->setVisible(false);
     recentNetworksMenu_->addAction(recentFileActions_[i]);
-    connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
+    connect(recentFileActions_[i], &QAction::triggered, this, &SCIRunMainWindow::loadRecentNetwork);
   }
 
 	setupScriptedEventsWindow();
   setupProvenanceWindow();
+  createMacroToolbar();
+
+  setActionIcons();
 
   setupDevConsole();
   setupPythonConsole();
 
-  connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
-  connect(prefsWindow_->defaultNoteSizeComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNoteSize(int)));
-  connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
-  connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
-  connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
-  connect(prefsWindow_->maxCoresSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(maxCoreValueChanged(int)));
+  connect(prefsWindow_->defaultNotePositionComboBox_, qOverload<int>(&QComboBox::activated), this, &SCIRunMainWindow::readDefaultNotePosition);
+  connect(prefsWindow_->defaultNoteSizeComboBox_, qOverload<int>(&QComboBox::activated), this, &SCIRunMainWindow::readDefaultNoteSize);
+  connect(prefsWindow_->cubicPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesCubicBezier);
+  connect(prefsWindow_->manhattanPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesManhattan);
+  connect(prefsWindow_->euclideanPipesRadioButton_, &QPushButton::clicked, this, &SCIRunMainWindow::makePipesEuclidean);
+  connect(prefsWindow_->maxCoresSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &SCIRunMainWindow::maxCoreValueChanged);
   //TODO: will be a user or network setting
   makePipesEuclidean();
 
-  connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
+  connect(moduleFilterLineEdit_, &QLineEdit::textChanged, this, &SCIRunMainWindow::filterModuleNamesInTreeView);
 
-  connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
-  connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
-  connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
-  connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
-  connect(prefsWindow_->dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
+  connect(prefsWindow_->modulesSnapToCheckBox_, &QCheckBox::stateChanged, this, &SCIRunMainWindow::modulesSnapToChanged);
+  connect(prefsWindow_->modulesSnapToCheckBox_, &QCheckBox::stateChanged, networkEditor_, &NetworkEditor::snapToModules);
+  connect(prefsWindow_->portSizeEffectsCheckBox_, &QCheckBox::stateChanged, this, &SCIRunMainWindow::highlightPortsChanged);
+  connect(prefsWindow_->portSizeEffectsCheckBox_, &QCheckBox::stateChanged, networkEditor_, &NetworkEditor::highlightPorts);
+  connect(prefsWindow_->dockableModulesCheckBox_, &QCheckBox::stateChanged, this, &SCIRunMainWindow::adjustModuleDock);
 
   makeFilterButtonMenu();
 
-  connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
-  connect(prefsWindow_->screenshotPathPushButton_, SIGNAL(clicked()), this, SLOT(setScreenshotDirectoryFromGUI()));
-  //connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
-  connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
-  connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
+  connect(prefsWindow_->scirunDataPushButton_, &QPushButton::clicked, this, &SCIRunMainWindow::setDataDirectoryFromGUI);
+  connect(prefsWindow_->screenshotPathPushButton_, &QPushButton::clicked, this, &SCIRunMainWindow::setScreenshotDirectoryFromGUI);
+  //connect(prefsWindow_->addToPathButton_, &QPushButton::clicked, this, &SCIRunMainWindow::addToPathFromGUI);
+  connect(actionFilter_modules_, &QAction::triggered, this, &SCIRunMainWindow::setFocusOnFilterLine);
+  connect(actionAddModule_, &QAction::triggered, this, &SCIRunMainWindow::addModuleKeyboardAction);
   actionAddModule_->setVisible(false);
-  connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
+  connect(actionSelectModule_, &QAction::triggered, this, &SCIRunMainWindow::selectModuleKeyboardAction);
   actionSelectModule_->setVisible(false);
-  connect(actionReportIssue_, SIGNAL(triggered()), this, SLOT(reportIssue()));
-  connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
-  connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
-	connect(actionToggleTagLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleTagLayer(bool)));
-  connect(actionToggleMetadataLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleMetadataLayer(bool)));
-  connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
-  connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
-  connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
-  connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionReportIssue_, &QAction::triggered, this, &SCIRunMainWindow::reportIssue);
+  connect(actionSelectMode_, &QAction::toggled, this, &SCIRunMainWindow::setSelectMode);
+  connect(actionDragMode_, &QAction::toggled, this, &SCIRunMainWindow::setDragMode);
+	connect(actionToggleTagLayer_, &QAction::toggled, this, &SCIRunMainWindow::toggleTagLayer);
+  connect(actionToggleMetadataLayer_, &QAction::toggled, this, &SCIRunMainWindow::toggleMetadataLayer);
+  connect(actionResetNetworkZoom_, &QAction::triggered, this, &SCIRunMainWindow::zoomNetwork);
+  connect(actionZoomIn_, &QAction::triggered, this, &SCIRunMainWindow::zoomNetwork);
+  connect(actionZoomOut_, &QAction::triggered, this, &SCIRunMainWindow::zoomNetwork);
+  connect(actionZoomBestFit_, &QAction::triggered, this, &SCIRunMainWindow::zoomNetwork);
   connect(actionStateViewer_, &QAction::triggered, [this]() { networkEditor_->showStateViewer(); });
 
   auto dimFunc = [this](const char* type)
@@ -261,7 +263,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionCopy_->setIcon(QPixmap(":/general/Resources/copy.png"));
   actionPaste_->setIcon(QPixmap(":/general/Resources/paste.png"));
 
-  connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
+  connect(actionKeyboardShortcuts_, &QAction::triggered, this, &SCIRunMainWindow::showKeyboardShortcutsDialog);
 
   //TODO: store in xml file, add to app resources
   {
@@ -296,22 +298,34 @@ SCIRunMainWindow::SCIRunMainWindow()
       "BrainStimulator_nightly.zip" };
     brainStimNightly.setupAction(actionBrainStimulatorNightly_, this);
   }
-  connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
+  connect(actionLoadToolkit_, &QAction::triggered, this, &SCIRunMainWindow::loadToolkit);
 
-  connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
-  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
+  connect(networkEditor_, &NetworkEditor::networkExecuted, networkProgressBar_.get(), &NetworkExecutionProgressBar::resetModulesDone);
+  connect(networkEditor_->moduleEventProxy().get(), &ModuleEventProxy::moduleExecuteEnd, networkProgressBar_.get(), &NetworkExecutionProgressBar::incrementModulesDone);
   connect(networkEditor_, &NetworkEditor::networkExecuted, []() { DialogErrorControl::instance().resetCounter(); });
-	connect(networkEditor_, SIGNAL(requestLoadNetwork(const QString&)), this, SLOT(checkAndLoadNetworkFile(const QString&)));
-  connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
+	connect(networkEditor_, &NetworkEditor::requestLoadNetwork, this, &SCIRunMainWindow::checkAndLoadNetworkFile);
+  connect(networkEditor_, &NetworkEditor::networkExecuted, this, &SCIRunMainWindow::changeExecuteActionIconToStop);
 
-  connect(prefsWindow_->actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
+  connect(prefsWindow_->actionTextIconCheckBox_, &QPushButton::clicked, this, &SCIRunMainWindow::adjustExecuteButtonAppearance);
   prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
 
-  connect(networkEditor_, SIGNAL(newSubnetworkCopied(const QString&)), this, SLOT(updateClipboardHistory(const QString&)));
-  connect(networkEditor_, SIGNAL(middleMouseClicked()), this, SLOT(switchMouseMode()));
+  connect(networkEditor_, &NetworkEditor::newSubnetworkCopied, this, &SCIRunMainWindow::updateClipboardHistory);
+  connect(networkEditor_, &NetworkEditor::middleMouseClicked, this, &SCIRunMainWindow::switchMouseMode);
 
-  connect(openLogFolderButton_, SIGNAL(clicked()), this, SLOT(openLogFolder()));
+  connect(openLogFolderButton_, &QPushButton::clicked, this, &SCIRunMainWindow::openLogFolder);
+
+  setupDockToggleViewAction(moduleSelectorDockWidget_, "Ctrl+Shift+M");
+  setupDockToggleViewAction(userModuleSelectorDockWidget_, "Ctrl+Shift+U");
+  setupDockToggleViewAction(logDockWidget_, "Ctrl+Shift+L");
+  setupDockToggleViewAction(networkMiniViewDockWidget_, "Ctrl+Shift+V");
+  setupDockToggleViewAction(provenanceWindow_, "Ctrl+Shift+P");
+  setupDockToggleViewAction(triggeredEventsWindow_, "Ctrl+Shift+E");
+  setupDockToggleViewAction(tagManagerWindow_, "Ctrl+Shift+T");
+  setupDockToggleViewAction(macroEditor_, "Ctrl+Shift+X");
+  #ifdef BUILD_WITH_PYTHON
+  setupDockToggleViewAction(pythonConsole_, "Ctrl+Shift+Y");
+  #endif
 
   setupInputWidgets();
 
@@ -321,12 +335,10 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   setCurrentFile("");
 
-  actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
-  actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
-  actionProvenance_->setChecked(!provenanceWindow_->isHidden());
-  actionTriggeredEvents_->setChecked(!triggeredEventsWindow_->isHidden());
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
-  actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
+
+  connect(actionAutoRotateViewScene_, &QAction::triggered, prefsWindow_->autoRotateViewerOnMouseReleaseCheckbox_, &QCheckBox::toggle);
+  connect(actionAutoRotateViewScene_, &QAction::triggered, [this]() { showStatusMessage(QString("ViewScene auto-rotate toggled."), 3000); });
 
   moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
 	  "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -335,7 +347,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   hideNonfunctioningWidgets();
 
-  connect(moduleSelectorDockWidget_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
+  connect(moduleSelectorDockWidget_, &QDockWidget::topLevelChanged, this, &SCIRunMainWindow::updateDockWidgetProperties);
 
   setupVersionButton();
 
@@ -374,18 +386,58 @@ void SCIRunMainWindow::networkTimedOut()
 	exitApplication(2);
 }
 
+void SCIRunMainWindow::setupDockToggleViewAction(QDockWidget* dock, const QString& shortcut)
+{
+  auto tva = dock->toggleViewAction();
+  tva->setShortcut(QKeySequence(shortcut));
+  menuWindow->addAction(tva);
+}
+
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
 {
   QFileInfo info(fullFileName);
   return info.fileName();
 }
 
+namespace 
+{
+bool fileExistCheck(const std::string& filename)
+{
+  bool fileExists;
+  //TODO: boost upgrade to 1.80 should remove the need for the try/catch--see issue #2407
+  try
+  {
+    fileExists = boost::filesystem::exists(filename);
+  }
+  catch (...)
+  {
+    fileExists = false;
+  }
+  return fileExists;
+}
+
+bool superFileExistCheck(const std::string& filename)
+{
+  auto check = std::async([filename]() { return fileExistCheck(filename); });
+  auto status = check.wait_for(std::chrono::seconds(1));
+  if (status == std::future_status::ready)
+    return check.get();
+  return false;
+}
+}
+
 void SCIRunMainWindow::updateRecentFileActions()
 {
   QMutableStringListIterator i(recentFiles_);
-  while (i.hasNext()) {
-    if (!QFile::exists(i.next()))
+  while (i.hasNext()) 
+  {
+    const auto file = i.next().toStdString();
+    
+    if (!superFileExistCheck(file))
+    {
+      logWarning("Network file {} not found, removing entry from recent list.", file);
       i.remove();
+    }
   }
 
   for (int j = 0; j < MaxRecentFiles; ++j)

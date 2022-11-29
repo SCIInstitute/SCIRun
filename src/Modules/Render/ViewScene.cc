@@ -108,6 +108,7 @@ ALGORITHM_PARAMETER_DEF(Render, ScaleBarMultiplier);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarNumTicks);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarLineWidth);
 ALGORITHM_PARAMETER_DEF(Render, ScaleBarFontSize);
+ALGORITHM_PARAMETER_DEF(Render, ScaleBarLineColor);
 //ALGORITHM_PARAMETER_DEF(Render, Lighting);
 //ALGORITHM_PARAMETER_DEF(Render, ShowBBox);
 // ALGORITHM_PARAMETER_DEF(Render, UseClip);
@@ -158,7 +159,9 @@ ALGORITHM_PARAMETER_DEF(Render, AxesSize);
 ALGORITHM_PARAMETER_DEF(Render, AxesX);
 ALGORITHM_PARAMETER_DEF(Render, AxesY);
 ALGORITHM_PARAMETER_DEF(Render, VisibleItemListState);
-
+ALGORITHM_PARAMETER_DEF(Render, ToolBarMainPosition);
+ALGORITHM_PARAMETER_DEF(Render, ToolBarRenderPosition);
+ALGORITHM_PARAMETER_DEF(Render, ToolBarAdvancedPosition);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotDirectory);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
@@ -204,6 +207,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::ScaleBarNumTicks, 11);
   state->setValue(Parameters::ScaleBarLineWidth, 1.0);
   state->setValue(Parameters::ScaleBarFontSize, 8);
+  state->setValue(Parameters::ScaleBarLineColor, 1.0);
   // state->setValue(Parameters::Lighting, true);
   //state->setValue(Parameters::ShowBBox, false);
   // state->setValue(Parameters::UseClip, true);
@@ -257,8 +261,11 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::AxesX, 100);
   state->setValue(Parameters::AxesY, 100);
 
-  state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
+  state->setValue(Parameters::ToolBarMainPosition, 4);  //TopToolBarArea
+  state->setValue(Parameters::ToolBarRenderPosition, 1);  //LeftToolBarArea
+  state->setValue(Parameters::ToolBarAdvancedPosition, 2);  //RightToolBarArea
 
+  state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });

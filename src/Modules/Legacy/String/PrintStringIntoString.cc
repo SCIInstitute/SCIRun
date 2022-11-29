@@ -72,29 +72,24 @@ PrintStringIntoString::execute()
   std::string  str;
 
   std::vector<char> buffer(256);
-  bool    lastport = false;
-
-
-  auto  stringH = getOptionalInput(Format);
-
+  bool lastport = false;
+  auto stringH = getOptionalInput(Format);
   auto state = get_state();
 
   // check for port input and in none use gui input
   if (stringH && *stringH)
   {
-    state -> setValue(FormatString, (*stringH) -> value());
+    state->setValue(FormatString, (*stringH)->value());
   }
-  format = state -> getValue(FormatString).toString();
+  format = state->getValue(FormatString).toString();
 
-
-  // Get the dynamic handles
   auto stringsH = getOptionalDynamicInputs(Input);
 
 
   if (needToExecute())
   {
     size_t i = 0;
-    while(i < format.size())
+    while (i < format.size())
     {
       if (format[i] == '%')
       {
@@ -102,7 +97,7 @@ PrintStringIntoString::execute()
         {
           error("Improper format string '%' is last character");
           return;
-      }
+        }
 
         if (format[i+1] == '%')
         {
@@ -125,34 +120,33 @@ PrintStringIntoString::execute()
 
           std::string fstr = format.substr(i,j-i+1);
 
+          if ((format[j] == 's')||(format[j] == 'S')||(format[j] == 'c')||(format[j] == 'C'))
           {
-            str = "";
-            if (lastport == false)
             {
-              if (inputport == stringsH.size())
+              str = "";
+              if (!lastport)
               {
-                lastport = true;
-              }
-              else
-              {
-                if (stringsH.size() == static_cast<size_t>(inputport))
+                if (inputport == stringsH.size())
                 {
                   lastport = true;
                 }
                 else
                 {
-                  currentstring = stringsH[inputport]; inputport++;
-                  if (currentstring)
+                  if (stringsH.size() == static_cast<size_t>(inputport))
                   {
-                    str = currentstring->value();
+                    lastport = true;
+                  }
+                  else
+                  {
+                    currentstring = stringsH[inputport++];
+                    if (currentstring)
+                    {
+                      str = currentstring->value();
+                    }
                   }
                 }
               }
             }
-          }
-
-          if ((format[j] == 's')||(format[j] == 'S')||(format[j] == 'c')||(format[j] == 'C'))
-          {
             // We put the %s %S back in the string so it can be filled out lateron
             // By a different module
 
@@ -209,7 +203,7 @@ PrintStringIntoString::execute()
         output += format[i++];
       }
     }
-
+    
     StringHandle handle(new String(output));
     sendOutput(Output, handle);
   }

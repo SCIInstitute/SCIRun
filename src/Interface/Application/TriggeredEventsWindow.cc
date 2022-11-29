@@ -39,9 +39,9 @@ TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockW
 {
   setupUi(this);
   gridLayout_2->addWidget(scriptPlainTextEdit_, 2, 0);
-  connect(eventListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
-  connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
-  connect(enabledCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(enableStateChanged(int)));
+  connect(eventListWidget_, &QListWidget::itemSelectionChanged, this, &TriggeredEventsWindow::updateScriptEditor);
+  connect(scriptPlainTextEdit_, &QPlainTextEdit::textChanged, this, &TriggeredEventsWindow::updateScripts);
+  connect(enabledCheckBox_, &QCheckBox::stateChanged, this, &TriggeredEventsWindow::enableStateChanged);
 }
 
 const QMap<QString, QString>& TriggeredEventsWindow::scripts() const

@@ -72,9 +72,10 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
     for (VMesh::Node::index_type i=0; i<size; ++i)
     {
       vmesh->get_center(p,i);
-      (*output)(i, 0) = p.x();
-      (*output)(i, 1) = p.y();
-      (*output)(i, 2) = p.z();
+      const auto ii = static_cast<uint64_t>(i);
+      (*output)(ii, 0) = p.x();
+      (*output)(ii, 1) = p.y();
+      (*output)(ii, 2) = p.z();
       cnt++;
       if (cnt == 400)
       {
@@ -90,7 +91,7 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
 
     Point p;
     int cnt = 0;
-    for (VMesh::Node::index_type i=0; i<size; ++i)
+    for (auto i=0; i<size; ++i)
     {
       p = points[i];
       (*output)(i, 0) = p.x();

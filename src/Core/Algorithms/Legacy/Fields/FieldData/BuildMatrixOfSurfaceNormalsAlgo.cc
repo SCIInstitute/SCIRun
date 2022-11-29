@@ -74,7 +74,7 @@ bool BuildMatrixOfSurfaceNormalsAlgo::runImpl(FieldHandle input, DenseMatrixHand
     return (false);
   }
 
-	VMesh::Node::index_type k = 0;
+	int k = 0;
   int cnt = 0;
   Vector norm;
   for (VMesh::Node::index_type i=0; i<num_nodes; ++i)

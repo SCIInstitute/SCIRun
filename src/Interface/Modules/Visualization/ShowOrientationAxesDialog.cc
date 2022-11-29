@@ -39,10 +39,10 @@ ShowOrientationAxesDialog::ShowOrientationAxesDialog(
   fixSize();
 
   addDoubleSpinBoxManager(scaleDoubleSpinBox_, SOA::Scale);
-  connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleUpPush()));
-  connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleUpPush()));
-  connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDownPush()));
-  connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleDownPush()));
+  connect(upScaleToolButton_, &QPushButton::clicked, this, &ShowOrientationAxesDialog::scaleUpPush);
+  connect(doubleUpScaleToolButton_, &QPushButton::clicked, this, &ShowOrientationAxesDialog::scaleDoubleUpPush);
+  connect(downScaleToolButton_, &QPushButton::clicked, this, &ShowOrientationAxesDialog::scaleDownPush);
+  connect(doubleDownScaleToolButton_, &QPushButton::clicked, this, &ShowOrientationAxesDialog::scaleDoubleDownPush);
 
   addDoubleSpinBoxManager(xDoubleSpinBox_, SOA::X);
   addDoubleSpinBoxManager(yDoubleSpinBox_, SOA::Y);

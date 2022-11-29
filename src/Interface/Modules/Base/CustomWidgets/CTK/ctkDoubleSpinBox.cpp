@@ -197,18 +197,18 @@ void ctkDoubleSpinBoxPrivate::init()
   this->SpinBox->setInvertedControls(this->InvertedControls);
   // ctkQDoubleSpinBox needs to be first to receive textChanged() signals.
   QLineEdit* lineEdit = new QLineEdit(q);
-  QObject::connect(lineEdit, SIGNAL(textChanged(QString)),
-                   this, SLOT(editorTextChanged(QString)));
+  QObject::connect(lineEdit, &QLineEdit::textChanged,
+                   this, &ctkDoubleSpinBoxPrivate::editorTextChanged);
   this->SpinBox->setLineEdit(lineEdit);
   lineEdit->setObjectName(QLatin1String("qt_spinbox_lineedit"));
   this->InputValue = this->SpinBox->value();
   this->InputRange[0] = this->SpinBox->minimum();
   this->InputRange[1] = this->SpinBox->maximum();
 
-  QObject::connect(this->SpinBox, SIGNAL(valueChanged(double)),
-    this, SLOT(onValueChanged()));
-  QObject::connect(this->SpinBox, SIGNAL(editingFinished()),
-    q, SIGNAL(editingFinished()));
+  QObject::connect(this->SpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+    this, &ctkDoubleSpinBoxPrivate::onValueChanged);
+  QObject::connect(this->SpinBox, &QDoubleSpinBox::editingFinished,
+    q, &ctkDoubleSpinBox::editingFinished);
 
   QHBoxLayout* l = new QHBoxLayout(q);
   l->addWidget(this->SpinBox);
@@ -1043,20 +1043,20 @@ void ctkDoubleSpinBox::setValueProxy(ctkValueProxy* proxy)
 
   if (d->Proxy)
     {
-    disconnect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
-               d, SLOT(onValueProxyAboutToBeModified()));
-    disconnect(d->Proxy.data(), SIGNAL(proxyModified()),
-               d, SLOT(onValueProxyModified()));
+    disconnect(d->Proxy.data(), &ctkValueProxy::proxyAboutToBeModified,
+               d, &ctkDoubleSpinBoxPrivate::onValueProxyAboutToBeModified);
+    disconnect(d->Proxy.data(), &ctkValueProxy::proxyModified,
+               d, &ctkDoubleSpinBoxPrivate::onValueProxyModified);
     }
 
   d->Proxy = proxy;
 
   if (d->Proxy)
     {
-    connect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
-            d, SLOT(onValueProxyAboutToBeModified()));
-    connect(d->Proxy.data(), SIGNAL(proxyModified()),
-            d, SLOT(onValueProxyModified()));
+    connect(d->Proxy.data(), &ctkValueProxy::proxyAboutToBeModified,
+            d, &ctkDoubleSpinBoxPrivate::onValueProxyAboutToBeModified);
+    connect(d->Proxy.data(), &ctkValueProxy::proxyModified,
+            d, &ctkDoubleSpinBoxPrivate::onValueProxyModified);
     }
 
   d->onValueProxyModified();

@@ -64,14 +64,14 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
 	addCheckBoxManager(transposeDataCheckBox_, Parameters::TransposeData);
 	addComboBoxManager(curveStyleComboBox_, Parameters::CurveStyle);
-	connect(curveStyleComboBox_, SIGNAL(activated(const QString&)), this, SLOT(setCurveStyle(const QString&)));
+	connect(curveStyleComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &BasicPlotterDialog::setCurveStyle);
 
-	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
-	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
-	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
-  connect(backgroundColorPushButton_, SIGNAL(clicked()), this, SLOT(assignBackgroundColor()));
-  connect(dataSeriesComboBox_, SIGNAL(activated(int)), this, SLOT(switchDataSeries(int)));
-  connect(dataLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(assignDataLabel(const QString&)));
+	connect(showPlotPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::showPlot);
+	connect(exportPlotPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::exportPlot);
+	connect(dataColorPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::assignDataColor);
+  connect(backgroundColorPushButton_, &QPushButton::clicked, this, &BasicPlotterDialog::assignBackgroundColor);
+  connect(dataSeriesComboBox_, qOverload<int>(&QComboBox::activated), this, &BasicPlotterDialog::switchDataSeries);
+  connect(dataLineEdit_, &QLineEdit::textChanged, this, &BasicPlotterDialog::assignDataLabel);
   dataSeriesComboBox_->setDisabled(true);
 
   plotDialog_ = new PlotDialog(this);

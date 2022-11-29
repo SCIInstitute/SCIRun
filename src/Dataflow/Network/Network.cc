@@ -140,9 +140,34 @@ bool Network::disconnect(const ConnectionId& id)
   return false;
 }
 
-void Network::disable_connection(const ConnectionId&)
+ConnectionHandle Network::lookupConnection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) const
 {
-  /// @todo
+  auto fromMod = lookupModule(ModuleId(moduleIdFrom));
+  if (!fromMod)
+    return nullptr;
+  auto fromPorts = fromMod->outputPorts();
+  if (fromIndex < 0 || fromIndex >= fromPorts.size())
+    return nullptr;
+  const auto outputPortId = fromPorts[fromIndex]->externalId();
+
+  auto toMod = lookupModule(ModuleId(moduleIdTo));
+  if (!toMod)
+    return nullptr;
+  auto toPorts = toMod->inputPorts();
+  if (toIndex < 0 || toIndex >= toPorts.size())
+    return nullptr;
+  const auto inputPortId = toPorts[toIndex]->externalId();
+
+  const ConnectionId id = ConnectionId::create(ConnectionDescription(
+    OutgoingConnectionDescription(ModuleId(moduleIdFrom), outputPortId),
+    IncomingConnectionDescription(ModuleId(moduleIdTo), inputPortId)));
+  const auto connIter = connections_.find(id);
+  if (connIter != connections_.end())
+  {
+    return connIter->second;
+  }
+
+  return nullptr;
 }
 
 size_t Network::nmodules() const

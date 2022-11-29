@@ -58,6 +58,8 @@ public:
   void setModuleExecuteDownstreamOnly(bool mode);
   void setAutoRotateViewerOnMouseRelease(bool mode);
   void setWidgetSelectionCorrection(bool mode);
+  void setToolBarPopupShowDelay(int delay);
+  void setToolBarPopupHideDelay(int delay);
 
 public Q_SLOTS:
   void updateModuleErrorDialogOption(int state);
@@ -68,6 +70,8 @@ public Q_SLOTS:
   void updateForceGridBackground(int state);
   void updateWidgetSelectionCorrection(int state);
   void updateAutoRotateViewer(int state);
+  void updateToolBarPopupShowDelay(int delay);
+  void updateToolBarPopupHideDelay(int delay);
   void updateModuleExecuteDownstream(int state);
 
 protected:

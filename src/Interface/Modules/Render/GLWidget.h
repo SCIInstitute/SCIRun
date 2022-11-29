@@ -40,7 +40,6 @@
 
 #ifndef Q_MOC_RUN
 #include <gl-platform/GLPlatform.hpp>
-#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #endif
 #include <QOpenGLWidget>

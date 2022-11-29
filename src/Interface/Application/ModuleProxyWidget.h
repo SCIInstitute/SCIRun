@@ -105,6 +105,7 @@ namespace SCIRun
       QColor animateColor_;
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
+      bool destroyed_ {false};
       QPointF position_;
       QPointF cachedPosition_;
       bool doHighlight_;

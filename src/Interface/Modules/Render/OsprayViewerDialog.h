@@ -56,7 +56,7 @@ public:
     Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
   ~OsprayViewerDialog();
-  void adjustToolbar() override;
+  void adjustToolbar(double factor) override;
 
 Q_SIGNALS:
   void newGeometryValueForwarder();

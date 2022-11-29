@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildElemLeadField",
+    "namespace": "Fields",
+    "status": "Converted--looped input changed to python",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/BuildElemLeadField.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

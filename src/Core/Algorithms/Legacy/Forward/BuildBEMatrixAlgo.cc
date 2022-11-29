@@ -589,7 +589,7 @@ void BuildBEMatrixBaseCompute::make_auto_G_compute(VMesh* hsurf, MatrixType& aut
       } // else
 
       for (int i=0; i<3; ++i)
-        auto_G(ppi, nodes[i])+=g_values(i,0)*mult;
+        auto_G(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))+=g_values(i,0)*mult;
     }
   }
 }
@@ -664,7 +664,7 @@ void BuildBEMatrixBaseCompute::make_cross_G_compute(VMesh* hsurf1, VMesh* hsurf2
       g_values = area * (cruse_weights * temp.transpose());
 
       for (int i=0; i<3; ++i)
-        cross_G(ppi, nodes[i])+=g_values(i,0)*mult;
+        cross_G(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))+=g_values(i,0)*mult;
     }
   }
 }
@@ -709,7 +709,7 @@ void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2
       getOmega(v1, v2, v3, coef);
 
       for (i=0; i<3; ++i)
-        cross_P(ppi, nodes[i])-=coef(0,i)*mult;
+        cross_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))-=coef(0,i)*mult;
     }
   }
 }
@@ -767,7 +767,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
         getOmega(v1, v2, v3, coef);
 
         for (i=0; i<3; ++i)
-          auto_P(ppi, nodes[i])-=coef(0,i)*mult;
+          auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))-=coef(0,i)*mult;
       }
     }
   }

@@ -299,7 +299,7 @@ bool MarchingCubesAlgo::run(FieldHandle input, const std::vector<double>& isoval
     }
   }
 
-  return true;
+  return success;
 }
 
 

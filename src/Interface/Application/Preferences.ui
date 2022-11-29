@@ -29,15 +29,15 @@
    <item row="0" column="0">
     <widget class="QToolBox" name="toolBox">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="page">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>720</width>
-        <height>370</height>
+        <width>714</width>
+        <height>324</height>
        </rect>
       </property>
       <attribute name="label">
@@ -284,8 +284,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>720</width>
-        <height>370</height>
+        <width>714</width>
+        <height>324</height>
        </rect>
       </property>
       <attribute name="label">
@@ -391,13 +391,109 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="page_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>714</width>
+        <height>324</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Renderer</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="autoRotateViewerOnMouseReleaseCheckbox_">
+         <property name="text">
+          <string>Auto-rotate viewer on mouse release</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="viewerWidgetSelectionCorrectionCheckbox_">
+         <property name="text">
+          <string>Viewer widget selection correction--enable if widgets don't respond to shift-click actions</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Tool bar pop-up delays (ms)</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Show</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="toolBarPopupShowDelaySpinBox_">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximum">
+             <number>99999</number>
+            </property>
+            <property name="value">
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Hide</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="toolBarPopupHideDelaySpinBox_">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximum">
+             <number>99999</number>
+            </property>
+            <property name="value">
+             <number>200</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="toolBoxPage2">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>753</width>
-        <height>143</height>
+        <width>714</width>
+        <height>324</height>
        </rect>
       </property>
       <attribute name="label">
@@ -406,6 +502,20 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <layout class="QGridLayout" name="gridLayout_3">
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="highDPIAdjustCheckBox_">
+           <property name="text">
+            <string>Adjust for high-DPI displays (SCIRun restart required)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="autoModuleNoteCheckbox_">
+           <property name="text">
+            <string>Add helpful module notes automatically</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="1">
           <widget class="QCheckBox" name="moduleErrorDialogDisableCheckbox_">
            <property name="text">
@@ -416,7 +526,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="2" column="1">
           <widget class="QSpinBox" name="maxCoresSpinBox_">
            <property name="suffix">
             <string/>
@@ -429,21 +539,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="autoModuleNoteCheckbox_">
-           <property name="text">
-            <string>Add helpful module notes automatically</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="highDPIAdjustCheckBox_">
-           <property name="text">
-            <string>Adjust for high-DPI displays (SCIRun restart required)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="label_3">
            <property name="maximumSize">
             <size>
@@ -453,20 +549,6 @@
            </property>
            <property name="text">
             <string>Maximum cores used per module (0 = no limit):</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QCheckBox" name="viewerWidgetSelectionCorrectionCheckbox_">
-           <property name="text">
-            <string>Viewer widget selection correction</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QCheckBox" name="autoRotateViewerOnMouseReleaseCheckbox_">
-           <property name="text">
-            <string>Auto-rotate viewer on mouse release</string>
            </property>
           </widget>
          </item>

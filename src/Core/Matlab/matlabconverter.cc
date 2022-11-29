@@ -530,7 +530,7 @@ void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &han
         // - property: optional extra struct array with key
         //             /value pairs for the property manager
 
-        int dataindex, propertyindex;
+        int dataindex;
         dataindex = ma.getfieldnameindexCI("data");
         if (dataindex == -1) dataindex = ma.getfieldnameindex("potvals");
         if (dataindex == -1) dataindex = ma.getfieldnameindexCI("field");
@@ -538,7 +538,7 @@ void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &han
         if (dataindex == -1) dataindex = ma.getfieldnameindexCI("vectorfield");
         if (dataindex == -1) dataindex = ma.getfieldnameindexCI("tensorfield");
 
-        propertyindex = ma.getfieldnameindexCI("property");
+        ma.getfieldnameindexCI("property");
 
         if (dataindex == -1)
         {
