@@ -106,7 +106,7 @@ Now add a second module to the network. This module is used to visualize various
 
 :::{figure-md} fig-pipe-selection
 
-![Pipe Selection Options](ClassicTutorial_figures/pipselection.png)
+![Pipe Selection Options](ClassicTutorial_figures/pipeselection.png)
 
 Pipe Selection Options
 :::
@@ -220,6 +220,12 @@ Buttons on the left side of the ViewScene window (see {numref}`fig-left-controls
 - Orientation Axes:
 - Scale Bar:
 - Mouse/Zoom controls:
+:::{figure-md} fig-controls
+
+![ViewScene window controls](ClassicTutorial_figures/viewscenecontrols.png)
+
+ViewScene window controls
+:::
 
 
 ## Saving and reloading networks
