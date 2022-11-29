@@ -201,25 +201,32 @@ In the Viewer, the mouse can be used to rotate, scale, and translate the image.
 
 ## Setting Visualization Parameters
 
-Now review the tools at the top of the ViewScene window (see {numref}`fig-top-controls`). Buttons at the top of the ViewScene window are used for the following functions:
+Now review the tools at the top of the ViewScene window (see {numref}`fig-controls`). Buttons at the top of the ViewScene window are used for the following functions (for detailed information about the functionality of each tool, refer to the [ViewScene module documentation](../modules/Render/ViewScene.md)):
 
-- Object Selection:
-- AutoView:
-- Screenshot:
-- Lights:
-- Axes Controls:
-- Locks:
+- Auto View: restores the display back to a default condition. This is very useful when objects disappear from the view window due to a combination of settings
+- Object Selection
+- View Options
+- Camera Locks
+- Screenshot
+- Auto Rotate
 
-Buttons on the left side of the ViewScene window (see {numref}`fig-left-controls`) are used for the following functions:
+Buttons on the left side of the ViewScene window (see {numref}`fig-controls`) are used for the following functions:
 
-- Auto-rotate:
-- Scene color:
-- Plane settings:
-- Fog controls:
--
-- Orientation Axes:
-- Scale Bar:
-- Mouse/Zoom controls:
+- Background Color
+- Orientation Axes
+- Plane Settings
+- Fog Controls
+- Material Properties
+- Headlight
+- Additional Lights
+- Scale Bar
+
+Buttons on the right side of the ViewScene window (see {numref}`fig-controls`) are used for the following functions:
+
+- Groups
+- Mouse Controls
+- Report Problems
+
 :::{figure-md} fig-controls
 
 ![ViewScene window controls](ClassicTutorial_figures/viewscenecontrols.png)
