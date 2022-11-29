@@ -61,7 +61,7 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
    :caption: Modules:
 
    modules/BIOPSE/index
-   modules/BrainSimulator/index
+   modules/BrainStimulator/index
    modules/Bundle/index
    modules/ChangeFieldData/index
    modules/ChangeMesh/index
