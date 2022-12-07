@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/make_shared.hpp>
+
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Utils/Exception.h>
 #include <Core/ConsoleApplication/ConsoleCommandFactory.h>
 #include <Core/ConsoleApplication/ConsoleCommands.h>
@@ -37,7 +37,7 @@ using namespace SCIRun::Core::Console;
 class NothingCommand : public ConsoleCommand
 {
 public:
-  virtual bool execute() override { return true; }
+  bool execute() override { return true; }
 };
 
 CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
@@ -45,33 +45,33 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
   switch (type)
   {
   case GlobalCommands::ShowMainWindow:
-    return boost::make_shared<NothingCommand>();
+    return makeShared<NothingCommand>();
   case GlobalCommands::ShowSplashScreen:
-    return boost::make_shared<NothingCommand>();
+    return makeShared<NothingCommand>();
   case GlobalCommands::PrintHelp:
-    return boost::make_shared<PrintHelpCommand>();
+    return makeShared<PrintHelpCommand>();
   case GlobalCommands::PrintVersion:
-    return boost::make_shared<PrintVersionCommand>();
+    return makeShared<PrintVersionCommand>();
   case GlobalCommands::LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandConsole>();
+    return makeShared<LoadFileCommandConsole>();
   case GlobalCommands::PrintModules:
-    return boost::make_shared<PrintModulesCommand>();
+    return makeShared<PrintModulesCommand>();
   case GlobalCommands::SaveNetworkFile:
-    return boost::make_shared<SaveFileCommandConsole>();
+    return makeShared<SaveFileCommandConsole>();
   case GlobalCommands::RunPythonScript:
-    return boost::make_shared<RunPythonScriptCommandConsole>();
+    return makeShared<RunPythonScriptCommandConsole>();
   case GlobalCommands::ExecuteCurrentNetwork:
-    return boost::make_shared<ExecuteCurrentNetworkCommandConsole>();
+    return makeShared<ExecuteCurrentNetworkCommandConsole>();
   case GlobalCommands::SetupDataDirectory:
-    return boost::make_shared<SetupDataDirectoryCommand>();
+    return makeShared<SetupDataDirectoryCommand>();
   case GlobalCommands::InteractiveMode:
-    return boost::make_shared<InteractiveModeCommandConsole>();
+    return makeShared<InteractiveModeCommandConsole>();
   case GlobalCommands::SetupQuitAfterExecute:
-    return boost::make_shared<QuitAfterExecuteCommandConsole>();
+    return makeShared<QuitAfterExecuteCommandConsole>();
   case GlobalCommands::QuitCommand:
-    return boost::make_shared<QuitCommandConsole>();
+    return makeShared<QuitCommandConsole>();
   case GlobalCommands::DisableViewScenes:
-    return boost::make_shared<NothingCommand>();
+    return makeShared<NothingCommand>();
   default:
     THROW_INVALID_ARGUMENT("Unknown global command type.");
   }

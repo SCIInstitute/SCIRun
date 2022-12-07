@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,8 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@file  TestModuleSimpleUI.cc
-///
 
 #include <Modules/String/TestModuleSimpleUI.h>
 #include <Core/Datatypes/String.h>
@@ -36,46 +33,36 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms;
 
-/// @class TestModuleSimpleUI
-/// @brief This module splits out a string.
+const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI","String","SCIRun");
+
+TestModuleSimpleUI::TestModuleSimpleUI () : Module(staticInfo_)
+{
+    INITIALIZE_PORT(InputString);
+    INITIALIZE_PORT(OutputString);
+}
 
 SCIRun::Core::Algorithms::AlgorithmParameterName TestModuleSimpleUI::FormatString("FormatString");
 
-MODULE_INFO_DEF(TestModuleSimpleUI, String, SCIRun)
-
-TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputString);
-  INITIALIZE_PORT(OutputString);
-}
-
 void TestModuleSimpleUI::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(FormatString,std::string ("[Insert message here]"));
+    auto state = get_state();
+    state->setValue(FormatString,std::string("[Insert your message here]"));
 }
 
-
-void
-TestModuleSimpleUI::execute()
+void TestModuleSimpleUI::execute()
 {
+    std::string message_string;
+    auto stringH=getOptionalInput(InputString);
+    auto state=get_state();
 
-  std::string message_string;
+    if(stringH && *stringH)
+    {
+        state->setValue(FormatString, (*stringH)->value());
+    }
 
-  auto  stringH = getOptionalInput(InputString);
+    message_string=state->getValue(FormatString).toString();
 
-  auto state = get_state();
-
-  if (stringH && *stringH)
-  {
-    state -> setValue(FormatString, (*stringH) -> value());
-  }
-
-  //message_string = "You stay classy, Planet Earth!";
-  message_string = state -> getValue(FormatString).toString();
-
-  StringHandle msH(new String(message_string));
-  sendOutput(OutputString, msH);
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
 }

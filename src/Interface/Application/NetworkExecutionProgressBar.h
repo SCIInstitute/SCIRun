@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
 #define INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
 
@@ -33,7 +33,8 @@
 #include <QTextStream>
 #include <QProgressBar>
 #ifndef Q_MOC_RUN
-#include <boost/timer.hpp>
+#include <Core/Logging/ScopedTimeRemarker.h>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Thread/Mutex.h>
 #endif
 
@@ -58,7 +59,7 @@ namespace Gui {
     virtual size_t unexecuted() const = 0;
   };
 
-  using NetworkStatusPtr = boost::shared_ptr<NetworkStatus>;
+  using NetworkStatusPtr = SharedPointer<NetworkStatus>;
 
   class SCIRunProgressBar : public QProgressBar
   {
@@ -97,7 +98,7 @@ private:
   size_t totalModules_;
   double totalExecutionTime_;
   Core::Thread::Mutex mutex_;
-  boost::timer executionTimer_;
+  //std::unique_ptr<Core::Logging::SimpleScopedTimer> executionTimer_;
   QString timingLog_;
   QTextStream timingStream_;
 

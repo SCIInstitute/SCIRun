@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Engine/Python/SCIRunPythonModule.h
 
 #ifndef ENGINE_PYTHON_SCIRUNPYTHONMODULE_H
@@ -39,7 +40,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 {
   using namespace SCIRun;
 
-  boost::python::class_<PyPort, boost::shared_ptr<PyPort>, boost::noncopyable>("SCIRun::PyPort", boost::python::no_init)
+  boost::python::class_<PyPort, SharedPointer<PyPort>, boost::noncopyable>("SCIRun::PyPort", boost::python::no_init)
     .add_property("name", &PyPort::name)
     .add_property("type", &PyPort::type)
     .add_property("isInput", &PyPort::isInput)
@@ -47,13 +48,13 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("connect", &PyPort::connect)
     ;
 
-  boost::python::class_<PyPorts, boost::shared_ptr<PyPorts>, boost::noncopyable>("SCIRun::PyPorts", boost::python::no_init)
+  boost::python::class_<PyPorts, SharedPointer<PyPorts>, boost::noncopyable>("SCIRun::PyPorts", boost::python::no_init)
     .def("__getattr__", &PyPorts::getattr)
     .def("__getitem__", &PyPorts::getitem)
     .def("__len__", &PyPorts::size)
     ;
 
-  boost::python::class_<PyModule, boost::shared_ptr<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
+  boost::python::class_<PyModule, SharedPointer<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
     .add_property("id", &PyModule::id)
     .add_property("stateVars", &PyModule::stateVars)
     .add_property("input", &PyModule::input)
@@ -64,7 +65,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("__setattr__", &PyModule::setattr)
     ;
 
-  boost::python::class_<PyDatatype, boost::shared_ptr<PyDatatype>, boost::noncopyable>("SCIRun::PyDatatype", boost::python::no_init)
+  boost::python::class_<PyDatatype, SharedPointer<PyDatatype>, boost::noncopyable>("SCIRun::PyDatatype", boost::python::no_init)
     .add_property("type", &PyDatatype::type)
     .add_property("value", &PyDatatype::value)
   ;
@@ -94,6 +95,13 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("scirun_get_module_input_value", &NetworkEditorPythonAPI::scirun_get_module_input_value);
   boost::python::def("scirun_get_module_input_object_by_index", &NetworkEditorPythonAPI::scirun_get_module_input_object_index);
   boost::python::def("scirun_get_module_input_value_by_index", &NetworkEditorPythonAPI::scirun_get_module_input_value_index);
+
+  boost::python::def("get_input_data", &NetworkEditorPythonAPI::get_input_data);
+  boost::python::def("get_output_data", &NetworkEditorPythonAPI::get_output_data);
+  boost::python::def("set_output_data", &NetworkEditorPythonAPI::set_output_data);
+
+  boost::python::def("scirun_enable_connection", &NetworkEditorPythonAPI::scirun_enable_connection);
+  boost::python::def("scirun_disable_connection", &NetworkEditorPythonAPI::scirun_disable_connection);
 
   boost::python::def("scirun_save_network", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("scirun_load_network", &NetworkEditorPythonAPI::loadNetwork);

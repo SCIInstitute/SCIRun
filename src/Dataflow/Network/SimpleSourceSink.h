@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,13 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Network/SimpleSourceSink.h
 
 #ifndef DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 #define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
 #include <Dataflow/Network/DataflowInterfaces.h>
-#include <boost/function.hpp>
 #include <set>
 #include <Dataflow/Network/share.h>
 
@@ -42,7 +41,7 @@ namespace SCIRun
   {
     namespace Networks
     {
-      using WeakDatatypeHandle = boost::weak_ptr<Core::Datatypes::DatatypeHandle::element_type>;
+      using WeakDatatypeHandle = std::weak_ptr<Core::Datatypes::DatatypeHandle::element_type>;
 
       class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
@@ -90,10 +89,11 @@ namespace SCIRun
       public:
         SimpleSource();
         ~SimpleSource();
-        virtual void cacheData(Core::Datatypes::DatatypeHandle data) override;
-        virtual void send(DatatypeSinkInterfaceHandle receiver) const override;
-        virtual bool hasData() const override;
-        virtual std::string describeData() const override;
+        void cacheData(Core::Datatypes::DatatypeHandle data) override;
+        void send(DatatypeSinkInterfaceHandle receiver) const override;
+        bool hasData() const override;
+        Core::Datatypes::DatatypeHandle peekData() const override;
+        std::string describeData() const override;
 
         static void clearAllSources();
       protected:

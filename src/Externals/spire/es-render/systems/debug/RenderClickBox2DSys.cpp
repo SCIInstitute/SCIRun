@@ -1,3 +1,35 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <entity-system/GenericSystem.hpp>
@@ -40,7 +72,7 @@ public:
 
   ren::VBO mVBO;
   ren::IBO mIBO;
-  
+
   RenderSimpleGeom  mAttribs;
   CommonUniforms    mCommonUniforms;
 
@@ -51,10 +83,10 @@ public:
     return spire::OptionalComponents<gen::Transform>(type);
   }
 
-  void preWalkComponents(spire::ESCoreBase& coreIn)
+  void preWalkComponents(spire::ESCoreBase& coreIn) override
   {
-    spire::CerealCore* ourCorePtr = dynamic_cast<spire::CerealCore*>(&coreIn);
-    if (ourCorePtr == nullptr)
+    auto ourCorePtr = dynamic_cast<spire::CerealCore*>(&coreIn);
+    if (!ourCorePtr)
     {
       std::cerr << "Unable to execute clickbox promise fulfillment. Bad cast." << std::endl;
       return;
@@ -94,9 +126,9 @@ public:
                                   mAttribs.stride);
   }
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
-    shaders::unbindPreappliedAttrib(mAttribs.appliedAttribs, 
+    shaders::unbindPreappliedAttrib(mAttribs.appliedAttribs,
                                     static_cast<size_t>(mAttribs.attribSize));
   }
 
@@ -110,8 +142,6 @@ public:
     for (const gen::ClickBox2D& box : clickBox)
     {
       // Bind any common uniforms.
-      gen::CameraSelect::Selection sel = gen::CameraSelect::ORTHOGONAL_CAMERA;
-
       glm::mat4 xformToUse;
       if (trafo.size() > 0)
         xformToUse = trafo.front().transform;
@@ -128,7 +158,7 @@ public:
           xformToUse, camera.front().data, time.front().globalTime);
 
       GL(glDrawElements(mIBO.primMode, mIBO.numPrims,
-                        mIBO.primType, 0));
+                        mIBO.primType, nullptr));
     }
   }
 };
@@ -144,4 +174,3 @@ const char* getSystemName_DebugRenderClickBox2D()
 }
 
 } // namespace ren
-

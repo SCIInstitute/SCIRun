@@ -1,30 +1,28 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -35,20 +33,19 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/MatrixComparison.h>
-#include <Core/Utils/StringUtil.h>
 
 #include <Core/Algorithms/Field/Tests/LoadFieldsForAlgoCoreTests.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
 
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::TestUtils;
+using namespace Geometry;
+using namespace Algorithms;
+using namespace Fields;
+using namespace TestUtils;
 
 TEST(SetFieldDataToConstantValueAlgoTest, NullInput)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle nullField;
+  const FieldHandle nullField;
 
   const double value = 0;
   algo.set(Parameters::Value, value);
@@ -60,7 +57,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NullInput)
 TEST(SetFieldDataToConstantValueAlgoTest, NullInputDoesNotThrow)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle nullField;
+  const FieldHandle nullField;
 
   const double value = 0;
   algo.set(Parameters::Value, value);
@@ -72,7 +69,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NullInputDoesNotThrow)
 TEST(SetFieldDataToConstantValueAlgoTest, InvalidType)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -82,7 +79,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidType)
 TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -92,7 +89,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
 TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle emptyTetVol = EmptyTetVolFieldConstantBasis(DOUBLE_E);
+  auto emptyTetVol = EmptyTetVolFieldConstantBasis(data_info_type::DOUBLE_E);
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(emptyTetVol, result));
@@ -114,7 +111,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
 TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle tetTetVol = TetrahedronTetVolLinearBasis(DOUBLE_E);
+  auto tetTetVol = TetrahedronTetVolLinearBasis(data_info_type::DOUBLE_E);
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(tetTetVol, result));
@@ -125,7 +122,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -137,7 +134,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
 TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -151,7 +148,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -166,7 +163,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
 TEST(SetFieldDataToConstantValueAlgoTest, PositiveValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle tetmesh = LoadTet();
+  auto tetmesh = LoadTet();
   GetFieldDataAlgo getData;
 
   const double value = 3.14;
@@ -192,7 +189,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, PositiveValue)
 TEST(SetFieldDataToConstantValueAlgoTest, NegativeValue)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle tetmesh = LoadTet();
+  auto tetmesh = LoadTet();
   GetFieldDataAlgo getData;
 
   const double value = -5.7;
@@ -219,7 +216,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NegativeValue)
 TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = -200;
   algo.set(Parameters::Value, value);
@@ -233,7 +230,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -246,7 +243,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
 TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfConstantBasis(INT_E);
+  auto cubeTriSurf = CubeTriSurfConstantBasis(data_info_type::INT_E);
 
   const int value = -200;
   algo.set(Parameters::Value, value);
@@ -260,7 +257,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.runMatrix(result);
+  auto data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -272,7 +269,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
 TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(DOUBLE_E);
+  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::DOUBLE_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -299,7 +296,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
 TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToIntFromDouble)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(DOUBLE_E);
+  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::DOUBLE_E);
 
   const double value = 5.2;
   const int intValue = 5;
@@ -356,7 +353,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTet)
 TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTri)
 {
   SetFieldDataToConstantValueAlgo algo;
-  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(INT_E);
+  FieldHandle cubeTriSurf = CubeTriSurfLinearBasis(data_info_type::INT_E);
 
   const int value = 5;
   algo.set(Parameters::Value, value);
@@ -379,4 +376,3 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTri)
   for (int i = 0; i < data->nrows(); ++i)
     ASSERT_EQ(value, (*data)(i,0));
 }
-

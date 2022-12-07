@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,49 +23,36 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun{
-  namespace Gui{
-    class RefineMeshDialogImpl
-    {
-    public:
-      RefineMeshDialogImpl()
-      {
-        typedef boost::bimap<std::string, std::string>::value_type strPair;
-        refineNameLookup_.insert(strPair("Do not add constraint", "all"));
-        refineNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue", "greaterthan"));
-        refineNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue", "equal"));
-        refineNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue", "lessthan"));
-        refineNameLookup_.insert(strPair("Do not refine any elements", "none"));
-      }
-      boost::bimap<std::string, std::string> refineNameLookup_;
-    };
-  }
-}
 RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-  impl_(new RefineMeshDialogImpl)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(constraintComboBox_, Parameters::AddConstraints, impl_->refineNameLookup_);
+  addComboBoxManager(constraintComboBox_, Parameters::AddConstraints,
+    {{"Do not add constraint", "all"},
+    {"Do not refine nodes/elements with values less than isovalue", "greaterthan"},
+    {"Do not refine nodes/elements with values unequal to isovalue", "equal"},
+    {"Do not refine nodes/elements with values greater than isovalue", "lessthan"},
+    {"Do not refine any elements", "none"}}
+  );
   addComboBoxManager(refinementComboBox_, Parameters::RefineMethod);
   addDoubleSpinBoxManager(isoValueSpinBox_, Parameters::IsoValue);
 
-  connect(constraintComboBox_, SIGNAL(activated(int)), this, SLOT(setIsoValueEnabled()));
+  connect(constraintComboBox_, qOverload<int>(&QComboBox::activated), this, &RefineMeshDialog::setIsoValueEnabled);
 }
 
 void RefineMeshDialog::pullSpecial()

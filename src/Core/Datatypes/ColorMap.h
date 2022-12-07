@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,7 +24,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/ColorMap.h
+
 #ifndef CORE_DATATYPES_COLORMAP_H
 #define CORE_DATATYPES_COLORMAP_H
 
@@ -40,83 +42,86 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class ColorMapStrategy;
-  typedef boost::shared_ptr<ColorMapStrategy> ColorMapStrategyHandle;
-
   class SCISHARE ColorMap : public Datatype
   {
   public:
-    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
+    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for its
     // default input range, we need to transform by default the data into [0,1] range.
-    explicit ColorMap(ColorMapStrategyHandle color,
-      const std::string& name = "Rainbow", const size_t resolution = 256,
-                        const double shift = 0.0, const bool invert = false,
-                        const double rescale_scale = .5, const double rescale_shift = 1.);
-                        //TODO cbright: pass in alpha vector
-    virtual ColorMap* clone() const override;
+    explicit ColorMap(const std::vector<ColorRGB>& color,
+      const std::string& name = "Rainbow", const size_t resolution = 256, const double shift = 0.0,
+      const bool invert = false, const double rescale_scale = 0.5, const double rescale_shift = 1.0,
+      const std::vector<double>& alphaPoints = {});
 
-    ColorMapStrategyHandle getColorStrategy() const { return color_; }
-    std::string getColorMapName() const;
-    size_t getColorMapResolution() const;
-    double getColorMapShift() const;
-    bool getColorMapInvert() const;
-    double getColorMapRescaleScale() const;
-    double getColorMapRescaleShift() const;
+    ColorMap* clone() const override;
+
+    std::vector<ColorRGB> getColorData() const {return colorData_;}
+    std::string getColorMapName() const {return nameInfo_;}
+    size_t getColorMapResolution() const {return resolution_;}
+    double getColorMapShift() const {return shift_;}
+    bool getColorMapInvert() const {return invert_;}
+    double getColorMapRescaleScale() const {return rescale_scale_;}
+    double getColorMapRescaleShift() const {return rescale_shift_;}
+    std::vector<double> getAlphaLookup() const {return alphaLookup_;}
 
     ColorRGB valueToColor(double scalar) const;
-    ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
+    ColorRGB valueToColor(Core::Geometry::Tensor &tensor) const;
     ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
 
-    virtual std::string dynamic_type_name() const override { return "ColorMap"; }
+    double valueToIndex(double scalar) const;
+    double valueToIndex(Core::Geometry::Tensor &tensor) const;
+    double valueToIndex(const Core::Geometry::Vector &vector) const;
+
+    std::string dynamic_type_name() const override { return "ColorMap"; }
+    double alpha(double transformedValue) const;
+    double getTransformedValue(double v) const;
+    std::string styleSheet() const;
+    std::string describe() const { return info() + " & " + styleSheet(); }
+    std::string info() const;
 
   private:
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
-    double getTransformedValue(double v) const;
+    ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const;
 
-    ColorMapStrategyHandle color_;
-    ///<< The colormap's name.
-    std::string nameInfo_;
-    ///<< The resolution of the map [2,256].
-    size_t resolution_;
-    ///<< The gamma shift.
-    double shift_;
-    ///<< Whether to invert the map or not.
-    bool invert_;
-    ///<< Rescaling scale (usually 1. / (data_max - data_min) ).
-    double rescale_scale_;
-    ///<< Rescaling shift (usually -data_min). Shift happens before scale.
-    double rescale_shift_;
-
+    std::vector<ColorRGB> colorData_;
+    std::string nameInfo_; //The colormap's name.
+    size_t resolution_; //The resolution of the map [2,256].
+    double shift_; //The gamma shift.
+    bool invert_; //Whether to invert the map or not.
+    double rescale_scale_; //Rescaling scale (usually 1. / (data_max - data_min) ).
+    double rescale_shift_; //Rescaling shift (usually -data_min). Shift happens before scale.
     std::vector<double> alphaLookup_;
-  };
-
-  class SCISHARE ColorMapStrategy
-  {
-  public:
-    virtual ~ColorMapStrategy() {}
-    virtual ColorRGB getColorMapVal(double v) const = 0;
-  };
-
-  //TODO: not sure this needs to be abstract
-  class SCISHARE AlphaMapping
-  {
-  public:
-    virtual ~AlphaMapping() {}
-    virtual double alpha(double transformedValue) const = 0;
+    mutable std::string styleSheet_;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable
   {
   public:
    // See explanation for defaults above in ColorMap Constructor
-    static ColorMapHandle create(const std::string& name = "Rainbow", const size_t &resolution = 256,
-                                    const double &shift = 0.0, const bool &invert = false,
-                                    const double &rescale_scale = .5, const double &rescale_shift = 1.);
-    typedef std::vector<std::string> NameList;
-    static NameList getList();
+    static ColorMapHandle create(const std::string& name = "Rainbow",
+      const size_t &resolution = 256, const double &shift = 0.0, const bool &invert = false,
+      const double &rescale_scale = 0.5,  const double &rescale_shift = 1.0,
+      const std::vector<double>& alphaPoints = {});
+
+    static ColorMapHandle create(const std::vector<ColorRGB>& colorData,
+      const std::string& name = "Custom", const size_t &resolution = 256, const double &shift = 0.0,
+      const bool &invert = false, const double &rescale_scale = 0.5, const double &rescale_shift = 1.0,
+      const std::vector<double>& alphaPoints = {});
+
+    static std::vector<std::string> getList();
   private:
     StandardColorMapFactory() = delete;
+  };
+
+  // colormap helper for ospray transfer function
+  class SCISHARE ColorMap_OSP_helper
+  {
+  public:
+    std::vector<float> colorList_;
+    std::vector<float> opacityList_;
+    float min_ = 0.0;
+    float max_ = 1.0;
+    explicit ColorMap_OSP_helper(ColorMapHandle cmap);
   };
 
 }}}

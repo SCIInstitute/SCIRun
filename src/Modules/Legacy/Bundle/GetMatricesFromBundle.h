@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
 #define MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
 
@@ -45,8 +45,8 @@ namespace SCIRun {
       {
       public:
         GetMatricesFromBundle();
-        virtual void setStateDefaults() override;
-        virtual void execute() override;
+        void setStateDefaults() override;
+        void execute() override;
 
         INPUT_PORT(0, InputBundle, Bundle);
         OUTPUT_PORT(0, OutputBundle, Bundle);
@@ -61,7 +61,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName MatrixNames[];
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
         std::string makeMatrixNameList(const Core::Datatypes::Bundle& bundle) const;
       };

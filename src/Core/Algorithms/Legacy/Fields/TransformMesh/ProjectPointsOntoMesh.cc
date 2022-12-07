@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
@@ -53,7 +53,7 @@ ProjectPointsOntoMeshAlgo::ProjectPointsOntoMeshAlgo()
 bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "ProjectPointsOntoMesh");
-  
+
   if (!input)
   {
     error("No input field.");
@@ -65,45 +65,45 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
     error("No mesh to project points onto.");
     return (false);
   }
-  
+
   FieldInformation fi(input), fo(input), fobj(object);
 
   // Create the proper output type
   if (fi.is_crv_element()) fo.make_curvemesh();
   if (fi.is_quad_element()) fo.make_quadsurfmesh();
   if (fi.is_hex_element()) fo.make_hexvolmesh();
-  
+
   std::string method = getOption(Parameters::ProjectMethod);
 
   if ((!(fobj.is_surface()||fobj.is_volume()||fobj.is_curve()))&&(method=="elements"))
   {
     error("The object field needs to be a curve, a surface or a volume.");
-    return (false);    
+    return (false);
   }
-  
+
   MeshHandle outputmesh = CreateMesh(fo);
   if (!outputmesh)
   {
     error("Could not create output mesh.");
-    return (false);    
+    return (false);
   }
-  
+
   output = CreateField(fo,outputmesh);
   if (!output)
   {
     error("Could not create output field.");
-    return (false);    
+    return (false);
   }
-  
+
   VMesh* imesh = input->vmesh();
   VMesh* omesh = output->vmesh();
   VMesh* objmesh = object->vmesh();
-  
+
   VField* ifield = input->vfield();
   VField* ofield = output->vfield();
-  
+
   omesh->reserve_nodes(imesh->num_nodes());
-  
+
   if ((method == "elements") && (fobj.is_volume()))
   {
     objmesh->synchronize(Mesh::ELEM_LOCATE_E);
@@ -116,13 +116,13 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
     if(!(algo.run(object,surffield)))
     {
       error("Could not compute boundary field.");
-      return (false);    
+      return (false);
     }
-    
+
     VMesh* smesh = surffield->vmesh();
-    
-    VMesh::size_type numnodes = imesh->num_nodes();    
-    VMesh::index_type count = 0;    
+
+    VMesh::size_type numnodes = imesh->num_nodes();
+    VMesh::index_type count = 0;
     for (VMesh::Node::index_type i=0; i< numnodes; i++)
     {
       Point p;
@@ -139,11 +139,11 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
         smesh->find_closest_elem(r,eidx,p);
         omesh->add_point(r);
       }
-      count++; 
-      if (count == 100) 
-      { 
-        update_progress_max(i,numnodes); 
-        count=0; 
+      count++;
+      if (count == 100)
+      {
+        update_progress_max(i,numnodes);
+        count=0;
       }
     }
   }
@@ -153,7 +153,7 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
 
     VMesh::size_type numnodes = imesh->num_nodes();
 
-    VMesh::index_type count = 0;    
+    VMesh::index_type count = 0;
     for (VMesh::Node::index_type i=0; i< numnodes; i++)
     {
       Point p, r;
@@ -161,11 +161,11 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
       VMesh::Elem::index_type eidx;
       objmesh->find_closest_elem(r,eidx,p);
       omesh->add_point(r);
-      count++; 
-      if (count == 100) 
-      { 
-        update_progress_max(i,numnodes); 
-        count=0; 
+      count++;
+      if (count == 100)
+      {
+        update_progress_max(i,numnodes);
+        count=0;
       }
     }
   }
@@ -175,7 +175,7 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
 
     VMesh::size_type numnodes = imesh->num_nodes();
 
-    VMesh::index_type count = 0;    
+    VMesh::index_type count = 0;
     for (VMesh::Node::index_type i=0; i< numnodes; i++)
     {
       Point p, r;
@@ -184,11 +184,11 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
       objmesh->locate(nidx,p);
       objmesh->get_center(r,nidx);
       omesh->add_point(r);
-      count++; 
-      if (count == 100) 
-      { 
-        update_progress_max(i,numnodes); 
-        count=0; 
+      count++;
+      if (count == 100)
+      {
+        update_progress_max(i,numnodes);
+        count=0;
       }
     }
   }
@@ -197,7 +197,7 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
     error("Invalid method for projection.");
     return (false);
   }
-  
+
   VMesh::size_type numelems = imesh->num_elems();
   omesh->reserve_elems(numelems);
   for (VMesh::Elem::index_type i=0; i<numelems; i++)
@@ -206,15 +206,15 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
     imesh->get_nodes(nodes,i);
     omesh->add_elem(nodes);
   }
-  
+
   // Copy values if any are stored
   if (ifield->basis_order() > -1)
   {
     ofield->resize_values();
     ofield->copy_values(ifield);
   }
-  
-  return (true); 
+
+  return (true);
 }
 
 AlgorithmOutput ProjectPointsOntoMeshAlgo::run(const AlgorithmInput& input) const

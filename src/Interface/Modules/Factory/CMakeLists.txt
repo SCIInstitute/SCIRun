@@ -1,12 +1,10 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 SET(Interface_Modules_Factory_HEADERS
   ModuleDialogFactory.h
@@ -88,13 +87,14 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_Matlab
   Interface_Modules_Teem
   Interface_Modules_Visualization
+  Interface_Modules_Python
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_OSPRAY)
   TARGET_LINK_LIBRARIES(Interface_Modules_Factory
-    Interface_Modules_Python
+    Interface_Modules_Render_Ospray
   )
 ENDIF()
 
@@ -102,6 +102,7 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
 ENDIF()
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../Base/CustomWidgets/CTK)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 SCIRUN_ADD_TEST_DIR(Tests)

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
@@ -41,26 +41,9 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-
-namespace SCIRun {
-  namespace Gui {
-    class SolveLinearSystemDialogImpl
-    {
-    public:
-      SolveLinearSystemDialogImpl()
-      {
-        solverNameLookup_.insert(StringPair("Conjugate Gradient (SCI)", "cg"));
-        solverNameLookup_.insert(StringPair("BiConjugate Gradient (SCI)", "bicg"));
-        solverNameLookup_.insert(StringPair("Jacobi (SCI)", "jacobi"));
-        solverNameLookup_.insert(StringPair("MINRES (SCI)", "minres"));
-      }
-      GuiStringTranslationMap solverNameLookup_;
-    };
-  }}
-
 SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), impl_(new SolveLinearSystemDialogImpl)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -103,5 +86,9 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 #endif
 
   addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
-  addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);
+  addComboBoxManager(methodComboBox_, Variables::Method,
+    {{"Conjugate Gradient (SCI)", "cg"},
+    {"BiConjugate Gradient (SCI)", "bicg"},
+    {"Jacobi (SCI)", "jacobi"},
+    {"MINRES (SCI)", "minres"}});
 }

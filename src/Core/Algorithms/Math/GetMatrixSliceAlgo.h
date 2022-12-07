@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,44 +25,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H
 #define CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H
 
-#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace Math {
+namespace Core {
+  namespace Algorithms {
+    namespace Math {
 
-        ALGORITHM_PARAMETER_DECL(IsSliceColumn);
-        ALGORITHM_PARAMETER_DECL(SliceIndex);
-        ALGORITHM_PARAMETER_DECL(MaxIndex);
-				ALGORITHM_PARAMETER_DECL(PlayModeActive);
-        ALGORITHM_PARAMETER_DECL(PlayModeType);
-        ALGORITHM_PARAMETER_DECL(SliceIncrement);
-        ALGORITHM_PARAMETER_DECL(PlayModeDelay);
+      ALGORITHM_PARAMETER_DECL(IsSliceColumn);
+      ALGORITHM_PARAMETER_DECL(SliceIndex);
+      ALGORITHM_PARAMETER_DECL(MaxIndex);
+      ALGORITHM_PARAMETER_DECL(PlayModeActive);
+      ALGORITHM_PARAMETER_DECL(PlayModeType);
+      ALGORITHM_PARAMETER_DECL(SliceIncrement);
+      ALGORITHM_PARAMETER_DECL(PlayModeDelay);
 
-        class SCISHARE GetMatrixSliceAlgo : public AlgorithmBase
+      class SCISHARE GetMatrixSliceAlgo : public AlgorithmBase
+      {
+       public:
+        GetMatrixSliceAlgo();
+        AlgorithmOutput run(const AlgorithmInput& input) const override;
+        std::tuple<Datatypes::MatrixHandle, int> runImpl(Datatypes::MatrixHandle matrix, int index, bool getColumn) const;
+
+        enum class PlayMode
         {
-        public:
-          GetMatrixSliceAlgo();
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
-          boost::tuple<Datatypes::MatrixHandle, int> runImpl(Datatypes::MatrixHandle matrix, int index, bool getColumn) const;
-
-					enum PlayMode
-					{
-						PLAY = 1,
-						PAUSE = 2
-					};
-
-        private:
-          void checkIndex(int index, int max) const;
+          PLAY = 1,
+          PAUSE = 2
         };
 
-}}}}
+       private:
+        void checkIndex(int index, int max) const;
+      };
+
+    }
+  }
+}
+}
 
 #endif

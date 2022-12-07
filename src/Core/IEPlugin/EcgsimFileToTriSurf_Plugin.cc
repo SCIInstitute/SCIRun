@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,30 +35,35 @@
  *   University of Utah
  *
  */
- 
+
+#include <Core/IEPlugin/EcgsimFileToTriSurf_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Logging/LoggerInterface.h>
 
 #include <iostream>
 #include <fstream>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
 
-FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::EcgsimFileToTriSurf_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
-        
+  FieldHandle result;
+
   int ncols = 4;
   int nrows = 0;
   int line_ncols = 0;
   int num_pts = 0;
   int num_fac = 0;
-        
+
   std::string line;
   double data;
-   
+
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
@@ -80,7 +84,7 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -127,7 +131,7 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
           if (line_ncols > 0)
           {
             nrows++;
-                      
+
             if (ncols != line_ncols)
             {
               if (pr)  pr->error("Improper format of text file, not every line contains the same amount of coordinates");
@@ -157,15 +161,15 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
     inputfile.close();
   }
 
-        
+
    // STAGE 2
-   // Generate field from 
-        
-        
+   // Generate field from
+
+
   // Now create field
   FieldInformation fi("TriSurfMesh",-1,"double");
   result = CreateField(fi);
-  
+
   VMesh *mesh = result->vmesh();
 
   mesh->node_reserve(num_pts);
@@ -178,10 +182,10 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
     try
     {
       inputfile.open(filename);
-    
+
       std::vector<double> vdata(3);
       int k = 0;
-    
+
       // remove header
       getline(inputfile,line,'\n');
 
@@ -193,8 +197,8 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
         {
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
-        }               
-      
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -218,7 +222,7 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
         catch(...)
         {
         }
-          
+
         if (k == 4) mesh->add_point(Point(vdata[0],vdata[1],vdata[2]));
       }
 
@@ -226,9 +230,9 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
       unsigned int idata;
       VMesh::Node::array_type ndata;
       ndata.resize(3);
-        
+
       k = 0;
-        
+
       // remove header
       getline(inputfile,line,'\n');
 
@@ -239,8 +243,8 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
         {
          // block out comments
          if ((line[0] == '#')||(line[0] == '%')) continue;
-        }               
-          
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -259,15 +263,15 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
             {
               ndata[k-1] = VMesh::Node::index_type(idata-1);
             }
-                  
-            k++;              
+
+            k++;
           }
         }
         catch(...)
         {
         }
-          
-        if (k == 4) 
+
+        if (k == 4)
         {
           mesh->add_elem(ndata);
         }
@@ -279,11 +283,7 @@ FieldHandle EcgsimFileToTriSurf_reader(ProgressReporter *pr, const char *filenam
       return (result);
     }
     inputfile.close();
-  }     
-        
+  }
+
   return (result);
 }
-
-static FieldIEPlugin EcgsimFileToTriSurf_plugin("EcgsimFileToTriSurf","{.tri}", "",EcgsimFileToTriSurf_reader,0);
-
-} // end namespace

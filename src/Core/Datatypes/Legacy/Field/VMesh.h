@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -48,7 +47,7 @@ namespace SCIRun {
 class VMesh;
 class TypeDescription;
 
-typedef boost::shared_ptr<VMesh> VMeshHandle;
+typedef SharedPointer<VMesh> VMeshHandle;
 
 class SCISHARE VMesh {
 public:
@@ -324,8 +323,8 @@ public:
     { DElem::index_type s; size(s); return(static_cast<size_t>(s)); }
 
   /// NOTE NOT VALID FOR EACH MESH:
-  virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
-  virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_node_search_grid();
+  virtual SharedPointer<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
+  virtual SharedPointer<SearchGridT<SCIRun::index_type> > get_node_search_grid();
 
   /// test for special case where the mesh is empty
   /// empty meshes may need a special treatment
@@ -458,7 +457,7 @@ public:
     { return (0.0); }
 
   /// Get the geometrical size of topological mesh components
-  virtual double get_size(Node::index_type i) const { return 0.0; }
+  virtual double get_size(Node::index_type) const { return 0.0; }
   virtual double get_size(Edge::index_type i) const;
   virtual double get_size(Face::index_type i) const;
   virtual double get_size(Cell::index_type i) const;
@@ -1261,13 +1260,26 @@ protected:
 
   /// generation number of mesh
   unsigned int generation_;
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  /// Add this one separately to avoid circular dependencies
-  /// Pointer to base class of the mesh
-  PropertyManager* pm_;
-#endif
 };
+
+/// General case locate, search each elem.
+template <class INDEX, class MESH>
+bool elem_locate(INDEX& elem, MESH& msh, const Core::Geometry::Point& p)
+{
+  typename MESH::Elem::iterator iter, end;
+  msh.begin(iter);
+  msh.end(end);
+  std::vector<double> coords(msh.dimensionality());
+  while (iter != end) {
+    if (msh.get_coords(coords, p, *iter))
+    {
+      elem = INDEX(*iter);
+      return true;
+    }
+    ++iter;
+  }
+  return false;
+}
 
 } // end namespace SCIRun
 

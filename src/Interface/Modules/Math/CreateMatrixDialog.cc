@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -36,17 +37,24 @@ using namespace SCIRun::Modules;
 
 CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), firstPull_(true)
+  : ModuleDialogGeneric(state, parent), firstPull_(true), matrixTextEdit_(nullptr)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
-  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
+  {
+    matrixTextEdit_ = new CodeEditor(this);
+    layout()->addWidget(matrixTextEdit_);
+    matrixTextEdit_->setEnabled(false);
+  }
+
+  connect(editCheckBox_, &QCheckBox::stateChanged, this, &CreateMatrixDialog::pushMatrixToState);
+  connect(matrixTextEdit_, &CodeEditor::textChanged, this, &CreateMatrixDialog::editBoxUnsaved);
+  connect(editCheckBox_, &QCheckBox::toggled, matrixTextEdit_, &QTextEdit::setEnabled);
 }
 
-void CreateMatrixDialog::hideEvent(QHideEvent* event)
+void CreateMatrixDialog::hideEvent(QHideEvent*)
 {
   editCheckBox_->setChecked(false);
 }

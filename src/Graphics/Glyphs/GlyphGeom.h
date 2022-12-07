@@ -1,117 +1,116 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef Graphics_Graphics_Glyphs_GlyphGeom_H
 #define Graphics_Graphics_Glyphs_GlyphGeom_H
 
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Datatypes/Dyadic3DTensor.h>
 #include <Core/Math/TrigTable.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Datatypes/Color.h>
+#include <Graphics/Glyphs/GlyphConstructor.h>
 
 #include <Graphics/Glyphs/share.h>
 
 namespace SCIRun {
-  namespace Graphics {
+namespace Graphics {
+class SCISHARE GlyphGeom
+{
+private:
+  GlyphConstructor constructor_;
 
-    class SCISHARE GlyphGeom
-    {
-    public:
-      typedef std::vector<std::pair<Core::Geometry::Point, Core::Geometry::Vector>> QuadStrip;
+public:
+  GlyphGeom();
 
-      GlyphGeom();
-      
-      void getBufferInfo(int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points,
-        std::vector<Core::Geometry::Vector>& normals, std::vector<Core::Datatypes::ColorRGB>& colors, std::vector<uint32_t>& indices);
-      
-      void buildObject(Datatypes::GeometryHandle geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
-        const Datatypes::ColorScheme& colorScheme, RenderState state,
-        const Datatypes::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox);
+  void buildObject(Datatypes::GeometryObjectSpire& geom, const std::string& uniqueNodeID,
+                   const bool isTransparent, const double transparencyValue,
+                   const Datatypes::ColorScheme& colorScheme, RenderState state,
+                   const Core::Geometry::BBox& bbox, const bool isClippable = true,
+                   const Core::Datatypes::ColorMapHandle colorMap = nullptr);
+  void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
+                double ratio, int resolution, const Core::Datatypes::ColorRGB& color1,
+                const Core::Datatypes::ColorRGB& color2, bool render_cylinder_base,
+                bool render_cone_base, bool showNormals, double showNormalsScale);
+  void addSphere(const Core::Geometry::Point& p, double radius, int resolution,
+                 const Core::Datatypes::ColorRGB& color, bool showNormals, double showNormalsScale);
+  void addBox(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t, double scale,
+              Core::Datatypes::ColorRGB& color, bool normalize, bool showNormals, double showNormalsScale);
+  void addEllipsoid(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t, double scale,
+                    int resolution, const Core::Datatypes::ColorRGB& color, bool normalize, bool showNormals, double showNormalsScale);
+  void addSuperquadricTensor(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t,
+                             double scale, int resolution, const Core::Datatypes::ColorRGB& color,
+                             bool normalize, double emphasis, bool showNormals, double showNormalsScale);
+  void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
+                   int resolution, const Core::Datatypes::ColorRGB& color1,
+                   const Core::Datatypes::ColorRGB& color2,
+                   bool showNormals, double showNormalsScale,
+                   bool renderBase1 = false, bool renderBase2 = false);
+  void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius1,
+                   double radius2, int resolution, const Core::Datatypes::ColorRGB& color1,
+                   const Core::Datatypes::ColorRGB& color2,
+                   bool showNormals, double showNormalsScale,
+                   bool renderBase1 = false, bool renderBase2 = false);
+  void addCone(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
+               int resolution, bool renderBase, const Core::Datatypes::ColorRGB& color1,
+               const Core::Datatypes::ColorRGB& color2, bool showNormals, double showNormalsScale);
+  void addDisk(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
+               int resolution, const Core::Datatypes::ColorRGB& color1,
+               const Core::Datatypes::ColorRGB& color2, bool showNormals, double showNormalsScale);
+  void addComet(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius,
+                int resolution, const Core::Datatypes::ColorRGB& color1,
+                const Core::Datatypes::ColorRGB& color2, double sphere_extrusion, bool showNormals, double showNormalsScale);
+  void addTorus(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+                double major_radius, double minor_radius, int resolution,
+                const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2, bool showNormals, double showNormalsScale);
+  void addClippingPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+                        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
+                        double radius, int resolution, const Core::Datatypes::ColorRGB& color1,
+                        const Core::Datatypes::ColorRGB& color2);
+  void addPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+                const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
+                const Core::Datatypes::ColorRGB& color1);
 
-      void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution, 
-        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addSphere(const Core::Geometry::Point& p, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
-      void addEllipsoid(const Core::Geometry::Point& p, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color);
-      void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
-        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addCone(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
-        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addClippingPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
-        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, double radius, double resolution,
-        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
-        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
-        const Core::Datatypes::ColorRGB& color1);
+  void addLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+               const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+  void addNeedle(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+                 const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+  void addPoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
+  void addSuperquadricSurface(const Core::Geometry::Point& center, Core::Datatypes::Dyadic3DTensor& t,
+                              double scale, int resolution, const Core::Datatypes::ColorRGB& color,
+                              double A, double B, bool showNormals, double showNormalsScale);
+  void generateSphere(const Core::Geometry::Point& center, double radius, int resolution,
+                      const Core::Datatypes::ColorRGB& color, bool showNormals, double showNormalsScale);
+  void generatePlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+                     const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
+                     const Core::Datatypes::ColorRGB& color);
+};
+}}
 
-      void addLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
-        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addNeedle(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, 
-        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addPoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
-
-      //From SCIRun4
-      void addArrow(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius, double length, int nu = 20, int nv = 0);
-      void addBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side);
-      void addCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double length, int nu = 20, int nv = 2);
-      void addSphere(const Core::Geometry::Point& center, double radius, int nu=20, int nv=20, int half=0);      
-      
-    private:
-      std::vector<SinCosTable> tables_;
-      std::vector<Core::Geometry::Vector> points_;
-      std::vector<Core::Geometry::Vector> normals_;
-      std::vector<Core::Datatypes::ColorRGB> colors_;
-      std::vector<uint32_t> indices_;
-      int64_t numVBOElements_;
-      uint32_t lineIndex_;
-            
-      void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generateEllipsoid(const Core::Geometry::Point& center, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generateSphere(const Core::Geometry::Point& center, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generateLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generatePoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generatePlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, 
-        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-
-      //From SCIRun4
-      void generateBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side, std::vector<QuadStrip>& quadstrips);
-      void generateCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double radius2, double length, int nu, int nv, std::vector<QuadStrip>& quadstrips);
-      void generateEllipsoid(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double scales, int nu, int nv, int half, std::vector<QuadStrip>& quadstrips);
-      void generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Vector& normal, Core::Geometry::Transform& trans, Core::Geometry::Transform& rotate);
-      
-      
-    };
-  } //Graphics
-} //SCIRun
 #endif //Graphics_Graphics_Glyphs_GlyphGeom_H

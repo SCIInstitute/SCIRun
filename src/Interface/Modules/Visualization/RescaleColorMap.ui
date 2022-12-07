@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>389</width>
-    <height>136</height>
+    <width>541</width>
+    <height>140</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>389</width>
-    <height>136</height>
+    <width>541</width>
+    <height>140</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>140</height>
+    <height>99999</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -34,6 +34,12 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
     <widget class="QGroupBox" name="autoGroupBox_">
+     <property name="minimumSize">
+      <size>
+       <width>190</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="title">
       <string/>
      </property>
@@ -43,6 +49,12 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QCheckBox" name="symmetricCheckBox_">
+        <property name="minimumSize">
+         <size>
+          <width>180</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string>Symmetric Auto Scale</string>
         </property>

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
@@ -99,7 +99,7 @@ void InsertFieldsIntoBundle::execute()
     for (int i = 0; i < fields.size(); ++i)
     {
       auto field = fields[i];
-      auto stateName = state->getValue(Name((*fieldPortNameIterator++)->id().toString())).toString();
+      auto stateName = state->getValue(Name((*fieldPortNameIterator++)->internalId().toString())).toString();
       if (field)
       {
         auto name = !stateName.empty() ? stateName : ("field" + boost::lexical_cast<std::string>(i));

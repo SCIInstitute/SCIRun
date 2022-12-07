@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/String/PrintMatrixIntoString.h>
 #include <stdio.h>
@@ -71,11 +71,11 @@ PrintMatrixIntoString::execute()
 {
   std::string   format, output;
 
-  MatrixHandle currentmatrix = 0;
+  MatrixHandle currentmatrix;
   int inputport = 0;
   index_type matrixindex = 0;
   double       datavalue = 0;
-  double*      dataptr = 0;
+  double*      dataptr = nullptr;
   bool         lastport = false;
   bool         lastdata = false;
   bool         isformat = false;

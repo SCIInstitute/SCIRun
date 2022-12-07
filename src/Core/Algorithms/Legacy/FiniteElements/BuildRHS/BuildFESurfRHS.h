@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,40 +26,44 @@
 */
 
 
+//@file BuildFESurfRHS.h
+///@brief This module computes
+///
+///@author
+/// ported by Moritz Dannhauer (10/29/2017) from SCIRun4
+///
+///@details
+///
+///
+///
+/// Input:  Output:
+
+
+
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFESURFRHS_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFESURFRHS_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
 
-// for Windows support
-#include <Core/Algorithms/FiniteElements/share.h>
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace FiniteElements {
 
-namespace SCIRunAlgo {
+ALGORITHM_PARAMETER_DECL(BoundaryField);
+ALGORITHM_PARAMETER_DECL(RHSMatrix);
 
-using namespace SCIRun;
-
-class SCISHARE BuildFESurfRHSAlgo : public AlgoBase
+class SCISHARE BuildFESurfRHSAlgo : public AlgorithmBase
 {
-  public:
-    /// Set defaults
-  BuildFESurfRHSAlgo() 
-  {
-    //MDS add_option("mapping","auto","auto|node|elem|none");
-  }
-  
-  /// With mapping
-  //MDS bool run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping);
-  /// Without mapping
-  bool run(FieldHandle input, FieldHandle& output, MatrixHandle& mat_output);
-
+public:
+  BuildFESurfRHSAlgo() {}
+  bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mat_output) const;
+  AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
-#endif 
+#endif

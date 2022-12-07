@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <boost/lexical_cast.hpp>
 #include <boost/assign.hpp>
@@ -53,16 +53,17 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
 {
   MockModulePtr module(new NiceMock<MockModule>);
 
-  ON_CALL(*module, get_module_name()).WillByDefault(Return(info.lookupInfo_.module_name_));
+  ON_CALL(*module, name()).WillByDefault(Return(info.lookupInfo_.module_name_));
 
-  ON_CALL(*module, num_input_ports()).WillByDefault(Return(info.input_ports_.size()));
+  ON_CALL(*module, numInputPorts()).WillByDefault(Return(info.input_ports_.size()));
   size_t portIndex = 0;
   std::vector<InputPortHandle> inputs;
   for (const InputPortDescription& d : info.input_ports_)
   {
     MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
     ON_CALL(*inputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
-    ON_CALL(*inputPort, id()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*inputPort, externalId()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*inputPort, internalId()).WillByDefault(Return(PortId(d.id)));
     ON_CALL(*module, hasInputPort(d.id)).WillByDefault(Return(true));
     inputs.push_back(inputPort);
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
@@ -71,14 +72,15 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
   }
   ON_CALL(*module, inputPorts()).WillByDefault(Return(inputs));
 
-  ON_CALL(*module, num_output_ports()).WillByDefault(Return(info.output_ports_.size()));
+  ON_CALL(*module, numOutputPorts()).WillByDefault(Return(info.output_ports_.size()));
   portIndex = 0;
   std::vector<OutputPortHandle> outputs;
   for (const OutputPortDescription& d : info.output_ports_)
   {
     MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
     ON_CALL(*outputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
-    ON_CALL(*outputPort, id()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*outputPort, internalId()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*outputPort, externalId()).WillByDefault(Return(PortId(d.id)));
     ON_CALL(*module, hasOutputPort(d.id)).WillByDefault(Return(true));
     outputs.push_back(outputPort);
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
@@ -88,7 +90,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
   ON_CALL(*module, outputPorts()).WillByDefault(Return(outputs));
 
   ModuleId id("module", ++moduleCounter_);
-  ON_CALL(*module, get_id()).WillByDefault(Return(id));
+  ON_CALL(*module, id()).WillByDefault(Return(id));
 
   //not used now, commenting out.
   //if (stateFactory_)

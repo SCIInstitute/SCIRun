@@ -1,6 +1,35 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_CEREALCORE_HPP
 #define SPIRE_CEREALCORE_HPP
 
+#include <es-log/trace-log.h>
 #include <set>
 #include <iostream>
 #include <stdexcept>
@@ -8,13 +37,14 @@
 
 #include "CerealHeap.hpp"
 #include "ComponentSerialize.hpp"
+#include <spire/scishare.h>
 
 struct _Tny;
 typedef _Tny Tny;
 
 namespace spire {
 
-  class CerealCore : public spire::ESCoreBase
+class SCISHARE CerealCore : public spire::ESCoreBase
 {
 public:
   CerealCore();
@@ -49,7 +79,7 @@ public:
   /// Serializes a single entity into CerealSerialize.
   /// The caller is responsible for calling Tny_free on the returned Tny*.
   Tny* serializeEntity(uint64_t entityID);
-  
+
   /// Serializes a Tny pointer as if it were an entity. Useful in constructing
   /// change sets. Output can be used in conjunction with
   /// deserializeComponentMerge. The caller is responsible for calling Tny_free
@@ -61,9 +91,9 @@ public:
   template <typename T>
   Tny* serializeValue(T& value, uint64_t entityID, int32_t componentIndex = -1)
   {
-    // Grab the CerealHeap based off of the 
+    // Grab the CerealHeap based off of the
     spire::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
-    
+
     // Convert value into a TNY_DICT, then call the necessary function to
     // slap on a valid serialization header.
     CerealHeap<T>* heap = dynamic_cast<CerealHeap<T>*>(cont);
@@ -76,7 +106,7 @@ public:
     Tny* val = heap->serializeValue(*this, value, entityID, componentIndex);
 
     // Add val to a dictionary which contains the component's name.
-    Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+    Tny* root = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
     root = Tny_add(root, TNY_OBJ, const_cast<char*>(heap->getComponentName()), val, 0);
 
     // Get rid of value since a deep copy was made.
@@ -161,9 +191,9 @@ public:
   template <typename T>
   void disableComponentSerialization()
   {
-    // Grab the CerealHeap based off of the 
+    // Grab the CerealHeap based off of the
     spire::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
-    
+
     CerealHeap<T>* heap = dynamic_cast<CerealHeap<T>*>(cont);
     heap->setSerializable(false);
   }
@@ -186,5 +216,4 @@ protected:
 
 } // namespace spire
 
-#endif 
-
+#endif

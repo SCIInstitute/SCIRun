@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/Field.cc
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -42,24 +42,24 @@ using namespace SCIRun::Core::Thread;
 
 Field::Field()
 {
-  DEBUG_CONSTRUCTOR("Field")  
+  DEBUG_CONSTRUCTOR("Field")
 }
 
-Field::Field(const Field& copy) : Core::Datatypes::Datatype(copy) 
+Field::Field(const Field& copy) : Core::Datatypes::Datatype(copy)
 { DEBUG_CONSTRUCTOR("Field");  }
 
 Field::~Field()
 {
-  DEBUG_DESTRUCTOR("Field")  
+  DEBUG_DESTRUCTOR("Field")
 }
 
 const int FIELD_VERSION = 3;
 
-void 
+void
 Field::io(Piostream& stream)
 {
   int version = stream.begin_class("Field", FIELD_VERSION);
-  if (version < 2) 
+  if (version < 2)
   {
     // The following was FIELD_VERSION 1 data_at ordering
     //     enum data_location{
@@ -73,34 +73,34 @@ Field::io(Piostream& stream)
     unsigned int tmp;
     int order = 999;
     Pio(stream, tmp);
-    if (tmp == 0) 
+    if (tmp == 0)
     {
       // data_at_ was NODE
       order = 1;
-    } 
-    else if (tmp == 4) 
+    }
+    else if (tmp == 4)
     {
       // data_at_ was NONE
       order = -1;
-    } 
-    else 
+    }
+    else
     {
       // data_at_ was somewhere else
       order = 0;
     }
-    
-    if (order != basis_order() && ((!(vmesh()->is_pointcloudmesh())) || order == -1)) 
+
+    if (order != basis_order() && ((!(vmesh()->is_pointcloudmesh())) || order == -1))
     {
       // signal error in the stream and return;
       stream.flag_error();
       return;
     }
-  } 
-  else if (version < 3) 
+  }
+  else if (version < 3)
   {
     int order;
     Pio(stream, order);
-    if (order != basis_order() && ((!(vmesh()->is_pointcloudmesh())) || order == -1)) 
+    if (order != basis_order() && ((!(vmesh()->is_pointcloudmesh())) || order == -1))
     {
       // signal error in the stream and return;
       stream.flag_error();
@@ -112,15 +112,15 @@ Field::io(Piostream& stream)
   stream.end_class();
 }
 
-std::string Field::type_name() const { return type_id.type; }   
+std::string Field::type_name() const { return type_id.type; }
 
 // initialize the static member type_id
-PersistentTypeID Field::type_id("Field", "Datatype", 0);
+PersistentTypeID Field::type_id("Field", "Datatype", nullptr);
 
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface
-Mutex *FieldTypeIDMutex = 0;
-static std::map<std::string,FieldTypeID*>* FieldTypeIDTable = 0;
+Mutex *FieldTypeIDMutex = nullptr;
+static std::map<std::string,FieldTypeID*>* FieldTypeIDTable = nullptr;
 
 FieldTypeID::FieldTypeID(const std::string&type,
                          FieldHandle (*field_maker)(),
@@ -129,13 +129,13 @@ FieldTypeID::FieldTypeID(const std::string&type,
     field_maker(field_maker),
     field_maker_mesh(field_maker_mesh)
 {
-  if (FieldTypeIDMutex == 0)
+  if (FieldTypeIDMutex == nullptr)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(FieldTypeIDMutex->get());
   {
-    if (FieldTypeIDTable == 0)
+    if (FieldTypeIDTable == nullptr)
     {
       FieldTypeIDTable = new std::map<std::string,FieldTypeID*>;
     }
@@ -169,10 +169,10 @@ SCIRun::CreateField(const std::string& type, MeshHandle mesh)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(*FieldTypeIDMutex);
   {
     auto it = FieldTypeIDTable->find(type);
-    if (it != FieldTypeIDTable->end()) 
+    if (it != FieldTypeIDTable->end())
     {
       handle = (*it).second->field_maker_mesh(mesh);
     }
@@ -192,11 +192,11 @@ SCIRun::CreateField(const std::string& type)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
+  Guard lock(*FieldTypeIDMutex);
   {
     std::map<std::string,FieldTypeID*>::iterator it;
     it = FieldTypeIDTable->find(type);
-    if (it != FieldTypeIDTable->end()) 
+    if (it != FieldTypeIDTable->end())
     {
       handle = (*it).second->field_maker();
     }

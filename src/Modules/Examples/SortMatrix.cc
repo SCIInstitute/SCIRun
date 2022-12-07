@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,44 +25,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/SortMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Math/SortMatrixAlgo.h>
+
+#include<Modules/Math/SortMatrix.h>
+#include<Core/Datatypes/Matrix.h>
+#include<Dataflow/Network/Module.h>
+#include<Core/Algorithms/Math/SortMatrixAlgo.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
-/// @class SortMatrix
-/// @brief This module sorts the matrix entries into ascending or descending order.
-
-MODULE_INFO_DEF(SortMatrix, Math, SCIRun)
+MODULE_INFO_DEF(SortMatrix,Math,SCIRun);
 
 SortMatrix::SortMatrix() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(InputMatrix);
-  INITIALIZE_PORT(OutputMatrix);
+    INITIALIZE_PORT(InputMatrix);
+    INITIALIZE_PORT(OutputMatrix);
 }
 
 void SortMatrix::setStateDefaults()
 {
-  setStateIntFromAlgo(Variables::Method);
+    setStateIntFromAlgo(Variables::Method);
+
 }
 
-void
-SortMatrix::execute()
+void SortMatrix::execute()
 {
-  auto input = getRequiredInput(InputMatrix);
+    auto input=getRequiredInput(InputMatrix);
 
-  if (needToExecute())
-  {
-    setAlgoIntFromState(Variables::Method);
-
-    auto output = algo().run_generic(withInputData((InputMatrix, input)));
-
-    sendOutputFromAlgorithm(OutputMatrix, output);
-
-  }
+    if(needToExecute())
+    {
+        setAlgoIntFromState(Variables::Method);
+        auto output = algo().run(withInputData((InputMatrix, input)));
+        sendOutputFromAlgorithm(OutputMatrix,output);
+    }
 }

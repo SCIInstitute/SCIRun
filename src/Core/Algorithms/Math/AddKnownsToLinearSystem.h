@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
 
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_AddKnownsToLinearSystem_H
@@ -43,19 +42,17 @@ namespace SCIRun {
         {
         public:
 
-          static AlgorithmInputName LHS_Matrix;
-          static AlgorithmInputName RHS_Vector;
-          static AlgorithmInputName X_Vector;
-          static AlgorithmOutputName OutPutLHSMatrix;
-          static AlgorithmOutputName OutPutRHSVector;
+          static const AlgorithmInputName LHS_Matrix;
+          static const AlgorithmInputName RHS_Vector;
+          static const AlgorithmInputName X_Vector;
+          static const AlgorithmOutputName OutPutLHSMatrix;
+          static const AlgorithmOutputName OutPutRHSVector;
           bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
-          virtual AlgorithmOutput run(const AlgorithmInput &) const;
-
-          static double bound_for_equality;
+          AlgorithmOutput run(const AlgorithmInput &) const override;
         };
 
       }
     }
   }
 }
-#endif 
+#endif

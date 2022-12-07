@@ -1,29 +1,28 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -79,7 +78,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Matlab/matfilebase.h>
 #include <Core/Matlab/share.h>
 
@@ -231,8 +230,8 @@ namespace SCIRun
       // a new buffer specified by dataptr (address of this new buffer) with
       // size size (number of elements in this buffer)
 
-      if (databuffer() == 0) return;
-      if (dataptr  == 0) return;
+      if (databuffer() == nullptr) return;
+      if (dataptr  == nullptr) return;
       if (dsize == 0) return;
       if (size() == 0) return;
       if (dsize > size()) dsize = size();	// limit casting and copying to amount of data we have
@@ -290,8 +289,8 @@ namespace SCIRun
       // a new buffer specified by dataptr (address of this new buffer) with
       // size size (number of elements in this buffer)
 
-      if (databuffer() == 0) return;
-      if (dataptr  == 0) return;
+      if (databuffer() == nullptr) return;
+      if (dataptr  == nullptr) return;
       if (dim1 == 0) return;
       if (dim2 == 0) return;
       if (size() == 0) return;
@@ -364,8 +363,8 @@ namespace SCIRun
       // a new buffer specified by dataptr (address of this new buffer) with
       // size size (number of elements in this buffer)
 
-      if (databuffer() == 0) return;
-      if (dataptr  == 0) return;
+      if (databuffer() == nullptr) return;
+      if (dataptr  == nullptr) return;
       if (dim1 == 0) return;
       if (dim2 == 0) return;
       if (dim3 == 0) return;
@@ -443,7 +442,7 @@ namespace SCIRun
       int dsize = size();
       vec.resize(dsize);
 
-      if (databuffer() == 0) { vec.resize(0); return; }
+      if (databuffer() == nullptr) { vec.resize(0); return; }
       if (size() == 0) { vec.resize(0); return; };
 
       switch (type())
@@ -499,7 +498,7 @@ namespace SCIRun
       // direct access to the data
 
       T val = 0;
-      if (databuffer() == 0) throw out_of_range();
+      if (databuffer() == nullptr) throw out_of_range();
       if (index >= size()) throw out_of_range();
 
       switch (type())
@@ -552,7 +551,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       clear();
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
 
       newdatabuffer(dsize*elsize(dtype),dtype);
 
@@ -611,7 +610,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       clear();
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
 
       newdatabuffer(dim1*dim2*elsize(dtype),dtype);
 
@@ -676,7 +675,7 @@ namespace SCIRun
       // size size (number of elements in this buffer)
 
       clear();
-      if (dataptr  == 0) return;
+      if (dataptr  == nullptr) return;
 
       newdatabuffer(dim1*dim2*dim3*elsize(dtype),dtype);
 

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,8 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
+#ifdef WITH_TETGEN
 #include <Modules/Legacy/Fields/InterfaceWithTetGenImpl.h>
+#endif
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -85,6 +87,7 @@ void InterfaceWithTetGen::setStateDefaults()
 
 void InterfaceWithTetGen::execute()
 {
+#ifdef WITH_TETGEN
   auto first_surface = getRequiredInput(Main);
   auto rest = getOptionalDynamicInputs(Regions);
   std::deque<FieldHandle> surfaces(rest.begin(), rest.end());
@@ -113,7 +116,10 @@ void InterfaceWithTetGen::execute()
     inputs.moreSwitches_ = state->getValue(Parameters::MoreSwitches).toString();
 
     InterfaceWithTetGenImpl impl(this, inputs);
-    auto result = impl.runImpl(surfaces, points.get_value_or(nullptr), region_attribs.get_value_or(nullptr));
+    auto result = impl.runImpl(surfaces, points.value_or(nullptr), region_attribs.value_or(nullptr));
     sendOutput(TetVol, result);
   }
+#else
+  error("This module needs the build flag WITH_TETGEN enabled in order to work.");
+#endif
 }

@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #include <algorithm>
 #include <string>
 
@@ -5,10 +33,30 @@
 
 namespace spire {
 
+std::string SystemCore::toString(std::string prefix) const
+{
+  std::string output = prefix + "Systems: " + std::to_string(mSystems.size()) + "\n";
+  prefix += "  ";
+
+  for(auto& sysItm: mSystems)
+  {
+    output += prefix + "Name: " + sysItm.systemName
+      + "  NextExecutionTime: " + std::to_string(sysItm.nextExecutionTime) + "\n";
+  }
+
+  return output;
+}
+
+
 void SystemCore::runSystems(spire::ESCoreBase& core, uint64_t referenceTime)
 {
   for (SystemItem& sys : mSystems)
   {
+    //auto name = sys.systemName;
+    //const auto p = name.find("GeomPromise") != std::string::npos;
+    //if (p)
+    //  std::cout << "runSystems: " << name << " " << &sys << std::endl;
+
     if (sys.shouldExecute(referenceTime))
     {
       sys.system->walkComponents(core);
@@ -158,7 +206,7 @@ void SystemCore::deserializeActiveSystems(Tny* root, uint64_t referenceTime)
     }
     Tny* val = Tny_get(comp, "interval");
     uint64_t interval = val->value.num;
-    
+
     Tny_get(comp, "stagger");
     uint64_t stagger = val->value.num;
 
@@ -174,11 +222,11 @@ Tny* SystemCore::serializeActiveSystems()
 {
   // Iterate through all active systems and serialize them out, in order, to
   // a TNY dictionary.
-  Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+  Tny* root = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
 
-  for (SystemItem& item : mSystems)  
+  for (SystemItem& item : mSystems)
   {
-    Tny* obj = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
+    Tny* obj = Tny_add(nullptr, TNY_DICT, nullptr, nullptr, 0);
     obj = Tny_add(obj, TNY_INT64, const_cast<char*>("interval"), static_cast<void*>(&item.interval), 0);
     obj = Tny_add(obj, TNY_INT64, const_cast<char*>("stagger"), static_cast<void*>(&item.stagger), 0);
     obj = Tny_add(obj, TNY_INT64, const_cast<char*>("nextExec"), static_cast<void*>(&item.nextExecutionTime), 0);
@@ -234,4 +282,3 @@ uint64_t SystemCore::SystemItem::calcNextExecutionTime(uint64_t referenceTime)
 }
 
 } // namespace spire
-

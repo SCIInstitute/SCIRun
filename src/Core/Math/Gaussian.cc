@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,13 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
 ///@class Gaussian
 ///@brief Support choosing a random value from a 1D Gaussian
 ///       distribution (rand), as well as evaluate the probability
 ///       of a particular value occuring.
 ///
-///@author 
+///@author
 ///       David Weinstein
 ///       Department of Computer Science
 ///       University of Utah
@@ -44,16 +44,9 @@
 
 namespace SCIRun {
 
-Gaussian::Gaussian(double mean, double sigma, int seed) 
+Gaussian::Gaussian(double mean, double sigma, int seed)
   : mean_(mean), sigma_(sigma), mr_(new MusilRNG(seed))
 {
 }
 
-Gaussian::~Gaussian() {
-  delete mr_;
-}
-
 } // End namespace SCIRun
-
-
-

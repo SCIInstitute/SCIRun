@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -66,7 +65,7 @@ class LatVolMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVLatVolMesh(MESH*) { return (0); }
+VMesh* CreateVLatVolMesh(MESH*) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -95,7 +94,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<LatVolMesh<Basis> > handle_type;
+  typedef SharedPointer<LatVolMesh<Basis> > handle_type;
   typedef Basis                             basis_type;
 
   struct LatIndex;
@@ -104,7 +103,7 @@ public:
   struct LatIndex
   {
   public:
-    LatIndex() : i_(0), j_(0), k_(0), mesh_(0) {}
+    LatIndex() : i_(0), j_(0), k_(0), mesh_(nullptr) {}
     LatIndex(const LatVolMesh *m, index_type i, index_type j, index_type k) :
       i_(i), j_(j), k_(k), mesh_(m) {}
 
@@ -148,8 +147,7 @@ public:
     NodeIndex() : LatIndex() {}
     NodeIndex(const LatVolMesh *m, size_type i, size_type j, size_type k)
       : LatIndex(m, i,j,k) {}
-    static std::string type_name(int i=-1) {
-      ASSERT(i < 1);
+    static std::string type_name() {
       return LatVolMesh<Basis>::type_name(-1) + "::NodeIndex";
     }
   };
@@ -625,20 +623,21 @@ public:
     vmesh_.reset(CreateVLatVolMesh(this));
   }
 
-  virtual LatVolMesh *clone() const { return new LatVolMesh(*this); }
+LatVolMesh *clone() const override { return new LatVolMesh(*this); }
   virtual ~LatVolMesh()
   {
     DEBUG_DESTRUCTOR("LatVolMesh")
   }
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() {
+VMesh* vmesh() override
+  {
        return (vmesh_.get());
   }
 
-  virtual MeshFacadeHandle getFacade() const { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
+MeshFacadeHandle getFacade() const override { return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+int basis_order() override { return (basis_.polynomial_order()); }
 
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
@@ -675,8 +674,8 @@ public:
   /// Synchronize functions, as there is nothing to synchronize, these
   /// functions always succeed
 
-  virtual bool synchronize(mask_type /*sync*/) { return (true); }
-  virtual bool unsynchronize(mask_type /*sync*/) { return (true); }
+bool synchronize(mask_type /*sync*/) override { return (true); }
+bool unsynchronize(mask_type /*sync*/) override { return (true); }
   bool clear_synchronization() { return (true); }
 
   /// Get the local coordinates for a certain point within an element
@@ -795,7 +794,7 @@ public:
   /// Get the determinant of the jacobian, which is the local volume of an element
   /// and is intended to help with the integration of functions over an element.
   template<class VECTOR>
-  double det_jacobian(const VECTOR& coords, typename Elem::index_type idx) const
+  double det_jacobian(const VECTOR&, typename Elem::index_type) const
   {
     return (det_jacobian_);
   }
@@ -804,7 +803,7 @@ public:
   /// version of this matrix. This is currentl here for completeness of the
   /// interface
   template<class VECTOR>
-  void jacobian(const VECTOR& coords, typename Elem::index_type idx, double* J) const
+  void jacobian(const VECTOR&, typename Elem::index_type, double* J) const
   {
     J[0] = jacobian_[0];
     J[1] = jacobian_[1];
@@ -920,12 +919,9 @@ public:
                  const typename Cell::index_type &) const;
 
   /// get the parent element(s) of the given index
-  void get_elems(typename Elem::array_type &result,
-                 const typename Node::index_type &idx) const;
-  void get_elems(typename Elem::array_type &result,
-                 const typename Edge::index_type &idx) const;
-  void get_elems(typename Elem::array_type &result,
-                 const typename Face::index_type &idx) const;
+  void get_elems(typename Elem::array_type &result, const typename Node::index_type &idx) const;
+  void get_elems(typename Elem::array_type &result, const typename Edge::index_type &idx) const;
+  void get_elems(typename Elem::array_type &result, const typename Face::index_type &idx) const;
 
 
   /// Wrapper to get the derivative elements from this element.
@@ -1084,7 +1080,7 @@ public:
   double get_epsilon() const;
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.  static PersistentTypeID type_idts;
@@ -1094,7 +1090,7 @@ private:
 
 public:
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return latvol_typeid.type; }
+std::string dynamic_type_name() const override { return latvol_typeid.type; }
 
   // Unsafe due to non-constness of unproject.
   Core::Geometry::Transform& get_transform() { return transform_; }
@@ -1111,7 +1107,7 @@ public:
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* cell_type_description();
   static const TypeDescription* face_type_description();
   static const TypeDescription* edge_type_description();
@@ -1122,11 +1118,11 @@ public:
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new LatVolMesh(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<LatVolMesh>(); }
+  static MeshHandle mesh_maker() { return makeShared<LatVolMesh>(); }
   /// This function returns a handle for the virtual interface.
   static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
   {
-    return boost::make_shared<LatVolMesh>(x,y,z,min,max);
+    return makeShared<LatVolMesh>(x,y,z,min,max);
   }
 
 protected:
@@ -1151,16 +1147,16 @@ protected:
   double scaled_jacobian_;
   double det_inverse_jacobian_;
 
-  boost::shared_ptr<VMesh> vmesh_;
+  SharedPointer<VMesh> vmesh_;
 };
 
 template <class Basis>
 const TypeDescription* get_type_description(LatVolMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("LatVolMesh", subs,
@@ -1176,7 +1172,7 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
 }
 
 
@@ -1184,11 +1180,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1202,11 +1198,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1220,11 +1216,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1238,11 +1234,11 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1305,24 +1301,21 @@ template <class Basis>
 Core::Geometry::BBox
 LatVolMesh<Basis>::get_bounding_box() const
 {
-  Core::Geometry::Point p0(min_i_,         min_j_,         min_k_);
-  Core::Geometry::Point p1(min_i_ + ni_-1, min_j_,         min_k_);
-  Core::Geometry::Point p2(min_i_ + ni_-1, min_j_ + nj_-1, min_k_);
-  Core::Geometry::Point p3(min_i_,         min_j_ + nj_-1, min_k_);
-  Core::Geometry::Point p4(min_i_,         min_j_,         min_k_ + nk_-1);
-  Core::Geometry::Point p5(min_i_ + ni_-1, min_j_,         min_k_ + nk_-1);
-  Core::Geometry::Point p6(min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1);
-  Core::Geometry::Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
+  std::vector<Core::Geometry::Point> corners = {
+    {min_i_, min_j_, min_k_},
+    {min_i_ + ni_-1, min_j_,         min_k_},
+    {min_i_ + ni_-1, min_j_ + nj_-1, min_k_},
+    {min_i_,         min_j_ + nj_-1, min_k_},
+    {min_i_,         min_j_,         min_k_ + nk_-1},
+    {min_i_ + ni_-1, min_j_,         min_k_ + nk_-1},
+    {min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1},
+    {min_i_,         min_j_ + nj_-1, min_k_ + nk_-1} };
 
-  Core::Geometry::BBox result;
-  result.extend(transform_.project(p0))
-    .extend(transform_.project(p1))
-    .extend(transform_.project(p2))
-    .extend(transform_.project(p3))
-    .extend(transform_.project(p4))
-    .extend(transform_.project(p5))
-    .extend(transform_.project(p6))
-    .extend(transform_.project(p7));
+
+  for (auto& c : corners)
+    c = transform_.project(c);
+
+  Core::Geometry::BBox result(corners);
   return result;
 }
 
@@ -1626,7 +1619,7 @@ LatVolMesh<Basis>::get_edges(typename Edge::array_type &array,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
+LatVolMesh<Basis>::get_elems(typename Elem::array_type &result,
                              const typename Edge::index_type &eidx) const
 {
   result.reserve(4);
@@ -1721,7 +1714,7 @@ LatVolMesh<Basis>::get_faces(typename Face::array_type &array,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
+LatVolMesh<Basis>::get_elems(typename Elem::array_type &result,
                              const typename Face::index_type &fidx) const
 {
   result.reserve(2);
@@ -1763,7 +1756,7 @@ LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
+LatVolMesh<Basis>::get_elems(typename Elem::array_type &result,
                              const typename Node::index_type &idx) const
 {
   result.reserve(8);
@@ -2129,7 +2122,7 @@ LatVolMesh<Basis>::get_size(const typename Cell::index_type& /*idx*/) const
 
 template <class Basis>
 bool
-LatVolMesh<Basis>::locate(typename Cell::index_type &elem, const Core::Geometry::Point &p) const
+LatVolMesh<Basis>::locate(typename Elem::index_type &elem, const Core::Geometry::Point &p) const
 {
   const double epsilon = 1e-7;
 
@@ -2189,11 +2182,11 @@ LatVolMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry:
   const double njj = static_cast<double>(nj_-1);
   const double nkk = static_cast<double>(nk_-1);
 
-  if (rx < 0.0) rx = 0.0; 
+  if (rx < 0.0) rx = 0.0;
   if (rx > nii) rx = nii;
   if (ry < 0.0) ry = 0.0;
   if (ry > njj) ry = njj;
-  if (rz < 0.0) rz = 0.0; 
+  if (rz < 0.0) rz = 0.0;
   if (rz > nkk) rz = nkk;
 
   node.i_ = static_cast<index_type>(rx);
@@ -2225,11 +2218,11 @@ LatVolMesh<Basis>::find_closest_node(double& pdist,
   const double njj = static_cast<double>(nj_-1);
   const double nkk = static_cast<double>(nk_-1);
 
-  if (rx < 0.0) rx = 0.0; 
+  if (rx < 0.0) rx = 0.0;
   if (rx > nii) rx = nii;
-  if (ry < 0.0) ry = 0.0; 
+  if (ry < 0.0) ry = 0.0;
   if (ry > njj) ry = njj;
-  if (rz < 0.0) rz = 0.0; 
+  if (rz < 0.0) rz = 0.0;
   if (rz > nkk) rz = nkk;
 
   result = transform_.project(Core::Geometry::Point(rx,ry,rz));
@@ -2279,11 +2272,11 @@ LatVolMesh<Basis>::find_closest_elems(double& pdist,
   const double njj = static_cast<double>(nj_-2);
   //const double nkk = static_cast<double>(nk_-2);
 
-  if (ii < 0.0) ii = 0.0; 
+  if (ii < 0.0) ii = 0.0;
   if (ii > nii) ii = nii;
-  if (jj < 0.0) jj = 0.0; 
+  if (jj < 0.0) jj = 0.0;
   if (jj > njj) jj = njj;
-  if (jj < 0.0) jj = 0.0; 
+  if (jj < 0.0) jj = 0.0;
   if (jj > njj) jj = njj;
   const double fii = floor(ii);
   const double fjj = floor(jj);
@@ -2490,7 +2483,7 @@ LatVolMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 

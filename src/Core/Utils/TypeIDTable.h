@@ -1,41 +1,43 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 /// @todo Documentation Core/Utils/TypeIDTable.h
 
 #ifndef CORE_UTILS_TYPEIDTABLE_H
 #define CORE_UTILS_TYPEIDTABLE_H
 
-#include <boost/thread/mutex.hpp>
+#include <Core/Thread/Mutex.h>
+#include <map>
+#include <optional>
 #include <boost/noncopyable.hpp>
-#include <boost/optional.hpp>
 #include <Core/Utils/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
 namespace Core
 {
@@ -47,12 +49,12 @@ namespace Utility
   class TypeIDTable : boost::noncopyable
   {
   public:
-    typedef boost::optional<const CtorInfo&> CtorInfoOption;
-    
+    typedef std::optional<CtorInfo> CtorInfoOption;
+
     //do locking internally
     CtorInfoOption findConstructorInfo(const std::string& key) const
     {
-      boost::mutex::scoped_lock s(lock_);
+      Core::Thread::Guard s(lock_);
       auto iter = lookup_.find(key);
       if (iter == lookup_.end())
         return CtorInfoOption();
@@ -61,7 +63,7 @@ namespace Utility
 
     bool registerConstructorInfo(const std::string& key, const CtorInfo& info)
     {
-      boost::mutex::scoped_lock s(lock_);
+      Core::Thread::Guard s(lock_);
       auto iter = lookup_.find(key);
       if (iter != lookup_.end())
       {
@@ -69,7 +71,7 @@ namespace Utility
         {
           /// @todo: improve for testing
           /// @todo: use real logger here
-          std::cerr << "WARNING: duplicate type exists: " << key << "\n";
+          //TODO inject new logger std::cerr << "WARNING: duplicate type exists: " << key << "\n";
           return false;
         }
       }
@@ -80,7 +82,7 @@ namespace Utility
     size_t size() const { return lookup_.size(); }
 
   private:
-    mutable boost::mutex lock_;
+    mutable Thread::Mutex lock_;
     std::map<std::string, CtorInfo> lookup_;
   };
 

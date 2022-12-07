@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2014 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,14 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   February 2014
+
+/// author James Hughes
+/// date   February 2014
 
 #ifndef SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 #define SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 
+#include <es-log/trace-log.h>
 #include "BaseSystem.hpp"
 #include "ESCoreBase.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -51,7 +53,7 @@ public:
     postWalkComponents(core);
   }
 
-  bool walkEntity(ESCoreBase& core, uint64_t entityID) override
+  bool walkEntity(ESCoreBase& core, uint64_t) override
   {
     preWalkComponents(core);
     execute(core);
@@ -60,15 +62,15 @@ public:
   }
 
   // Used in the two functions above.
-  virtual void preWalkComponents(ESCoreBase& core)            {}
-  virtual void postWalkComponents(ESCoreBase& core)           {}
+  virtual void preWalkComponents(ESCoreBase&)            {}
+  virtual void postWalkComponents(ESCoreBase&)           {}
 
   std::vector<uint64_t> getComponents() const override
   {
     return std::vector<uint64_t>();
   }
 
-  virtual bool isComponentOptional(uint64_t /* component */) override
+  bool isComponentOptional(uint64_t /* component */) override
   {
     return false;
   }
@@ -76,4 +78,4 @@ public:
 
 } // namespace spire
 
-#endif 
+#endif

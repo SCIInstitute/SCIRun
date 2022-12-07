@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
@@ -47,7 +47,7 @@ MapFieldDataOntoNodesDialog::MapFieldDataOntoNodesDialog(const std::string& name
   addComboBoxManager(interpolationComboBox_, Parameters::InterpolationModel);
   addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
   addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
-  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
+  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues);
 }
 
 void MapFieldDataOntoNodesDialog::pullSpecial()
@@ -66,4 +66,3 @@ void MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues(int state)
     state_->setValue(Parameters::OutsideValue, std::numeric_limits<double>::quiet_NaN());
   }
 }
-

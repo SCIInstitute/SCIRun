@@ -3,11 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
-Permission is hereby granted, free of charge, to any person obtaining a
+   Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,6 +25,7 @@ Permission is hereby granted, free of charge, to any person obtaining a
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_FORWARD_CalcTMP_H__
 #define MODULES_LEGACY_FORWARD_CalcTMP_H__
 
@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         CalcTMP();
-        virtual void setStateDefaults() override {}
-        virtual void execute() override;
+        void setStateDefaults() override {}
+        void execute() override;
 
         INPUT_PORT(0, Amplitude, Matrix);
         INPUT_PORT(1, Depolarization_Time, Matrix);
@@ -56,7 +56,7 @@ namespace SCIRun {
 
         LEGACY_BIOPSE_MODULE
 
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
 
     }

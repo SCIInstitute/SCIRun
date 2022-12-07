@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/MatrixTypeConversion.h
 
 #ifndef CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H
@@ -36,7 +37,6 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <boost/type_traits.hpp>
-#include <boost/utility/enable_if.hpp>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -44,14 +44,14 @@ namespace Core {
   namespace Datatypes {
 
     /// No conversion is done.
-    /// NULL is returned if the matrix is not of the appropriate type.
+    /// nullptr is returned if the matrix is not of the appropriate type.
     class SCISHARE castMatrix
     {
     public:
       template <class ToType, typename T, template <typename> class MatrixType>
       static SharedPointer<ToType> to(const SharedPointer<MatrixType<T>>& matrix, typename boost::enable_if<boost::is_same<T, typename ToType::value_type> >::type* = nullptr)
       {
-        return boost::dynamic_pointer_cast<ToType>(matrix);
+        return std::dynamic_pointer_cast<ToType>(matrix);
       }
 
       template <typename T, template <typename> class MatrixType>
@@ -134,16 +134,16 @@ namespace Core {
 
       auto dense = castMatrix::toDense(mh);
       if (dense)
-        return boost::make_shared<DenseColumnMatrixGeneric<T>>(dense->col(0));
+        return makeShared<DenseColumnMatrixGeneric<T>>(dense->col(0));
 
       auto sparse = castMatrix::toSparse(mh);
       if (sparse)
       {
         DenseColumnMatrixGeneric<T> dense_col(DenseColumnMatrixGeneric<T>::Zero(sparse->nrows()));
-        for (auto i = 0; i < sparse->nrows(); i++)
+        for (auto i = 0ul; i < sparse->nrows(); i++)
           dense_col(i) = sparse->coeff(i, 0);
 
-        return boost::make_shared<DenseColumnMatrixGeneric<T>>(dense_col);
+        return makeShared<DenseColumnMatrixGeneric<T>>(dense_col);
       }
 
       return nullptr;
@@ -156,8 +156,8 @@ namespace Core {
     {
       typename SparseRowMatrixFromMapGeneric<T>::Values data;
       NonZero<T> nonZero;
-      for (auto i = 0; i < dense.nrows(); i++)
-        for (auto j = 0; j < dense.ncols(); j++)
+      for (auto i = 0ul; i < dense.nrows(); i++)
+        for (auto j = 0ul; j < dense.ncols(); j++)
           if (nonZero(dense(i, j)))
             data[i][j] = dense(i, j);
 

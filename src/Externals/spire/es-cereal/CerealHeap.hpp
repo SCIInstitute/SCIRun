@@ -1,6 +1,35 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_COMMON_CEREALHEAP_HPP
 #define SPIRE_COMMON_CEREALHEAP_HPP
 
+#include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include <tny/tny.hpp>
 
@@ -10,15 +39,16 @@
 ///       types they really are.
 
 #include "ComponentSerialize.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
 namespace heap_detail {
 
-bool checkTnyType(Tny* root, TnyType type);
-Tny* addSerializedComponent(Tny* cur, Tny* component, uint64_t entityID);
-Tny* writeSerializedHeap(ComponentSerialize& s, Tny* compArray);
-Tny* readSerializedHeap(ComponentSerialize& s, Tny* compArray,
+  SCISHARE bool checkTnyType(Tny* root, TnyType type);
+  SCISHARE Tny* addSerializedComponent(Tny* cur, Tny* component, uint64_t entityID);
+  SCISHARE Tny* writeSerializedHeap(ComponentSerialize& s, Tny* compArray);
+  SCISHARE Tny* readSerializedHeap(ComponentSerialize& s, Tny* compArray,
                         std::vector<ComponentSerialize::HeaderItem>& typeHeaders);
 }
 
@@ -37,7 +67,7 @@ class CerealHeap : public spire::ComponentContainer<T>, public ComponentSerializ
     static yes impl( V* );
     static no  impl(...);
 
-    enum { value = sizeof( impl( static_cast<U*>(0) ) ) == sizeof(yes) };
+    enum { value = sizeof( impl( static_cast<U*>(nullptr) ) ) == sizeof(yes) };
   };
 
   /// Has getname function implementation
@@ -52,7 +82,7 @@ class CerealHeap : public spire::ComponentContainer<T>, public ComponentSerializ
     static yes impl( V* );
     static no  impl(...);
 
-    enum { value = sizeof( impl( static_cast<U*>(0) ) ) == sizeof(yes) };
+    enum { value = sizeof( impl( static_cast<U*>(nullptr) ) ) == sizeof(yes) };
   };
 
 public:
@@ -65,7 +95,7 @@ public:
                   "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
 
     // Build component array.
-    Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* compArray = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     ComponentSerialize s(core, false);
 
@@ -100,17 +130,17 @@ public:
     if (baseIndex == -1)
     {
       std::cerr << "Unable to find entityID " << entityID << " in " << getComponentName() << std::endl;
-      return NULL;
+      return nullptr;
     }
 
-    Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* compArray = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     ComponentSerialize s(core, false);
 
     typename spire::ComponentContainer<T>::ComponentItem* array =
         spire::ComponentContainer<T>::getComponentArray();
     int i = baseIndex;
-    size_t numComponents = spire::ComponentContainer<T>::getNumComponents();
+    auto numComponents = static_cast<int>(spire::ComponentContainer<T>::getNumComponents());
     while (i != numComponents && array[i].sequence == entityID)
     {
       // Serialize the entity at index 'i'.
@@ -129,12 +159,12 @@ public:
 
   /// Returns the Tny* dictionary containing value's serialized contents.
   /// for the given entityID and componentIndex.
-  Tny* serializeValue(spire::ESCoreBase& core, T& value, uint64_t entityID, int32_t componentIndex)
+  Tny* serializeValue(spire::ESCoreBase& core, T& value, uint64_t entityID, int32_t)
   {
     static_assert( has_member_serialize<T>::value,
                   "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
 
-    Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+    Tny* compArray = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
     ComponentSerialize s(core, false);
     s.prepareForNewComponent();
@@ -162,7 +192,7 @@ public:
     deserializeCreateInternal(core, root);
   }
 
-  const char* getComponentName() override
+  const char* getComponentName() const override
   {
     static_assert( has_member_getname<T>::value,
                   "Component does not have a getName function with signature: static const char* getName()" );
@@ -189,8 +219,14 @@ public:
     return std::string();
   }
 
-  bool isSerializable() override          {return mIsSerializable;}
+  bool isSerializable() const override          {return mIsSerializable;}
   void setSerializable(bool serializable) {mIsSerializable = serializable;}
+
+  std::string describe() const override
+  {
+    auto base = ComponentContainer<T>::describe();
+    return base + "\nCerealHeap()\n\t" + getComponentName();
+  }
 
 private:
 
@@ -210,7 +246,7 @@ private:
     }
 
     T value;
-    typename spire::ComponentContainer<T>::ComponentItem* array = 
+    typename spire::ComponentContainer<T>::ComponentItem* array =
         spire::ComponentContainer<T>::getComponentArray();
     Tny* cur = components;
     int componentIndex = 0;
@@ -250,7 +286,7 @@ private:
 
         // Check to see if __cindex exists inside of the dictionary.
         int trueIndex = 0;
-        if (Tny_get(obj, "__cindex") != NULL)
+        if (Tny_get(obj, "__cindex") != nullptr)
         {
           int32_t serializedIndex = 0;
           CerealSerializeType<int32_t>::in(obj, "__cindex", componentIndex);
@@ -265,7 +301,7 @@ private:
           trueIndex = baseIndex + componentIndex;
         }
 
-        if (trueIndex < spire::ComponentContainer<T>::getNumComponents())
+        if (trueIndex < static_cast<int>(spire::ComponentContainer<T>::getNumComponents()))
         {
           if (array[trueIndex].sequence == entityID)
           {
@@ -344,4 +380,3 @@ private:
 } // namespace spire
 
 #endif
-

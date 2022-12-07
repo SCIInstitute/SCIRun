@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 # Sources of Core/Thread classes
 
@@ -72,8 +72,6 @@ SCIRUN_ADD_LIBRARY(Core_Thread_Legacy
 SET(Core_Thread_Legacy_Link
   Core_Exceptions_Legacy
   Core_Thread
-  #${THREAD_LIBRARY}
-  #${TRACEBACK_LIB}
 )
 
 IF(WIN32)

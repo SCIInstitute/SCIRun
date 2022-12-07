@@ -1,13 +1,11 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +26,6 @@
 */
 
 
-
 ///
 ///@file   Runnable
 ///@brief  The base class for all threads
@@ -39,6 +36,8 @@
 ///@date   June 1997
 ///
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #ifndef Core_Thread_Runnable_h
 #define Core_Thread_Runnable_h
 
@@ -47,27 +46,27 @@
 namespace SCIRun {
 
 /**************************************
- 
+
 @class
    Runnable
-   
+
 KEYWORDS
    Thread
-   
-@details  
+
+@details
    This class should be a base class for any class which is to be
    attached to a thread.  It provides a <i>run</i> pure virtual method
    which should be overridden to provide the thread body.  When this
    method returns, or the thread calls <i>Thread::exit</i>, the
    thread terminates.  A <b>Runnable</b> should be attached to
    only one thread.
-  
+
    <p> It is very important that the <b>Runnable</b> object (or any
    object derived from it) is never explicitly deleted.  It will be
    deleted by the <b>Thread</b> to which it is attached, when the
    thread terminates.  The destructor will be executed in the context
    of this same thread.
-   
+
 ****************************************/
   class SCISHARE Runnable : boost::noncopyable
   {

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
@@ -112,7 +112,7 @@ Vector::safe_normal() const
    return v;
 }
 
-std::istream& operator>>( std::istream& is, Vector& v)
+std::istream& SCIRun::Core::Geometry::operator>>( std::istream& is, Vector& v)
 {
   double x, y, z;
   char st;
@@ -187,10 +187,18 @@ SCIRun::Vector_get_h_file_path()
 
 const TypeDescription* SCIRun::Core::Geometry::get_type_description(Vector*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("Vector", Vector_get_h_file_path(),
 				"SCIRun", TypeDescription::DATA_E);
   }
   return td;
+}
+
+Vector SCIRun::Core::Geometry::vectorFromString(const std::string& str)
+{
+  std::istringstream istr(str);
+  Vector v;
+  istr >> v;
+  return v;
 }

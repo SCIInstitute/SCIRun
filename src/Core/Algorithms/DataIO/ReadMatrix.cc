@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,17 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <fstream>
 #include <iostream>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Thread/Mutex.h>
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::DataIO;
@@ -50,10 +49,10 @@ namespace SCIRun {
         class ReadMatrixAlgorithmPrivate
         {
         public:
-          static boost::mutex fileCheckMutex_;
+          static Thread::Mutex fileCheckMutex_;
         };
 
-        boost::mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
+        Thread::Mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
       }}}}
 
 ReadMatrixAlgorithm::ReadMatrixAlgorithm()
@@ -65,14 +64,14 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
 {
   {
     //BOOST FILESYSTEM BUG: it is not thread-safe. @todo: need to meld this locking code into the ENSURE_FILE_EXISTS macro.
-    boost::lock_guard<boost::mutex> guard(ReadMatrixAlgorithmPrivate::fileCheckMutex_);
+    Core::Thread::Guard guard(ReadMatrixAlgorithmPrivate::fileCheckMutex_);
     ENSURE_FILE_EXISTS(filename);
   }
 
   if (boost::filesystem::extension(filename) == ".txt")
   {
     std::ifstream reader(filename.c_str());
-    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
+    DenseMatrixHandle matrix(makeShared<DenseMatrix>());
     reader >> *matrix;
 
     return matrix;
@@ -96,7 +95,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   THROW_ALGORITHM_INPUT_ERROR("Unknown matrix file format");
 }
 
-AlgorithmOutput ReadMatrixAlgorithm::run(const AlgorithmInput& input) const
+AlgorithmOutput ReadMatrixAlgorithm::run(const AlgorithmInput&) const
 {
   auto filename = get(Variables::Filename).toFilename().string();
   auto file = run(filename);

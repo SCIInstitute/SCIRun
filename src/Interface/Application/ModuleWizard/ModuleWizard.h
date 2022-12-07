@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CLASSWIZARD_H
 #define CLASSWIZARD_H
@@ -47,9 +47,9 @@ class ClassWizard : public QWizard
     Q_OBJECT
 
 public:
-    ClassWizard(QWidget *parent = 0);
+    ClassWizard(QWidget *parent = nullptr);
 
-    void accept();
+    void accept() override;
 };
 
 class IntroPage : public QWizardPage
@@ -57,7 +57,7 @@ class IntroPage : public QWizardPage
     Q_OBJECT
 
 public:
-    IntroPage(QWidget *parent = 0);
+    IntroPage(QWidget *parent = nullptr);
 
 private:
     QLabel *label;
@@ -68,7 +68,7 @@ class ClassInfoPage : public QWizardPage
     Q_OBJECT
 
 public:
-    ClassInfoPage(QWidget *parent = 0);
+    ClassInfoPage(QWidget *parent = nullptr);
 
 private:
     QLabel *classNameLabel;
@@ -88,10 +88,10 @@ class CodeStylePage : public QWizardPage
     Q_OBJECT
 
 public:
-    CodeStylePage(QWidget *parent = 0);
+    CodeStylePage(QWidget *parent = nullptr);
 
 protected:
-    void initializePage();
+    void initializePage() override;
 
 private:
     QCheckBox *commentCheckBox;
@@ -108,10 +108,10 @@ class OutputFilesPage : public QWizardPage
     Q_OBJECT
 
 public:
-    OutputFilesPage(QWidget *parent = 0);
+    OutputFilesPage(QWidget *parent = nullptr);
 
 protected:
-    void initializePage();
+    void initializePage() override;
 
 private:
     QLabel *outputDirLabel;
@@ -127,10 +127,10 @@ class ConclusionPage : public QWizardPage
     Q_OBJECT
 
 public:
-    ConclusionPage(QWidget *parent = 0);
+    ConclusionPage(QWidget *parent = nullptr);
 
 protected:
-    void initializePage();
+    void initializePage() override;
 
 private:
     QLabel *label;

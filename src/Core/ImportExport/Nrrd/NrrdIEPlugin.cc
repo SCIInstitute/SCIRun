@@ -1,30 +1,30 @@
 /*
-  For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-  The MIT License
+   The MIT License
 
-  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-  University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-  The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 // ReSharper disable once CppUnusedIncludeDirective
@@ -47,11 +47,11 @@ IEPluginManagerManager::IEPluginManagerManager() {}
 
 std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter)
 {
-  Core::Logging::LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter received {}", fileFilter);
+  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter received {}", fileFilter);
   boost::regex r("(.*) \\(\\*.*\\)");
   boost::smatch what;
   regex_match(fileFilter, what, r);
-  Core::Logging::LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning {}", std::string(what[1]));
+  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning {}", std::string(what[1]));
   return what[1];
 }
 
@@ -156,9 +156,9 @@ NrrdIEPlugin::NrrdIEPlugin(const std::string& pname,
 
 NrrdIEPlugin::~NrrdIEPlugin()
 {
-  if (matrix_plugin_table == NULL)
+  if (!matrix_plugin_table)
   {
-    std::cerr << "WARNING: NrrdIEPlugin.cc: ~NrrdIEPlugin(): matrix_plugin_table is NULL\n";
+    std::cerr << "WARNING: NrrdIEPlugin.cc: ~NrrdIEPlugin(): matrix_plugin_table is null\n";
     std::cerr << "         For: " << pluginname << "\n";
     return;
   }
@@ -201,13 +201,14 @@ NrrdIEPlugin::operator==(const NrrdIEPlugin &other) const
 void
 NrrdIEPluginManager::get_importer_list(std::vector<std::string> &results)
 {
-  if (matrix_plugin_table == NULL) return;
+  if (!matrix_plugin_table)
+    return;
 
   nrrdIEPluginMutex.lock();
   std::map<std::string, NrrdIEPlugin *>::const_iterator itr = matrix_plugin_table->begin();
   while (itr != matrix_plugin_table->end())
   {
-    if ((*itr).second->fileReader_ != NULL)
+    if ((*itr).second->fileReader_)
     {
       results.push_back((*itr).first);
     }
@@ -220,13 +221,14 @@ NrrdIEPluginManager::get_importer_list(std::vector<std::string> &results)
 void
 NrrdIEPluginManager::get_exporter_list(std::vector<std::string> &results)
 {
-  if (matrix_plugin_table == NULL) return;
+  if (!matrix_plugin_table)
+    return;
 
   nrrdIEPluginMutex.lock();
-  std::map<std::string, NrrdIEPlugin *>::const_iterator itr = matrix_plugin_table->begin();
+  auto itr = matrix_plugin_table->begin();
   while (itr != matrix_plugin_table->end())
   {
-    if ((*itr).second->fileWriter_ != NULL)
+    if ((*itr).second->fileWriter_)
     {
       results.push_back((*itr).first);
     }
@@ -239,13 +241,14 @@ NrrdIEPluginManager::get_exporter_list(std::vector<std::string> &results)
 NrrdIEPlugin *
 NrrdIEPluginManager::get_plugin(const std::string &name)
 {
-  if (matrix_plugin_table == NULL) return NULL;
+  if (!matrix_plugin_table)
+    return nullptr;
 
   // Should check for invalid name.
-  std::map<std::string, NrrdIEPlugin *>::iterator loc = matrix_plugin_table->find(name);
+  auto loc = matrix_plugin_table->find(name);
   if (loc == matrix_plugin_table->end())
   {
-    return NULL;
+    return nullptr;
   }
   else
   {

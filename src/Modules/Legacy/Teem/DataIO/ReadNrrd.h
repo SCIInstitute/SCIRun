@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_TEEM_DATAIO_READ_NRRD_H
 #define MODULES_TEEM_DATAIO_READ_NRRD_H
 
@@ -44,16 +44,16 @@ namespace DataIO {
   public:
     //typedef GenericReader<NrrdDataHandle, NrrdPortTag> my_base;
     ReadNrrd();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
-    //virtual bool useCustomImporter(const std::string& filename) const override;
-    //virtual bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
+    void execute() override;
+    void setStateDefaults() override;
+    //bool useCustomImporter(const std::string& filename) const override;
+    //bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
 
     OUTPUT_PORT(0, Output_Data, NrrdDataType);
 
     static std::string fileTypeList();
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     NrrdDataHandle read_nrrd();
     NrrdDataHandle read_file(const std::string& fn);

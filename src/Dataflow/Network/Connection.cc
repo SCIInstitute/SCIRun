@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,14 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Dataflow::Networks;
 
-Connection::Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id)
-  : oport_(oport), iport_(iport), id_(id)
+Connection::Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id, bool isVirtual)
+  : oport_(oport), iport_(iport), id_(id), virtual_(isVirtual)
 {
   ENSURE_NOT_NULL(oport_, "output port is null");
   ENSURE_NOT_NULL(iport_, "input port is null");

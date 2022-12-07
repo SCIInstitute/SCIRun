@@ -1,32 +1,32 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-Author            : Moritz Dannhauer
-Last modification : March 16 2014 (ported from SCIRun4)
-TODO: Nrrd aoutput
+   Author:               Moritz Dannhauer
+   Last Modification:    March 16 2014 (ported from SCIRun4)
+   TODO:                 Nrrd output
 */
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
@@ -54,7 +54,7 @@ bool
   FieldHandle& input,
   FieldHandle& output)
 {
-  std::string method = algo->getOption(MapFieldDataFromElemToNodeAlgo::Method);
+  std::string method = algo->getOption(Variables::Method);
 
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
@@ -86,7 +86,7 @@ bool
   {
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
@@ -111,7 +111,7 @@ bool
   {
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
@@ -139,7 +139,7 @@ bool
   {
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_elems(elems, *it);
       size_t nsize = elems.size();
       DATA val(0);
@@ -167,7 +167,7 @@ bool
   {
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
@@ -192,7 +192,7 @@ bool
     std::vector<DATA> valarray;
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       valarray.resize(nsize);
@@ -224,10 +224,8 @@ bool
 
 MapFieldDataFromElemToNodeAlgo::MapFieldDataFromElemToNodeAlgo()
 {
-  addOption(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
+  addOption(Variables::Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
-
-AlgorithmParameterName MapFieldDataFromElemToNodeAlgo::Method("Method");
 
 AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run(const AlgorithmInput& input) const
 {

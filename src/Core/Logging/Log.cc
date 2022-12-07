@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,13 +25,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Logging/Log.h>
 #include <Core/Logging/ApplicationHelper.h>
 #include <boost/filesystem.hpp>
 #include <Core/Utils/Exception.h>
-#include <Core/Thread/Mutex.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/base_sink.h>
+#include <iostream>
 
 using namespace SCIRun::Core::Logging;
+
+#ifdef WIN32
+#include <windows.h>
+#include <VersionHelpers.h>
+#endif
 
 CORE_SINGLETON_IMPLEMENTATION(LogSettings)
 
@@ -44,7 +52,18 @@ bool LogSettings::verbose() const
 void LogSettings::setVerbose(bool v)
 {
   verbose_ = v;
-  spdlog::set_level(v ? spdlog::level::debug : spdlog::level::info);
+  spdlog::set_level(v ? spdlog::level::debug : spdlog::level::warn);
+
+  GeneralLog::Instance().setVerbose(v);
+}
+
+bool SCIRun::Core::Logging::useLogCheckForWindows7()
+{
+#ifdef WIN32
+  return !(IsWindows7OrGreater() && !IsWindows8OrGreater());
+#else
+  return true;
+#endif
 }
 
   //          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
@@ -73,11 +92,13 @@ namespace
     {
     }
   protected:
-    void _sink_it(const spdlog::details::log_msg& msg) override
+    void sink_it_(const spdlog::details::log_msg& msg) override
     {
-      appender_->log4(msg.formatted.str());
+		  spdlog::memory_buf_t formatted;
+		  formatter_->format(msg, formatted);
+      appender_->log4(fmt::to_string(formatted));
     }
-    void _flush() override
+    void flush_() override
     {
     }
   private:
@@ -85,33 +106,48 @@ namespace
   };
 }
 
+template <class T>
+Logger2 makeLoggerLogged(const std::string& name, T&& sinkBegin, T&& sinkEnd)
+{
+  //printf("Parameters: %s %Ii\n", name.c_str(), std::distance(sinkBegin, sinkEnd));
+  return std::make_shared<spdlog::logger>(name, sinkBegin, sinkEnd);
+}
+
 Logger2 Log2::get()
 {
-  static Thread::Mutex mutex(name_);
-  if (!logger_)
+  if (useLog_)
   {
-    Thread::Guard g(mutex.get());
+    static std::mutex mutex;
     if (!logger_)
     {
-      spdlog::set_async_mode(1 << 10);
-      std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
-        [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
-      logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
-      logger_->info("{} log initialized.", name_);
-      setVerbose(verbose());
+      std::lock_guard<std::mutex> g(mutex);
+      if (!logger_)
+      {
+        std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
+          [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
+        logger_ = makeLoggerLogged(name_, sinks_.begin(), sinks_.end());
+        logger_->trace("{} log initialized.", name_);
+		    logger_->flush_on(spdlog::level::err);
+        setVerbose(verbose());
+      }
     }
   }
+
   return logger_;
 }
 
-Log2::Log2(const std::string& name) : name_(name)
+Log2::Log2(const std::string& name, bool useLog) : useLog_(useLog), name_(name)
 {
+  //printf("Log2(): %s\n", name_.c_str());
 }
 
 void Log2::addColorConsoleSink()
 {
-  auto consoleSink = spdlog::stdout_color_mt("dummy" + name_)->sinks()[0];
-  addSink(consoleSink);
+  if (useLog_)
+  {
+    auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    addSink(consoleSink);
+  }
 }
 
 bool Log2::verbose() const
@@ -123,15 +159,33 @@ void Log2::setVerbose(bool v)
 {
   verbose_ = v;
   if (logger_)
-    logger_->set_level(v ? spdlog::level::debug : spdlog::level::info);
+  {
+    logger_->set_level(v ? spdlog::level::debug : spdlog::level::warn);
+  }
 }
 
-GeneralLog::GeneralLog() : Log2("root")
+void Log2::addSink(spdlog::sink_ptr sink)
 {
-  addColorConsoleSink();
-  auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-    (LogSettings::Instance().logDirectory() / "scirun5_root_v2.log").string(), 1024*1024, 3);
-  addSink(rotating);
+  sinks_.push_back(sink);
+}
+
+GeneralLog::GeneralLog() : Log2("root", useLogCheckForWindows7())
+{
+  if (useLog_)
+  {
+    addColorConsoleSink();
+    auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+      (LogSettings::Instance().logDirectory() / "scirun5_root_v3.log").string(), 1024 * 1024, 3);
+    addSink(rotating);
+  }
+}
+
+ModuleLog::ModuleLog() : Log2("module", useLogCheckForWindows7())
+{
+  if (useLog_)
+  {
+    addColorConsoleSink();
+  }
 }
 
 CORE_SINGLETON_IMPLEMENTATION(ModuleLog)

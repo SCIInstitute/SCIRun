@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_DATAIO_READ_MATRIX_H
 #define MODULES_DATAIO_READ_MATRIX_H
 
@@ -43,18 +43,18 @@ namespace DataIO {
   public:
     typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
     ReadMatrix();
-    virtual void execute() override;
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
+    void execute() override;
+    bool useCustomImporter(const std::string& filename) const override;
+    bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
 
     OUTPUT_PORT(0, Matrix, Matrix);
 
     static std::string fileTypeList();
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
   protected:
-    virtual std::string defaultFileTypeName() const override;
+    std::string defaultFileTypeName() const override;
   };
 
 }}}

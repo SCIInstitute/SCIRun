@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /// @todo Documentation Dataflow/Network/Port.h
 
@@ -60,22 +60,26 @@ public:
 
   size_t nconnections() const override;
   Connection* connection(size_t) const override;
+  bool hasConnectionCountIncreased() const override;
 
-  virtual PortId id() const override { return id_; }
-  virtual void setId(const PortId& id) override { id_ = id; }
+  PortId internalId() const override { return internalId_; }
+  void setId_DynamicCase(const PortId& id) override { internalId_ = externalId_ = id; }
+  void setInternalId(const PortId& id) override { internalId_ = id; }
+  PortId externalId() const override { return externalId_; }
   std::string get_typename() const override { return typeName_; }
   std::string get_colorname() const { return colorName_; }
   std::string get_portname() const override { return portName_; }
 
-  virtual void attach(Connection* conn) override;
-  virtual void detach(Connection* conn) override;
+  void attach(Connection* conn) override;
+  void detach(Connection* conn) override;
 
-  virtual ModuleId getUnderlyingModuleId() const override;
-  virtual size_t getIndex() const override;
-  virtual void setIndex(size_t index) override;
+  ModuleId getUnderlyingModuleId() const override;
+  size_t getIndex() const override;
+  void setIndex(size_t index) override;
 
-  virtual boost::optional<ConnectionId> firstConnectionId() const override;
-  virtual ModuleStateHandle moduleState() const override;
+  std::optional<ConnectionId> firstConnectionId() const override;
+  ModuleStateHandle moduleState() const override;
+  ModuleInterface* underlyingModule() const override { return module_; }
 
   /// @todo:
   // light interface
@@ -84,11 +88,13 @@ protected:
   ModuleInterface* module_;
   std::vector<Connection*> connections_;
   size_t index_;
-  PortId id_;
+  PortId internalId_;
+  PortId externalId_;
 
   const std::string typeName_;
   const std::string portName_;
   const std::string colorName_;
+  mutable bool connectionCountIncreasedFlag_;
 };
 
 #ifdef WIN32
@@ -102,39 +108,39 @@ class SCISHARE InputPort : public Port, public InputPortInterface
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
   virtual ~InputPort();
-  virtual void attach(Connection* conn) override;
-  virtual void detach(Connection* conn) override;
-  virtual DatatypeSinkInterfaceHandle sink() const override;
-  virtual Core::Datatypes::DatatypeHandleOption getData() const override;
-  virtual bool isInput() const override { return true; } //boo
-  virtual bool isDynamic() const override { return isDynamic_; }
-  virtual InputPortInterface* clone() const override;
-  virtual bool hasChanged() const override;
-  virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
-  virtual void resendNewDataSignal() override;
-  virtual boost::optional<std::string> connectedModuleId() const override;
-  virtual ModuleStateHandle stateFromConnectedModule() const override;
+  void attach(Connection* conn) override;
+  void detach(Connection* conn) override;
+  DatatypeSinkInterfaceHandle sink() const override;
+  Core::Datatypes::DatatypeHandleOption getData() const override;
+  bool isInput() const override { return true; } //boo
+  bool isDynamic() const override { return isDynamic_; }
+  InputPortInterface* clone() const override;
+  bool hasChanged() const override;
+  boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
+  void resendNewDataSignal() override;
+  std::optional<std::string> connectedModuleId() const override;
+  ModuleStateHandle stateFromConnectedModule() const override;
 private:
   bool shouldTriggerDataChange() const;
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;
 };
 
-
 class SCISHARE OutputPort : public Port, public OutputPortInterface
 {
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
-  virtual DatatypeSourceInterfaceHandle source() const override { return source_; }
-  virtual void sendData(Core::Datatypes::DatatypeHandle data) override;
-  virtual bool isInput() const override { return false; } //boo
-  virtual bool isDynamic() const override { return false; } /// @todo: design dynamic output ports
-  virtual bool hasData() const override;
-  virtual void attach(Connection* conn) override;
-  virtual PortDataDescriber getPortDataDescriber() const override;
-  virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) override;
-  virtual void sendConnectionFeedback(const Core::Datatypes::ModuleFeedback& info) override;
+  DatatypeSourceInterfaceHandle source() const override { return source_; }
+  void sendData(Core::Datatypes::DatatypeHandle data) override;
+  bool isInput() const override { return false; } //boo
+  bool isDynamic() const override { return false; } /// @todo: design dynamic output ports
+  bool hasData() const override;
+  Core::Datatypes::DatatypeHandle peekData() const override;
+  void attach(Connection* conn) override;
+  PortDataDescriber getPortDataDescriber() const override;
+  boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) override;
+  void sendConnectionFeedback(const Core::Datatypes::ModuleFeedback& info) override;
 private:
   DatatypeSourceInterfaceHandle source_;
   ConnectionFeedbackSignalType cxnFeedback_;

@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 # Sources of Core/Algorithms/Converter classes
 
 SET(Core_Algorithms_Legacy_Converter_SRCS
@@ -35,7 +35,7 @@ SET(Core_Algorithms_Legacy_Converter_SRCS
   FieldToNrrd.cc
   ConvertToNrrd.cc
   #MatricesToDipoleField.cc
-  #ConvertBundleToField.cc
+  ConvertBundleToField.cc
   ConvertMatrixToString.cc
 )
 
@@ -45,6 +45,7 @@ SET(Core_Algorithms_Legacy_Converter_HEADERS
   FieldToNrrd.h
   ConvertToNrrd.h
   ConvertMatrixToString.h
+  ConvertBundleToField.h
   share.h
 )
 
@@ -57,15 +58,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Converter
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
-  #Core_Util
-  #Core_Exceptions
-  #Core_Thread
-  #Core_Geom
-  #Core_Geometry
-  #Core_Persistent
-  #Core_Basis
-  #${M_LIBRARY}
-  #${SCI_TEEM_LIBRARY}
+  Core_Datatypes_Legacy_Bundle
 )
 
 IF(BUILD_SHARED_LIBS)

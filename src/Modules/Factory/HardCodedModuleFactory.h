@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Modules/Factory/HardCodedModuleFactory.h
 
 #ifndef HARD_CODED_MODULE_FACTORY_H
@@ -43,16 +43,17 @@ namespace SCIRun {
       {
       public:
         HardCodedModuleFactory();
-        virtual Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const override;
-        virtual Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) const override;
-        virtual void setStateFactory(Dataflow::Networks::ModuleStateFactoryHandle stateFactory) override;
-        virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
-        virtual void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;
-        virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
-        virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override;
+        Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const override;
+        Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) const override;
+        void setStateFactory(Dataflow::Networks::ModuleStateFactoryHandle stateFactory) override;
+        void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
+        void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;
+        const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
+        const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override;
+        bool moduleImplementationExists(const std::string& name) const override;
       private:
         Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
-        boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
+        SharedPointer<class HardCodedModuleFactoryImpl> impl_;
       };
     }
   }

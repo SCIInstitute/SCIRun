@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/State/SimpleMapModuleState.cc
 
 #include <Dataflow/State/SimpleMapModuleState.h>
@@ -77,7 +78,7 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
 ModuleStateHandle SimpleMapModuleState::clone() const
 {
   //std::cout << "SMMS clone " << name_ << std::endl;
-  return boost::make_shared<SimpleMapModuleState>(*this);
+  return makeShared<SimpleMapModuleState>(*this);
 }
 
 const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const
@@ -114,13 +115,16 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
 boost::signals2::connection SimpleMapModuleState::connectStateChanged(state_changed_sig_t::slot_function_type subscriber)
 {
   auto conn = stateChangedSignal_.connect(subscriber);
-  LOG_DEBUG("SimpleMapModuleState::connectStateChanged, num_slots = {}", stateChangedSignal_.num_slots());
+  LOG_TRACE("SimpleMapModuleState::connectStateChanged, num_slots = {}", stateChangedSignal_.num_slots());
+  generalStateConnections_.push_back(conn);
   return conn;
 }
 
 boost::signals2::connection SimpleMapModuleState::connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber)
 {
-  return specificStateChangeSignalMap_[stateKeyToObserve].connect(subscriber);
+  auto c = specificStateChangeSignalMap_[stateKeyToObserve].connect(subscriber);
+  specificStateConnections_.push_back(c);
+  return c;
 }
 
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
@@ -145,7 +149,7 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
 {
   //print();
   auto i = transientStateMap_.find(name.name());
-  return i != transientStateMap_.end() && !i->second.empty() ? boost::make_optional(i->second) : TransientValueOption();
+  return i != transientStateMap_.end() && !i->second.empty() ? std::optional(i->second) : TransientValueOption();
 }
 
 void SimpleMapModuleState::setTransientValue(const Name& name, const TransientValue& value, bool fireSignal)
@@ -170,4 +174,12 @@ void SimpleMapModuleState::fireTransientStateChangeSignal()
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const
 {
   return new SimpleMapModuleState(name);
+}
+
+void SimpleMapModuleState::disconnectAll()
+{
+  for (auto& c : generalStateConnections_)
+    c.disconnect();
+  for (auto& c : specificStateConnections_)
+    c.disconnect();
 }

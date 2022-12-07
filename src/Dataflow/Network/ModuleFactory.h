@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Network/ModuleFactory.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_FACTORY_H
@@ -52,6 +53,7 @@ namespace Networks {
     virtual void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory) = 0;
     virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const = 0;
     virtual const DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const = 0;
+    virtual bool moduleImplementationExists(const std::string& name) const = 0;
   };
 
   SCISHARE ModuleHandle CreateModuleFromUniqueName(ModuleFactory& factory, const std::string& moduleName);
@@ -91,7 +93,7 @@ namespace Networks {
     {
     public:
       explicit ModuleReplacementFilterBuilder(const DirectModuleDescriptionLookupMap& map) : descMap_(map) {}
-      boost::shared_ptr<ModuleReplacementFilter> build();
+      SharedPointer<ModuleReplacementFilter> build();
     private:
       void registerModule(ModuleReplacementFilter::ReplaceMap& replaceMap, const ModuleLookupInfo& info,
         const InputPortDescriptionList& inputPorts,

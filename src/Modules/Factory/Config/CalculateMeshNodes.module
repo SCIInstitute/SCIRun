@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateMeshNodes",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/CalculateMeshNodes.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CalculateMeshNodesDialog",
+    "header": "Interface/Modules/Fields/CalculateMeshNodesDialog.h"
+  }
+}

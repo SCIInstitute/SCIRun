@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/DataIO/WriteField.h
 
 #ifndef MODULES_DATAIO_WRITE_FIELD_H
@@ -43,16 +44,16 @@ namespace SCIRun {
       public:
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
         WriteField();
-        virtual void execute() override;
-        virtual bool useCustomExporter(const std::string& filename) const override;
-        virtual bool call_exporter(const std::string& filename) override;
+        void execute() override;
+        bool useCustomExporter(const std::string& filename) const override;
+        bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, FieldToWrite, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
       protected:
-        virtual std::string defaultFileTypeName() const override;
+        std::string defaultFileTypeName() const override;
       };
 
     }}}

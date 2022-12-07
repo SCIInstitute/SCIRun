@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -54,9 +53,9 @@ public:
   ErrnoException(const std::string&, int err, const char* file, int line);
   ErrnoException(const ErrnoException&);
   virtual ~ErrnoException() NOEXCEPT;
-  virtual const char* message() const;
-  virtual const char* type() const;
-	 
+  const char* message() const override;
+  const char* type() const override;
+
   int getErrno() const;
 protected:
 private:

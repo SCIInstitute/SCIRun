@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "OsprayViewer",
+    "namespace": "Render",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Render/OsprayViewer.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "OsprayViewerDialog",
+    "header": "Interface/Modules/Render/OsprayViewerDialog.h"
+  }
+}

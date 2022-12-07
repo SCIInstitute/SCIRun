@@ -1,30 +1,34 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
 
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
@@ -155,10 +159,26 @@ private:
     }
   };
 
+  GLuint addIBO(void* iboData, size_t iboDataSize)
+  {
+    GLuint glid;
+
+    GL(glGenBuffers(1, &glid));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glid));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(iboDataSize), iboData, GL_STATIC_DRAW));
+
+    return glid;
+  }
+
+  void removeIBO(GLuint glid)
+  {
+    GL(glDeleteBuffers(1, &glid));
+  }
+
   GLuint sortObjects(const Core::Geometry::Vector& dir,
     const spire::ComponentGroup<ren::IBO>& ibo,
     const spire::ComponentGroup<SpireSubPass>& pass,
-    const spire::ComponentGroup<ren::StaticIBOMan>& iboMan)
+    const spire::ComponentGroup<ren::StaticIBOMan>&)
   {
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
     uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
@@ -188,12 +208,9 @@ private:
 
     std::sort(rel_depth.begin(), rel_depth.end());
 
-    // setup index buffers
-    int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
-
     std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
     char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
-    char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+    char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : nullptr;
     GLuint result = ibo.front().glid;
     if (sbuffer && num_triangles > 0)
     {
@@ -205,8 +222,7 @@ private:
       }
 
       std::string transIBOName = pass.front().ibo.name + "trans";
-      result = iboMan.front().instance_->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
-        numPrimitives, transIBOName);
+      result = addIBO(sbuffer, pass.front().ibo.data->getBufferSize());
     }
 
     return result;
@@ -236,7 +252,7 @@ private:
       const spire::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const spire::ComponentGroup<ren::StaticVBOMan>& vboMan,
       const spire::ComponentGroup<ren::StaticIBOMan>& iboMan,
-      const spire::ComponentGroup<ren::StaticTextureMan>& texMan) override
+      const spire::ComponentGroup<ren::StaticTextureMan>&) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -244,14 +260,14 @@ private:
       return;
     }
 
-    if (srstate.front().state.get(RenderState::IS_TEXT))
+    if (srstate.front().state.get(RenderState::ActionFlags::IS_TEXT))
     {
       return;
     }
 
-    bool doRender = srstate.front().state.get(RenderState::USE_TRANSPARENCY) ||
-      srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) ||
-      srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES);
+    bool doRender = srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENCY) ||
+      srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES) ||
+      srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES);
 
     if (!doRender)
     {
@@ -261,9 +277,9 @@ private:
     bool drawLines = (ibo.front().primMode == static_cast<int>(SpireIBO::PRIMITIVE::LINES));
     GLuint iboID = ibo.front().glid;
 
-    Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
-                               camera.front().data.worldToView[1][2],
-                               camera.front().data.worldToView[2][2]);
+    Core::Geometry::Vector dir(camera.front().data.view[0][2],
+                               camera.front().data.view[1][2],
+                               camera.front().data.view[2][2]);
 
     if (!drawLines)
     {
@@ -298,7 +314,7 @@ private:
           {
             if (sortedObjects[index].mSortedID != 0)
             {
-              iboMan.front().instance_->removeInMemoryIBO(sortedObjects[index].mSortedID);
+              removeIBO(sortedObjects[index].mSortedID);
             }
             sortedObjects[index].prevDir = dir;
             sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
@@ -332,9 +348,9 @@ private:
               iboNegZID = it->glid;
           }
 
-          Core::Geometry::Vector absDir(fabs(camera.front().data.worldToView[0][2]),
-                                        fabs(camera.front().data.worldToView[1][2]),
-                                        fabs(camera.front().data.worldToView[2][2]));
+          Core::Geometry::Vector absDir(fabs(camera.front().data.view[0][2]),
+                                        fabs(camera.front().data.view[1][2]),
+                                        fabs(camera.front().data.view[2][2]));
 
           double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
           double orZ = absDir.z() > xORy ? absDir.z() : xORy;
@@ -547,15 +563,15 @@ private:
             rlistTrafo, camera.front().data, time.front().globalTime);
 
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
     }
     else
     {
-      if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
+      if (!srstate.front().state.get(RenderState::ActionFlags::IS_DOUBLE_SIDED))
       {
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
       else
       {
@@ -569,12 +585,12 @@ private:
         GL(glUniform1f(fdToggleLoc, 1.0f));
         glCullFace(GL_BACK);
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
 
         GL(glUniform1f(fdToggleLoc, 0.0f));
         glCullFace(GL_FRONT);
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
+                          ibo.front().primType, nullptr));
       }
     }
 
@@ -583,7 +599,7 @@ private:
     {
       if (pass.front().renderState.mSortType == RenderState::TransparencySortType::CONTINUOUS_SORT)
       {
-        iboMan.front().instance_->removeInMemoryIBO(iboID);
+        removeIBO(iboID);
       }
     }
 

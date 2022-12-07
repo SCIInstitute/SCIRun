@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Modules/Math/ConvertRealToComplexMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -71,7 +71,7 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, ThrowsForNullMatrixInput)
 
 TEST_F(ConvertRealToComplexMatrixModuleTests, SparseMatrixOnInputPort)
 {
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3, 3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3, 3));
   m->insert(0, 0) = 1;
   m->insert(1, 1) = 2;
   m->insert(2, 2) = 3;
@@ -84,7 +84,7 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, SparseMatrixOnInputPort)
 
 TEST_F(ConvertRealToComplexMatrixModuleTests, DenseMatrixOnInputPort)
 {
-  DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+  DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
   (*m)(0) = 1;
   (*m)(1) = 2;
   (*m)(2) = 3;
@@ -96,7 +96,7 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, DenseMatrixOnInputPort)
 
 TEST_F(ConvertRealToComplexMatrixModuleTests, ColumnMatrixOnInputPort)
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 1));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3, 1));
   (*m)(0, 0) = 1;
   (*m)(1, 0) = 2;
   (*m)(2, 0) = 3;
@@ -108,12 +108,12 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, ColumnMatrixOnInputPort)
 
 TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork)
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 2));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(2, 2));
   (*m)(0, 0) = 1;
   (*m)(0, 1) = 2;
   (*m)(1, 0) = 3;
   (*m)(1, 1) = 4;
-  DenseMatrixHandle n(boost::make_shared<DenseMatrix>(2, 2));
+  DenseMatrixHandle n(makeShared<DenseMatrix>(2, 2));
   (*n)(0, 0) = -1;
   (*n)(0, 1) = -2;
   (*n)(1, 0) = -3;
@@ -124,7 +124,7 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork)
   EXPECT_NO_THROW(csdf->execute());
   auto output = getDataOnThisOutputPort(csdf, 0);
   ASSERT_TRUE(output != nullptr);
-  auto result = boost::dynamic_pointer_cast<ComplexDenseMatrix>(output);
+  auto result = std::dynamic_pointer_cast<ComplexDenseMatrix>(output);
   for (int x = 0; x < 2; x++)
     for (int y = 0; y < 2; y++)
     {
@@ -138,7 +138,7 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork)
 
 TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork_sparse)
 {
-  auto m(boost::make_shared<SparseRowMatrix>(3, 3));
+  auto m(makeShared<SparseRowMatrix>(3, 3));
   m->insert(0, 0) = 1;
   m->insert(0, 2) = 1;
   m->insert(1, 0) = 3;
@@ -146,7 +146,7 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork_sparse)
   m->insert(2, 1) = 1;
   m->insert(2, 2) = 3;
   m->makeCompressed();
-  auto n(boost::make_shared<SparseRowMatrix>(3, 3));
+  auto n(makeShared<SparseRowMatrix>(3, 3));
   n->insert(0, 1) = 1;
   n->insert(0, 2) = 2;
   n->insert(1, 0) = 8;
@@ -160,7 +160,7 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork_sparse)
   EXPECT_NO_THROW(csdf->execute());
   auto output = getDataOnThisOutputPort(csdf, 0);
   ASSERT_TRUE(output != nullptr);
-  auto out = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(output);
+  auto out = std::dynamic_pointer_cast<ComplexSparseRowMatrix>(output);
   for (int k = 0; k < out->outerSize(); ++k)
   {
     for (ComplexSparseRowMatrix::InnerIterator it(*out, k); it; ++it)

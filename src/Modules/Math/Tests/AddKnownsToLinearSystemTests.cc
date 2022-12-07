@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -76,7 +76,7 @@ namespace
 	// x vector [1; 2; ... n]
 	DenseMatrixHandle x_num(int rows)
 	{
-		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(rows,1));
+		DenseMatrixHandle m (makeShared<DenseMatrix>(rows,1));
 		for (int i = 0; i < m->rows(); ++ i)
 				(*m)(i, 0) = i+1;
 		return m;
@@ -84,7 +84,7 @@ namespace
 	// x vector [NaN; NaN; NaN;]
 	DenseMatrixHandle x_all_nan ()
 	{
-		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+		DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 		(*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
@@ -94,7 +94,7 @@ namespace
 	// symmetric LHS (stiff) matrix
 	SparseRowMatrixHandle lhs()
 	{
-		SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+		SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
 		m->insert(0,0) = 1;
 		m->insert(0,1) = 7;
 		m->insert(0,2) = 3;
@@ -111,14 +111,14 @@ namespace
 	// RHS vector of zeros
 	DenseMatrixHandle rhs_zero(int rows)
 	{
-		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
+		DenseMatrixHandle m(makeShared<DenseMatrix>(rows,1));
 		m->setZero();
 		return m;
 	}
 	// RHS vector [1; 2; ... n]
 	DenseMatrixHandle rhs_num(int rows)
 	{
-		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
+		DenseMatrixHandle m(makeShared<DenseMatrix>(rows,1));
     for (int i=0; i<rows; i++)
       (*m)(i,0) = 1+i;
 		return m;

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -39,15 +38,10 @@
 ///@date  July 2000
 ///
 
-
 #ifndef SCI_PIECEWISEINTERP_H__
 #define SCI_PIECEWISEINTERP_H__
 
-#include <Core/Math/MiscMath.h>
 #include <Core/Containers/Array1.h>
-#include <sci_debug.h>
-
-#include <iostream>
 
 namespace SCIRun {
 
@@ -60,12 +54,12 @@ protected:
   double min_bnd;            // and its boundaries (for camera path optimizations)
   double max_bnd;
   Array1<double> points;		  // sorted parameter points
-  inline bool fill_data(const Array1<double>&);
+  bool fill_data(const Array1<double>&);
 
 public:
   PiecewiseInterp() : data_valid(false), curr_intrv(-1), min_bnd(0), max_bnd(0) {}
   virtual ~PiecewiseInterp() {}
-  inline int get_interval(double);
+  int get_interval(double);
 
   virtual bool get_value(double, T&) = 0;
   virtual bool set_data(const Array1<double>& pts, const Array1<T>& vals) = 0;
@@ -80,13 +74,15 @@ public:
 
 // returns -1 if data is not valid or the value is out of boundaries
 template <class T>
-inline int PiecewiseInterp<T>::get_interval(double w)
+int PiecewiseInterp<T>::get_interval(double w)
 {
   if (data_valid)
   {
     if (w < min_bnd || w >= max_bnd)
     {	// taking advantage of smooth parameter changing
-      int lbnd = 0, rbnd = points.size()-1, delta = 0;
+      int lbnd = 0;
+      int rbnd = static_cast<int>(points.size()) - 1;
+      int delta;
 
       if (w>=points[lbnd] && w<=points[rbnd])
       {
@@ -143,7 +139,7 @@ inline int PiecewiseInterp<T>::get_interval(double w)
 template<class T>
 inline bool PiecewiseInterp<T>::fill_data(const Array1<double>& pts)
 {
-  for (int i = 1; i < pts.size(); i++)
+  for (size_t i = 1; i < pts.size(); i++)
   {
     if ((pts[i] - pts[i-1]) < 1e-7)
     {

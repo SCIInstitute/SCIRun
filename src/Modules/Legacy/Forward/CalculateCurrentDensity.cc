@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Forward/CalculateCurrentDensity.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -51,70 +51,53 @@ CalculateCurrentDensity::CalculateCurrentDensity() : Module(staticInfo_,false)
 void CalculateCurrentDensity::execute()
 {
   auto efieldH = getRequiredInput(TetMesh_EField);
-  //TODO: wrong port is grabbed. Changing the port might lead to errors from line 57 below.
-  auto sigmasH = getRequiredInput(TetMesh_EField);
-
-  if (efieldH->mesh() != sigmasH->mesh())
-  {
-    error("EField and Sigma Field need to have the same mesh.");
-    return;
-  }
-
-  VField* efield = efieldH->vfield();
-  VMesh*  emesh = efieldH->vmesh();
-  VField* sfield = sigmasH->vfield();
-
-  if (sfield->basis_order() != 0)
-  {
-    error("Need sigmas at Elements");
-    return;
-  }
-
-  if (efield->basis_order() != 0)
-  {
-    error("Need efield at Elements");
-    return;
-  }
-
-  if (!(efield->is_vector()))
-  {
-    error("Electric field needs to vector data");
-    return;
-  }
+  auto sigmasH = getRequiredInput(TetMesh_Sigmas);
 
   if (needToExecute())
   {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    std::vector<std::pair<std::string, Tensor> > conds;
-    bool index_based = sfield->get_property("conductivity_table", conds);
-#endif
+    VField* efield = efieldH->vfield();
+    VMesh*  emesh = efieldH->vmesh();
+    VField* sfield = sigmasH->vfield();
 
-    FieldInformation fi(efieldH);
-    fi.make_vector();
-    FieldHandle output_field = CreateField(fi, efieldH->mesh());
+    if (sfield->basis_order() != 0)
+    {
+      error("Need sigmas at Elements");
+      return;
+    }
+
+    if (efield->basis_order() != 0)
+    {
+      error("Need efield at Elements");
+      return;
+    }
+
+    if (!efield->is_vector())
+    {
+      error("Electric field needs to vector data");
+      return;
+    }
+
+    if (emesh->num_elems() != sigmasH->vmesh()->num_elems())
+    {
+      error("Electric field have same number of elements as sigma field");
+      return;
+    }
+
+    FieldInformation eInfo(efieldH);
+    eInfo.make_vector();
+    FieldHandle output_field = CreateField(eInfo, efieldH->mesh());
     VField* ofield = output_field->vfield();
 
     VMesh::size_type num_elems = emesh->num_elems();
 
     Vector vec;
     Vector e;
-    for (VMesh::Elem::index_type idx = 0; idx<num_elems; idx++)
+    for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
     {
       efield->get_value(e, idx);
 
       Tensor s;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      if (index_based)
-      {
-        int sigma_idx;
-        sfield->get_value(sigma_idx, idx);
-        s = conds[sigma_idx].second;
-      }
-      else
-#endif
-      {
-        sfield->get_value(s, idx);
-      }
+      sfield->get_value(s, idx);
 
       // - sign added to vector to account for E = - Del V
       vec = Vector(-(s.val(0, 0) * e.x() + s.val(0, 1) * e.y() + s.val(0, 2) * e.z()),

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -36,9 +36,9 @@
 #include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
+using namespace Core::Datatypes;
+using namespace Core::Algorithms;
+using namespace Math;
 
 ALGORITHM_PARAMETER_DEF(Math, IsSliceColumn);
 ALGORITHM_PARAMETER_DEF(Math, SliceIndex);
@@ -62,17 +62,17 @@ GetMatrixSliceAlgo::GetMatrixSliceAlgo()
 
 AlgorithmOutput GetMatrixSliceAlgo::run(const AlgorithmInput& input) const
 {
-  auto inputMatrix = input.get<Matrix>(Variables::InputMatrix);
+  const auto inputMatrix = input.get<Matrix>(Variables::InputMatrix);
   auto outputMatrix = runImpl(inputMatrix, get(Parameters::SliceIndex).toInt(), get(Parameters::IsSliceColumn).toBool());
 
   AlgorithmOutput output;
-  output[Variables::OutputMatrix] = outputMatrix.get<0>();
-  output.setAdditionalAlgoOutput(boost::make_shared<Variable>(Name("maxIndex"), outputMatrix.get<1>()));
+  output[Variables::OutputMatrix] = std::get<0>(outputMatrix);
+  output.setAdditionalAlgoOutput(makeShared<Variable>(Name("maxIndex"), std::get<1>(outputMatrix)));
 
   return output;
 }
 
-boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool getColumn) const
+std::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool getColumn) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "Input matrix");
   if (getColumn)
@@ -83,16 +83,16 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
     // dense case only now
     auto dense = castMatrix::toDense(matrix);
     if (dense)
-      return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->col(index)), max);
+      return std::make_tuple(makeShared<DenseMatrix>(dense->col(index)), max);
     else
     {
       auto sparse = castMatrix::toSparse(matrix);
       if (sparse)
       {
         //TODO: makes a copy of the transpose. Not good. Should test out manually copying elements, trade speed for memory.
-        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->getColumn(index)), max);
+        return std::make_tuple(makeShared<SparseRowMatrix>(sparse->getColumn(index)), max);
       }
-      return boost::make_tuple(nullptr, 0);
+      return std::make_tuple(nullptr, 0);
     }
   }
   else
@@ -102,13 +102,13 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
 
     auto dense = castMatrix::toDense(matrix);
     if (dense)
-      return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->row(index)), max);
+      return std::make_tuple(makeShared<DenseMatrix>(dense->row(index)), max);
     else
     {
       auto sparse = castMatrix::toSparse(matrix);
       if (sparse)
-        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->row(index)), max);
-      return boost::make_tuple(nullptr, 0);
+        return std::make_tuple(makeShared<SparseRowMatrix>(sparse->row(index)), max);
+      return std::make_tuple(nullptr, 0);
     }
   }
 }

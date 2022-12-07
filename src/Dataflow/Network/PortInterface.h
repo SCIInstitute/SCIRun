@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /// @todo Documentation Dataflow/Network/PortInterface.h
 
@@ -48,7 +48,8 @@ namespace Networks {
   {
   public:
     virtual ~PortDescriptionInterface();
-    virtual PortId id() const = 0;
+    virtual PortId internalId() const = 0;
+    virtual PortId externalId() const = 0;
     virtual size_t nconnections() const = 0;
     virtual std::string get_typename() const = 0;
     virtual std::string get_portname() const = 0;
@@ -56,7 +57,7 @@ namespace Networks {
     virtual bool isDynamic() const = 0;
     virtual ModuleId getUnderlyingModuleId() const = 0;
     virtual size_t getIndex() const = 0;
-    virtual boost::optional<ConnectionId> firstConnectionId() const = 0;
+    virtual std::optional<ConnectionId> firstConnectionId() const = 0;
   };
 
   class SCISHARE PortInterface : public PortDescriptionInterface
@@ -69,8 +70,11 @@ namespace Networks {
     virtual void setIndex(size_t index) = 0;
     void incrementIndex() { setIndex(getIndex() + 1); }
     void decrementIndex() { setIndex(getIndex() - 1); }
-    virtual void setId(const PortId& id) = 0;
+    virtual void setId_DynamicCase(const PortId& id) = 0;
+    virtual void setInternalId(const PortId& id) = 0;
     virtual ModuleStateHandle moduleState() const = 0;
+    virtual bool hasConnectionCountIncreased() const = 0;
+    virtual ModuleInterface* underlyingModule() const = 0;
   };
 
   typedef boost::signals2::signal<void(const PortId&, Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
@@ -86,7 +90,7 @@ namespace Networks {
     virtual bool hasChanged() const = 0;
     virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) = 0;
     virtual void resendNewDataSignal() = 0;
-    virtual boost::optional<std::string> connectedModuleId() const = 0;
+    virtual std::optional<std::string> connectedModuleId() const = 0;
     virtual ModuleStateHandle stateFromConnectedModule() const = 0;
   };
 
@@ -98,6 +102,7 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual bool hasData() const = 0;
+    virtual Core::Datatypes::DatatypeHandle peekData() const = 0;
     virtual DatatypeSourceInterfaceHandle source() const = 0;
     virtual OutputPortInterface* clone() const { return nullptr; } // TODO
     virtual PortDataDescriber getPortDataDescriber() const = 0;

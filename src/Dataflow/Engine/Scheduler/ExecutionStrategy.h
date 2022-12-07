@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,14 +25,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 #define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 
+#include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
-#include <boost/thread.hpp>
 #include <boost/atomic.hpp>
 #include <Core/Thread/ConditionVariable.h>
+#include <Core/Thread/Interruptible.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -44,9 +45,9 @@ namespace Engine {
   {
   public:
     virtual ~ExecutionStrategy() {}
-    virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
+    virtual std::future<int> execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
 
-    enum Type
+    enum class Type
     {
       SERIAL,
       BASIC_PARALLEL,
@@ -56,7 +57,7 @@ namespace Engine {
 
   };
 
-  typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;
+  typedef SharedPointer<ExecutionStrategy> ExecutionStrategyHandle;
 
   class SCISHARE ExecutionStrategyFactory
   {
@@ -66,31 +67,65 @@ namespace Engine {
     virtual ExecutionStrategyHandle createDefault() const = 0;
   };
 
-  typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
+  typedef SharedPointer<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
 
+  class SCISHARE ExecutionManager
+  {
+  public:
+    virtual ~ExecutionManager() = default;
 
-  class SCISHARE ExecutionQueueManager
+    virtual void initExecutor(ExecutionStrategyFactoryHandle factory) = 0;
+    virtual void setExecutionStrategy(ExecutionStrategyHandle exec) = 0;
+    virtual std::future<int> execute(ExecutionContextHandle context) = 0;
+
+    virtual void stopExecution() = 0;
+  };
+
+  using ExecutionManagerHandle = SharedPointer<ExecutionManager>;
+
+  class SCISHARE ExecutionManagerBase : public ExecutionManager
+  {
+  public:
+    void initExecutor(ExecutionStrategyFactoryHandle factory) override;
+    void setExecutionStrategy(ExecutionStrategyHandle exec) override;
+  protected:
+    ExecutionManagerBase();
+    std::future<int> executeImpl(ExecutionContextHandle context);
+    ExecutionStrategyHandle currentExecutor_;
+    Core::Thread::Mutex executionMutex_;
+  };
+
+  class SCISHARE ExecutionQueueManager : public ExecutionManagerBase, public Core::Thread::Stoppable
   {
   public:
     ExecutionQueueManager();
-    void initExecutor(ExecutionStrategyFactoryHandle factory);
-    void setExecutionStrategy(ExecutionStrategyHandle exec);
-    boost::shared_ptr<boost::thread> enqueueContext(ExecutionContextHandle context);
-    void start();
-    void stop();
+    
+    std::future<int> execute(ExecutionContextHandle context) override
+    {
+      enqueueContext(context);
+      return {};
+    }
+    
+    void stopExecution() override;
   private:
-    void executeImpl(ExecutionContextHandle context);
-    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;
+    void startExecution();
+    void enqueueContext(ExecutionContextHandle context);
+    
+    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle> ExecutionContextQueue;
     ExecutionContextQueue contexts_;
-
-    ExecutionStrategyHandle currentExecutor_;
-
-    boost::shared_ptr<boost::thread> executionLaunchThread_;
-    Core::Thread::Mutex executionMutex_;
+    ThreadPtr executionLaunchThread_;
+    
     Core::Thread::ConditionVariable somethingToExecute_;
     boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...
 
     void executeTopContext();
+  };
+
+  class SCISHARE SimpleExecutionManager : public ExecutionManagerBase
+  {
+  public:
+    std::future<int> execute(ExecutionContextHandle context) override { return executeImpl(context); }
+    void stopExecution() override {}
   };
 }
 }}

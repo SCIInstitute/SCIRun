@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,13 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_COMMANDLINE_COMMANDLINESPEC_H
 #define CORE_COMMANDLINE_COMMANDLINESPEC_H
 
 #include <string>
+#include <optional>
 #include <boost/filesystem.hpp>
-#include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/noncopyable.hpp>
 #include <Core/CommandLine/share.h>
 
@@ -41,15 +41,16 @@ namespace SCIRun {
     namespace CommandLine {
 
       class DeveloperParameters;
-      using DeveloperParametersPtr = boost::shared_ptr<DeveloperParameters>;
+      using DeveloperParametersPtr = SharedPointer<DeveloperParameters>;
 
       class SCISHARE ApplicationParameters : boost::noncopyable
       {
       public:
         virtual ~ApplicationParameters();
         virtual const std::vector<std::string>& inputFiles() const = 0;
-        virtual boost::optional<boost::filesystem::path> pythonScriptFile() const = 0;
-        virtual boost::optional<boost::filesystem::path> dataDirectory() const = 0;
+        virtual std::optional<boost::filesystem::path> pythonScriptFile() const = 0;
+        virtual std::optional<boost::filesystem::path> dataDirectory() const = 0;
+        virtual std::optional<std::string> importNetworkFile() const = 0;
         virtual bool help() const = 0;
         virtual bool version() const = 0;
         virtual bool executeNetwork() const = 0;
@@ -58,6 +59,7 @@ namespace SCIRun {
         virtual bool disableSplash() const = 0;
         virtual bool isRegressionMode() const = 0;
         virtual bool interactiveMode() const = 0;
+        virtual bool saveViewSceneScreenshotsOnQuit() const = 0;
         virtual bool quitAfterOneScriptedExecution() const = 0;
         virtual bool loadMostRecentFile() const = 0;
         virtual DeveloperParametersPtr developerParameters() const = 0;
@@ -70,15 +72,15 @@ namespace SCIRun {
       {
       public:
         virtual ~DeveloperParameters() {}
-        virtual boost::optional<int> regressionTimeoutSeconds() const = 0;
-        virtual boost::optional<std::string> threadMode() const = 0;
-        virtual boost::optional<std::string> reexecuteMode() const = 0;
-        virtual boost::optional<int> frameInitLimit() const = 0;
-        virtual boost::optional<unsigned int> maxCores() const = 0;
-        virtual boost::optional<double> guiExpandFactor() const = 0;
+        virtual std::optional<int> regressionTimeoutSeconds() const = 0;
+        virtual std::optional<std::string> threadMode() const = 0;
+        virtual std::optional<std::string> reexecuteMode() const = 0;
+        virtual std::optional<int> frameInitLimit() const = 0;
+        virtual std::optional<unsigned int> maxCores() const = 0;
+        virtual std::optional<double> guiExpandFactor() const = 0;
       };
 
-      typedef boost::shared_ptr<ApplicationParameters> ApplicationParametersHandle;
+      typedef SharedPointer<ApplicationParameters> ApplicationParametersHandle;
 
       class CommandLineParserInternal;
 
@@ -89,7 +91,7 @@ namespace SCIRun {
         ApplicationParametersHandle parse(int argc, const char* argv[]) const;
         std::string describe() const;
       private:
-        boost::shared_ptr<CommandLineParserInternal> impl_;
+        SharedPointer<CommandLineParserInternal> impl_;
       };
 
 }}}

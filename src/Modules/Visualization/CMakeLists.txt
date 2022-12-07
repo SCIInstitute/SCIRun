@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,26 +25,41 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Modules_Visualization_SRCS
   CreateStandardColorMap.cc
   ShowField.cc
   ShowFieldGlyphs.cc
+  ShowFieldGlyphsPortHandler.cc
   ShowString.cc
   ShowColorMapModule.cc
   RescaleColorMap.cc
   TextBuilder.cc
-  InterfaceWithOspray.cc
+  ShowFieldWithOspray.cc
+  CreateTestingArrow.cc
+  ShowMeshBoundingBox.cc
+  ShowOrientationAxes.cc
+  ShowUncertaintyGlyphs.cc
+  GeometryBuffer.cc
+  ReportColorMapInfo.cc
 )
 
 SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
   ShowField.h
   ShowFieldGlyphs.h
+  ShowFieldGlyphsPortHandler.h
   ShowString.h
   ShowColorMapModule.h
   RescaleColorMap.h
   TextBuilder.h
-  InterfaceWithOspray.h
+  ShowFieldWithOspray.h
+  CreateTestingArrow.h
+  ShowMeshBoundingBox.h
+  ShowOrientationAxes.h
+  ShowUncertaintyGlyphs.h
+  GeometryBuffer.h
+  ReportColorMapInfo.h
   share.h
 )
 
@@ -62,14 +76,9 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Algorithms_Visualization
   Graphics_Glyphs
   Graphics_Datatypes
+  Graphics_Widgets
   ${SCI_FREETYPE_LIBRARY}
 )
-
-IF(WITH_OSPRAY)
-  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
-  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
-  TARGET_LINK_LIBRARIES(Modules_Visualization ${OSPRAY_LIBRARIES})
-ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Visualization)

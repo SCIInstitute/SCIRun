@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +25,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
 
-#include <Core/Datatypes/FieldInformation.h>
-
-#include <float.h>
+#include <Modules/Legacy/Fields/MapFieldDataOntoNodesRadialbasis.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Math/MiscMath.h>
+#include <Core/Logging/Log.h>
 #include <vector>
 #include <sstream>
 
-#include <Core/Exceptions/Exception.h>
-
-namespace SCIRun {
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun;
 
 /// @todo: code cleanup needed
 // documentation needed
@@ -54,299 +59,189 @@ namespace SCIRun {
 /// @class MapFieldDataOntoNodesRadialbasis
 /// @brief Maps data centered on the nodes to another set of nodes using a radial basis.
 
-class MapFieldDataOntoNodesRadialbasis : public Module {
-  public:
-    MapFieldDataOntoNodesRadialbasis(GuiContext*);
-    virtual ~MapFieldDataOntoNodesRadialbasis() {}
-	
-    virtual void execute();
-
-  private:
-    GuiString gui_quantity_;
-    GuiString gui_value_;
-    GuiDouble gui_outside_value_;
-    GuiDouble gui_max_distance_;
-
-	bool radial_basis_func(VMesh* Cors, VMesh* points, FieldHandle& output, FieldHandle& input_s, FieldHandle& input_d);
-  bool interp_on_mesh(VMesh* points, VMesh* Cors, std::vector<double>& coefs,  FieldHandle& output);
-    //SCIRunAlgo::MapFieldDataOntoNodesRadialbasisAlgo algo_;    
+class MapFieldDataOntoNodesRadialbasisImpl
+{
+public:
+  explicit MapFieldDataOntoNodesRadialbasisImpl(ModuleStateHandle state) : state_(state) {}
+	bool radial_basis_func(FieldHandle& output, FieldHandle source, FieldHandle destination);
+  bool interp_on_mesh(VMesh* points, VMesh* Cors, const DenseMatrix& coefs, FieldHandle output);
+private:
+  ModuleStateHandle state_;
 };
 
+MODULE_INFO_DEF(MapFieldDataOntoNodesRadialbasis, ChangeFieldData, SCIRun)
 
-DECLARE_MAKER(MapFieldDataOntoNodesRadialbasis)
-
-MapFieldDataOntoNodesRadialbasis::MapFieldDataOntoNodesRadialbasis(GuiContext* ctx) :
-  Module("MapFieldDataOntoNodesRadialbasis", ctx, Source, "ChangeFieldData", "SCIRun"),
-  gui_quantity_(get_ctx()->subVar("quantity"),"value"),
-  gui_value_(get_ctx()->subVar("value"),"thin-plate-spline"),
-  gui_outside_value_(get_ctx()->subVar("outside-value"),0.0),
-  gui_max_distance_(get_ctx()->subVar("max-distance"),DBL_MAX)
+MapFieldDataOntoNodesRadialbasis::MapFieldDataOntoNodesRadialbasis() : Module(staticInfo_)
 {
-  //algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Source);
+  INITIALIZE_PORT(Destination);
+  INITIALIZE_PORT(Output);
 }
 
-void
-MapFieldDataOntoNodesRadialbasis::execute()
+void MapFieldDataOntoNodesRadialbasis::setStateDefaults()
 {
-  FieldHandle source, destination, output;
-  
-  get_input_handle("Source",source,true);
-  get_input_handle("Destination",destination,true);
+  auto state = get_state();
+  state->setValue(Parameters::OutsideValue, 0.0);
+  state->setValue(Parameters::MaxDistance, std::numeric_limits<double>::max());
+  state->setValue(Parameters::InterpolationModel, std::string("thin-plate-spline"));
+  state->setValue(Parameters::Quantity, std::string("value"));
+}
 
-  
-  if (inputs_changed_ || !oport_cached("Output") ||
-    gui_quantity_.changed() || gui_value_.changed() ||
-    gui_outside_value_.changed() || gui_max_distance_.changed())
+void MapFieldDataOntoNodesRadialbasis::execute()
+{
+  auto source = getRequiredInput(Source);
+  auto destination = getRequiredInput(Destination);
+
+  if (needToExecute())
   {
-    update_state(Executing);
-    
-    
-      if (source.get_rep() == 0)
-      {
-        error("No source field");
-        return;
-      }
-
-      if (destination.get_rep() == 0)
-      {
-        error("No destination field");
-        return;
-      }
-      
-
-
-      VMesh* imesh = source->vmesh();
-      VMesh* dmesh = destination->vmesh();
-      radial_basis_func(imesh, dmesh, output,source,destination);
-      
-      send_output_handle("Output",output,true);
+    FieldHandle output;
+    MapFieldDataOntoNodesRadialbasisImpl impl(get_state());
+    impl.radial_basis_func(output, source, destination);
+    sendOutput(Output, output);
   }
 }
 
-
-bool
-MapFieldDataOntoNodesRadialbasis:: radial_basis_func(VMesh* Cors, VMesh* points, FieldHandle& output, FieldHandle& input_s, FieldHandle& input_d)
-{    
-    FieldHandle input_cp;
-    FieldInformation fi(input_d);
-    FieldInformation fis(input_s);
-  
-    input_cp = input_s;
-    input_cp.detach();
-    input_cp->mesh_detach();
-  
-    
-    VMesh::Node::size_type num_cors, num_pts;
-    VMesh::Node::iterator iti,itj;
-    VMesh::Node::iterator it;
-    SCIRun::Point Pc,Pp;
-  
-    
-    Cors->size(num_cors);
-    points->size(num_pts);
-    
-    double xcomp=0.0,ycomp=0.0,zcomp=0.0,mag=0.0;
-    
-    DenseMatrixHandle Sigma = new DenseMatrix(num_cors,num_cors);
-    
-    VField* ifield = input_cp->vfield();
-    fi.set_data_type(fis.get_data_type());
-    output = CreateField(fi,input_d->mesh());
-
-    
-    if (output.get_rep() == 0)
-    {
-      error("Could not allocate output field");
-      return (false);
-    }
-
-    double elec_val=0.0;
-    double temp=0.0;
-    
-    //create the radial basis function
-    for(int i=0;i<num_cors;++i)
-    {
-      for(int j=0;j<num_cors;++j)
-      {
-        iti=i;
-        itj=j;
-        
-        Cors->get_point(Pc,*(itj));
-        Cors->get_point(Pp,*(iti));
-        
-        xcomp = Pc.x() - Pp.x();
-        ycomp = Pc.y() - Pp.y();
-        zcomp = Pc.z() - Pp.z();
-        
-        mag = sqrt(pow(xcomp,2.0)+pow(ycomp,2.0)+pow(zcomp,2.0));
-        if(mag==0)
-        {
-          Sigma->put(i,j,0);
-          Sigma->put(j,i,0);
-        }
-        else
-        {
-          temp = pow(mag,2.0)*log(mag);
-
-          Sigma->put(i,j,temp);
-          Sigma->put(j,i,temp);
-        }    
-      }
-    }
-
-    
-    //create the right side of the equation
-    std::vector<double> coefs;//(3*num_cors1+9);
-    std::vector<double> rside;//(3*num_cors1+9);
-    
-
-    for(int i=0;i<num_cors;++i)
-    {
-      it=i;
-      ifield->get_value(elec_val,*(it));
-      rside.push_back(elec_val);
-    }
-        
-    
-    //Create sparse matrix for sigmas of svd
-    int m = num_cors;
-    int n = num_cors;
-
-    SparseRowMatrixHandle Sm;
-  
-    //create the U and V matrix
-    DenseMatrixHandle Um = new DenseMatrix(m,n);
-    DenseMatrixHandle Vm = new DenseMatrix(n,n);
-  
-    //run SVD
-    try
-    {
-      LinearAlgebra::svd(*Sigma, *Um, Sm, *Vm);
-    }
-    catch (const SCIRun::Exception& exception)
-    {
-      std::ostringstream oss;
-      oss << "Caught exception: " << exception.type() << " " << exception.message();
-      error(oss.str());
-      return (false);
-    }
-  
-    //Make more storage for the solving the linear least squares
-    DenseMatrixHandle RsideMat = new DenseMatrix(m,1);
-    DenseMatrixHandle CMat = new DenseMatrix(n,1);
-    DenseMatrixHandle YMat = new DenseMatrix(n,1);
-    DenseMatrixHandle CoefMat = new DenseMatrix(n,1);
-  
-    for(int loop=0;loop<n;++loop)
-    {
-      RsideMat->put(loop,0,rside[loop]);
-    }
-
-  
-  //c=trans(Um)*rside;
-  Mult_trans_X(*CMat, *Um,*RsideMat);
-  
-
-  for(int k=0;k<n;k++)
-  {
-     YMat->put(k,0,CMat->get(k,0)/Sm->get(k,k));
-  }
-  
-  Mult_trans_X(*CoefMat, *Vm, *YMat);
-   
-  for(int p=0;p<n;p++)
-  {
-    coefs.push_back(CoefMat->get(p,0));
-  }
-  
-  //done with solve, make the new field
-  interp_on_mesh(points, Cors, coefs, output);
-
-  return true;
-}
-
-bool
-MapFieldDataOntoNodesRadialbasis::interp_on_mesh(VMesh* points, VMesh* Cors, std::vector<double>& coefs, FieldHandle& output)
+bool MapFieldDataOntoNodesRadialbasisImpl::radial_basis_func(FieldHandle& output, FieldHandle source, FieldHandle destination)
 {
+  auto cors = source->vmesh();
+  auto points = destination->vmesh();
+
+  FieldInformation fi(destination);
+  FieldInformation fis(source);
+
   VMesh::Node::size_type num_cors, num_pts;
-  VMesh::Node::iterator it,itp,iti,itj;
-  SCIRun::Point P,Pp,Pc;
+  VMesh::Node::iterator iti,itj;
 
-  VField* ofield = output->vfield();
-    
-  Cors->size(num_cors);
+  cors->size(num_cors);
   points->size(num_pts);
-  
-  double xcomp=0.0, ycomp=0.0, zcomp=0.0, mag=0.0;
-  double sumer=0.0;
-  double sigma=0.0;
-  int max_dist=0;
- 
-  double guiMD = (gui_max_distance_.get());
-  double guiOV = (gui_outside_value_.get());
-  
-  for(int i=0; i< num_pts;++i)
-  {
-    sumer=0;
-    max_dist=0.0;
-    for(int j=0; j<num_cors; ++j)
-    {
 
+  DenseMatrix sigma(num_cors, num_cors);
+
+  fi.set_data_type(fis.get_data_type());
+  output = CreateField(fi, destination->mesh());
+
+  //create the radial basis function
+  for(int i=0;i<num_cors;++i)
+  {
+    for(int j=0;j<num_cors;++j)
+    {
       iti=i;
       itj=j;
-        
-      Cors->get_point(Pc,*(itj));
-      points->get_point(Pp,*(iti));
-        
-      xcomp=Pc.x()-Pp.x();
-      ycomp=Pc.y()-Pp.y();
-      zcomp=Pc.z()-Pp.z();
-        
-      mag=sqrt(pow(xcomp,2.0)+pow(ycomp,2.0)+pow(zcomp,2.0));
-      
-      if(mag > guiMD)
+
+      Point Pc, Pp;
+      cors->get_point(Pc,*(itj));
+      cors->get_point(Pp,*(iti));
+
+      auto xcomp = Pc.x() - Pp.x();
+      auto ycomp = Pc.y() - Pp.y();
+      auto zcomp = Pc.z() - Pp.z();
+
+      auto mag = sqrt(pow(xcomp,2.0)+pow(ycomp,2.0)+pow(zcomp,2.0));
+      if (mag == 0)
       {
-        j=(num_cors-1);
-        max_dist=1;
-      }
-      
-      if(mag==0)
-      {
-        sigma=0;
+        sigma(i,j) = sigma(j,i) = 0;
       }
       else
       {
-          
-        if(gui_value_.get() == "thin-plate-spline")
-        {
-          sigma=pow(mag,2.0)*log(mag);
-        }
-        else
-        {
-          std::cerr<<"Not yet implemented"<<std::endl;
-          j=num_cors-1;
-          i=num_pts-1;
-        }
-        
-      }    
-      sumer+=coefs[j]*sigma;
-      
+        sigma(i,j) = sigma(j,i) = pow(mag,2.0)*log(mag);
+      }
     }
-    itp=i;
-    if( max_dist == 0)
+  }
+
+  //create the right side of the equation
+  DenseMatrix rsideMat(num_cors, 1);
+
+  auto ifield = source->vfield();
+  //TODO: NOT how to iterate through nodes
+  for(int i = 0; i < num_cors; ++i)
+  {
+    VMesh::Node::iterator it = i;
+    double elec_val = 0.0;
+    ifield->get_value(elec_val, *(it));
+    rsideMat(i, 0) = elec_val;
+  }
+
+  //run SVD
+  Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(sigma, Eigen::ComputeFullU | Eigen::ComputeFullV);
+
+  DenseMatrix Um = svd_mat.matrixU();
+  DenseMatrix Sm = svd_mat.singularValues();
+  DenseMatrix Vm = svd_mat.matrixV();
+
+  auto coefMat = Vm * (Um.transpose() * rsideMat).cwiseQuotient(Sm);
+
+  //done with solve, make the new field
+  return interp_on_mesh(points, cors, coefMat, output);
+}
+
+bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* cors, const DenseMatrix& coefs, FieldHandle output)
+{
+  VMesh::Node::size_type num_cors, num_pts;
+  VMesh::Node::iterator it,itp,iti,itj;
+
+  auto ofield = output->vfield();
+
+  if (ofield->is_nodata())
+    return false;
+
+  cors->size(num_cors);
+  points->size(num_pts);
+
+  double sumer=0.0;
+  double sigma=0.0;
+  bool max_dist = false;
+
+  double guiMD = state_->getValue(Parameters::MaxDistance).toDouble();
+  double guiOV = state_->getValue(Parameters::OutsideValue).toDouble();
+
+  for (int i = 0; i < num_pts; ++i)
+  {
+    sumer = 0;
+    max_dist = false;
+    for (int j = 0; j<num_cors; ++j)
     {
-      ofield->set_value(sumer,*(itp));
+      iti = i;
+      itj = j;
+
+      Point Pp, Pc;
+      cors->get_point(Pc,*(itj));
+      points->get_point(Pp,*(iti));
+
+      auto xcomp = Pc.x()-Pp.x();
+      auto ycomp = Pc.y()-Pp.y();
+      auto zcomp = Pc.z()-Pp.z();
+
+      auto mag = sqrt(pow(xcomp,2.0)+pow(ycomp,2.0)+pow(zcomp,2.0));
+
+      if (mag > guiMD)
+      {
+        j = num_cors - 1;
+        max_dist = true;
+      }
+
+      if (mag == 0)
+      {
+        sigma = 0;
+      }
+      else
+      {
+        #if 0 //else: //   std::cerr<<"Not yet implemented"<<std::endl;
+        if(gui_value_.get() == "thin-plate-spline")
+        #endif
+        {
+          sigma = pow(mag,2.0)*log(mag);
+        }
+      }
+      sumer += coefs(j, 0) * sigma;
     }
-    else
+    itp = i;
+
+    if (max_dist)
     {
       sumer = guiOV;
-      ofield->set_value(sumer,*(itp));
     }
+    ofield->set_value(sumer, *(itp));
   }
 
   return true;
 }
-
-
-} // End namespace SCIRun
-

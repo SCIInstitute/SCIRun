@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 #include <Core/Algorithms/Math/ConvertMatrixType.h>
 #include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -67,7 +68,7 @@ TEST_F(ConvertMatrixTypeModuleTests, ThrowsForNullMatrixInput)
 
 TEST_F(ConvertMatrixTypeModuleTests, SparseMatrixOnInputPort)
 {
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(1,1) = 2;
   m->insert(2,2) = 3;
@@ -79,7 +80,7 @@ TEST_F(ConvertMatrixTypeModuleTests, SparseMatrixOnInputPort)
 
 TEST_F(ConvertMatrixTypeModuleTests, DenseMatrixOnInputPort)
 {
-  DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+  DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
   (*m)(0) = 1;
   (*m)(1) = 2;
   (*m)(2) = 3;
@@ -90,7 +91,7 @@ TEST_F(ConvertMatrixTypeModuleTests, DenseMatrixOnInputPort)
 
 TEST_F(ConvertMatrixTypeModuleTests, ColumnMatrixOnInputPort)
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
   (*m)(0,0) = 1;
   (*m)(1,0) = 2;
   (*m)(2,0) = 3;

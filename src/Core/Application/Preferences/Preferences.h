@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 
 /// @todo Documentation Core/Application Preferences.h
 
@@ -33,8 +33,8 @@
 
 #include <boost/filesystem/path.hpp>
 #include <Core/Utils/Singleton.h>
-#include <Core/Algorithms/Base/Variable.h>
 #include <boost/signals2.hpp>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Application/Preferences/share.h>
 
 namespace SCIRun
@@ -71,7 +71,7 @@ namespace SCIRun
 
     class SCISHARE Preferences : boost::noncopyable
     {
-	    CORE_SINGLETON( Preferences );
+	    CORE_SINGLETON( Preferences )
 
     private:
 	    Preferences();
@@ -86,7 +86,13 @@ namespace SCIRun
       BooleanVariable highlightPorts;
       BooleanVariable autoNotes;
       BooleanVariable highDPIAdjustment;
+      BooleanVariable widgetSelectionCorrection;
+      BooleanVariable autoRotateViewerOnMouseRelease;
+      TrackedVariable<BooleanVariable> moduleExecuteDownstreamOnly;
+      TrackedVariable<BooleanVariable> forceGridBackground;
       TrackedVariable<BooleanVariable> modulesAreDockable;
+      TrackedVariable<IntVariable> toolBarPopupShowDelay;
+      TrackedVariable<IntVariable> toolBarPopupHideDelay;
       StringVariable networkBackgroundColor;
 
       TriggeredScriptInfo postModuleAdd;
@@ -96,7 +102,13 @@ namespace SCIRun
       std::string dataDirectoryPlaceholder() const;
 
       boost::filesystem::path dataDirectory() const;
-      void setDataDirectory(const boost::filesystem::path& path, bool runPython = true);
+
+      // returns python command to set the dataDir in the correct format
+      [[nodiscard]]
+      std::string setDataDirectory(const boost::filesystem::path& path);
+
+      boost::filesystem::path screenshotDirectory() const;
+      void setScreenshotDirectory(const boost::filesystem::path& path);
 
       std::vector<boost::filesystem::path> dataPath() const;
       void addToDataPath(const boost::filesystem::path& path);
@@ -104,6 +116,7 @@ namespace SCIRun
 
     private:
 	    boost::filesystem::path dataDir_;
+      boost::filesystem::path screenshotDir_;
       std::vector<boost::filesystem::path> dataPath_;
     };
 

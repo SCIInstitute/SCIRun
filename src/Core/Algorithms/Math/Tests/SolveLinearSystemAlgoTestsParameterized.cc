@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Testing/Utils/SCIRunUnitTests.h>
 
@@ -56,7 +56,7 @@ using ::testing::Values;
 using ::testing::Combine;
 using ::testing::Range;
 
-class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<const char*, const char*, int> >
+class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < std::tuple<const char*, const char*, int> >
 {
 public:
 	ReadMatrixAlgorithm reader;
@@ -68,7 +68,7 @@ public:
 
 	~SolveLinearSystemTestsAlgoParameterized() {}
 protected:
-	virtual void SetUp()
+	void SetUp() override
 	{
 		auto Afile = TestResources::rootDir() / "Matrices" /  "moritz_A.mat";
 
@@ -89,14 +89,14 @@ protected:
 		}
 		 // algo object will initialize x0 to the zero vector
 
-		algo.set(Variables::Preconditioner, std::string(::std::tr1::get<1>(GetParam())));
+		algo.set(Variables::Preconditioner, std::string(std::get<1>(GetParam())));
 		algo.set(Variables::MaxIterations, 670);
-		algo.set(Variables::TargetError, ::std::tr1::get<2>(GetParam()));
+		algo.set(Variables::TargetError, std::get<2>(GetParam()));
 
 		algo.set(Variables::MaxIterations, 667);
 		algo.set(Variables::TargetError, 1e-4);
 
-		algo.setOption(Variables::Method, std::string(::std::tr1::get<0>(GetParam())));
+		algo.setOption(Variables::Method, std::string(std::get<0>(GetParam())));
 		algo.setUpdaterFunc([](double x) {});
 
 		/*
@@ -122,7 +122,8 @@ protected:
 		std::cout << "max diff is: " << maxDiff << std::endl;
 		*/
 		}
-	virtual void TearDown(){}
+
+        void TearDown() override {}
 };
 
 TEST_P(SolveLinearSystemTestsAlgoParameterized, CanSolveDarrellParameterized)

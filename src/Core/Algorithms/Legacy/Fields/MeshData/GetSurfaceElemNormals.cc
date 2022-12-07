@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/MeshData/GetSurfaceElemNormals.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
@@ -35,7 +35,7 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool 
+bool
 GetSurfaceElemNormalsAlgo::
 run(FieldHandle& input, MatrixHandle& output)
 {
@@ -46,17 +46,17 @@ run(FieldHandle& input, MatrixHandle& output)
     error("No input source field");
     algo_end(); return (false);
   }
-  
-  FieldInformation fi(input);  
+
+  FieldInformation fi(input);
   if (!(fi.is_surface()))
   {
     error("This algorithm only works on a surface mesh");
     algo_end(); return (false);
   }
-  
+
   VMesh* vmesh = input->vmesh();
   VMesh::size_type num_elems = vmesh->num_elems();
-  
+
   output = new DenseMatrix(num_elems,3);
 
   if (output.get_rep() == 0)
@@ -73,7 +73,7 @@ run(FieldHandle& input, MatrixHandle& output)
   VMesh::coords_type center;
   vmesh->get_element_center(center);
   vmesh->synchronize(Mesh::NORMALS_E);
-  
+
   for (VMesh::Elem::index_type i=0; i<num_elems; ++i)
   {
     vmesh->get_normal(norm,center,i);
@@ -83,7 +83,7 @@ run(FieldHandle& input, MatrixHandle& output)
     k += 3;
     cnt++; if (cnt == 400) {cnt=0; update_progress(i,num_elems); }
   }
-  
+
   algo_end(); return (true);
 }
 

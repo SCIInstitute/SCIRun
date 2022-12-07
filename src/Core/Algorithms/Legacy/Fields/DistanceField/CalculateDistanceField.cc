@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -66,7 +66,7 @@ class CalculateDistanceFieldP : public Interruptible
 {
   public:
     CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, const AlgorithmBase* algo) :
-      imesh(imesh), objmesh(objmesh), objfield(0), ofield(ofield), vfield(0), algo_(algo) {}
+      imesh(imesh), objmesh(objmesh), objfield(nullptr), ofield(ofield), vfield(nullptr), algo_(algo) {}
 
     CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField* objfield, VField*  ofield, VField* vfield, const AlgorithmBase* algo) :
       imesh(imesh), objmesh(objmesh), objfield(objfield), ofield(ofield), vfield(vfield), algo_(algo)  {}
@@ -93,7 +93,7 @@ class CalculateDistanceFieldP : public Interruptible
 
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
@@ -110,7 +110,7 @@ class CalculateDistanceFieldP : public Interruptible
 
         for (VMesh::Node::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
@@ -127,7 +127,7 @@ class CalculateDistanceFieldP : public Interruptible
 
         for (VMesh::ENode::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
@@ -166,7 +166,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -181,7 +181,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -196,7 +196,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -220,7 +220,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -236,7 +236,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -252,7 +252,7 @@ class CalculateDistanceFieldP : public Interruptible
 
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -276,7 +276,7 @@ class CalculateDistanceFieldP : public Interruptible
           double scalar;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -291,7 +291,7 @@ class CalculateDistanceFieldP : public Interruptible
           Vector vec;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -306,7 +306,7 @@ class CalculateDistanceFieldP : public Interruptible
           Tensor tensor;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -405,7 +405,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   }
 
   detail::CalculateDistanceFieldP palgo(imesh,objmesh,ofield,this);
-  auto task_i = [&palgo,this](int i) { palgo.parallel(i, Parallel::NumCores()); };
+  auto task_i = [&palgo](int i) { palgo.parallel(i, Parallel::NumCores()); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);
@@ -490,7 +490,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   }
 
   detail::CalculateDistanceFieldP palgo(imesh,objmesh,objfield,dfield,vfield,this);
-  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  auto task_i = [&palgo](int i) { palgo.parallel2(i, Parallel::NumCores()); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);

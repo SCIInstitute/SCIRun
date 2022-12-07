@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,12 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITEXECUTOR_H
 #define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITEXECUTOR_H
 
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitProducerInterface.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <Core/Logging/Log.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -42,24 +41,19 @@ namespace SCIRun {
         struct SCISHARE ModuleExecutor
         {
           ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) :
-            module_(mod), lookup_(lookup), producer_(producer),
-            shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
+            module_(mod), lookup_(lookup), producer_(producer)
           {
-            //Core::Logging::Log::get("executor").setVerbose(shouldLog_);
           }
-          void run()
+          void run() const
           {
-            log_->debug_if(shouldLog_, "Module Executor: {}", module_->get_id().id_);
-            auto exec = lookup_->lookupExecutable(module_->get_id());
-            boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules, boost::ref(*producer_))));
+            auto* exec = lookup_->lookupExecutable(module_->id());
+            boost::signals2::scoped_connection s(exec->connectExecuteEnds([this](double, const Networks::ModuleId&) { producer_->enqueueReadyModules(); }));
             exec->executeWithSignals();
           }
 
           Networks::ModuleHandle module_;
           const Networks::ExecutableLookup* lookup_;
           ProducerInterfacePtr producer_;
-          bool shouldLog_;
-          static Core::Logging::Logger2 log_;
         };
 
 

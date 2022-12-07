@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -50,19 +50,19 @@ class ConvertHexVolToTetVolModuleTests : public ModuleTest
 {
  protected:
 
-  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=DOUBLE_E)
+  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=data_info_type::DOUBLE_E)
   {
-    FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
+    FieldInformation lfi(mesh_info_type::LATVOLMESH_E, databasis_info_type::LINEARDATA_E, type);
     Point minb(-1.0, -1.0, -1.0);
     Point maxb(1.0, 1.0, 1.0);
     MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
     FieldHandle ofh = CreateField(lfi,mesh);
     return ofh;
   }
-  
+
  DenseMatrixHandle CreateDenseMatrix()
  {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,3));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3,3));
   (*m)(0,0) = 1;
   (*m)(1,0) = 2;
   (*m)(2,0) = 3;
@@ -90,8 +90,6 @@ TEST_F(ConvertHexVolToTetVolModuleTests, CorrectInput)
 {
   auto csdf = makeModule("ConvertHexVolToTetVol");
   auto size=6;
-  stubPortNWithThisData(csdf, 0, CreateEmptyLatVol(size, size, size, INT_E));
+  stubPortNWithThisData(csdf, 0, CreateEmptyLatVol(size, size, size, data_info_type::INT_E));
   EXPECT_NO_THROW(csdf->execute());
 }
-
-

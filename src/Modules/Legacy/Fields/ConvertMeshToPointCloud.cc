@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -50,11 +50,10 @@ ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
 
 void ConvertMeshToPointCloud::setStateDefaults()
 {
-  setStateStringFromAlgoOption(ConvertMeshToPointCloudMeshAlgo::Location);
+  setStateStringFromAlgoOption(Parameters::Location);
 }
 
-void
-ConvertMeshToPointCloud::execute()
+void ConvertMeshToPointCloud::execute()
 {
   auto imesh = getRequiredInput(Mesh);
 
@@ -63,7 +62,7 @@ ConvertMeshToPointCloud::execute()
 
   if (needToExecute())
   {
-    setAlgoOptionFromState(ConvertMeshToPointCloudMeshAlgo::Location);
+    setAlgoOptionFromState(Parameters::Location);
 
     auto output = algo().run(input);
 

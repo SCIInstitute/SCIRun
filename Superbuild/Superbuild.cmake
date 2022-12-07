@@ -44,13 +44,6 @@ ENDIF()
 
 INCLUDE( ExternalProject )
 
-# Compute -G arg for configuring external projects with the same CMake generator:
-#if(CMAKE_EXTRA_GENERATOR)
-#  set(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}")
-#else()
-#  set(gen "${CMAKE_GENERATOR}" )
-#endif()
-
 ###########################################
 # DETERMINE ARCHITECTURE
 # In order for the code to depend on the architecture settings
@@ -64,7 +57,11 @@ ENDIF()
 
 ###########################################
 # Configure test support
-OPTION(BUILD_TESTING "Build with tests." ON)
+OPTION(BUILD_TESTING "Build with tests." OFF)
+
+###########################################
+# Configure compilation database generation
+OPTION(GENERATE_COMPILATION_DATABASE "Generate Compilation Database." ON)
 
 ###########################################
 # Configure python
@@ -72,7 +69,11 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ###########################################
 # Configure tetgen
-OPTION(WITH_TETGEN "Build Tetgen." OFF)
+OPTION(WITH_TETGEN "Build Tetgen." ON)
+
+###########################################
+# Configure ospray
+OPTION(WITH_OSPRAY "Build Ospray." OFF)
 
 ###########################################
 # Configure data
@@ -92,40 +93,34 @@ ENDIF()
 OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
-# Travis CI build needs to be as slim as possible
-OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
-MARK_AS_ADVANCED(TRAVIS_BUILD)
-
-IF(TRAVIS_BUILD)
-  IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
-    SET(BUILD_TESTING OFF)
-    SET(DOWNLOAD_TOOLKITS OFF)
-    SET(BUILD_HEADLESS ON)
-    SET(BUILD_WITH_PYTHON OFF)
-    SET(BUILD_WITH_SCIRUN_DATA OFF)
-  ELSE()
-    SET(BUILD_WITH_SCIRUN_DATA OFF)
-    # try building everything with clang!
-  ENDIF()
-  ADD_DEFINITIONS(-DTRAVIS_BUILD)
-ENDIF()
-
-###########################################
 # Configure Qt
-IF(NOT BUILD_HEADLESS)
-  SET(QT_MIN_VERSION "4.8.1")
-  INCLUDE(FindQt4)
-  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
-  SET(QT_USE_QTOPENGL TRUE)
 
-  IF(QT4_FOUND)
-    MESSAGE(STATUS "QTVERSION=${QTVERSION}")
-    MESSAGE(STATUS "Found use file: ${QT_USE_FILE}")
-    IF(APPLE AND ${QTVERSION} VERSION_EQUAL 4.8 AND ${QTVERSION} VERSION_LESS 4.8.5)
-      MESSAGE(WARNING "Qt 4.8 versions earlier than 4.8.3 contain a bug that disables menu items under some circumstances. Upgrade to a more recent version.")
-    ENDIF()
+SET(DEFAULT_QT_MIN_VERSION "5.15.2")
+
+set(SCIRUN_QT_MIN_VERSION ${DEFAULT_QT_MIN_VERSION} CACHE STRING "Qt version")
+set_property(CACHE SCIRUN_QT_MIN_VERSION PROPERTY STRINGS 5.12.8 5.15.2 6.3.1)
+string(REPLACE "." ";" SCIRUN_QT_MIN_VERSION_LIST ${SCIRUN_QT_MIN_VERSION})
+list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
+list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
+list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
+
+IF(NOT BUILD_HEADLESS)
+
+  SET(Qt_PATH "" CACHE PATH "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
+
+  IF(IS_DIRECTORY ${Qt_PATH})
+    if (${QT_VERSION_MAJOR} STREQUAL "6")
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
+    else()
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt_PATH})
+    endif()
   ELSE()
-    MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
+    MESSAGE(SEND_ERROR "Set Qt_PATH to directory where Qt is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+  ENDIF()
+
+  IF(APPLE)
+    SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
+    MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
   ENDIF()
 ELSE()
   ADD_DEFINITIONS(-DBUILD_HEADLESS)
@@ -164,15 +159,16 @@ IF(BUILD_TESTING)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TestDataConfig.cmake SCIRunTestData_external )
 ENDIF()
 
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/EigenExternal.cmake Eigen_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/ZlibExternal.cmake Zlib_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/SQLiteExternal.cmake SQLite_external )
-ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibPNGExternal.cmake LibPNG_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TeemExternal.cmake Teem_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/FreetypeExternal.cmake Freetype_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/GLMExternal.cmake GLM_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/SpdLogExternal.cmake SpdLog_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/Cleaver2External.cmake Cleaver2_external )
 
 IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
@@ -195,6 +191,15 @@ IF(WITH_TETGEN)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
 ENDIF()
 
+IF(WITH_OSPRAY)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
+ENDIF()
+
+IF(NOT BUILD_HEADLESS)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
+  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/CtkExternal.cmake Ctk_external )
+ENDIF()
+
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
 ###########################################
@@ -215,24 +220,30 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
+    "-DQT_VERSION_MAJOR:STRING=${QT_VERSION_MAJOR}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
+    "-DUSER_PYTHON_VERSION:STRING=${USER_PYTHON_VERSION}"
+    "-DUSER_PYTHON_VERSION_MAJOR:STRING=${USER_PYTHON_VERSION_MAJOR}"
+    "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
+    "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
+    "-DEigen_DIR:PATH=${Eigen_DIR}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
-    "-DLibPNG_DIR:PATH=${LibPNG_DIR}"
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
     "-DBoost_DIR:PATH=${Boost_DIR}"
     "-DTeem_DIR:PATH=${Teem_DIR}"
-    "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
 	  "-DGLM_DIR:PATH=${GLM_DIR}"
     "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
     "-DTNY_DIR:PATH=${TNY_DIR}"
 	  "-DGLEW_DIR:PATH=${Glew_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
+    "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
+    "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
 
 IF(BUILD_WITH_PYTHON)
@@ -248,6 +259,12 @@ IF(WITH_TETGEN)
   )
 ENDIF()
 
+IF(WITH_OSPRAY)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DOspray_External_Dir:PATH=${OSPRAY_BUILD_DIR}"
+  )
+ENDIF()
+
 IF(WIN32)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}"
@@ -256,9 +273,17 @@ ENDIF()
 
 IF(NOT BUILD_HEADLESS)
   LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}"
-    "-DQT_USE_QTOPENGL:BOOL=${QT_USE_QTOPENGL}"
-    "-DQT_MIN_VERSION:STRING=${QT_MIN_VERSION}"
+    "-DQt_PATH:PATH=${Qt_PATH}"
+    "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
+    "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
+    "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"
+    "-DQt${QT_VERSION_MAJOR}GuiTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}GuiTools_DIR}"
+    "-DQt${QT_VERSION_MAJOR}OpenGL_DIR:PATH=${Qt${QT_VERSION_MAJOR}OpenGL_DIR}"
+	  "-DQt${QT_VERSION_MAJOR}Network_DIR:PATH=${Qt${QT_VERSION_MAJOR}Network_DIR}"
+ 	  "-DQt${QT_VERSION_MAJOR}Widgets_DIR:PATH=${Qt${QT_VERSION_MAJOR}Widgets_DIR}"
+	  "-DQt${QT_VERSION_MAJOR}Concurrent_DIR:PATH=${Qt${QT_VERSION_MAJOR}Concurrent_DIR}"
+    "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
+    "-DQWT_DIR:PATH=${QWT_DIR}"
   )
 ENDIF()
 

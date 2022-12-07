@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/IEPlugin/CARPFiber_Plugin.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -488,10 +488,9 @@ bool SCIRun::CARPFiber_writer(LoggerHandle pr, FieldHandle fh, const char *filen
 
   VMesh *mesh = fh->vmesh();
   VField *field = fh->vfield();
-  
+
   FieldInformation fi(fh);
 
-  
    // Isotropic Fiber file
   {
     std::ofstream outputfile;
@@ -522,52 +521,37 @@ bool SCIRun::CARPFiber_writer(LoggerHandle pr, FieldHandle fh, const char *filen
       mesh->begin(cellIter);
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
-	    
 
 #if DEBUG
       std::cerr << "Number of tets = " << cellSize << std::endl;
+      std::cout << *cellIterEnd << std::endl;
 #endif
-	
-	std::cout << *cellIterEnd << std::endl;
-	
-	 if (fi.is_tensor())
-  		{
-  		
-  		outputfile << 2 << std::endl;
-  		
-      
-     	Tensor tensor;
-          for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
-          {
-            field->get_value(tensor, idx);
-            outputfile << tensor.val(0, 0) << " " << tensor.val(0, 1) << " " << tensor.val(0, 2) << " " << tensor.val(1, 1) << " " << tensor.val(1, 2) << " " << tensor.val(2, 2) << std::endl;
-          }
-    
-      	   
-      		}
-      	else if (fi.is_vector()) 
-      	{
-      	
-      	outputfile << 1 << std::endl;
-      	
-		Vector val;
-          for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
-          {
-            field->get_value(val, idx);
-            outputfile << val.x() << " " << val.y() << " " << val.z() << std::endl;
-          }
-	    
-	
-      	}
-      	
-      	
-	
-      	else 
-		{
-      if (pr) pr->error("Please convert to Tetvol");
-      return false;
-    	}
-      
+
+      if (fi.is_tensor())
+      {
+        outputfile << 2 << std::endl;
+        Tensor tensor;
+        for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
+        {
+          field->get_value(tensor, idx);
+          outputfile << tensor.val(0, 0) << " " << tensor.val(0, 1) << " " << tensor.val(0, 2) << " " << tensor.val(1, 1) << " " << tensor.val(1, 2) << " " << tensor.val(2, 2) << '\n';
+        }
+      }
+      else if (fi.is_vector())
+      {
+        outputfile << 1 << std::endl;
+        Vector val;
+        for (VMesh::index_type idx = 0; idx < *cellIterEnd; idx++)
+        {
+          field->get_value(val, idx);
+          outputfile << val.x() << " " << val.y() << " " << val.z() << '\n';
+        }
+      }
+      else
+      {
+        if (pr) pr->error("Please convert to Tetvol");
+        return false;
+      }
     }
     catch (...)
     {
@@ -576,8 +560,7 @@ bool SCIRun::CARPFiber_writer(LoggerHandle pr, FieldHandle fh, const char *filen
     }
     outputfile.close();
   }
-   
-   
+
+
   return true;
 }
-

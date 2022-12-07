@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,11 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/IEPlugin/ObjToField_Plugin.h>
+#include <Core/IEPlugin/G3DToField_Plugin.h>
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/EcgsimFileToMatrix_Plugin.h>
+#include <Core/IEPlugin/EcgsimFileToTriSurf_Plugin.h>
 #include <Core/IEPlugin/PointCloudField_Plugin.h>
 #include <Core/IEPlugin/IgbFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/CurveField_Plugin.h>
@@ -48,6 +50,8 @@ using namespace SCIRun::Core::Logging;
 void IEPluginManager::Initialize()
 {
   static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "*.obj", "", ObjToField_reader, FieldToObj_writer);
+
+  //static FieldIEPluginLegacyAdapter G3DToField_plugin("IV3D", "*.g3d", "", nullptr, FieldToG3D_writer);
 
   static FieldIEPluginLegacyAdapter NrrdToField_plugin("NrrdFile","*.nhdr *.nrrd", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
   static FieldIEPluginLegacyAdapter NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","*.nhdr *.nrrd", "", Nodal_NrrdToField_reader, nullptr);
@@ -68,6 +72,7 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter CurveField_plugin("CurveField", "*.pts *.pos *.edge", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
 
   static MatrixIEPluginLegacyAdapter EcgsimFileMatrix_plugin("ECGSimFile", "", "", EcgsimFileMatrix_reader, EcgsimFileMatrix_writer);
+  static MatrixIEPluginLegacyAdapter EcgsimFileBinaryMatrix_plugin("ECGSimFileBinary", "", "", EcgsimBinaryFileMatrix_reader, nullptr);
   static MatrixIEPluginLegacyAdapter IgbFileMatrix_plugin("IGBFile", "*.igb", "*.igb", IgbFileMatrix_reader, nullptr);
 
   static FieldIEPluginLegacyAdapter TriSurfField_plugin("TriSurfField", "*.fac *.tri *.pts *.pos", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
@@ -78,6 +83,7 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter VtkFromTriSurfField_plugin("VtkToTriSurfField", "*.vtk", "", VtkToTriSurfField_reader, nullptr);
   static FieldIEPluginLegacyAdapter TriSurfFieldToExotxt_plugin("TriSurfFieldToExotxt", "*.ex2", "", nullptr, TriSurfFieldToExotxt_writer);
   static FieldIEPluginLegacyAdapter TriSurfFieldToExotxtBaseIndexOne_plugin("TriSurfFieldToExotxt[BaseIndex 1]", "*.ex2", "", nullptr, TriSurfFieldToExotxtBaseIndexOne_writer);
+  static FieldIEPluginLegacyAdapter EcgsimFileTriSurfField_plugin("EcgsimFileToTriSurf", "*.tri", "", EcgsimFileToTriSurf_reader, nullptr);
 
   static FieldIEPluginLegacyAdapter TetVolField_plugin("TetVolField","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, TetVolFieldToTextBaseIndexZero_writer);
   static FieldIEPluginLegacyAdapter CARPMesh_plugin("CARPMesh","*.elem *.pts *.lon", "", CARPMesh_reader, CARPMesh_writer);

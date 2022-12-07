@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/CollectFields/CollectPointClouds.h>
 
 #include <Core/Datatypes/FieldInformation.h>
@@ -34,7 +34,7 @@
 namespace SCIRunAlgo {
 
 
-bool 
+bool
 CollectPointCloudsAlgo::run( FieldHandle field_input_handle,
 			     FieldHandle field_acc_handle,
 			     FieldHandle &field_output_handle)
@@ -46,11 +46,11 @@ CollectPointCloudsAlgo::run( FieldHandle field_input_handle,
   if (field_input_handle.get_rep() == 0)
   {
     error("No input mesh.");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   FieldInformation fi(field_input_handle);
-  
+
   if (!(fi.is_pointcloudmesh()))
   {
     error("Input mesh needs to be a PointCloudMesh.");
@@ -70,21 +70,21 @@ CollectPointCloudsAlgo::run( FieldHandle field_input_handle,
 
   // ----------------------------
   // Check accumulation field
-  
+
   VField* afield = 0;
   VMesh*  amesh  = 0;
 
   if (field_acc_handle.get_rep())
   {
     FieldInformation fi2(field_acc_handle);
-    
+
     if ((!(fi2.is_curvemesh()))||(!(fi2.is_lineardata())))
     {
       error("Output mesh needs to be a Curve mesh with linear data.");
       algo_end(); return (false);
     }
     VMesh::size_type num_acc_nodes = field_acc_handle->vmesh()->num_nodes();
-    
+
     if ( num_acc_nodes % num_nodes != 0)
     {
       error("Number of nodes in accumulation field is not a multiple of the number of nodes in the pointcloud field.");
@@ -99,25 +99,25 @@ CollectPointCloudsAlgo::run( FieldHandle field_input_handle,
   fo.make_curvemesh();
   fo.make_lineardata();
   fo.make_linearmesh();
-  
+
   field_output_handle = CreateField(fo);
-  
+
   if (field_output_handle.get_rep() == 0)
   {
     error("Could not create output mesh.");
     algo_end(); return (false);
   }
-   
+
   VField* ofield = field_output_handle->vfield();
-  VMesh*  omesh =  field_output_handle->vmesh();  
-  
+  VMesh*  omesh =  field_output_handle->vmesh();
+
   if (afield)
   {
     VMesh::size_type num_acc_nodes = field_acc_handle->vmesh()->num_nodes();
-    
+
     int fields = num_acc_nodes / num_nodes;
     int max_num_fields = get_int("max_num_fields");
-    
+
     int start = fields-(max_num_fields-1);
     int end = fields;
     if (start < 0) start = 0;
@@ -155,7 +155,7 @@ CollectPointCloudsAlgo::run( FieldHandle field_input_handle,
 
   // No previous field so add all off the points to the output field.
   else
-  {  
+  {
     for (VMesh::Node::index_type idx=0; idx<num_nodes;idx++)
     {
       Point p;
@@ -163,16 +163,16 @@ CollectPointCloudsAlgo::run( FieldHandle field_input_handle,
       omesh->add_point(p);
     }
   }
-  
+
   ofield->resize_values();
 
   if (afield)
   {
     VMesh::size_type num_acc_nodes = field_acc_handle->vmesh()->num_nodes();
-    
+
     int fields = num_acc_nodes / num_nodes;
     int max_num_fields = get_int("max_num_fields");
-    
+
     int start = fields-(max_num_fields-1);
     int end = fields;
     if (start < 0) start = 0;
@@ -201,12 +201,11 @@ CollectPointCloudsAlgo::run( FieldHandle field_input_handle,
       ofield->copy_value(ifield,idx,idx);
     }
   }
-  
+
   ofield->copy_properties(ifield);
   omesh->copy_properties(imesh);
-  
+
   algo_end();  return (true);
 }
 
 } // end namespace SCIRunAlgo
-

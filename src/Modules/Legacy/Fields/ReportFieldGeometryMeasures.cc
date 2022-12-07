@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@file  ReportFieldGeometryMeasures.cc
 ///
@@ -210,6 +210,7 @@ void ReportFieldGeometryMeasures::execute()
   {
     VMesh::Face::size_type nrows;
     mesh->size(nrows);
+    remark("Entered");
     output.reset(new DenseMatrix(nrows, ncols));
     double* dataptr = output->data();
 
@@ -252,6 +253,11 @@ void ReportFieldGeometryMeasures::execute()
       if (eidx) { *dataptr = static_cast<double>(idx); dataptr++; }
       if (size) { *dataptr = vol; dataptr++; }
     }
+  }
+
+  if (output && output->nrows() == 0)
+  {
+    warning("No measures added to matrix--output will be an empty matrix with zero rows.");
   }
 
   sendOutput(Output_Measures, output);

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +25,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H 1
 
-#include "Interface/Modules/Math/ui_SortMatrixDialog.h"
+#ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
+#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
+
+#include <Interface/Modules/Math/ui_SortMatrixDialog.h>
+//#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-	namespace Gui {
-		class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
-			public Ui::SortMatrixDialog
-		{
-			Q_OBJECT
+namespace Gui {
 
-		public:
-			SortMatrixDialog(const std::string& name,
-						SCIRun::Dataflow::Networks::ModuleStateHandle state,
-						QWidget* parent = 0);
-		};
-	}
+class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
+    public Ui::SortMatrixDialog
+{
+	Q_OBJECT
+
+public:
+  SortMatrixDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+
+};
+
+}
 }
 
 #endif

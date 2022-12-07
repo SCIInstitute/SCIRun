@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -136,7 +136,7 @@ TEST_F(MapFieldDataFromNodeToElemModuleTests, ThrowsForNullInput)
 TEST_F(MapFieldDataFromNodeToElemModuleTests, ThrowForDenseMatrixInPort)
 {
   auto test = makeModule("MapFieldDataFromNodeToElem");
-	DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+	DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 	for (int i=0; i<3; i++)
 		(*m)(i, 0) = 1;
   stubPortNWithThisData(test, 0, m);
@@ -146,7 +146,7 @@ TEST_F(MapFieldDataFromNodeToElemModuleTests, ThrowForDenseMatrixInPort)
 TEST_F(MapFieldDataFromNodeToElemModuleTests, ThrowForSparseRowMatrixInPort)
 {
   auto test = makeModule("MapFieldDataFromNodeToElem");
-	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
 	m->insert(0,0) = 1;
 	m->insert(0,1) = 7;
 	m->insert(0,2) = 3;
@@ -164,7 +164,7 @@ TEST_F(MapFieldDataFromNodeToElemModuleTests, ThrowForSparseRowMatrixInPort)
 TEST_F(MapFieldDataFromNodeToElemModuleTests, ThrowForDenseColumnMatrixInPort)
 {
   auto test = makeModule("MapFieldDataFromNodeToElem");
-	DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+	DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
 	m->setZero();
   stubPortNWithThisData(test, 0, m);
 	EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);

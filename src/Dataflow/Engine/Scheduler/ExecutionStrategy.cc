@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,59 +25,72 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-ExecutionBounds ExecutionContext::executionBounds_;
+ExecutionBounds ExecutionContext::globalExecutionBounds_;
 
-boost::signals2::connection ExecutionContext::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+ExecutionBounds& ExecutionContext::globalExecutionBounds() { return globalExecutionBounds_; }
+
+boost::signals2::connection ExecutionContext::connectGlobalNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
-  return executionBounds_.executeStarts_.connect(subscriber);
+  return globalExecutionBounds_.executeStarts_.connect(subscriber);
 }
-boost::signals2::connection ExecutionContext::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+
+boost::signals2::connection ExecutionContext::connectGlobalNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  return executionBounds_.executeFinishes_.connect(subscriber);
+  return globalExecutionBounds_.executeFinishes_.connect(subscriber);
 }
 
 ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
 {
   if (!filter)
-    return additionalFilter;
-  if (!additionalFilter)
+    return additionalFilter_;
+  if (!additionalFilter_)
     return filter;
 
-  return boost::bind(filter, _1) && boost::bind(additionalFilter, _1);
+  auto additional = additionalFilter_;
+  return [filter, additional](ModuleHandle mh) { return filter(mh) && additional(mh); };
+}
+
+ExecutionManagerBase::ExecutionManagerBase() : executionMutex_("executionManager")
+{
+  
 }
 
 ExecutionQueueManager::ExecutionQueueManager() : 
-  contexts_(10), 
-  executionMutex_("executionQueue"),
+  contexts_(10),
   somethingToExecute_("executionQueue"),
   contextCount_(0)
 {
 }
 
-void ExecutionQueueManager::setExecutionStrategy(ExecutionStrategyHandle exec)
-{ 
+void ExecutionManagerBase::setExecutionStrategy(ExecutionStrategyHandle exec)
+{
   Guard g(executionMutex_.get());
-  currentExecutor_ = exec; 
+  currentExecutor_ = exec;
 }
 
-void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
+void ExecutionManagerBase::initExecutor(ExecutionStrategyFactoryHandle factory)
 {
   if (!currentExecutor_ && factory)
     currentExecutor_ = factory->createDefault();
 }
 
-void ExecutionQueueManager::start()
+void ExecutionQueueManager::startExecution()
 {
-  executionLaunchThread_.reset(new boost::thread([this]() { executeTopContext(); }));
+  //logCritical("startExecution");
+  resetStoppability();
+  auto task = [this] { executeTopContext(); }; 
+
+  executionLaunchThread_.reset(new std::thread(task));
 }
 
-boost::shared_ptr<boost::thread> ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
   bool contextReady;
   {
@@ -90,10 +102,9 @@ boost::shared_ptr<boost::thread> ExecutionQueueManager::enqueueContext(Execution
   if (contextReady)
   {
     if (!executionLaunchThread_)
-      start();
+      startExecution();
     somethingToExecute_.conditionBroadcast();
   }
-  return executionLaunchThread_;
 }
 
 void ExecutionQueueManager::executeTopContext()
@@ -103,7 +114,12 @@ void ExecutionQueueManager::executeTopContext()
     UniqueLock lock(executionMutex_.get());
     while (0 == contextCount_)
     {
+      //logCritical("in loop while 0");
       somethingToExecute_.wait(lock);
+      if (stopRequested())
+      {
+        return;
+      }
     }
     if (contexts_.consume_one([&](ExecutionContextHandle ctx) { executeImpl(ctx); }))
     {
@@ -112,17 +128,24 @@ void ExecutionQueueManager::executeTopContext()
   }
 }
 
-void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
+std::future<int> ExecutionManagerBase::executeImpl(ExecutionContextHandle context)
 {
-  if (currentExecutor_ && ctx)
+  if (currentExecutor_ && context)
   {
-    ctx->preexecute();
-    currentExecutor_->execute(*ctx, executionMutex_);
+    context->preexecute();
+    return currentExecutor_->execute(*context, executionMutex_);
   }
+  return {};
 }
 
-void ExecutionQueueManager::stop()
+void ExecutionQueueManager::stopExecution()
 {
-  executionLaunchThread_->interrupt();
-  executionLaunchThread_.reset();
+  if (executionLaunchThread_)
+  {
+    sendStopRequest();
+    somethingToExecute_.conditionBroadcast();
+    if (executionLaunchThread_->joinable())
+      executionLaunchThread_->join();
+    executionLaunchThread_.reset();
+  }
 }

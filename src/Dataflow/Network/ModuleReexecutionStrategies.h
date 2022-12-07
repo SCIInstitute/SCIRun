@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,24 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef DATAFLOW_NETWORK_MODULEREEXECUTIONSTRATEGIES_H
 #define DATAFLOW_NETWORK_MODULEREEXECUTIONSTRATEGIES_H
 
-#include <boost/noncopyable.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/atomic.hpp>
-#include <atomic>
-#include <vector>
-#include <Core/Logging/LoggerInterface.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmFwd.h>
-#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/share.h>
 
@@ -54,7 +41,7 @@ namespace Networks {
   class SCISHARE AlwaysReexecuteStrategy : public ModuleReexecutionStrategy
   {
   public:
-    virtual bool needToExecute() const override { return true; }
+    bool needToExecute() const override { return true; }
   };
 
   class SCISHARE InputsChangedChecker
@@ -65,7 +52,7 @@ namespace Networks {
     virtual bool inputsChanged() const = 0;
   };
 
-  typedef boost::shared_ptr<InputsChangedChecker> InputsChangedCheckerHandle;
+  typedef SharedPointer<InputsChangedChecker> InputsChangedCheckerHandle;
 
   class SCISHARE StateChangedChecker
   {
@@ -75,7 +62,7 @@ namespace Networks {
     virtual bool newStatePresent() const = 0;
   };
 
-  typedef boost::shared_ptr<StateChangedChecker> StateChangedCheckerHandle;
+  typedef SharedPointer<StateChangedChecker> StateChangedCheckerHandle;
 
   class SCISHARE OutputPortsCachedChecker
   {
@@ -85,7 +72,7 @@ namespace Networks {
     virtual bool outputPortsCached() const = 0;
   };
 
-  typedef boost::shared_ptr<OutputPortsCachedChecker> OutputPortsCachedCheckerHandle;
+  typedef SharedPointer<OutputPortsCachedChecker> OutputPortsCachedCheckerHandle;
 
   class SCISHARE DynamicReexecutionStrategy : public ModuleReexecutionStrategy
   {
@@ -94,7 +81,7 @@ namespace Networks {
       InputsChangedCheckerHandle inputsChanged,
       StateChangedCheckerHandle stateChanged,
       OutputPortsCachedCheckerHandle outputsCached);
-    virtual bool needToExecute() const override;
+    bool needToExecute() const override;
   private:
     InputsChangedCheckerHandle inputsChanged_;
     StateChangedCheckerHandle stateChanged_;
@@ -105,7 +92,7 @@ namespace Networks {
   {
   public:
     explicit InputsChangedCheckerImpl(const Module& module);
-    virtual bool inputsChanged() const override;
+    bool inputsChanged() const override;
   private:
     const Module& module_;
   };
@@ -114,7 +101,7 @@ namespace Networks {
   {
   public:
     explicit StateChangedCheckerImpl(const Module& module);
-    virtual bool newStatePresent() const override;
+    bool newStatePresent() const override;
   private:
     const Module& module_;
   };
@@ -123,7 +110,7 @@ namespace Networks {
   {
   public:
     explicit OutputPortsCachedCheckerImpl(const Module& module);
-    virtual bool outputPortsCached() const override;
+    bool outputPortsCached() const override;
   private:
     const Module& module_;
   };
@@ -131,10 +118,10 @@ namespace Networks {
   class SCISHARE DynamicReexecutionStrategyFactory : public ReexecuteStrategyFactory
   {
   public:
-    explicit DynamicReexecutionStrategyFactory(const boost::optional<std::string>& reexMode);
+    explicit DynamicReexecutionStrategyFactory(const std::optional<std::string>& reexMode);
     ModuleReexecutionStrategyHandle create(const Module& module) const override;
   private:
-    boost::optional<std::string> reexecuteMode_;
+    std::optional<std::string> reexecuteMode_;
   };
 
 }}}

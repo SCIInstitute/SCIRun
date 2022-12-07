@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef INTERFACE_MODULES_CREATE_MATRIX_H
 #define INTERFACE_MODULES_CREATE_MATRIX_H
@@ -47,7 +47,7 @@ public:
 public Q_SLOTS:
   void moduleExecuted() override;
 protected:
-  virtual void pullSpecial() override;
+  void pullSpecial() override;
   void hideEvent(QHideEvent* event) override;
 
 private Q_SLOTS:
@@ -57,6 +57,7 @@ private Q_SLOTS:
   void remindAboutUnsavedMatrix();
 private:
   bool firstPull_;
+  class CodeEditor* matrixTextEdit_;
 };
 
 }

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -50,7 +50,7 @@ bool CurveFieldToTextBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const 
 
 FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
+  FieldHandle result = nullptr;
 
   std::string pts_fn(filename);
   std::string edge_fn(filename);
@@ -177,7 +177,6 @@ FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
-  bool has_header = false;
   bool first_line = true;
 
   std::vector<double> values;
@@ -212,11 +211,11 @@ FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
           {
             if (line_ncols == 1)
             {
-              has_header = true;
+              //has_header = true;
             }
             else if ((line_ncols == 3)||(line_ncols == 2))
             {
-              has_header = false;
+              //has_header = false;
               first_line = false;
               nrows++;
               ncols = line_ncols;
@@ -296,11 +295,11 @@ FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
           {
             if (line_ncols == 1)
             {
-              has_header = true;
+              //has_header = true;
             }
             else if (line_ncols > 1)
             {
-              has_header = false;
+              //has_header = false;
               first_line = false;
               nrows++;
               ncols = line_ncols;

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MappingDataSource.h>
 #include <Core/Math/MiscMath.h>
@@ -88,32 +88,32 @@ MappingDataSource::is_tensor() const
 
 class InterpolatedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       sfield_->interpolate(data,p,def_value_,ei_);
     }
 
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       sfield_->interpolate(data,p,Vector(def_value_,def_value_,def_value_),ei_);
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       sfield_->interpolate(data,p,Tensor(def_value_),ei_);
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->minterpolate(data,p,def_value_,mei_);
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       sfield_->minterpolate(data,p,Vector(def_value_,def_value_,def_value_),mei_);
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       sfield_->minterpolate(data,p,Tensor(def_value_),mei_);
     }
@@ -138,42 +138,42 @@ class InterpolatedDataSource : public MappingDataSource {
 
 class InterpolatedWeightedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       double weight; wfield_->interpolate(weight,p,0.0,wei_);
       sfield_->interpolate(data,p,def_value_,ei_);
       data = data*weight;
     }
 
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       double weight; wfield_->interpolate(weight,p,0.0,wei_);
       sfield_->interpolate(data,p,Vector(0.0,0.0,0.0),ei_);
       data = data*weight;
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       double weight; wfield_->interpolate(weight,p,0.0,wei_);
       sfield_->interpolate(data,p,Tensor(def_value_),ei_);
       data = data*weight;
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->minterpolate(data,p,def_value_,mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = weights_[j]*data[j];
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->minterpolate(data,p,Vector(def_value_,def_value_,def_value_),mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = weights_[j]*data[j];
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->minterpolate(data,p,Tensor(def_value_),mei_);
@@ -211,28 +211,28 @@ class InterpolatedWeightedDataSource : public MappingDataSource {
 
 class InterpolatedWeightedTensorDataSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Tensor weight; wfield_->interpolate(weight,p,Tensor(0.0),wei_);
       sfield_->interpolate(data,p,Vector(def_value_,def_value_,def_value_),ei_);
       data = weight*data;
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       wfield_->interpolate(data,p,Tensor(0.0),wei_);
       double tdata; sfield_->interpolate(tdata,p,def_value_,ei_);
       data = data*tdata;
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,Tensor(0.0),wmei_);
       sfield_->minterpolate(data,p,Vector(def_value_,def_value_,def_value_),mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = weights_[j]*data[j];
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(data,p,Tensor(0.0),wmei_);
       sfield_->minterpolate(tdata_,p,def_value_,mei_);
@@ -269,7 +269,7 @@ class InterpolatedWeightedTensorDataSource : public MappingDataSource {
 
 class InterpolatedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -277,7 +277,7 @@ class InterpolatedGradientSource : public MappingDataSource {
       data = Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
 
@@ -309,7 +309,7 @@ class InterpolatedGradientSource : public MappingDataSource {
 
 class InterpolatedWeightedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -319,7 +319,7 @@ class InterpolatedWeightedGradientSource : public MappingDataSource {
       data = weight*Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->mgradient(grads_,p,def_value_,meg_);
@@ -356,7 +356,7 @@ class InterpolatedWeightedGradientSource : public MappingDataSource {
 
 class InterpolatedWeightedTensorGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -366,7 +366,7 @@ class InterpolatedWeightedTensorGradientSource : public MappingDataSource {
       data = weight*Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->mgradient(grads_,p,def_value_,meg_);
@@ -403,7 +403,7 @@ class InterpolatedWeightedTensorGradientSource : public MappingDataSource {
 
 class InterpolatedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -411,7 +411,7 @@ class InterpolatedGradientNormSource : public MappingDataSource {
       data = (Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
       data.resize(grads_.size());
@@ -442,7 +442,7 @@ class InterpolatedGradientNormSource : public MappingDataSource {
 
 class InterpolatedWeightedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -452,7 +452,7 @@ class InterpolatedWeightedGradientNormSource : public MappingDataSource {
       data = (weight*Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
       wfield_->minterpolate(weights_,p,0.0,wmei_);
@@ -489,7 +489,7 @@ class InterpolatedWeightedGradientNormSource : public MappingDataSource {
 
 class InterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -499,7 +499,7 @@ class InterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
       data = (weight*Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
       wfield_->minterpolate(weights_,p,0.0,wmei_);
@@ -537,7 +537,7 @@ class InterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
 
 class ClosestInterpolatedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       if(!(sfield_->interpolate(data,p,def_value_)))
       {
@@ -556,7 +556,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       if(!(sfield_->interpolate(data,p)))
       {
@@ -575,7 +575,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       if(!(sfield_->interpolate(data,p,Tensor(def_value_))))
       {
@@ -594,7 +594,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -616,7 +616,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -639,7 +639,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -684,7 +684,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -720,7 +720,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -756,7 +756,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       data = weight * data;
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -792,7 +792,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       data = weight* data;
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -832,7 +832,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -872,7 +872,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -942,7 +942,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
 class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
   public:
 
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Tensor weight;
       if(!(wfield_->interpolate(weight,p,Tensor(0.0))))
@@ -978,7 +978,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
       data = weight * data;
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       if(!(wfield_->interpolate(data,p,Tensor(0.0))))
       {
@@ -1014,7 +1014,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
       data = tdata* data;
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1054,7 +1054,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1124,7 +1124,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
 
 class ClosestInterpolatedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
@@ -1147,7 +1147,7 @@ class ClosestInterpolatedGradientSource : public MappingDataSource {
       data = Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1195,7 +1195,7 @@ class ClosestInterpolatedGradientSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -1236,7 +1236,7 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1305,7 +1305,7 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Tensor weight;
       if(!(wfield_->interpolate(weight,p,Tensor(0.0))))
@@ -1346,7 +1346,7 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1415,7 +1415,7 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
 
 class ClosestInterpolatedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
@@ -1438,7 +1438,7 @@ class ClosestInterpolatedGradientNormSource : public MappingDataSource {
       data = (Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1486,7 +1486,7 @@ class ClosestInterpolatedGradientNormSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -1527,7 +1527,7 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1596,7 +1596,7 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       Tensor weight;
       if(!(wfield_->interpolate(weight,p,Tensor(0.0))))
@@ -1637,7 +1637,7 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
       }
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1706,7 +1706,7 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
 
 class ClosestNodeDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -1721,7 +1721,7 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -1735,7 +1735,7 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -1749,7 +1749,7 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1767,7 +1767,7 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1785,7 +1785,7 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1827,7 +1827,7 @@ class ClosestNodeDataSource : public MappingDataSource {
 
 class ClosestNodeWeightedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       double weight;
@@ -1852,7 +1852,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       double weight;
@@ -1877,7 +1877,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       Point r; double dist;
       double weight;
@@ -1902,7 +1902,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1931,7 +1931,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1960,7 +1960,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -2022,7 +2022,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
 
 class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       Tensor weight;
@@ -2047,7 +2047,7 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Tensor& data, const Point& p) const override
+    void get_data(Tensor& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2072,7 +2072,7 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
       data = tdata*data;
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -2101,7 +2101,7 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -2163,7 +2163,7 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
 
 class ClosestNodeGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -2219,7 +2219,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2303,7 +2303,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
 
 class ClosestNodeWeightedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2370,7 +2370,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2470,7 +2470,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
 
 class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2538,7 +2538,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2642,7 +2642,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
 
 class ClosestNodeGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -2699,7 +2699,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2784,7 +2784,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
 
 class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, const Point& p) const override
+    void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2852,7 +2852,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2953,7 +2953,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
 
 class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, const Point& p) const override
+    void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -3021,7 +3021,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
+    void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)

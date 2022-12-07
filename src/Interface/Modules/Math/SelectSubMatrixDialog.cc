@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -44,10 +44,10 @@ SelectSubMatrixDialog::SelectSubMatrixDialog(const std::string& name, ModuleStat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(rowCheckBox_, SelectSubMatrixAlgorithm::rowCheckBox());
-  addCheckBoxManager(columnCheckBox_, SelectSubMatrixAlgorithm::columnCheckBox());
-  addSpinBoxManager(rowStartSpinBox_, SelectSubMatrixAlgorithm::rowStartSpinBox());
-  addSpinBoxManager(columnStartSpinBox_, SelectSubMatrixAlgorithm::columnStartSpinBox());
-  addSpinBoxManager(columnEndSpinBox_, SelectSubMatrixAlgorithm::columnEndSpinBox());
-  addSpinBoxManager(rowEndSpinBox_, SelectSubMatrixAlgorithm::rowEndSpinBox());
+  addCheckBoxManager(rowCheckBox_, Parameters::rowCheckBox);
+  addCheckBoxManager(columnCheckBox_, Parameters::columnCheckBox);
+  addSpinBoxManager(rowStartSpinBox_, Parameters::rowStartSpinBox);
+  addSpinBoxManager(columnStartSpinBox_, Parameters::columnStartSpinBox);
+  addSpinBoxManager(columnEndSpinBox_, Parameters::columnEndSpinBox);
+  addSpinBoxManager(rowEndSpinBox_, Parameters::rowEndSpinBox);
 }

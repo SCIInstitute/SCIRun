@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
@@ -56,9 +56,13 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addCheckBoxManager(snapToNodeCheckBox_, Parameters::SnapToNode);
   addCheckBoxManager(snapToElementCheckBox_, Parameters::SnapToElement);
 
-  connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
-  connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxSize);
+  addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxSize);
+
+  connect(moveToComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateSinglePointProbeFromFieldDialog::enableWidgets);
+  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor);
   connectButtonToExecuteSignal(colorChooserPushButton_);
+  connect(bboxScaleCheckBox_, &QCheckBox::stateChanged, this, &GenerateSinglePointProbeFromFieldDialog::toggleSpinBoxes);
 }
 
 void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)
@@ -97,4 +101,10 @@ void GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor()
 void GenerateSinglePointProbeFromFieldDialog::pushColor()
 {
   state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+}
+
+void GenerateSinglePointProbeFromFieldDialog::toggleSpinBoxes()
+{
+  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
+  sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
 }

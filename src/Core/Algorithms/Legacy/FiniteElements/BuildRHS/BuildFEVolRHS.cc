@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -57,7 +57,7 @@ class FEMVolRHSBuilder
   FEMVolRHSBuilder(const AlgorithmBase *algo) :
       algo_(algo), numprocessors_(Parallel::NumCores()),
       barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
-      mesh_(0), field_(0),
+      mesh_(nullptr), field_(nullptr),
       domain_dimension(0), local_dimension_nodes(0),
       local_dimension_add_nodes(0),
       local_dimension_derivatives(0),
@@ -464,7 +464,7 @@ void FEMVolRHSBuilder::parallel(int proc_num)
 
 	/// loop over system dofs for this thread
 	int cnt = 0;
- 	size_type size_gd = end_gd-start_gd;
+ 	//size_type size_gd = end_gd-start_gd;
      try
 	{
 
@@ -530,7 +530,7 @@ void FEMVolRHSBuilder::parallel(int proc_num)
 		/// the main thread makes the matrix
 		if (proc_num == 0)
 		{
-		 rhsmatrix_ = boost::make_shared<DenseMatrix>(global_dimension,1);
+		 rhsmatrix_ = makeShared<DenseMatrix>(global_dimension,1);
 		}
 		success_[proc_num] = true;
 	}
@@ -560,13 +560,14 @@ void FEMVolRHSBuilder::parallel(int proc_num)
 		/// loop over system dofs for this thread
 		cnt = 0;
 
-		size_gd = end_gd-start_gd;
+		//size_gd = end_gd-start_gd;
 
 		for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
 		{
 
                         //zero output vector
-                        (*rhsmatrix_)(i,0)=0.0;
+                        const auto ii = static_cast<uint64_t>(i);
+                        (*rhsmatrix_)(ii,0)=0.0;
 
 			if (i < global_dimension_nodes)
 			{
@@ -598,8 +599,9 @@ void FEMVolRHSBuilder::parallel(int proc_num)
 					{
 						if (na[k] == i)
 						{
+              const auto ii = static_cast<uint64_t>(i);
 					          build_local_matrix_regular(ca[j], k , l_val, ni_points, ni_weights, ni_derivatives,precompute);
-                                                  (*rhsmatrix_)(i,0)=(*rhsmatrix_)(i,0)+l_val;
+                                                  (*rhsmatrix_)(ii,0)+=l_val;
 						}
 					}
 				}
@@ -622,8 +624,9 @@ void FEMVolRHSBuilder::parallel(int proc_num)
 					{
 						if (na[k] == i)
 						{
+              const auto ii = static_cast<uint64_t>(i);
 					            build_local_matrix(ca[j], k , l_val, ni_points, ni_weights, ni_derivatives);
-                                                    (*rhsmatrix_)(i,0)=(*rhsmatrix_)(i,0)+l_val;  //rhsmatrix_->add(i, 0, l_val);
+                                                    (*rhsmatrix_)(ii,0)+=l_val;  //rhsmatrix_->add(i, 0, l_val);
 						}
 					}
 
@@ -633,8 +636,9 @@ void FEMVolRHSBuilder::parallel(int proc_num)
 						{
 							if (global_dimension + static_cast<int>(ea[k]) == i)
 							{
+                const auto ii = static_cast<uint64_t>(i);
 							     build_local_matrix(ca[j], k+na.size() , l_val, ni_points, ni_weights, ni_derivatives);
-                                                             (*rhsmatrix_)(i,0)=(*rhsmatrix_)(i,0)+l_val;
+                                                             (*rhsmatrix_)(ii,0)+=l_val;
 							}
 						}
 					}

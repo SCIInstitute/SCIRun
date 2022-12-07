@@ -1,3 +1,35 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <gl-shaders/GLShader.hpp>
 
 #include <es-general/util/Math.hpp>
@@ -11,7 +43,7 @@ namespace Render {
 
 LightingUniforms::LightingUniforms()
 {
-  for (int i = 0; i < LIGHT_NUM; ++i)
+  for (size_t i = 0; i < LIGHT_NUM; ++i)
   {
     hasLightUniform[i] = false;
     uniformLocation[i] = 0;
@@ -27,27 +59,27 @@ void LightingUniforms::checkUniformArray(GLuint shaderID)
   std::vector<shaders::ShaderUniform> shaderUniforms = shaders::getProgramUniforms(shaderID);
   for (const shaders::ShaderUniform& uniform : shaderUniforms)
   {
-    if (uniform.nameInCode == "uLightDirWorld")
+    if (uniform.nameInCode == "uLightDirectionView")
     {
       hasLightUniform[0] = true;
       uniformLocation[0] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld0")
+    else if (uniform.nameInCode == "uLightDirectionView0")
     {
       hasLightUniform[0] = true;
       uniformLocation[0] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld1")
+    else if (uniform.nameInCode == "uLightDirectionView1")
     {
       hasLightUniform[1] = true;
       uniformLocation[1] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld2")
+    else if (uniform.nameInCode == "uLightDirectionView2")
     {
       hasLightUniform[2] = true;
       uniformLocation[2] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld3")
+    else if (uniform.nameInCode == "uLightDirectionView3")
     {
       hasLightUniform[3] = true;
       uniformLocation[3] = uniform.uniformLoc;
@@ -78,7 +110,7 @@ void LightingUniforms::checkUniformArray(GLuint shaderID)
 void LightingUniforms::applyUniform(const std::vector<glm::vec3>& lightDirs,
   const std::vector<glm::vec3>& lightColors) const
 {
-  for (int i = 0; i < lightDirs.size(); ++i)
+  for (size_t i = 0; i < lightDirs.size(); ++i)
   {
     if (i >= LIGHT_NUM)
       break;
@@ -100,5 +132,3 @@ void LightingUniforms::applyUniform(const std::vector<glm::vec3>& lightDirs,
 
 } // namespace Render
 } // namespace SCIRun
-
-

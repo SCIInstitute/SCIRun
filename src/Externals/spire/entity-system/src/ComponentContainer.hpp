@@ -1,11 +1,42 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
 #define SPIRE_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 #include "TemplateID.hpp"
 #include "BaseComponentContainer.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -55,6 +86,19 @@ public:
     // Remove all componnts, and if their destructors exist, call those
     // as well.
     removeAllImmediately();
+  }
+
+  std::string toString(std::string prefix) const override
+  {
+    std::string output = "";
+    prefix += "  ";
+
+    for(auto& comp : mComponents)
+    {
+      output += prefix + "Sequence: " + std::to_string(comp.sequence) + "\n";
+    }
+
+    return output;
   }
 
   /// Item that represents one component paired with a sequence.
@@ -198,7 +242,7 @@ public:
     // array because nullptr was not returned from the
     // getComponentItemWithSequence function.
     auto curIndex = item - &mComponents[0];
-    while (item->sequence == sequence 
+    while (item->sequence == sequence
       && curIndex < static_cast<int>(mComponents.size()))
     {
       ++numComponents;
@@ -269,7 +313,7 @@ public:
     // our vector.
     if (mComponents.size() > 0)
     {
-      if (mLastSortedSize != mComponents.size())
+      if (mLastSortedSize != static_cast<int>(mComponents.size()))
       {
        // Iterate through the components to-be-constructed array, and construct.
         auto it = mComponents.begin() + mLastSortedSize;
@@ -406,39 +450,19 @@ public:
     mComponents.emplace_back(sequence, component);
   }
 
-  //void addComponent(uint64_t sequence, T&& component)
-  //{
-  //  // Add the component to the end of mComponents and wait for a renormalize.
-  //  if (isStatic() == true)
-  //  {
-  //    std::cerr << "Attempting to add entityID component to a static component container!" << std::endl;
-  //    throw std::runtime_error("Attempting to add entityID component to static component container!");
-  //    return;
-  //  }
-  //  mComponents.emplace_back(sequence, std::forward<T>(component));
-  //}
-
-  // /// Returns the index the static component was added at.
-  // size_t addStaticComponent(const T& component)
-  // {
-  //   if (isStatic() == false)
-  //   {
-  //     if (mComponents.size() > 0)
-  //     {
-  //       std::cerr << "Cannot add static components to a container that already has";
-  //       std::cerr << " non-static\ncomponents!" << std::endl;
-  //       throw std::runtime_error("Cannot add static components to an entityID component container!");
-  //       return -1;
-  //     }
-  //     else
-  //     {
-  //       setStatic(true);
-  //     }
-  //   }
-  //   size_t newIndex = mComponents.size();
-  //   mComponents.emplace_back(StaticEntID, component);
-  //   return newIndex;
-  // }
+  std::string describe() const override
+  {
+    std::ostringstream ostr;
+    ostr << "ComponentContainer(): " << "\n";
+    ostr << "\tmLastSortedSize: " << mLastSortedSize << "\n";
+    ostr << "\tmUpperSequence: " << mUpperSequence << "\n";
+    ostr << "\tmLowerSequence: " << mLowerSequence << "\n";
+    ostr << "\tmIsStatic: " << mIsStatic << "\n";
+    ostr << "\tmComponents.size: " << mComponents.size() << "\n";
+    ostr << "\tmRemovals.size: " << mRemovals.size() << "\n";
+    ostr << "\tmModifications.size: " << mModifications.size() << "\n";
+    return ostr.str();
+  }
 
   /// Returns the index the static component was added at.
   size_t addStaticComponent(const T& component)
@@ -551,11 +575,6 @@ public:
   {
     mModifications.emplace_back(val, index, priority);
   }
-
-  //void modifyIndex(T&& val, size_t index, int priority)
-  //{
-  //  mModifications.emplace_back(std::move(val), index, priority);
-  //}
 
   /// Retrieves the active size of the vector backing this component container.
   /// Used only for debugging purposes (see addStaticComponent in ESCore).

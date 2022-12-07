@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_CONSOLEAPPLICATION_CONSOLECOMMANDS_H
 #define CORE_CONSOLEAPPLICATION_CONSOLECOMMANDS_H
 
@@ -41,7 +41,7 @@ namespace Console {
   {
   public:
     LoadFileCommandConsole();
-    virtual bool execute() override;
+    bool execute() override;
   // private:
   //   int index_ = 0;
   };
@@ -49,63 +49,63 @@ namespace Console {
   class SCISHARE SaveFileCommandConsole : public Commands::FileCommand<Commands::ConsoleCommand>, public Commands::SaveFileCommandHelper
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE ExecuteCurrentNetworkCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE QuitAfterExecuteCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     QuitAfterExecuteCommandConsole();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE QuitCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     QuitCommandConsole();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE PrintHelpCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE InteractiveModeCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE PrintVersionCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SCISHARE PrintModulesCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
    class SCISHARE SetupDataDirectoryCommand : public Core::Commands::ConsoleCommand
    {
    public:
-     virtual bool execute() override;
+     bool execute() override;
    };
 
 }}}

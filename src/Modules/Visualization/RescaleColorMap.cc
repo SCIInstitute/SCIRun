@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Modules/Visualization/RescaleColorMap.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -81,7 +81,7 @@ void RescaleColorMap::execute()
 
     //set the min/max values to the actual min/max if we choose auto
     double actual_min = std::numeric_limits<double>::max();
-    double actual_max = std::numeric_limits<double>::min();
+    double actual_max = -std::numeric_limits<double>::max();
     double min,max;
 
     for (const auto& field : fields)
@@ -115,11 +115,10 @@ void RescaleColorMap::execute()
     cm_shift =  - fixed_min;
     cm_scale = 1. / (fixed_max - fixed_min);
 
-    sendOutput(ColorMapOutput, StandardColorMapFactory::create(colorMap->getColorMapName(),
-      colorMap->getColorMapResolution(),
-      colorMap->getColorMapShift(),
-      colorMap->getColorMapInvert(),
-      cm_scale, cm_shift));
+    sendOutput(ColorMapOutput, StandardColorMapFactory::create(
+      colorMap->getColorData(), colorMap->getColorMapName(),
+      colorMap->getColorMapResolution(), colorMap->getColorMapShift(),
+      colorMap->getColorMapInvert(), cm_scale, cm_shift, colorMap->getAlphaLookup()));
   }
 }
 

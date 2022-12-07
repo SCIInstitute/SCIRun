@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Field/CalculateNodeLocationFrequencyAlgorithm.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -34,7 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -74,7 +74,7 @@ FieldHandle CalculateNodeLocationFrequencyAlgo::runImpl(FieldHandle input) const
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output field");
 
   auto facade(input->mesh()->getFacade());
-  boost::unordered_map<Point, unsigned int, PointHash> pointFreq;
+  std::unordered_map<Point, unsigned int, PointHash> pointFreq;
   for (const auto& node : facade->nodes())
   {
     pointFreq[node.point()]++;

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,12 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File       : SolveInverseProblemWithTikhonovSVD.h
-//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
-//    Date       : September 06th, 2017 (last update)
+
+///  File       : SolveInverseProblemWithTikhonovSVD.h
+///  Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+///  Date       : September 06th, 2017 (last update)
 
 #ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovSVD_H__
 #define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovSVD_H__
+
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 #include <Modules/Legacy/Inverse/share.h>
@@ -46,8 +47,8 @@ namespace Inverse {
 	{
 	public:
 		SolveInverseProblemWithTikhonovSVD();
-		virtual void execute();
-		virtual void setStateDefaults();
+                void execute() override;
+                void setStateDefaults() override;
 
 		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
 		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
@@ -60,10 +61,10 @@ namespace Inverse {
 		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
 		OUTPUT_PORT(2, RegInverse, DenseMatrix);
 
-		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+		MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
 	private:
-		
+
 	};
 }}}
 

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -31,44 +30,47 @@
 #define CORE_DATATYPES_VFDATA_H 1
 
 #include <Core/GeometryPrimitives/Vector.h>
+#define NOMINMAX
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Containers/Array2.h>
 #include <Core/Containers/Array3.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/CastFData.h>
-#include <string>
 #include <vector>
 #include <complex>
-#include <float.h>
 
 #include <Core/Datatypes/Legacy/Field/share.h>
 
-#define VFDATA_ACCESS_DECLARATION(type) \
-  virtual void get_value(type &val, VMesh::index_type idx) const; \
-  virtual void set_value(const type &val, VMesh::index_type idx); \
-  virtual void get_evalue(type &val, VMesh::index_type idx) const; \
-  virtual void set_evalue(const type &val, VMesh::index_type idx); \
-  virtual void get_values(type *ptr, VMesh::size_type sz, VMesh::size_type offset) const; \
-  virtual void set_values(const type *ptr, VMesh::size_type sz, VMesh::size_type offset); \
-  virtual void get_evalues(type *ptr, VMesh::size_type sz, VMesh::size_type offset) const; \
-  virtual void set_evalues(const type *ptr, VMesh::size_type sz, VMesh::size_type offset); \
-  virtual void set_all_values(const type &val); \
-  virtual void get_weighted_value(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const;  \
-  virtual void get_weighted_evalue(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const; \
-  virtual void get_values(type *ptr, VMesh::Node::array_type& nodes) const; \
-  virtual void get_values(type *ptr, VMesh::Elem::array_type& elems) const; \
-  virtual void set_values(const type *ptr, VMesh::Node::array_type& nodes); \
-  virtual void set_values(const type *ptr, VMesh::Elem::array_type& elems); \
-  virtual void get_values(type *ptr, index_type* idx, size_type size) const; \
-  virtual void set_values(const type *ptr, index_type* idx, size_type size); \
+#define VFDATA_ACCESS_DECLARATION_IMPL(type, V, O) \
+  V void get_value(type &val, VMesh::index_type idx) const O; \
+  V void set_value(const type &val, VMesh::index_type idx) O; \
+  V void get_evalue(type &val, VMesh::index_type idx) const O; \
+  V void set_evalue(const type &val, VMesh::index_type idx) O; \
+  V void get_values(type *ptr, VMesh::size_type sz, VMesh::size_type offset) const O; \
+  V void set_values(const type *ptr, VMesh::size_type sz, VMesh::size_type offset) O; \
+  V void get_evalues(type *ptr, VMesh::size_type sz, VMesh::size_type offset) const O; \
+  V void set_evalues(const type *ptr, VMesh::size_type sz, VMesh::size_type offset) O; \
+  V void set_all_values(const type &val) O; \
+  V void get_weighted_value(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const O;  \
+  V void get_weighted_evalue(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const O; \
+  V void get_values(type *ptr, VMesh::Node::array_type& nodes) const O; \
+  V void get_values(type *ptr, VMesh::Elem::array_type& elems) const O; \
+  V void set_values(const type *ptr, VMesh::Node::array_type& nodes) O; \
+  V void set_values(const type *ptr, VMesh::Elem::array_type& elems) O; \
+  V void get_values(type *ptr, index_type* idx, size_type size) const O; \
+  V void set_values(const type *ptr, index_type* idx, size_type size) O; \
 
+#define VFDATA_ACCESS_DECLARATION_V(type) VFDATA_ACCESS_DECLARATION_IMPL(type, virtual, )
+#define VFDATA_ACCESS_DECLARATION_O(type) VFDATA_ACCESS_DECLARATION_IMPL(type, , override)
 
-#define VFDATA_ACCESS_DECLARATION2(type) \
-  virtual void interpolate(type &val, VMesh::ElemInterpolate &interp, type defval = (static_cast<type>(0))) const; \
-  virtual void minterpolate(std::vector<type> &val, VMesh::MultiElemInterpolate &interp, type defval = (static_cast<type>(0))) const; \
-  virtual void gradient(StackVector<type,3> &val, VMesh::ElemGradient &interp, type defval = (static_cast<type>(0))) const; \
-  virtual void mgradient(std::vector<StackVector<type,3> > &val, VMesh::MultiElemGradient &interp, type defval = (static_cast<type>(0))) const; \
+#define VFDATA_ACCESS_DECLARATION2_IMPL(type, V, O) \
+  V void interpolate(type &val, VMesh::ElemInterpolate &interp, type defval = (static_cast<type>(0))) const O; \
+  V void minterpolate(std::vector<type> &val, VMesh::MultiElemInterpolate &interp, type defval = (static_cast<type>(0))) const O; \
+  V void gradient(StackVector<type,3> &val, VMesh::ElemGradient &interp, type defval = (static_cast<type>(0))) const O; \
+  V void mgradient(std::vector<StackVector<type,3> > &val, VMesh::MultiElemGradient &interp, type defval = (static_cast<type>(0))) const O; \
+
+#define VFDATA_ACCESS_DECLARATION2_V(type) VFDATA_ACCESS_DECLARATION2_IMPL(type, virtual, )
+#define VFDATA_ACCESS_DECLARATION2_O(type) VFDATA_ACCESS_DECLARATION2_IMPL(type, , override)
 
 #define VFDATA_FUNCTION_DECLARATION(type) \
   SCISHARE VFData* CreateVFData(std::vector<type>& fdata, std::vector<type>& lfdata, std::vector<std::vector<type> >& hfdata); \
@@ -96,28 +98,28 @@ public:
   virtual void* fdata_pointer() const;
   virtual void* efdata_pointer() const;
 
-  VFDATA_ACCESS_DECLARATION(char)
-  VFDATA_ACCESS_DECLARATION(unsigned char)
-  VFDATA_ACCESS_DECLARATION(short)
-  VFDATA_ACCESS_DECLARATION(unsigned short)
-  VFDATA_ACCESS_DECLARATION(int)
-  VFDATA_ACCESS_DECLARATION(unsigned int)
-  VFDATA_ACCESS_DECLARATION(long long)
-  VFDATA_ACCESS_DECLARATION(unsigned long long)
-  VFDATA_ACCESS_DECLARATION(float)
-  VFDATA_ACCESS_DECLARATION(double)
-  VFDATA_ACCESS_DECLARATION(std::complex<double>)
-  VFDATA_ACCESS_DECLARATION(Core::Geometry::Vector)
-  VFDATA_ACCESS_DECLARATION(Core::Geometry::Tensor)
+  VFDATA_ACCESS_DECLARATION_V(char)
+  VFDATA_ACCESS_DECLARATION_V(unsigned char)
+  VFDATA_ACCESS_DECLARATION_V(short)
+  VFDATA_ACCESS_DECLARATION_V(unsigned short)
+  VFDATA_ACCESS_DECLARATION_V(int)
+  VFDATA_ACCESS_DECLARATION_V(unsigned int)
+  VFDATA_ACCESS_DECLARATION_V(long long)
+  VFDATA_ACCESS_DECLARATION_V(unsigned long long)
+  VFDATA_ACCESS_DECLARATION_V(float)
+  VFDATA_ACCESS_DECLARATION_V(double)
+  VFDATA_ACCESS_DECLARATION_V(std::complex<double>)
+  VFDATA_ACCESS_DECLARATION_V(Core::Geometry::Vector)
+  VFDATA_ACCESS_DECLARATION_V(Core::Geometry::Tensor)
 
 
-  VFDATA_ACCESS_DECLARATION2(char)
-  VFDATA_ACCESS_DECLARATION2(int)
-  VFDATA_ACCESS_DECLARATION2(float)
-  VFDATA_ACCESS_DECLARATION2(double)
-  VFDATA_ACCESS_DECLARATION2(std::complex<double>)
-  VFDATA_ACCESS_DECLARATION2(Core::Geometry::Vector)
-  VFDATA_ACCESS_DECLARATION2(Core::Geometry::Tensor)
+  VFDATA_ACCESS_DECLARATION2_V(char)
+  VFDATA_ACCESS_DECLARATION2_V(int)
+  VFDATA_ACCESS_DECLARATION2_V(float)
+  VFDATA_ACCESS_DECLARATION2_V(double)
+  VFDATA_ACCESS_DECLARATION2_V(std::complex<double>)
+  VFDATA_ACCESS_DECLARATION2_V(Core::Geometry::Vector)
+  VFDATA_ACCESS_DECLARATION2_V(Core::Geometry::Tensor)
 
 
   /// Copy a value without needing to know the type
@@ -207,4 +209,3 @@ VFDATA_FUNCTION_DECLARATION(Core::Geometry::Tensor)
 } // end namespace
 
 #endif
-

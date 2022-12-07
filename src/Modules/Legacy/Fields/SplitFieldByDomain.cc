@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Fields/SplitFieldByDomain.cc
 
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
@@ -59,8 +60,8 @@ SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 void SplitFieldByDomain::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(SplitFieldByDomainAlgo::SortBySize, false);
-  state->setValue(SplitFieldByDomainAlgo::SortAscending, false);
+  state->setValue(Parameters::SortBySize, false);
+  state->setValue(Parameters::SortAscending, false);
 }
 
 void SplitFieldByDomain::execute()
@@ -69,8 +70,8 @@ void SplitFieldByDomain::execute()
 
   if (needToExecute())
   {
-    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortBySize);
-    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
+    setAlgoBoolFromState(Parameters::SortBySize);
+    setAlgoBoolFromState(Parameters::SortAscending);
 
     auto algoOutput = algo().run(withInputData((InputField, input)));
 

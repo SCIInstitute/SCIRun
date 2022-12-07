@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
@@ -133,17 +133,17 @@ TEST_F(PythonControllerFunctionalTests, DISABLED_CanExecuteNetwork)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::none));
+  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(std::nullopt));
   NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   PythonInterpreter::Instance().run_string("m1 = scirun_add_module(\"CreateLatVol\")");
-  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::NotExecuted);
+  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Value::NotExecuted);
   PythonInterpreter::Instance().run_string("m2 = scirun_add_module(\"CreateLatVol\")");
   PythonInterpreter::Instance().run_string("scirun_connect_modules(m1, 0, m2, 0)");
   PythonInterpreter::Instance().run_string("scirun_execute_all()");
  // boost::this_thread::sleep(boost::posix_time::milliseconds(500));
-  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Completed);
+  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Value::Completed);
   //TODO: how do i assert on
 }
 

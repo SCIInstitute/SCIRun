@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
@@ -45,6 +45,24 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addTextEditManager(listTextEdit_, Parameters::ListOfIsovalues);
   addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
   addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
+  addRadioButtonGroupManager({inclusiveRadioButton_, exclusiveRadioButton_}, Parameters::IsovalueListInclusiveExclusive);
+  addRadioButtonGroupManager({manualMinMaxRadioButton_, fieldMinMaxRadioButton_}, Parameters::IsovalueQuantityFromField);
+  addDoubleSpinBoxManager(manualMinDoubleSpinBox_, Parameters::ManualMinimumIsovalue);
+  addDoubleSpinBoxManager(manualMaxDoubleSpinBox_, Parameters::ManualMaximumIsovalue);
   WidgetStyleMixin::tabStyle(tabWidget);
   addTabManager(tabWidget, Parameters::IsovalueChoice);
+  connect(singleHorizontalSlider_, &QSlider::sliderReleased, this, &ExtractSimpleIsosurfaceDialog::sliderChanged);
+}
+
+void ExtractSimpleIsosurfaceDialog::sliderChanged()
+{
+  auto value = singleHorizontalSlider_->value();
+  auto percent = static_cast<double>(value) / (singleHorizontalSlider_->maximum() - singleHorizontalSlider_->minimum());
+  auto minmax = transient_value_cast<std::pair<double, double>>(state_->getTransientValue("fieldMinMax"));
+  auto newFieldValue = percent * (minmax.second - minmax.first) + minmax.first;
+  singleDoubleSpinBox_->setValue(newFieldValue);
+  singleDoubleSpinBox_->setToolTip(QString("Min: %1, Max: %2").arg(minmax.first).arg(minmax.second));
+
+  if (executeOnReleaseCheckBox_->isChecked())
+    Q_EMIT executeFromStateChangeTriggered();
 }

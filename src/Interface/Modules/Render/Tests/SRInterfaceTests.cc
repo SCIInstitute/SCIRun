@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #if _WIN32
 #include <GL/glew.h>
 #endif
@@ -34,7 +34,7 @@
 
 using namespace SCIRun;
 using namespace Render;
-using namespace Gui;
+
 #ifdef WIN32
 //TODO: these tests crash on OSX
 #define TEST_NAME(name) name
@@ -45,31 +45,15 @@ using namespace Gui;
 //TODO: crashes on Mac, works on Windows
 TEST(SRInterfaceTest, TEST_NAME(CanInstantiateSRInterface))
 {
-  std::shared_ptr<GLContext> context;
-  SRInterface srinterface(context);
+  SRInterface srinterface;
 }
 
-class DummyGLContext : public GLContext
-{
-public:
-  DummyGLContext() : GLContext(nullptr) {}
-  virtual void makeCurrent() override
-  {
-    std::cout << "DummyGLContext::makeCurrent called" << std::endl;
-  }
-  virtual void swapBuffers() override
-  {
-    std::cout << "DummyGLContext::swapBuffers called" << std::endl;
-  }
-};
-
 //TODO: this one crashes on windows now too.
-TEST(SRInterfaceTest, 
+TEST(SRInterfaceTest,
   //TEST_NAME(CanRenderEmptyFrame))
   DISABLED_CanRenderEmptyFrame)
 {
-  std::shared_ptr<GLContext> context(new DummyGLContext);
-  SRInterface srinterface(context);
+  SRInterface srinterface;
 
-  srinterface.doFrame(0, 50);
+  srinterface.doFrame(50);
 }

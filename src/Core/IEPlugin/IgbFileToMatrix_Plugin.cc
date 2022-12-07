@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /*
  *  IgbFiletoMatrix_Plugin.cc
@@ -54,7 +54,7 @@ using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
 
-MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
+MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle, const char *filename)
 {
   std::string line;
   std::vector<std::string> strs;
@@ -114,7 +114,7 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
     }
     is.close();
 
-    auto result(boost::make_shared<DenseMatrix>(x_size,t_size));
+    auto result(makeShared<DenseMatrix>(x_size,t_size));
 
     for(size_t p=0;p<t_size;p++ )
     {

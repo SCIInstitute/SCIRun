@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
+
 /// @todo Documentation Modules/Visualization/CreateStandardColorMap.h
 
 #ifndef MODULES_VISUALIZATION_CREATESTANDARDCOLORMAP_H
@@ -47,6 +48,10 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ColorMapResolution);
         ALGORITHM_PARAMETER_DECL(AlphaUserPointsVector);
         ALGORITHM_PARAMETER_DECL(AlphaFunctionVector);
+        ALGORITHM_PARAMETER_DECL(ColorMapOption);
+        ALGORITHM_PARAMETER_DECL(CustomColor0);
+        ALGORITHM_PARAMETER_DECL(CustomColor1);
+        ALGORITHM_PARAMETER_DECL(DefaultAlphaValue);
       }
     }
   }
@@ -62,12 +67,19 @@ namespace SCIRun
         CONVERTED_VERSION_OF_MODULE(CreateStandardColorMaps)
       public:
         CreateStandardColorMap();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         OUTPUT_PORT(0, ColorMapObject, ColorMap);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+
+      private:
+        enum ColorMapOptionType
+        {
+          PREDEFINED,
+          CUSTOM
+        };
       };
     }
   }

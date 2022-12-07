@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
 
 /*
@@ -86,9 +85,9 @@ ConvertNrrdToMatrix::execute()
 }
 
 MatrixHandle
-ConvertNrrdToMatrix::create_matrix_from_nrrds(boost::optional<NrrdDataHandle> dataHOpt,
-boost::optional<NrrdDataHandle> rowsHOpt,
-boost::optional<NrrdDataHandle> colsHOpt, int cols)
+ConvertNrrdToMatrix::create_matrix_from_nrrds(std::optional<NrrdDataHandle> dataHOpt,
+std::optional<NrrdDataHandle> rowsHOpt,
+std::optional<NrrdDataHandle> colsHOpt, int cols)
 {
   // Determine if we have data, rows, columns to indicate whether it is
   // a dense or sparse matrix
@@ -271,8 +270,8 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
 
 template<class PTYPE>
 MatrixHandle
-ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle rowsH,
-NrrdDataHandle colsH, int cols)
+ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle, NrrdDataHandle ,
+NrrdDataHandle , int )
 {
   error("Nrrd to Sparse matrix not supported yet.");
   return nullptr;

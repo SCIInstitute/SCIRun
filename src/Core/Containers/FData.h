@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -15,7 +14,7 @@
    Software is furnished to do so, subject to the following conditions:
 
    The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software. 
+   in all copies or substantial portions of the Software.
 
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,14 +23,15 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/  
+*/
 
-///  
+
+///
 ///    @file   FData.h
 ///    @author Martin Cole
 ///    @date   Wed Apr 28 09:45:51 2004
-///    
-///    @brief  Taken from old LatVolField.h ... 
+///
+///    @brief  Taken from old LatVolField.h ...
 
 
 #ifndef CORE_CONTAINERS_FDATA_H
@@ -58,40 +58,40 @@ public:
   typedef Data * iterator;
   typedef const Data * const_iterator;
 
-  iterator begin() { return &(*this)(0,0,0); } 
+  iterator begin() { return &(*this)(0,0,0); }
   iterator end() { return &((*this)(this->dim1()-1,this->dim2()-1,this->dim3()-1))+1; }
-  const_iterator begin() const { return &(*this)(0,0,0); } 
+  const_iterator begin() const { return &(*this)(0,0,0); }
   const_iterator end() const { return &((*this)(this->dim1()-1,this->dim2()-1,this->dim3()-1))+1; }
 
-    
+
   FData3d() : Array3<Data>() {}
   FData3d(int) : Array3<Data>() {}
   FData3d(const FData3d& data) : Array3<Data>(data) {}
   virtual ~FData3d();
-  
+
   const value_type &operator[](typename Msh::Cell::index_type idx) const
-  { return operator()(idx.k_,idx.j_,idx.i_); } 
+  { return operator()(idx.k_,idx.j_,idx.i_); }
   const value_type &operator[](typename Msh::Face::index_type idx) const
   { return operator()(0, 0, idx); }
   const value_type &operator[](typename Msh::Edge::index_type idx) const
-  { return operator()(0, 0, idx); }    
+  { return operator()(0, 0, idx); }
   const value_type &operator[](typename Msh::Node::index_type idx) const
-  { return operator()(idx.k_,idx.j_,idx.i_); }    
+  { return operator()(idx.k_,idx.j_,idx.i_); }
   const value_type &operator[](VMesh::index_type idx) const
   { return Array3<Data>::operator()(idx); }
 
   value_type &operator[](typename Msh::Cell::index_type idx)
-  { return operator()(idx.k_,idx.j_,idx.i_); } 
+  { return operator()(idx.k_,idx.j_,idx.i_); }
   value_type &operator[](typename Msh::Face::index_type idx)
   { return operator()(0, 0, idx); }
   value_type &operator[](typename Msh::Edge::index_type idx)
-  { return operator()(0, 0, idx); }    
+  { return operator()(0, 0, idx); }
   value_type &operator[](typename Msh::Node::index_type idx)
-  { return operator()(idx.k_,idx.j_,idx.i_); }    
+  { return operator()(idx.k_,idx.j_,idx.i_); }
   value_type &operator[](VMesh::index_type idx)
   { return Array3<Data>::operator()(idx); }
 
-  void resize(const typename Msh::Node::size_type &size) 
+  void resize(const typename Msh::Node::size_type &size)
   { Array3<Data>::resize(size.k_, size.j_, size.i_); Array3<Data>::zero(); }
   void resize(const typename Msh::Edge::size_type &size)
   { Array3<Data>::resize(1, 1, size); Array3<Data>::zero();  }
@@ -114,7 +114,7 @@ FData3d<Data, Msh>::~FData3d()
 {
 }
 
-  
+
 template <class Data, class Msh>
 const std::string
 FData3d<Data, Msh>::type_name(int n)
@@ -131,41 +131,41 @@ FData3d<Data, Msh>::type_name(int n)
   }
   else if (n == 1)
   {
-    return find_type_name(static_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(nullptr));
   }
   else
   {
-    return find_type_name(static_cast<Msh *>(0));
+    return find_type_name(static_cast<Msh *>(nullptr));
   }
 }
 
 template <class Data, class Msh>
 const TypeDescription*
-FData3d<Data, Msh>::get_type_description(int n) const 
+FData3d<Data, Msh>::get_type_description(int n) const
 {
   ASSERT((n >= -1) && n <= 2);
 
   static std::string name(type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
-  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
+  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(nullptr));
 
   if (n == -1) {
-    static TypeDescription* tdn1 = 0;
-    if (tdn1 == 0) {
+    static TypeDescription* tdn1 = nullptr;
+    if (tdn1 == nullptr) {
       TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
       (*subs)[0] = sub1;
       (*subs)[1] = sub2;
       tdn1 = new TypeDescription(name, subs, path, namesp,
 				    TypeDescription::CONTAINER_E);
-    } 
+    }
     return tdn1;
   }
   else if(n == 0) {
-    static TypeDescription* tdn0 = 0;
-    if (tdn0 == 0) {
-      tdn0 = new TypeDescription(name, 0, path, namesp,
+    static TypeDescription* tdn0 = nullptr;
+    if (tdn0 == nullptr) {
+      tdn0 = new TypeDescription(name, nullptr, path, namesp,
 				    TypeDescription::CONTAINER_E);
     }
     return tdn0;
@@ -177,17 +177,17 @@ FData3d<Data, Msh>::get_type_description(int n) const
 }
 
 template <class Data, class Msh>
-const TypeDescription* 
+const TypeDescription*
 get_type_description(FData3d<Data, Msh>*)
 {
   static std::string name(FData3d<Data, Msh>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
-  const TypeDescription *sub2 = SCIRun::get_type_description(static_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
+  const TypeDescription *sub2 = SCIRun::get_type_description(static_cast<Msh*>(nullptr));
 
-  static TypeDescription* tdn1 = 0;
-  if (tdn1 == 0) {
+  static TypeDescription* tdn1 = nullptr;
+  if (tdn1 == nullptr) {
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
     (*subs)[0] = sub1;
     (*subs)[1] = sub2;
@@ -215,9 +215,9 @@ public:
   FData2d(int) : Array2<Data>() {}
   FData2d(const FData2d& data) : Array2<Data>(data) {}
   virtual ~FData2d();
-  
+
   const value_type &operator[](typename Msh::Cell::index_type idx) const
-  { return operator()(0, idx); } 
+  { return operator()(0, idx); }
   const value_type &operator[](typename Msh::Face::index_type idx) const
   { return operator()(idx.j_, idx.i_); }
   const value_type &operator[](typename Msh::Edge::index_type idx) const
@@ -228,7 +228,7 @@ public:
   { return Array2<Data>::operator()(static_cast<unsigned int>(idx)); }
 
   value_type &operator[](typename Msh::Cell::index_type idx)
-  { return operator()(0, idx); } 
+  { return operator()(0, idx); }
   value_type &operator[](typename Msh::Face::index_type idx)
   { return operator()(idx.j_, idx.i_); }
   value_type &operator[](typename Msh::Edge::index_type idx)
@@ -277,26 +277,26 @@ FData2d<Data, Msh>::type_name(int n)
   }
   else if (n == 1)
   {
-    return find_type_name(static_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(nullptr));
   }
   else
   {
-    return find_type_name(static_cast<Msh *>(0));
+    return find_type_name(static_cast<Msh *>(nullptr));
   }
 }
 
 template <class Data, class Msh>
-const TypeDescription* 
+const TypeDescription*
 get_type_description(FData2d<Data, Msh>*)
 {
   static std::string name(FData2d<Data, Msh>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
-  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
+  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(nullptr));
 
-  static TypeDescription* tdn1 = 0;
-  if (tdn1 == 0) {
+  static TypeDescription* tdn1 = nullptr;
+  if (tdn1 == nullptr) {
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
     (*subs)[0] = sub1;
     (*subs)[1] = sub2;
@@ -332,11 +332,11 @@ public:
   FData1d(int) : Array1<Data>() {}
   FData1d(const FData1d& data) { Array1<Data>::copy(data); }
   virtual ~FData1d();
-  
+
   const value_type &operator[](index_type idx) const
-  { return operator()(idx); } 
+  { return operator()(idx); }
   value_type &operator[](index_type idx)
-  { return operator()(idx); } 
+  { return operator()(idx); }
 
   void resize(const size_type size)
   { Array1<Data>::resize(size); }
@@ -367,23 +367,23 @@ FData1d<Data>::type_name(int n)
   {
     return "FData1d";
   }
-  else 
+  else
   {
-    return find_type_name(static_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(nullptr));
   }
 }
 
 template <class Data>
-const TypeDescription* 
+const TypeDescription*
 get_type_description(FData1d<Data>*)
 {
   static std::string name(FData1d<Data>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(nullptr));
 
-  static TypeDescription* tdn1 = 0;
-  if (tdn1 == 0) 
+  static TypeDescription* tdn1 = nullptr;
+  if (tdn1 == nullptr)
   {
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub1;
@@ -397,4 +397,3 @@ get_type_description(FData1d<Data>*)
 } // end namespace SCIRun
 
 #endif // Containers_FData_h
-

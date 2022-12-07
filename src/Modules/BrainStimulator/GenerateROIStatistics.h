@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@file
 /// GenerateROIStatisticsModule.cc
@@ -68,21 +68,21 @@ class SCISHARE GenerateROIStatistics : public SCIRun::Dataflow::Networks::Module
   public:
     GenerateROIStatistics();
 
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
+    void execute() override;
+    void setStateDefaults() override;
 
-    INPUT_PORT(0, MeshDataOnElements, Field);
-    INPUT_PORT(1, PhysicalUnit, String);
-    INPUT_PORT(2, AtlasMesh, Field);
-    INPUT_PORT(3, AtlasMeshLabels, String);
-    INPUT_PORT(4, CoordinateSpace, Field);
-    INPUT_PORT(5, CoordinateSpaceLabel, String);
+    INPUT_PORT(0, MeshDataOnElements, Field)
+    INPUT_PORT(1, PhysicalUnit, String)
+    INPUT_PORT(2, AtlasMesh, Field)
+    INPUT_PORT(3, AtlasMeshLabels, String)
+    INPUT_PORT(4, CoordinateSpace, Field)
+    INPUT_PORT(5, CoordinateSpaceLabel, String)
 
-    OUTPUT_PORT(0, StatisticalResults, Matrix);
+    OUTPUT_PORT(0, StatisticalResults, Matrix)
 
     NEW_BRAIN_STIMULATOR_MODULE
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 };
 
 }}}

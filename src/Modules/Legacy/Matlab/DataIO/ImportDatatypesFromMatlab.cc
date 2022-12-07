@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -50,7 +50,7 @@ namespace detail
   {
   public:
     explicit ImportDatatypesFromMatlabImpl(LoggerHandle logger);
-    void indexmatlabfile(bool postmsg);
+    void indexmatlabfile();
     void displayerror(const std::string& str) const;
 
     std::string guimatrixinfotextslist_, guimatrixnameslist_, guimatrixname_, guifilename_;
@@ -133,7 +133,7 @@ class ImportDatatypesFromMatlab : public Module
     //   string to TCL with all the names and formats of the matrices.
     //   NOTE: This Function explicitly depends on the TCL code.
 
-    void		indexmatlabfile(bool postmsg);
+    void		indexmatlabfile();
 
     // readmatlabarray():
     //   This function reads the in the gui selected Matlab array. It
@@ -177,7 +177,7 @@ ImportDatatypesFromMatlab::ImportDatatypesFromMatlab(GuiContext* ctx)
     guimatrixnameslist_(get_ctx()->subVar("matrixnameslist",false)),
     guimatrixname_(get_ctx()->subVar("matrixname"))
 {
-  indexmatlabfile(false);
+  indexmatlabfile();
 }
 
 // Destructor:
@@ -205,7 +205,7 @@ void ImportDatatypesFromMatlab::execute()
 		std::string filename = stringH->get();
 		guifilename_.set(filename);
 		get_ctx()->reset();
-    indexmatlabfile(true);
+    indexmatlabfile();
 		get_ctx()->reset();
 	}
 
@@ -323,7 +323,7 @@ void ImportDatatypesFromMatlab::tcl_command(GuiArgs& args, void* userdata)
     get_ctx()->reset();
 
     // Find out what the .mat file contains
-    indexmatlabfile(true);
+    indexmatlabfile();
     return;
   }
   else
@@ -381,7 +381,7 @@ matlabarray ImportDatatypesFromMatlab::readmatlabarray(int p)
 namespace detail
 {
 
-void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
+void ImportDatatypesFromMatlabImpl::indexmatlabfile()
 {
 	const int NUMPORTS = 9;
   std::string matrixinfotexts[NUMPORTS];
@@ -393,8 +393,6 @@ void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
   guimatrixinfotextslist_ = matrixinfotextslist;
   guimatrixnameslist_ = matrixnameslist;
 
-//   SCIRun::ProgressReporter* pr = 0;
-//   if (postmsg) pr = dynamic_cast<SCIRun::ProgressReporter* >(this);
   matlabconverter translate(logger_);
 
   std::string filename = guifilename_;
@@ -466,7 +464,6 @@ void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
       }
     }
 
-
     for (int q=0;q<NUMPORTS;q++)
     {
       matrixinfotexts[q] += "{none} } ";
@@ -481,7 +478,7 @@ void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
     matrixname = "";
     for (int p=0;p<NUMPORTS;p++)
     {
-      if (foundmatrixname[p] == false)
+      if (!foundmatrixname[p])
       {
         if (p==0)
         {

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H 1
@@ -50,7 +50,7 @@ namespace SCIRun {
           bool runImpl(FieldHandle input, NrrdDataHandle data, FieldHandle& output) const;
           bool verify_input_data(FieldHandle input_field, size_t dataRows, size_t dataCols, size_type& numvals, FieldInformation& fi, const std::string& outputDatatype = "double") const;
 
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
           FieldHandle runImplRealComplex(FieldHandle input_field, Datatypes::DenseMatrixHandle realData, Datatypes::ComplexDenseMatrixHandle complexData) const;
           template <typename T>

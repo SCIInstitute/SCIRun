@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Basic/DynamicPortTester.cc
 
 #include <iostream>
@@ -58,7 +59,7 @@ void DynamicPortTester::execute()
   std::cout << "Dynamic port test. Connected are " << matrices.size() << " matrices, " << fields.size()
     << " fields, and " << strings.size() << " strings." << std::endl;
 
-  sendOutput(NumMatrices, boost::make_shared<Int32>(static_cast<int>(matrices.size())));
-  sendOutput(NumFields, boost::make_shared<Int32>(static_cast<int>(fields.size())));
-  sendOutput(NumStrings, boost::make_shared<Int32>(static_cast<int>(strings.size())));
+  sendOutput(NumMatrices, makeShared<Int32>(static_cast<int>(matrices.size())));
+  sendOutput(NumFields, makeShared<Int32>(static_cast<int>(fields.size())));
+  sendOutput(NumStrings, makeShared<Int32>(static_cast<int>(strings.size())));
 }

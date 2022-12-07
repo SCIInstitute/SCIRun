@@ -1,57 +1,109 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
-
+#include <chrono>
+#include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Interruptible.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Thread;
 
-Mutex::Mutex(const std::string& name) : name_(name)
+#define LOG_GUARD 0
+
+NamedMutex::NamedMutex(const std::string& name) : name_(name)
 {
 }
 
-void Mutex::lock()
+std::string NamedMutex::name() const { return name_; }
+NamedMutex& NamedMutex::get() { return *this; }
+
+LoggedGuard::LoggedGuard(NamedMutex& mutex, const std::string& log) : std::scoped_lock<std::mutex>(mutex.get()),
+  log_("[" + mutex.name() + "] :: " + log)
 {
-  impl_.lock();
+#if LOG_GUARD
+  logCritical("LoggedGuard() locking of {} complete: {}", mutex.name(), log);
+#endif
 }
 
-void Mutex::unlock()
+LoggedGuard::~LoggedGuard()
 {
-  impl_.unlock();
+#if LOG_GUARD
+  logCritical("~LoggedGuard() unlocking about to occur: {}", log_);
+#endif
 }
 
-void Interruptible::checkForInterruption()
+LoggedGuard SCIRun::Core::Thread::makeLoggedGuard(NamedMutex& mutex, const std::string& name)
 {
-  boost::this_thread::interruption_point();
-  //#ifdef WIN32 // this is working on Mac, but not Windows.
-  //std::cout << "trying to interrupt_point in thread " << boost::this_thread::get_id() << std::endl;
-  //std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
-  //std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
-  //#endif
+#if LOG_GUARD
+  logCritical("LoggedGuard() attempting to lock: {}", name);
+#endif
+  return {mutex, name};
+}
+
+Stoppable::Stoppable() :
+  exitSignal(new std::promise<void>),
+  futureObj(exitSignal->get_future())
+{
+}
+
+Stoppable::Stoppable(Stoppable&& obj) :
+  exitSignal(std::move(obj.exitSignal)),
+  futureObj(std::move(obj.futureObj))
+{
+}
+
+Stoppable& Stoppable::operator=(Stoppable && obj)
+{
+  exitSignal = std::move(obj.exitSignal);
+  futureObj = std::move(obj.futureObj);
+  return *this;
+}
+
+void Stoppable::resetStoppability()
+{
+  exitSignal.reset(new std::promise<void>);
+  futureObj = exitSignal->get_future();
+}
+
+//Checks if thread is requested to stop
+bool Stoppable::stopRequested() const
+{
+  //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << "?";
+
+  auto timedout = futureObj.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout;
+  //std::cout << "\t" << std::boolalpha << !timedout << std::endl;
+    // checks if value in future object is available
+  return !timedout;
+}
+
+// Request the thread to stop by setting value in promise object
+void Stoppable::sendStopRequest()
+{
+  //std::cout << std::this_thread::get_id() << " " << __FUNCTION__ << std::endl;
+  exitSignal->set_value();
 }

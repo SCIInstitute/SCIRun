@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,8 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,8 +44,13 @@ CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addTextEditManager(functionTextEdit_, CreateFieldDataModule::FunctionString);
-  addComboBoxManager(fieldOutputDataComboBox_, CreateFieldDataModule::FormatString);
+  addComboBoxManager(fieldOutputDataComboBox_, Variables::FormatString);
   addComboBoxManager(fieldOutputBasisComboBox_, CreateFieldDataModule::BasisString);
   connectParserHelpButton(parserHelpButton_);
+
+  {
+    codeEdit_ = new CodeEditor(this);
+    qobject_cast<QVBoxLayout*>(expressionGroupBox_->layout())->insertWidget(0, codeEdit_);
+    addPlainTextEditManager(codeEdit_, Variables::FunctionString);
+  }
 }

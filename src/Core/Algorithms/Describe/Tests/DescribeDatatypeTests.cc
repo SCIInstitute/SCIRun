@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,9 +24,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
+
 #include <Core/Algorithms/Describe/DescribeDatatype.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
@@ -66,7 +67,7 @@ TEST(DescribeDatatypeAlgorithmTests, CanDescribeField)
 {
   DescribeDatatype algo;
 
-  auto field = CreateEmptyLatVol(); 
+  auto field = CreateEmptyLatVol();
   auto desc = algo.describe(field);
 
   EXPECT_EQ("[Field Data] Info:\nType: GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,HexTrilinearLgn<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > \nCenter: [0 0 0]\nSize: [2 2 2]\nData min,max: 0 , 0\n# nodes: 60\n# elements: 24\n# data: 60\nData location: Nodes (linear basis)\nDims (x,y,z): [3 4 5]\nGeometric size: 8\n", desc);
@@ -76,7 +77,7 @@ TEST(DescribeDatatypeAlgorithmTests, CanDescribeComplexDenseMatrix)
 {
   DescribeDatatype algo;
 
-  auto m = boost::make_shared<ComplexDenseMatrix>(2, 2);
+  auto m = makeShared<ComplexDenseMatrix>(2, 2);
   *m << complex{ 1, 2 }, complex{ 3, -1 }, complex{ 0, 1 }, complex{ -2, -1 };
 
   auto desc = algo.describe(m);
@@ -95,4 +96,15 @@ TEST(DescribeDatatypeAlgorithmTests, CanDescribeComplexSparseMatrix)
   auto desc = algo.describe(s);
 
   EXPECT_EQ("[Complex Matrix Data] Info:\nType:\t\tComplexSparseRowMatrix\n# Rows:\t\t2\n# Columns:\t\t2\n# Elements:\t\t4\nMinimum (by norm):\t(0,1)\nMaximum (by norm):\t(3,-1)\n", desc);
+}
+
+TEST(DescribeDatatypeAlgorithmTests, CanDescribeColorMap)
+{
+  DescribeDatatype algo;
+
+  auto cm = StandardColorMapFactory::create();
+
+  auto desc = algo.describe(cm);
+
+  EXPECT_EQ("[ColorMap Object] Description: \nName: Rainbow\nResolution: 256\nInvert: false\nShift: 0\nScale: 0.5\nRescale Shift: 1 & " + cm->styleSheet(), desc);
 }

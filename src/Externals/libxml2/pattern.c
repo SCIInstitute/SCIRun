@@ -3,7 +3,7 @@
  *
  * Reference:
  *   http://www.w3.org/TR/2001/REC-xmlschema-1-20010502/
- *   to some extent 
+ *   to some extent
  *   http://www.w3.org/TR/1999/REC-xml-19991116
  *
  * See Copyright for the status of this software.
@@ -154,7 +154,7 @@ struct _xmlPatParserContext {
     int	           error;		/* error code */
     xmlDictPtr     dict;		/* the dictionary if any */
     xmlPatternPtr  comp;		/* the result */
-    xmlNodePtr     elem;		/* the current node if any */    
+    xmlNodePtr     elem;		/* the current node if any */
     const xmlChar **namespaces;		/* the namespaces definitions */
     int   nb_namespaces;		/* the number of namespaces */
 };
@@ -281,7 +281,7 @@ xmlNewPatParserContext(const xmlChar *pattern, xmlDictPtr dict,
     cur->base = pattern;
     if (namespaces != NULL) {
         int i;
-	for (i = 0;namespaces[2 * i] != NULL;i++);
+	for (i = 0;namespaces[2 * i] != NULL;i++) {}
         cur->nb_namespaces = i;
     } else {
         cur->nb_namespaces = 0;
@@ -775,7 +775,7 @@ xmlPatScanLiteral(xmlPatParserContextPtr ctxt) {
  * xmlPatScanName:
  * @ctxt:  the XPath Parser context
  *
- * [4] NameChar ::= Letter | Digit | '.' | '-' | '_' | 
+ * [4] NameChar ::= Letter | Digit | '.' | '-' | '_' |
  *                  CombiningChar | Extender
  *
  * [5] Name ::= (Letter | '_' | ':') (NameChar)*
@@ -800,7 +800,7 @@ xmlPatScanName(xmlPatParserContextPtr ctxt) {
 
     while ((IS_LETTER(val)) || (IS_DIGIT(val)) ||
            (val == '.') || (val == '-') ||
-	   (val == '_') || 
+	   (val == '_') ||
 	   (IS_COMBINING(val)) ||
 	   (IS_EXTENDER(val))) {
 	cur += len;
@@ -883,7 +883,7 @@ xmlCompileAttributeTest(xmlPatParserContextPtr ctxt) {
     xmlChar *token = NULL;
     xmlChar *name = NULL;
     xmlChar *URL = NULL;
-    
+
     name = xmlPatScanNCName(ctxt);
     if (name == NULL) {
 	if (CUR == '*') {
@@ -899,7 +899,7 @@ xmlCompileAttributeTest(xmlPatParserContextPtr ctxt) {
     if (CUR == ':') {
 	int i;
 	xmlChar *prefix = name;
-	
+
 	NEXT;
 	/*
 	* This is a namespace match
@@ -921,7 +921,7 @@ xmlCompileAttributeTest(xmlPatParserContextPtr ctxt) {
 		ERROR5(NULL, NULL, NULL,
 		    "xmlCompileAttributeTest : no namespace bound to prefix %s\n",
 		    prefix);
-		ctxt->error = 1;	    
+		ctxt->error = 1;
 		goto error;
 	    }
 	}
@@ -935,7 +935,7 @@ xmlCompileAttributeTest(xmlPatParserContextPtr ctxt) {
 		    "xmlCompileAttributeTest : Name expected\n");
 		ctxt->error = 1;
 		goto error;
-	    }	    
+	    }
 	} else {
 	    PUSH(XML_OP_ATTR, token, URL);
 	}
@@ -959,7 +959,7 @@ error:
  * form suitable for fast matching.
  *
  * [3]    Step    ::=    '.' | NameTest
- * [4]    NameTest    ::=    QName | '*' | NCName ':' '*' 
+ * [4]    NameTest    ::=    QName | '*' | NCName ':' '*'
  */
 
 static void
@@ -983,7 +983,7 @@ xmlCompileStepPattern(xmlPatParserContextPtr ctxt) {
 	} else if (CUR == '@') {
 	    NEXT;
 	    xmlCompileAttributeTest(ctxt);
-	    if (ctxt->error != 0) 
+	    if (ctxt->error != 0)
 		goto error;
 	    return;
 	} else {
@@ -1058,7 +1058,7 @@ xmlCompileStepPattern(xmlPatParserContextPtr ctxt) {
 		if (CUR == ':') {
 		    xmlChar *prefix = name;
 		    int i;
-		    
+
 		    NEXT;
 		    /*
 		    * This is a namespace match
@@ -1147,7 +1147,7 @@ error:
  * Compile the Path Pattern and generates a precompiled
  * form suitable for fast matching.
  *
- * [5]    Path    ::=    ('.//')? ( Step '/' )* ( Step | '@' NameTest ) 
+ * [5]    Path    ::=    ('.//')? ( Step '/' )* ( Step | '@' NameTest )
  */
 static void
 xmlCompilePathPattern(xmlPatParserContextPtr ctxt) {
@@ -1157,7 +1157,7 @@ xmlCompilePathPattern(xmlPatParserContextPtr ctxt) {
     } else if ((CUR == '.') || (ctxt->comp->flags & XML_PATTERN_NOTPATTERN)) {
         ctxt->comp->flags |= PAT_FROM_CUR;
     }
-	
+
     if ((CUR == '/') && (NXT(1) == '/')) {
 	PUSH(XML_OP_ANCESTOR, NULL, NULL);
 	NEXT;
@@ -1358,7 +1358,7 @@ xmlStreamCompAddStep(xmlStreamCompPtr comp, const xmlChar *name,
 /**
  * xmlStreamCompile:
  * @comp: the precompiled pattern
- * 
+ *
  * Tries to stream compile a pattern
  *
  * Returns -1 in case of failure and 0 in case of success.
@@ -1418,7 +1418,7 @@ xmlStreamCompile(xmlPatternPtr comp) {
 		flags = 0;
 		if (s < 0)
 		    goto error;
-		break;	    
+		break;
 	    case XML_OP_ATTR:
 		flags |= XML_STREAM_STEP_ATTR;
 		s = xmlStreamCompAddStep(stream, comp->steps[i].value,
@@ -1441,7 +1441,7 @@ xmlStreamCompile(xmlPatternPtr comp) {
 		flags = 0;
 		if (s < 0)
 		    goto error;
-		break;	    
+		break;
 	    case XML_OP_ALL:
 	        s = xmlStreamCompAddStep(stream, NULL, NULL, flags);
 		flags = 0;
@@ -1466,7 +1466,7 @@ xmlStreamCompile(xmlPatternPtr comp) {
 		    stream->flags |= XML_STREAM_DESC;
 		break;
 	}
-    }    
+    }
     if ((! root) && (comp->flags & XML_PATTERN_NOTPATTERN) == 0) {
 	/*
 	* If this should behave like a real pattern, we will mark
@@ -1478,7 +1478,7 @@ xmlStreamCompile(xmlPatternPtr comp) {
 
 	if (stream->nbStep > 0) {
 	    if ((stream->steps[0].flags & XML_STREAM_STEP_DESC) == 0)
-		stream->steps[0].flags |= XML_STREAM_STEP_DESC;	    
+		stream->steps[0].flags |= XML_STREAM_STEP_DESC;
 	}
     }
     stream->steps[s].flags |= XML_STREAM_STEP_FINAL;
@@ -1650,7 +1650,7 @@ xmlStreamPushInternal(xmlStreamCtxtPtr stream,
 	    if ((nodeType == XML_ELEMENT_NODE) &&
 		(((stream->flags & XML_PATTERN_NOTPATTERN) == 0) ||
 		(stream->level == 0))) {
-		    ret = 1;		
+		    ret = 1;
 	    }
 	    stream->level++;
 	    goto stream_next;
@@ -1689,7 +1689,7 @@ xmlStreamPushInternal(xmlStreamCtxtPtr stream,
 		* If there are "//", then we need to process every "//"
 		* occuring in the states, plus any other state for this
 		* level.
-		*/		
+		*/
 		step = stream->states[2 * i];
 
 		/* TODO: should not happen anymore: dead states */
@@ -1707,10 +1707,10 @@ xmlStreamPushInternal(xmlStreamCtxtPtr stream,
 		if ((tmp < stream->level) && (!desc))
 		    goto next_state;
 	    }
-	    /* 
+	    /*
 	    * Check for correct node-type.
 	    */
-	    if ((nodeType == XML_ATTRIBUTE_NODE) && 
+	    if ((nodeType == XML_ATTRIBUTE_NODE) &&
 		((comp->steps[step].flags & XML_STREAM_STEP_ATTR) == 0))
 		goto next_state;
 	    /*
@@ -1738,7 +1738,7 @@ xmlStreamPushInternal(xmlStreamCtxtPtr stream,
 			     (xmlStrEqual(comp->steps[step].ns, ns)));
 		}
 	    }
-	    if (match) {		
+	    if (match) {
 		final = comp->steps[step].flags & XML_STREAM_STEP_FINAL;
 		if (desc) {
 		    if (final) {
@@ -1784,7 +1784,7 @@ next_state:
 	    * Re/enter the expression if it is a "descendant" one,
 	    * or if we are at the 1st level of evaluation.
 	    */
-	    
+
 	    if (stream->level == 1) {
 		if (XML_STREAM_XS_IDC(stream)) {
 		    /*
@@ -1794,7 +1794,7 @@ next_state:
 		    goto stream_next;
 		} else
 		    goto compare;
-	    }	    
+	    }
 	    /*
 	    * A "//" is always reentrant.
 	    */
@@ -1804,19 +1804,19 @@ next_state:
 	    /*
 	    * XS-IDC: Process the 2nd level, since the missing
 	    * "self::node()" is responsible for the 2nd level being
-	    * the real start level.	    
-	    */	    
+	    * the real start level.
+	    */
 	    if ((stream->level == 2) && XML_STREAM_XS_IDC(stream))
 		goto compare;
 
 	    goto stream_next;
 	}
-	
+
 compare:
 	/*
 	* Check expected node-type.
 	*/
-	if ((nodeType == XML_ATTRIBUTE_NODE) && 
+	if ((nodeType == XML_ATTRIBUTE_NODE) &&
 	    ((comp->steps[0].flags & XML_STREAM_STEP_ATTR) == 0))
 	    goto stream_next;
 	/*
@@ -1855,11 +1855,11 @@ compare:
 	    */
 	    stream->blockLevel = stream->level;
 	}
-	
+
 stream_next:
         stream = stream->next;
     } /* while stream != NULL */
- 
+
     if (err > 0)
         ret = -1;
 #ifdef DEBUG_STREAMING
@@ -1921,11 +1921,11 @@ xmlStreamPushAttr(xmlStreamCtxtPtr stream,
 int
 xmlStreamPop(xmlStreamCtxtPtr stream) {
     int i, lev;
-    int ret;
+    //int ret;
 
     if (stream == NULL)
         return(-1);
-    ret = 0;
+    //ret = 0;
     while (stream != NULL) {
 	/*
 	* Reset block-level.
@@ -1934,11 +1934,11 @@ xmlStreamPop(xmlStreamCtxtPtr stream) {
 	    stream->blockLevel = -1;
 
 	stream->level--;
-	if (stream->level < 0)
-	    ret = -1;		
+//	if (stream->level < 0)
+//	    ret = -1;
 	/*
 	 * Check evolution of existing states
-	 */	
+	 */
 	for (i = stream->nbState -1; i >= 0; i--) {
 	    /* discard obsoleted states */
 	    lev = stream->states[(2 * i) + 1];
@@ -2175,7 +2175,7 @@ xmlPatternMaxDepth(xmlPatternPtr comp) {
  * part of the set.
  *
  * Returns -1 in case of error otherwise the depth,
- *         
+ *
  */
 int
 xmlPatternMinDepth(xmlPatternPtr comp) {

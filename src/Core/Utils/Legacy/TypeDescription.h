@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///    @file    TypeDescription.h
 ///    @author  Martin Cole
@@ -52,7 +52,7 @@ public:
     CONTAINER_E,
     FIELD_E,
     OTHER_E
-  }; 
+  };
 
   typedef std::vector<const TypeDescription*> td_vec;
 
@@ -60,23 +60,23 @@ public:
 		  const std::string& path,
 		  const std::string& namesp,
 		  category_e c = OTHER_E);
-  TypeDescription(const std::string& name, 
-		  td_vec *sub, // this takes ownership of the memory. 
+  TypeDescription(const std::string& name,
+		  td_vec *sub, // this takes ownership of the memory.
 		  const std::string& path,
 		  const std::string& namesp,
 		  category_e c = OTHER_E);
   ~TypeDescription();
-     
+
   td_vec* get_sub_type() const {
     return subtype_;
   }
   /// The arguments determine how the templated types are separated.
   /// default is "<" and "> "
-  std::string get_name(const std::string & type_sep_start = "<", 
+  std::string get_name(const std::string & type_sep_start = "<",
 		  const std::string & type_sep_end = "> ") const;
   std::string get_similar_name(const std::string &substitute,
 			  const int pos,
-			  const std::string & type_sep_start = "<", 
+			  const std::string & type_sep_start = "<",
 			  const std::string & type_sep_end = "> ") const;
 
   std::string get_filename() const;
@@ -112,7 +112,7 @@ SCISHARE const TypeDescription* get_type_description(double*);
 SCISHARE const TypeDescription* get_type_description(std::complex<double>*);
 SCISHARE const TypeDescription* get_type_description(float*);
 SCISHARE const TypeDescription* get_type_description(short*);
-SCISHARE const TypeDescription* get_type_description(unsigned short*); 
+SCISHARE const TypeDescription* get_type_description(unsigned short*);
 SCISHARE const TypeDescription* get_type_description(int*);
 SCISHARE const TypeDescription* get_type_description(unsigned int*);
 SCISHARE const TypeDescription* get_type_description(long*);
@@ -158,4 +158,3 @@ const TypeDescription* get_type_description (std::pair<T1,T2> *)
 } // End namespace SCIRun
 
 #endif //Disclosure_TypeDescription_h
-

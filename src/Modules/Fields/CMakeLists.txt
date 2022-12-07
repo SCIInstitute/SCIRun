@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,21 +25,23 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Modules_Fields_SRCS
   ReportFieldInfo.cc
-  InterfaceWithCleaver.cc
+  InterfaceWithCleaver2.cc
   EditMeshBoundingBox.cc
   CalculateNodeLocationFrequency.cc
   RefineTetMeshLocally.cc
+  CalculateBundleDifference.cc
 )
 
 SET(Modules_Fields_HEADERS
-  InterfaceWithCleaver.h
+  InterfaceWithCleaver2.h
   ReportFieldInfo.h
   EditMeshBoundingBox.h
-  BoxWidgetTypes.h
   CalculateNodeLocationFrequency.h
   RefineTetMeshLocally.h
+  CalculateBundleDifference.h
   share.h
 )
 
@@ -57,6 +58,7 @@ TARGET_LINK_LIBRARIES(Modules_Fields
   Core_Datatypes_Legacy_Field
   Graphics_Glyphs
   Graphics_Datatypes
+  Graphics_Widgets
   ${OPENGL_LIBRARIES}
 )
 

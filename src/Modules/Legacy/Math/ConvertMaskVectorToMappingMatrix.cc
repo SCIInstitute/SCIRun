@@ -1,13 +1,11 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@author
-///   McKay Davis
-///   School of Computing
-///   University of Utah
-///@date  August, 2005
+
+/// @author
+///    McKay Davis
+///    School of Computing
+///    University of Utah
+/// @date  August, 2005
 
 #include <Dataflow/Network/Module.h>
 
@@ -70,7 +69,7 @@ ConvertMaskVectorToMappingMatrix::execute()
 {
   update_state(Module::JustStarted);
   update_state(Module::NeedData);
-  
+
   NrrdDataHandle nrrdH;
   if (!get_input_handle("MaskVector", nrrdH)) return;
 
@@ -78,7 +77,7 @@ ConvertMaskVectorToMappingMatrix::execute()
   if (!nrrd)
     throw "Input MaskVector Nrrd empty";
 
-  if (nrrd->type != nrrdTypeUChar) 
+  if (nrrd->type != nrrdTypeUChar)
     throw "Input MaskVector not Unsigned Char";
 
 
@@ -93,13 +92,11 @@ ConvertMaskVectorToMappingMatrix::execute()
     cc[i] = i;
     data[i] = mask[i]?1.0:0.0;
   }
-  
-  rr[dim] = dim;  
+
+  rr[dim] = dim;
 
   MatrixHandle mtmp(new SparseRowMatrix(dim, dim, sparseData, dim));
   send_output_handle("MappingMatrix", mtmp);
 }
 
 } // End namespace SCIRun
-
-

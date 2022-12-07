@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -66,9 +66,6 @@ MapFieldDataOntoNodes::execute()
   auto destination = getRequiredInput(Destination);
   auto weights = getOptionalInput(Weights);
 
-//   if (inputs_changed_ || !oport_cached("Output") ||
-//     gui_quantity_.changed() || gui_value_.changed() ||
-//     gui_outside_value_.changed() || gui_max_distance_.changed())
   if (needToExecute())
   {
     setAlgoOptionFromState(Parameters::Quantity);

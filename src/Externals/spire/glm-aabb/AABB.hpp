@@ -1,12 +1,42 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_GLM_AABB_HPP
 #define SPIRE_GLM_AABB_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
 /// Standalone axis aligned bounding box implemented built on top of GLM.
-class AABB
+class SCISHARE AABB
 {
 public:
   /// Builds a null AABB.
@@ -15,7 +45,7 @@ public:
   /// Builds an AABB that encompasses a sphere.
   /// \param[in]  center Center of the sphere.
   /// \param[in]  radius Radius of the sphere.
-  AABB(const glm::vec3& center, glm::float_t radius);
+  AABB(const glm::vec3& center, float radius);
 
   /// Builds an AABB that contains the two points.
   AABB(const glm::vec3& p1, const glm::vec3& p2);
@@ -30,7 +60,7 @@ public:
   bool isNull() const {return mMin.x > mMax.x || mMin.y > mMax.y || mMin.z > mMax.z;}
 
   /// Extend the bounding box on all sides by \p val.
-  void extend(glm::float_t val);
+  void extend(float val);
 
   /// Expand the AABB to include point \p p.
   void extend(const glm::vec3& p);
@@ -39,7 +69,7 @@ public:
   /// radius.
   /// \param[in]  center Center of sphere.
   /// \param[in]  radius Radius of sphere.
-  void extend(const glm::vec3& center, glm::float_t radius);
+  void extend(const glm::vec3& center, float radius);
 
   /// Expand the AABB to encompass the given \p aabb.
   void extend(const AABB& aabb);
@@ -48,7 +78,7 @@ public:
   /// normal, and radius \p radius.
   /// \xxx Untested -- This function is not represented in our unit tests.
   void extendDisk(const glm::vec3& center, const glm::vec3& normal,
-                  glm::float_t radius);
+                  float radius);
 
   /// Translates AABB by vector \p v.
   void translate(const glm::vec3& v);
@@ -68,11 +98,11 @@ public:
 
   /// Retrieves the longest edge.
   /// If the AABB is NULL, then 0 is returned.
-  glm::float_t getLongestEdge() const;
+  float getLongestEdge() const;
 
   /// Retrieves the shortest edge.
   /// If the AABB is NULL, then 0 is returned.
-  glm::float_t getShortestEdge() const;
+  float getShortestEdge() const;
 
   /// Retrieves the AABB's minimum point.
   glm::vec3 getMin() const {return mMin;}
@@ -96,7 +126,7 @@ public:
   /// they have to have 100% overlap.
   /// If either of the two AABBs is NULL, then false is returned.
   /// \xxx Untested -- This function is not represented in our unit tests.
-  bool isSimilarTo(const AABB& b, glm::float_t diff = 0.5) const;
+  bool isSimilarTo(const AABB& b, float diff = 0.5) const;
 
 private:
 
@@ -104,6 +134,6 @@ private:
   glm::vec3 mMax;   ///< Maximum point.
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

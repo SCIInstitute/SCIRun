@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Math/EvaluateLinAlgGeneral.h>
 #include <Core/Datatypes/String.h>
@@ -82,7 +82,7 @@ void
 EvaluateLinearAlgebraGeneral::execute()
 {
   const int NUM_PORTS = 5;
-  std::vector<boost::optional<MatrixHandle>> imatrix;
+  std::vector<std::optional<MatrixHandle>> imatrix;
   std::vector<MatrixHandle> omatrix(NUM_PORTS);
 
   imatrix.push_back(getOptionalInput(i1));

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Network/Port.h>
 #include <Dataflow/Network/Connection.h>
@@ -47,7 +47,7 @@ using ::testing::_;
 class OutputPortTest : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle());
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
@@ -70,11 +70,11 @@ TEST_F(OutputPortTest, SendSomeData)
   //EXPECT_CALL(*inputModule, getInputPort(2)).WillRepeatedly(Return(inputPort));
   //EXPECT_CALL(*outputModule, getOutputPort(1)).WillRepeatedly(Return(outputPort));
 
-  Connection c(outputPort, inputPort, "test");
-  
+  Connection c(outputPort, inputPort, "test", false);
+
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
-  
+
   EXPECT_CALL(*mockSource, cacheData(dataToPush));
   EXPECT_CALL(*mockSource, send(_));
   outputPort->sendData(dataToPush);
@@ -83,7 +83,7 @@ TEST_F(OutputPortTest, SendSomeData)
 TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
 {
   MockModulePtr outputModule(new NiceMock<MockModule>);
-  
+
   Port::ConstructionParams pcp(PortId(0, "ScalarValue"), "Double", false);
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
@@ -114,8 +114,8 @@ TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
   //EXPECT_CALL(*inputPort2, get_typename()).WillRepeatedly(Return(pcp.type_name));
   //EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
 
-  Connection c1(outputPort, inputPort, "test1");
-  Connection c2(outputPort, inputPort2, "test2");
+  Connection c1(outputPort, inputPort, "test1", false);
+  Connection c2(outputPort, inputPort2, "test2", false);
   EXPECT_EQ(2, outputPort->nconnections());
 
   const int dataValue = 2;

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2016 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #ifndef MODULES_PYTHON_INTERFACEWITHPYTHON_H
 #define MODULES_PYTHON_INTERFACEWITHPYTHON_H
@@ -42,6 +42,7 @@ namespace SCIRun
       namespace Python
       {
         ALGORITHM_PARAMETER_DECL(PythonCode);
+        ALGORITHM_PARAMETER_DECL(PythonTopLevelCode);
         ALGORITHM_PARAMETER_DECL(PythonInputStringNames);
         ALGORITHM_PARAMETER_DECL(PythonInputMatrixNames);
         ALGORITHM_PARAMETER_DECL(PythonInputFieldNames);
@@ -54,6 +55,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(PythonOutputField1Name);
         ALGORITHM_PARAMETER_DECL(PythonOutputField2Name);
         ALGORITHM_PARAMETER_DECL(PythonOutputField3Name);
+
+        class InterfaceWithPythonCodeTranslator;
       }
     }
   }
@@ -68,31 +71,35 @@ namespace SCIRun
       {
       public:
         InterfaceWithPython();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
-        INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
-        INPUT_PORT_DYNAMIC(1, InputField, Field);
-        INPUT_PORT_DYNAMIC(2, InputString, String);
-        OUTPUT_PORT(0, PythonMatrix1, Matrix);
-        OUTPUT_PORT(1, PythonMatrix2, Matrix);
-        OUTPUT_PORT(2, PythonMatrix3, Matrix);
-        OUTPUT_PORT(3, PythonField1, Field);
-        OUTPUT_PORT(4, PythonField2, Field);
-        OUTPUT_PORT(5, PythonField3, Field);
-        OUTPUT_PORT(6, PythonString1, String);
-        OUTPUT_PORT(7, PythonString2, String);
-        OUTPUT_PORT(8, PythonString3, String);
+        INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix)
+        INPUT_PORT_DYNAMIC(1, InputField, Field)
+        INPUT_PORT_DYNAMIC(2, InputString, String)
+        OUTPUT_PORT(0, PythonMatrix1, Matrix)
+        OUTPUT_PORT(1, PythonMatrix2, Matrix)
+        OUTPUT_PORT(2, PythonMatrix3, Matrix)
+        OUTPUT_PORT(3, PythonField1, Field)
+        OUTPUT_PORT(4, PythonField2, Field)
+        OUTPUT_PORT(5, PythonField3, Field)
+        OUTPUT_PORT(6, PythonString1, String)
+        OUTPUT_PORT(7, PythonString2, String)
+        OUTPUT_PORT(8, PythonString3, String)
 
-        static std::vector<Core::Algorithms::AlgorithmParameterName> inputNameParameters();
         static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
+        #ifndef BUILD_WITH_PYTHON
+          DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+        #endif
       private:
         static Core::Thread::Mutex lock_;
-        std::string convertInputSyntax(const std::string& code) const;
-        std::string convertOutputSyntax(const std::string& code) const;
+        void runTopLevelCode() const;
+        std::vector<std::string> connectedPortIds() const;
+        SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
+        static bool matlabInitialized_;
       };
 
     }

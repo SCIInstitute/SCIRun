@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/CollectMatricesDialog.h>
 #include <Core/Algorithms/Math/CollectMatrices/CollectMatricesAlgorithm.h>
 
@@ -44,7 +44,7 @@ CollectMatricesDialog::CollectMatricesDialog(const std::string& name, ModuleStat
   addRadioButtonGroupManager({ appendRadioButton_, replaceRadioButton_ }, Parameters::CollectAppendIndicator);
   addRadioButtonGroupManager({ prependRadioButton_, postpendRadioButton_ }, Parameters::CollectPrependIndicator);
 
-  connect(clearOutputPushButton_, SIGNAL(clicked()), this, SLOT(clearOutputClicked()));
+  connect(clearOutputPushButton_, &QPushButton::clicked, this, &CollectMatricesDialog::clearOutputClicked);
 }
 
 void CollectMatricesDialog::clearOutputClicked()

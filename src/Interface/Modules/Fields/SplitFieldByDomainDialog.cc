@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 
@@ -41,6 +41,6 @@ SplitFieldByDomainDialog::SplitFieldByDomainDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(sortBySizeCheckBox_, SplitFieldByDomainAlgo::SortBySize);
-  addCheckBoxManager(sortAscendingCheckBox_, SplitFieldByDomainAlgo::SortAscending);
+  addCheckBoxManager(sortBySizeCheckBox_, Parameters::SortBySize);
+  addCheckBoxManager(sortAscendingCheckBox_, Parameters::SortAscending);
 }

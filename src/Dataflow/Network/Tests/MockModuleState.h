@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MOCK_MODULE_STATE_H
 #define MOCK_MODULE_STATE_H
@@ -50,14 +50,15 @@ namespace SCIRun {
           MOCK_METHOD1(connectStateChanged, boost::signals2::connection(state_changed_sig_t::slot_function_type));
           MOCK_METHOD2(connectSpecificStateChanged, boost::signals2::connection(const Name&, state_changed_sig_t::slot_function_type));
           MOCK_METHOD0(fireTransientStateChangeSignal, void());
+          MOCK_METHOD0(disconnectAll, void());
         };
 
-        typedef boost::shared_ptr<MockModuleState> MockModuleStatePtr;
+        typedef SharedPointer<MockModuleState> MockModuleStatePtr;
 
         class MockModuleStateFactory : public ModuleStateInterfaceFactory
         {
         public:
-          virtual ModuleStateInterface* make_state(const std::string& name) const
+          ModuleStateInterface* make_state(const std::string& name) const override
           {
             return new ::testing::NiceMock<MockModuleState>;
           }

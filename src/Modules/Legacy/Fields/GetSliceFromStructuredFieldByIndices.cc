@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 ///
 ///     @file    GetSliceFromStructuredFieldByIndices.h
@@ -42,6 +42,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 /// @class GetSliceFromStructuredFieldByIndices
 /// @brief This module reduces the dimension of a topologically regular field by 1 dimension.
@@ -50,6 +51,7 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Geometry;
 
@@ -131,8 +133,8 @@ void GetSliceFromStructuredFieldByIndices::execute()
     if (state->getValue(Dim_i).toInt() != static_cast<int>(dims[0] - offset))
     {
       state->setValue(Dim_i, static_cast<int>(dims[0] - offset));
-      }
     }
+  }
 
   if (dims.size() >= 2)
   {
@@ -191,7 +193,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
         state->getValue(Dim_k).toInt() != inputMatrix->get(2, 2))
       {
         std::ostringstream str;
-        str << "The dimensions of the matrix slicing do match the field. "
+        str << "The dimensions of the matrix slicing do not match the field. "
           << " Expected "
           << state->getValue(Dim_i).toInt() << " "
           << state->getValue(Dim_j).toInt() << " "
@@ -400,7 +402,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
       /// Index based on the old mesh so that we are assured of getting the last
       /// node even if it forms a "partial" elem.
-      for (k = k_start; k<k_stop_stride; k += k_stride)
+      for (k = k_start; k < k_stop_stride; k += k_stride)
       {
 
         /// Check for going past the stop.
@@ -424,7 +426,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
         knodeIdx = knode*jdim_in*idim_in;
         kelemIdx = knode*(jdim_in - 1)*(idim_in - 1);
 
-        for (j = j_start; j<j_stop_stride; j += j_stride)
+        for (j = j_start; j < j_stop_stride; j += j_stride)
         {
 
           /// Check for going past the stop.
@@ -473,23 +475,23 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
             switch (ifield->basis_order())
             {
-            case 0:
+              case 0:
 
-              if (i + i_stride < i_stop_stride &&
-                j + j_stride < j_stop_stride &&
-                k + k_stride < k_stop_stride)
-              {
-                ofield->copy_value(ifield, ielemIdx, oelemIdx);
-                oelemIdx++;
-              }
-              break;
+                if (i + i_stride < i_stop_stride &&
+                  j + j_stride < j_stop_stride &&
+                  k + k_stride < k_stop_stride)
+                {
+                  ofield->copy_value(ifield, ielemIdx, oelemIdx);
+                  oelemIdx++;
+                }
+                break;
 
-            case 1:
-              ofield->copy_value(ifield, inodeIdx, onodeIdx);
-              break;
+              case 1:
+                ofield->copy_value(ifield, inodeIdx, onodeIdx);
+                break;
 
-            default:
-              break;
+              default:
+                break;
             }
 
             onodeIdx++;
@@ -598,19 +600,39 @@ void GetSliceFromStructuredFieldByIndices::execute()
       VMesh* omesh = field_out_handle->vmesh();
       CopyProperties(*inputField, *field_out_handle);
 
+      auto indexCheck = [&state](const AlgorithmParameterName& name)
+      {
+        return [&state, &name](int index)
+        {
+          if (index < 0 || index >= state->getValue(name).toInt())
+          {
+            std::ostringstream str;
+            str << "The selected index slice (" << index << ") is out of range of the field dimensions (0.." << state->getValue(name).toInt() << ").";
+            return std::make_tuple(false, str.str());
+          }
+          else
+            return std::make_tuple(true, std::string());
+        };
+      };
       /// Get the index for the axis selected.
       index_type index;
       if (state->getValue(Axis_ijk).toInt() == 0)
       {
         index = state->getValue(Index_i).toInt();
+        auto check = indexCheck(Dim_i)(index);
+        IF_CHECK_FAILED_THROW_ALGORITHM_INPUT_ERROR(check);
       }
       else if (state->getValue(Axis_ijk).toInt() == 1)
       {
         index = state->getValue(Index_j).toInt();
+        auto check = indexCheck(Dim_j)(index);
+        IF_CHECK_FAILED_THROW_ALGORITHM_INPUT_ERROR(check);
       }
       else
       {
         index = state->getValue(Index_k).toInt();
+        auto check = indexCheck(Dim_k)(index);
+        IF_CHECK_FAILED_THROW_ALGORITHM_INPUT_ERROR(check);
       }
 
       if (dim.size() == 3)
@@ -658,20 +680,17 @@ void GetSliceFromStructuredFieldByIndices::execute()
       if (imesh->is_regularmesh())
       {
         Transform trans = imesh->get_transform();
-        double offset = 0.0;
         if (axis == 0)
         {
           trans.post_permute(2, 3, 1);
-          offset = index / (double)old_i;
         }
         else if (axis == 1)
         {
           trans.post_permute(1, 3, 2);
-          offset = index / (double)old_j;
         }
         else
         {
-          offset = index / (double)old_k;
+          //offset = index / (double)old_k;
         }
         trans.post_translate(Vector(0.0, 0.0, index));
 
@@ -788,4 +807,4 @@ void GetSliceFromStructuredFieldByIndices::execute()
       sendOutput(OutputMatrix, selected);
     }
   }
-  }
+}

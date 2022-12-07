@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MOCK_PORTS_H
 #define MOCK_PORTS_H
@@ -50,11 +50,12 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
-          MOCK_CONST_METHOD0(id, PortId());
-          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
+          MOCK_CONST_METHOD0(internalId, PortId());
+          MOCK_CONST_METHOD0(externalId, PortId());
+          MOCK_CONST_METHOD0(firstConnectionId, std::optional<ConnectionId>());
         };
 
-        typedef boost::shared_ptr<MockPortDescription> MockPortDescriptionPtr;
+        typedef SharedPointer<MockPortDescription> MockPortDescriptionPtr;
 
         class MockInputPort : public InputPortInterface
         {
@@ -72,19 +73,23 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(clone, InputPortInterface*());
-          MOCK_CONST_METHOD0(id, PortId());
-          MOCK_METHOD1(setId, void(const PortId&));
+          MOCK_CONST_METHOD0(internalId, PortId());
+          MOCK_CONST_METHOD0(externalId, PortId());
+          MOCK_METHOD1(setId_DynamicCase, void(const PortId&));
+          MOCK_METHOD1(setInternalId, void(const PortId&));
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_METHOD1(connectDataOnPortHasChanged, boost::signals2::connection(const DataOnPortHasChangedSignalType::slot_type&));
-          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
+          MOCK_CONST_METHOD0(firstConnectionId, std::optional<ConnectionId>());
           MOCK_METHOD0(resendNewDataSignal, void());
           MOCK_CONST_METHOD0(moduleState, ModuleStateHandle());
-          MOCK_CONST_METHOD0(connectedModuleId, boost::optional<std::string>());
+          MOCK_CONST_METHOD0(connectedModuleId, std::optional<std::string>());
           MOCK_CONST_METHOD0(stateFromConnectedModule, ModuleStateHandle());
+          MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
+          MOCK_CONST_METHOD0(underlyingModule, ModuleInterface*());
         };
 
-        typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
+        typedef SharedPointer<MockInputPort> MockInputPortPtr;
 
         class MockOutputPort : public OutputPortInterface
         {
@@ -100,19 +105,24 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
-          MOCK_CONST_METHOD0(id, PortId());
-          MOCK_METHOD1(setId, void(const PortId&));
+          MOCK_CONST_METHOD0(internalId, PortId());
+          MOCK_CONST_METHOD0(externalId, PortId());
+          MOCK_METHOD1(setId_DynamicCase, void(const PortId&));
+          MOCK_METHOD1(setInternalId, void(const PortId&));
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_CONST_METHOD0(hasData, bool());
+          MOCK_CONST_METHOD0(peekData, Core::Datatypes::DatatypeHandle());
           MOCK_CONST_METHOD0(source, DatatypeSourceInterfaceHandle());
           MOCK_CONST_METHOD0(getPortDataDescriber, PortDataDescriber());
           MOCK_METHOD1(connectConnectionFeedbackListener, boost::signals2::connection(const ConnectionFeedbackSignalType::slot_type&));
           MOCK_METHOD1(sendConnectionFeedback, void(const Core::Datatypes::ModuleFeedback&));
-          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
+          MOCK_CONST_METHOD0(firstConnectionId, std::optional<ConnectionId>());
           MOCK_CONST_METHOD0(moduleState, ModuleStateHandle());
+          MOCK_CONST_METHOD0(hasConnectionCountIncreased, bool());
+          MOCK_CONST_METHOD0(underlyingModule, ModuleInterface*());
         };
 
-        typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
+        typedef SharedPointer<MockOutputPort> MockOutputPortPtr;
 
         class MockDatatypeSink : public DatatypeSinkInterface
         {
@@ -126,7 +136,7 @@ namespace SCIRun {
           MOCK_METHOD0(forceFireDataHasChanged, void());
         };
 
-        typedef boost::shared_ptr<MockDatatypeSink> MockDatatypeSinkPtr;
+        typedef SharedPointer<MockDatatypeSink> MockDatatypeSinkPtr;
 
         class MockDatatypeSource : public DatatypeSourceInterface
         {
@@ -135,9 +145,10 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(send, void(DatatypeSinkInterfaceHandle));
           MOCK_CONST_METHOD0(hasData, bool());
           MOCK_CONST_METHOD0(describeData, std::string());
+          MOCK_CONST_METHOD0(peekData, Core::Datatypes::DatatypeHandle());
         };
 
-        typedef boost::shared_ptr<MockDatatypeSource> MockDatatypeSourcePtr;
+        typedef SharedPointer<MockDatatypeSource> MockDatatypeSourcePtr;
       }
     }
   }

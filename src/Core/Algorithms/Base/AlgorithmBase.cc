@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <iostream>
 #include <vector>
-#include <boost/thread.hpp>
+#include <chrono>
+#include <thread>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -37,6 +38,7 @@
 
 #include <Core/Utils/StringUtil.h>
 #include <Core/Algorithms/Base/Name.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
 #include <Core/Algorithms/Base/AlgorithmInputBuilder.h>
@@ -54,9 +56,10 @@ using namespace SCIRun::Core::Thread;
 
 Name::Name(const std::string& name) : name_(name)
 {
-  if (!std::all_of(name.begin(), name.end(), isalnum))
+  if (!std::all_of(name.begin(), name.end(), [](char c) { return isalnum(c) || c == '_'; }))
   {
-    LOG_DEBUG("AlgorithmParameterName not accessible from Python: {}", name);
+    //Disabling this message since it messes up log creation order.
+    //LOG_DEBUG("AlgorithmParameterName not accessible from Python: {}", name);
   }
 }
 
@@ -142,9 +145,9 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
   {
 #ifdef _MSC_VER
     // fix for https://svn.boost.org/trac/boost/ticket/6320
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     Guard g(AlgorithmParameterHelper::lock_.get());
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     boost::filesystem::path::imbue( std::locale( "" ) );
     boost::filesystem::path dummy("boost bug workaround");
     LOG_DEBUG(dummy.string());
@@ -194,7 +197,7 @@ std::vector<Variable> AlgorithmParameter::toVector() const
 
 DatatypeHandle AlgorithmParameter::getDatatype() const
 {
-  return data_.get_value_or(nullptr);
+  return data_.value_or(nullptr);
 }
 
 Variable SCIRun::Core::Algorithms::makeVariable(const std::string& name, const Variable::Value& value)
@@ -269,6 +272,16 @@ void AlgorithmLogger::status(const std::string& status) const
   logger_->status(status);
 }
 
+bool AlgorithmLogger::errorReported() const
+{
+  return logger_->errorReported();
+}
+
+void AlgorithmLogger::setErrorFlag(bool flag)
+{
+  logger_->setErrorFlag(flag);
+}
+
 AlgorithmParameterList::AlgorithmParameterList() {}
 
 bool AlgorithmParameterList::set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value)
@@ -298,7 +311,7 @@ AlgorithmStatusReporter::AlgorithmStatusReporter()
 #if DEBUG
   setUpdaterFunc(defaultUpdaterFunc_);
 #else
-  setUpdaterFunc([](double x) {});
+  setUpdaterFunc([](double) {});
 #endif
 }
 
@@ -464,4 +477,9 @@ std::vector<std::string> Core::Algorithms::toNameVector(const Variable::List& li
 std::vector<double> Core::Algorithms::toDoubleVector(const Variable::List& list)
 {
   return toTypedVector<double>(list, [](const Variable& v) { return v.toDouble(); });
+}
+
+std::vector<bool> Core::Algorithms::toBoolVector(const Variable::List& list)
+{
+  return toTypedVector<bool>(list, [](const Variable& v) { return v.toBool(); });
 }

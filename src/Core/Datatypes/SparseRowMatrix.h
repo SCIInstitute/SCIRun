@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -32,9 +31,9 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Math/MiscMath.h>
-#define register
+//#define register
 #include <Eigen/SparseCore>
-#undef register
+//#undef register
 
 namespace SCIRun {
 namespace Core {
@@ -58,7 +57,7 @@ namespace Datatypes {
     ///Legacy construction compatibility. Useful for converting old code, but should be avoided in new code.
     SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, size_t nnz) : EigenBase(nrows, ncols)
     {
-      if (rowCounter[nrows] != nnz)
+      if (rowCounter[nrows] != static_cast<index_type>(nnz))
         THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: row accumulator array does not match number of non-zero elements.");
       std::vector<Triplet> triplets;
       triplets.reserve(nnz);
@@ -82,7 +81,7 @@ namespace Datatypes {
 
     SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, const T* data, size_t nnz) : EigenBase(nrows, ncols)
     {
-      if (rowCounter[nrows] != nnz)
+      if (rowCounter[nrows] != static_cast<index_type>(nnz))
         THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: row accumulator array does not match number of non-zero elements.");
       std::vector<Triplet> triplets;
       triplets.reserve(nnz);
@@ -131,13 +130,13 @@ namespace Datatypes {
     }
     SparseRowMatrixGeneric(SparseRowMatrixGeneric&& other) : EigenBase(std::move(other)) {}
 
-    virtual SparseRowMatrixGeneric* clone() const override
+    SparseRowMatrixGeneric* clone() const override
     {
       return new SparseRowMatrixGeneric(*this);
     }
 
-    virtual size_t nrows() const override { return this->rows(); }
-    virtual size_t ncols() const override { return this->cols(); }
+    size_t nrows() const override { return this->rows(); }
+    size_t ncols() const override { return this->cols(); }
 
     typedef index_type RowsData;
     typedef index_type ColumnsData;
@@ -163,7 +162,7 @@ namespace Datatypes {
       return tr.block(i, 0, 1, nrows()).transpose();
     }
 
-    virtual void accept(MatrixVisitorGeneric<T>& visitor) override
+    void accept(MatrixVisitorGeneric<T>& visitor) override
     {
       visitor.visit(*this);
     }
@@ -179,11 +178,11 @@ namespace Datatypes {
       return this->isApprox(this->transpose(),1e-16);
     }
 
-    virtual T get(int i, int j) const override
+    T get(int i, int j) const override
     {
       return this->coeff(i,j);
     }
-    virtual void put(int i, int j, const T& val) override
+    void put(int i, int j, const T& val) override
     {
       this->coeffRef(i,j) = val;
       //TODO: not sure this is best place for this call: it's the slowest but also the safest since this is a virtual Matrix function. Users should know to avoid calling this with known sparse matrices.
@@ -220,7 +219,7 @@ namespace Datatypes {
       //typedef typename boost::numeric::ublas::matrix_row<const block_impl_type> block_row_type;
       //typedef typename block_row_type::iterator block_row_iterator;
 
-      //boost::shared_ptr<block_row_type> currentRow_;
+      //SharedPointer<block_row_type> currentRow_;
       //block_row_iterator rowIter_;
       //size_type numRowPartitions_, numColPartitions_;
       int currentRow_;
@@ -323,14 +322,14 @@ namespace Datatypes {
     const MatrixBase<T>& castForPrinting() const { return *this; } /// @todo: lame...figure out a better way
 
     /// Persistent representation...
-    virtual std::string dynamic_type_name() const override { return type_id.type; }
-    virtual void io(Piostream&) override;
+    std::string dynamic_type_name() const override { return type_id.type; }
+    void io(Piostream&) override;
     static PersistentTypeID type_id;
 
     static Persistent* SparseRowMatrixGenericMaker();
 
   private:
-    virtual void print(std::ostream& o) const override
+    void print(std::ostream& o) const override
     {
       o << static_cast<const EigenBase&>(*this);
     }

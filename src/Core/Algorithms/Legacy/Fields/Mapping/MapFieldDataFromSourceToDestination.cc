@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -60,7 +60,7 @@ MapFieldDataFromSourceToDestinationAlgo::MapFieldDataFromSourceToDestinationAlgo
   using namespace Parameters;
   addParameter(DefaultValue, 0.0);
   addParameter(MaxDistance, -1.0);
-  addOption(MappingMethod, "interpolateddata", "interpolateddata|closestdata|singledestination");
+  addOption(MappingMethod, "closestdata", "interpolateddata|closestdata|singledestination");
 }
 
 namespace detail
@@ -69,9 +69,10 @@ namespace detail
   {
   public:
     explicit MapFieldDataFromSourceToDestinationPAlgoBase(const std::string& name, int nproc) :
-      sfield_(0), dfield_(0), smesh_(0), dmesh_(0), maxdist_(0), algo_(0),
+      sfield_(nullptr), dfield_(nullptr), smesh_(nullptr), dmesh_(nullptr), maxdist_(0), algo_(nullptr),
       barrier_(name, nproc), nproc_(nproc) {}
 
+    virtual ~MapFieldDataFromSourceToDestinationPAlgoBase() {}
     virtual void parallel(int proc) = 0;
 
     VField* sfield_;
@@ -97,7 +98,7 @@ class MapFieldDataFromSourceToDestinationClosestDataPAlgo : public MapFieldDataF
     explicit MapFieldDataFromSourceToDestinationClosestDataPAlgo(int nproc) :
       MapFieldDataFromSourceToDestinationPAlgoBase(" MapFieldDataFromSourceToDestinationClosestDataPAlgo Barrier", nproc) {}
 
-    virtual void parallel(int proc) override;
+    void parallel(int proc) override;
 };
 
 void
@@ -121,7 +122,6 @@ MapFieldDataFromSourceToDestinationClosestDataPAlgo::parallel(int proc)
 
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
       double dist;
       if(smesh_->find_closest_elem(dist,r,didx,p))
@@ -140,7 +140,6 @@ MapFieldDataFromSourceToDestinationClosestDataPAlgo::parallel(int proc)
     VMesh::Elem::index_type didx;
     for (VMesh::Node::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
       double dist;
       if(smesh_->find_closest_elem(dist,r,didx,p))
@@ -159,7 +158,6 @@ MapFieldDataFromSourceToDestinationClosestDataPAlgo::parallel(int proc)
     VMesh::Node::index_type didx;
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
       double dist;
       if(smesh_->find_closest_node(dist,r,didx,p))
@@ -178,7 +176,6 @@ MapFieldDataFromSourceToDestinationClosestDataPAlgo::parallel(int proc)
     VMesh::Node::index_type didx;
     for (VMesh::Node::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
       double dist;
       if(smesh_->find_closest_node(dist,r,didx,p))
@@ -206,7 +203,7 @@ class MapFieldDataFromSourceToDestinationSingleDestinationPAlgo : public MapFiel
     explicit MapFieldDataFromSourceToDestinationSingleDestinationPAlgo(int nproc) :
       MapFieldDataFromSourceToDestinationPAlgoBase(" MapFieldDataFromSourceToDestinationSingleDestinationPAlgo Barrier", nproc) {}
 
-    virtual void parallel(int proc) override;
+    void parallel(int proc) override;
 
     std::vector<index_type> tcc_;
     std::vector<index_type> cc_;
@@ -238,7 +235,6 @@ MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel(int proc)
     VMesh::Elem::index_type didx;
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       smesh_->get_center(p,idx);
       double dist;
       if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
@@ -259,7 +255,6 @@ MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel(int proc)
     VMesh::Elem::index_type didx;
     for (VMesh::Node::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       smesh_->get_center(p,idx);
       double dist;
       if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
@@ -279,7 +274,6 @@ MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel(int proc)
     VMesh::Node::index_type didx;
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       smesh_->get_center(p,idx);
       double dist;
       if(dmesh_->find_closest_node(dist,r,didx,p))
@@ -299,7 +293,6 @@ MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel(int proc)
     VMesh::Node::index_type didx;
     for (VMesh::Node::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       smesh_->get_center(p,idx);
       double dist;
       if(dmesh_->find_closest_node(dist,r,didx,p))
@@ -347,7 +340,7 @@ class MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo : public MapField
     explicit MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo(int nproc) :
       MapFieldDataFromSourceToDestinationPAlgoBase(" MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo Barrier", nproc) {}
 
-    virtual void parallel(int proc) override;
+    void parallel(int proc) override;
 };
 
 void
@@ -370,7 +363,6 @@ MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel(int proc)
 
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
 
       double dist;
@@ -390,7 +382,6 @@ MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel(int proc)
     VMesh::Elem::index_type didx;
     for (VMesh::Node::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
       double dist;
       if(smesh_->find_closest_elem(dist,r,didx,p))
@@ -411,7 +402,6 @@ MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel(int proc)
     VMesh::ElemInterpolate interp;
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
       double dist;
       if(smesh_->find_closest_elem(dist,r,coords,didx,p))
@@ -434,7 +424,6 @@ MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel(int proc)
     VMesh::ElemInterpolate interp;
     for (VMesh::Node::index_type idx=start; idx<end;idx++)
     {
-      checkForInterruption();
       dmesh_->get_center(p,idx);
       double dist;
       if(smesh_->find_closest_elem(dist,r,coords,didx,p))
@@ -538,6 +527,11 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
     }
   }
 
+  if (fis.is_pointcloud() && method != "closestdata")
+  {
+    warning("Point cloud source data will produce the same mapping as a closestnodedata mapping since the data lacks a basis for interpolation. See https://github.com/SCIInstitute/SCIRun/issues/2154");
+  }
+
   double maxdist = get(MaxDistance).toDouble();
 
   boost::scoped_ptr<detail::MapFieldDataFromSourceToDestinationPAlgoBase> algoP;
@@ -566,7 +560,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   algoP->maxdist_ = maxdist;
   algoP->algo_ = this;
 
-  auto task_i = [&algoP,this](int i) { algoP->parallel(i); };
+  auto task_i = [&algoP](int i) { algoP->parallel(i); };
   Parallel::RunTasks(task_i, np);
 
   CopyProperties(*destination, *output);

@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 # CMakeLists.txt for Dataflow/Modules/Visualization
 
@@ -68,28 +68,15 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Visualization
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Visualization
   Dataflow_Network
-  #Dataflow_Widgets
-  #Dataflow_GuiInterface
-  #Dataflow_TkExtensions
   Core_Algorithms_Legacy_Fields
   Algorithms_Base
-  #Core_Algorithms_Visualization
-  #Core_Algorithms_Geometry
-  #Core_Algorithms_Converter
   Core_Basis
   Core_Datatypes
-  #Core_Datatypes_Legacy_Bundle
-  #Core_Exceptions_Legacy
-  #Core_Geom
   Core_Geometry_Primitives
-  #Core_GeomInterface
-  #Core_ImportExport
   Core_Math
-  #Core_Parser
-  #Core_Persistent
-  #Core_Thread
   Core_Util_Legacy
-  #${SCI_TEEM_LIBRARY}
+  Graphics_Widgets
+  Graphics_Datatypes
 )
 
 IF(BUILD_SHARED_LIBS)

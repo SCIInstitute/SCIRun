@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,10 +25,12 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 # Sources of Core/Algorithms/DataIO classes
 
 SET(Core_Algorithms_Legacy_DataIO_SRCS
   DataIOAlgo.cc
+  #G3DToFieldReader.cc
   ObjToFieldReader.cc
   VTKToTriSurfReader.cc
   TriSurfSTLBinaryConverter.cc
@@ -38,6 +39,7 @@ SET(Core_Algorithms_Legacy_DataIO_SRCS
 )
 
 SET(Core_Algorithms_Legacy_DataIO_HEADERS
+  #G3DToFieldReader.h
   ObjToFieldReader.h
   VTKToTriSurfReader.h
   DataIOAlgo.h
@@ -57,6 +59,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
+
   Core_Math
   Core_Persistent
   Core_ImportExport

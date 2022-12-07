@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,17 +26,16 @@
 */
 
 
-
 ///
 ///@file  AssertionFailed.h
 ///@brief Generic exception for internal errors
-/// 
+///
 ///@author
 ///       Steven G. Parker
 ///       Department of Computer Science
 ///       University of Utah
 ///@date  July 1999
-/// 
+///
 
 #include <Core/Exceptions/AssertionFailed.h>
 #include <sstream>
@@ -46,18 +44,18 @@ namespace SCIRun {
 
 AssertionFailed::AssertionFailed(const char* message,
                                  const char* file,
-                                 int line) : 
+                                 int line) :
   Exception()
-{ 
+{
   init(message, file, line);
 }
 
 
 AssertionFailed::AssertionFailed(const std::string& message,
                                  const char* file,
-                                 int line) : 
+                                 int line) :
   Exception()
-{ 
+{
   init(message.c_str(), file, line);
 }
 

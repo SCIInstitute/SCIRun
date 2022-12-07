@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,17 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 #ifndef Q_MOC_RUN
 #include <Interface/Modules/Base/WidgetSlotManagers.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Algorithms/Base/Name.h>
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/bimap.hpp>
 #include <boost/signals2/connection.hpp>
 #endif
 #include <Interface/Modules/Base/share.h>
@@ -45,8 +44,7 @@ namespace SCIRun {
 namespace Gui {
 
   typedef std::function<void(QWidget*)> ExecutionDisablingServiceFunction;
-  typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
-  typedef GuiStringTranslationMap::value_type StringPair;
+  using StringPairs = std::initializer_list<std::tuple<std::string, std::string>>;
 
   enum class DynamicPortChange
   {
@@ -66,24 +64,42 @@ namespace Gui {
     static void setStateVarTooltipWithStyle(QWidget* widget, const std::string& stateVarName);
   };
 
+  class SCISHARE ModuleDialogDockWidget : public QDockWidget
+  {
+    Q_OBJECT
+  public:
+    using QDockWidget::QDockWidget;
+  Q_SIGNALS:
+    void movedToFullScreen(bool fullScreen);
+  protected:
+    void moveEvent(QMoveEvent* e) override;
+  };
+
+  class ModuleDialogFactoryInterface;
+  using ModuleDialogFactoryInterfaceHandle = SharedPointer<ModuleDialogFactoryInterface>;
+
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
     Q_OBJECT
   public:
-    virtual ~ModuleDialogGeneric();
+    ~ModuleDialogGeneric() override;
     bool isPulling() const { return pulling_; }
     QAction* getExecuteAction() { return executeAction_; }
     QAction* getExecuteDownstreamAction() { return executeDownstreamAction_; }
-    void setDockable(QDockWidget* dock);
+    void setDockable(ModuleDialogDockWidget* dock);
     void updateWindowTitle(const QString& title);
     void setButtonBarTitleVisible(bool visible);
     void setupButtonBar();
     bool isCollapsed() const { return collapsed_; }
     virtual void createStartupNote() {}
-    virtual void adjustToolbar() {}
+    virtual void adjustToolbar(double /*factor*/) {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
+    virtual void postMoveEventCallback(const QPoint&) {}
+    //TODO
+    static ModuleDialogFactoryInterfaceHandle factory();
+    static void setFactory(ModuleDialogFactoryInterfaceHandle f);
   public Q_SLOTS:
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
@@ -92,7 +108,8 @@ namespace Gui {
     void toggleCollapse();
     void collapse() { if (!collapsed_) toggleCollapse(); }
     void expand() { if (collapsed_) toggleCollapse(); }
-    virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) {}
+    virtual void updateFromPortChange(int, const std::string&, DynamicPortChange) {}
+    virtual void adaptToFullScreenView(bool /*fullScreen*/) {}
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);
@@ -109,12 +126,15 @@ namespace Gui {
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
     void contextMenuEvent(QContextMenuEvent* e) override;
+    void keyPressEvent(QKeyEvent* e) override;
     void fixSize();
+    static void fixSize(QWidget* widget);
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
     void connectSpinBoxToExecuteSignal(QSpinBox* box);
     void connectSpinBoxToExecuteSignal(QDoubleSpinBox* box);
+    void adjustToolbarForHighResolution(QToolBar* toolbar, double factor);
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.
@@ -137,8 +157,8 @@ namespace Gui {
     //////////////////////
 
     //TODO: highlight this section in code and documentation
-		void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
-    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
+    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, StringPairs stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addPlainTextEditManager(QPlainTextEdit* plainTextEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
@@ -163,8 +183,14 @@ namespace Gui {
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);
 
     void createExecuteInteractivelyToggleAction();
+    void createForceAlwaysExecuteToggleAction();
+    QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
+    void colorToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const QColor& color);
+    std::vector<QColor> colorsFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
+    void colorsToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const std::vector<QColor>& colors);
   private Q_SLOTS:
     void executeInteractivelyToggled(bool toggle);
+    void forceAlwaysExecuteToggled(bool toggle);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
@@ -175,20 +201,24 @@ namespace Gui {
     void disconnectStateChangeToExecute();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
-    QAction* executeAction_;
-    QAction* executeDownstreamAction_;
-    QAction* shrinkAction_;
-    QAction* executeInteractivelyToggleAction_;
+    QAction* executeAction_{ nullptr };
+    QAction* executeDownstreamAction_{ nullptr };
+    QAction* shrinkAction_{ nullptr };
+    QAction* executeInteractivelyToggleAction_{ nullptr };
+    QAction* forceAlwaysExecuteToggleAction_{ nullptr };
     bool collapsed_;
     QString windowTitle_;
-    QDockWidget* dock_;
-    class ModuleButtonBar* buttonBox_;
+    ModuleDialogDockWidget* dock_{ nullptr };
+    class ModuleButtonBar* buttonBox_{ nullptr };
     QSize oldSize_;
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;
     static ExecutionDisablingServiceFunction disablerRemove_;
     static std::set<ModuleDialogGeneric*> instances_;
+    static ModuleDialogFactoryInterfaceHandle factory_;
   };
+
+  SCISHARE QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey);
 
   class SCISHARE ScopedWidgetSignalBlocker
   {
@@ -201,6 +231,14 @@ namespace Gui {
 
   SCISHARE void openUrl(const QString& url, const std::string& name);
   SCISHARE void openPythonAPIDoc();
+  SCISHARE std::vector<QString> toQStringVector(const std::vector<std::string>& strVec);
+
+  class SCISHARE ModuleDialogFactoryInterface
+  {
+  public:
+    virtual ~ModuleDialogFactoryInterface() = default;
+    virtual ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state) const = 0;
+  };
 }
 }
 

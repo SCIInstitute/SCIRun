@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,12 +24,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 #include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -45,6 +43,6 @@ ClipVolumeByIsovalueDialog::ClipVolumeByIsovalueDialog(const std::string& name, 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addDoubleSpinBoxManager(IsoValueSpinBox_, ClipMeshByIsovalueAlgo::ScalarIsoValue);
-  addRadioButtonGroupManager({ lessthanRadioButton_,  greaterthanRadioButton_}, ClipMeshByIsovalueAlgo::LessThanIsoValue);
+  addDoubleSpinBoxManager(IsoValueSpinBox_, Parameters::ScalarIsoValue);
+  addRadioButtonGroupManager({ lessthanRadioButton_,  greaterthanRadioButton_}, Parameters::LessThanIsoValue);
 }

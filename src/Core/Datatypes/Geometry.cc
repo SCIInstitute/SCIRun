@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Geometry.h>
 
 using namespace SCIRun::Core;
@@ -39,4 +39,24 @@ GeometryObject::GeometryObject(const GeometryIDGenerator& idGenerator, const std
 GeometryObject* GeometryObject::clone() const
 {
   return nullptr; //TODO
+}
+
+void GeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+    list.insert(handle);
+}
+
+OsprayGeometryObject* OsprayGeometryObject::clone() const
+{
+  return nullptr; //TODO
+}
+
+CompositeOsprayGeometryObject::CompositeOsprayGeometryObject(const std::vector<OsprayGeometryObjectHandle>& objs) : objs_(objs)
+{
+  for (const auto& obj : objs_)
+  {
+    if (obj)
+      box.extend(obj->box);
+  }
 }

@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 
 #include <Core/Application/Session/Session.h>
 #include <Core/Thread/Mutex.h>
@@ -32,7 +32,7 @@
 #include <Core/DatabaseManager/DatabaseManager.h>
 #include <Core/Utils/Exception.h>
 #include <boost/filesystem.hpp>
-#include <boost/make_shared.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <fstream>
 #include <locale>
@@ -68,72 +68,72 @@ class BasicSession : public SessionInterface
 public:
   explicit BasicSession(SessionBackEndHandle backEnd) : backEnd_(backEnd) {}
 
-  virtual void beginSession()
+  void beginSession() override
   {
     backEnd_->consume("", "Session begins.");
   }
 
-  virtual void endSession()
+  void endSession() override
   {
     backEnd_->consume("", "Session ends.");
   }
 
-  virtual void recordSystemDetails()
+  void recordSystemDetails() override
   {
     // TODO
   }
 
-  virtual void networkFileLoaded()
+  void networkFileLoaded() override
   {
     // TODO
   }
 
-  virtual void networkFileSaved()
+  void networkFileSaved() override
   {
     // TODO
   }
 
-  virtual void networkEdited(/*EditDescription*/)
+  void networkEdited(/*EditDescription*/) override
   {
     // TODO
   }
 
-  virtual void executionStarted()
+  void executionStarted() override
   {
     // TODO
   }
 
-  virtual void executionFinished()
+  void executionFinished() override
   {
     // TODO
   }
 
-  virtual void moduleExecutionStarted(/*ModuleId*/)
+  void moduleExecutionStarted(/*ModuleId*/) override
   {
     // TODO
   }
 
-  virtual void moduleExecutionFinished(/*ModuleId*/)
+  void moduleExecutionFinished(/*ModuleId*/) override
   {
     // TODO
   }
 
-  virtual void recordStateVariable(/*ModuleId, Variable*/)
+  void recordStateVariable(/*ModuleId, Variable*/) override
   {
     // TODO
   }
 
-  virtual void fileRead(/*ModuleId, filename*/)
+  void fileRead(/*ModuleId, filename*/) override
   {
     // TODO
   }
 
-  virtual void fileWritten(/*ModuleId, filename*/)
+  void fileWritten(/*ModuleId, filename*/) override
   {
     // TODO
   }
 
-  virtual void externalProgramAccessed()
+  void externalProgramAccessed() override
   {
     // TODO
   }
@@ -144,20 +144,20 @@ private:
 class NullSession : public SessionInterface
 {
 public:
-  virtual void beginSession() {}
-  virtual void endSession() {}
-  virtual void recordSystemDetails() {}
-  virtual void networkFileLoaded() {}
-  virtual void networkFileSaved() {}
-  virtual void networkEdited(/*EditDescription*/) {}
-  virtual void executionStarted() {}
-  virtual void executionFinished() {}
-  virtual void moduleExecutionStarted(/*ModuleId*/) {}
-  virtual void moduleExecutionFinished(/*ModuleId*/) {}
-  virtual void recordStateVariable(/*ModuleId, Variable*/) {}
-  virtual void fileRead(/*ModuleId, filename*/) {}
-  virtual void fileWritten(/*ModuleId, filename*/) {}
-  virtual void externalProgramAccessed() {}
+  void beginSession() override {}
+  void endSession() override {}
+  void recordSystemDetails() override {}
+  void networkFileLoaded() override {}
+  void networkFileSaved() override {}
+  void networkEdited(/*EditDescription*/) override {}
+  void executionStarted() override {}
+  void executionFinished() override {}
+  void moduleExecutionStarted(/*ModuleId*/) override {}
+  void moduleExecutionFinished(/*ModuleId*/) override {}
+  void recordStateVariable(/*ModuleId, Variable*/) override {}
+  void fileRead(/*ModuleId, filename*/) override {}
+  void fileWritten(/*ModuleId, filename*/) override {}
+  void externalProgramAccessed() override {}
 };
 
 class SessionFile : public SessionBackEnd
@@ -167,9 +167,10 @@ public:
     locale_(stream_.getloc(), new boost::posix_time::time_facet("%x %X")), mutex_("sessionFile")
   {
   }
-  virtual void consume(const std::string& statement, const std::string& message)
+
+  void consume(const std::string& statement, const std::string& message) override
   {
-    Guard g(mutex_.get());
+    Guard g(mutex_);
     namespace pt = boost::posix_time;
     const pt::ptime now = pt::second_clock::local_time();
     static bool firstTime = true;
@@ -191,7 +192,7 @@ private:
 class SessionDB : public SessionBackEnd
 {
 public:
-  virtual void consume(const std::string& statement, const std::string& message)
+  void consume(const std::string& /*statement*/, const std::string& /*message*/) override
   {
     // TODO
   }
@@ -215,7 +216,8 @@ public:
     std::string error;
     db_.save_database(file_, error);
   }
-  virtual void consume(const std::string& statement, const std::string& message)
+
+  void consume(const std::string& statement, const std::string& message) override
   {
     if (!insertRow(statement + " / " + message))
       std::cout << "problem inserting row" << std::endl;
@@ -247,7 +249,7 @@ private:
 class CompositeSessionBackEnd : public SessionBackEnd
 {
 public:
-  virtual void consume(const std::string& statement, const std::string& message)
+  void consume(const std::string& statement, const std::string& message) override
   {
     for (const auto& backEnd : backEnds_)
     {
@@ -267,7 +269,7 @@ private:
 
 SessionHandle SessionBuilder::build(const boost::filesystem::path& file)
 {
-  boost::shared_ptr<detail::CompositeSessionBackEnd> compositeSession(new detail::CompositeSessionBackEnd);
+  std::shared_ptr<detail::CompositeSessionBackEnd> compositeSession(new detail::CompositeSessionBackEnd);
   // try create db backend
   try
   {
@@ -293,7 +295,7 @@ SessionHandle SessionBuilder::build(const boost::filesystem::path& file)
     std::cout << "Error creating text session back end: " << e.what() << std::endl;
   }
 
-  return boost::make_shared<detail::BasicSession>(compositeSession);
+  return std::make_shared<detail::BasicSession>(compositeSession);
 }
 
 SessionHandle SessionUser::session()

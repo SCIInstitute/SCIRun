@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,13 +24,15 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Logging/ScopedTimeRemarker.h
 
 #ifndef CORE_LOGGING_SCOPEDTIMEREMARKER_H
 #define CORE_LOGGING_SCOPEDTIMEREMARKER_H
 
 #include <string>
-#include <boost/timer.hpp>
+#include <chrono>
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Logging/share.h>
 
@@ -41,6 +42,17 @@ namespace SCIRun
   {
     namespace Logging
     {
+      class SCISHARE SimpleScopedTimer
+      {
+      public:
+        SimpleScopedTimer();
+        SimpleScopedTimer(const SimpleScopedTimer&) = delete;
+        SimpleScopedTimer& operator=(const SimpleScopedTimer&) = delete;
+        double elapsedSeconds() const;
+      private:
+        const std::chrono::time_point<std::chrono::steady_clock> start_;
+      };
+
       class SCISHARE ScopedTimeRemarker
       {
       public:
@@ -49,7 +61,7 @@ namespace SCIRun
       private:
         LegacyLoggerInterface* log_;
         std::string label_;
-        boost::timer timer_;
+        SimpleScopedTimer timer_;
       };
 
       class SCISHARE ScopedTimeLogger
@@ -60,7 +72,7 @@ namespace SCIRun
       private:
         std::string label_;
         bool shouldLog_;
-        boost::timer timer_;
+        SimpleScopedTimer timer_;
       };
     }
   }

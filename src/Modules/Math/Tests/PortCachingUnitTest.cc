@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -73,7 +73,7 @@ namespace Testing
     MOCK_CONST_METHOD0(needToExecute, bool());
   };
 
-  typedef boost::shared_ptr<MockModuleReexecutionStrategy> MockModuleReexecutionStrategyPtr;
+  typedef SharedPointer<MockModuleReexecutionStrategy> MockModuleReexecutionStrategyPtr;
 
   class MockInputsChangedChecker : public InputsChangedChecker
   {
@@ -81,7 +81,7 @@ namespace Testing
     MOCK_CONST_METHOD0(inputsChanged, bool());
   };
 
-  typedef boost::shared_ptr<MockInputsChangedChecker> MockInputsChangedCheckerPtr;
+  typedef SharedPointer<MockInputsChangedChecker> MockInputsChangedCheckerPtr;
 
   class MockStateChangedChecker : public StateChangedChecker
   {
@@ -89,7 +89,7 @@ namespace Testing
     MOCK_CONST_METHOD0(newStatePresent, bool());
   };
 
-  typedef boost::shared_ptr<MockStateChangedChecker> MockStateChangedCheckerPtr;
+  typedef SharedPointer<MockStateChangedChecker> MockStateChangedCheckerPtr;
 
   class MockOutputPortsCachedChecker : public OutputPortsCachedChecker
   {
@@ -97,7 +97,7 @@ namespace Testing
     MOCK_CONST_METHOD0(outputPortsCached, bool());
   };
 
-  typedef boost::shared_ptr<MockOutputPortsCachedChecker> MockOutputPortsCachedCheckerPtr;
+  typedef SharedPointer<MockOutputPortsCachedChecker> MockOutputPortsCachedCheckerPtr;
 
 }
 
@@ -107,12 +107,12 @@ using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
 
-class PortCachingUnitTest : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool> >
+class PortCachingUnitTest : public ::testing::TestWithParam < std::tuple<bool, bool> >
 {
 public:
   PortCachingUnitTest() :
-    portCaching_(::std::tr1::get<0>(GetParam())),
-    needToExecute_(::std::tr1::get<1>(GetParam()))
+    portCaching_(std::get<0>(GetParam())),
+    needToExecute_(std::get<1>(GetParam()))
   {
   }
 protected:
@@ -163,7 +163,7 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
     EXPECT_CALL(*mockNeedToExecute, needToExecute()).Times(1).WillOnce(Return(needToExecute_));
     SimpleSink::setGlobalPortCachingFlag(portCaching_);
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     send->execute();
     process->execute();
@@ -205,7 +205,7 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
 
   evalModule->resetFlags();
   send->execute();
-  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
   process->execute();
   receive->execute();
   FAIL() << "test needs rewrite";
@@ -215,7 +215,7 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
 
   evalModule->resetFlags();
   send->execute();
-  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
   process->execute();
   receive->execute();
@@ -225,13 +225,13 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
   #endif
 }
 
-class ReexecuteStrategyUnitTest : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool> >
+class ReexecuteStrategyUnitTest : public ::testing::TestWithParam < std::tuple<bool, bool, bool> >
 {
 public:
   ReexecuteStrategyUnitTest() :
-    inputsChanged_(::std::tr1::get<0>(GetParam())),
-    stateChanged_(::std::tr1::get<1>(GetParam())),
-    oportsCached_(::std::tr1::get<2>(GetParam()))
+    inputsChanged_(std::get<0>(GetParam())),
+    stateChanged_(std::get<1>(GetParam())),
+    oportsCached_(std::get<2>(GetParam()))
   {
     LogSettings::Instance().setVerbose(true);
   }
@@ -592,7 +592,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustInputsChanged)
     SimpleSink::setGlobalPortCachingFlag(true);
     evalModule->resetFlags();
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
@@ -679,7 +679,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
     SimpleSink::setGlobalPortCachingFlag(true);
     evalModule->resetFlags();
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
@@ -705,7 +705,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
       EXPECT_TRUE(evalModule->executeCalled_);
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
-      process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+      process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
 
       //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //state has changed
@@ -765,7 +765,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
     SimpleSink::setGlobalPortCachingFlag(true);
     evalModule->resetFlags();
 
-    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    process->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);

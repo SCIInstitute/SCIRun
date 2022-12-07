@@ -1,3 +1,35 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include <entity-system/GenericSystem.hpp>
 #include <gl-shaders/GLShader.hpp>
 #include <es-fs/Filesystem.hpp>
@@ -151,8 +183,8 @@ void ShaderMan::loadVertexShaderCB(const std::string& /* vsName */, bool error,
     }
     else
     {
-      std::cerr << "ShaderMan: Failed promise for " << assetName << std::endl;
-      std::cerr << "Failed on vertex shader. Number of retries exceeded." << std::endl;
+      logRendererError("ShaderMan: Failed promise for {}", assetName);
+      logRendererError("Failed on vertex shader. Number of retries exceeded.");
     }
   }
 }
@@ -213,8 +245,8 @@ void ShaderMan::loadFragmentShaderCB(const std::string& /* fsName */, bool error
     }
     else
     {
-      std::cerr << "ShaderMan: Failed promise for " << assetName << std::endl;
-      std::cerr << "Failed on fragment shader. Number of retries exceeded." << std::endl;
+      logRendererError("ShaderMan: Failed promise for {}", assetName);
+      logRendererError("Failed on fragment shader. Number of retries exceeded.");
     }
   }
 }
@@ -315,8 +347,9 @@ public:
             man->requestVSandFS(core, asset, man->mNumRetries);
           }
         }
-    } else {
-        std::cerr << "Unable to complete shader fulfillment. There is no ShaderMan." << std::endl;
+    } else
+    {
+      logRendererError("Unable to complete shader fulfillment. There is no ShaderMan.");
     }
   }
 
@@ -325,11 +358,12 @@ public:
                const spire::ComponentGroup<StaticShaderMan>& shaderManGroup) override
   {
     std::weak_ptr<ShaderMan> sm = shaderManGroup.front().instance_;
-    if (std::shared_ptr<ShaderMan> shaderMan = sm.lock()) {
-        spire::CerealCore* ourCorePtr = dynamic_cast<spire::CerealCore*>(&core);
-        if (ourCorePtr == nullptr)
+    if (std::shared_ptr<ShaderMan> shaderMan = sm.lock())
+    {
+        auto ourCorePtr = dynamic_cast<spire::CerealCore*>(&core);
+        if (!ourCorePtr)
         {
-          std::cerr << "Unable to execute shader promise fulfillment. Bad cast." << std::endl;
+          logRendererError("Unable to execute shader promise fulfillment. Bad cast.");
           return;
         }
         spire::CerealCore& ourCore = *ourCorePtr;
@@ -391,8 +425,8 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 {
   if (mNewUnfulfilledAssets)
   {
-    std::cerr << "ShaderMan: Terminating garbage collection. Orphan assets that"
-              << " have yet to be associated with entity ID's would be GC'd" << std::endl;
+    logRendererError("ShaderMan: Terminating garbage collection. Orphan assets that"
+      " have yet to be associated with entity ID's would be GC'd");
     return;
   }
 
@@ -411,7 +445,7 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
       // Find the asset name in mNameToGL and erase.
       mNameToGL.erase(mNameToGL.find(it->second));
 
-      std::cout << "Shader GC: " << it->second << std::endl;
+      RENDERER_LOG("Shader GC: {}", it->second);
 
       // Erase our iterator and move on. Ensure we delete the program.
       GLuint idToErase = it->first;
@@ -421,8 +455,8 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 
     if (it == mGLToName.end())
     {
-      std::cerr << "runGCAgainstVaidIDs: terminating early, validKeys contains "
-                << "elements not in Shader map." << std::endl;
+      logRendererError("runGCAgainstVaidIDs: terminating early, validKeys contains "
+                "elements not in Shader map.");
       break;
     }
 
@@ -431,7 +465,7 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
     // component, this is not an error.
     if (it->first > id)
     {
-      std::cerr << "runGCAgainstVaidIDs: validKeys contains elements not in the Shader map." << std::endl;
+      logRendererError("runGCAgainstValidIDs: validKeys contains elements not in the Shader map.");
     }
 
     ++it;
@@ -443,7 +477,7 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
     // Find the asset name in mNameToGL and erase.
     mNameToGL.erase(mNameToGL.find(it->second));
 
-    std::cout << "Shader GC: " << it->second << std::endl;
+    RENDERER_LOG("Shader GC: ", it->second);
 
     // Erase our iterator and move on. Ensure we delete the program.
     GLuint idToErase = it->first;
@@ -470,8 +504,7 @@ public:
         man->runGCAgainstVaidIDs(mValidKeys);
         mValidKeys.clear();
     } else {
-        std::cerr << "Unable to complete shader garbage collection. " <<
-                     "There is no ShaderMan." << std::endl;
+        logRendererError("Unable to complete shader garbage collection. There is no ShaderMan.");
 
     }
   }

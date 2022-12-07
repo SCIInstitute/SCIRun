@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -41,7 +41,7 @@
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Dataflow::Engine; 
+using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;
@@ -60,18 +60,36 @@ using namespace boost::assign;
 
 namespace
 {
-  HardCodedModuleFactory mf;
-  std::ostringstream dummyLog;
-  NetworkFileHandle load(const std::string& file)
-  {
-    auto dtdpath = TestResources::rootDir() / "Other";
-    LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
-    auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / file;
-    return lnio.load_net(v4file1.string());
-  }
+  auto dtdpath = TestResources::rootDir() / "Other";
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
+class LegacyNetworkFileImporterTests : public ::testing::Test
+{
+public:
+  LegacyNetworkFileImporterTests() : lnio(dtdpath.string(), mf, dummyLog)
+  {
+  }
+  NetworkFileHandle load(const std::string& file)
+  {
+    auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "testing" / file;
+    return lnio.load_net(v4file1.string());
+  }
+  static void SetUpTestCase()
+  {
+    auto xmlFile = TestResources::rootDir() / "../../src/Interface/Application/Resources/LegacyModuleImporter.xml";
+    std::ifstream file(xmlFile.string());
+    LegacyNetworkIO::initializeStateConverter(file);
+  }
+
+private:
+  HardCodedModuleFactory mf;
+  std::ostringstream dummyLog;
+  LegacyNetworkIO lnio;
+};
+
+bool print = false;
+
+TEST_F(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
 {
   auto networkFile = load("empty.srn");
   ASSERT_TRUE(networkFile != nullptr);
@@ -84,12 +102,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
 {
-  auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
-  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "oneModule.srn";
-  auto networkFile = lnio.load_net(v4file1.string());
+  auto networkFile = load("oneModule.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
   EXPECT_EQ(1, networkFile->network.modules.size());
@@ -109,7 +124,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState)
 {
   auto networkFile = load("clvState.srn");
   ASSERT_TRUE(networkFile != nullptr);
@@ -144,12 +159,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState
   EXPECT_EQ(1, mod->second.state.getValue(Name("ElementSizeNormalized")).toInt());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnections)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnections)
 {
-  auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
-  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "threeModulesNoConnections.srn";
-  auto networkFile = lnio.load_net(v4file1.string());
+  auto networkFile = load("threeModulesNoConnections.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
   EXPECT_EQ(3, networkFile->network.modules.size());
@@ -182,12 +194,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnectio
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnection)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnection)
 {
-  auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
-  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "twoModsOneConnection.srn";
-  auto networkFile = lnio.load_net(v4file1.string());
+  auto networkFile = load("twoModsOneConnection.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
   EXPECT_EQ(2, networkFile->network.modules.size());
@@ -204,7 +213,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnecti
 
   ASSERT_EQ(1, networkFile->network.connections.size());
   auto conn = networkFile->network.connections[0];
-  std::cout << "CONN LOOKS LIKE " << static_cast<std::string>(ConnectionId::create(conn)) << std::endl;
+  //std::cout << "CONN LOOKS LIKE " << static_cast<std::string>(ConnectionId::create(conn)) << std::endl;
 
   EXPECT_EQ(2, networkFile->modulePositions.modulePositions.size());
 
@@ -213,12 +222,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnecti
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
 {
-  auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
-  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "threeSameModulesIDTest.srn";
-  auto networkFile = lnio.load_net(v4file1.string());
+  auto networkFile = load("threeSameModulesIDTest.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
   EXPECT_EQ(3, networkFile->network.modules.size());
@@ -241,12 +247,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
   EXPECT_EQ(0, networkFile->network.connections.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMultipleConnections)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMultipleConnections)
 {
-  auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
-  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "multiConnections.srn";
-  auto networkFile = lnio.load_net(v4file1.string());
+  auto networkFile = load("multiConnections.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
   EXPECT_EQ(5, networkFile->network.modules.size());
@@ -260,12 +263,13 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMultipleConnections)
   std::string* expectedPtr = expected;
   for (const auto& c : networkFile->network.connections)
   {
-    std::cout << static_cast<std::string>(ConnectionId::create(c)) << std::endl;
+    if (print)
+      std::cout << static_cast<std::string>(ConnectionId::create(c)) << std::endl;
     EXPECT_EQ(static_cast<std::string>(ConnectionId::create(c)), *expectedPtr++);
   }
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithRenamedModules)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithRenamedModules)
 {
   auto networkFile = load("forward_problem.srn");
   ASSERT_TRUE(networkFile != nullptr);
@@ -278,7 +282,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithRenamedModules)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
 {
   auto networkFile = load("dynamicPorts.srn");
   ASSERT_TRUE(networkFile != nullptr);
@@ -291,12 +295,88 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, DISABLED_CanLoadNetworkFileWithLotsOfState)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
 {
-  FAIL() << "todo";
+  auto networkFile = load("lotsOfState.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(7, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("CalculateFieldData:0", mod->first);
+  EXPECT_EQ("RESULT = abs(DATA);\n", mod->second.state.getValue(Name("FunctionString")).toString());
+  EXPECT_EQ("Scalar", mod->second.state.getValue(Name("FormatString")).toString());
+  ++mod;
+  EXPECT_EQ("CreateStandardColorMap:0", mod->first);
+  ++mod;
+  EXPECT_EQ("GetDomainBoundary:0", mod->first);
+  EXPECT_EQ(0, mod->second.state.getValue(Name("UseRange")).toInt());
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("MinRange")).toDouble());
+  EXPECT_EQ(255.0, mod->second.state.getValue(Name("MaxRange")).toDouble());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("Domain")).toInt());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("AddOuterBoundary")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("InnerBoundaryOnly")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("NoInnerBoundary")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("DisconnectBoundaries")).toInt());
+  ++mod;
+  EXPECT_EQ("ReadField:0", mod->first);
+  EXPECT_EQ("SCIRunData_4/utahtorso/utahtorso-blood.ts.fld", mod->second.state.getValue(Name("Filename")).toString());
+  EXPECT_EQ("", mod->second.state.getValue(Name("ScriptEnvironmentVariable")).toString());
+  EXPECT_EQ("SCIRun Field File (*.fld)", mod->second.state.getValue(Name("FileTypeName")).toString());
+  EXPECT_EQ("utahtorso-blood.ts.fld", mod->second.state.getValue(Name("filename_base")).toString());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("number_in_series")).toInt());
+  EXPECT_EQ(2, mod->second.state.getValue(Name("delay")).toInt());
+  ++mod;
+  EXPECT_EQ("RescaleColorMap:0", mod->first);
+  EXPECT_EQ(0, mod->second.state.getValue(Name("AutoScale")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("Symmetric")).toInt());
+  EXPECT_EQ(0.5, mod->second.state.getValue(Name("FixedMin")).toDouble());
+  EXPECT_EQ(1.0, mod->second.state.getValue(Name("FixedMax")).toDouble());
+  ++mod;
+  EXPECT_EQ("ShowField:0", mod->first);
+  EXPECT_EQ("Color(0.5,0.5,0.5)", mod->second.state.getValue(Name("DefaultMeshColor")).toString());
+  EXPECT_EQ("Color(1.0,1.0,1.0)", mod->second.state.getValue(Name("DefaultTextColor")).toString());
+  ++mod;
+  EXPECT_EQ("ViewScene:0", mod->first);
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMapFieldDataFromSourceToDestinationState)
+{
+  auto networkFile = load("MapFieldDataFromSourceToDestination.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(3, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:0", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  //EXPECT_EQ("interpolateddata", mod->second.state.getValue(Name("MappingMethod")).toString());
+  ++mod;
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:1", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  //EXPECT_EQ("singledestination", mod->second.state.getValue(Name("MappingMethod")).toString());
+  ++mod;
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:2", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  //EXPECT_EQ("closestdata", mod->second.state.getValue(Name("MappingMethod")).toString());
+}
+
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithCreateMatrix)
+{
+  auto networkFile = load("CreateMatrix.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(1, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("CreateMatrix:0", mod->first);
+  EXPECT_EQ("0.1 0.2\n0.3 0.4\n0.5 0.6\n", mod->second.state.getValue(Name("TextEntry")).toString());
+}
+
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
 {
   auto networkFile = load("notes.srn");
   ASSERT_TRUE(networkFile != nullptr);
@@ -309,7 +389,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
 {
   auto networkFile = load("notes.srn");
   ASSERT_TRUE(networkFile != nullptr);
@@ -322,7 +402,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePositions)
+TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePositions)
 {
   auto networkFile = load("notePositions.srn");
   ASSERT_TRUE(networkFile != nullptr);
@@ -336,7 +416,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePosi
 
   const auto& moduleNotesMap = networkFile->moduleNotes.notes;
   /*
-  enum NotePosition
+  enum class NotePosition
   {
     Default,  0
     None,     1

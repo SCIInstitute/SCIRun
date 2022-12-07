@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetColorMapsFromBundle",
+    "namespace": "Bundles",
+    "status": "Converted",
+    "description": "Retrieves a color map object from a bundle",
+    "header": "Modules/Legacy/Bundle/GetColorMapsFromBundle.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "GetColorMapsFromBundleDialog",
+    "header": "Interface/Modules/Bundle/GetColorMapsFromBundleDialog.h"
+  }
+}

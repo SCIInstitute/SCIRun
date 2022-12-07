@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_APPLICATION_HASPARSERHELPDIALOG_H
 #define INTERFACE_APPLICATION_HASPARSERHELPDIALOG_H
 
@@ -43,7 +43,7 @@ namespace Gui {
   public Q_SLOTS:
     virtual void popUpParserHelp();
   protected:
-    explicit ModuleDialogWithParserHelp(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0) : ModuleDialogGeneric(state, parent), help_(nullptr) {}
+    explicit ModuleDialogWithParserHelp(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr) : ModuleDialogGeneric(state, parent), help_(nullptr) {}
     void connectParserHelpButton(QPushButton* button);
   private:
     QDialog* help_;
@@ -51,8 +51,12 @@ namespace Gui {
 
   class SCISHARE ParserHelpDialog : public QDialog, public Ui::ParserHelp
   {
+    Q_OBJECT
   public:
-    ParserHelpDialog(QWidget* parent = 0);
+    ParserHelpDialog(QWidget* parent = nullptr);
+  private Q_SLOTS:
+    void searchText();
+    void resetFormatting(const QString& text);
   };
 
 }}

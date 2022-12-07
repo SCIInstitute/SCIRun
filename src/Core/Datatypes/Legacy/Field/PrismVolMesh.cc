@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Legacy/Field/PrismVolMesh.h>
 #include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
@@ -48,93 +48,93 @@ template<class MESH> class VPrismVolMesh;
 template<class MESH>
 class VPrismVolMesh : public VUnstructuredMesh<MESH> {
 public:
-  virtual bool is_prismvolmesh()       { return (true); }
+  bool is_prismvolmesh() override { return (true); }
 
   /// constructor and destructor
-  explicit VPrismVolMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
+  explicit VPrismVolMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh)
   {
-    DEBUG_CONSTRUCTOR("VPrismVolMesh") 
+    DEBUG_CONSTRUCTOR("VPrismVolMesh")
   }
-  virtual ~VPrismVolMesh() 
+  virtual ~VPrismVolMesh()
   {
-    DEBUG_DESTRUCTOR("VPrismVolMesh")   
+    DEBUG_DESTRUCTOR("VPrismVolMesh")
   }
-    
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
-                         VMesh::Edge::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
-                         VMesh::Face::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Cell::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Elem::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
-                         VMesh::DElem::index_type i) const;
 
-  virtual void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Edge::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Face::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges, 
-                          VMesh::Cell::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges, 
-                          VMesh::Elem::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges, 
-                          VMesh::DElem::index_type i) const;
-                                            
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Face::index_type i) const;
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Cell::index_type i) const;
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Elem::index_type i) const;
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::DElem::index_type i) const;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Edge::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Face::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Cell::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Elem::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Cell::index_type i) const;
-  virtual void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Elem::index_type i) const;
-  virtual void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::DElem::index_type i) const;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Edge::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Face::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Cell::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Elem::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::DElem::index_type i) const override;
 
-  virtual void get_cells(VMesh::Cell::array_type& cells, 
-                         VMesh::Node::index_type i) const;  
-  virtual void get_cells(VMesh::Cell::array_type& cells,
-                         VMesh::Edge::index_type i) const;  
-  virtual void get_cells(VMesh::Cell::array_type& cells,
-                         VMesh::Face::index_type i) const;  
-  virtual void get_cells(VMesh::Cell::array_type& cells, 
-                         VMesh::Elem::index_type i) const;  
-  virtual void get_cells(VMesh::Cell::array_type& cells, 
-                         VMesh::DElem::index_type i) const;  
-  
-  virtual void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Node::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Edge::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
-                         VMesh::Face::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
-                         VMesh::Cell::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
-                         VMesh::DElem::index_type i) const;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Face::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Cell::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Elem::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_delems(VMesh::DElem::array_type& delems, 
-                          VMesh::Face::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Cell::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Elem::index_type i) const;
+  void get_faces(VMesh::Face::array_type& faces,
+                         VMesh::Cell::index_type i) const override;
+  void get_faces(VMesh::Face::array_type& faces,
+                         VMesh::Elem::index_type i) const override;
+  void get_faces(VMesh::Face::array_type& faces,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void set_nodes(VMesh::Node::array_type&,
-                         VMesh::Elem::index_type);
-  
-  virtual void set_nodes(VMesh::Node::array_type&,
-                         VMesh::Cell::index_type);
+  void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::Node::index_type i) const override;
+  void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::Edge::index_type i) const override;
+  void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::Face::index_type i) const override;
+  void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::Elem::index_type i) const override;
+  void get_cells(VMesh::Cell::array_type& cells,
+                         VMesh::DElem::index_type i) const override;
+
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Node::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Edge::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Face::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Cell::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::DElem::index_type i) const override;
+
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Face::index_type i) const override;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Cell::index_type i) const override;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Elem::index_type i) const override;
+
+  void set_nodes(VMesh::Node::array_type&,
+                         VMesh::Elem::index_type) override;
+
+  void set_nodes(VMesh::Node::array_type&,
+                         VMesh::Cell::index_type) override;
 
 
-  virtual VMesh::index_type* get_elems_pointer() const;
+  VMesh::index_type* get_elems_pointer() const override;
 };
 
 /// Functions for creating the virtual interface for specific mesh types
@@ -145,9 +145,9 @@ public:
 /// 2) quadratic interpolation
 /// 3) cubic interpolation
 
-/// Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVPrismVolMesh(PrismVolMesh<PrismLinearLgn<Point> >* mesh)
 {
   return new VPrismVolMesh<PrismVolMesh<PrismLinearLgn<Point> > >(mesh);
@@ -156,12 +156,12 @@ VMesh* CreateVPrismVolMesh(PrismVolMesh<PrismLinearLgn<Point> >* mesh)
 /// Register class maker, so we can instantiate it
 static MeshTypeID PrismVolMesh_MeshID1(PrismVolMesh<PrismLinearLgn<Point> >::type_name(-1),
                   PrismVolMesh<PrismLinearLgn<Point> >::mesh_maker);
-                  
-                  
-/// Add the QUADRATIC virtual interface and the meshid for creating it                  
+
+
+/// Add the QUADRATIC virtual interface and the meshid for creating it
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVPrismVolMesh(PrismVolMesh<PrismQuadraticLgn<Point> >* mesh)
 {
   return new VPrismVolMesh<PrismVolMesh<PrismQuadraticLgn<Point> > >(mesh);
@@ -173,10 +173,10 @@ static MeshTypeID PrismVolMesh_MeshID2(PrismVolMesh<PrismQuadraticLgn<Point> >::
 #endif
 
 
-/// Add the CUBIC virtual interface and the meshid for creating it                  
+/// Add the CUBIC virtual interface and the meshid for creating it
 #if (SCIRUN_CUBIC_SUPPORT > 0)
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVPrismVolMesh(PrismVolMesh<PrismCubicHmt<Point> >* mesh)
 {
   return new VPrismVolMesh<PrismVolMesh<PrismCubicHmt<Point> > >(mesh);
@@ -434,16 +434,16 @@ VPrismVolMesh<MESH>::get_delems(VMesh::DElem::array_type &delems,
 }
 
 template <class MESH>
-void 
-VPrismVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes, 
+void
+VPrismVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes,
                               VMesh::Elem::index_type i)
 {
   this->mesh_->set_nodes_by_elem(nodes,i);
 }
 
 template <class MESH>
-void 
-VPrismVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes, 
+void
+VPrismVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes,
                               VMesh::Cell::index_type i)
 {
   this->mesh_->set_nodes_by_elem(nodes,i);
@@ -454,7 +454,7 @@ VMesh::index_type*
 VPrismVolMesh<MESH>::
 get_elems_pointer() const
 {
-  if (this->mesh_->cells_.size() == 0) return (0);
+  if (this->mesh_->cells_.size() == 0) return (nullptr);
    return (&(this->mesh_->cells_[0]));
 }
 

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MODULES_DATAIO_GENERIC_WRITER_H
 #define MODULES_DATAIO_GENERIC_WRITER_H
@@ -46,16 +46,16 @@ namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-template <class HType, class PortTag>
+template <class HType, class PortTag, class PortDescriber = Has2InputPorts<PortTag, StringPortTag>>
 class GenericWriter : public Dataflow::Networks::Module,
-  public Has2InputPorts<PortTag, StringPortTag>,
+  public PortDescriber,
   public HasNoOutputPorts
 {
 public:
   GenericWriter(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
 
-  virtual void setStateDefaults() override final;
-  virtual void execute() override;
+  void setStateDefaults() override;
+  void execute() override;
 
   INPUT_PORT(1, Filename, String);
 
@@ -72,14 +72,14 @@ protected:
   //GuiInt			confirm_once_;
 
   virtual bool useCustomExporter(const std::string& filename) const = 0;
-  virtual bool call_exporter(const std::string &filename) { return false; }
+  virtual bool call_exporter(const std::string& /*filename*/) { return false; }
 
   virtual bool overwrite() { return true; } /// @todo
 };
 
 
-template <class HType, class PortTag>
-GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
+template <class HType, class PortTag, class PortDescriber>
+GenericWriter<HType, PortTag, PortDescriber>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
   : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
@@ -89,11 +89,12 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
   INITIALIZE_PORT(Filename);
 }
 
-template <class HType, class PortTag>
-void GenericWriter<HType, PortTag>::setStateDefaults()
+template <class HType, class PortTag, class PortDescriber>
+void GenericWriter<HType, PortTag, PortDescriber>::setStateDefaults()
 {
   get_state()->setValue(stateFilename_, std::string());
   get_state()->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
+  get_state()->setValue(SCIRun::Core::Algorithms::Variables::GuiFileTypeName, std::string());
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -112,9 +113,8 @@ GenericWriter<HType, PortTag>::overwrite()
 }
 #endif
 
-template <class HType, class PortTag>
-void
-GenericWriter<HType, PortTag>::execute()
+template <class HType, class PortTag, class PortDescriber>
+void GenericWriter<HType, PortTag, PortDescriber>::execute()
 {
   // If there is an optional input string set the filename to it in the GUI.
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
@@ -146,14 +146,16 @@ GenericWriter<HType, PortTag>::execute()
   {
     MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "No filename specified.");
   }
-  if (needToExecute())
+
+  if (!boost::filesystem::exists(filename_) || needToExecute())
   {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
 #endif
     remark("saving file " + filename_);
 
-    if (!overwrite()) return;
+    if (!overwrite())
+      return;
 
     if (useCustomExporter(filename_))
     {

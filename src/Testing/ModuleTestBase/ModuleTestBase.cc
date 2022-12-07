@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
@@ -37,11 +37,8 @@
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Dataflow/Network/ModuleBuilder.h>
@@ -66,17 +63,17 @@ class StubbedDatatypeSink : public DatatypeSinkInterface
 public:
   virtual bool hasData() const { return true; }
   virtual void setHasData(bool) {}
-  virtual void waitForData() override {}
+  void waitForData() override {}
 
-  virtual DatatypeHandleOption receive() override { return data_; }
-  virtual DatatypeSinkInterface* clone() const override { return new StubbedDatatypeSink; }
-  virtual bool hasChanged() const override { return true; }
+  DatatypeHandleOption receive() override { return data_; }
+  DatatypeSinkInterface* clone() const override { return new StubbedDatatypeSink; }
+  bool hasChanged() const override { return true; }
 
   void setData(DatatypeHandleOption data) { data_ = data; }
-  virtual void invalidateProvider() override {}
-  virtual void forceFireDataHasChanged() override {}
+  void invalidateProvider() override {}
+  void forceFireDataHasChanged() override {}
 
-  virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type&) override { return {}; }
+  boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type&) override { return {}; }
 private:
   DatatypeHandleOption data_;
 };
@@ -91,11 +88,11 @@ class MockAlgorithmFactory : public AlgorithmFactory
 {
 public:
   explicit MockAlgorithmFactory(bool verbose) : verbose_(verbose) {}
-  virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator*) const override
+  AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator*) const override
   {
     if (verbose_)
       std::cout << "Creating mock algorithm named: " << name << std::endl;
-    return boost::make_shared<NiceMock<MockAlgorithm>>();
+    return makeShared<NiceMock<MockAlgorithm>>();
   }
 private:
   bool verbose_;
@@ -126,7 +123,7 @@ ModuleHandle ModuleTestBase::makeModule(const std::string& name)
 
 void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
 {
-  if (portNum < module->num_input_ports())
+  if (portNum < module->numInputPorts())
   {
     auto iport = module->inputPorts()[portNum];
     if (iport->nconnections() > 0)
@@ -135,7 +132,7 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
     if (iport->isDynamic())
     {
       ModuleBuilder builder;
-      auto newPortId = builder.cloneInputPort(module, iport->id());
+      auto newPortId = builder.cloneInputPort(module, iport->externalId());
     }
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);
@@ -144,17 +141,17 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
 
 DatatypeHandle ModuleTestBase::getDataOnThisOutputPort(ModuleHandle module, size_t portNum)
 {
-  if (portNum < module->num_output_ports())
+  if (portNum < module->numOutputPorts())
   {
     auto oport = module->outputPorts()[portNum];
-    return boost::dynamic_pointer_cast<TestSimpleSource>(oport->source())->getDataForTesting();
+    return std::dynamic_pointer_cast<TestSimpleSource>(oport->source())->getDataForTesting();
   }
   return nullptr;
 }
 
 void ModuleTestBase::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum)
 {
-  if (portNum < module->num_output_ports())
+  if (portNum < module->numOutputPorts())
   {
     auto oport = module->outputPorts()[portNum];
     oport->attach(nullptr);

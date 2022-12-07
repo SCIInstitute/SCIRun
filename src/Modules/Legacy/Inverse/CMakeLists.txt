@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,12 +25,13 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 # CMakeLists.txt for Dataflow/Modules/Inverse
 
 SET(Modules_Legacy_Inverse_HEADERS
   SolveInverseProblemWithTikhonov.h
   SolveInverseProblemWithTikhonovSVD.h
-  SolveInverseProblemWithTikhonovTSVD.h
+  SolveInverseProblemWithTSVD.h
   BuildSurfaceLaplacianMatrix.h
   LCurvePlot.h
   share.h
@@ -40,7 +40,7 @@ SET(Modules_Legacy_Inverse_HEADERS
 SET(Modules_Legacy_Inverse_SRCS
   SolveInverseProblemWithTikhonov.cc
   SolveInverseProblemWithTikhonovSVD.cc
-  SolveInverseProblemWithTikhonovTSVD.cc
+  SolveInverseProblemWithTSVD.cc
   BuildSurfaceLaplacianMatrix.cc
   LCurvePlot.cc
 )

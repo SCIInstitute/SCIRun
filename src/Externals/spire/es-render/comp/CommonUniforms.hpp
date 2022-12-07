@@ -1,34 +1,64 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
 #define SPIRE_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
 
+#include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/CameraSelect.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
-struct CommonUniforms
+struct SCISHARE CommonUniforms
 {
   // -- Data --
   static const int MaxNumCommonUniforms = 5;
-  
+
   enum COMMON_UNIFORMS
   {
-    OBJ_PROJECTION_INVERSE_VIEW_OBJECT,   // uProjIVObject  - Object -> World -> View -> Projection
-    OBJ_VIEW_OBJECT,                      // uViewObject    - Object -> World -> View
-    OBJ_OBJECT,                           // uObject        - Object -> World transform
-    CAM_PROJECTION_INVERSE_VIEW,          // uProjIV        - Inverse view projection matrix
-    CAM_PROJECTION,                       // uProj          - Projection matrix
-    CAM_VIEW,                             // uView          - View to World
-    CAM_VIEW_VEC,                         // uCamViewVec    - Viewing vector for the camera. Depends on projection matrix
-    CAM_INVERSE_VIEW,                     // uInverseView   - Inverse view
-    CAM_UP,                               // uCamUp         - 'Up' vector for the camera in world space
-    CAM_POS,                              // uCamPos        - Camera position in world space.
-    GLOBAL_TIME,                          // uGlobalTime    - Global time of the game. Used for animation.
-    ASPECT_RATIO,                         // uAspectRatio   - The window aspect ratio
-    WINDOW_WIDTH,                         // uWindowWidth   - The window's width
+    U_MODEL_VIEW_PROJECTION,                // uModelViewProjection  - Object -> World -> View -> Projection
+    U_MODEL_VIEW,                           // uModelView    - Object -> World -> View
+    U_MODEL,                                // uModel        - Object -> World transform
+    U_VIEW_PROJECTION,                      // uViewProjection        - Inverse view projection matrix
+    U_PROJECTION,                           // uProj          - Projection matrix
+    U_INVERSE_VIEW,                         // uInverseView          - View to World
+    U_CAM_VIEW_VEC,                         // uCamViewVec    - Viewing vector for the camera. Depends on projection matrix
+    U_VIEW,                                 // uView   - Inverse view
+    U_CAM_UP,                               // uCamUp         - 'Up' vector for the camera in world space
+    U_CAM_POS,                              // uCamPos        - Camera position in world space.
+    U_GLOBAL_TIME,                          // uGlobalTime    - Global time of the game. Used for animation.
+    U_ASPECT_RATIO,                         // uAspectRatio   - The window aspect ratio
+    U_WINDOW_WIDTH,                         // uWindowWidth   - The window's width
     UNIFORM_NONE,
   };
 
@@ -71,4 +101,4 @@ struct CommonUniforms
 
 } // namespace ren
 
-#endif 
+#endif

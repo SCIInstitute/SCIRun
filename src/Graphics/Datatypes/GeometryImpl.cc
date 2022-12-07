@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,17 +25,59 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
-GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable) : 
+GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable) :
 GeometryObject(idGenerator, tag),
-mLowestValue(0.0),
-mHighestValue(0.0),
-isVisible(true),
 isClippable_(isClippable)
 {
-  
+
+}
+
+CompositeGeometryObject::~CompositeGeometryObject()
+{
+}
+
+void CompositeGeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+  {
+    list.insert(geoms_.begin(), geoms_.end());
+  }
+}
+
+void SpireSubPass::addUniform(const std::string& name, const glm::vec4& vector)
+{
+  for (auto& i : mUniforms)
+  {
+    if (i.name == name && i.type == Uniform::UniformType::UNIFORM_VEC4)
+    {
+      i.data = vector;
+      return;
+    }
+  }
+  mUniforms.push_back(Uniform(name, vector));
+}
+
+void SpireSubPass::addOrModifyUniform(const Uniform& uniform)
+{
+  for (auto& i : mUniforms)
+  {
+    if (i.name == uniform.name && i.type == uniform.type)
+    {
+      i.data = uniform.data;
+      return;
+    }
+  }
+  mUniforms.push_back(uniform);
+}
+
+void SpireSubPass::addUniform(const Uniform& uniform)
+{
+  mUniforms.push_back(uniform);
 }

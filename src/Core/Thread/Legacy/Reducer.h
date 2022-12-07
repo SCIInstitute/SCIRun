@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 ///
 ///@file   Reducer.h
 ///@brief  A barrier with reduction operations
@@ -46,19 +44,19 @@
 namespace SCIRun {
 
 /**************************************
- 
+
 @class
    Reducer
-   
+
 KEYWORDS
    Thread
-   
+
 @details
    Perform reduction operations over a set of threads.  Reduction
    operations include things like global sums, global min/max, etc.
    In these operations, a local sum (operation) is performed on each
    thread, and these sums are added together.
- 
+
 ****************************************/
 	template<class T> class Reducer : public Barrier {
 	public:
@@ -183,5 +181,3 @@ Reducer<T>::reduce(int proc, int n, const T& myresult)
     return red;
 
 #endif
-
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Serialization/Network/ModuleDescriptionSerialization.h
 
-
 #ifndef CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H
-#define CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H 
+#define CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H
 
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ConnectionId.h>
@@ -47,7 +46,7 @@ namespace Networks {
   {
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(package_name_);
       ar & BOOST_SERIALIZATION_NVP(category_name_);
@@ -64,7 +63,7 @@ namespace Networks {
   {
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & boost::serialization::make_nvp("moduleId1_", out_.moduleId_.id_);
       ar & boost::serialization::make_nvp("port1_", out_.portId_);
@@ -86,7 +85,7 @@ namespace boost {
   namespace serialization {
 
     template<class Archive>
-    void serialize(Archive& ar, SCIRun::Dataflow::Networks::PortId& pid, const unsigned int version)
+    void serialize(Archive& ar, SCIRun::Dataflow::Networks::PortId& pid, const unsigned int /*version*/)
     {
       ar & boost::serialization::make_nvp("name", pid.name);
       ar & boost::serialization::make_nvp("id", pid.id);

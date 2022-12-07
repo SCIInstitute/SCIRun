@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -41,8 +41,6 @@ using namespace SCIRun::Dataflow::Networks;
 
 MODULE_INFO_DEF(JoinFields, NewField, SCIRun)
 
-const AlgorithmParameterName JoinFields::ForcePointCloud("ForcePointCloud");
-
 JoinFields::JoinFields() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputFields);
@@ -51,12 +49,12 @@ JoinFields::JoinFields() : Module(staticInfo_)
 
 void JoinFields::setStateDefaults()
 {
-  setStateBoolFromAlgo(JoinFieldsAlgo::MergeElems);
-  setStateBoolFromAlgo(JoinFieldsAlgo::MergeNodes);
-  setStateBoolFromAlgo(JoinFieldsAlgo::MatchNodeValues);
-  setStateBoolFromAlgo(JoinFieldsAlgo::MakeNoData);
-  setStateDoubleFromAlgo(JoinFieldsAlgo::Tolerance);
-  get_state()->setValue(ForcePointCloud, false);
+  setStateBoolFromAlgo(Parameters::merge_elems);
+  setStateBoolFromAlgo(Parameters::merge_nodes);
+  setStateBoolFromAlgo(Parameters::match_node_values);
+  setStateBoolFromAlgo(Parameters::make_no_data);
+  setStateDoubleFromAlgo(Parameters::tolerance);
+  get_state()->setValue(Parameters::ForcePointCloud, false);
 }
 
 void JoinFields::execute()
@@ -65,13 +63,13 @@ void JoinFields::execute()
 
   if (needToExecute())
   {
-    bool forcepointcloud = get_state()->getValue(ForcePointCloud).toBool();
+    bool forcepointcloud = get_state()->getValue(Parameters::ForcePointCloud).toBool();
 
-    setAlgoBoolFromState(JoinFieldsAlgo::MergeElems);
-    setAlgoBoolFromState(JoinFieldsAlgo::MatchNodeValues);
-    setAlgoBoolFromState(JoinFieldsAlgo::MergeNodes);
-    setAlgoBoolFromState(JoinFieldsAlgo::MakeNoData);
-    setAlgoDoubleFromState(JoinFieldsAlgo::Tolerance);
+    setAlgoBoolFromState(Parameters::merge_elems);
+    setAlgoBoolFromState(Parameters::match_node_values);
+    setAlgoBoolFromState(Parameters::merge_nodes);
+    setAlgoBoolFromState(Parameters::make_no_data);
+    setAlgoDoubleFromState(Parameters::tolerance);
 
     auto output = algo().run(withInputData((InputFields, fields)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -57,7 +56,7 @@ class SCISHARE ReportMatrixSliceMeasureAlgo : public AlgorithmBase
 
   public:
     ReportMatrixSliceMeasureAlgo();
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     // Apply an operation on a row by row basis
     bool ApplyRowOperation(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int operation) const;

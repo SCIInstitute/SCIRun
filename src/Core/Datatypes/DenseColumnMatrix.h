@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,12 +27,12 @@
 
 
 #ifndef CORE_DATATYPES_DENSE_COLUMN_MATRIX_H
-#define CORE_DATATYPES_DENSE_COLUMN_MATRIX_H 
+#define CORE_DATATYPES_DENSE_COLUMN_MATRIX_H
 
 #include <Core/Datatypes/Matrix.h>
-#define register
+//#define register
 #include <Eigen/Dense>
-#undef register
+//#undef register
 
 namespace SCIRun {
 namespace Core {
@@ -63,34 +62,34 @@ namespace Datatypes {
       return *this;
     }
 
-    virtual DenseColumnMatrixGeneric* clone() const override
+    DenseColumnMatrixGeneric* clone() const override
     {
       return new DenseColumnMatrixGeneric(*this);
     }
 
-    virtual void accept(MatrixVisitorGeneric<T>& visitor) override
+    void accept(MatrixVisitorGeneric<T>& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual size_t nrows() const override { return this->rows(); }
-    virtual size_t ncols() const override { return this->cols(); }
-    virtual T get(int i, int j) const override
+    size_t nrows() const override { return this->rows(); }
+    size_t ncols() const override { return this->cols(); }
+    T get(int i, int j) const override
     {
       return (*this)(i,j);
     }
-    virtual void put(int i, int j, const T& val) override
+    void put(int i, int j, const T& val) override
     {
       (*this)(i,j) = val;
     }
 
     /// Persistent representation...
-    virtual std::string dynamic_type_name() const override { return type_id.type; }
-    virtual void io(Piostream&) override;
+    std::string dynamic_type_name() const override { return type_id.type; }
+    void io(Piostream&) override;
     static PersistentTypeID type_id;
 
   private:
-    virtual void print(std::ostream& o) const override
+    void print(std::ostream& o) const override
     {
       o << static_cast<const EigenBase&>(*this);
     }

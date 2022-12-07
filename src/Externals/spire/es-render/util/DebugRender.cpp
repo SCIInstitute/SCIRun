@@ -1,4 +1,34 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
 
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
 
 #include <glm/glm.hpp>
 #include <gl-shaders/GLShader.hpp>
@@ -15,8 +45,8 @@ namespace ren {
 DebugRender::DebugRender() :
     mLines(0),
     mCurCircum(0),
-    mColorUniform("uColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), VecUniform::VEC4),
-    mShaderID(0)
+    mShaderID(0),
+    mColorUniform("uColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), VecUniform::VEC4)
 {}
 
 DebugRender::DebugRender(spire::CerealCore& core) :
@@ -24,9 +54,9 @@ DebugRender::DebugRender(spire::CerealCore& core) :
     mCurCircum(0),
     mColorUniform("uColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), VecUniform::VEC4)
 {
-  reaquireShader(core);
+  reacquireShader(core);
 }
-  
+
 void DebugRender::clear()
 {
   mLines = 0;
@@ -39,7 +69,7 @@ void DebugRender::finalizeClosedObject()
   addLine(mFirstPoint, mLastPoint);
 }
 
-void DebugRender::reaquireShader(spire::CerealCore& core)
+void DebugRender::reacquireShader(spire::CerealCore& core)
 {
   mShaderID = getColorLineShader(core);
 
@@ -157,7 +187,7 @@ void DebugRender::render(const glm::mat4& trafo,
 	// glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, stride, lineMemory);
 	// glEnableVertexAttribArray(1);
 
-  if (triangleFan == false)
+  if (!triangleFan)
 		glDrawArrays(GL_LINES, 0, mLines * 2);
 	else
 		glDrawArrays(GL_TRIANGLE_FAN, 0, mLines * 2);

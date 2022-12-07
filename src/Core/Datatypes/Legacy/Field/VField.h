@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 #ifndef CORE_DATATYPES_VFIELD_H
@@ -50,11 +48,11 @@ class SCISHARE VField {
 public:
 
   VField() :
-    field_(0),
-    mesh_(0),
-    pm_(0),
-    vmesh_(0),
-    vfdata_(0),
+    field_(nullptr),
+    mesh_(nullptr),
+    pm_(nullptr),
+    vmesh_(nullptr),
+    vfdata_(nullptr),
     basis_order_(0),
     number_of_nodes_(0),
     number_of_enodes_(0),

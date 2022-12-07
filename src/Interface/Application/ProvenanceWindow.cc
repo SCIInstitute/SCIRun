@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <QtGui>
 #include <iostream>
@@ -47,16 +47,17 @@ ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QW
   networkEditor_(provenanceManager->networkIO())
 {
   setupUi(this);
-  networkXMLTextEdit_->setTabStopWidth(15);
+  // TODO deprecated
+  //networkXMLTextEdit_->setTabStopWidth(15);
 
-  connect(provenanceListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
-  connect(provenanceListWidget_, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
-  connect(undoButton_, SIGNAL(clicked()), this, SLOT(undo()));
-  connect(redoButton_, SIGNAL(clicked()), this, SLOT(redo()));
-  connect(undoAllButton_, SIGNAL(clicked()), this, SLOT(undoAll()));
-  connect(redoAllButton_, SIGNAL(clicked()), this, SLOT(redoAll()));
-  connect(clearButton_, SIGNAL(clicked()), this, SLOT(clear()));
-  connect(itemMaxSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setMaxItems(int)));
+  connect(provenanceListWidget_, &QListWidget::itemClicked, this, &ProvenanceWindow::displayInfo);
+  connect(provenanceListWidget_, &QListWidget::currentItemChanged, this, &ProvenanceWindow::displayInfo);
+  connect(undoButton_, &QPushButton::clicked, this, &ProvenanceWindow::undo);
+  connect(redoButton_, &QPushButton::clicked, this, &ProvenanceWindow::redo);
+  connect(undoAllButton_, &QPushButton::clicked, this, &ProvenanceWindow::undoAll);
+  connect(redoAllButton_, &QPushButton::clicked, this, &ProvenanceWindow::redoAll);
+  connect(clearButton_, &QPushButton::clicked, this, &ProvenanceWindow::clear);
+  connect(itemMaxSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &ProvenanceWindow::setMaxItems);
   setMaxItems(10);
   setUndoEnabled(false);
   setRedoEnabled(false);
@@ -98,14 +99,14 @@ public:
     QFont f = font();
     f.setItalic(false);
     setFont(f);
-    setBackgroundColor(Qt::white);
+    setBackground(Qt::white);
   }
   void setAsRedo()
   {
     QFont f = font();
     f.setItalic(true);
     setFont(f);
-    setBackgroundColor(Qt::lightGray);
+    setBackground(Qt::lightGray);
   }
   QString xmlText() const
   {
@@ -287,11 +288,11 @@ GuiActionProvenanceConverter::GuiActionProvenanceConverter(NetworkEditor* editor
   provenanceManagerModifyingNetwork_(false)
 {}
 
-void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
+void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ModuleAddedProvenanceItem>(name, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -300,7 +301,7 @@ void GuiActionProvenanceConverter::moduleRemoved(const ModuleId& id)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -309,7 +310,7 @@ void GuiActionProvenanceConverter::connectionAdded(const SCIRun::Dataflow::Netwo
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -318,7 +319,7 @@ void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Net
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -327,7 +328,7 @@ void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks:
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(boost::make_shared<ModuleMovedProvenanceItem>(id, newX, newY, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, editor_->saveNetwork()));
     Q_EMIT provenanceItemCreated(item);
   }
 }

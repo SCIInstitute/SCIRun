@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 
 /// @todo Documentation Core/Python/PythonInterpreter.cc
 
@@ -41,7 +41,7 @@
 #include <boost/preprocessor.hpp>
 #include <string>
 #include <vector>
-#include <boost/thread/condition_variable.hpp>
+#include <condition_variable>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 
@@ -53,13 +53,7 @@
 #include <Core/Python/PythonInterpreter.h>
 
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
-
-
-//#ifdef _MSC_VER
-//#pragma warning( pop )
-//#endif
-
-//#include <Interface/PythonTestGui/Python/ToPythonConverters.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core;
 
@@ -105,7 +99,7 @@ public:
 
 	// Condition variable to make sure the PythonInterpreter thread has
 	// completed initialization before continuing the main thread.
-	boost::condition_variable thread_condition_variable_;
+	std::condition_variable thread_condition_variable_;
 private:
   // The name of the executable
   std::vector< wchar_t > program_name_;
@@ -243,6 +237,7 @@ PythonInterpreter::~PythonInterpreter()
 bool needsSpecialPythonPathTreatment(const std::string& commandLine)
 {
 #if defined(BUILD_HEADLESS) && defined(__APPLE__)
+  (void)commandLine;
   return true;
 #else
   const std::string TEST_EXECUTABLE_NAME = "SCIRun_test";
@@ -506,6 +501,7 @@ void PythonInterpreter::print_banner()
 
 bool PythonInterpreter::run_string( const std::string& command )
 {
+  LOG_DEBUG("Python::run_string( {} )", command);
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 		if ( !this->private_->initialized_ )
@@ -582,6 +578,7 @@ bool PythonInterpreter::run_string( const std::string& command )
 
 void PythonInterpreter::run_script( const std::string& script )
 {
+  LOG_DEBUG("Python::run_script( {} )", script);
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 		if ( !this->private_->initialized_ )
@@ -605,7 +602,7 @@ void PythonInterpreter::run_script( const std::string& script )
 	catch ( ... ) {}
 
 	// If an error happened during compilation, print the error message
-	if ( PyErr_Occurred() != NULL )
+	if ( PyErr_Occurred() )
 	{
 		PyErr_Print();
 	}
@@ -615,7 +612,7 @@ void PythonInterpreter::run_script( const std::string& script )
 		boost::python::dict local_var;
 		PyObject* result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), local_var.ptr() );
 		Py_XDECREF( result );
-		if ( PyErr_Occurred() != NULL )
+		if ( PyErr_Occurred() )
 		{
 			PyErr_Print();
 		}
@@ -627,6 +624,7 @@ void PythonInterpreter::run_script( const std::string& script )
 
 bool PythonInterpreter::run_file( const std::string& file_name )
 {
+  LOG_DEBUG("Python::run_file( {} )", file_name);
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 		if ( !this->private_->initialized_ )
@@ -680,7 +678,7 @@ void PythonInterpreter::start_terminal()
 
 	wchar_t** argv = new wchar_t*[ 2 ];
   argv[0] = const_cast< wchar_t* >(this->private_->programName());
-	argv[ 1 ] = 0;
+	argv[ 1 ] = nullptr;
 	Py_Main( 1, argv );
 	delete[] argv;
 

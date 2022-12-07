@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -91,13 +91,13 @@ void GetDomainBoundary::execute()
   {
     if (minValue && *minValue)
     {
-      double minrange = (*minValue)->value();
+      double minrange = (*minValue)->toDouble();
       get_state()->setValue(Parameters::MinRange, minrange);
       get_state()->setValue(Parameters::Domain, minrange);  //??
     }
     if (maxValue && *maxValue)
     {
-      double maxrange = (*maxValue)->value();
+      double maxrange = (*maxValue)->toDouble();
       get_state()->setValue(Parameters::MaxRange, maxrange);
     }
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITCONSUMER_H
 #define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITCONSUMER_H
 
@@ -35,7 +35,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
-#include <boost/thread/thread.hpp>
+#include <Core/Thread/Parallel.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
 
@@ -47,50 +47,47 @@ namespace DynamicExecutor {
   class SCISHARE ExecutionThreadGroup : boost::noncopyable
   {
   public:
-    ExecutionThreadGroup()
-    {
-      clear();
-    }
     void startExecution(const ModuleExecutor& executor)
     {
-      auto thread = executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
-      Core::Thread::Guard g(mapLock_->get());
-      threadsByModuleId_[executor.module_->get_id().id_] = thread;
+      //auto thread = 
+      executeThreads_.create_thread([=]() { executor.run(); });
+      //Core::Thread::Guard g(mapLock_->get());
+      //threadsByModuleId_[executor.module_->id().id_] = thread;
     }
     void joinAll()
     {
-      executeThreads_->join_all();
+      executeThreads_.join_all();
     }
     void clear()
     {
-      executeThreads_.reset(new boost::thread_group);
-      threadsByModuleId_.clear();
-      std::ostringstream lockName;
-      lockName << "threadMap " << this;
-      mapLock_.reset(new Core::Thread::Mutex(lockName.str()));
+      executeThreads_.clear();
+     // threadsByModuleId_.clear();
+      //std::ostringstream lockName;
+      //lockName << "threadMap " << this;
+      //mapLock_.reset(new Core::Thread::Mutex(lockName.str()));
     }
-    boost::thread* getThreadForModule(const std::string& moduleId) const
-    {
-      if (!mapLock_)
-      {
-        return nullptr;
-      }
-      Core::Thread::Guard g(mapLock_->get());
+    //std::thread* getThreadForModule(const std::string& moduleId) const
+    //{
+    //  if (!mapLock_)
+    //  {
+    //    return nullptr;
+    //  }
+    //  Core::Thread::Guard g(mapLock_->get());
 
-      auto it = threadsByModuleId_.find(moduleId);
-      if (it == threadsByModuleId_.end())
-        return nullptr;
-      if (!executeThreads_->is_thread_in(it->second))
-        return nullptr;
-      return it->second;
-    }
+    //  auto it = threadsByModuleId_.find(moduleId);
+    //  if (it == threadsByModuleId_.end())
+    //    return nullptr;
+    //  if (!executeThreads_->is_thread_in(it->second))
+    //    return nullptr;
+    //  return it->second;
+    //}
   private:
-    mutable boost::shared_ptr<boost::thread_group> executeThreads_;
-    std::map<std::string, boost::thread*> threadsByModuleId_;
-    mutable boost::shared_ptr<Core::Thread::Mutex> mapLock_;
+    mutable Core::Thread::ThreadGroup executeThreads_;
+    //std::map<std::string, std::thread*> threadsByModuleId_;
+    //mutable SharedPointer<Core::Thread::Mutex> mapLock_;
   };
 
-  typedef boost::shared_ptr<ExecutionThreadGroup> ExecutionThreadGroupPtr;
+  typedef SharedPointer<ExecutionThreadGroup> ExecutionThreadGroupPtr;
 
   class SCISHARE ModuleConsumer : boost::noncopyable
   {
@@ -98,48 +95,48 @@ namespace DynamicExecutor {
     explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer,
       ExecutionThreadGroupPtr executeThreadGroup) :
     work_(workQueue), producer_(producer), lookup_(lookup),
-    executeThreadGroup_(executeThreadGroup),
-    shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
+    executeThreadGroup_(executeThreadGroup)
+    //,shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
     {
       //log_.setVerbose(shouldLog_);
-      log_->debug_if(shouldLog_, "Consumer created.");
+      //log_->trace_if(shouldLog_, "Consumer created.");
     }
     void operator()() const
     {
       if (!producer_)
       {
-        log_->debug_if(shouldLog_, "Consumer quitting due to no producer pointer.");
+        //log_->trace_if(shouldLog_, "Consumer quitting due to no producer pointer.");
         return;
       }
 
-      log_->debug_if(shouldLog_, "Consumer started.");
+      //log_->trace_if(shouldLog_, "Consumer started.");
 
       while (!producer_->isDone() || moreWork())
       {
         if (moreWork())
         {
-          log_->debug_if(shouldLog_, "\tConsumer thinks work queue is not empty.");
-          log_->debug_if(shouldLog_, "\tConsumer accessing front of work queue.");
+          //log_->trace_if(shouldLog_, "\tConsumer thinks work queue is not empty.");
+          //log_->trace_if(shouldLog_, "\tConsumer accessing front of work queue.");
 
           Networks::ModuleHandle unit;
           work_->pop(unit);
 
-          log_->debug_if(shouldLog_, "\tConsumer popping front of work queue.");
+          //log_->trace_if(shouldLog_, "\tConsumer popping front of work queue.");
 
           if (unit)
           {
-            log_->debug_if(shouldLog_, "~~~Processing {}", unit->get_id());
+            //log_->trace_if(shouldLog_, "~~~Processing {}", unit->get_id());
 
             ModuleExecutor executor(unit, lookup_, producer_);
             executeThreadGroup_->startExecution(executor);
           }
           else
           {
-            log_->debug_if(shouldLog_, "\tConsumer received null module");
+            //log_->trace_if(shouldLog_, "\tConsumer received null module");
           }
         }
       }
-      log_->debug_if(shouldLog_, "Consumer done.");
+     // log_->trace_if(shouldLog_, "Consumer done.");
     }
 
     bool moreWork() const
@@ -153,11 +150,11 @@ namespace DynamicExecutor {
     const Networks::ExecutableLookup* lookup_;
     ExecutionThreadGroupPtr executeThreadGroup_;
 
-    static Core::Logging::Logger2 log_;
-    bool shouldLog_;
+    //static Core::Logging::Logger2 log_;
+    //bool shouldLog_;
   };
 
-  typedef boost::shared_ptr<ModuleConsumer> ModuleConsumerPtr;
+  typedef SharedPointer<ModuleConsumer> ModuleConsumerPtr;
 
 }}
 }}

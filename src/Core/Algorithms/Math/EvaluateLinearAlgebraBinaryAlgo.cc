@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -55,10 +55,10 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   ENSURE_ALGORITHM_INPUT_NOT_NULL(lhs, "lhs");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(rhs, "rhs");
 
-  auto oper = params.get<0>();
+  auto oper = params.op;
   switch (oper)
   {
-  case ADD:
+  case Operator::ADD:
   {
     if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to add matrices.");
@@ -66,7 +66,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     rhs->accept(add);
     return add.sum_;
   }
-  case SUBTRACT:
+  case Operator::SUBTRACT:
   {
     if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to subtract matrices.");
@@ -77,7 +77,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     result->accept(add);
     return add.sum_;
   }
-  case MULTIPLY:
+  case Operator::MULTIPLY:
   {
     if (lhs->ncols() != rhs->nrows())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to multiply matrices.");
@@ -85,9 +85,9 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     rhs->accept(mult);
     return mult.getProduct();
   }
-  case FUNCTION:
+  case Operator::FUNCTION:
   {
-    // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result. 
+    // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result.
     // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
     if (matrixIs::sparse(lhs) || matrixIs::sparse(rhs))
     {
@@ -103,8 +103,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     if (!engine.add_input_fullmatrix("y", rhsInput))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
 
-    auto func = params.get<1>();
-    auto function_string = func.get();
+    auto function_string = params.func;
 
     function_string = "RESULT=" + function_string;
     engine.add_expressions(function_string);
@@ -137,11 +136,11 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 
 AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run(const AlgorithmInput& input) const
 {
-  auto LHS = input.get<Matrix>(Variables::LHS);
-  auto RHS = input.get<Matrix>(Variables::RHS);
-  auto func = boost::make_optional(get(Variables::FunctionString).toString());
+  const auto LHS = input.get<Matrix>(Variables::LHS);
+  const auto RHS = input.get<Matrix>(Variables::RHS);
+  const auto func = get(Variables::FunctionString).toString();
 
-  auto result = run(boost::make_tuple(LHS, RHS), boost::make_tuple(Operator(get(Variables::Operator).toInt()), func));
+  const auto result = run(boost::make_tuple(LHS, RHS), { Operator(get(Variables::Operator).toInt()), func });
 
   AlgorithmOutput output;
   output[Variables::Result] = result;

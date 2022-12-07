@@ -1,39 +1,40 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
@@ -45,6 +46,7 @@ using namespace Datatypes;
 using namespace Thread;
 using namespace Dataflow::Networks;
 using namespace Algorithms;
+using namespace Algorithms::Visualization::Parameters;
 using namespace Visualization;
 using namespace Geometry;
 using namespace Graphics;
@@ -62,38 +64,33 @@ namespace detail
 class GeometryBuilder
 {
 public:
-  GeometryBuilder(const std::string& moduleId, ModuleStateHandle state) : moduleId_(moduleId), state_(state) {}
+  GeometryBuilder(const std::string& moduleId, ModuleStateHandle state, Stoppable* stoppable)
+    : moduleId_(moduleId), state_(state), stoppable_(stoppable) {}
   /// Constructs a geometry object (essentially a spire object) from the given
   /// field data.
   GeometryHandle buildGeometryObject(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    const GeometryIDGenerator& gid,
-    Interruptible* interruptible);
+    std::optional<ColorMapHandle> colorMap,
+    const GeometryIDGenerator& gid);
 
   /// Mesh construction. Any of the functions below can modify the renderState.
   /// This modified render state will be passed onto the renderer.
   void renderNodes(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
   void renderFaces(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
-    unsigned int approx_div,
     const std::string& id);
 
   void renderFacesLinear(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
-    unsigned int approxDiv,
     const std::string& id);
 
   void addFaceGeom(
@@ -104,37 +101,39 @@ public:
     spire::VarBuffer* iboBuffer,
     spire::VarBuffer* vboBuffer,
     ColorScheme colorScheme,
-    const std::vector<ColorRGB> &face_colors,
+    const std::vector<ColorRGB> &textureCoords,
     const RenderState& state);
 
   void renderEdges(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state,
     GeometryHandle geom,
     const std::string& id);
 
-  RenderState getNodeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getEdgeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getFaceRenderState(boost::optional<ColorMapHandle> colorMap);
+  RenderState getNodeRenderState(std::optional<ColorMapHandle> colorMap);
+  RenderState getEdgeRenderState(std::optional<ColorMapHandle> colorMap);
+  RenderState getFaceRenderState(std::optional<ColorMapHandle> colorMap);
 private:
   float faceTransparencyValue_ = 0.65f;
   float edgeTransparencyValue_ = 0.65f;
   float nodeTransparencyValue_ = 0.65f;
   std::string moduleId_;
   ModuleStateHandle state_;
+  Stoppable* stoppable_;
 };
 }}}}
 
 using namespace detail;
 
-ShowField::ShowField() : GeometryGeneratingModule(staticInfo_),
-  builder_(new GeometryBuilder(get_id().id_, get_state()))
+ShowField::ShowField() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(SceneGraph);
+  //INITIALIZE_PORT(OspraySceneGraph);
+
+  builder_.reset(new GeometryBuilder(id().id_, get_state(), this));
 }
 
 void ShowField::setStateDefaults()
@@ -198,10 +197,10 @@ void ShowField::processMeshComponentSelection(const ModuleFeedback& var)
   try
   {
     auto sel = dynamic_cast<const MeshComponentSelectionFeedback&>(var);
-    if (sel.moduleId == get_id().id_)
+    if (sel.moduleId == id().id_)
     {
-    get_state()->setValue(Name("Show" + sel.component), sel.selected);
-    enqueueExecuteAgain(false);
+      get_state()->setValue(Name("Show" + sel.component), sel.selected);
+      enqueueExecuteAgain(false);
     }
   }
   catch (std::bad_cast&)
@@ -218,24 +217,24 @@ void ShowField::execute()
   if (needToExecute())
   {
     updateAvailableRenderOptions(field);
-    auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
+    auto geom = builder_->buildGeometryObject(field, colorMap, *this);
     sendOutput(SceneGraph, geom);
   }
 }
 
 RenderState GeometryBuilder::getNodeRenderState(
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+  std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
-  bool useColorMap = state_->getValue(ShowField::NodesColoring).toInt() == 1;
-  bool rgbConversion = state_->getValue(ShowField::NodesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state_->getValue(ShowField::ShowNodes).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_NODES, state_->getValue(ShowField::NodeTransparency).toBool());
+  bool useColorMap = state_->getValue(NodesColoring).toInt() == 1;
+  bool rgbConversion = state_->getValue(NodesColoring).toInt() == 2;
+  renState.set(RenderState::ActionFlags::IS_ON, state_->getValue(ShowNodes).toBool());
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENT_NODES, state_->getValue(NodeTransparency).toBool());
 
-  renState.set(RenderState::USE_SPHERE, state_->getValue(ShowField::NodeAsSpheres).toInt() == 1);
+  renState.set(RenderState::ActionFlags::USE_SPHERE, state_->getValue(NodeAsSpheres).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state_->getValue(ShowField::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -247,32 +246,32 @@ RenderState GeometryBuilder::getNodeRenderState(
 
   if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP_ON_NODES, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP_ON_NODES, true);
   }
   else if (rgbConversion)
   {
-    renState.set(RenderState::USE_COLOR_CONVERT_ON_NODES, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT_ON_NODES, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR_NODES, true);
-    state_->setValue(ShowField::NodesColoring, 0);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR_NODES, true);
+    state_->setValue(NodesColoring, 0);
   }
 
   return renState;
 }
 
-RenderState GeometryBuilder::getEdgeRenderState(boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+RenderState GeometryBuilder::getEdgeRenderState(std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
-  bool useColorMap = state_->getValue(ShowField::EdgesColoring).toInt() == 1;
-  bool rgbConversion = state_->getValue(ShowField::EdgesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state_->getValue(ShowField::ShowEdges).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, state_->getValue(ShowField::EdgeTransparency).toBool());
-  renState.set(RenderState::USE_CYLINDER, state_->getValue(ShowField::EdgesAsCylinders).toInt() == 1);
+  bool useColorMap = state_->getValue(EdgesColoring).toInt() == 1;
+  bool rgbConversion = state_->getValue(EdgesColoring).toInt() == 2;
+  renState.set(RenderState::ActionFlags::IS_ON, state_->getValue(ShowEdges).toBool());
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENT_EDGES, state_->getValue(EdgeTransparency).toBool());
+  renState.set(RenderState::ActionFlags::USE_CYLINDER, state_->getValue(EdgesAsCylinders).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state_->getValue(ShowField::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -282,36 +281,36 @@ RenderState GeometryBuilder::getEdgeRenderState(boost::optional<boost::shared_pt
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  edgeTransparencyValue_ = static_cast<float>(state_->getValue(ShowField::EdgeTransparencyValue).toDouble());
+  edgeTransparencyValue_ = static_cast<float>(state_->getValue(EdgeTransparencyValue).toDouble());
 
   if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP_ON_EDGES, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP_ON_EDGES, true);
   }
   else if (rgbConversion)
   {
-    renState.set(RenderState::USE_COLOR_CONVERT_ON_EDGES, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT_ON_EDGES, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR_EDGES, true);
-    state_->setValue(ShowField::EdgesColoring, 0);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR_EDGES, true);
+    state_->setValue(EdgesColoring, 0);
   }
 
   return renState;
 }
 
-RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+RenderState GeometryBuilder::getFaceRenderState(std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
-  bool useColorMap = state_->getValue(ShowField::FacesColoring).toInt() == 1;
-  bool rgbConversion = state_->getValue(ShowField::FacesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state_->getValue(ShowField::ShowFaces).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state_->getValue(ShowField::FaceTransparency).toBool());
-  renState.set(RenderState::USE_FACE_NORMALS, state_->getValue(ShowField::UseFaceNormals).toBool());
+  bool useColorMap = state_->getValue(FacesColoring).toInt() == 1;
+  bool rgbConversion = state_->getValue(FacesColoring).toInt() == 2;
+  renState.set(RenderState::ActionFlags::IS_ON, state_->getValue(ShowFaces).toBool());
+  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, state_->getValue(FaceTransparency).toBool());
+  renState.set(RenderState::ActionFlags::USE_FACE_NORMALS, state_->getValue(UseFaceNormals).toBool());
 
-  renState.defaultColor = ColorRGB(state_->getValue(ShowField::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -321,20 +320,20 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_pt
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  faceTransparencyValue_ = static_cast<float>(state_->getValue(ShowField::FaceTransparencyValue).toDouble());
+  faceTransparencyValue_ = static_cast<float>(state_->getValue(FaceTransparencyValue).toDouble());
 
   if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, true);
   }
   else if (rgbConversion)
   {
-    renState.set(RenderState::USE_COLOR_CONVERT, true);
+    renState.set(RenderState::ActionFlags::USE_COLOR_CONVERT, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
-    state_->setValue(ShowField::FacesColoring, 0);
+    renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
+    state_->setValue(FacesColoring, 0);
   }
 
   return renState;
@@ -342,57 +341,49 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_pt
 
 GeometryHandle GeometryBuilder::buildGeometryObject(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  const GeometryIDGenerator& gid, Interruptible* interruptible)
+  std::optional<SharedPointer<ColorMap>> colorMap,
+  const GeometryIDGenerator& gid)
 {
   // Function for reporting progress. TODO: use this variable somewhere!
-  //auto progressFunc = getUpdaterFunc();
+  // auto progressFunc = getUpdaterFunc();
 
-  /// \todo Determine a better way of handling all of the various object state_.
-  bool showNodes = state_->getValue(ShowField::ShowNodes).toBool();
-  bool showEdges = state_->getValue(ShowField::ShowEdges).toBool();
-  bool showFaces = state_->getValue(ShowField::ShowFaces).toBool();
+  // todo Determine a better way of handling all of the various object state_.
+  bool showNodes = state_->getValue(ShowNodes).toBool();
+  bool showEdges = state_->getValue(ShowEdges).toBool();
+  bool showFaces = state_->getValue(ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
 
   std::string idname = "EntireField";
-  if (!state_->getValue(ShowField::FieldName).toString().empty())
+  if (!state_->getValue(FieldName).toString().empty())
   {
-    idname += GeometryObject::delimiter + state_->getValue(ShowField::FieldName).toString() + " (from " + moduleId_ + ")";
+    idname += GeometryObject::delimiter + state_->getValue(FieldName).toString() + " (from " + moduleId_ + ")";
   }
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(gid, idname, true));
+  auto geom(makeShared<GeometryObjectSpire>(gid, idname, true));
 
-  /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
+  // todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
-  /// \todo Mind material properties (simple since we already have implemented
-  ///       most of this).
+  // todo Mind material properties (simple since we already have implemented
+  //      most of this).
 
-  /// \todo Handle assignment of color map. The color map will need to be
-  ///       available to us as we are building the meshes. Due to the way
-  ///       SCIRun expects meshes to be built.
+  // todo Handle assignment of color map. The color map will need to be
+  //      available to us as we are building the meshes. Due to the way
+  //      SCIRun expects meshes to be built.
 
-  /// \todo render_state_ DIRTY flag? See old scirun ShowField.cc:446.
+  // todo render_state_ DIRTY flag? See old scirun ShowField.cc:446.
 
   const int dim = field->vmesh()->dimensionality();
   if (showEdges && dim < 1) { showEdges = false; }
   if (showFaces && dim < 2) { showFaces = false; }
 
-  if (showNodes)
-  {
-    // Construct node geometry.
-    renderNodes(field, colorMap, interruptible, getNodeRenderState(colorMap), geom, geom->uniqueID());
-  }
-
   if (showFaces)
-  {
-    int approxDiv = 1;
-    renderFaces(field, colorMap, interruptible, getFaceRenderState(colorMap), geom, approxDiv, geom->uniqueID());
-  }
+    renderFaces(field, colorMap, getFaceRenderState(colorMap), geom, geom->uniqueID());
 
   if (showEdges)
-  {
-    renderEdges(field, colorMap, interruptible, getEdgeRenderState(colorMap), geom, geom->uniqueID());
-  }
+    renderEdges(field, colorMap, getEdgeRenderState(colorMap), geom, geom->uniqueID());
+
+  if (showNodes)
+    renderNodes(field, colorMap, getNodeRenderState(colorMap), geom, geom->uniqueID());
 
   return geom;
 }
@@ -400,10 +391,8 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 
 void GeometryBuilder::renderFaces(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state, GeometryHandle geom,
-  unsigned int approxDiv,
   const std::string& id)
 {
   VField* fld = field->vfield();
@@ -412,7 +401,7 @@ void GeometryBuilder::renderFaces(
   // Directly ported from SCIRUN 4. Unsure what 'linear' is.
   // I'm assuming it means linear interpolation as opposed to nearest neighbor
   // interpolation along the basis. But I could be wrong.
-  bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2 && approxDiv == 1);
+  bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2);
 
   // Todo: Check for texture -- this is indicative of volume rendering.
   // if(mesh->is_regularmesh() && mesh->is_surface() &&
@@ -420,7 +409,7 @@ void GeometryBuilder::renderFaces(
 
   if (doLinear)
   {
-    return renderFacesLinear(field, colorMap, interruptible, state, geom, approxDiv, id);
+    return renderFacesLinear(field, colorMap, state, geom, id);
   }
   else
   {
@@ -429,13 +418,84 @@ void GeometryBuilder::renderFaces(
 }
 
 
+
+namespace
+{
+  template <typename T>
+  inline void writeFloats(spire::VarBuffer* vboBuffer, std::initializer_list<T> ts)
+  {
+    for (const T& t : ts)
+      vboBuffer->writeUnsafe(static_cast<float>(t));
+  }
+
+  inline void writeAtributeToVBO(const Point& point, spire::VarBuffer* vboBuffer)
+  {
+    writeFloats(vboBuffer, {point.x(), point.y(), point.z()});
+  }
+
+  inline void writeAtributeToVBO(const Vector& vector, spire::VarBuffer* vboBuffer)
+  {
+    writeFloats(vboBuffer, {vector.x(), vector.y(), vector.z()});
+  }
+
+  inline void writeAtributeToVBO(const glm::vec2& coords, spire::VarBuffer* vboBuffer)
+  {
+    writeFloats(vboBuffer, {coords.x, coords.y});
+  }
+
+  template<typename ... Params>
+  void writeTri(spire::VarBuffer* vboBuffer, const Params& ... params)
+  {
+    for(int i = 0; i < 3; ++i)
+      (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
+  }
+
+  template<typename ...Params>
+  void writeQuad(spire::VarBuffer* vboBuffer, const Params& ... params)
+  {
+    for(int i = 0; i < 4; ++i)
+      (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
+  }
+
+  enum : int
+  {
+    TRI, TRI_TEXCOORDS, TRI_NORMALS, TRI_NORMALS_TEXCOORDS,
+    QUAD, QUAD_TEXCOORDS, QUAD_NORMALS, QUAD_NORMALS_TEXCOORDS
+  };
+
+  inline int getWriteCase(bool writeQuads, bool writeNormals, bool writeTexCoords)
+  {
+    return ((int)writeQuads << 2) | ((int)writeNormals << 1) | ((int)writeTexCoords);
+  }
+
+  void spiltColorMapToTextureAndCoordinates(
+    const std::optional<SharedPointer<ColorMap>>& colorMap,
+    ColorMapHandle& textureMap, ColorMapHandle& coordinateMap)
+  {
+    ColorMapHandle realColorMap;
+
+    if (colorMap)
+      realColorMap = *colorMap;
+    else
+      realColorMap = StandardColorMapFactory::create();
+
+    textureMap = StandardColorMapFactory::create(
+      realColorMap->getColorData(), realColorMap->getColorMapName(),
+      realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
+      realColorMap->getColorMapInvert(), 0.5, 1.0, realColorMap->getAlphaLookup());
+
+    coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
+      realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
+  }
+}
+
+
+
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
-  unsigned int approxDiv,
   const std::string& id)
 {
   VField* fld = field->vfield();
@@ -444,772 +504,334 @@ void GeometryBuilder::renderFacesLinear(
   mesh->synchronize(Mesh::FACES_E);
 
   VMesh::Face::size_type numFaces;
-
   mesh->size(numFaces);
-
-  if (numFaces == 0)
-    return;
-
-  bool withNormals = (state.get(RenderState::USE_NORMALS));
-  if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
-
-  bool invertNormals = state_->getValue(ShowField::FaceInvertNormals).toBool();
-  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
-  std::vector<double> svals;
-  std::vector<Vector> vvals;
-  std::vector<Tensor> tvals;
-  std::vector<ColorRGB> face_colors;
-
-  if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
-  {
-    colorScheme = ColorScheme::COLOR_UNIFORM;
-  }
-  else if (state.get(RenderState::USE_COLORMAP))
-  {
-    colorScheme = ColorScheme::COLOR_MAP;
-  }
-  else // if (fld->basis_order() >= 0)
-  {
-    colorScheme = ColorScheme::COLOR_IN_SITU;
-  }
-
-  // Three 32 bit ints to index into the VBO
-  uint32_t iboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(uint32_t) * 3);
-  //Seven floats per VBO: Pos (3) XYZ, and Color (4) RGBA
-  uint32_t vboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(float) * 7);
-
-  // Construct VBO and IBO that will be used to render the faces. Once again,
-  // IBOs are not strictly needed. But, we may be able to optimize this code
-  // somewhat.
-  /// \todo Switch to unique_ptrs and move semantics.
-  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
-    new spire::VarBuffer(vboSize));
-  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
-    new spire::VarBuffer(iboSize));
-
-  // Accessing the pointers like this is contrived. We only do this for
-  // speed since we will be using the pointers in a tight inner loop.
-  auto iboBuffer = iboBufferSPtr.get();
-  auto vboBuffer = vboBufferSPtr.get();
-
-  uint32_t iboIndex = 0;
-  int64_t numVBOElements = 0;
-
-  VMesh::Face::iterator fiter, fiterEnd;
-  VMesh::Node::array_type nodes;
-
-  mesh->begin(fiter);
-  mesh->end(fiterEnd);
+  if (numFaces == 0) return;
 
   Point idpt;
+  VMesh::Face::iterator fiter, fiterEnd;
+  VMesh::Node::array_type nodes;
   mesh->get_nodes(nodes, *fiter);
   mesh->get_point(idpt, nodes[0]);
+  mesh->begin(fiter);
+  mesh->end(fiterEnd);
+  int numNodesPerFace = nodes.size();
+  bool useQuads = (numNodesPerFace == 4);
+  int numAttributes = 3; //initially 3 because we will atleast be rendering verticies (vec3's)
 
-  while (fiter != fiterEnd)
+  bool useNormals = state.get(RenderState::ActionFlags::USE_NORMALS);
+  bool useFaceNormals = state.get(RenderState::ActionFlags::USE_FACE_NORMALS) && mesh->has_normals();
+  bool invertNormals = state_->getValue(FaceInvertNormals).toBool();
+  if (useNormals)
   {
-    interruptible->checkForInterruption();
-
-    mesh->get_nodes(nodes, *fiter);
-
-    std::vector<Point> points(nodes.size());
-    std::vector<Vector> normals(nodes.size());
-
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-      mesh->get_point(points[i], nodes[i]);
-    }
-
-    //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
-    if (withNormals)
-    {
-      bool useFaceNormals = state.get(RenderState::USE_FACE_NORMALS) && mesh->has_normals();
-      if (useFaceNormals)
-      {
-        for (size_t i = 0; i < nodes.size(); i++)
-        {
-          auto norm = normals[i];
-          normals[i] = invertNormals ? -norm : norm;
-          mesh->get_normal(normals[i], nodes[i]);
-        }
-      }
-      else
-      {
-        /// Fix normal of Quads
-        if (points.size() == 4)
-        {
-          Vector edge1 = points[1] - points[0];
-          Vector edge2 = points[2] - points[1];
-          Vector edge3 = points[3] - points[2];
-          Vector edge4 = points[0] - points[3];
-
-          Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
-
-          norm.normalize();
-
-          for (size_t i = 0; i < nodes.size(); i++)
-          {
-            normals[i] = invertNormals ? -norm : norm;
-          }
-        }
-        /// Fix Normals of Tris
-        else
-        {
-          Vector edge1 = points[1] - points[0];
-          Vector edge2 = points[2] - points[1];
-          Vector norm = Cross(edge1, edge2);
-
-          norm.normalize();
-
-          for (size_t i = 0; i < nodes.size(); i++)
-          {
-            normals[i] = invertNormals ? -norm : norm;
-          }
-          //For future reference for a try at smoother rendering
-          /*
-          for (size_t i = 0; i < nodes.size(); i++)
-          {
-          mesh->get_normal(normals[i], nodes[i]);
-          }
-          */
-        }
-      }
-    }
-    // Default color single face no matter the element data.
-    if (colorScheme == ColorScheme::COLOR_UNIFORM)
-    {
-      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, face_colors, state);
-    }
-    // Element data (Cells) so two sided faces.
-    else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
-    {
-      auto map = colorMap.get();
-      //two possible colors.
-      svals.resize(2);
-      vvals.resize(2);
-      tvals.resize(2);
-      face_colors = {{ColorRGB(1.,1.,1.),ColorRGB(1.,1.,1.)}};
-
-      VMesh::Elem::array_type cells;
-      mesh->get_elems(cells, *fiter);
-
-      if (fld->is_scalar())
-      {
-        fld->get_value(svals[0], cells[0]);
-
-        if (cells.size() > 1)
-        {
-          fld->get_value(svals[1], cells[1]);
-        }
-        else
-        {
-          svals[1] = svals[0];
-        }
-        face_colors[0] = map->valueToColor(svals[0]);
-        face_colors[1] = map->valueToColor(svals[1]);
-      }
-      else if (fld->is_vector())
-      {
-        fld->get_value(vvals[0], cells[0]);
-
-        if (cells.size() > 1)
-        {
-          fld->get_value(vvals[1], cells[1]);
-        }
-        else
-        {
-          svals[1] = svals[0];
-        }
-
-        face_colors[0] = map->valueToColor(vvals[0]);
-        face_colors[1] = map->valueToColor(vvals[1]);
-      }
-      else if (fld->is_tensor())
-      {
-        fld->get_value(tvals[0], cells[0]);
-
-        if (cells.size() > 1)
-        {
-          fld->get_value(tvals[1], cells[1]);
-        }
-        else
-        {
-          svals[1] = svals[0];
-        }
-
-        face_colors[0] = map->valueToColor(tvals[0]);
-        face_colors[1] = map->valueToColor(tvals[1]);
-      }
-
-      state.set(RenderState::IS_DOUBLE_SIDED, true);
-
-      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, face_colors, state);
-    }
-    // Element data (faces)
-    else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
-    {
-      auto map = colorMap.get();
-      //one possible color, each node that color.
-      svals.resize(1);
-      vvals.resize(1);
-      tvals.resize(1);
-      face_colors.resize(nodes.size());
-      if (fld->is_scalar())
-      {
-        fld->get_value(svals[0], *fiter);
-        face_colors[0] = map->valueToColor(svals[0]);
-      }
-      else if (fld->is_vector())
-      {
-        fld->get_value(vvals[0], *fiter);
-        face_colors[0] = map->valueToColor(vvals[0]);
-      }
-      else if (fld->is_tensor())
-      {
-        fld->get_value(tvals[0], *fiter);
-        face_colors[0] = map->valueToColor(tvals[0]);
-      }
-
-      // Same color at all corners.
-      for (size_t i = 0; i<nodes.size(); ++i)
-      {
-        face_colors[i] = face_colors[0];
-      }
-
-      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, face_colors,  state);
-    }
-
-    // Data at nodes
-    else if (fld->basis_order() == 1)
-    {
-      auto map = colorMap.get();
-      svals.resize(nodes.size());
-      vvals.resize(nodes.size());
-      tvals.resize(nodes.size());
-      face_colors.resize(nodes.size());
-      //node.size() possible colors.
-      if (fld->is_scalar())
-      {
-        for (size_t i = 0; i<nodes.size(); i++)
-        {
-          fld->get_value(svals[i], nodes[i]);
-          face_colors[i] = map->valueToColor(svals[i]);
-        }
-      }
-      else if (fld->is_vector())
-      {
-        for (size_t i = 0; i<nodes.size(); i++)
-        {
-          fld->get_value(vvals[i], nodes[i]);
-          face_colors[i] = map->valueToColor(vvals[i]);
-        }
-      }
-      else if (fld->is_tensor())
-      {
-        for (size_t i = 0; i<nodes.size(); i++)
-        {
-          fld->get_value(tvals[i], nodes[i]);
-          face_colors[i] = map->valueToColor(tvals[i]);
-        }
-      }
-
-      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, face_colors, state);
-    }
-
-    ++fiter;
-    ++numVBOElements;
+    numAttributes += 3;
+    mesh->synchronize(Mesh::NORMALS_E);
   }
 
-  std::stringstream ss;
-  ss << invertNormals << static_cast<int>(colorScheme) << faceTransparencyValue_;
+  bool useColorMap = (fld->basis_order() >= 0 && state.get(RenderState::ActionFlags::USE_COLORMAP));
+  bool isCellData = (fld->basis_order() == 0 && mesh->dimensionality() == 3);
+  bool isFaceData = (fld->basis_order() == 0 && mesh->dimensionality() == 2);
+  bool isNodeData = (fld->basis_order() == 1);
+  bool isScalar = fld->is_scalar();
+  bool isVector = fld->is_vector();
+  bool isTensor = fld->is_tensor();
+  //int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
+  //colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
 
-  std::string uniqueNodeID = id + "face" + ss.str();
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "Pass";
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
 
-  // NOTE: Attributes will depend on the color scheme. We will want to
-  // normalize the colors if the color scheme is COLOR_IN_SITU.
 
-  // Construct VBO.
-  std::string shader = "Shaders/UniformColor";
-  std::vector<SpireVBO::AttributeData> attribs;
-  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  std::vector<SpireSubPass::Uniform> uniforms;
-  if (withNormals)
+  ColorMapHandle textureMap, coordinateMap;
+  spiltColorMapToTextureAndCoordinates(colorMap, textureMap, coordinateMap);
+
+  if (useColorMap)
   {
-    attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+    numAttributes += 2;
+    colorScheme = ColorScheme::COLOR_MAP;
   }
 
-  if (state.get(RenderState::USE_TRANSPARENCY))
+  int writeCase = getWriteCase(useQuads, useNormals, useColorMap);
+
+  std::vector<Point> points(numNodesPerFace);
+  std::vector<Vector> normals(numNodesPerFace);
+  std::vector<glm::vec2> textureCoords(numNodesPerFace);
+  std::vector<double> svals(numNodesPerFace);
+  std::vector<Vector> vvals(numNodesPerFace);
+  std::vector<Tensor> tvals(numNodesPerFace);
+
+  size_t passNumber = 0;
+  size_t facesLeft = mesh->num_faces();
+
+  while(facesLeft > 0)
+  {
+    const static size_t maxFacesPerPass = 1 << 24;
+    int facesLeftInThisPass = std::min(facesLeft, maxFacesPerPass);
+    facesLeft -= facesLeftInThisPass;
+
+    // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
+    size_t iboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(uint32_t) * (numNodesPerFace - 2) * 3);
+    size_t vboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(float) * numNodesPerFace * numAttributes);
+    std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
+    std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+    auto iboBuffer = iboBufferSPtr.get();
+    auto vboBuffer = vboBufferSPtr.get();
+
+    if(useQuads)
+    {
+      uint32_t nodesInThisPass = facesLeftInThisPass * 4;
+      for(uint32_t i = 0; i < nodesInThisPass; i += 4)
+      {
+        iboBuffer->writeUnsafe(i+0);
+        iboBuffer->writeUnsafe(i+1);
+        iboBuffer->writeUnsafe(i+2);
+        iboBuffer->writeUnsafe(i+2);
+        iboBuffer->writeUnsafe(i+3);
+        iboBuffer->writeUnsafe(i+0);
+      }
+    }
+    else
+    {
+      uint32_t nodesInThisPass = facesLeftInThisPass * 3;
+      for(uint32_t i = 0; i <  nodesInThisPass; i += 3)
+      {
+        iboBuffer->writeUnsafe(i+0);
+        iboBuffer->writeUnsafe(i+1);
+        iboBuffer->writeUnsafe(i+2);
+      }
+    }
+
+    while (facesLeftInThisPass > 0)
+    {
+      mesh->get_nodes(nodes, *fiter);
+
+      for(size_t i = 0; i < numNodesPerFace; ++i)
+        mesh->get_point(points[i], nodes[i]);
+
+      if (useNormals)
+      {
+        if (useFaceNormals)
+        {
+          for(size_t i = 0; i < numNodesPerFace; ++i)
+            mesh->get_normal(normals[i], nodes[i]);
+        }
+        else
+        {
+          Vector norm;
+          if (useQuads)
+          {
+            Vector edge1 = points[1] - points[0];
+            Vector edge2 = points[2] - points[1];
+            Vector edge3 = points[3] - points[2];
+            Vector edge4 = points[0] - points[3];
+            norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
+            norm.normalize();
+          }
+          else
+          {
+            Vector edge1 = points[1] - points[0];
+            Vector edge2 = points[2] - points[1];
+            norm = Cross(edge1, edge2);
+            norm.normalize();
+          }
+
+          for(size_t i = 0; i < numNodesPerFace; ++i)
+            normals[i] = norm;
+        }
+
+        if(invertNormals)
+          for(size_t i = 0; i < numNodesPerFace; ++i)
+            normals[i] = -normals[i];
+      }
+
+      if(useColorMap)
+      {
+        // Element data (Cells) so two sided faces.
+        if (isCellData)
+        {
+          VMesh::Elem::array_type cells;
+          mesh->get_elems(cells, *fiter);
+
+          if (isScalar)
+          {
+            fld->get_value(svals[0], cells[0]);
+            if (cells.size() > 1) fld->get_value(svals[1], cells[1]);
+            else svals[1] = svals[0];
+
+            for (size_t i = 0; i < numNodesPerFace; ++i)
+            {
+              textureCoords[i].x = coordinateMap->valueToIndex(svals[0]);
+              textureCoords[i].y = coordinateMap->valueToIndex(svals[1]);
+            }
+          }
+          else if (isVector)
+          {
+            fld->get_value(vvals[0], cells[0]);
+            if (cells.size() > 1) fld->get_value(vvals[1], cells[1]);
+            else svals[1] = svals[0];
+
+            for (size_t i = 0; i < numNodesPerFace; ++i)
+            {
+              textureCoords[i].x = coordinateMap->valueToIndex(vvals[0]);
+              textureCoords[i].y = coordinateMap->valueToIndex(vvals[1]);
+            }
+          }
+          else if (isTensor)
+          {
+            fld->get_value(tvals[0], cells[0]);
+            if (cells.size() > 1) fld->get_value(tvals[1], cells[1]);
+            else svals[1] = svals[0];
+
+            for (size_t i = 0; i < numNodesPerFace; ++i)
+            {
+              textureCoords[i].x = coordinateMap->valueToIndex(tvals[0]);
+              textureCoords[i].y = coordinateMap->valueToIndex(tvals[1]);
+            }
+          }
+        }
+        // Element data (faces)
+        else if (isFaceData)
+        {
+          if (isScalar)
+          {
+            fld->get_value(svals[0], *fiter);
+            textureCoords[0].x = coordinateMap->valueToIndex(svals[0]);
+          }
+          else if (isVector)
+          {
+            fld->get_value(vvals[0], *fiter);
+            textureCoords[0].x = coordinateMap->valueToIndex(vvals[0]);
+          }
+          else if (isTensor)
+          {
+            fld->get_value(tvals[0], *fiter);
+            textureCoords[0].x = coordinateMap->valueToIndex(tvals[0]);
+          }
+
+          for (size_t i = 0; i < numNodesPerFace; ++i)
+            textureCoords[i].y = textureCoords[i].x = textureCoords[0].x;
+        }
+        // Data at nodes
+        else if (isNodeData)
+        {
+          if (isScalar)
+          {
+            for (size_t i = 0; i < numNodesPerFace; ++i)
+            {
+              fld->get_value(svals[i], nodes[i]);
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToIndex(svals[i]);
+            }
+          }
+          else if (isVector)
+          {
+            for (size_t i = 0; i < numNodesPerFace; ++i)
+            {
+              fld->get_value(vvals[i], nodes[i]);
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToIndex(vvals[i]);
+            }
+          }
+          else if (isTensor)
+          {
+            for (size_t i = 0; i < numNodesPerFace; ++i)
+            {
+              fld->get_value(tvals[i], nodes[i]);
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToIndex(tvals[i]);
+            }
+          }
+        }
+      }
+
+      switch(writeCase)
+      {
+        case TRI: writeTri(vboBuffer, points); break;
+        case TRI_TEXCOORDS: writeTri(vboBuffer, points, textureCoords); break;
+        case TRI_NORMALS: writeTri(vboBuffer, points, normals); break;
+        case TRI_NORMALS_TEXCOORDS: writeTri(vboBuffer, points, normals, textureCoords); break;
+        case QUAD: writeQuad(vboBuffer, points); break;
+        case QUAD_TEXCOORDS: writeQuad(vboBuffer, points, textureCoords); break;
+        case QUAD_NORMALS: writeQuad(vboBuffer, points, normals); break;
+        case QUAD_NORMALS_TEXCOORDS: writeQuad(vboBuffer, points, normals, textureCoords); break;
+      }
+
+      ++fiter;
+      --facesLeftInThisPass;
+    }
+
+    std::stringstream ss;
+    ss << invertNormals << static_cast<int>(colorScheme) << faceTransparencyValue_ << "_" << passNumber;
+
+    std::string uniqueNodeID = id + "face" + ss.str();
+    std::string vboName = uniqueNodeID + "VBO";
+    std::string iboName = uniqueNodeID + "IBO";
+    std::string passName = uniqueNodeID + "Pass";
+    std::string shader = (useNormals ? "Shaders/Phong" : "Shaders/Flat");
+
+    std::vector<SpireVBO::AttributeData> attribs;
+    std::vector<SpireSubPass::Uniform> uniforms;
+
+    attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+    uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", true));
+    uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
     uniforms.push_back(SpireSubPass::Uniform("uTransparency", faceTransparencyValue_));
 
-  if (colorScheme == ColorScheme::COLOR_MAP)
-  {
-    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-
-    if (!state.get(RenderState::IS_DOUBLE_SIDED))
+    if (useNormals)
     {
-      if (withNormals)
-      {
-        // Use colormapping lit shader.
-        shader = "Shaders/DirPhongCMap";
-        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-      }
-      else
-      {
-        // Use colormapping only shader.
-        shader = "Shaders/ColorMap";
-      }
-    }
-    else
-    {
-      attribs.push_back(SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float)));
-
-      if (withNormals)
-      {
-        // Use colormapping lit shader.
-        shader = "Shaders/DblSided_DirPhongCMap";
-        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-      }
-      else
-      {
-        // Use colormapping only shader.
-        shader = "Shaders/DblSided_ColorMap";
-      }
-    }
-  }
-  else if (colorScheme == ColorScheme::COLOR_IN_SITU)
-  {
-    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float), true));
-
-    if (state.get(RenderState::IS_DOUBLE_SIDED) == false)
-    {
-      if (withNormals)
-      {
-        shader = "Shaders/InSituPhongColor";
-        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-      }
-      else
-      {
-        // Use colormapping shader.
-        shader = "Shaders/InSituColor";
-      }
-    }
-    else
-    {
-      attribs.push_back(SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float), true));
-
-      if (withNormals)
-      {
-        shader = "Shaders/DblSided_InSituPhongColor";
-        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-      }
-      else
-      {
-        // Use colormapping shader.
-        shader = "Shaders/DblSided_InSituColor";
-      }
-    }
-  }
-  else if (colorScheme == ColorScheme::COLOR_UNIFORM)
-  {
-    ColorRGB defaultColor = state.defaultColor;
-
-    if (withNormals)
-    {
-      shader = "Shaders/DirPhong";
-      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
+      attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-      uniforms.push_back(SpireSubPass::Uniform(
-        "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+    }
+
+    SpireTexture2D texture;
+    if (useColorMap)
+    {
+      shader += "_ColorMap";
+      attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
+
+      const static int colorMapResolution = 256;
+      for(int i = 0; i < colorMapResolution; ++i)
+      {
+        ColorRGB color = textureMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
+        texture.bitmap.push_back(color.r()*255.99f);
+        texture.bitmap.push_back(color.g()*255.99f);
+        texture.bitmap.push_back(color.b()*255.99f);
+        texture.bitmap.push_back(color.a()*255.99f);
+      }
+      texture.name = "ColorMap";
+      texture.height = 1;
+      texture.width = colorMapResolution;
     }
     else
     {
-      shader = "Shaders/UniformColor";
-      uniforms.push_back(SpireSubPass::Uniform(
-        "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
+        glm::vec4(state.defaultColor.r(), state.defaultColor.g(), state.defaultColor.b(), 1.0f)));
     }
-  }
 
-  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
-    numVBOElements, mesh->get_bounding_box(), true);
+    //numVBOElements is only used in dead code and should be removed which is why its hard coded to 0
+    SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, mesh->get_bounding_box(), true);
+    geom->vbos().push_back(geomVBO);
 
-  geom->mVBOs.push_back(geomVBO);
+    SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+    geom->ibos().push_back(geomIBO);
 
-  // Construct IBO.
+    SpireText text;
+    SpireSubPass pass(passName, vboName, iboName, shader,
+      colorScheme, state, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text, texture);
 
-  SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+    for (const auto& uniform : uniforms) pass.addUniform(uniform);
 
-  geom->mIBOs.push_back(geomIBO);
-
-  SpireText text;
-
-  SpireSubPass pass(passName, vboName, iboName, shader,
-    colorScheme, state, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
-
-  // Add all uniforms generated above to the pass.
-  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-  geom->mPasses.push_back(pass);
-
-  /// \todo Add spheres and other glyphs as display lists. Will want to
-  ///       build up to geometry / tessellation shaders if support is present.
-}
-
-// This function needs to be reorganized.
-// The fact that we are only rendering triangles helps us dramatically and
-// we get rid of the quads renderer pointers. Additionally, we can re-order
-// the triangles in ES and perform different rendering based on the
-// transparency of the triangles.
-void GeometryBuilder::addFaceGeom(
-  const std::vector<Point>  &points,
-  const std::vector<Vector> &normals,
-  bool withNormals,
-  uint32_t& iboIndex,
-  spire::VarBuffer* iboBuffer,
-  spire::VarBuffer* vboBuffer,
-  ColorScheme colorScheme,
-  const std::vector<ColorRGB> &face_colors,
-  const RenderState& state)
-{
-  auto writeVBOPoint = [&vboBuffer](const Point& point)
-  {
-    vboBuffer->write(static_cast<float>(point.x()));
-    vboBuffer->write(static_cast<float>(point.y()));
-    vboBuffer->write(static_cast<float>(point.z()));
-  };
-
-  auto writeVBONormal = [&vboBuffer](const Vector& normal)
-  {
-    vboBuffer->write(static_cast<float>(normal.x()));
-    vboBuffer->write(static_cast<float>(normal.y()));
-    vboBuffer->write(static_cast<float>(normal.z()));
-  };
-
-  auto writeVBOColorValue = [&vboBuffer](ColorRGB value)
-  {
-    vboBuffer->write(static_cast<float>(value.r()));
-    vboBuffer->write(static_cast<float>(value.g()));
-    vboBuffer->write(static_cast<float>(value.b()));
-    vboBuffer->write(static_cast<float>(1.f));
-  };
-
-  auto writeIBOIndex = [&iboBuffer](uint32_t index)
-  {
-    iboBuffer->write(index);
-  };
-
-  bool doubleSided = state.get(RenderState::IS_DOUBLE_SIDED);
-
-  if (colorScheme == ColorScheme::COLOR_UNIFORM)
-  {
-    if (points.size() == 4)
-    {
-      if (withNormals)
-      {
-        writeVBOPoint(points[0]);
-        writeVBONormal(normals[0]);
-
-        writeVBOPoint(points[1]);
-        writeVBONormal(normals[1]);
-
-        writeVBOPoint(points[2]);
-        writeVBONormal(normals[2]);
-
-        writeVBOPoint(points[3]);
-        writeVBONormal(normals[3]);
-      }
-      else
-      {
-        writeVBOPoint(points[0]);
-        writeVBOPoint(points[1]);
-        writeVBOPoint(points[2]);
-        writeVBOPoint(points[3]);
-      }
-      writeIBOIndex(iboIndex);
-      writeIBOIndex(iboIndex + 1);
-      writeIBOIndex(iboIndex + 2);
-
-      writeIBOIndex(iboIndex + 2);
-      writeIBOIndex(iboIndex + 3);
-      writeIBOIndex(iboIndex + 0);
-
-      iboIndex += 4;
-    }
-    else
-    {
-      for (size_t i = 2; i < points.size(); i++)
-      {
-        if (withNormals)
-        {
-          // Render points if we are not rendering spheres.
-          writeVBOPoint(points[0]);
-          writeVBONormal(normals[0]);
-          writeIBOIndex(iboIndex);
-
-          writeVBOPoint(points[i - 1]);
-          writeVBONormal(normals[i - 1]);
-          writeIBOIndex(iboIndex + i - 1);
-
-          writeVBOPoint(points[i]);
-          writeVBONormal(normals[i]);
-          writeIBOIndex(iboIndex + i);
-        }
-        else
-        {
-          writeVBOPoint(points[0]);
-          writeIBOIndex(iboIndex);
-
-          writeVBOPoint(points[i - 1]);
-          writeIBOIndex(iboIndex + i - 1);
-
-          writeVBOPoint(points[i]);
-          writeIBOIndex(iboIndex + i);
-        }
-      }
-      iboIndex += points.size();
-    }
-  }
-  else if (colorScheme == ColorScheme::COLOR_MAP)
-  {
-    if (points.size() == 4)
-    {
-      // Note:  For the double sided case, the 0 and 1 indices are not a typo.
-      //        It is a direct translation from old scirun.
-      if (withNormals)
-      {
-        writeVBOPoint(points[0]);
-        writeVBONormal(normals[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[1]);
-        writeVBONormal(normals[1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[2]);
-        writeVBONormal(normals[2]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[3]);
-        writeVBONormal(normals[3]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-      }
-      else
-      {
-        writeVBOPoint(points[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[2]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[3]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-      }
-      writeIBOIndex(iboIndex);
-      writeIBOIndex(iboIndex + 1);
-      writeIBOIndex(iboIndex + 2);
-
-      writeIBOIndex(iboIndex + 2);
-      writeIBOIndex(iboIndex + 3);
-      writeIBOIndex(iboIndex + 0);
-
-      iboIndex += 4;
-    }
-    else
-    {
-      for (size_t i = 2; i < points.size(); i++)
-      {
-        // Note:  For the double sided case, the 0 and 1 indices are not a typo.
-        //        It is a direct translation from old scirun.
-        if (withNormals)
-        {
-          // Render points if we are not rendering spheres.
-          writeVBOPoint(points[0]);
-          writeVBONormal(normals[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex);
-
-          // Apply misc user settings.
-          writeVBOPoint(points[i - 1]);
-          writeVBONormal(normals[i - 1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i-1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i - 1);
-
-          writeVBOPoint(points[i]);
-          writeVBONormal(normals[i]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i);
-        }
-        else
-        {
-          // Render points if we are not rendering spheres.
-          writeVBOPoint(points[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex);
-
-          writeVBOPoint(points[i - 1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i-1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i - 1);
-
-          writeVBOPoint(points[i]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i);
-        }
-      }
-      iboIndex += points.size();
-    }
-  }
-  else if (colorScheme == ColorScheme::COLOR_IN_SITU)
-  {
-    if (points.size() == 4)
-    {
-      if (withNormals)
-      {
-        writeVBOPoint(points[0]);
-        writeVBONormal(normals[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[1]);
-        writeVBONormal(normals[1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[2]);
-        writeVBONormal(normals[2]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[3]);
-        writeVBONormal(normals[3]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-      }
-      else
-      {
-        writeVBOPoint(points[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        // Add appropriate uniforms to the pass (in this case, uColor).
-        writeVBOPoint(points[1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[2]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-
-        writeVBOPoint(points[3]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-      }
-      writeIBOIndex(iboIndex);
-      writeIBOIndex(iboIndex + 1);
-      writeIBOIndex(iboIndex + 2);
-
-      writeIBOIndex(iboIndex + 2);
-      writeIBOIndex(iboIndex + 3);
-      writeIBOIndex(iboIndex + 0);
-
-      iboIndex += 4;
-    }
-    else
-    {
-      for (size_t i = 2; i < points.size(); i++)
-      {
-        if (withNormals)
-        {
-          writeVBOPoint(points[0]);
-          writeVBONormal(normals[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex);
-
-          writeVBOPoint(points[i - 1]);
-          writeVBONormal(normals[i - 1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i - 1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i - 1);
-
-          writeVBOPoint(points[i]);
-          writeVBONormal(normals[i]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i);
-        }
-        else
-        {
-          writeVBOPoint(points[0]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          iboBuffer->write(iboIndex);
-
-          writeVBOPoint(points[i - 1]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i - 1]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i - 1);
-
-          writeVBOPoint(points[i]);
-        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
-        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
-          writeIBOIndex(iboIndex + i);
-        }
-      }
-      iboIndex += points.size();
-    }
+    geom->passes().push_back(pass);
+    ++passNumber;
   }
 }
+
+
 
 void GeometryBuilder::renderNodes(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
 {
-
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
@@ -1220,9 +842,12 @@ void GeometryBuilder::renderNodes(
   ColorScheme colorScheme;
   ColorRGB node_color;
 
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR_NODES))
+  ColorMapHandle textureMap, coordinateMap;
+  spiltColorMapToTextureAndCoordinates(colorMap, textureMap, coordinateMap);
+
+  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::ActionFlags::USE_DEFAULT_COLOR_NODES))
     colorScheme = ColorScheme::COLOR_UNIFORM;
-  else if (state.get(RenderState::USE_COLORMAP_ON_NODES))
+  else if (state.get(RenderState::ActionFlags::USE_COLORMAP_ON_NODES))
     colorScheme = ColorScheme::COLOR_MAP;
   else
     colorScheme = ColorScheme::COLOR_IN_SITU;
@@ -1233,53 +858,45 @@ void GeometryBuilder::renderNodes(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  double radius = state_->getValue(ShowField::SphereScaleValue).toDouble();
-  double num_strips = static_cast<double>(state_->getValue(ShowField::SphereResolution).toInt());
+  double radius = state_->getValue(SphereScaleValue).toDouble();
+  double num_strips = static_cast<double>(state_->getValue(SphereResolution).toInt());
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
-  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << static_cast<int>(colorScheme);
+  ss << state.get(RenderState::ActionFlags::USE_SPHERE) << radius << num_strips << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "node" + ss.str();
 
-  nodeTransparencyValue_ = static_cast<float>(state_->getValue(ShowField::NodeTransparencyValue).toDouble());
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
-  // Use spheres...
-  if (state.get(RenderState::USE_SPHERE))
-    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
+  nodeTransparencyValue_ = static_cast<float>(state_->getValue(NodeTransparencyValue).toDouble());
 
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    interruptible->checkForInterruption();
-
     Point p;
     mesh->get_point(p, *eiter);
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
-        node_color = map->valueToColor(sval);
+        node_color = ColorRGB(coordinateMap->valueToIndex(sval));
       }
       else if (fld->is_vector())
       {
         fld->get_value(vval, *eiter);
-        node_color = map->valueToColor(vval);
+        node_color = ColorRGB(coordinateMap->valueToIndex(vval));
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tval, *eiter);
-        node_color = map->valueToColor(tval);
+        node_color = ColorRGB(coordinateMap->valueToIndex(tval));
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_SPHERE))
+    if (state.get(RenderState::ActionFlags::USE_SPHERE))
     {
-      glyphs.addSphere(p, radius, num_strips, node_color);
+      glyphs.addSphere(p, radius, num_strips, node_color, false, 0.0);
     }
     else
     {
@@ -1289,15 +906,15 @@ void GeometryBuilder::renderNodes(
     ++eiter;
   }
 
-  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box());
+  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
+    colorScheme, state, mesh->get_bounding_box(), true, textureMap);
 }
+
 
 
 void GeometryBuilder::renderEdges(
   FieldHandle field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  Interruptible* interruptible,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -1312,11 +929,14 @@ void GeometryBuilder::renderEdges(
   ColorScheme colorScheme;
   ColorRGB edge_colors[2];
 
+  ColorMapHandle textureMap, coordinateMap;
+  spiltColorMapToTextureAndCoordinates(colorMap, textureMap, coordinateMap);
+
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
-    state.get(RenderState::USE_DEFAULT_COLOR_EDGES))
+    state.get(RenderState::ActionFlags::USE_DEFAULT_COLOR_EDGES))
     colorScheme = ColorScheme::COLOR_UNIFORM;
-  else if (state.get(RenderState::USE_COLORMAP_ON_EDGES))
+  else if (state.get(RenderState::ActionFlags::USE_COLORMAP_ON_EDGES))
     colorScheme = ColorScheme::COLOR_MAP;
   else
     colorScheme = ColorScheme::COLOR_IN_SITU;
@@ -1327,26 +947,19 @@ void GeometryBuilder::renderEdges(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  double num_strips = static_cast<double>(state_->getValue(ShowField::CylinderResolution).toInt());
-  double radius = state_->getValue(ShowField::CylinderRadius).toDouble();
+  double num_strips = static_cast<double>(state_->getValue(CylinderResolution).toInt());
+  double radius = state_->getValue(CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
 
   std::stringstream ss;
-  ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << static_cast<int>(colorScheme);
+  ss << state.get(RenderState::ActionFlags::USE_CYLINDER) << num_strips << radius << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "edge" + ss.str();
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
-  // Use cylinders...
-  if (state.get(RenderState::USE_CYLINDER))
-    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    interruptible->checkForInterruption();
-
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
 
@@ -1356,7 +969,6 @@ void GeometryBuilder::renderEdges(
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         if (fld->basis_order() == 1)
@@ -1370,8 +982,8 @@ void GeometryBuilder::renderEdges(
 
           sval1 = sval0;
         }
-        edge_colors[0] = map->valueToColor(sval0);
-        edge_colors[1] = map->valueToColor(sval1);
+        edge_colors[0] = ColorRGB(coordinateMap->valueToIndex(sval0));
+        edge_colors[1] = ColorRGB(coordinateMap->valueToIndex(sval1));
       }
       else if (fld->is_vector())
       {
@@ -1386,8 +998,8 @@ void GeometryBuilder::renderEdges(
           vval1 = vval0;
         }
 
-        edge_colors[0] = map->valueToColor(vval0);
-        edge_colors[1] = map->valueToColor(vval1);
+        edge_colors[0] = ColorRGB(coordinateMap->valueToIndex(vval0));
+        edge_colors[1] = ColorRGB(coordinateMap->valueToIndex(vval1));
       }
       else if (fld->is_tensor())
       {
@@ -1402,37 +1014,39 @@ void GeometryBuilder::renderEdges(
           tval1 = tval0;
         }
 
-        edge_colors[0] = map->valueToColor(tval0);
-        edge_colors[1] = map->valueToColor(tval1);
+        edge_colors[0] = ColorRGB(coordinateMap->valueToIndex(tval0));
+        edge_colors[1] = ColorRGB(coordinateMap->valueToIndex(tval1));
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_CYLINDER) && p0 != p1)
+
+    if (p0 != p1)
     {
-      glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
-      glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
-      glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);
-    }
-    else
-    {
-      glyphs.addLine(p0, p1, edge_colors[0], edge_colors[1]);
+      if (state.get(RenderState::ActionFlags::USE_CYLINDER))
+      {
+        glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1], false, 0.0);
+        glyphs.addSphere(p0, radius, num_strips, edge_colors[0], false, 0.0);
+        glyphs.addSphere(p1, radius, num_strips, edge_colors[1], false, 0.0);
+      }
+      else
+      {
+        glyphs.addLine(p0, p1, edge_colors[0], edge_colors[1]);
+      }
     }
 
     ++eiter;
   }
 
-  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box());
+  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
+    colorScheme, state, mesh->get_bounding_box(), true, textureMap);
 }
 
 void ShowField::updateAvailableRenderOptions(FieldHandle field)
 {
-  if (!field)
-    return;
+  if (!field) return;
 
   auto vmesh = field->vmesh();
-  if (!vmesh)
-    return;
+  if (!vmesh) return;
 
   auto state = get_state();
   vmesh->synchronize(Mesh::NODES_E);
@@ -1457,43 +1071,42 @@ void ShowField::updateAvailableRenderOptions(FieldHandle field)
   }
 }
 
-const AlgorithmParameterName ShowField::FieldName("FieldName");
-const AlgorithmParameterName ShowField::ShowNodes("ShowNodes");
-const AlgorithmParameterName ShowField::ShowEdges("ShowEdges");
-const AlgorithmParameterName ShowField::ShowFaces("ShowFaces");
-const AlgorithmParameterName ShowField::NodesAvailable("NodesAvailable");
-const AlgorithmParameterName ShowField::EdgesAvailable("EdgesAvailable");
-const AlgorithmParameterName ShowField::FacesAvailable("FacesAvailable");
-const AlgorithmParameterName ShowField::NodeTransparency("NodeTransparency");
-const AlgorithmParameterName ShowField::EdgeTransparency("EdgeTransparency");
-const AlgorithmParameterName ShowField::FaceTransparency("FaceTransparency");
-const AlgorithmParameterName ShowField::FaceInvertNormals("FaceInvertNormals");
-const AlgorithmParameterName ShowField::NodeAsPoints("NodeAsPoints");
-const AlgorithmParameterName ShowField::NodeAsSpheres("NodeAsSpheres");
-const AlgorithmParameterName ShowField::EdgesAsLines("EdgesAsLines");
-const AlgorithmParameterName ShowField::EdgesAsCylinders("EdgesAsCylinders");
-const AlgorithmParameterName ShowField::DefaultMeshColor("DefaultMeshColor");
-const AlgorithmParameterName ShowField::FaceTransparencyValue("FaceTransparencyValue");
-const AlgorithmParameterName ShowField::EdgeTransparencyValue("EdgeTransparencyValue");
-const AlgorithmParameterName ShowField::NodeTransparencyValue("NodeTransparencyValue");
-const AlgorithmParameterName ShowField::FacesColoring("FacesColoring");
-const AlgorithmParameterName ShowField::NodesColoring("NodesColoring");
-const AlgorithmParameterName ShowField::EdgesColoring("EdgesColoring");
-const AlgorithmParameterName ShowField::SphereScaleValue("SphereScaleValue");
-const AlgorithmParameterName ShowField::CylinderRadius("CylinderRadius");
-const AlgorithmParameterName ShowField::CylinderResolution("CylinderResolution");
-const AlgorithmParameterName ShowField::SphereResolution("SphereResolution");
-const AlgorithmParameterName ShowField::DefaultTextColor("DefaultTextColor");
-const AlgorithmParameterName ShowField::ShowText("ShowText");
-const AlgorithmParameterName ShowField::ShowDataValues("ShowDataValues");
-const AlgorithmParameterName ShowField::ShowNodeIndices("ShowNodeIndices");
-const AlgorithmParameterName ShowField::ShowEdgeIndices("ShowEdgeIndices");
-const AlgorithmParameterName ShowField::ShowFaceIndices("ShowFaceIndices");
-const AlgorithmParameterName ShowField::ShowCellIndices("ShowCellIndices");
-const AlgorithmParameterName ShowField::CullBackfacingText("CullBackfacingText");
-const AlgorithmParameterName ShowField::TextAlwaysVisible("TextAlwaysVisible");
-const AlgorithmParameterName ShowField::RenderAsLocation("RenderAsLocation");
-const AlgorithmParameterName ShowField::TextSize("TextSize");
-const AlgorithmParameterName ShowField::TextPrecision("TextPrecision");
-const AlgorithmParameterName ShowField::TextColoring("TextColoring");
-const AlgorithmParameterName ShowField::UseFaceNormals("UseFaceNormals");
+ALGORITHM_PARAMETER_DEF(Visualization, FieldName);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowNodes);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowEdges);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowFaces);
+ALGORITHM_PARAMETER_DEF(Visualization, NodesAvailable);
+ALGORITHM_PARAMETER_DEF(Visualization, EdgesAvailable);
+ALGORITHM_PARAMETER_DEF(Visualization, FacesAvailable);
+ALGORITHM_PARAMETER_DEF(Visualization, NodeTransparency);
+ALGORITHM_PARAMETER_DEF(Visualization, EdgeTransparency);
+ALGORITHM_PARAMETER_DEF(Visualization, FaceTransparency);
+ALGORITHM_PARAMETER_DEF(Visualization, FaceInvertNormals);
+ALGORITHM_PARAMETER_DEF(Visualization, NodeAsPoints);
+ALGORITHM_PARAMETER_DEF(Visualization, NodeAsSpheres);
+ALGORITHM_PARAMETER_DEF(Visualization, EdgesAsLines);
+ALGORITHM_PARAMETER_DEF(Visualization, EdgesAsCylinders);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultMeshColor);
+ALGORITHM_PARAMETER_DEF(Visualization, FaceTransparencyValue);
+ALGORITHM_PARAMETER_DEF(Visualization, EdgeTransparencyValue);
+ALGORITHM_PARAMETER_DEF(Visualization, NodeTransparencyValue);
+ALGORITHM_PARAMETER_DEF(Visualization, FacesColoring);
+ALGORITHM_PARAMETER_DEF(Visualization, NodesColoring);
+ALGORITHM_PARAMETER_DEF(Visualization, EdgesColoring);
+ALGORITHM_PARAMETER_DEF(Visualization, SphereScaleValue);
+ALGORITHM_PARAMETER_DEF(Visualization, CylinderResolution);
+ALGORITHM_PARAMETER_DEF(Visualization, SphereResolution);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultTextColor);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowText);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowDataValues);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowNodeIndices);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowEdgeIndices);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowFaceIndices);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowCellIndices);
+ALGORITHM_PARAMETER_DEF(Visualization, CullBackfacingText);
+ALGORITHM_PARAMETER_DEF(Visualization, TextAlwaysVisible);
+ALGORITHM_PARAMETER_DEF(Visualization, RenderAsLocation);
+ALGORITHM_PARAMETER_DEF(Visualization, TextSize);
+ALGORITHM_PARAMETER_DEF(Visualization, TextPrecision);
+ALGORITHM_PARAMETER_DEF(Visualization, TextColoring);
+ALGORITHM_PARAMETER_DEF(Visualization, UseFaceNormals);

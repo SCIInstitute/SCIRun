@@ -1,22 +1,21 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -26,16 +25,25 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Graphics_Glyphs_SRCS
+  GlyphConstructor.cc
+  GlyphGeomUtility.cc
+  VectorGlyphBuilder.cc
+  TensorGlyphBuilder.cc
   GlyphGeom.cc
 )
 
 SET(Graphics_Glyphs_HEADERS
+  GlyphConstructor.h
+  GlyphGeomUtility.h
+  VectorGlyphBuilder.h
+  TensorGlyphBuilder.h
   GlyphGeom.h
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(Graphics_Glyphs 
+SCIRUN_ADD_LIBRARY(Graphics_Glyphs
   ${Graphics_Glyphs_HEADERS}
   ${Graphics_Glyphs_SRCS}
 )
@@ -44,7 +52,6 @@ TARGET_LINK_LIBRARIES(Graphics_Glyphs
   Core_Math
   Core_Datatypes
   Core_Geometry_Primitives
-  Core_Algorithms_Visualization
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}
   ${SCI_SPIRE_LIBRARY}

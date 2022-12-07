@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -43,7 +44,12 @@ ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addTextEditManager(expressionTextEdit_, ClipFieldDataModule::FunctionString);
   addComboBoxManager(clippingLocationComboBox_, Parameters::ClipMethod);
   connectParserHelpButton(parserHelpButton_);
+
+  {
+    codeEdit_ = new CodeEditor(this);
+    qobject_cast<QVBoxLayout*>(expressionGroupBox_->layout())->insertWidget(0, codeEdit_);
+    addPlainTextEditManager(codeEdit_, ClipFieldDataModule::FunctionString);
+  }
 }

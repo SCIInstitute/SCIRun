@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>352</width>
-    <height>98</height>
+    <width>551</width>
+    <height>204</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>352</width>
-    <height>98</height>
+    <width>391</width>
+    <height>132</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -24,9 +24,9 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
-       <pointsize>12</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="title">

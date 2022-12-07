@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,12 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
+#include <Interface/Modules/Python/CompositeModuleDialog.h>
+#include <Interface/Modules/Visualization/GeometryBufferDialog.h>
 #include <boost/assign.hpp>
 
 using namespace SCIRun::Gui;
@@ -46,5 +48,8 @@ void ModuleDialogFactory::addDialogsToMakerMap2()
     ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
     ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
     ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
+    ADD_MODULE_DIALOG(CompositeModuleWithStaticPorts, CompositeModuleDialog)
+    ADD_MODULE_DIALOG(CompositeModuleWithTypedStaticPorts, CompositeModuleDialog)
+    ADD_MODULE_DIALOG(GeometryBuffer, GeometryBufferDialog)
   ;
 }

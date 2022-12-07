@@ -31,8 +31,6 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 ExternalProject_Add(Tny_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Tny.git"
   GIT_TAG "origin/master"
-  #CONFIGURE_COMMAND ""
-  #BUILD_COMMAND ""
   INSTALL_COMMAND ""
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}

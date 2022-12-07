@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <iostream>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -38,36 +37,36 @@ using namespace SCIRun::Core::Thread;
 
 namespace
 {
-  struct LinearExecution : public WaitsForStartupInitialization
+  struct LinearExecution : WaitsForStartupInitialization
   {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock) 
+    LinearExecution(const ExecutableLookup* lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock)
       : lookup_(lookup), order_(order), bounds_(bounds), executionLock_(executionLock)
     {
     }
     void operator()() const
     {
-      waitForStartupInit(lookup_);
+      waitForStartupInit(*lookup_);
       Guard g(executionLock_->get());
-      bounds_.executeStarts_();
-      for (const ModuleId& id : order_)
+      ScopedExecutionBoundsSignaller signaller(&bounds_, [=]() { return lookup_->errorCode(); });
+      for (const auto& id : order_)
       {
-        ExecutableObject* obj = lookup_.lookupExecutable(id);
+        auto obj = lookup_->lookupExecutable(id);
         if (obj)
         {
           obj->executeWithSignals();
         }
       }
-      bounds_.executeFinishes_(lookup_.errorCode());
     }
-    const ExecutableLookup& lookup_;
+    const ExecutableLookup* lookup_;
     ModuleExecutionOrder order_;
     const ExecutionBounds& bounds_;
     Mutex* executionLock_;
   };
 }
 
-void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
+std::future<int> LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
 {
-  LinearExecution runner(context.lookup, order, context.bounds(), &executionLock);
-  boost::thread execution(runner);
+  LinearExecution runner(context.lookup(), order, context.bounds(), &executionLock);
+  Util::launchAsyncThread(runner);
+  return {};
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,41 +25,67 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <QApplication>
 #include <QMessageBox>
 #include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/GuiCommandFactory.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
-#include <boost/make_shared.hpp>
+#include <Interface/Application/MainWindowCollaborators.h>
+#include <Core/Logging/Log.h>
+#include <Core/Utils/SmartPointers.h>
+#include <iostream>
 
 using namespace SCIRun::Gui;
 
+class SCIRunGuiApplication : public QApplication
+{
+public:
+  SCIRunGuiApplication(int& argc, char** argv) :
+    QApplication(argc, argv) {}
+
+  bool notify(QObject* receiver, QEvent* event) override
+  {
+    try
+    {
+      return QApplication::notify(receiver, event);
+    }
+    catch (const std::exception& e)
+    {
+      QMessageBox::critical(nullptr, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nPlease report an issue describing what caused this message.");
+      SCIRun::logCritical("Unhandled exception: {}", e.what());
+      SCIRunGuiRunner::reportIssue();
+      return false;
+    }
+    catch (...)
+    {
+      QMessageBox::critical(nullptr, "Critical error", "Unknown unhandled exception: please report an issue describing what caused this message.");
+      SCIRun::logCritical("Unhandled exception: Unknown type");
+      SCIRunGuiRunner::reportIssue();
+      return false;
+    }
+  }
+};
+
+
 int GuiApplication::run(int argc, const char* argv[])
 {
-  QApplication app(argc, const_cast<char**>(argv));
+  QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+  SCIRunGuiApplication app(argc, const_cast<char**>(argv));
 
   try
   {
-    auto mainWin = SCIRunMainWindow::Instance();
-
-    Core::Application::Instance().setCommandFactory(boost::make_shared<GuiGlobalCommandFactory>());
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-
-    app.exec();
-    return mainWin->returnCode();
+    SCIRunGuiRunner gui(app);
+    return gui.returnCode();
   }
   catch (std::exception& e)
   {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    std::cerr << "Unhandled exception: " << e.what() << std::endl;
+    QMessageBox::critical(nullptr, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
+    logCritical("Unhandled exception: {}", e.what());
     return 1;
   }
   catch (...)
   {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    std::cerr << "Unhandled exception: Unknown" << std::endl;
+    QMessageBox::critical(nullptr, "Critical error", "Unknown unhandled exception: exiting now.");
+    logCritical("Unhandled exception: Unknown type");
     return 1;
   }
 }

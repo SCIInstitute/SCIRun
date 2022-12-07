@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
+#ifndef MODULETESTBASE_H
+#define MODULETESTBASE_H
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -34,9 +37,9 @@
 #include <Testing/Utils/SCIRunFieldSamples.h>
 #include <Testing/ModuleTestBase/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
-  namespace Testing 
+  namespace Testing
   {
     class SCISHARE ModuleTestBase
     {
@@ -55,7 +58,7 @@ namespace SCIRun
 
     class SCISHARE ModuleTest : public ::testing::Test, public ModuleTestBase
     {
-    
+
     };
 
     template <typename Param>
@@ -69,13 +72,14 @@ namespace SCIRun
     public:
       MOCK_CONST_METHOD1(run, SCIRun::Core::Algorithms::AlgorithmOutput(const SCIRun::Core::Algorithms::AlgorithmInput&));
       MOCK_CONST_METHOD1(keyNotFoundPolicy, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
+      // ReSharper disable once CppOverridingFunctionWithoutOverrideSpecifier
       MOCK_METHOD2(set, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&));
       MOCK_CONST_METHOD1(get, const SCIRun::Core::Algorithms::AlgorithmParameter&(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
       //MOCK_METHOD2(setOption, void(const AlgorithmParameterName&, const std::string& value));
       //MOCK_CONST_METHOD1(getOption, std::string(const AlgorithmParameterName&));
     };
 
-    typedef boost::shared_ptr< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;
+    typedef SharedPointer< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;
 
     class SCISHARE UseRealAlgorithmFactory
     {
@@ -92,3 +96,5 @@ namespace SCIRun
     };
   }
 }
+
+#endif // MODULETESTBASE_H

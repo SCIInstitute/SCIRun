@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
@@ -102,7 +102,7 @@ SolveLinearSystemParallelAlgo::run(SparseRowMatrixHandle a, DenseColumnMatrixHan
 
   // Create output matrix
   auto size = x0->nrows();
-  x = boost::make_shared<DenseColumnMatrix>(size);
+  x = makeShared<DenseColumnMatrix>(size);
 
   // Copy output matrix pointer
   matrices.x = x;
@@ -132,7 +132,7 @@ class SolveLinearSystemCGAlgo : public SolveLinearSystemParallelAlgo
 {
   public:
     explicit SolveLinearSystemCGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-    virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
+    bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const override;
 };
 
 bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
@@ -344,8 +344,8 @@ class SolveLinearSystemBICGAlgo : public SolveLinearSystemParallelAlgo
 {
   public:
     explicit SolveLinearSystemBICGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-    virtual bool parallel(ParallelLinearAlgebra& PLA,
-                          SolverInputs& matrices) const;
+    bool parallel(ParallelLinearAlgebra& PLA,
+                          SolverInputs& matrices) const override;
 };
 
 bool
@@ -559,7 +559,7 @@ class SolveLinearSystemMINRESAlgo : public SolveLinearSystemParallelAlgo
 {
 public:
   explicit SolveLinearSystemMINRESAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
+  bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const override;
 };
 
 
@@ -911,7 +911,7 @@ class SolveLinearSystemJACOBIAlgo : public SolveLinearSystemParallelAlgo
 {
 public:
   explicit SolveLinearSystemJACOBIAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
-  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
+  bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const override;
 };
 
 
@@ -1080,7 +1080,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   DenseColumnMatrixHandle b,
                            DenseColumnMatrixHandle x0,
                            DenseColumnMatrixHandle& x,
-                           DenseColumnMatrixHandle& convergence) const
+                           DenseColumnMatrixHandle& /*convergence*/) const
 {
   ScopedAlgorithmStatusReporter ssr(this, "SolveLinearSystem");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
@@ -1120,11 +1120,11 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   if (!x0)
   {
     // create an x0 matrix
-    auto temp(boost::make_shared<DenseColumnMatrix>(b->nrows()));
+    auto temp(makeShared<DenseColumnMatrix>(b->nrows()));
     temp->setZero();
     x0 = temp;
   }
-  
+
   if ((x0->ncols() != 1) || (b->ncols() != 1))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix x0 and b need to have the same number of rows");
@@ -1212,8 +1212,8 @@ AlgorithmOutput SolveLinearSystemAlgo::run(const AlgorithmInput& input) const
   {
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
-  
+
   AlgorithmOutput output;
-  output[Variables::Solution] = boost::make_shared<DenseMatrix>(solution->col(0));
+  output[Variables::Solution] = makeShared<DenseMatrix>(solution->col(0));
   return output;
 }

@@ -1,30 +1,29 @@
-//
-//  For more information, please see: http://software.sci.utah.edu
-//
-//  The MIT License
-//
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
 // For memory management
@@ -228,7 +227,7 @@ namespace SCIRun {
       // Set the function pointer, we up cast it to the real type as the parser
       // does not know anything about this interpreter and the argument the
       // function will take in.
-      auto func = boost::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
+      auto func = std::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
 
       //Each function is a line in the parsed/interpreted code
       LinAlgProgramCode pc(func->get_function());
@@ -323,7 +322,7 @@ namespace SCIRun {
       pprogram->get_single_function(j, fhandle);
 
       // Set the function pointer
-      auto func = boost::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
+      auto func = std::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
       LinAlgProgramCode pc(func->get_function());
 
       ParserScriptVariableHandle ohandle = fhandle->get_output_var();
@@ -483,7 +482,7 @@ namespace SCIRun {
 
   bool LinAlgProgram::add_sink(const std::string& name)
   {
-    LinAlgProgramSource ps; ps.set_matrix(0);
+    LinAlgProgramSource ps; ps.set_matrix(nullptr);
     output_sinks_[name] = ps;
     return (true);
   }

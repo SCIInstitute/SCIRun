@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -32,9 +31,9 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/GeometryPrimitives/Transform.h> /// @todo
-#define register
+//#define register
 #include <Eigen/Dense>
-#undef register
+//#undef register
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -81,22 +80,22 @@ namespace Datatypes {
       return *this;
     }
 
-    virtual DenseMatrixGeneric* clone() const override
+    DenseMatrixGeneric* clone() const override
     {
       return new DenseMatrixGeneric(*this);
     }
 
-    virtual size_t nrows() const override { return this->rows(); }
-    virtual size_t ncols() const override { return this->cols(); }
+    size_t nrows() const override { return this->rows(); }
+    size_t ncols() const override { return this->cols(); }
 
-    virtual void accept(MatrixVisitorGeneric<T>& visitor) override
+    void accept(MatrixVisitorGeneric<T>& visitor) override
     {
       visitor.visit(*this);
     }
 
     /// Persistent representation...
-    virtual std::string dynamic_type_name() const override;
-    virtual void io(Piostream&) override;
+    std::string dynamic_type_name() const override;
+    void io(Piostream&) override;
     static PersistentTypeID type_id;
     static PersistentMaker0 maker0;
 
@@ -117,17 +116,17 @@ namespace Datatypes {
       return this->isApprox(this->transpose());
     }
 
-    virtual T get(int i, int j) const override
+    T get(int i, int j) const override
     {
       return (*this)(i,j);
     }
-    virtual void put(int i, int j, const T& val) override
+    void put(int i, int j, const T& val) override
     {
       (*this)(i,j) = val;
     }
 
   private:
-    virtual void print(std::ostream& o) const override
+    void print(std::ostream& o) const override
     {
       /// @todo!!
       //o << static_cast<const EigenBase&>(m);

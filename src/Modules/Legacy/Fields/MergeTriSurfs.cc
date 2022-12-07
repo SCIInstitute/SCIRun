@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,43 +25,52 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @author
 ///   Michael Callahan,
 ///   Department of Computer Science,
 ///   University of Utah
 /// @date  July 2004
 
-#include <Core/Geometry/CompGeom.h>
+#include <Modules/Legacy/Fields/MergeTriSurfs.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
 
-#include <Core/Util/StringUtil.h>
-#include <Core/Containers/Handle.h>
- 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <iostream>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+
+MODULE_INFO_DEF(MergeTriSurfs, NewField, SCIRun)
+
+//TODO: move to algo layer
+namespace detail
+{
 
 /// @class MergeTriSurfsAlgo
-/// @brief This module self intersects all the triangles in a trisurf with each other so that none overlap. 
+/// @brief This module self intersects all the triangles in a trisurf with each other so that none overlap.
 
 class MergeTriSurfsAlgo
 {
 public:
 
-  /// virtual interface. 
-  void execute(ProgressReporter *reporter,
+  /// virtual interface.
+  void execute(AlgorithmStatusReporter::UpdaterFunc reporter,
                FieldHandle tris,
                std::vector<index_type> &new_nodes,
                std::vector<index_type> &new_elems);
 };
 
-
 void
-MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
+MergeTriSurfsAlgo::execute(AlgorithmStatusReporter::UpdaterFunc reporter,
                            FieldHandle tris_h,
                            std::vector<index_type> &new_nodes,
                            std::vector<index_type> &new_elems)
@@ -80,12 +88,12 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
   VMesh::Elem::array_type candidates;
   VMesh::size_type num_elems = tmesh->num_elems();
   std::vector<Point> newpoints;
- 
+
   double epsilon = tmesh->get_epsilon();
   int cnt = 0;
   for(VMesh::Elem::index_type idx=0; idx<num_elems;idx++)
   {
-    cnt++; if (cnt == 100) { cnt = 0; reporter->update_progress(idx, num_elems * 2); }
+    cnt++; if (cnt == 100) { cnt = 0; reporter(static_cast<double>(idx) / num_elems * 2); }
 
     VMesh::Node::array_type anodes;
     tmesh->get_nodes(anodes, idx);
@@ -96,7 +104,7 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
       tmesh->get_point(apoints[i], anodes[i]);
       tribox.extend(apoints[i]);
     }
-    
+
     tribox.extend(epsilon);
     tmesh->locate(candidates, tribox);
 
@@ -117,15 +125,15 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
                            newpoints);
       }
     }
-  }      
+  }
 
   VMesh::Node::index_type newnode;
   VMesh::Elem::array_type newelems;
-  
+
   cnt = 0;
   for (size_t i = 0; i < newpoints.size(); i++)
   {
-    cnt++; if (cnt == 100) { cnt = 0; reporter->update_progress(i, newpoints.size()); }
+    cnt++; if (cnt == 100) { cnt = 0; reporter(static_cast<double>(i) / newpoints.size()); }
 
     Point closest;
     VMesh::Elem::array_type elem;
@@ -146,50 +154,32 @@ MergeTriSurfsAlgo::execute(ProgressReporter *reporter,
   tmesh->synchronize(Mesh::EDGES_E);
   tfield->resize_fdata();
 }
-
-
-
-
-class MergeTriSurfs : public Module {
-public:
-  MergeTriSurfs(GuiContext* ctx);
-  virtual ~MergeTriSurfs() {}
-  virtual void execute();
-};
-
-DECLARE_MAKER(MergeTriSurfs)
-MergeTriSurfs::MergeTriSurfs(GuiContext* ctx)
-  : Module("MergeTriSurfs", ctx, Filter, "NewField", "SCIRun")
-{
 }
 
-void
-MergeTriSurfs::execute()
+MergeTriSurfs::MergeTriSurfs() : Module(staticInfo_, false)
 {
-  // Get input field.
-  FieldHandle ifieldhandle;
-  get_input_handle("Input Field", ifieldhandle,true);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
+
+void MergeTriSurfs::execute()
+{
+  auto ifieldhandle = getRequiredInput(InputField);
 
   FieldInformation fi(ifieldhandle);
 
-  if (!(fi.is_trisurfmesh()))
+  if (!fi.is_trisurfmesh())
   {
     error("This module has only been implemented for Trisurf meshes.");
     return;
   }
 
-  /// @todo: Verify that it's a trisurf that we're testing.
-  update_state(Executing);
-    
-  MergeTriSurfsAlgo algo;
-  ifieldhandle.detach();
-  ifieldhandle->mesh_detach();
-  
+  detail::MergeTriSurfsAlgo algo;
+  auto output = FieldHandle(ifieldhandle->deep_clone());
+
   std::vector<index_type> new_nodes;
   std::vector<index_type> new_elems;
-  algo.execute(this, ifieldhandle, new_nodes, new_elems);
-  
-  send_output_handle("Output Field", ifieldhandle, true);
-}
+  algo.execute(getUpdaterFunc(), output, new_nodes, new_elems);
 
-} // End namespace SCIRun
+  sendOutput(OutputField, output);
+}

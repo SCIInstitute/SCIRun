@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
-#include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 
@@ -70,7 +69,7 @@ TEST(TypeIDTableTests, CanRegisterObjectForLater)
 
   auto ctor = table.findConstructorInfo(type);
 
-  EXPECT_TRUE(!!ctor);
+  EXPECT_TRUE(ctor);
 }
 
 TEST(TypeIDTableTests, CannotRegisterConflictingCtors)
@@ -90,7 +89,7 @@ TEST(TypeIDTableTests, CannotRegisterConflictingCtors)
 
   auto ctor = table.findConstructorInfo(type);
 
-  EXPECT_TRUE(!!ctor);
+  EXPECT_TRUE(ctor);
   EXPECT_EQ(1, ctor->x);
 }
 
@@ -119,12 +118,12 @@ TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
 
   int trueCount = 0;
   int tryCount = 50;
-  std::vector< boost::shared_ptr<boost::thread> > threads;
+  std::vector< std::shared_ptr<std::thread> > threads;
 
   for (int i = 0; i < tryCount; ++i)
   {
     TryRegister tr(table, trueCount, i);
-    boost::shared_ptr<boost::thread> t(new boost::thread(tr));
+    std::shared_ptr<std::thread> t(new std::thread(tr));
     threads.push_back(t);
   }
 
@@ -141,7 +140,7 @@ TEST(StringFormatting, NewWayMatchesOldWay)
   double x = 3.14159265;
   char s[32];
   sprintf(s, "%8.4f", x);
-  auto expected = boost::lexical_cast<std::string>(s);
+  std::string expected(s);
 
   auto actual = str(boost::format("%8.4f") % x);
 

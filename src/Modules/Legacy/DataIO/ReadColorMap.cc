@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,7 +34,7 @@
 ///    Department of Computer Science
 ///    University of Utah
 /// @date  July 1994
-/// 
+///
 
 #include <Dataflow/Network/Ports/ColorMapPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>
@@ -73,7 +72,7 @@ ReadColorMap::ReadColorMap(GuiContext* ctx)
   ColorMapIEPluginManager mgr;
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
-  
+
   std::string importtypes = "{";
   importtypes += "{{SCIRun Colormap File} {.cmap} } ";
 
@@ -102,7 +101,7 @@ ReadColorMap::call_importer(const std::string &filename, ColorMapHandle & cmHand
   const std::string ftpre = gui_filetype_.get();
   const std::string::size_type loc = ftpre.find(" (");
   const std::string ft = ftpre.substr(0, loc);
-  
+
   ColorMapIEPluginManager mgr;
   ColorMapIEPlugin *pl = mgr.get_plugin(ft);
   if (pl)
@@ -117,8 +116,8 @@ ReadColorMap::call_importer(const std::string &filename, ColorMapHandle & cmHand
 void
 ReadColorMap::execute()
 {
-  if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
-     
+  if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true;
+
   const std::string ftpre = gui_filetype_.get();
   const std::string::size_type loc = ftpre.find(" (");
   const std::string ft = ftpre.substr(0, loc);
@@ -126,7 +125,7 @@ ReadColorMap::execute()
   importing_ = !(ft == "" ||
 		 ft == "SCIRun Colormap File" ||
 		 ft == "SCIRun Colormap Any");
-     
+
   GenericReader<ColorMapHandle>::execute();
 }
 

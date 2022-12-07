@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
+
 #include <Modules/String/TestModuleSimpleUI.h>
-//#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,7 +41,7 @@ TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, Modu
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-  addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
+    addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
+  //addCheckBoxManager(knob1CheckBox_, Parameters::Knob1);
+  //addDoubleSpinBoxManager(knob2SpinBox_, Parameters::Knob2);
 }
-

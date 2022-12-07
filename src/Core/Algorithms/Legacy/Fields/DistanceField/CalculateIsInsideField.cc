@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateIsInsideField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -101,8 +101,6 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
   if (fo.is_tensor()) fo.make_double();
   fo.make_constantdata();
 
-  bool clean_field = false;
-
   if (!output)
   {
     output = CreateField(fo,input->mesh());
@@ -112,7 +110,6 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
       error("Could not create output field");
       return(false);
     }
-    clean_field = true;
   }
 
   // For the moment we calculate everything in doubles

@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #include "CerealHeap.hpp"
 
 namespace spire {
@@ -6,7 +34,7 @@ namespace heap_detail {
 
 bool checkTnyType(Tny* root, TnyType type)
 {
-  if (root == NULL)
+  if (root == nullptr)
   {
     std::cerr << "es-cereal: deserialize root is NULL" << std::endl;
     throw std::runtime_error("NULL ptr");
@@ -26,22 +54,22 @@ bool checkTnyType(Tny* root, TnyType type)
 Tny* addSerializedComponent(Tny* cur, Tny* component, uint64_t entityID)
 {
   // A TNY_INT64 is really an UINT64
-  cur = Tny_add(cur, TNY_INT64, NULL, static_cast<void*>(&entityID), 0);
-  cur = Tny_add(cur, TNY_OBJ, NULL, component, 0);
+  cur = Tny_add(cur, TNY_INT64, nullptr, static_cast<void*>(&entityID), 0);
+  cur = Tny_add(cur, TNY_OBJ, nullptr, component, 0);
   return cur;
 }
 
 Tny* writeSerializedHeap(ComponentSerialize& s, Tny* compArray)
 {
   // The heap header will contain all information regarding values.
-  Tny* root = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
+  Tny* root = Tny_add(nullptr, TNY_ARRAY, nullptr, nullptr, 0);
 
   // Retrieve header indicating the types that have been serialized.
   Tny* typeHeader = s.getTypeHeader();
-  root = Tny_add(root, TNY_OBJ, NULL, typeHeader, 0);
+  root = Tny_add(root, TNY_OBJ, nullptr, typeHeader, 0);
 
   // Add all serialized data.
-  root = Tny_add(root, TNY_OBJ, NULL, compArray, 0);
+  root = Tny_add(root, TNY_OBJ, nullptr, compArray, 0);
 
   Tny_free(typeHeader);
 
@@ -87,5 +115,4 @@ Tny* readSerializedHeap(ComponentSerialize& /* s */, Tny* root,
 
 } // namespace heap_detail
 
-} 
-
+}

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/ConvertMeshToPointCloudDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
@@ -34,7 +34,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -43,9 +43,8 @@ ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& 
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
-  
-    streamlineMethod_.insert(StringPair("Extract Node Locations", "node"));
-    streamlineMethod_.insert(StringPair("Extract Data Locations", "data"));
 
-    addComboBoxManager(option_, Fields::ConvertMeshToPointCloudMeshAlgo::Location,streamlineMethod_);
+  addComboBoxManager(option_, Parameters::Location,
+    {{"Extract Node Locations", "node"},
+    {"Extract Data Locations", "data"}});
 }

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@author
 ///   Allen R. Sanderson
@@ -65,8 +65,8 @@ ClipVolumeByIsovalue::ClipVolumeByIsovalue() : Module(staticInfo_)
 void ClipVolumeByIsovalue::setStateDefaults()
 {
   auto state = get_state();
-  setStateDoubleFromAlgo(ClipMeshByIsovalueAlgo::ScalarIsoValue);
-  setStateIntFromAlgo(ClipMeshByIsovalueAlgo::LessThanIsoValue);
+  setStateDoubleFromAlgo(Parameters::ScalarIsoValue);
+  setStateIntFromAlgo(Parameters::LessThanIsoValue);
 }
 
 
@@ -80,21 +80,21 @@ void ClipVolumeByIsovalue::execute()
     double iso=0;
 
     // GUI inputs have less priority than isovalue - second module input
-    iso = get_state()->getValue(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
+    iso = get_state()->getValue(Parameters::ScalarIsoValue).toDouble();
 
     if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())
     {
       iso = (*isovalueOption)->get(0,0);
     }
 
-    algo().set(ClipMeshByIsovalueAlgo::ScalarIsoValue, iso);
+    algo().set(Parameters::ScalarIsoValue, iso);
 
-    auto gui_LessThanIsoValue = (get_state()->getValue(ClipMeshByIsovalueAlgo::LessThanIsoValue)).toInt();
+    auto gui_LessThanIsoValue = (get_state()->getValue(Parameters::LessThanIsoValue)).toInt();
 
     if (gui_LessThanIsoValue==-1)
        gui_LessThanIsoValue=0;
 
-    algo().set(ClipMeshByIsovalueAlgo::LessThanIsoValue, gui_LessThanIsoValue);
+    algo().set(Parameters::LessThanIsoValue, gui_LessThanIsoValue);
 
     auto output = algo().run(withInputData((InputField, input)));
 

@@ -1,12 +1,46 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #ifndef SPIRE_RENDER_COMPONENT_RENDER_FONT_HPP
 #define SPIRE_RENDER_COMPONENT_RENDER_FONT_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <gl-shaders/GLShader.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 
 #include "StaticVBOMan.hpp"
 #include "StaticFontMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -27,7 +61,7 @@ struct RenderFont
 
   // We own this vbo and ibo since they were only constructed for our string.
   // It will be destroyed on component destruct. We don't use the default
-  // quads for this because 1) we construct the entire string in the vbo, 
+  // quads for this because 1) we construct the entire string in the vbo,
   // 2) we don't use 0 and 1 texcoords, and 3) we have extra information being
   // sent to the shader regarding the center of the tex quads.
   GLuint vbo;
@@ -48,7 +82,7 @@ struct RenderFont
   // the shader and the attributes that we supply.
   int attribSize;
   size_t stride;
-  spire::ShaderAttributeApplied appliedAttribs[MaxFontAttributes]; 
+  spire::ShaderAttributeApplied appliedAttribs[MaxFontAttributes];
 
   // Uniform location for text scaling.
   GLint numTextCharsUniformLoc;
@@ -102,7 +136,7 @@ struct RenderFont
     }
     else
     {
-      std::cerr << "RenderFont: Unable to set string: " << str << " Name must be " 
+      std::cerr << "RenderFont: Unable to set string: " << str << " Name must be "
                 << (MaxStringSize - 1) << "characters or shorter." << std::endl;
     }
   }
@@ -131,4 +165,4 @@ struct RenderFont
 
 } // namespace ren
 
-#endif 
+#endif

@@ -1,29 +1,28 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -104,9 +103,6 @@ namespace SCIRun {
             const Geometry::Vector&,
             const Geometry::Vector&,
             unsigned int,
-            Datatypes::DenseMatrix&,
-            double,
-            double,
             Datatypes::DenseMatrix& );
 
           static double get_new_auto_g( const Geometry::Vector&,
@@ -119,7 +115,6 @@ namespace SCIRun {
             Datatypes::DenseMatrixHandle&,
             double,
             double,
-            double,
             const std::vector<double>& );
 
           static void make_cross_G_allocate(VMesh*, VMesh*, Datatypes::DenseMatrixHandle&);
@@ -128,14 +123,12 @@ namespace SCIRun {
             Datatypes::DenseMatrixHandle&,
             double,
             double,
-            double,
             const std::vector<double>& );
 
           static void make_auto_G_allocate(VMesh*, Datatypes::DenseMatrixHandle&);
 
           static void make_auto_P( VMesh*,
             Datatypes::DenseMatrixHandle&,
-            double,
             double,
             double );
 
@@ -147,7 +140,6 @@ namespace SCIRun {
           static void make_cross_P( VMesh*,
             VMesh*,
             Datatypes::DenseMatrixHandle&,
-            double,
             double,
             double );
 
@@ -221,7 +213,7 @@ namespace SCIRun {
           virtual Datatypes::MatrixHandle compute(const bemfield_vector& fields) const = 0;
         };
 
-        typedef boost::shared_ptr<BEMAlgoImpl> BEMAlgoPtr;
+        typedef SharedPointer<BEMAlgoImpl> BEMAlgoPtr;
 
         class SCISHARE BEMAlgoImplFactory
         {

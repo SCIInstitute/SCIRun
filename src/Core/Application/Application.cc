@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 
 #include <boost/filesystem.hpp>
 
@@ -64,9 +64,8 @@ namespace SCIRun
 {
   namespace Core
   {
-    class ApplicationPrivate
+    struct ApplicationPrivate
     {
-    public:
       CommandLineParser parser;
       boost::filesystem::path app_filepath_;
       boost::filesystem::path app_filename_;
@@ -98,18 +97,18 @@ Application::~Application()
 void Application::shutdown()
 {
   if (!private_)
-    GeneralLog::Instance().get()->info("Application shutdown called with null internals");
+    logInfo("Application shutdown called with null internals");
   try
   {
     private_.reset();
   }
   catch (std::exception& e)
   {
-    GeneralLog::Instance().get()->critical("Unhandled exception during application shutdown: {}", e.what());
+    logCritical("Unhandled exception during application shutdown: {}", e.what());
   }
   catch (...)
   {
-    GeneralLog::Instance().get()->critical("Unknown unhandled exception during application shutdown");
+    logCritical("Unknown unhandled exception during application shutdown");
   }
 }
 
@@ -160,7 +159,7 @@ void Application::readCommandLine(int argc, const char* argv[])
     auto maxCoresOption = private_->parameters_->developerParameters()->maxCores();
     if (maxCoresOption)
       Thread::Parallel::SetMaximumCores(*maxCoresOption);
-      
+
     LogSettings::Instance().setVerbose(parameters()->verboseMode());
   }
 }
@@ -174,7 +173,7 @@ namespace
   {
   public:
     HardCodedPythonTestCommand(const std::string& script, bool enabled) : script_(script), enabled_(enabled) {}
-    virtual bool execute() override
+    bool execute() override
     {
       if (!enabled_)
         return false;
@@ -194,21 +193,21 @@ namespace
   class HardCodedPythonFactory : public NetworkEventCommandFactory
   {
   public:
-    virtual CommandHandle create(NetworkEventCommands type) const override
+    CommandHandle create(NetworkEventCommands type) const override
     {
       const auto& prefs = Preferences::Instance();
       switch (type)
       {
       case NetworkEventCommands::PostModuleAdd:
-        return boost::make_shared<HardCodedPythonTestCommand>(
+        return makeShared<HardCodedPythonTestCommand>(
           prefs.postModuleAdd.script.val(),
           prefs.postModuleAdd.enabled.val());
       case NetworkEventCommands::OnNetworkLoad:
-        return boost::make_shared<HardCodedPythonTestCommand>(
+        return makeShared<HardCodedPythonTestCommand>(
           prefs.onNetworkLoad.script.val(),
           prefs.onNetworkLoad.enabled.val());
       case NetworkEventCommands::ApplicationStart:
-        return boost::make_shared<HardCodedPythonTestCommand>(
+        return makeShared<HardCodedPythonTestCommand>(
           prefs.applicationStart.script.val(),
           prefs.applicationStart.enabled.val());
       }
@@ -222,9 +221,9 @@ namespace
   NetworkEventCommandFactoryHandle makeNetworkEventCommandFactory()
   {
 #ifdef BUILD_WITH_PYTHON
-    return boost::make_shared<HardCodedPythonFactory>();
+    return makeShared<HardCodedPythonFactory>();
 #else
-    return boost::make_shared<NullCommandFactory>();
+    return makeShared<NullCommandFactory>();
 #endif
   }
 }

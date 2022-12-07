@@ -1,0 +1,83 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#include <Interface/Modules/DataIO/WriteBundleDialog.h>
+#include <Modules/DataIO/WriteBundle.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/ImportExport/GenericIEPlugin.h>
+#include <iostream>
+#include <QFileDialog>
+
+using namespace SCIRun::Gui;
+using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+
+WriteBundleDialog::WriteBundleDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  connect(saveFileButton_, &QPushButton::clicked, this, &WriteBundleDialog::saveFile);
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &WriteBundleDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &WriteBundleDialog::pushFileNameToState);
+  WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(saveFileButton_, Variables::FileTypeName.name());
+}
+
+void WriteBundleDialog::pullSpecial()
+{
+  pullFilename(state_, fileNameLineEdit_, {});
+}
+
+void WriteBundleDialog::pushFileNameToState()
+{
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+}
+
+void WriteBundleDialog::saveFile()
+{
+  auto types = transient_value_cast<std::string>(state_->getTransientValue(Variables::FileTypeList));
+  selectedFilter_ = QString::fromStdString(state_->getValue(Variables::GuiFileTypeName).toString());
+  auto file = QFileDialog::getSaveFileName(this, "Save Bundle File", dialogDirectory(), QString::fromStdString(types), &selectedFilter_);
+  if (file.length() > 0)
+  {
+    auto filter = selectedFilter_.toStdString();
+    state_->setValue(Variables::GuiFileTypeName, filter);
+    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(filter);
+    state_->setValue(Variables::FileTypeName, typeName);
+    fileNameLineEdit_->setText(file);
+    updateRecentFile(file);
+    pushFileNameToState();
+  }
+}

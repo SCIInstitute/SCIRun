@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -48,10 +48,10 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
+  connect(openFileButton_, &QPushButton::clicked, this, &ReadMatrixClassicDialog::openFile);
   //addLineEditManager() TODO: investigate these other signals with lineedit.
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &ReadMatrixClassicDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &ReadMatrixClassicDialog::pushFileNameToState);
   WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(openFileButton_, Variables::FileTypeName.name());
@@ -61,9 +61,8 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
 
 void ReadMatrixClassicDialog::pullSpecial()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
   static MatrixIEPluginManager mgr;
-  selectedFilter_ = QString::fromStdString(dialogBoxFilterFromFileTypeDescription(mgr, state_->getValue(Variables::FileTypeName).toString()));
+  selectedFilter_ = pullFilename(state_, fileNameLineEdit_, dialogBoxFilterFromFileTypeDescription(mgr));
 }
 
 void ReadMatrixClassicDialog::pushFileNameToState()

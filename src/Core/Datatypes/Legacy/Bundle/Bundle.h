@@ -1,30 +1,30 @@
 /*
-  For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-  The MIT License
+   The MIT License
 
-  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-  University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-  The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef SCIRUN_CORE_DATATYPES_BUNDLE_H
 #define SCIRUN_CORE_DATATYPES_BUNDLE_H 1
@@ -38,7 +38,7 @@ namespace SCIRun {
 
       /// @todo:
       // 0. Bundle I/O
-      // 1. Store ColorMaps, Nrrds, and Bundles
+      // 1. Store Nrrds, and Bundles
       // 2. Matrix <-> Nrrd interop. Should go in separate class.
 
 class SCISHARE Bundle : public Datatype
@@ -46,7 +46,7 @@ class SCISHARE Bundle : public Datatype
   public:
     Bundle();
 
-    virtual Bundle* clone() const;
+    Bundle* clone() const override;
 
     bool empty() const;
     size_t size() const;
@@ -72,6 +72,12 @@ class SCISHARE Bundle : public Datatype
     std::vector<StringHandle> getStrings() const;
     std::vector<std::string> getStringNames() const;
 
+    bool isColorMap(const std::string& name) const;
+    ColorMapHandle getColorMap(const std::string& name) const;
+    size_t numColorMaps() const;
+    std::vector<ColorMapHandle> getColorMaps() const;
+    std::vector<std::string> getColorMapNames() const;
+
     bool remove(const std::string& name);
 
     typedef std::map<std::string, Core::Datatypes::DatatypeHandle> UnderlyingMapType;
@@ -80,7 +86,7 @@ class SCISHARE Bundle : public Datatype
     UnderlyingMapType::const_iterator end() const { return bundle_.end(); }
 
     /// For writing bundles to file
-    virtual void io(Piostream&);
+    void io(Piostream&) override;
     static PersistentTypeID type_id;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -134,34 +140,6 @@ class SCISHARE Bundle : public Datatype
     std::string getNrrdName(int index);
       // Implementation in cc file, with NRRD/MATRIX compatibility
 
-    /// The basic functions for managing colormaps
-    ///  getcolormap     -> Retrieve a Handle to a colormap stored in the bundle
-    ///  setcolormap     -> Add a colormap with a name, if it already exists the
-    ///                     old one is overwritten
-    ///  remcolormap     -> Remove a handle from the bundle
-    ///  iscolormap      -> Test whether a colormap is present in the bundle
-    ///  numcolormaps    -> The number of colormaps stored in the bundle
-    ///  getcolormapname -> Get the nth name in the bundle for building a
-    ///                     contents list
-
-    LockingHandle<ColorMap> getColorMap(const std::string& name)
-      { return(get<ColorMap>(name)); }
-
-    void setColorMap(const std::string& name, LockingHandle<ColorMap> &colormap)
-      { set<ColorMap>(name,colormap); }
-
-    void remColorMap(const std::string& name)
-      { rem(name); }
-
-    bool isColorMap(const std::string& name)
-      { return(is<ColorMap>(name)); }
-
-    int numColorMaps()
-      { return(num<ColorMap>()); }
-
-    std::string getColorMapName(int index)
-      { return(getName<ColorMap>(index)); }
-
     /// The basic functions for managing bundles
     ///  getbundle     -> Retrieve a Handle to a bundle stored in the bundle
     ///  setbundle     -> Add a bundle with a name, if it already exists the old
@@ -201,9 +179,43 @@ class SCISHARE Bundle : public Datatype
     /// Get the type of a handle (for BundleInfo)
     std::string    getHandleType(int index);
 #endif
-    virtual std::string dynamic_type_name() const { return type_id.type; }
+    std::string dynamic_type_name() const override { return type_id.type; }
 
 private:
+
+  template <typename OfType>
+  size_t numObjs(OfType ofType) const
+  {
+    return std::count_if(begin(), end(),
+      [ofType](const UnderlyingMapType::value_type& p) { return ofType(p.first); }
+    );
+  }
+
+  template <typename T, typename OfType>
+  std::vector<T> getObjs(OfType typedGet) const
+  {
+    std::vector<T> objs;
+    std::transform(begin(), end(), std::back_inserter(objs),
+      [typedGet](const UnderlyingMapType::value_type& p)
+      {
+        return typedGet(p.first);
+      });
+
+    objs.erase(std::remove_if(objs.begin(), objs.end(), [](const T& t) { return t == nullptr; }), objs.end());
+    return objs;
+  }
+
+  template <typename OfType>
+  std::vector<std::string> getObjNames(OfType ofType) const
+  {
+    std::vector<std::string> names;
+    for (const auto& p : bundle_)
+    {
+      if (ofType(p.first))
+        names.push_back(p.first);
+    }
+    return names;
+  }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 

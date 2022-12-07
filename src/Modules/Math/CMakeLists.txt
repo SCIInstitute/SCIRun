@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 SET(Modules_Math_SRCS
   #ConvertMatrixType.cc
@@ -48,6 +48,12 @@ SET(Modules_Math_SRCS
   ConvertRealToComplexMatrix.cc
   ConvertComplexToRealMatrix.cc
   BooleanCompare.cc
+  DisplayHistogram.cc
+  BasicPlotter.cc
+  AdvancedPlotter.cc
+  ResizeMatrix.cc
+  CreateStandardMatrix.cc
+  ComputeTensorUncertainty.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -73,6 +79,12 @@ SET(Modules_Math_HEADERS
   ConvertRealToComplexMatrix.h
   ConvertComplexToRealMatrix.h
   BooleanCompare.h
+  DisplayHistogram.h
+  BasicPlotter.h
+  AdvancedPlotter.h
+  ResizeMatrix.h
+  CreateStandardMatrix.h
+  ComputeTensorUncertainty.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math

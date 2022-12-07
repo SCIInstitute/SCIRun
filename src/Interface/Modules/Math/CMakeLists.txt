@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2017 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 SET(Interface_Modules_Math_FORMS
   SelectSubMatrix.ui
@@ -47,6 +47,12 @@ SET(Interface_Modules_Math_FORMS
   ReportMatrixSliceMeasureDialog.ui
   SetSubmatrix.ui
   BooleanCompareDialog.ui
+  DisplayHistogram.ui
+  BasicPlotter.ui
+  AdvancedPlotter.ui
+  ResizeMatrixDialog.ui
+  CreateStandardMatrixDialog.ui
+  ComputeTensorUncertainty.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -71,6 +77,13 @@ SET(Interface_Modules_Math_HEADERS
   SetSubmatrixDialog.h
   SolveComplexLinearSystemDialog.h
   BooleanCompareDialog.h
+  DisplayHistogramDialog.h
+  BasicPlotterDialog.h
+  AdvancedPlotterDialog.h
+  PlotDialog.h
+  ResizeMatrixDialog.h
+  CreateStandardMatrixDialog.h
+  ComputeTensorUncertaintyDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -94,10 +107,19 @@ SET(Interface_Modules_Math_SOURCES
   SetSubmatrixDialog.cc
   SolveComplexLinearSystemDialog.cc
   BooleanCompareDialog.cc
+  DisplayHistogramDialog.cc
+  BasicPlotterDialog.cc
+  AdvancedPlotterDialog.cc
+  PlotDialog.cc
+  ResizeMatrixDialog.cc
+  CreateStandardMatrixDialog.cc
+  ComputeTensorUncertaintyDialog.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Math_HEADERS_MOC ${Interface_Modules_Math_HEADERS})
+QT_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS "${Interface_Modules_Math_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Math_HEADERS_MOC "${Interface_Modules_Math_HEADERS}")
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../Base/CustomWidgets/CTK)
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Math
   ${Interface_Modules_Math_HEADERS}
@@ -111,9 +133,13 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Modules_Math
   Modules_Legacy_Math
   Interface_Modules_Base
-
   ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES})
+  ${QT_LIBRARIES}
+  ${SCI_QWT_LIBRARY}
+  )
+
+
+ADD_DEFINITIONS(-DQWT_DLL)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Math)

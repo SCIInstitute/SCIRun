@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MODULES_LEGACY_FIELDS_GetSliceFromStructuredFieldByIndices_H__
 #define MODULES_LEGACY_FIELDS_GetSliceFromStructuredFieldByIndices_H__
@@ -59,15 +59,15 @@ namespace SCIRun {
       public:
         GetSliceFromStructuredFieldByIndices();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, InputMatrix, Matrix);
         OUTPUT_PORT(0, OutputField, Field);
         OUTPUT_PORT(1, OutputMatrix, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
     }
   }

@@ -70,6 +70,22 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="forceAlwaysExecuteCheckBox_">
+     <property name="minimumSize">
+      <size>
+       <width>22</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Force Always Execute</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -104,6 +120,9 @@
    </item>
    <item>
     <widget class="QToolButton" name="collapseToolButton_">
+     <property name="toolTip">
+      <string>Toggle Collapse</string>
+     </property>
      <property name="text">
       <string>...</string>
      </property>

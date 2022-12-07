@@ -41,10 +41,26 @@
     <file>Resources/timepiece-512.png</file>
     <file>Resources/scirunWizard.png</file>
     <file>Resources/ViewScene/autoview.png</file>
+    <file>Resources/ViewScene/autorotate.png</file>
     <file>Resources/ViewScene/configure.png</file>
     <file>Resources/ViewScene/views.png</file>
     <file>Resources/ViewScene/lockView.png</file>
     <file>Resources/ViewScene/screenshot.png</file>
+    <file>Resources/ViewScene/quickscreenshot.png</file>
+    <file>Resources/ViewScene/autorotate2.png</file>
+    <file>Resources/ViewScene/axes.png</file>
+    <file>Resources/ViewScene/materials.png</file>
+    <file>Resources/ViewScene/scaleBar.png</file>
+    <file>Resources/ViewScene/selection.png</file>
+    <file>Resources/ViewScene/fillColor.png</file>
+    <file>Resources/ViewScene/clipping.png</file>
+    <file>Resources/ViewScene/eye.png</file>
+    <file>Resources/ViewScene/fog.png</file>
+    <file>Resources/ViewScene/light.png</file>
+    <file>Resources/ViewScene/headlight.png</file>
+    <file>Resources/ViewScene/devel.png</file>
+    <file>Resources/ViewScene/link.png</file>
+    <file>Resources/ViewScene/mouse.png</file>
     <file>Resources/network.png</file>
     <file>Resources/subnet3.png</file>
     <file>Resources/editSubnet.png</file>
@@ -68,5 +84,13 @@
     <file>Resources/rename.ico</file>
     <file>Resources/delete_black.png</file>
     <file>Resources/delete_red.png</file>
+    <file>Resources/script_play-512lime.png</file>
+    <file>Resources/flash1.png</file>
+    <file>Resources/flash2.png</file>
+    <file>Resources/flash3.png</file>
+    <file>Resources/flash4.png</file>
+    <file>Resources/flash5.png</file>
+    <file>Resources/LegacyModuleImporter.xml</file>
+    <file>Resources/Wizard/int_with_py_network.png</file>
   </qresource>
 </RCC>

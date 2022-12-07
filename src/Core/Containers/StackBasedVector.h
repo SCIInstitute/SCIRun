@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// This implements a subclass of the std::vector class, except that
 /// the vector is statically allocated on the stack for performance.
 
@@ -36,7 +36,7 @@
 #include <vector>
 
 /// This vector type is similar in performance to the StackVector, but checks
-/// for overflow. In case of overflow memory will be reserved to store data_ 
+/// for overflow. In case of overflow memory will be reserved to store data_
 
 
 /// @todo: replace with STL container
@@ -47,7 +47,7 @@ template<class T, size_t CAPACITY>
 class StackBasedVector : public std::vector<T>
 {
 public:
-  StackBasedVector(size_t size = 0) : std::vector<T>(std::min(size, CAPACITY)) 
+  StackBasedVector(size_t size = 0) : std::vector<T>(std::min(size, CAPACITY))
   {
     this->reserve(CAPACITY);
   }

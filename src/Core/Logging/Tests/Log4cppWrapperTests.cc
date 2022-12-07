@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 
 #include <Core/Logging/Log.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/daily_file_sink.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 #include <iostream>
 #include <memory>
@@ -78,7 +82,8 @@ TEST(LogWrapperTests, SpdLogExample)
 
 	// Conditional logging example
         auto i = 2;
-        console->warn_if(i != 0, "an important message");
+        if (i != 0)
+          console->warn("an important message");
 
         // Formatting examples
         console->warn("Easy padding in numbers like {:08d}", 12);
@@ -151,8 +156,6 @@ TEST(LogWrapperTests, SpdLogExample)
 
 void async_example()
 {
-    size_t q_size = 4096; //queue size must be power of 2
-    spd::set_async_mode(q_size);
     auto async_file = spd::daily_logger_st("async_file_logger", "logs/async_log.txt");
     for (int i = 0; i < 100; ++i)
         async_file->info("Async message #{}", i);

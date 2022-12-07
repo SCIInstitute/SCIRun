@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Engine/Controller/ProvenanceManager.h
 
 #ifndef ENGINE_NETWORK_PROVENANCEMANAGER_H
@@ -39,7 +40,7 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-  
+
   template <class Memento>
   class ProvenanceManager : boost::noncopyable
   {
@@ -55,7 +56,7 @@ namespace Engine {
     void addItem(ItemHandle item);
     ItemHandle undo();
     ItemHandle redo();
-    
+
     List undoAll();
     List redoAll();
 
@@ -71,7 +72,7 @@ namespace Engine {
     ItemHandle redo(bool restore);
     IOType* networkIO_;
     Stack undo_, redo_;
-    boost::optional<Memento> initialState_;
+    std::optional<Memento> initialState_;
   };
 
 
@@ -133,14 +134,14 @@ namespace Engine {
         if (!undo_.empty())
           networkIO_->loadNetwork(undo_.top()->memento());
         else if (initialState_)
-          networkIO_->loadNetwork(initialState_.get());
+          networkIO_->loadNetwork(*initialState_);
       }
-      
+
       return undone;
     }
     return ItemHandle();
   }
-  
+
   template <class Memento>
   typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::redo()
   {
@@ -162,7 +163,7 @@ namespace Engine {
         networkIO_->clear();
         networkIO_->loadNetwork(redone->memento());
       }
-      
+
       return redone;
     }
     return ItemHandle();
@@ -176,7 +177,7 @@ namespace Engine {
       undone.push_back(undo(false));
     networkIO_->clear();
     if (initialState_)
-      networkIO_->loadNetwork(initialState_.get());
+      networkIO_->loadNetwork(*initialState_);
     return undone;
   }
 

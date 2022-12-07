@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Engine/Controller/ProvenanceItemImpl.h
 
 #ifndef ENGINE_NETWORK_PROVENANCEITEMIMPL_H
@@ -38,12 +39,12 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-  
+
   class SCISHARE ProvenanceItemBase : public ProvenanceItem<Networks::NetworkFileHandle>
   {
   public:
     explicit ProvenanceItemBase(Networks::NetworkFileHandle state);
-    virtual Networks::NetworkFileHandle memento() const;
+    Networks::NetworkFileHandle memento() const override;
   protected:
     Networks::NetworkFileHandle state_;
   };
@@ -52,7 +53,7 @@ namespace Engine {
   {
   public:
     ModuleAddedProvenanceItem(const std::string& moduleName, Networks::NetworkFileHandle state);
-    virtual std::string name() const;
+    std::string name() const override;
   private:
     std::string moduleName_;
   };
@@ -61,7 +62,7 @@ namespace Engine {
   {
   public:
     ModuleRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, Networks::NetworkFileHandle state);
-    virtual std::string name() const;
+    std::string name() const override;
   private:
     SCIRun::Dataflow::Networks::ModuleId moduleId_;
   };
@@ -70,7 +71,7 @@ namespace Engine {
   {
   public:
     ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, Networks::NetworkFileHandle state);
-    virtual std::string name() const;
+    std::string name() const override;
   private:
     SCIRun::Dataflow::Networks::ConnectionDescription desc_;
   };
@@ -79,7 +80,7 @@ namespace Engine {
   {
   public:
     ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, Networks::NetworkFileHandle state);
-    virtual std::string name() const;
+    std::string name() const override;
   private:
     SCIRun::Dataflow::Networks::ConnectionId id_;
   };
@@ -88,7 +89,7 @@ namespace Engine {
   {
   public:
     ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, Networks::NetworkFileHandle state);
-    virtual std::string name() const;
+    std::string name() const override;
   private:
     SCIRun::Dataflow::Networks::ModuleId moduleId_;
     double newX_, newY_;

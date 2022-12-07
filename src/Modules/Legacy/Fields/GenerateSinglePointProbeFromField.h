@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 #define MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
@@ -54,6 +54,8 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(ProbeColor);
         ALGORITHM_PARAMETER_DECL(SnapToNode);
         ALGORITHM_PARAMETER_DECL(SnapToElement);
+        ALGORITHM_PARAMETER_DECL(BBoxSize);
+        ALGORITHM_PARAMETER_DECL(UseBBoxSize);
       }
     }
   }
@@ -68,41 +70,26 @@ namespace SCIRun {
       public:
         GenerateSinglePointProbeFromField();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
         OUTPUT_PORT(1, GeneratedPoint, Field);
         OUTPUT_PORT(2, ElementIndex, Int32);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
-        boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
+        SharedPointer<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix);
 
-        FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
+        FieldHandle GenerateOutputField(std::optional<FieldHandle> ifieldOption);
         index_type GenerateIndex();
         void setNearestNode(const Core::Geometry::Point& location);
         void setNearestElement(const Core::Geometry::Point& location);
       };
-
-      class SCISHARE PointWidgetStub
-      {
-      public:
-        PointWidgetStub();
-        Core::Geometry::Point position() const;
-        void setPosition(const Core::Geometry::Point& p);
-        double scale() const { return scale_; }
-        void setScale(double s) { scale_ = s; }
-      private:
-        Core::Geometry::Point pos_;
-        double scale_;
-      };
-
-      typedef boost::shared_ptr<PointWidgetStub> PointWidgetPtr;
     }
   }
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <iostream>
 #include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
@@ -43,9 +43,9 @@ namespace Engine {
   class SerialExecutionStrategyPrivate
   {
   public:
-    void execute(const ExecutionContext& context, Mutex& executionLock)
+    std::future<int> execute(const ExecutionContext& context, Mutex& executionLock)
     {
-      executeWithCycleCheck(scheduler_, executor_, context, executionLock);
+      return executeWithCycleCheck(scheduler_, executor_, context, executionLock);
     }
   private:
     BoostGraphSerialScheduler scheduler_;
@@ -58,7 +58,7 @@ SerialExecutionStrategy::SerialExecutionStrategy() : impl_(new SerialExecutionSt
 {
 }
 
-void SerialExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
+std::future<int> SerialExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
 {
-  impl_->execute(context, executionLock);
+  return impl_->execute(context, executionLock);
 }

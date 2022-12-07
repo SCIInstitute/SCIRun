@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>247</width>
-    <height>129</height>
+    <width>284</width>
+    <height>159</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>247</width>
-    <height>129</height>
+    <width>284</width>
+    <height>159</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,12 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="3">
     <widget class="QCheckBox" name="rowCheckBox_">
+     <property name="minimumSize">
+      <size>
+       <width>270</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="text">
       <string>Select range of rows:</string>
      </property>
@@ -42,6 +48,12 @@
    </item>
    <item row="2" column="0" colspan="4">
     <widget class="QCheckBox" name="columnCheckBox_">
+     <property name="minimumSize">
+      <size>
+       <width>270</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="text">
       <string>Select range of columns:</string>
      </property>

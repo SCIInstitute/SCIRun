@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
@@ -105,7 +105,7 @@ bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
   {
     try
     {
-      DenseColumnMatrixHandle mat(boost::make_shared<DenseColumnMatrix>(data_.getSize()));
+      DenseColumnMatrixHandle mat(makeShared<DenseColumnMatrix>(data_.getSize()));
       data_.setCurrentMatrix(mat);
       data_.addVector(mat);
     }
@@ -131,7 +131,8 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
   if (!mat) return (false);
   if (mat->nrows() != size_) return (false);
 
-  mat->makeCompressed(); /// @todo: this should be an invariant of our SparseRowMatrix type.
+  if (first())
+    mat->makeCompressed(); /// @todo: this should be an invariant of our SparseRowMatrix type.
   M.data_ = mat->valuePtr();
   M.rows_ = mat->outerIndexPtr();
   M.columns_ = mat->innerIndexPtr();

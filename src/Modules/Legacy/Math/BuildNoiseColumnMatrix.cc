@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,17 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Core/Algorithms/Math/BuildNoiseColumnMatrix.h>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/MatrixFwd.h>
-//#include <Core/Datatypes/Legacy/Matrix/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-
-
-
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
@@ -44,22 +40,21 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-
 BuildNoiseColumnMatrix::BuildNoiseColumnMatrix() : Module(ModuleLookupInfo("BuildNoiseColumnMatrix","Math","SCIRun"))
 {
 	INITIALIZE_PORT(InputMatrix);
 	INITIALIZE_PORT(ResultMatrix);
 }
 
-void  BuildNoiseColumnMatrix::setStateDefaults()
+void BuildNoiseColumnMatrix::setStateDefaults()
 {
-	setStateDoubleFromAlgo(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio());
+	setStateDoubleFromAlgo(Parameters::SignalToNoiseRatio);
 }
 
 void BuildNoiseColumnMatrix::execute()
 {
 	auto input_matrix = getRequiredInput(InputMatrix);
-  algo().set(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio(),get_state()->getValue(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio()).toDouble());
+  setAlgoDoubleFromState(Parameters::SignalToNoiseRatio);
 	auto output = algo().run(withInputData((InputMatrix,input_matrix)));
 	sendOutputFromAlgorithm(ResultMatrix, output);
-} 
+}

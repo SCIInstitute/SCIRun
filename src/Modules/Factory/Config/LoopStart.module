@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "LoopStart",
+    "namespace": "Python",
+    "status": "In progress",
+    "description": "This module sends pre-execute code to a downstream module via the new metadata port/programmable pipe.",
+    "header": "Modules/Python/LoopStart.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "LoopStartDialog",
+    "header": "Interface/Modules/Python/LoopStartDialog.h"
+  }
+}

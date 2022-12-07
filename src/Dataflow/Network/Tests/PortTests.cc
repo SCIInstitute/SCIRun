@@ -1,30 +1,30 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+  For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+  The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
-   University of Utah.
+  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+  University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+  Permission is hereby granted, free of charge, to any person obtaining a
+  copy of this software and associated documentation files (the "Software"),
+  to deal in the Software without restriction, including without limitation
+  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  and/or sell copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Network/Port.h>
 #include <Dataflow/Network/Connection.h>
@@ -45,11 +45,11 @@ using ::testing::DefaultValue;
 class PortTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle());
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
-    
+
     inputModule.reset(new NiceMock<MockModule>);
     outputModule.reset(new NiceMock<MockModule>);
   }
@@ -60,7 +60,7 @@ protected:
 
 TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 {
-  ASSERT_THROW(InputPort(0,                  Port::ConstructionParams(PortId(0, "Matrix"),   "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  NullPointerException);
+  ASSERT_THROW(InputPort(nullptr,                  Port::ConstructionParams(PortId(0, "Matrix"),   "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  NullPointerException);
   ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId(0, ""),         "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
   ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId(0, "Matrix"),   ""             , false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
 }
@@ -74,7 +74,7 @@ TEST_F(PortTests, AggregatesConnections)
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());
   {
-    Connection c(outputPort, inputPort, "test");
+    Connection c(outputPort, inputPort, "test", false);
     //connection added on construction
     ASSERT_EQ(1, inputPort->nconnections());
     ASSERT_EQ(1, outputPort->nconnections());
@@ -94,15 +94,15 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());
-  Connection c(outputPort, inputPort, "test");
+  Connection c(outputPort, inputPort, "test", false);
   ASSERT_EQ(1, inputPort->nconnections());
   ASSERT_EQ(1, outputPort->nconnections());
 
   //shouldn't be able to connect a second output to the same input.
-  EXPECT_THROW(Connection c(outputPort, inputPort, "test"), InvalidArgumentException);
+  EXPECT_THROW(Connection c(outputPort, inputPort, "test", false), InvalidArgumentException);
 
   OutputPortHandle outputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
-  EXPECT_THROW(Connection c(outputPort2, inputPort, "test"), InvalidArgumentException);
+  EXPECT_THROW(Connection c(outputPort2, inputPort, "test", false), InvalidArgumentException);
 }
 
 /// @todo: this verification pushed up to higher layer.
@@ -116,10 +116,9 @@ TEST_F(PortTests, DISABLED_CannotConnectPortsWithDifferentDatatypes)
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());
   {
-    EXPECT_THROW(Connection c(outputPort, inputPort, "test"), InvalidArgumentException);
+    EXPECT_THROW(Connection c(outputPort, inputPort, "test", false), InvalidArgumentException);
     //connection constructor should throw for type mismatch
     ASSERT_EQ(0, inputPort->nconnections());
     ASSERT_EQ(0, outputPort->nconnections());
   }
 }
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef INTERFACE_APPLICATION_GUICOMMANDS_H
 #define INTERFACE_APPLICATION_GUICOMMANDS_H
@@ -47,54 +47,52 @@ namespace Gui {
   {
   public:
     LoadFileCommandGui();
-    virtual bool execute() override;
-  //private:
-  //  int index_ = 0;
+    bool execute() override;
   };
 
   class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class ExecuteCurrentNetworkCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class QuitAfterExecuteCommandGui : public Core::Commands::GuiCommand
   {
   public:
     QuitAfterExecuteCommandGui();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class QuitCommandGui : public Core::Commands::GuiCommand
   {
   public:
     QuitCommandGui();
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class ShowMainWindowGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class SetupDataDirectoryCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class ShowSplashScreenGui : public Core::Commands::GuiCommand
   {
   public:
     ShowSplashScreenGui();
-    virtual bool execute() override;
+    bool execute() override;
   private:
     static void initSplashScreen();
     static QSplashScreen* splash_;
@@ -125,6 +123,7 @@ namespace Gui {
   class FileImportCommand : public NetworkFileProcessCommand
   {
   public:
+    FileImportCommand();
     std::string logContents() const { return logContents_.str(); }
   protected:
     Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;

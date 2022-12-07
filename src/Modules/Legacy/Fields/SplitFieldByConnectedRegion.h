@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,16 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@file SplitFieldByConnectedRegion.h
-///@brief
-/// Splits a domain into separate fields as defined by the input field's connectivity.
+
+/// @file SplitFieldByConnectedRegion.h
+/// @brief
+///  Splits a domain into separate fields as defined by the input field's connectivity.
 ///
-///@author
-/// Moritz Dannhauer (ported from SCIRun4)
+/// @author
+///  Moritz Dannhauer (ported from SCIRun4)
 ///
-///@details
-/// This is simply the module that grabs the input field and passes it to the algorithm along with the GUI settings from the state object.
-/// After execution, it also receives the 8 output fields and the bundle which contains all sub fields that could be separated.
+/// @details
+///  This is simply the module that grabs the input field and passes it to the algorithm along with the GUI settings from the state object.
+///  After execution, it also receives the 8 output fields and the bundle which contains all sub fields that could be separated.
 
 #ifndef MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__
 #define MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__
@@ -49,25 +49,26 @@ namespace SCIRun {
 
       class SCISHARE SplitFieldByConnectedRegion : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
-        public Has8OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>
+        public Has9OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, BundlePortTag>
       {
       public:
         SplitFieldByConnectedRegion();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, OutputField1, Field);
-	      OUTPUT_PORT(1, OutputField2, Field);
+        OUTPUT_PORT(1, OutputField2, Field);
         OUTPUT_PORT(2, OutputField3, Field);
         OUTPUT_PORT(3, OutputField4, Field);
         OUTPUT_PORT(4, OutputField5, Field);
         OUTPUT_PORT(5, OutputField6, Field);
         OUTPUT_PORT(6, OutputField7, Field);
         OUTPUT_PORT(7, OutputField8, Field);
+        OUTPUT_PORT(8, OutputBundle, Bundle);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
 
     }

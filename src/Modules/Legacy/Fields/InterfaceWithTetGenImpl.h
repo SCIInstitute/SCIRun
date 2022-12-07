@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MODULES_LEGACY_FIELDS_INTERFACEWITHTETGENIMPL_H__
 #define MODULES_LEGACY_FIELDS_INTERFACEWITHTETGENIMPL_H__
@@ -69,7 +69,7 @@ namespace SCIRun {
         InterfaceWithTetGenImpl(Dataflow::Networks::Module* mod, const InterfaceWithTetGenInput& input);
         FieldHandle runImpl(const std::deque<FieldHandle>& surfaces, FieldHandle points, FieldHandle region_attribs) const;
       private:
-        boost::shared_ptr<detail::InterfaceWithTetGenImplImpl> impl_;
+        SharedPointer<detail::InterfaceWithTetGenImplImpl> impl_;
         InterfaceWithTetGenInput inputFlags_;
       };
     }

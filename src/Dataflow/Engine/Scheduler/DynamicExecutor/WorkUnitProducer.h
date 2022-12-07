@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITPRODUCER_H
 #define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITPRODUCER_H
 
@@ -35,10 +35,10 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Mutex.h>
 #include <boost/foreach.hpp>
-#include <boost/thread.hpp>
-#include <spdlog/fmt/ostr.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
+
+#include <iostream>
 
 namespace SCIRun {
   namespace Dataflow {
@@ -49,7 +49,7 @@ namespace SCIRun {
         {
         public:
           ModuleProducer(const Networks::ModuleFilter& filter,
-            const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
+            const Networks::NetworkStateInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
             scheduler_(filter), network_(network), enqueueLock_(lock),
             work_(work), doneCount_(0), badGroup_(false),
             //shouldLog_(SCIRun::Core::Logging::Log::get().verbose()),
@@ -58,16 +58,16 @@ namespace SCIRun {
             //log_.setVerbose(shouldLog_);
           }
 
-          virtual void enqueueReadyModules() const
+          void enqueueReadyModules() const override
           {
             Core::Thread::Guard g(enqueueLock_->get());
             if (!isDone())
             {
               auto order = scheduler_.schedule(*network_);
-              if (shouldLog_)
-              {
-                log_->debug("Producer received this ordering: \n{}\nProducer processing min group {}", order, order.minGroup());
-              }
+              //if (shouldLog_)
+              //{
+              //  log_->trace("Producer received this ordering: \n{}\nProducer processing min group {}", order, order.minGroup());
+              //}
               if (order.minGroup() < 0)
               {
                 badGroup_ = true;
@@ -77,15 +77,15 @@ namespace SCIRun {
               {
                 auto module = network_->lookupModule(mod.second);
 
-                if (module->executionState().currentState() == Networks::ModuleExecutionState::Waiting)
+                if (module->executionState().currentState() == Networks::ModuleExecutionState::Value::Waiting)
                 {
-                  if (shouldLog_)
-                    log_->debug("Producer pushing module {}", mod.second);
+                  //if (shouldLog_)
+                  //  log_->trace("Producer pushing module {}", mod.second);
 
                   if (doneIds_.find(mod.second) != doneIds_.end())
                   {
-                    if (shouldLog_)
-                      log_->info("Module producer: wants to enqueue module {} a second time. {}", mod.second, id_);
+                    //if (shouldLog_)
+                    //  log_->info("Module producer: wants to enqueue module {} a second time. {}", mod.second, id_);
                   }
                   else
                   {
@@ -93,8 +93,8 @@ namespace SCIRun {
                     doneIds_.insert(mod.second);
                     doneCount_.fetch_add(1);
 
-                    if (shouldLog_)
-                      log_->debug("Producer status: {} {} out of {}", id_, doneCount_, numModules_);
+                    //if (shouldLog_)
+                    //  log_->trace("Producer status: {} {} out of {}", id_, doneCount_, numModules_);
                   }
                 }
               }
@@ -103,43 +103,43 @@ namespace SCIRun {
 
           void operator()() const
           {
-            id_ = boost::this_thread::get_id();
+            id_ = std::this_thread::get_id();
 
-            log_->debug_if(shouldLog_, "Producer started {}", id_);
+            //log_->trace_if(shouldLog_, "Producer started {}", id_);
 
             enqueueReadyModules();
 
             while (!badGroup_ && !isDone())
             {
-              boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+              std::this_thread::sleep_for(std::chrono::milliseconds(100));
               //std::cout << "producer thread waiting " << id_ << std::endl;
             }
 
             if (badGroup_)
-              std::cerr << "producer is done with bad group, something went wrong. probably a race condition..." << std::endl;
+              logCritical("producer is done with bad group, something went wrong. probably a race condition...");
 
-            log_->debug_if(shouldLog_, "Producer is done. {}", id_);
+            //log_->trace_if(shouldLog_, "Producer is done. {}", id_);
           }
 
-          bool isDone() const
+          bool isDone() const override
           {
             return doneCount_ >= numModules_;
           }
         private:
           BoostGraphParallelScheduler scheduler_;
-          const Networks::NetworkInterface* network_;
+          const Networks::NetworkStateInterface* network_;
           Core::Thread::Mutex* enqueueLock_;
           ModuleWorkQueuePtr work_;
           mutable boost::atomic<int> doneCount_;
           mutable bool badGroup_;
           mutable std::set<Networks::ModuleId> doneIds_;
-          static Core::Logging::Logger2 log_;
-          bool shouldLog_;
+          //static Core::Logging::Logger2 log_;
+          //bool shouldLog_;
           size_t numModules_;
-          mutable boost::thread::id id_;
+          mutable std::thread::id id_;
         };
 
-        typedef boost::shared_ptr<ModuleProducer> ModuleProducerPtr;
+        typedef SharedPointer<ModuleProducer> ModuleProducerPtr;
 
       }}
 

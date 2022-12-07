@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,10 +25,10 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 # Sources of Core/Exceptions classes
 
 SET(Core_Exceptions_Legacy_SRCS
-  ArrayIndexOutOfBounds.cc
   AssertionFailed.cc
   DimensionMismatch.cc
   ErrnoException.cc
@@ -39,7 +38,6 @@ SET(Core_Exceptions_Legacy_SRCS
 )
 
 SET(Core_Exceptions_Legacy_HEADERS
-  ArrayIndexOutOfBounds.h
   AssertionFailed.h
   DimensionMismatch.h
   ErrnoException.h

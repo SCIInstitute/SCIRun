@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ModelTMSCoil",
+    "namespace": "BrainStimulator",
+    "status": "converted based on code from Petar Petrov",
+    "description": "Creates generic TMS coil",
+    "header": "Modules/BrainStimulator/ModelTMSCoil.h"
+  },
+  "algorithm": {
+    "name": "ModelTMSCoilAlgorithm",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/ModelGenericCoilAlgorithm.h"
+  },
+  "UI": {
+    "name": "ModelTMSCoilDialog",
+    "header": "Interface/Modules/BrainStimulator/ModelTMSCoilDialog.h"
+  }
+}

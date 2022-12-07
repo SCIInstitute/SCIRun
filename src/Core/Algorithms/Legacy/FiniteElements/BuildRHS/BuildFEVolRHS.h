@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///@file BuildFEVolRHS.h
 ///@brief This module computes a volumetric right-hand-side. This module is needed for TMS simulations in the BrainStimulator package.
@@ -56,16 +56,15 @@ class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
     BuildFEVolRHSAlgo();
     static AlgorithmInputName Mesh;
     static AlgorithmOutputName RHS;
-    static AlgorithmParameterName vectorTableBasisMatrices();
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;
   #endif
 
    Datatypes::DenseMatrixHandle run(FieldHandle input) const;
-   virtual AlgorithmOutput run(const AlgorithmInput &) const;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 private:
-   mutable int generation_;
+   //mutable int generation_;
    mutable Datatypes::MatrixHandle basis_fevolrhs_;
 };
 

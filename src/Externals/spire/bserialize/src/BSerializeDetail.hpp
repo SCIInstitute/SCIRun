@@ -1,11 +1,41 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_BSERIALIZEDETAIL_HPP
 #define SPIRE_BSERIALIZEDETAIL_HPP
 
+#include <es-log/trace-log.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <string>
 #include <stdexcept>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -48,6 +78,13 @@ bool writeTypeToMemory(char* msg, size_t msgSize, size_t* offset_out, const T& v
   *offset_out += sizeof(T);
 
   return true;
+}
+
+template <typename T>
+inline void writeTypeToMemoryUnsafe(char* msg, size_t& offset_out, const T& v)
+{
+  std::memcpy(msg + offset_out, &v, sizeof(T));
+  offset_out += sizeof(T);
 }
 
 template <typename T>
@@ -193,6 +230,9 @@ public:
 
   static bool write(char* msg, size_t msgSize, size_t* offset_out, const Type& in)
   { return writeTypeToMemory<Type>(msg, msgSize, offset_out, in); }
+
+//  static bool writeUnsafe(char* msg, size_t* offset_out, const Type& in)
+//  { return writeTypeToMemoryUnsafe<Type>(msg, offset_out, in); }
 };
 
 //------------------------------------------------------------------------------
@@ -240,7 +280,7 @@ public:
     if (*offset_out + stringLength + 1 > msgSize)
     {
       throw std::runtime_error("Read passed end of buffer");
-      return NULL;
+      return nullptr;
     }
 
     const char* ret = msg + *offset_out;
@@ -252,7 +292,7 @@ public:
 
   static bool write(char* msg, size_t msgSize, size_t* offset_out, const Type& in)
   {
-    if (in != NULL)
+    if (in != nullptr)
     {
       int32_t stringLength = (int)std::strlen(in);
       SerializeType<int32_t>::write(msg, msgSize, offset_out, stringLength);
@@ -313,4 +353,4 @@ public:
 
 } // namespace spire
 
-#endif 
+#endif

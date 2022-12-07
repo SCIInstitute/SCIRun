@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 /// @brief This module will get the data associated with the nodes or the
 /// elements of a field and put them in a matrix.
@@ -60,8 +60,7 @@ void GetFieldData::execute()
   bool need_nrrd_data = oport_connected(OutputNrrd);
   bool need_complex_matrix_data = oport_connected(OutputComplexMatrix);
 
-  //TODO: need to integrate "output port connection status changed" into needToExecute()
-  if (needToExecute() || need_nrrd_data)
+  if (needToExecute())
   {
     algo().set(Parameters::CalcMatrix, need_matrix_data);
     algo().set(Parameters::CalcNrrd, need_nrrd_data);

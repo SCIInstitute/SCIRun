@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <iostream>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 
 using namespace SCIRun::Gui;
@@ -53,7 +53,7 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(NetworkStatusPtr status
   timingAction_->setToolTip("Click to copy execution times to clipboard");
   timingAction_->setVisible(true);
   timingAction_->setIcon(QPixmap(":/general/Resources/timepiece-512.png"));
-  connect(timingAction_, SIGNAL(triggered()), this, SLOT(displayTimingInfo()));
+  connect(timingAction_, &QAction::triggered, this, &NetworkExecutionProgressBar::displayTimingInfo);
   timingStream_.setRealNumberPrecision(4);
 
   progressBar_->setStyleSheet(parent->styleSheet());
@@ -83,6 +83,7 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
     progressBar_->setValue(0);
   }
 }
+
 void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const std::string& moduleId)
 {
   Guard g(mutex_.get());
@@ -92,12 +93,12 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     counterLabel_->setText(counterLabelString());
     progressBar_->setValue(numModulesDone_);
     totalExecutionTime_ += execTime;
-    auto wallTime = executionTimer_.elapsed();
     //Green - completed modules\n??? - Unexecuted modules\nRed - errored modules\n
-    progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: %2")
-      .arg(totalExecutionTime_).arg(wallTime));
+    progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: TODO")
+      .arg(totalExecutionTime_));// .arg(wallTime));
     timingStream_ << '\t' << moduleId.c_str() << "," << execTime << ',' << totalExecutionTime_
-      << ','  << wallTime << '\n';
+       //      << ','  << wallTime
+      << '\n';
 
     if (numModulesDone_ == totalModules_)
       timingStream_ << "TIMING LOG: " << "execution ended at " << QTime::currentTime().toString("hh:mm:ss.zzz") << '\n';
@@ -109,7 +110,7 @@ void NetworkExecutionProgressBar::resetModulesDone()
   Guard g(mutex_.get());
   numModulesDone_ = 0;
   totalExecutionTime_ = 0;
-  executionTimer_.restart();
+  //executionTimer_.reset();
   counterLabel_->setText(counterLabelString());
   progressBar_->setValue(numModulesDone_);
   progressBar_->setToolTip("");

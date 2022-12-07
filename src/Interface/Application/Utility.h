@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef UTILITY_H
 #define UTILITY_H
@@ -53,8 +53,11 @@ namespace Gui
   using TagNameFunc = std::function<QString(int)>;
 
   QString colorToString(const QColor& color);
+  QColor stringToColor(const QString& s);
 
   QGraphicsEffect* blurEffect(double radius = 2);
+
+  bool allowModificationSignalConnection();
 
   inline QAction* separatorAction(QWidget* parent)
   {
@@ -65,7 +68,8 @@ namespace Gui
 
   inline QAction* disabled(QAction* action)
   {
-    action->setEnabled(false);
+    if (action)
+      action->setEnabled(false);
     return action;
   }
 
@@ -79,9 +83,6 @@ namespace Gui
   QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup, QWidget* parent);
   bool portTypeMatches(const std::string& portTypeToMatch, bool isInput, const Dataflow::Networks::ModuleDescription& module);
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
-
-  const char* addNewModuleActionTypePropertyName();
-  const char* insertNewModuleActionTypePropertyName();
 
   const Qt::GlobalColor CLIPBOARD_COLOR = Qt::cyan;
 
@@ -101,7 +102,7 @@ namespace Gui
     HideGroups = -101
   };
 
-  inline bool validTag(int tag) { return MinTag <= tag && tag <= MaxTag; }
+  inline bool validTag(int tag) { return static_cast<int>(MinTag) <= tag && tag <= static_cast<int>(MaxTag); }
 }
 
 }

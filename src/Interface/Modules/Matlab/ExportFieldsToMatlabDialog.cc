@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Matlab/ExportFieldsToMatlabDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -45,9 +46,9 @@ ExportFieldsToMatlabDialog::ExportFieldsToMatlabDialog(const std::string& name, 
 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  connect(openFileButton_, &QPushButton::clicked, this, &ExportFieldsToMatlabDialog::saveFile);
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &ExportFieldsToMatlabDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &ExportFieldsToMatlabDialog::pushFileNameToState);
 }
 
 void ExportFieldsToMatlabDialog::updateFromPortChange(int, const std::string& portName, DynamicPortChange type)
@@ -57,20 +58,34 @@ void ExportFieldsToMatlabDialog::updateFromPortChange(int, const std::string& po
 
   static const std::string typeName = "Field";
   const int lineEditColumn = 1;
-  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, TableItemMakerMap(), 
+  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, TableItemMakerMap(),
   {
     { 2, [this]() { return makeInputArrayTypeComboBoxItem(); } }
   });
+  pushArrayType();
 }
 
 QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
 {
   QStringList bcList;
-  bcList << "numeric array" << "struct array";
+  bcList << "struct array" << "numeric array";
   auto bcBox = new QComboBox();
   bcBox->addItems(bcList);
-  bcBox->setCurrentIndex(bcBox->findText(QString::fromStdString(toStringVector(state_->getValue(Parameters::FieldFormats).toVector())[tableWidget->rowCount() - 1])));
-  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushArrayType()));
+
+  auto formats = state_->getValue(Parameters::FieldFormats).toVector();
+  if (formats.size() >= tableWidget->rowCount())
+  {
+    bcBox->setCurrentIndex(
+      bcBox->findText(
+        QString::fromStdString(
+          toStringVector(formats)[tableWidget->rowCount() - 1])));
+  }
+  else
+  {
+    bcBox->setCurrentIndex(0);
+  }
+
+  connect(bcBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &ExportFieldsToMatlabDialog::pushArrayType);
   return bcBox;
 }
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -67,7 +66,7 @@ public:
   Tensor(const Tensor&);
   explicit Tensor(int);
   explicit Tensor(double);
-  Tensor(double, double, double, double, double, double);  
+  Tensor(double, double, double, double, double, double);
   explicit Tensor(const Array1<double> &); // 6 values
   explicit Tensor(const std::vector<double> &); // 6 values
   explicit Tensor(const double *); // 6 values
@@ -75,7 +74,7 @@ public:
   Tensor(const Vector&, const Vector&, const Vector&);
   Tensor& operator=(const Tensor&);
   Tensor& operator=(const double&);
-  
+
   bool operator==(const Tensor&) const;
   bool operator!=(const Tensor&) const;
 
@@ -89,7 +88,7 @@ public:
   static std::string type_name(int i = -1);
 
   void build_mat_from_eigens();
-  void build_eigens_from_mat(); 
+  void build_eigens_from_mat();
   void get_eigenvectors(Vector &e1, Vector &e2, Vector &e3);
   const Vector &get_eigenvector1() const { ASSERT(have_eigens_); return e1_; }
   const Vector &get_eigenvector2() const { ASSERT(have_eigens_); return e2_; }
@@ -97,6 +96,9 @@ public:
   void get_eigenvalues(double &l1, double &l2, double &l3);
 
   double norm() const;
+  Vector euclidean_norm() const;
+  void normal();
+  double magnitude();
 
   void set_eigens(const Vector &e1, const Vector &e2, const Vector &e3);
 
@@ -125,7 +127,12 @@ public:
   double val(size_t i, size_t j) const { return mat_[i][j]; }
   double& val(size_t i, size_t j) { return mat_[i][j]; }
 
+  double linearCertainty() const;
+  double planarCertainty() const;
+  double sphericalCertainty() const;
+
 private:
+  double eigenValueSum() const;
   double mat_[3][3];
   Vector e1_, e2_, e3_;  // these are already scaled by the eigenvalues
   double l1_, l2_, l3_;
@@ -154,7 +161,7 @@ inline bool operator>=(const Tensor& t1, const Tensor& t2)
   return(t1.norm()>=t2.norm());
 }
 
-inline 
+inline
 Tensor operator*(double d, const Tensor &t) {
   return t*d;
 }
@@ -189,7 +196,7 @@ Tensor symmetricTensorFromNineElementArray(const Indexable& array)
 SCISHARE const TypeDescription* get_type_description(Tensor*);
     }}
 
-  
+
 
 } // End namespace SCIRun
 

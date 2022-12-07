@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Legacy/Field/ScanlineMesh.h>
 #include <Core/Datatypes/Legacy/Field/VMeshShared.h>
@@ -52,213 +52,213 @@ template<class MESH> class VStructCurveMesh;
 template<class MESH>
 class VScanlineMesh : public VMeshShared<MESH> {
 public:
-  virtual bool is_scanlinemesh()       { return (true); }
+  bool is_scanlinemesh() override { return (true); }
 
   /// constructor and descructor
-  VScanlineMesh(MESH* mesh) : VMeshShared<MESH>(mesh) 
+  VScanlineMesh(MESH* mesh) : VMeshShared<MESH>(mesh)
   {
-    DEBUG_CONSTRUCTOR("VScanlineMesh")   
+    DEBUG_CONSTRUCTOR("VScanlineMesh")
 
     this->ni_ = mesh->ni_;
   }
-  
-  virtual ~VScanlineMesh() 
+
+  virtual ~VScanlineMesh()
   {
-    DEBUG_DESTRUCTOR("VScanlineMesh")     
+    DEBUG_DESTRUCTOR("VScanlineMesh")
   }
 
-  virtual void size(VMesh::Node::size_type& size) const;
-  virtual void size(VMesh::ENode::size_type& size) const;
-  virtual void size(VMesh::Edge::size_type& size) const;
-  virtual void size(VMesh::Elem::size_type& size) const;
-  virtual void size(VMesh::DElem::size_type& size) const;
-  
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
-                         VMesh::Edge::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
-                         VMesh::Elem::index_type i) const;
-  virtual void get_nodes(VMesh::Node::array_type& nodes, 
-                         VMesh::DElem::index_type i) const;
+  void size(VMesh::Node::size_type& size) const override;
+  void size(VMesh::ENode::size_type& size) const override;
+  void size(VMesh::Edge::size_type& size) const override;
+  void size(VMesh::Elem::size_type& size) const override;
+  void size(VMesh::DElem::size_type& size) const override;
 
-  virtual void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Edge::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Elem::index_type i) const;
-  virtual void get_enodes(VMesh::ENode::array_type& edges, 
-                          VMesh::DElem::index_type i) const;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Edge::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::Elem::index_type i) const override;
+  void get_nodes(VMesh::Node::array_type& nodes,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_edges(VMesh::Edge::array_type& edges, 
-                         VMesh::Node::index_type i) const;  
-  virtual void get_edges(VMesh::Edge::array_type& edges, 
-                         VMesh::Elem::index_type i) const;
-  virtual void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::DElem::index_type i) const;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Edge::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::Elem::index_type i) const override;
+  void get_enodes(VMesh::ENode::array_type& edges,
+                          VMesh::DElem::index_type i) const override;
 
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
-                         VMesh::Node::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems, 
-                         VMesh::Edge::index_type i) const;
-  virtual void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::DElem::index_type i) const;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Node::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::Elem::index_type i) const override;
+  void get_edges(VMesh::Edge::array_type& edges,
+                         VMesh::DElem::index_type i) const override;
 
-  virtual void get_delems(VMesh::DElem::array_type& delems, 
-                          VMesh::Node::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems, 
-                          VMesh::Edge::index_type i) const;
-  virtual void get_delems(VMesh::DElem::array_type& delems, 
-                          VMesh::Elem::index_type i) const;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Node::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::Edge::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::DElem::index_type i) const override;
+
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Node::index_type i) const override;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Edge::index_type i) const override;
+  void get_delems(VMesh::DElem::array_type& delems,
+                          VMesh::Elem::index_type i) const override;
 
   /// Get the center of a certain mesh element
-  virtual void get_center(Point &point, VMesh::Node::index_type i) const;
-  virtual void get_center(Point &point, VMesh::ENode::index_type i) const;
-  virtual void get_center(Point &point, VMesh::Edge::index_type i) const;
-  virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
-  virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
+  void get_center(Point &point, VMesh::Node::index_type i) const override;
+  void get_center(Point &point, VMesh::ENode::index_type i) const override;
+  void get_center(Point &point, VMesh::Edge::index_type i) const override;
+  void get_center(Point &point, VMesh::Elem::index_type i) const override;
+  void get_center(Point &point, VMesh::DElem::index_type i) const override;
 
   /// Get the centers of a series of nodes
-  virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
-  virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
-  
-  virtual double get_size(VMesh::Node::index_type i) const;
-  virtual double get_size(VMesh::Edge::index_type i) const;
-  virtual double get_size(VMesh::Elem::index_type i) const;
-  virtual double get_size(VMesh::DElem::index_type i) const;
-                                                    
-  virtual bool locate(VMesh::Node::index_type &i, const Point &point) const;
-  virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const;
-  virtual bool locate(VMesh::Elem::index_type &i, 
-                      VMesh::coords_type& coords, const Point &point) const;
+  void get_centers(Point* points, const VMesh::Node::array_type& array) const override;
+  void get_centers(Point* points, const VMesh::Elem::array_type& array) const override;
 
-  virtual bool get_coords(VMesh::coords_type &coords, 
-                          const Point &point, 
-                          VMesh::Elem::index_type i) const;  
-  virtual void interpolate(Point &p, 
-                           const VMesh::coords_type &coords, 
-                           VMesh::Elem::index_type i) const;
+  double get_size(VMesh::Node::index_type i) const override;
+  double get_size(VMesh::Edge::index_type i) const override;
+  double get_size(VMesh::Elem::index_type i) const override;
+  double get_size(VMesh::DElem::index_type i) const override;
 
-  virtual void minterpolate(std::vector<Point> &p, 
-                            const std::vector<VMesh::coords_type> &coords, 
-                            VMesh::Elem::index_type i) const;
-                            
-  virtual void derivate(VMesh::dpoints_type &p, 
-                        const VMesh::coords_type &coords, 
-                        VMesh::Elem::index_type i) const;
-                        
-  virtual void get_random_point(Point &p,
-				VMesh::Elem::index_type i, 
-                                FieldRNG &rng) const;
+  bool locate(VMesh::Node::index_type &i, const Point &point) const override;
+  bool locate(VMesh::Elem::index_type &i, const Point &point) const override;
+  bool locate(VMesh::Elem::index_type &i,
+                      VMesh::coords_type& coords, const Point &point) const override;
 
-  virtual bool get_neighbor(VMesh::Elem::index_type &neighbor, 
-                            VMesh::Elem::index_type elem, 
-                            VMesh::DElem::index_type delem) const;
-  virtual bool get_neighbors(VMesh::Elem::array_type &elems, 
-                             VMesh::Elem::index_type elem, 
-                             VMesh::DElem::index_type delem) const;
-  virtual void get_neighbors(VMesh::Elem::array_type &elems, 
-                             VMesh::Elem::index_type elem) const;
-  virtual void get_neighbors(VMesh::Node::array_type &nodes, 
-                             VMesh::Node::index_type node) const;
+  bool get_coords(VMesh::coords_type &coords,
+                          const Point &point,
+                          VMesh::Elem::index_type i) const override;
+  void interpolate(Point &p,
+                           const VMesh::coords_type &coords,
+                           VMesh::Elem::index_type i) const override;
 
-  virtual void pwl_approx_edge(VMesh::coords_array_type &coords, 
-                               VMesh::Elem::index_type ci, 
-                               unsigned int which_edge, 
-                               unsigned int div_per_unit) const;
-  virtual void pwl_approx_face(VMesh::coords_array2_type &coords, 
-                               VMesh::Elem::index_type ci, 
-                               unsigned int which_face, 
-                               unsigned int div_per_unit) const;
+  void minterpolate(std::vector<Point> &p,
+                            const std::vector<VMesh::coords_type> &coords,
+                            VMesh::Elem::index_type i) const override;
 
-  virtual double det_jacobian(const VMesh::coords_type& coords,
-                              VMesh::Elem::index_type idx) const; 
+  void derivate(VMesh::dpoints_type &p,
+                        const VMesh::coords_type &coords,
+                        VMesh::Elem::index_type i) const override;
 
-  virtual void jacobian(const VMesh::coords_type& coords,
+  void get_random_point(Point &p,
+				VMesh::Elem::index_type i,
+                                FieldRNG &rng) const override;
+
+  bool get_neighbor(VMesh::Elem::index_type &neighbor,
+                            VMesh::Elem::index_type elem,
+                            VMesh::DElem::index_type delem) const override;
+  bool get_neighbors(VMesh::Elem::array_type &elems,
+                             VMesh::Elem::index_type elem,
+                             VMesh::DElem::index_type delem) const override;
+  void get_neighbors(VMesh::Elem::array_type &elems,
+                             VMesh::Elem::index_type elem) const override;
+  void get_neighbors(VMesh::Node::array_type &nodes,
+                             VMesh::Node::index_type node) const override;
+
+  void pwl_approx_edge(VMesh::coords_array_type &coords,
+                               VMesh::Elem::index_type ci,
+                               unsigned int which_edge,
+                               unsigned int div_per_unit) const override;
+  void pwl_approx_face(VMesh::coords_array2_type &coords,
+                               VMesh::Elem::index_type ci,
+                               unsigned int which_face,
+                               unsigned int div_per_unit) const override;
+
+  double det_jacobian(const VMesh::coords_type& coords,
+                              VMesh::Elem::index_type idx) const override;
+
+  void jacobian(const VMesh::coords_type& coords,
                         VMesh::Elem::index_type idx,
-                        double* J) const; 
+                        double* J) const override;
 
-  virtual double  inverse_jacobian(const VMesh::coords_type& coords,
+  double  inverse_jacobian(const VMesh::coords_type& coords,
                                    VMesh::Elem::index_type idx,
-                                   double* Ji) const;
-                                   
-  virtual double  scaled_jacobian_metric(const VMesh::Elem::index_type) const;
-  virtual double  jacobian_metric(const VMesh::Elem::index_type) const;  
+                                   double* Ji) const override;
 
-  virtual bool find_closest_node(double& pdist,
-                                 Point &result,
-                                 VMesh::Node::index_type& node, 
-                                 const Point &p) const;
+  double  scaled_jacobian_metric(const VMesh::Elem::index_type) const override;
+  double  jacobian_metric(const VMesh::Elem::index_type) const override;
 
-  virtual bool find_closest_node(double& pdist,
+  bool find_closest_node(double& pdist,
                                  Point &result,
-                                 VMesh::Node::index_type& node, 
+                                 VMesh::Node::index_type& node,
+                                 const Point &p) const override;
+
+  bool find_closest_node(double& pdist,
+                                 Point &result,
+                                 VMesh::Node::index_type& node,
                                  const Point &p,
-                                 double maxdist) const;
-  
-  virtual bool find_closest_elem(double& pdist,
+                                 double maxdist) const override;
+
+  bool find_closest_elem(double& pdist,
                                  Point &result,
                                  VMesh::coords_type& coords,
-                                 VMesh::Elem::index_type& elem, 
-                                 const Point &p) const;
+                                 VMesh::Elem::index_type& elem,
+                                 const Point &p) const override;
 
-  virtual bool find_closest_elem(double& pdist,
+  bool find_closest_elem(double& pdist,
                                  Point &result,
                                  VMesh::coords_type& coords,
-                                 VMesh::Elem::index_type& elem, 
+                                 VMesh::Elem::index_type& elem,
                                  const Point &p,
-                                 double maxdist) const;
-                                 
-  virtual bool find_closest_elems(double& pdist,
-                                  Point &result, 
-                                  VMesh::Elem::array_type& elems, 
-                                  const Point &p) const;  
-  
-  virtual void get_dimensions(VMesh::dimension_type& dims);
+                                 double maxdist) const override;
 
-  virtual void get_elem_dimensions(VMesh::dimension_type& dim);  
+  bool find_closest_elems(double& pdist,
+                                  Point &result,
+                                  VMesh::Elem::array_type& elems,
+                                  const Point &p) const override;
 
-  virtual Transform get_transform() const;
-  virtual void set_transform(const Transform& t);
+  void get_dimensions(VMesh::dimension_type& dims) override;
 
-  virtual void get_interpolate_weights(const Point& point, 
+  void get_elem_dimensions(VMesh::dimension_type& dim) override;
+
+  Transform get_transform() const override;
+  void set_transform(const Transform& t) override;
+
+  void get_interpolate_weights(const Point& point,
                                        VMesh::ElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_interpolate_weights(const VMesh::coords_type& coords, 
-                                       VMesh::Elem::index_type elem, 
+  void get_interpolate_weights(const VMesh::coords_type& coords,
+                                       VMesh::Elem::index_type elem,
                                        VMesh::ElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_minterpolate_weights(const std::vector<Point>& point, 
+  void get_minterpolate_weights(const std::vector<Point>& point,
                                        VMesh::MultiElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords, 
-                                        VMesh::Elem::index_type elem, 
+  void get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords,
+                                        VMesh::Elem::index_type elem,
                                         VMesh::MultiElemInterpolate& ei,
-                                        int basis_order) const;
+                                        int basis_order) const override;
 
-  virtual void get_gradient_weights(const Point& point, 
+  void get_gradient_weights(const Point& point,
                                     VMesh::ElemGradient& eg,
-                                    int basis_order) const;
-                                                                                                                                                         
-  virtual void get_gradient_weights(const VMesh::coords_type& coords, 
-                                    VMesh::Elem::index_type elem, 
-                                    VMesh::ElemGradient& eg,
-                                    int basis_order) const;
-                                       
-  virtual void get_mgradient_weights(const std::vector<VMesh::coords_type>& coords, 
-                                     VMesh::Elem::index_type elem, 
-                                     VMesh::MultiElemGradient& eg,
-                                     int basis_order) const;  
+                                    int basis_order) const override;
 
-  virtual void get_mgradient_weights(const std::vector<Point>& point, 
+  void get_gradient_weights(const VMesh::coords_type& coords,
+                                    VMesh::Elem::index_type elem,
+                                    VMesh::ElemGradient& eg,
+                                    int basis_order) const override;
+
+  void get_mgradient_weights(const std::vector<VMesh::coords_type>& coords,
+                                     VMesh::Elem::index_type elem,
                                      VMesh::MultiElemGradient& eg,
-                                     int basis_order) const;  
+                                     int basis_order) const override;
+
+  void get_mgradient_weights(const std::vector<Point>& point,
+                                     VMesh::MultiElemGradient& eg,
+                                     int basis_order) const override;
 
 protected:
 
 
   template <class ARRAY, class INDEX>
-  inline void 
+  inline void
   get_nodes_from_edge(ARRAY &array, INDEX idx) const
   {
     array.resize(2);
@@ -267,7 +267,7 @@ protected:
   }
 
   template <class ARRAY, class INDEX>
-  inline void 
+  inline void
   get_edges_from_node(ARRAY &array,INDEX idx) const
   {
     array.reserve(2);
@@ -283,7 +283,7 @@ protected:
   }
 
   template <class ARRAY, class INDEX>
-  inline void 
+  inline void
   get_nodes_from_elem(ARRAY &array, INDEX idx) const
   {
     get_nodes_from_edge(array,idx);
@@ -296,18 +296,18 @@ protected:
   }
 
   template <class INDEX>
-  inline void 
+  inline void
   to_index(typename MESH::Node::index_type &index, INDEX i) const
     { index = typename MESH::Node::index_type(i); }
 
   template <class INDEX>
-  inline void 
+  inline void
   to_index(typename MESH::Edge::index_type &index, INDEX i) const
     { index = typename MESH::Edge::index_type(i); }
 
 
   template <class INDEX>
-  inline bool 
+  inline bool
   locate_elem(INDEX idx,Point p) const
   {
     if (this->ni_ < 2) return (true);
@@ -320,17 +320,17 @@ protected:
 
     if (ii>nii && (ii-epsilon)<nii) ii=nii-epsilon;
     if (ii<0 && ii>-epsilon) ii=0;
-    
+
     idx = static_cast<index_type>(floor(ii));
 
     if (idx < (this->ni_-1) && idx >= 0) return (true);
 
-    return (false);  
+    return (false);
   }
 
 
   template <class INDEX, class ARRAY>
-  inline bool 
+  inline bool
   locate_elem(INDEX idx, ARRAY coords, Point p) const
   {
     if (this->ni_ < 2) return (true);
@@ -343,7 +343,7 @@ protected:
 
     if (ii>nii && (ii-epsilon)<nii) ii=nii-epsilon;
     if (ii<0 && ii>-epsilon) ii=0;
-    
+
     idx = static_cast<index_type>(floor(ii));
 
     coords.resize(1);
@@ -351,15 +351,15 @@ protected:
 
     if (idx < (this->ni_-1) && idx >= 0) return (true);
 
-    return (false);  
+    return (false);
   }
 
   template <class INDEX>
-  inline bool 
+  inline bool
   locate_node(INDEX idx, Point p) const
   {
     if (this->ni_ == 0) return (false);
-  
+
     const Point r = this->mesh_->transform_.unproject(p);
 
     double rx = floor(r.x() + 0.5);
@@ -374,18 +374,10 @@ protected:
 
   template <class ARRAY, class INDEX>
   inline void
-  inv_jacobian(const ARRAY& coords, INDEX idx, double* Ji) const
+  inv_jacobian(const ARRAY&, INDEX, double* Ji) const
   {
     double* inverse_jacobian = this->mesh_->inverse_jacobian_;
-    Ji[0] = inverse_jacobian[0];
-    Ji[1] = inverse_jacobian[1];
-    Ji[2] = inverse_jacobian[2];
-    Ji[3] = inverse_jacobian[3];
-    Ji[4] = inverse_jacobian[4];
-    Ji[5] = inverse_jacobian[5];
-    Ji[6] = inverse_jacobian[6];
-    Ji[7] = inverse_jacobian[7];
-    Ji[8] = inverse_jacobian[8];
+    std::copy(inverse_jacobian, inverse_jacobian + 9, Ji);
   }
 
 };
@@ -396,9 +388,9 @@ protected:
 /// Currently there are only 3 variations of this mesh available
 /// 1) linear interpolation
 
-/// Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVScanlineMesh(ScanlineMesh<CrvLinearLgn<Point> >* mesh)
 {
   return new VScanlineMesh<ScanlineMesh<CrvLinearLgn<Point> > >(mesh);
@@ -408,7 +400,7 @@ VMesh* CreateVScanlineMesh(ScanlineMesh<CrvLinearLgn<Point> >* mesh)
 static MeshTypeID ScanlineMesh_MeshID1(ScanlineMesh<CrvLinearLgn<Point> >::type_name(-1),
                   ScanlineMesh<CrvLinearLgn<Point> >::mesh_maker,
                   ScanlineMesh<CrvLinearLgn<Point> >::scanline_maker);
-                  
+
 
 
 /// Functions for determining the number of indices that are used
@@ -581,7 +573,7 @@ void
 VScanlineMesh<MESH>::get_center(Point &p, VMesh::Node::index_type idx) const
 {
   typename MESH::Node::index_type i(idx);
-  this->mesh_->get_center(p,i); 
+  this->mesh_->get_center(p,i);
 }
 
 template <class MESH>
@@ -626,8 +618,8 @@ VScanlineMesh<MESH>::get_centers(Point* points, const VMesh::Node::array_type& a
     typename MESH::Node::index_type idx(array[j]);
     this->mesh_->get_center(points[j],idx);
   }
-}                                     
- 
+}
+
 template <class MESH>
 void
 VScanlineMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& array) const
@@ -637,46 +629,46 @@ VScanlineMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& a
     typename MESH::DElem::index_type idx(array[j]);
     this->mesh_->get_center(points[j],idx);
   }
-} 
+}
 
 
 template <class MESH>
-bool 
+bool
 VScanlineMesh<MESH>::locate(VMesh::Node::index_type &i, const Point &point) const
 {
   return(locate_node(i,point));
 }
 
 template <class MESH>
-bool 
+bool
 VScanlineMesh<MESH>::locate(VMesh::Elem::index_type &i, const Point &point) const
 {
   return(locate_elem(i,point));
 }
 
 template <class MESH>
-bool 
-VScanlineMesh<MESH>::locate(VMesh::Elem::index_type &i, 
-                            VMesh::coords_type& coords, 
+bool
+VScanlineMesh<MESH>::locate(VMesh::Elem::index_type &i,
+                            VMesh::coords_type& coords,
                             const Point &point) const
 {
   return(locate_elem(i,coords,point));
 }
 
 template <class MESH>
-bool 
-VScanlineMesh<MESH>::get_coords(VMesh::coords_type &coords, 
-                                const Point &point, 
+bool
+VScanlineMesh<MESH>::get_coords(VMesh::coords_type &coords,
+                                const Point &point,
                                 VMesh::Elem::index_type i) const
 {
   typename MESH::Elem::index_type vi(i);
   return(this->mesh_->get_coords(coords,point,vi));
-}  
-  
+}
+
 template <class MESH>
-void 
-VScanlineMesh<MESH>::interpolate(Point &point, 
-                                 const VMesh::coords_type &coords, 
+void
+VScanlineMesh<MESH>::interpolate(Point &point,
+                                 const VMesh::coords_type &coords,
                                  VMesh::Elem::index_type idx) const
 {
   Point pnt(static_cast<double>(idx)+static_cast<double>(coords[0]),0.0,0.0);
@@ -684,9 +676,9 @@ VScanlineMesh<MESH>::interpolate(Point &point,
 }
 
 template <class MESH>
-void 
-VScanlineMesh<MESH>::minterpolate(std::vector<Point> &point, 
-                                 const std::vector<VMesh::coords_type> &coords, 
+void
+VScanlineMesh<MESH>::minterpolate(std::vector<Point> &point,
+                                 const std::vector<VMesh::coords_type> &coords,
                                  VMesh::Elem::index_type idx) const
 {
   point.resize(coords.size());
@@ -698,9 +690,9 @@ VScanlineMesh<MESH>::minterpolate(std::vector<Point> &point,
 }
 
 template <class MESH>
-void 
-VScanlineMesh<MESH>::derivate(VMesh::dpoints_type &p, 
-                              const VMesh::coords_type &coords, 
+void
+VScanlineMesh<MESH>::derivate(VMesh::dpoints_type &p,
+                              const VMesh::coords_type &coords,
                               VMesh::Elem::index_type i) const
 {
   typename MESH::Elem::index_type vi(i);
@@ -708,9 +700,9 @@ VScanlineMesh<MESH>::derivate(VMesh::dpoints_type &p,
 }
 
 template <class MESH>
-bool 
-VScanlineMesh<MESH>::get_neighbor(VMesh::Elem::index_type &neighbor, 
-                                  VMesh::Elem::index_type from, 
+bool
+VScanlineMesh<MESH>::get_neighbor(VMesh::Elem::index_type &neighbor,
+                                  VMesh::Elem::index_type from,
                                   VMesh::DElem::index_type delem) const
 {
   const VMesh::index_type xidx = static_cast<const VMesh::index_type>(from);
@@ -722,22 +714,22 @@ VScanlineMesh<MESH>::get_neighbor(VMesh::Elem::index_type &neighbor,
     neighbor = VMesh::Elem::index_type(xidx-1);
     return (true);
   }
-  
+
   if (xdelem == xidx+1)
   {
     if (xidx >= this->ni_-2) return (false);
     neighbor = VMesh::Elem::index_type(xidx+1);
-    return (true);  
+    return (true);
   }
-  
+
   return (false);
 }
 
 
 template <class MESH>
-bool 
-VScanlineMesh<MESH>::get_neighbors(VMesh::Elem::array_type &neighbors, 
-                                   VMesh::Elem::index_type from, 
+bool
+VScanlineMesh<MESH>::get_neighbors(VMesh::Elem::array_type &neighbors,
+                                   VMesh::Elem::index_type from,
                                    VMesh::DElem::index_type delem) const
 {
   VMesh::Elem::index_type n;
@@ -748,11 +740,11 @@ VScanlineMesh<MESH>::get_neighbors(VMesh::Elem::array_type &neighbors,
     return (true);
   }
   return (false);
-}                                
+}
 
 template <class MESH>
-void 
-VScanlineMesh<MESH>::get_neighbors(VMesh::Elem::array_type &array, 
+void
+VScanlineMesh<MESH>::get_neighbors(VMesh::Elem::array_type &array,
                                    VMesh::Elem::index_type idx) const
 {
   const VMesh::index_type xidx = static_cast<const VMesh::index_type>(idx);
@@ -760,20 +752,20 @@ VScanlineMesh<MESH>::get_neighbors(VMesh::Elem::array_type &array,
   array.reserve(2);
   array.clear();
   if (xidx > 0) array.push_back(VMesh::Elem::index_type(xidx-1));
-  if (xidx < this->ni_-2) array.push_back(VMesh::Elem::index_type(xidx+1));   
+  if (xidx < this->ni_-2) array.push_back(VMesh::Elem::index_type(xidx+1));
 }
 
 template <class MESH>
-void 
-VScanlineMesh<MESH>::get_neighbors(VMesh::Node::array_type &array, 
+void
+VScanlineMesh<MESH>::get_neighbors(VMesh::Node::array_type &array,
                                    VMesh::Node::index_type idx) const
 {
   const VMesh::index_type xidx = static_cast<const VMesh::index_type>(idx);
- 
+
   array.reserve(2);
   array.clear();
   if (xidx > 0) array.push_back(VMesh::Node::index_type(xidx-1));
-  if (xidx < this->ni_-1) array.push_back(VMesh::Node::index_type(xidx+1));  
+  if (xidx < this->ni_-1) array.push_back(VMesh::Node::index_type(xidx+1));
 }
 
 // WE should prcompute these:
@@ -810,9 +802,9 @@ VScanlineMesh<MESH>::get_size(VMesh::DElem::index_type i) const
 
 
 template <class MESH>
-void 
-VScanlineMesh<MESH>::pwl_approx_edge(VMesh::coords_array_type &coords, 
-                                     VMesh::Elem::index_type /*ci*/, 
+void
+VScanlineMesh<MESH>::pwl_approx_edge(VMesh::coords_array_type &coords,
+                                     VMesh::Elem::index_type /*ci*/,
                                      unsigned int which_edge,
                                      unsigned int div_per_unit) const
 {
@@ -820,9 +812,9 @@ VScanlineMesh<MESH>::pwl_approx_edge(VMesh::coords_array_type &coords,
 }
 
 template <class MESH>
-void 
-VScanlineMesh<MESH>::pwl_approx_face(VMesh::coords_array2_type &coords, 
-                                     VMesh::Elem::index_type /*ci*/, 
+void
+VScanlineMesh<MESH>::pwl_approx_face(VMesh::coords_array2_type &coords,
+                                     VMesh::Elem::index_type /*ci*/,
                                      unsigned int which_face,
                                      unsigned int div_per_unit) const
 {
@@ -830,7 +822,7 @@ VScanlineMesh<MESH>::pwl_approx_face(VMesh::coords_array2_type &coords,
 }
 
 template <class MESH>
-void 
+void
 VScanlineMesh<MESH>::get_random_point(Point &p,
 				      VMesh::Elem::index_type i,
 				      FieldRNG &rng) const
@@ -840,7 +832,7 @@ VScanlineMesh<MESH>::get_random_point(Point &p,
 }
 
 template <class MESH>
-void 
+void
 VScanlineMesh<MESH>::get_dimensions(VMesh::dimension_type& dims)
 {
   dims.resize(1);
@@ -848,7 +840,7 @@ VScanlineMesh<MESH>::get_dimensions(VMesh::dimension_type& dims)
 }
 
 template <class MESH>
-void 
+void
 VScanlineMesh<MESH>::get_elem_dimensions(VMesh::dimension_type& dims)
 {
   dims.resize(1);
@@ -870,8 +862,8 @@ VScanlineMesh<MESH>::set_transform(const Transform& t)
 }
 
 template <class MESH>
-double 
-VScanlineMesh<MESH>::det_jacobian(const VMesh::coords_type& /*coords*/, 
+double
+VScanlineMesh<MESH>::det_jacobian(const VMesh::coords_type& /*coords*/,
                                   VMesh::Elem::index_type /*idx*/) const
 {
   return(this->mesh_->det_jacobian_);
@@ -880,8 +872,8 @@ VScanlineMesh<MESH>::det_jacobian(const VMesh::coords_type& /*coords*/,
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::jacobian(const VMesh::coords_type& /*coords*/, 
-                              VMesh::Elem::index_type /*idx*/, 
+VScanlineMesh<MESH>::jacobian(const VMesh::coords_type& /*coords*/,
+                              VMesh::Elem::index_type /*idx*/,
                               double* J) const
 {
   double* jacobian = this->mesh_->jacobian_;
@@ -900,7 +892,7 @@ VScanlineMesh<MESH>::jacobian(const VMesh::coords_type& /*coords*/,
 template <class MESH>
 double
 VScanlineMesh<MESH>::inverse_jacobian(const VMesh::coords_type& /*coords*/,
-                                      VMesh::Elem::index_type /*idx*/, 
+                                      VMesh::Elem::index_type /*idx*/,
                                       double* Ji) const
 {
   double* inverse_jacobian = this->mesh_->inverse_jacobian_;
@@ -918,14 +910,14 @@ VScanlineMesh<MESH>::inverse_jacobian(const VMesh::coords_type& /*coords*/,
 }
 
 template <class MESH>
-double 
+double
 VScanlineMesh<MESH>::scaled_jacobian_metric(const VMesh::Elem::index_type /*idx*/) const
 {
   return(this->mesh_->scaled_jacobian_);
 }
 
 template <class MESH>
-double 
+double
 VScanlineMesh<MESH>::jacobian_metric(const VMesh::Elem::index_type /*idx*/) const
 {
   return(this->mesh_->det_jacobian_);
@@ -935,7 +927,7 @@ VScanlineMesh<MESH>::jacobian_metric(const VMesh::Elem::index_type /*idx*/) cons
 template <class MESH>
 bool
 VScanlineMesh<MESH>::find_closest_node(double& pdist,
-                                       Point &result, 
+                                       Point &result,
                                        VMesh::Node::index_type& node,
                                        const Point &p) const
 {
@@ -945,7 +937,7 @@ VScanlineMesh<MESH>::find_closest_node(double& pdist,
 template <class MESH>
 bool
 VScanlineMesh<MESH>::find_closest_node(double& pdist,
-                                       Point &result, 
+                                       Point &result,
                                        VMesh::Node::index_type& node,
                                        const Point &p,
                                        double maxdist) const
@@ -954,10 +946,10 @@ VScanlineMesh<MESH>::find_closest_node(double& pdist,
 }
 
 template <class MESH>
-bool 
+bool
 VScanlineMesh<MESH>::find_closest_elem(double& pdist,
                                        Point &result,
-                                       VMesh::coords_type& coords, 
+                                       VMesh::coords_type& coords,
                                        VMesh::Elem::index_type& elem,
                                        const Point &p) const
 {
@@ -965,10 +957,10 @@ VScanlineMesh<MESH>::find_closest_elem(double& pdist,
 }
 
 template <class MESH>
-bool 
+bool
 VScanlineMesh<MESH>::find_closest_elem(double& pdist,
                                        Point &result,
-                                       VMesh::coords_type& coords, 
+                                       VMesh::coords_type& coords,
                                        VMesh::Elem::index_type& elem,
                                        const Point &p,
                                        double maxdist) const
@@ -977,7 +969,7 @@ VScanlineMesh<MESH>::find_closest_elem(double& pdist,
 }
 
 template <class MESH>
-bool 
+bool
 VScanlineMesh<MESH>::find_closest_elems(double& pdist,
                                         Point &result,
                                         VMesh::Elem::array_type &elems,
@@ -990,7 +982,7 @@ VScanlineMesh<MESH>::find_closest_elems(double& pdist,
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_interpolate_weights(const Point& point, 
+VScanlineMesh<MESH>::get_interpolate_weights(const Point& point,
                                              VMesh::ElemInterpolate& ei,
                                              int basis_order) const
 {
@@ -1005,10 +997,10 @@ VScanlineMesh<MESH>::get_interpolate_weights(const Point& point,
   else
   {
     ei.basis_order = basis_order;
-    ei.elem_index  = -1;  
+    ei.elem_index  = -1;
     return;
   }
-    
+
   switch (basis_order)
   {
     case 0:
@@ -1024,7 +1016,7 @@ VScanlineMesh<MESH>::get_interpolate_weights(const Point& point,
       get_nodes_from_elem(ei.node_index,elem);
       get_edges_from_elem(ei.edge_index,elem);
       return;
-    case 3:   
+    case 3:
       ei.weights.resize(this->basis_->num_cubic_weights());
       this->basis_->get_cubic_weights(coords,&(ei.weights[0]));
       get_nodes_from_elem(ei.node_index,elem);
@@ -1037,14 +1029,14 @@ VScanlineMesh<MESH>::get_interpolate_weights(const Point& point,
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords, 
-                                             VMesh::Elem::index_type elem, 
+VScanlineMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords,
+                                             VMesh::Elem::index_type elem,
                                              VMesh::ElemInterpolate& ei,
                                              int basis_order) const
 {
   ei.basis_order = basis_order;
   ei.elem_index = elem;
-  
+
   switch (basis_order)
   {
     case 0:
@@ -1060,7 +1052,7 @@ VScanlineMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords,
       get_nodes_from_elem(ei.node_index,elem);
       get_edges_from_elem(ei.edge_index,elem);
       return;
-    case 3:   
+    case 3:
       ei.weights.resize(this->basis_->num_cubic_weights());
       this->basis_->get_cubic_weights(coords,&(ei.weights[0]));
       get_nodes_from_elem(ei.node_index,elem);
@@ -1069,16 +1061,16 @@ VScanlineMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords,
   }
   ASSERTFAIL("Interpolation of unknown order requested");
 }
-                                       
+
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point, 
+VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
                                               VMesh::MultiElemInterpolate& ei,
                                               int basis_order) const
 {
   ei.resize(point.size());
-  
+
   switch (basis_order)
   {
     case 0:
@@ -1093,8 +1085,8 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
           }
           else
           {
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
       return;
@@ -1102,7 +1094,7 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
       {
         StackVector<double,3> coords;
         typename VMesh::Elem::index_type elem;
-        
+
         for (size_t i=0; i<ei.size();i++)
         {
           ei[i].basis_order = basis_order;
@@ -1116,8 +1108,8 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
           }
           else
           {
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
       return;
@@ -1125,7 +1117,7 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
       {
         StackVector<double,3> coords;
         VMesh::Elem::index_type elem;
-        
+
         for (size_t i=0; i<ei.size();i++)
         {
           ei[i].basis_order = basis_order;
@@ -1140,16 +1132,16 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
           }
           else
           {
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
-      return;    
-    case 3:   
+      return;
+    case 3:
       {
         StackVector<double,3> coords;
         VMesh::Elem::index_type elem;
-        
+
         for (size_t i=0; i<ei.size();i++)
         {
           ei[i].basis_order = basis_order;
@@ -1164,8 +1156,8 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
           }
           else
           {
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
       return;
@@ -1175,19 +1167,19 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords, 
-                                              VMesh::Elem::index_type elem, 
+VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords,
+                                              VMesh::Elem::index_type elem,
                                               VMesh::MultiElemInterpolate& ei,
                                               int basis_order) const
 {
   ei.resize(coords.size());
-  
+
   for (size_t i=0; i<coords.size(); i++)
   {
     ei[i].basis_order = basis_order;
     ei[i].elem_index = elem;
   }
-  
+
   switch (basis_order)
   {
     case 0:
@@ -1209,7 +1201,7 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords_ty
         get_edges_from_elem(ei[i].edge_index,elem);
       }
       return;
-    case 3:   
+    case 3:
       for (size_t i=0; i<coords.size(); i++)
       {
         ei[i].weights.resize(this->basis_->num_cubic_weights());
@@ -1225,8 +1217,8 @@ VScanlineMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords_ty
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords, 
-                                          VMesh::Elem::index_type elem, 
+VScanlineMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
+                                          VMesh::Elem::index_type elem,
                                           VMesh::ElemGradient& eg,
                                           int basis_order) const
 {
@@ -1234,7 +1226,7 @@ VScanlineMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
 
   eg.basis_order = basis_order;
   eg.elem_index = elem;
-    
+
   switch (basis_order)
   {
     case 0:
@@ -1277,7 +1269,7 @@ VScanlineMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_gradient_weights(const Point& point, 
+VScanlineMesh<MESH>::get_gradient_weights(const Point& point,
                                           VMesh::ElemGradient& eg,
                                           int basis_order) const
 {
@@ -1292,10 +1284,10 @@ VScanlineMesh<MESH>::get_gradient_weights(const Point& point,
     eg.elem_index = -1;
     return;
   }
- 
+
   eg.basis_order = basis_order;
   eg.elem_index = elem;
-    
+
   switch (basis_order)
   {
     case 0:
@@ -1336,14 +1328,14 @@ VScanlineMesh<MESH>::get_gradient_weights(const Point& point,
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point, 
+VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
                                            VMesh::MultiElemGradient& eg,
                                            int basis_order) const
 {
   double* inverse_jacobian = this->mesh_->inverse_jacobian_;
 
   eg.resize(point.size());
-  
+
   switch (basis_order)
   {
     case 0:
@@ -1359,7 +1351,7 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
           else
           {
             eg[i].basis_order = basis_order;
-            eg[i].elem_index = -1;        
+            eg[i].elem_index = -1;
           }
         }
       }
@@ -1370,9 +1362,9 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
         StackVector<double,3> coords;
         for (size_t i=0; i< point.size(); i++)
         {
-          eg[i].basis_order = basis_order; 
+          eg[i].basis_order = basis_order;
           if(locate_elem(elem,coords,point[i]))
-          {      
+          {
             eg[i].elem_index = elem;
             eg[i].weights.resize(this->basis_->num_linear_derivate_weights());
             this->basis_->get_linear_derivate_weights(coords,&(eg[i].weights[0]));
@@ -1384,7 +1376,7 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
           }
           else
           {
-            eg[i].elem_index = -1;                
+            eg[i].elem_index = -1;
           }
         }
       }
@@ -1395,9 +1387,9 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
         StackVector<double,3> coords;
         for (size_t i=0; i< point.size(); i++)
         {
-          eg[i].basis_order = basis_order;            
+          eg[i].basis_order = basis_order;
           if(locate_elem(elem,coords,point[i]))
-          { 
+          {
             eg[i].elem_index = elem;
             eg[i].weights.resize(this->basis_->num_quadratic_derivate_weights());
             this->basis_->get_quadratic_derivate_weights(coords,&(eg[i].weights[0]));
@@ -1410,9 +1402,9 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
           }
           else
           {
-            eg[i].elem_index = -1;                
+            eg[i].elem_index = -1;
           }
-          
+
         }
       }
       return;
@@ -1422,9 +1414,9 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
         StackVector<double,3> coords;
         for (size_t i=0; i< point.size(); i++)
         {
-          eg[i].basis_order = basis_order; 
+          eg[i].basis_order = basis_order;
           if(locate_elem(elem,coords,point[i]))
-          {      
+          {
             eg[i].elem_index = elem;
             eg[i].weights.resize(this->basis_->num_cubic_derivate_weights());
             this->basis_->get_cubic_derivate_weights(coords,&(eg[i].weights[0]));
@@ -1437,7 +1429,7 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
           }
           else
           {
-            eg[i].elem_index = -1;                
+            eg[i].elem_index = -1;
           }
         }
       }
@@ -1450,8 +1442,8 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& coords, 
-                                           VMesh::Elem::index_type elem, 
+VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& coords,
+                                           VMesh::Elem::index_type elem,
                                            VMesh::MultiElemGradient& eg,
                                            int basis_order) const
 {
@@ -1463,7 +1455,7 @@ VScanlineMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>
     eg[i].basis_order = basis_order;
     eg[i].elem_index = elem;
   }
-  
+
   switch (basis_order)
   {
     case 0:
@@ -1519,22 +1511,22 @@ template<class MESH>
 class VStructCurveMesh : public VScanlineMesh<MESH> {
 public:
 
-  virtual bool is_scanlinemesh()         { return (false); }
-  virtual bool is_structcurvemesh()      { return (true); }
+  bool is_scanlinemesh() override { return (false); }
+  bool is_structcurvemesh() override { return (true); }
 
   /// constructor and descructor
   VStructCurveMesh(MESH* mesh) :
     VScanlineMesh<MESH>(mesh),
     points_(mesh->get_points())
   {
-    DEBUG_CONSTRUCTOR("VStructCurveMesh") 
+    DEBUG_CONSTRUCTOR("VStructCurveMesh")
   }
-  
+
   virtual ~VStructCurveMesh()
   {
-    DEBUG_DESTRUCTOR("VStructCurveMesh")   
+    DEBUG_DESTRUCTOR("VStructCurveMesh")
   }
-  
+
   friend class ElemData;
 
   class ElemData
@@ -1542,7 +1534,7 @@ public:
   public:
     ElemData(const VStructCurveMesh<MESH>* vmesh,MESH* mesh, VMesh::Elem::index_type idx) :
       index_(idx),
-      points_(mesh->get_points())    
+      points_(mesh->get_points())
     {
       vmesh->get_nodes_from_edge(nodes_,idx);
     }
@@ -1622,135 +1614,135 @@ public:
   };
 
 
-  virtual void get_center(Point &point, VMesh::Node::index_type i) const;
-  virtual void get_center(Point &point, VMesh::ENode::index_type i) const;
-  virtual void get_center(Point &point, VMesh::Edge::index_type i) const;
-  virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
-  virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
+  void get_center(Point &point, VMesh::Node::index_type i) const override;
+  void get_center(Point &point, VMesh::ENode::index_type i) const override;
+  void get_center(Point &point, VMesh::Edge::index_type i) const override;
+  void get_center(Point &point, VMesh::Elem::index_type i) const override;
+  void get_center(Point &point, VMesh::DElem::index_type i) const override;
 
   /// Get the centers of a series of nodes
-  virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
-  virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
-  
-  virtual double get_size(VMesh::Node::index_type i) const;
-  virtual double get_size(VMesh::Edge::index_type i) const;
-  virtual double get_size(VMesh::Elem::index_type i) const;
-  virtual double get_size(VMesh::DElem::index_type i) const;
-  
+  void get_centers(Point* points, const VMesh::Node::array_type& array) const override;
+  void get_centers(Point* points, const VMesh::Elem::array_type& array) const override;
 
-  virtual bool locate(VMesh::Node::index_type &i, const Point &point) const;
-  virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const;
+  double get_size(VMesh::Node::index_type i) const override;
+  double get_size(VMesh::Edge::index_type i) const override;
+  double get_size(VMesh::Elem::index_type i) const override;
+  double get_size(VMesh::DElem::index_type i) const override;
 
-  virtual bool locate(VMesh::Elem::index_type& i,
+
+  bool locate(VMesh::Node::index_type &i, const Point &point) const override;
+  bool locate(VMesh::Elem::index_type &i, const Point &point) const override;
+
+  bool locate(VMesh::Elem::index_type& i,
                       VMesh::coords_type& coords,
-                      const Point& point) const;
+                      const Point& point) const override;
 
-  virtual bool get_coords(VMesh::coords_type &coords, const Point &point, 
-			  VMesh::Elem::index_type i) const;  
-                                              
-  virtual void interpolate(Point &p, 
-                           const VMesh::coords_type &coords, 
-                           VMesh::Elem::index_type i) const;
-                           
-  virtual void minterpolate(std::vector<Point> &p, 
-                            const std::vector<VMesh::coords_type> &coords, 
-                            VMesh::Elem::index_type i) const;
-                                              
-  virtual void derivate(VMesh::dpoints_type &p,
-			const VMesh::coords_type &coords, 
-			VMesh::Elem::index_type i) const;
+  bool get_coords(VMesh::coords_type &coords, const Point &point,
+			  VMesh::Elem::index_type i) const override;
 
-  virtual void set_point(const Point &point, VMesh::Node::index_type i);
-  
-  virtual Point* get_points_pointer() const;
-  
-  virtual void get_random_point(Point &p,
+  void interpolate(Point &p,
+                           const VMesh::coords_type &coords,
+                           VMesh::Elem::index_type i) const override;
+
+  void minterpolate(std::vector<Point> &p,
+                            const std::vector<VMesh::coords_type> &coords,
+                            VMesh::Elem::index_type i) const override;
+
+  void derivate(VMesh::dpoints_type &p,
+			const VMesh::coords_type &coords,
+			VMesh::Elem::index_type i) const override;
+
+  void set_point(const Point &point, VMesh::Node::index_type i) override;
+
+  Point* get_points_pointer() const override;
+
+  void get_random_point(Point &p,
 				VMesh::Elem::index_type i,
-				FieldRNG &rng) const;  
+				FieldRNG &rng) const override;
 
-  virtual double det_jacobian(const VMesh::coords_type& coords,
-                              VMesh::Elem::index_type idx) const; 
+  double det_jacobian(const VMesh::coords_type& coords,
+                              VMesh::Elem::index_type idx) const override;
 
-  virtual void jacobian(const VMesh::coords_type& coords,
+  void jacobian(const VMesh::coords_type& coords,
                         VMesh::Elem::index_type idx,
-                        double* J) const; 
+                        double* J) const override;
 
-  virtual double  inverse_jacobian(const VMesh::coords_type& coords,
+  double  inverse_jacobian(const VMesh::coords_type& coords,
                                    VMesh::Elem::index_type idx,
-                                   double* Ji) const;
+                                   double* Ji) const override;
 
-  virtual double scaled_jacobian_metric(const VMesh::Elem::index_type idx) const;
-  virtual double jacobian_metric(const VMesh::Elem::index_type idx) const;
+  double scaled_jacobian_metric(const VMesh::Elem::index_type idx) const override;
+  double jacobian_metric(const VMesh::Elem::index_type idx) const override;
 
-  virtual void get_interpolate_weights(const Point& point, 
+  void get_interpolate_weights(const Point& point,
                                        VMesh::ElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_interpolate_weights(const VMesh::coords_type& coords, 
-                                       VMesh::Elem::index_type elem, 
+  void get_interpolate_weights(const VMesh::coords_type& coords,
+                                       VMesh::Elem::index_type elem,
                                        VMesh::ElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_minterpolate_weights(const std::vector<Point>& point, 
+  void get_minterpolate_weights(const std::vector<Point>& point,
                                        VMesh::MultiElemInterpolate& ei,
-                                       int basis_order) const;
+                                       int basis_order) const override;
 
-  virtual void get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords, 
-                                        VMesh::Elem::index_type elem, 
+  void get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords,
+                                        VMesh::Elem::index_type elem,
                                         VMesh::MultiElemInterpolate& ei,
-                                        int basis_order) const;
+                                        int basis_order) const override;
 
-  virtual void get_gradient_weights(const Point& point, 
+  void get_gradient_weights(const Point& point,
                                     VMesh::ElemGradient& eg,
-                                    int basis_order) const;
+                                    int basis_order) const override;
 
-  virtual void get_gradient_weights(const VMesh::coords_type& coords, 
-                                    VMesh::Elem::index_type elem, 
+  void get_gradient_weights(const VMesh::coords_type& coords,
+                                    VMesh::Elem::index_type elem,
                                     VMesh::ElemGradient& eg,
-                                    int basis_order) const;
-                                       
-  virtual void get_mgradient_weights(const std::vector<VMesh::coords_type>& coords, 
-                                     VMesh::Elem::index_type elem, 
+                                    int basis_order) const override;
+
+  void get_mgradient_weights(const std::vector<VMesh::coords_type>& coords,
+                                     VMesh::Elem::index_type elem,
                                      VMesh::MultiElemGradient& eg,
-                                     int basis_order) const;  
+                                     int basis_order) const override;
 
-  virtual void get_mgradient_weights(const std::vector<Point>& point, 
+  void get_mgradient_weights(const std::vector<Point>& point,
                                      VMesh::MultiElemGradient& eg,
-                                     int basis_order) const;
-                                     
-  virtual bool find_closest_node(double& pdist,
-                                 Point& result, 
-                                 VMesh::Node::index_type &i, 
-                                 const Point &point) const;
+                                     int basis_order) const override;
 
-  virtual bool find_closest_node(double& pdist,
-                                 Point& result, 
-                                 VMesh::Node::index_type &i, 
-                                 const Point &point,
-                                 double maxdist) const;
-                                 
-  virtual bool find_closest_elem(double& pdist,
-                                 Point& result, 
-                                 VMesh::coords_type& coords,
-                                 VMesh::Elem::index_type &i, 
-                                 const Point &point) const;
+  bool find_closest_node(double& pdist,
+                                 Point& result,
+                                 VMesh::Node::index_type &i,
+                                 const Point &point) const override;
 
-  virtual bool find_closest_elem(double& pdist,
-                                 Point& result, 
-                                 VMesh::coords_type& coords,
-                                 VMesh::Elem::index_type &i, 
+  bool find_closest_node(double& pdist,
+                                 Point& result,
+                                 VMesh::Node::index_type &i,
                                  const Point &point,
-                                 double maxdist) const;
-                                 
-  virtual bool find_closest_elems(double& pdist,
-                                  Point& result, 
-                                  VMesh::Elem::array_type &i, 
-                                  const Point &point) const;                                     
-                                     
+                                 double maxdist) const override;
+
+  bool find_closest_elem(double& pdist,
+                                 Point& result,
+                                 VMesh::coords_type& coords,
+                                 VMesh::Elem::index_type &i,
+                                 const Point &point) const override;
+
+  bool find_closest_elem(double& pdist,
+                                 Point& result,
+                                 VMesh::coords_type& coords,
+                                 VMesh::Elem::index_type &i,
+                                 const Point &point,
+                                 double maxdist) const override;
+
+  bool find_closest_elems(double& pdist,
+                                  Point& result,
+                                  VMesh::Elem::array_type &i,
+                                  const Point &point) const override;
+
 protected:
 
   template <class ARRAY, class INDEX>
-  inline void 
+  inline void
   inv_jacobian(const ARRAY& coords, INDEX idx, double* Ji) const
   {
     this->mesh_->inverse_jacobian(coords, typename MESH::Elem::index_type(idx),Ji);
@@ -1766,9 +1758,9 @@ protected:
 /// Currently there are only 3 variations of this mesh available
 /// 1) linear interpolation
 
-/// Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it
 
-/// Create virtual interface 
+/// Create virtual interface
 VMesh* CreateVStructCurveMesh(StructCurveMesh<CrvLinearLgn<Point> >* mesh)
 {
   return new VStructCurveMesh<StructCurveMesh<CrvLinearLgn<Point> > >(mesh);
@@ -1829,8 +1821,8 @@ VStructCurveMesh<MESH>::get_centers(Point* points, const VMesh::Node::array_type
   {
     points[j] = points_[array[j]];
   }
-}                                     
- 
+}
+
 template <class MESH>
 void
 VStructCurveMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& array) const
@@ -1842,7 +1834,7 @@ VStructCurveMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type
     const Point &p1 = points_[idx+1];
     points[j] = Point(p0+p1)*0.5;
   }
-} 
+}
 
 
 template <class MESH>
@@ -1874,15 +1866,15 @@ VStructCurveMesh<MESH>::get_size(VMesh::DElem::index_type i) const
 }
 
 template <class MESH>
-bool 
-VStructCurveMesh<MESH>::locate(VMesh::Node::index_type &idx, 
+bool
+VStructCurveMesh<MESH>::locate(VMesh::Node::index_type &idx,
                                const Point &point) const
 {
   return(this->mesh_->locate_node(idx,point));
 }
 
 template <class MESH>
-bool 
+bool
 VStructCurveMesh<MESH>::locate(VMesh::Elem::index_type &idx,
                                const Point &point) const
 {
@@ -1890,7 +1882,7 @@ VStructCurveMesh<MESH>::locate(VMesh::Elem::index_type &idx,
 }
 
 template <class MESH>
-bool 
+bool
 VStructCurveMesh<MESH>::locate(VMesh::Elem::index_type &idx,
                                VMesh::coords_type& coords,
                                const Point &point) const
@@ -1899,83 +1891,83 @@ VStructCurveMesh<MESH>::locate(VMesh::Elem::index_type &idx,
 }
 
 template <class MESH>
-bool 
+bool
 VStructCurveMesh<MESH>::find_closest_node(double& pdist,
                                           Point& result,
-                                          VMesh::Node::index_type &i, 
+                                          VMesh::Node::index_type &i,
                                           const Point &point) const
 {
   return(this->mesh_->find_closest_node(pdist,result,i,point,-1.0));
-} 
+}
 
 template <class MESH>
-bool 
+bool
 VStructCurveMesh<MESH>::find_closest_node(double& pdist,
                                           Point& result,
-                                          VMesh::Node::index_type &i, 
+                                          VMesh::Node::index_type &i,
                                           const Point &point,
                                           double maxdist) const
 {
   return(this->mesh_->find_closest_node(pdist,result,i,point,maxdist));
-} 
+}
 
 template <class MESH>
 bool
 VStructCurveMesh<MESH>::find_closest_elem(double& pdist,
                                           Point& result,
                                           VMesh::coords_type& coords,
-                                          VMesh::Elem::index_type &i, 
+                                          VMesh::Elem::index_type &i,
                                           const Point &point) const
 {
   return(this->mesh_->find_closest_elem(pdist,result,coords,i,point,-1.0));
-} 
+}
 
 template <class MESH>
 bool
 VStructCurveMesh<MESH>::find_closest_elem(double& pdist,
                                           Point& result,
                                           VMesh::coords_type& coords,
-                                          VMesh::Elem::index_type &i, 
+                                          VMesh::Elem::index_type &i,
                                           const Point &point,
                                           double maxdist) const
 {
   return(this->mesh_->find_closest_elem(pdist,result,coords,i,point,maxdist));
-} 
+}
 
 template <class MESH>
-bool 
+bool
 VStructCurveMesh<MESH>::find_closest_elems(double& pdist,
                                            Point& result,
-                                           VMesh::Elem::array_type &i, 
+                                           VMesh::Elem::array_type &i,
                                            const Point &point) const
 {
   return(this->mesh_->find_closest_elems(pdist,result,i,point));
-} 
+}
 
 
 
 template <class MESH>
-bool 
-VStructCurveMesh<MESH>::get_coords(VMesh::coords_type &coords, 
-                                   const Point &point, 
+bool
+VStructCurveMesh<MESH>::get_coords(VMesh::coords_type &coords,
+                                   const Point &point,
                                    VMesh::Elem::index_type idx) const
 {
   return(this->mesh_->get_coords(coords,point,idx));
-}  
-  
+}
+
 template <class MESH>
-void 
-VStructCurveMesh<MESH>::interpolate(Point &point, 
-                                    const VMesh::coords_type &coords, 
+void
+VStructCurveMesh<MESH>::interpolate(Point &point,
+                                    const VMesh::coords_type &coords,
                                     VMesh::Elem::index_type i) const
 {
 	this->mesh_->interpolate(point,coords,typename MESH::Elem::index_type(i));
 }
 
 template <class MESH>
-void 
-VStructCurveMesh<MESH>::minterpolate(std::vector<Point> &point, 
-                                     const std::vector<VMesh::coords_type> &coords, 
+void
+VStructCurveMesh<MESH>::minterpolate(std::vector<Point> &point,
+                                     const std::vector<VMesh::coords_type> &coords,
                                      VMesh::Elem::index_type i) const
 {
   point.resize(coords.size());
@@ -1986,9 +1978,9 @@ VStructCurveMesh<MESH>::minterpolate(std::vector<Point> &point,
 }
 
 template <class MESH>
-void 
-VStructCurveMesh<MESH>::derivate(VMesh::dpoints_type &p, 
-                                 const VMesh::coords_type &coords, 
+void
+VStructCurveMesh<MESH>::derivate(VMesh::dpoints_type &p,
+                                 const VMesh::coords_type &coords,
                                  VMesh::Elem::index_type i) const
 {
   this->mesh_->derivate(coords,typename MESH::Elem::index_type(i),p);
@@ -1996,7 +1988,7 @@ VStructCurveMesh<MESH>::derivate(VMesh::dpoints_type &p,
 
 
 template <class MESH>
-void 
+void
 VStructCurveMesh<MESH>::set_point(const Point &point, VMesh::Node::index_type i)
 {
   points_[i] = point;
@@ -2007,13 +1999,13 @@ Point*
 VStructCurveMesh<MESH>::
 get_points_pointer() const
 {
-  if (points_.size() == 0) return (0);
+  if (points_.size() == 0) return (nullptr);
   return (&(points_[0]));
 }
 
 
 template <class MESH>
-void 
+void
 VStructCurveMesh<MESH>::get_random_point(Point &p,
 					 VMesh::Elem::index_type i,
 					 FieldRNG &rng) const
@@ -2024,7 +2016,7 @@ VStructCurveMesh<MESH>::get_random_point(Point &p,
 
 
 template <class MESH>
-double 
+double
 VStructCurveMesh<MESH>::det_jacobian(const VMesh::coords_type& coords,
                                      VMesh::Elem::index_type idx) const
 {
@@ -2036,7 +2028,7 @@ VStructCurveMesh<MESH>::det_jacobian(const VMesh::coords_type& coords,
 template <class MESH>
 void
 VStructCurveMesh<MESH>::jacobian(const VMesh::coords_type& coords,
-                                 VMesh::Elem::index_type idx, 
+                                 VMesh::Elem::index_type idx,
                                  double* J) const
 {
   this->mesh_->jacobian(coords,
@@ -2047,7 +2039,7 @@ VStructCurveMesh<MESH>::jacobian(const VMesh::coords_type& coords,
 template <class MESH>
 double
 VStructCurveMesh<MESH>::inverse_jacobian(const VMesh::coords_type& coords,
-                                         VMesh::Elem::index_type idx, 
+                                         VMesh::Elem::index_type idx,
                                          double* Ji) const
 {
   return(this->mesh_->inverse_jacobian(coords,
@@ -2056,7 +2048,7 @@ VStructCurveMesh<MESH>::inverse_jacobian(const VMesh::coords_type& coords,
 
 
 template <class MESH>
-double 
+double
 VStructCurveMesh<MESH>::scaled_jacobian_metric(const VMesh::Elem::index_type idx) const
 {
   StackVector<Point,3> Jv;
@@ -2064,18 +2056,18 @@ VStructCurveMesh<MESH>::scaled_jacobian_metric(const VMesh::Elem::index_type idx
 
   double temp;
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
-  Jv.resize(3); 
+  Jv.resize(3);
   Vector v,w;
   Vector(Jv[0]).find_orthogonal(v,w);
   Jv[1] = v.asPoint();
   Jv[2] = w.asPoint();
   double min_jacobian = ScaledDetMatrix3P(Jv);
-  
+
   size_t num_vertices = this->basis_->number_of_vertices();
   for (size_t j=0;j < num_vertices;j++)
   {
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
-    Jv.resize(3); 
+    Jv.resize(3);
     Vector v,w;
     Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
@@ -2083,12 +2075,12 @@ VStructCurveMesh<MESH>::scaled_jacobian_metric(const VMesh::Elem::index_type idx
     temp = ScaledDetMatrix3P(Jv);
     if(temp < min_jacobian) min_jacobian = temp;
   }
-    
+
   return (min_jacobian);
 }
 
 template <class MESH>
-double 
+double
 VStructCurveMesh<MESH>::jacobian_metric(const  VMesh::Elem::index_type idx) const
 {
   StackVector<Point,3> Jv;
@@ -2096,18 +2088,18 @@ VStructCurveMesh<MESH>::jacobian_metric(const  VMesh::Elem::index_type idx) cons
 
   double temp;
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
-  Jv.resize(3); 
+  Jv.resize(3);
   Vector v,w;
   Vector(Jv[0]).find_orthogonal(v,w);
   Jv[1] = v.asPoint();
   Jv[2] = w.asPoint();
   double min_jacobian = DetMatrix3P(Jv);
-  
+
   size_t num_vertices = this->basis_->number_of_vertices();
   for (size_t j=0;j < num_vertices;j++)
   {
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
-    Jv.resize(3); 
+    Jv.resize(3);
     Vector v,w;
     Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
@@ -2115,7 +2107,7 @@ VStructCurveMesh<MESH>::jacobian_metric(const  VMesh::Elem::index_type idx) cons
     temp = DetMatrix3P(Jv);
     if(temp < min_jacobian) min_jacobian = temp;
   }
-    
+
   return (min_jacobian);
 }
 
@@ -2123,12 +2115,12 @@ VStructCurveMesh<MESH>::jacobian_metric(const  VMesh::Elem::index_type idx) cons
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_interpolate_weights(const Point& point, 
+VStructCurveMesh<MESH>::get_interpolate_weights(const Point& point,
                                                  VMesh::ElemInterpolate& ei,
                                                  int basis_order) const
 {
   VMesh::Elem::index_type elem;
-  
+
   if(this->mesh_->locate_elem(elem,point))
   {
     ei.basis_order = basis_order;
@@ -2136,13 +2128,13 @@ VStructCurveMesh<MESH>::get_interpolate_weights(const Point& point,
   }
   else
   {
-    ei.elem_index  = -1;  
+    ei.elem_index  = -1;
     return;
   }
-  
+
   StackVector<double,3> coords;
   this->mesh_->get_coords(coords,point,elem);
-  
+
   switch (basis_order)
   {
     case 0:
@@ -2158,7 +2150,7 @@ VStructCurveMesh<MESH>::get_interpolate_weights(const Point& point,
       this->get_nodes_from_elem(ei.node_index,elem);
       this->get_edges_from_elem(ei.edge_index,elem);
       return;
-    case 3:   
+    case 3:
       ei.weights.resize(this->basis_->num_cubic_weights());
       this->basis_->get_cubic_weights(coords,&(ei.weights[0]));
       this->get_nodes_from_elem(ei.node_index,elem);
@@ -2170,14 +2162,14 @@ VStructCurveMesh<MESH>::get_interpolate_weights(const Point& point,
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords, 
-                                                 VMesh::Elem::index_type elem, 
+VStructCurveMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords,
+                                                 VMesh::Elem::index_type elem,
                                                  VMesh::ElemInterpolate& ei,
                                                  int basis_order) const
 {
   ei.basis_order = basis_order;
   ei.elem_index = elem;
-  
+
   switch (basis_order)
   {
     case 0:
@@ -2193,7 +2185,7 @@ VStructCurveMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords
       this->get_nodes_from_elem(ei.node_index,elem);
       this->get_edges_from_elem(ei.edge_index,elem);
       return;
-    case 3:   
+    case 3:
       ei.weights.resize(this->basis_->num_cubic_weights());
       this->basis_->get_cubic_weights(coords,&(ei.weights[0]));
       this->get_nodes_from_elem(ei.node_index,elem);
@@ -2202,16 +2194,16 @@ VStructCurveMesh<MESH>::get_interpolate_weights(const VMesh::coords_type& coords
   }
   ASSERTFAIL("Interpolation of unknown order requested");
 }
-                                                     
+
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point, 
+VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point,
                                                   VMesh::MultiElemInterpolate& ei,
                                                   int basis_order) const
 {
   ei.resize(point.size());
-  
+
   switch (basis_order)
   {
     case 0:
@@ -2227,8 +2219,8 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point
           else
           {
             ei[i].basis_order = basis_order;
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
       return;
@@ -2236,7 +2228,7 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point
       {
         StackVector<double,3> coords;
         VMesh::Elem::index_type elem;
-        
+
         for (size_t i=0; i<ei.size();i++)
         {
           ei[i].basis_order = basis_order;
@@ -2250,8 +2242,8 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point
           }
           else
           {
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
       return;
@@ -2259,7 +2251,7 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point
       {
         StackVector<double,3> coords;
         VMesh::Elem::index_type elem;
-        
+
         for (size_t i=0; i<ei.size();i++)
         {
           ei[i].basis_order = basis_order;
@@ -2274,16 +2266,16 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point
           }
           else
           {
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
-      return;    
-    case 3:   
+      return;
+    case 3:
       {
         StackVector<double,3> coords;
         VMesh::Elem::index_type elem;
-        
+
         for (size_t i=0; i<ei.size();i++)
         {
           ei[i].basis_order = basis_order;
@@ -2298,8 +2290,8 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point
           }
           else
           {
-            ei[i].elem_index  = -1;  
-          }      
+            ei[i].elem_index  = -1;
+          }
         }
       }
       return;
@@ -2309,19 +2301,19 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<Point>& point
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords, 
-                                                 VMesh::Elem::index_type elem, 
+VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords_type>& coords,
+                                                 VMesh::Elem::index_type elem,
                                                  VMesh::MultiElemInterpolate& ei,
                                                  int basis_order) const
 {
   ei.resize(coords.size());
-  
+
   for (size_t i=0; i<coords.size(); i++)
   {
     ei[i].basis_order = basis_order;
     ei[i].elem_index = elem;
   }
-  
+
   switch (basis_order)
   {
     case 0:
@@ -2343,7 +2335,7 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords
         this->get_edges_from_elem(ei[i].edge_index,elem);
       }
       return;
-    case 3:   
+    case 3:
       for (size_t i=0; i<coords.size(); i++)
       {
         ei[i].weights.resize(this->basis_->num_cubic_weights());
@@ -2359,14 +2351,14 @@ VStructCurveMesh<MESH>::get_minterpolate_weights(const std::vector<VMesh::coords
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords, 
-                                             VMesh::Elem::index_type elem, 
+VStructCurveMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
+                                             VMesh::Elem::index_type elem,
                                              VMesh::ElemGradient& eg,
                                              int basis_order) const
 {
   eg.basis_order = basis_order;
   eg.elem_index = elem;
-    
+
   switch (basis_order)
   {
     case 0:
@@ -2409,7 +2401,7 @@ VStructCurveMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_gradient_weights(const Point& point, 
+VStructCurveMesh<MESH>::get_gradient_weights(const Point& point,
                                              VMesh::ElemGradient& eg,
                                              int basis_order) const
 {
@@ -2422,11 +2414,11 @@ VStructCurveMesh<MESH>::get_gradient_weights(const Point& point,
     eg.elem_index = -1;
     return;
   }
-  
+
   this->mesh_->get_coords(coords,point,elem);
   eg.basis_order = basis_order;
   eg.elem_index = elem;
-    
+
   switch (basis_order)
   {
     case 0:
@@ -2467,12 +2459,12 @@ VStructCurveMesh<MESH>::get_gradient_weights(const Point& point,
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point, 
+VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
                                               VMesh::MultiElemGradient& eg,
                                               int basis_order) const
 {
   eg.resize(point.size());
-  
+
   switch (basis_order)
   {
     case 0:
@@ -2488,7 +2480,7 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
           else
           {
             eg[i].basis_order = basis_order;
-            eg[i].elem_index = -1;        
+            eg[i].elem_index = -1;
           }
         }
       }
@@ -2499,9 +2491,9 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
         StackVector<double,3> coords;
         for (size_t i=0; i< point.size(); i++)
         {
-          eg[i].basis_order = basis_order;            
+          eg[i].basis_order = basis_order;
           if(this->mesh_->locate_elem(elem,point[i]))
-          {      
+          {
             eg[i].elem_index = elem;
             this->mesh_->get_coords(coords,point[i],elem);
             eg[i].weights.resize(this->basis_->num_linear_derivate_weights());
@@ -2525,9 +2517,9 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
         StackVector<double,3> coords;
         for (size_t i=0; i< point.size(); i++)
         {
-          eg[i].basis_order = basis_order;            
+          eg[i].basis_order = basis_order;
           if(this->mesh_->locate_elem(elem,point[i]))
-          {      
+          {
             eg[i].elem_index = elem;
             this->mesh_->get_coords(coords,point[i],elem);
             eg[i].weights.resize(this->basis_->num_quadratic_derivate_weights());
@@ -2543,7 +2535,7 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
           {
             eg[i].elem_index = -1;
           }
-          
+
         }
       }
       return;
@@ -2553,9 +2545,9 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
         StackVector<double,3> coords;
         for (size_t i=0; i< point.size(); i++)
         {
-          eg[i].basis_order = basis_order;            
+          eg[i].basis_order = basis_order;
           if(this->mesh_->locate_elem(elem,point[i]))
-          {      
+          {
             eg[i].elem_index = elem;
             this->mesh_->get_coords(coords,point[i],elem);
             eg[i].weights.resize(this->basis_->num_cubic_derivate_weights());
@@ -2582,8 +2574,8 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& coords, 
-                                              VMesh::Elem::index_type elem, 
+VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& coords,
+                                              VMesh::Elem::index_type elem,
                                               VMesh::MultiElemGradient& eg,
                                               int basis_order) const
 {
@@ -2593,7 +2585,7 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_ty
     eg[i].basis_order = basis_order;
     eg[i].elem_index = elem;
   }
-  
+
   switch (basis_order)
   {
     case 0:
@@ -2644,4 +2636,3 @@ VStructCurveMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_ty
 
 } // namespace
 #endif
-

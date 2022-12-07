@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/Fields/ScaleFieldMeshAndData.cc
 
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
@@ -70,13 +71,13 @@ void ScaleFieldMeshAndData::execute()
   {
     if (dataScale && *dataScale)
     {
-      double scale = (*dataScale)->value();
+      double scale = (*dataScale)->toDouble();
       get_state()->setValue(Parameters::data_scale, scale);
     }
 
     if (geomScale && *geomScale)
     {
-      double scale = (*geomScale)->value();
+      double scale = (*geomScale)->toDouble();
       get_state()->setValue(Parameters::mesh_scale, scale);
     }
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
+
+#include <Interface/qt_include.h>
 #include <iostream>
 #include <Interface/Application/NoteEditor.h>
 
@@ -39,31 +39,26 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
   setWindowTitle("Note for " + moduleName);
   setVisible(false);
 
-  connect(chooseColorButton_, SIGNAL(clicked()), this, SLOT(changeTextColor()));
-  connect(resetColorButton_, SIGNAL(clicked()), this, SLOT(resetTextColor()));
+  connect(chooseColorButton_, &QPushButton::clicked, this, &NoteEditor::changeTextColor);
+  connect(resetColorButton_, &QPushButton::clicked, this, &NoteEditor::resetTextColor);
   if (positionAdjustable)
-    connect(positionComboBox_, SIGNAL(activated(int)), this, SLOT(changeNotePosition(int)));
+    connect(positionComboBox_, qOverload<int>(&QComboBox::activated), this, &NoteEditor::changeNotePosition);
   else
   {
     positionComboBox_->setVisible(false);
     positionLabel_->setVisible(false);
   }
-  connect(fontSizeComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeFontSize(const QString&)));
-  //TODO: sloppy.
-  //connect(alignmentComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeTextAlignment(const QString&)));
+  connect(fontSizeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &NoteEditor::changeFontSize);
 
-  connect(textEdit_, SIGNAL(textChanged()), this, SLOT(updateNote()));
+  connect(textEdit_, &QTextEdit::textChanged, this, &NoteEditor::updateNote);
 
-  connect(buttonBox_->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(resetText()));
-  connect(buttonBox_->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(ok()));
-  connect(buttonBox_->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(cancel()));
-
-  label_2->setHidden(true);
-  alignmentComboBox_->setHidden(true);
+  connect(buttonBox_->button(QDialogButtonBox::Reset), &QPushButton::clicked, this, &NoteEditor::resetText);
+  connect(buttonBox_->button(QDialogButtonBox::Ok), &QPushButton::clicked, this, &NoteEditor::ok);
+  connect(buttonBox_->button(QDialogButtonBox::Cancel), &QPushButton::clicked, this, &NoteEditor::cancel);
 
   //TODO: settable notes
   previousColor_ = Qt::white;
-  position_ = Default;
+  position_ = NotePosition::Default;
 }
 
 void NoteEditor::changeNotePosition(int index)
@@ -101,8 +96,9 @@ void NoteEditor::changeTextAlignment(const QString& text)
 
 void NoteEditor::changeTextColor()
 {
-  auto newColor = QColorDialog::getColor(previousColor_, this, "Choose text color");
-  setNoteColor(newColor);
+  previousColor_ = currentColor_;
+  currentColor_ = QColorDialog::getColor(currentColor_, this, "Choose text color");
+  setNoteColor(currentColor_);
 }
 
 void NoteEditor::setNoteHtml(const QString& text)
@@ -153,6 +149,10 @@ void NoteEditor::setNoteColor(const QColor& color)
     textEdit_->setPlainText(textEdit_->toPlainText());
     updateNote();
   }
+  else
+  {
+    currentColor_ = previousColor_;
+  }
 }
 
 void NoteEditor::resetText()
@@ -165,7 +165,7 @@ void NoteEditor::resetTextColor()
   auto oldColor = textEdit_->textColor();
   textEdit_->setTextColor(previousColor_);
   textEdit_->setPlainText(textEdit_->toPlainText());
-  previousColor_ = oldColor;
+  previousColor_ = currentColor_ = oldColor;
 }
 
 void NoteEditor::ok()

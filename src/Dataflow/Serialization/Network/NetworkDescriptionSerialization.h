@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Dataflow/Serialization/Network/NetworkDescriptionSerialization.h
 
+/// @todo Documentation Dataflow/Serialization/Network/NetworkDescriptionSerialization.h
 
 #ifndef CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H
 #define CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H
@@ -50,11 +49,12 @@ namespace Networks {
   {
     ModuleLookupInfoXML module;
     State::SimpleMapModuleStateXML state;
-    ModuleWithState(const ModuleLookupInfoXML& m = ModuleLookupInfoXML(), const State::SimpleMapModuleStateXML& s = State::SimpleMapModuleStateXML()) : module(m), state(s) {}
+    ModuleWithState(const ModuleLookupInfoXML& m = ModuleLookupInfoXML(),
+      const State::SimpleMapModuleStateXML& s = State::SimpleMapModuleStateXML()) : module(m), state(s) {}
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(module);
       ar & BOOST_SERIALIZATION_NVP(state);
@@ -71,7 +71,7 @@ namespace Networks {
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(noteHTML);
       ar & BOOST_SERIALIZATION_NVP(noteText);
@@ -121,10 +121,11 @@ namespace Networks {
   public:
     ModuleMapXML modules;
     ConnectionsXML connections;
+    NetworkSerializationInterfaceHandle data() const;
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(modules);
       ar & BOOST_SERIALIZATION_NVP(connections);
@@ -180,7 +181,7 @@ namespace Networks {
   private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
+    void serialize(Archive& ar, const unsigned int /*version*/)
     {
       ar & BOOST_SERIALIZATION_NVP(networks);
     }

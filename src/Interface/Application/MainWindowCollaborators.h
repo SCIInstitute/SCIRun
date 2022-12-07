@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 #define INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 
 #ifndef Q_MOC_RUN
-#include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
@@ -38,8 +37,6 @@
 #include <Interface/Application/NetworkEditor.h>  //TODO
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #endif
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDir>
 #include <QLineEdit>
@@ -57,38 +54,27 @@ namespace Gui {
   class SCIRunMainWindow;
   class ModuleDialogGeneric;
 
-  class TextEditAppender :
-    //public Core::Logging::LegacyLoggerInterface,
-    public Core::Logging::LogAppenderStrategy
+  class TextEditAppender : public Core::Logging::LogAppenderStrategy
   {
   public:
-    explicit TextEditAppender(QTextEdit* text, bool regressionMode = false) :
-      text_(text), regressionMode_(regressionMode) {}
-
+    explicit TextEditAppender(QTextEdit* text) : text_(text) {}
     void log(const QString& message) const;
-    //
-    // void error(const std::string& msg) const override;
-    // void warning(const std::string& msg) const override;
-    // void remark(const std::string& msg) const override;
-    // void status(const std::string& msg) const override;
-
-    virtual void log4(const std::string& message) const override;
+    void log4(const std::string& message) const override;
   private:
     QTextEdit* text_;
     mutable QMutex mutex_;
-    bool regressionMode_;
   };
 
-  class TreeViewModuleGetter : public CurrentModuleSelection
+  class TreeViewActiveModuleItem : public CurrentModuleSelection
   {
   public:
-    explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
+    void setActiveTree(QTreeWidget* tree) override { activeTree_ = tree; }
     QString text() const override;
     QString clipboardXML() const override;
     bool isModule() const override;
     bool isClipboardXML() const override;
   private:
-    QTreeWidget& tree_;
+    QTreeWidget* activeTree_ {nullptr};
   };
 
   class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
@@ -109,7 +95,7 @@ namespace Gui {
   {
     Q_OBJECT
 
-    CORE_SINGLETON( WidgetDisablingService );
+    CORE_SINGLETON( WidgetDisablingService )
 
   private:
     WidgetDisablingService() {}
@@ -201,8 +187,57 @@ namespace Gui {
     QWizardPage* createConnectionChoicePage();
     QWizardPage* createDocPage();
     QWizardPage* createOtherSettingsPage();
+    QLineEdit* pathWidget_{};
+    bool showPrefs_{ false };
+  };
+
+  class PythonWizard : public QWizard
+  {
+    Q_OBJECT
+  public:
+    enum {  Page_Home, Page_Create_Intro, Page_Save, Page_LatVol, Page_MeshBox, Page_Connection,
+            Page_CalcData, Page_Iso, Page_ShowField, Page_ViewScene, Page_Execute,
+            Page_Load_Intro, Page_Load,
+            Page_Wand_Intro, Page_Wand,
+            Page_Int_Intro, Page_Base, Page_IntPy, Page_SetPy};
+    explicit PythonWizard(std:: function<void(const QString&)> display, QWidget* parent);
+    ~PythonWizard();
+  public Q_SLOTS:
+    void setShowPrefs(int state);
+  private Q_SLOTS:
+    void updatePathLabel(const QString& dir);
+    void showPrefs();
+    void customClicked(int which);
+    void switchPage(QAbstractButton* button);
+
+
+  private:
+    QWizardPage* createIntroPage();
+    QWizardPage* createCreateIntroPage();
+    QWizardPage* createSaveNetworkPage();
+    QWizardPage* createLatVolPage();
+    QWizardPage* createEditMeshBoundingBoxPage();
+    QWizardPage* createConnectionPage();
+    QWizardPage* createCalculateFieldDataPage();
+    QWizardPage* createExtractIsosurfacePage();
+    QWizardPage* createShowFieldPage();
+    QWizardPage* createViewScenePage();
+    QWizardPage* createExecutePage();
+
+    QWizardPage* createLoadingNetworkIntroPage();
+    QWizardPage* createLoadNetworkPage();
+
+    QWizardPage* createWandIntroPage();
+    QWizardPage* createWandPage();
+
+    QWizardPage* createInterfaceIntroPage();
+    QWizardPage* createBaseNetworkPage();
+    QWizardPage* createAddIntPyPage();
+    QWizardPage* createSetPythonPage();
+
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
+    std::function<void(const QString&)> displayPython_;
   };
 
   struct ToolkitInfo
@@ -213,7 +248,7 @@ namespace Gui {
 
     QString iconUrl, zipUrl, filename;
 
-    void setupAction(QAction* action, QObject* window) const;
+    void setupAction(QAction* action, SCIRunMainWindow* window) const;
   };
 
   class NetworkStatusImpl : public NetworkStatus
@@ -256,6 +291,19 @@ namespace Gui {
   };
 
   QString networkBackgroundImage();
+  QString standardNetworkBackgroundImage();
+
+  //TODO: global function replacements for SCIRunMainWindow access. extract into new file/namespace
+  QString scirunStylesheet();
+  QMainWindow* mainWindowWidget();
+
+  class SCIRunGuiRunner
+  {
+  public:
+    explicit SCIRunGuiRunner(QApplication& app);
+    int returnCode();
+    static void reportIssue();
+  };
 }
 }
 #endif

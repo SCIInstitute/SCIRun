@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_MATH_EVALUATELINEARALGEBRAGENERAL_H
 #define MODULES_LEGACY_MATH_EVALUATELINEARALGEBRAGENERAL_H
 
@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         EvaluateLinearAlgebraGeneral();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         INPUT_PORT(0, i1, Matrix);
         INPUT_PORT(1, i2, Matrix);
         INPUT_PORT(2, i3, Matrix);
@@ -55,7 +55,7 @@ namespace SCIRun {
         OUTPUT_PORT(3, o4, Matrix);
         OUTPUT_PORT(4, o5, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 }}}
 

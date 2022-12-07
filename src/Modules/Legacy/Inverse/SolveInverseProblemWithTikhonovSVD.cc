@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File       : SolveInverseProblemWithTikhonovSVD.cc
-//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
-//    Date       : September 06th, 2017 (last update)
+
+///  File       : SolveInverseProblemWithTikhonovSVD.cc
+///  Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+///  Date       : September 06th, 2017 (last update)
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
@@ -36,7 +36,6 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
-// #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -135,15 +134,17 @@ void SolveInverseProblemWithTikhonovSVD::execute()
     auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
     auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
     auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
-    
+
     auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
-    
+
     if (regularization_method== "lcurve")
     {
-      auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+			LCurvePlot helper;
+      auto str = helper.update_lcurve_gui(id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
       state->setTransientValue("LambdaCurveInfo", str);
+      state->setTransientValue("LambdaCurve", lambda_array);
+			state->setTransientValue("LambdaCornerPlot", helper.cornerPlot());
     }
 	}
 }
-

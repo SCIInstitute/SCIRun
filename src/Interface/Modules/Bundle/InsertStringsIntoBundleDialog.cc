@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Legacy/Bundle/InsertStringsIntoBundle.h>
 #include <Interface/Modules/Bundle/InsertStringsIntoBundleDialog.h>
 
@@ -43,14 +43,14 @@ InsertStringsIntoBundleDialog::InsertStringsIntoBundleDialog(const std::string& 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertStringsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
+void InsertStringsIntoBundleDialog::updateFromPortChange(int, const std::string& portId, DynamicPortChange type)
 {
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
 
   static const std::string typeName = "Strings";
   const int lineEditColumn = 1;
-  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type, 
+  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type,
   { { 2,
   [&]()
   {

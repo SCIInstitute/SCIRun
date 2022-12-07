@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/FairMeshDialog.h>
 #include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
@@ -42,8 +42,8 @@ FairMeshDialog::FairMeshDialog(const std::string& name, ModuleStateHandle state,
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(fastWeightingButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(desbrunWeightingButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(fastWeightingButton_, &QPushButton::clicked, this, &FairMeshDialog::push);
+  connect(desbrunWeightingButton_, &QPushButton::clicked, this, &FairMeshDialog::push);
 
   using namespace Parameters;
   addSpinBoxManager(iterationsSpinBox_, NumIterations);

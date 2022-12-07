@@ -29,16 +29,13 @@
       <attribute name="title">
        <string>Volume Conductor</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
           <string>Isotropic Conductivities [S/m]</string>
          </property>
-         <layout class="QFormLayout" name="formLayout">
-          <property name="fieldGrowthPolicy">
-           <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-          </property>
+         <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
@@ -158,14 +155,14 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="label_8">
             <property name="text">
              <string>Internal Air (8):</string>
             </property>
            </widget>
           </item>
-          <item row="8" column="1">
+          <item row="7" column="1">
            <widget class="QDoubleSpinBox" name="InternalAir_">
             <property name="decimals">
              <number>6</number>
@@ -179,17 +176,6 @@
         </widget>
        </item>
       </layout>
-      <widget class="QWidget" name="verticalLayoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>0</y>
-         <width>2</width>
-         <height>2</height>
-        </rect>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout"/>
-      </widget>
      </widget>
     </widget>
    </item>

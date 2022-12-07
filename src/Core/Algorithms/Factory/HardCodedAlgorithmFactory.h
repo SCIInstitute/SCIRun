@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef HARD_CODED_ALGORITHM_FACTORY_H
 #define HARD_CODED_ALGORITHM_FACTORY_H
@@ -46,7 +46,7 @@ namespace SCIRun {
         using AlgoMakerMap = std::map<std::string, NamedAlgoMaker>;
 
         HardCodedAlgorithmFactory();
-        virtual SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const;
+        SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const override;
         size_t numAlgorithms() const { return factoryMap_.size(); }
         AlgoMakerMap::const_iterator begin() const { return factoryMap_.cbegin(); }
         AlgoMakerMap::const_iterator end() const { return factoryMap_.cend(); }

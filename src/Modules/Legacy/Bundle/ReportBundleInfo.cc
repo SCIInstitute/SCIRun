@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,9 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>
 
@@ -60,21 +61,27 @@ void ReportBundleInfo::execute()
       auto obj = nameHandlePair.second;
       if (obj)
       {
-        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(obj);
+        auto str = std::dynamic_pointer_cast<Core::Datatypes::String>(obj);
         if (str)
         {
           infostring << str->value();
         }
         else
         {
-          auto mat = boost::dynamic_pointer_cast<Core::Datatypes::Matrix>(obj);
+          auto mat = std::dynamic_pointer_cast<Core::Datatypes::Matrix>(obj);
           if (mat)
             infostring << "Matrix (" << mat->nrows() << "x" << mat->ncols() << ")";
           else
           {
-            auto field = boost::dynamic_pointer_cast<Field>(obj);
+            auto field = std::dynamic_pointer_cast<Field>(obj);
             if (field)
               infostring << "Field (" << field->dynamic_type_name() << ")";
+            else
+            {
+              auto colorMap = std::dynamic_pointer_cast<Core::Datatypes::ColorMap>(obj);
+              if (colorMap)
+                infostring << "ColorMap (" << colorMap->getColorMapName() << ")";
+            }
           }
         }
       }

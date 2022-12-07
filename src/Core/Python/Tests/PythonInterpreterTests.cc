@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Python.h>
 #include <boost/python.hpp>
@@ -53,7 +53,7 @@ using namespace TestUtils;
 class FieldConversionTests : public testing::Test
 {
 protected:
-  virtual void SetUp() override
+  void SetUp() override
   {
   #ifdef WIN32
   #ifndef DEBUG
@@ -140,8 +140,8 @@ protected:
 
   static std::vector<FieldHandle> fileExamples()
   {
-    return{ TetMesh1(), TetMesh2(), CreateTriSurfScalarOnNode(), CreateTriSurfVectorOnNode(), CreateTetMeshVectorOnNode(), 
-      CreateTetMeshScalarOnElem(), CreateTetMeshScalarOnNode(), CreateTetMeshTensorOnNode(), CreatePointCloudScalar(), 
+    return{ TetMesh1(), TetMesh2(), CreateTriSurfScalarOnNode(), CreateTriSurfVectorOnNode(), CreateTetMeshVectorOnNode(),
+      CreateTetMeshScalarOnElem(), CreateTetMeshScalarOnNode(), CreateTetMeshTensorOnNode(), CreatePointCloudScalar(),
       CreateCurveMeshElem(), CreateImageNode()
     };
   }
@@ -154,7 +154,7 @@ TEST_F(FieldConversionTests, RoundTripLatVolUsingJustMatlabConversion)
   auto actual = roundTripThroughMatlabConverter(expected);
 
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
@@ -178,7 +178,7 @@ TEST_F(FieldConversionTests, RoundTripTetVolUsingJustMatlabConversion)
   auto actual = roundTripThroughMatlabConverter(expected);
 
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
@@ -199,7 +199,7 @@ TEST_F(FieldConversionTests, RoundTripTriSurfUsingJustMatlabConversion)
   auto actual = roundTripThroughMatlabConverter(expected);
 
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
@@ -222,7 +222,7 @@ TEST_F(FieldConversionTests, LoopThroughFieldFilesMatlabOnly)
     auto actual = roundTripThroughMatlabConverter(expected);
 
     ASSERT_TRUE(actual != nullptr);
-    auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+    auto actualField = std::dynamic_pointer_cast<Field>(actual);
     ASSERT_TRUE(actualField != nullptr);
 
     FieldInformation info(actualField);
@@ -245,7 +245,7 @@ TEST_F(FieldConversionTests, LoopThroughFieldFiles)
     // std::cout << "Converting " << expectedInfo.get_field_type_id() << " from python." << std::endl;
     auto actual = converter();
     ASSERT_TRUE(actual != nullptr);
-    auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+    auto actualField = std::dynamic_pointer_cast<Field>(actual);
     ASSERT_TRUE(actualField != nullptr);
 
     FieldInformation info(actualField);
@@ -269,7 +269,7 @@ TEST_F(FieldConversionTests, RoundTripLatVol)
 
   auto actual = converter();
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
@@ -294,7 +294,7 @@ TEST_F(FieldConversionTests, RoundTripTriSurf)
 
   auto actual = converter();
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
@@ -319,7 +319,7 @@ TEST_F(FieldConversionTests, RoundTripTetVolNode)
 
   auto actual = converter();
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
@@ -375,7 +375,7 @@ TEST_F(FieldConversionTests, DISABLED_RoundTripTriSurfCVRTI)
 
   auto actual = converter();
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
@@ -400,7 +400,7 @@ TEST_F(FieldConversionTests, RoundTripTetVolCell)
 
   auto actual = converter();
   ASSERT_TRUE(actual != nullptr);
-  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  auto actualField = std::dynamic_pointer_cast<Field>(actual);
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);

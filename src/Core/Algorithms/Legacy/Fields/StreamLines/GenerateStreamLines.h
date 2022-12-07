@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_FIELDS_STREAMLINES_GENERATESTREAMLINES_H
 #define CORE_ALGORITHMS_FIELDS_STREAMLINES_GENERATESTREAMLINES_H 1
@@ -54,7 +54,7 @@ class SCISHARE GenerateStreamLinesAlgo : public AlgorithmBase
     GenerateStreamLinesAlgo();
     bool runImpl(FieldHandle input, FieldHandle seeds, FieldHandle& output) const;
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     static const AlgorithmInputName VectorField;
     static const AlgorithmInputName Seeds;

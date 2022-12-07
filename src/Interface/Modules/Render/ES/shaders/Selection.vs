@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 // Uniforms
-uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
+uniform mat4    uModelViewProjection;
 uniform vec4    uColor;             // Uniform color
 
 // Attributes
@@ -38,6 +38,6 @@ varying vec4    fColor;
 
 void main( void )
 {
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  gl_Position = uModelViewProjection * vec4(aPos, 1.0);
   fColor      = uColor;
 }

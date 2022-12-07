@@ -1,30 +1,31 @@
 /*
-  For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-  The MIT License
+   The MIT License
 
-  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-  University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-  
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/DataIO/StreamACQFileFromDisk.cc
 
 #include <Core/Algorithms/DataIO/StreamData/StreamACQFile.h>
@@ -45,7 +46,7 @@ class SCISHARE StreamACQFileFromDisk : public Module {
     StreamACQFileFromDisk(GuiContext*);
     virtual ~StreamACQFileFromDisk() {}
     virtual void execute();
-    
+
   private:
     GuiString lead_or_frame_;
     GuiInt    slider_min_;
@@ -68,10 +69,10 @@ class SCISHARE StreamACQFileFromDisk : public Module {
     bool      didrun_;
 
     std::string old_filename_;
-    SCIRunAlgo::StreamACQFileAlgo algo_; 
-    
+    SCIRunAlgo::StreamACQFileAlgo algo_;
+
     void send_selection(int which, int amount);
-    int increment(int which, int lower, int upper);  
+    int increment(int which, int lower, int upper);
 };
 
 
@@ -115,8 +116,8 @@ StreamACQFileFromDisk::execute()
   {
     guifilename_.set(FileName->get());
     get_ctx()->reset();
-  }  
-  
+  }
+
   filename = guifilename_.get();
   if (filename.empty()) return;
 
@@ -127,60 +128,60 @@ StreamACQFileFromDisk::execute()
     reset = true;
   }
 
-  FileName = new String(filename); 
+  FileName = new String(filename);
 
-  // Get Indices or Weights 
+  // Get Indices or Weights
   get_input_handle("Indices",Indices,false);
   get_input_handle("Weights",Weights,false);
   get_input_handle("CalibrationMatrix",GainTable,false);
-  
+
   update_state(Executing);
-  
-  algo_.set_filename("filename",filename);  
+
+  algo_.set_filename("filename",filename);
   if (!(algo_.read_header()))
   {
     error("Could not open header file: " + filename);
     return;
   }
-  
+
   // Determine the mode we are running
   bool use_lead = (lead_or_frame_.get() == "lead");
-  
+
   int num_leads, num_frames;
   num_leads = algo_.get_int("num_leads");
   num_frames = algo_.get_int("num_frames");
   remark("number of leads "+to_string(num_leads));
   remark("number of frames "+to_string(num_frames));
-  
-  
+
+
   // Update the sliders
   if (use_lead)
   {
     slider_min_.set(0);
     num_leads = algo_.get_int("num_leads");
-    slider_max_.set(num_leads-1);  
-    if (reset) 
+    slider_max_.set(num_leads-1);
+    if (reset)
     {
       TCLInterface::execute(get_id() + " update_range");
       reset_vars();
       range_min_.set(0);
-      range_max_.set(num_leads-1);    
+      range_max_.set(num_leads-1);
     }
   }
   else
   {
     slider_min_.set(0);
     num_frames = algo_.get_int("num_frames");
-    slider_max_.set(num_frames-1);   
-    if (reset) 
+    slider_max_.set(num_frames-1);
+    if (reset)
     {
       TCLInterface::execute(get_id() + " update_range");
       reset_vars();
       range_min_.set(0);
-      range_max_.set(num_frames-1);    
+      range_max_.set(num_frames-1);
     }
   }
-  
+
   TCLInterface::execute(get_id() + " update_range");
   reset_vars();
 
@@ -189,13 +190,13 @@ StreamACQFileFromDisk::execute()
     if (use_lead)
     {
       range_min_.set(0);
-      range_max_.set(num_leads-1);  
+      range_max_.set(num_leads-1);
     }
     else
     {
       range_min_.set(0);
-      range_max_.set(num_frames-1);  
-    }    
+      range_max_.set(num_frames-1);
+    }
     execmode_.set("play");
     get_ctx()->reset();
     didrun_ = true;
@@ -212,7 +213,7 @@ StreamACQFileFromDisk::execute()
 
     int lower = start;
     int upper = end;
-    if (lower > upper) 
+    if (lower > upper)
     {
       std::swap(lower, upper);
     }
@@ -222,9 +223,9 @@ StreamACQFileFromDisk::execute()
     {
       if (start>end) inc_ = -1; else inc_ = 1;
     }
-    
+
     // If the current value is invalid, reset it to the start.
-    if (current_.get() < lower || current_.get() > upper) 
+    if (current_.get() < lower || current_.get() > upper)
     {
       current_.set(start);
       inc_ = (start>end)?-1:1;
@@ -237,27 +238,27 @@ StreamACQFileFromDisk::execute()
     int amount = send_amount_.get();
 
     // If updating, we're done for now.
-    if ((!didrun_)||(use_lead!=use_lead_)) 
+    if ((!didrun_)||(use_lead!=use_lead_))
     {
       use_lead_ = use_lead;
       senddata = true;
       didrun_ = true;
-    } 
-    else if (execmode == "step") 
+    }
+    else if (execmode == "step")
     {
       current = increment(current, lower, upper);
       senddata = true;
-    } 
-    else if (execmode == "stepb") 
+    }
+    else if (execmode == "stepb")
     {
       inc_ *= -1;
       current = increment(current, lower, upper);
       inc_ *= -1;
       senddata = true;
-    } 
-    else if (execmode == "play") 
+    }
+    else if (execmode == "play")
     {
-      if( !loop_ ) 
+      if( !loop_ )
       {
         if (playmode_.get() == "once" && current >= end) current = start;
       }
@@ -265,35 +266,35 @@ StreamACQFileFromDisk::execute()
       senddata = true;
       // User may have changed the execmode to stop so recheck.
       execmode_.reset();
-      if ( loop_ = (execmode_.get() == "play") ) 
+      if ( loop_ = (execmode_.get() == "play") )
       {
         const int delay = delay_.get();
-      
-        if( delay > 0) 
+
+        if( delay > 0)
         {
           Time::waitFor(delay/1000.0);
         }
-    
-        int next = increment(current, lower, upper);    
+
+        int next = increment(current, lower, upper);
 
         // Incrementing may cause a stop in the execmode so recheck.
         execmode_.reset();
-        if( loop_ = (execmode_.get() == "play") ) 
+        if( loop_ = (execmode_.get() == "play") )
         {
           current = next;
 
           want_to_execute();
         }
       }
-    } 
-    else 
+    }
+    else
     {
       if( execmode == "rewind" ) current = start;
       else if( execmode == "fforward" )	current = end;
-    
+
       senddata = true;
-    
-      if (playmode_.get() == "inc_w_exec") 
+
+      if (playmode_.get() == "inc_w_exec")
       {
         current = increment(current, lower, upper);
       }
@@ -305,7 +306,7 @@ StreamACQFileFromDisk::execute()
     }
     else
     {
-      amount = Max(1, Min(num_frames-current,amount));    
+      amount = Max(1, Min(num_frames-current,amount));
     }
 
     // Put the input from the GUI in the matrix Indices
@@ -318,9 +319,9 @@ StreamACQFileFromDisk::execute()
   }
 
   MatrixHandle Output;
-  
+
   algo_.set_handle("gain_table",GainTable);
-  
+
   if (use_lead)
   {
     if (Indices.get_rep())
@@ -331,7 +332,7 @@ StreamACQFileFromDisk::execute()
     else if (Weights.get_rep())
     {
       algo_.set_option("method","lead_weights");
-      if (!(algo_.run(Weights,Output))) return;    
+      if (!(algo_.run(Weights,Output))) return;
     }
   }
   else
@@ -344,8 +345,8 @@ StreamACQFileFromDisk::execute()
     else if (Weights.get_rep())
     {
       algo_.set_option("method","frame_weights");
-      if (!(algo_.run(Weights,Output))) return;    
-    }  
+      if (!(algo_.run(Weights,Output))) return;
+    }
   }
 
   send_output_handle("DataVector",Output,true);
@@ -358,7 +359,7 @@ int
 StreamACQFileFromDisk::increment(int current, int lower, int upper)
 {
   // Do nothing if no range.
-  if (upper == lower) 
+  if (upper == lower)
   {
     if (playmode_.get() == "once")
       execmode_.set( "stop" );
@@ -368,37 +369,37 @@ StreamACQFileFromDisk::increment(int current, int lower, int upper)
 
   current += inc_ * inc_amount;
 
-  if (current > upper) 
+  if (current > upper)
   {
-    if (playmode_.get() == "bounce1") 
+    if (playmode_.get() == "bounce1")
     {
       inc_ *= -1;
       return increment(upper, lower, upper);
-    } 
-    else if (playmode_.get() == "bounce2") 
+    }
+    else if (playmode_.get() == "bounce2")
     {
       inc_ *= -1;
       return upper;
-    } 
-    else 
+    }
+    else
     {
       if (playmode_.get() == "once") execmode_.set( "stop" );
       return lower;
     }
   }
-  if (current < lower) 
+  if (current < lower)
   {
-    if (playmode_.get() == "bounce1") 
+    if (playmode_.get() == "bounce1")
     {
       inc_ *= -1;
       return increment(lower, lower, upper);
-    } 
-    else if (playmode_.get() == "bounce2") 
+    }
+    else if (playmode_.get() == "bounce2")
     {
       inc_ *= -1;
       return lower;
-    } 
-    else 
+    }
+    else
     {
       if (playmode_.get() == "once")execmode_.set( "stop" );
       return upper;
@@ -408,4 +409,3 @@ StreamACQFileFromDisk::increment(int current, int lower, int upper)
 }
 
 } // End namespace SCIRun
-

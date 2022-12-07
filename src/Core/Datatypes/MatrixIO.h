@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,10 +24,12 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/MatrixIO.h
 
 #ifndef CORE_DATATYPES_MATRIX_IO_H
-#define CORE_DATATYPES_MATRIX_IO_H 
+#define CORE_DATATYPES_MATRIX_IO_H
 
 #include <Core/Utils/Exception.h>
 #include <Core/Datatypes/Matrix.h>
@@ -48,21 +49,21 @@ namespace Datatypes {
 
   // see http://stackoverflow.com/questions/7477978/nan-ascii-i-o-with-visual-c
   template <typename T>
-  struct FloatNaNHelper 
+  struct FloatNaNHelper
   {
     T& value;
     explicit FloatNaNHelper(T& f) : value(f) { }
     operator const T&() const { return value; }
   };
 
-  
+
   //TODO: template partial spec for double/float/etc.
   template <typename T>
-  std::istream& operator>>(std::istream& in, FloatNaNHelper<T>& f)
+  std::istream& operator>>(std::istream& in, FloatNaNHelper<T>&)
   {
     return in;
   }
-  
+
   template <>
   inline std::istream& operator>>(std::istream& in, FloatNaNHelper<double>& f)
   {
@@ -89,13 +90,13 @@ namespace Datatypes {
 
     std::string line;
 
-    while (!std::getline(istr, line, '\n').eof()) 
+    while (!std::getline(istr, line, '\n').eof())
     {
       std::istringstream reader(line);
 
       std::vector<T> lineData;
 
-      while (!reader.eof()) 
+      while (!reader.eof())
       {
         T val;
         reader >> val;
@@ -197,7 +198,13 @@ namespace Datatypes {
           FILE *f=fopen(this->raw_filename_.c_str(), "r");
           if (f)
           {
-            fread(this->data(), sizeof(T), this->rows() * this->cols(), f);
+            auto result = fread(this->data(), sizeof(T), this->rows() * this->cols(), f);
+            if (result != this->get_dense_size())
+            {
+              //TODO: test
+              if (false)
+                BOOST_THROW_EXCEPTION(SCIRun::Core::ExceptionBase() << FileNotFound("error reading matrix file"));
+            }
             fclose(f);
           }
           else
@@ -227,8 +234,8 @@ namespace Datatypes {
             size_t pos = stream.file_name.rfind('.');
             if (pos == std::string::npos) filename = stream.file_name + ".raw";
             else filename = stream.file_name.substr(0,pos) + ".raw";
-          } 
-          else 
+          }
+          else
           {
             split=0;
           }
@@ -295,7 +302,7 @@ namespace Datatypes {
       }
     }
 
-    stream.begin_cheap_delim();  
+    stream.begin_cheap_delim();
     Pio_index(stream, this->outerIndexPtr(), this->nrows() + 1);
     stream.end_cheap_delim();
 

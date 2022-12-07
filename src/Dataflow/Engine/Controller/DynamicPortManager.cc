@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Engine/Controller/DynamicPortManager.cc
 
 #include <Dataflow/Engine/Controller/DynamicPortManager.h>
@@ -40,11 +41,11 @@ using namespace SCIRun::Dataflow::Networks;
 DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkEditorController* controller) : controller_(controller), enabled_(true)
 {
   ENSURE_NOT_NULL(controller, "DPM needs network controller object");
-  addedSignal.connect(boost::bind(&DynamicPortManager::connectionAddedNeedToCloneAPort, this, _1));
-  removeSignal.connect(boost::bind(&DynamicPortManager::connectionRemovedNeedToRemoveAPort, this, _1));
+  addedSignal.connect([this](const ConnectionDescription& cd) { connectionAddedNeedToCloneAPort(cd); });
+  removeSignal.connect([this](const ConnectionId& cid) { connectionRemovedNeedToRemoveAPort(cid); });
 }
 
-void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+void DynamicPortManager::connectionAddedNeedToCloneAPort(const ConnectionDescription& cd)
 {
   if (enabled_)
   {
@@ -53,12 +54,12 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
     {
       ModuleBuilder builder;
       auto newPortId = builder.cloneInputPort(moduleIn, cd.in_.portId_);
-      portAdded_(moduleIn->get_id(), newPortId);
+      portAdded_(moduleIn->id(), newPortId);
     }
   }
 }
 
-void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId& id)
+void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const ConnectionId& id)
 {
   if (enabled_)
   {
@@ -70,7 +71,7 @@ void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Datafl
       {
         ModuleBuilder builder;
         builder.removeInputPort(moduleIn, desc.in_.portId_);
-        portRemoved_(moduleIn->get_id(), desc.in_.portId_);
+        portRemoved_(moduleIn->id(), desc.in_.portId_);
       }
     }
   }

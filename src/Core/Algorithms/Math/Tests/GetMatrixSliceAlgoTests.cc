@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,10 +23,12 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   author: Moritz Dannhauer
-   last change: 4/13/14
-   TODO: check Sparse inputs, Matrix inputs broken
+
+   Author:              Moritz Dannhauer
+   Last Modification:   April 13 2014
+   TODO:                check Sparse inputs, Matrix inputs broken
 */
+
 
 #include <gtest/gtest.h>
 
@@ -61,15 +62,15 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowDense)
     auto col = algo.runImpl(m1, i, true);
     DenseMatrix expected(m1->col(i));
     //std::cout << "expected column:\n" << expected << std::endl;
-    EXPECT_EQ(expected, *castMatrix::toDense(col.get<0>()));
-    EXPECT_EQ(m1->ncols() - 1, col.get<1>());
+    EXPECT_EQ(expected, *castMatrix::toDense(std::get<0>(col)));
+    EXPECT_EQ(m1->ncols() - 1, std::get<1>(col));
   }
   for (int i = 0; i < m1->nrows(); ++i)
   {
     auto row = algo.runImpl(m1, i, false);
     DenseMatrix expected(m1->row(i));
-    EXPECT_EQ(expected, *castMatrix::toDense(row.get<0>()));
-    EXPECT_EQ(m1->nrows() - 1, row.get<1>());
+    EXPECT_EQ(expected, *castMatrix::toDense(std::get<0>(row)));
+    EXPECT_EQ(m1->nrows() - 1, std::get<1>(row));
   }
 }
 
@@ -83,18 +84,18 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
   {
     auto col = algo.runImpl(m1, i, true);
     DenseMatrix expected(SCIRun::TestUtils::matrix1H()->col(i));
-    ASSERT_TRUE(col.get<0>() != nullptr);
+    ASSERT_TRUE(std::get<0>(col) != nullptr);
     //std::cout << "expected\n" << expected << "\n\nactual\n" << *convertMatrix::toDense(castMatrix::toSparse(col.get<0>())) << std::endl;
-    EXPECT_EQ(expected, *convertMatrix::toDense(castMatrix::toSparse(col.get<0>())));
-    EXPECT_EQ(m1->ncols() - 1, col.get<1>());
+    EXPECT_EQ(expected, *convertMatrix::toDense(castMatrix::toSparse(std::get<0>(col))));
+    EXPECT_EQ(m1->ncols() - 1, std::get<1>(col));
   }
   for (int i = 0; i < m1->nrows(); ++i)
   {
     auto row = algo.runImpl(m1, i, false);
     SparseRowMatrix expected(m1->row(i));
-    ASSERT_TRUE(row.get<0>() != nullptr);
-    EXPECT_SPARSE_EQ(expected, *castMatrix::toSparse(row.get<0>()));
-    EXPECT_EQ(m1->nrows() - 1, row.get<1>());
+    ASSERT_TRUE(std::get<0>(row) != nullptr);
+    EXPECT_SPARSE_EQ(expected, *castMatrix::toSparse(std::get<0>(row)));
+    EXPECT_EQ(m1->nrows() - 1, std::get<1>(row));
   }
 }
 

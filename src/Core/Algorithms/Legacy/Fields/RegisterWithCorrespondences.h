@@ -3,12 +3,11 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),a
+   copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
    and/or sell copies of the Software, and to permit persons to whom the
@@ -26,17 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELDS_REGISTERWITHCORRESPONDENCES_H
 #define CORE_ALGORITHMS_FIELDS_REGISTERWITHCORRESPONDENCES_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <vector>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -44,25 +38,33 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace Fields {
 
+				enum class TransformType
+				{
+					MORPH,
+					AFFINE,
+					RIGID,
+					NONE
+				};
+
 class SCISHARE RegisterWithCorrespondencesAlgo : public AlgorithmBase
 {
-  public:
-    /// Set defaults
-    RegisterWithCorrespondencesAlgo();
-	static AlgorithmInputName Correspondences1;
-	static AlgorithmInputName Correspondences2;
-	AlgorithmOutput run(const AlgorithmInput& input) const;
-  
-    /// run the algorithm
-    bool runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
-    bool runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
-    bool runP(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
-    bool runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
-    bool radial_basis_func(VMesh* Cors, VMesh* points, Datatypes::DenseMatrixHandle& Smat)  const;
-    bool make_new_points(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
-    bool make_new_pointsA(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
-	
- 
+public:
+  RegisterWithCorrespondencesAlgo();
+
+	static const AlgorithmInputName Correspondences1;
+	static const AlgorithmInputName Correspondences2;
+  static const AlgorithmOutputName TransformMatrix;
+
+	AlgorithmOutput run(const AlgorithmInput& input) const override;
+
+private:
+  Datatypes::DenseMatrixHandle runMorph(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+  Datatypes::DenseMatrixHandle runAffine(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+  Datatypes::DenseMatrixHandle runRigid_P(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+  Datatypes::DenseMatrixHandle runNone(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+  bool radial_basis_func(VMesh* Cors, VMesh* points, Datatypes::DenseMatrixHandle& Smat)  const;
+  bool make_new_points(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
+  bool make_new_pointsA(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
 };
 
 }}}}

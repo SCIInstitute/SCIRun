@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #ifndef MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 #define MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
@@ -63,11 +63,12 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName TextBlue;
         static const Core::Algorithms::AlgorithmParameterName XTranslation;
         static const Core::Algorithms::AlgorithmParameterName YTranslation;
+        static const Core::Algorithms::AlgorithmParameterName ColorMapName;
 
         void setStateDefaults() override;
         INPUT_PORT(0, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, GeometryOutput, GeometryObject);
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
       private:
         TextBuilder textBuilder_;

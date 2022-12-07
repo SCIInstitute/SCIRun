@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,7 +23,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
 
 // Testing libraries
@@ -70,7 +69,7 @@ protected:
 
 /// -------- INPUTS TESTS ------------ ///
 /*
-// NULL fwd matrix + NULL measure data
+// null fwd matrix + null measure data
 TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDNullData)
 {
   // create inputs
@@ -100,7 +99,7 @@ TEST_F(TikhonovFunctionalTest, loadIDFwdMatrixANDNullData)
 
 }
 
-// NULL fwd matrix + RANF measured data
+// null fwd matrix + RANF measured data
 TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDRandData)
 {
   // create inputs

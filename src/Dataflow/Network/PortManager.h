@@ -1,12 +1,12 @@
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Network/PortManager.h
 
 
@@ -35,10 +36,13 @@
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <Core/Logging/Log.h>
 #include <map>
 
+//#define LOG_DYNAMIC_PORT_CREATION
 #ifdef LOG_DYNAMIC_PORT_CREATION
 #include <iostream>
 #define DYNAMIC_PORT_LOG(x) x
@@ -52,6 +56,8 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  using ModuleAddFunc = std::function<size_t(PortHandle)>;
+
 template<class T>
 class PortManager : boost::noncopyable
 {
@@ -64,7 +70,7 @@ public:
   T operator[](const PortId& id) const;
   std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
-  void set_module(ModuleInterface* mod) { module_ = mod; }
+  void setModuleDynamicAddFunc(ModuleAddFunc a) { moduleAdd_ = a; }
   std::vector<T> view() const;
 private:
   int checkDynamicPortInvariant(const std::string& name);
@@ -77,14 +83,13 @@ private:
   typedef std::map<std::string, bool> DynamicMap;
   PortMap ports_;
   DynamicMap isDynamic_;
-  ModuleInterface* module_;
+  ModuleAddFunc moduleAdd_;
 };
 
 struct SCISHARE PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
-PortManager<T>::PortManager() :
-  module_(nullptr)
+PortManager<T>::PortManager()
 {
 }
 
@@ -99,37 +104,36 @@ template<class T>
 size_t
 PortManager<T>::add(const T& item)
 {
-  auto lastIndexWithSameName = lastIndexByName(item->id().name);
+  auto lastIndexWithSameName = lastIndexByName(item->internalId().name);
 
-  ports_[item->id()] = item;
-  isDynamic_[item->id().name] = item->isDynamic();
+  ports_[item->internalId()] = item;
+  isDynamic_[item->internalId().name] = item->isDynamic();
 
   if (item->isDynamic())
   {
-    auto availableIndex = checkDynamicPortInvariant(item->id().name);
+    auto availableIndex = checkDynamicPortInvariant(item->internalId().name);
 
     if (lastIndexWithSameName >= 0)
     {
       const auto newPortIndex = availableIndex >= 0 ? availableIndex : lastIndexWithSameName + 1;
-      DYNAMIC_PORT_LOG(std::cout << "cloned port: " << item->id().toString() << " newIndex: " << newPortIndex << std::endl);
+      DYNAMIC_PORT_LOG(std::cout << "cloned port: " << item->internalId().toString() << " newIndex: " << newPortIndex << std::endl);
 
       for (auto& portPair : ports_)
       {
-        DYNAMIC_PORT_LOG(std::cout << "\t id " << portPair.second->id().toString() << " index before setting " << portPair.second->getIndex() << std::endl);
+        DYNAMIC_PORT_LOG(std::cout << "\t id " << portPair.second->internalId().toString() << " index before setting " << portPair.second->getIndex() << std::endl);
 
-        if (portPair.second->getIndex() >= newPortIndex)
+        if (static_cast<int>(portPair.second->getIndex()) >= newPortIndex)
           portPair.second->incrementIndex();
       }
 
-
-      DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
+      DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->internalId().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
 
       return newPortIndex;
     }
   }
 
 
-  DYNAMIC_PORT_LOG(if (item->isDynamic()) std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl;);
+  DYNAMIC_PORT_LOG(if (item->isDynamic()) std::cout << "original port: " << item->internalId().toString() << " newIndex: " << size() - 1 << std::endl;);
 
   return size() - 1;
 }
@@ -144,7 +148,7 @@ PortManager<T>::lastIndexByName(const std::string& name) const
     return -1;
 
   DYNAMIC_PORT_LOG(std::cout << name << "  Input port object indexes:\n");
-  DYNAMIC_PORT_LOG(for (const auto& input : matches) std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl;);
+  DYNAMIC_PORT_LOG(for (const auto& input : matches) std::cout << input->internalId() << " " << input->internalId().name << " " << input->getIndex() << std::endl;);
 
   return static_cast<int>((*std::max_element(matches.begin(), matches.end(), [](const T& port1, const T& port2) { return port1->getIndex() < port2->getIndex(); }))->getIndex());
 }
@@ -156,11 +160,11 @@ PortManager<T>::checkDynamicPortInvariant(const std::string& name)
   auto byName = findAllByName(name);
   const size_t lastIndex = byName.size() - 1;
   std::vector<PortId> toRemove;
-  for (int i = 0; i < byName.size(); ++i)
+  for (size_t i = 0; i < byName.size(); ++i)
   {
     auto port = byName[i];
     if (0 == port->nconnections() && i != lastIndex)
-      toRemove.push_back(port->id());
+      toRemove.push_back(port->internalId());
   }
   int lastRemovedIndex = -1;
   for (const auto& id : toRemove)
@@ -207,9 +211,10 @@ PortManager<T>::operator[](const PortId& id)
       {
         throwForPortNotFound(id);
       }
-      auto newPort = boost::shared_ptr<typename T::element_type>(byName[0]->clone());
-      newPort->setId(id);
-      newPort->setIndex(add(newPort));
+      auto newPort = SharedPointer<typename T::element_type>(byName[0]->clone());
+      newPort->setId_DynamicCase(id);
+      newPort->setIndex(moduleAdd_(newPort));
+
       return newPort;
     }
     else
@@ -265,7 +270,11 @@ std::vector<T> PortManager<T>::findAllByNameImpl(const std::string& name) const
 
   boost::copy(
     ports_ | boost::adaptors::map_values
-    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
+           | boost::adaptors::filtered([&](const T& port)
+           {
+             return port->get_portname() == name || boost::starts_with(port->internalId().toString(), name);
+           }),
+      std::back_inserter(portsWithName));
 
   return portsWithName;
 }

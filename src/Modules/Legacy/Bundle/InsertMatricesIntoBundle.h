@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_BUNDLE_INSERTMATRICESINTOBUNDLE_H__
 #define MODULES_LEGACY_BUNDLE_INSERTMATRICESINTOBUNDLE_H__
 
@@ -45,8 +45,8 @@ namespace SCIRun {
       {
       public:
         InsertMatricesIntoBundle();
-        virtual void setStateDefaults() override;
-        virtual void execute() override;
+        void setStateDefaults() override;
+        void execute() override;
         HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputBundle, Bundle);
@@ -58,7 +58,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName MatrixNames;
         static const Core::Algorithms::AlgorithmParameterName MatrixReplace;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       };
 
     }

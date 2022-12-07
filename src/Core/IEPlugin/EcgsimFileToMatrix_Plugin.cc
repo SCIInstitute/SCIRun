@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /*
  *  EcgsimFileToMatrix_Plugin.cc
  *
@@ -35,7 +35,6 @@
  *   University of Utah
  *
  */
- 
 
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/EcgsimFileToMatrix_Plugin.h>
@@ -87,7 +86,7 @@ MatrixHandle SCIRun::EcgsimFileMatrix_reader(LoggerHandle pr, const char *filena
       }
       std::istringstream iss(line);
       iss >> header_rows;
-      iss >> header_cols; 
+      iss >> header_cols;
 
       while( getline(inputfile,line,'\n'))
       {
@@ -96,7 +95,7 @@ MatrixHandle SCIRun::EcgsimFileMatrix_reader(LoggerHandle pr, const char *filena
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-                  
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -147,7 +146,7 @@ MatrixHandle SCIRun::EcgsimFileMatrix_reader(LoggerHandle pr, const char *filena
       if (pr) pr->error("Could not open file: "+std::string(filename));
       return (result);
     }
-    
+
     inputfile.close();
   }
 
@@ -163,14 +162,14 @@ MatrixHandle SCIRun::EcgsimFileMatrix_reader(LoggerHandle pr, const char *filena
       if (pr) pr->error("Could not allocate matrix");
       return(result);
     }
-    
+
     double* dataptr = result->data();
     int k = 0;
 
     try
     {
       inputfile.open(filename);
-    
+
       // get header information
       getline(inputfile,line,'\n');
 
@@ -181,7 +180,7 @@ MatrixHandle SCIRun::EcgsimFileMatrix_reader(LoggerHandle pr, const char *filena
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-                                          
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -207,7 +206,7 @@ MatrixHandle SCIRun::EcgsimFileMatrix_reader(LoggerHandle pr, const char *filena
       if (pr) pr->error("Could not open and read data in file: " + std::string(filename));
       return (result);
     }
-    
+
     inputfile.close();
   }
   return(result);
@@ -221,7 +220,7 @@ bool SCIRun::EcgsimFileMatrix_writer(LoggerHandle pr, MatrixHandle matrixInput, 
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
 
   DenseMatrixHandle matrix = castMatrix::toDense(matrixInput);
-  
+
   if (!matrix)
   {
     if (pr) pr->error("Empty matrix detected");
@@ -244,24 +243,53 @@ bool SCIRun::EcgsimFileMatrix_writer(LoggerHandle pr, MatrixHandle matrixInput, 
     if (pr) pr->error("Could not open file: "+std::string(filename));
     return (false);
   }
-    
+
   // output header line
   //int rows = matrix->nrows();
   //int cols = matrix->ncols();
   outputfile << matrix->nrows() << " " << matrix->ncols() << std::endl;
 
   size_t k = 0;
-  for (int p=0; p<matrix->nrows(); p++)  
+  for (int p=0; p<matrix->nrows(); p++)
   {
-    for (int q=0; q<matrix->ncols(); q++)  
+    for (int q=0; q<matrix->ncols(); q++)
     {
       outputfile << dataptr[k++] << " ";
     }
     outputfile << "\n";
-  }  
-  
+  }
+
   return (true);
 }
 
+MatrixHandle SCIRun::EcgsimBinaryFileMatrix_reader(LoggerHandle pr, const char *filename)
+{
+  std::ifstream fp(filename, std::ifstream::binary);
+  if (!fp)
+  {
+    if (pr) pr->error("Could not load file: " + std::string(filename));
+    return nullptr;
+  }
 
+  const int sizeCount = 2;
+  unsigned int hdr[sizeCount];
+  fp.read(reinterpret_cast<char*>(hdr), sizeCount * sizeof(unsigned int));
+  if (!fp)
+  {
+    if (pr) pr->error("Header read failed (matrix size).");
+    return nullptr;
+  }
+  auto nrows = hdr[0];
+  auto ncols = hdr[1];
+  std::vector<float> values(nrows*ncols);
+  fp.read(reinterpret_cast<char*>(&values[0]), values.size() * sizeof(float));
+  if (!fp)
+  {
+    if (pr) pr->error("Values read failed (matrix contents).");
+    return nullptr;
+  }
 
+  auto result = makeShared<DenseMatrix>(nrows, ncols);
+  std::copy(values.begin(), values.end(), result->data());
+  return result;
+}

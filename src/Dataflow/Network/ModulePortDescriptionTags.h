@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef DATAFLOW_NETWORK_MODULEPORTDESCRIPTIONTAGS_H
 #define DATAFLOW_NETWORK_MODULEPORTDESCRIPTIONTAGS_H
@@ -51,11 +51,13 @@ namespace Modules
   struct SCISHARE ScalarPortTag {};
   struct SCISHARE StringPortTag {};
   struct SCISHARE FieldPortTag {};
+  struct SCISHARE OsprayGeometryPortTag {};
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE ColorMapPortTag {};
   struct SCISHARE BundlePortTag {};
   struct SCISHARE NrrdPortTag {};
   struct SCISHARE DatatypePortTag {};
+  struct SCISHARE MetadataObjectPortTag {};
 
   template <typename Base>
   struct DynamicPortTag : Base
@@ -319,11 +321,13 @@ namespace Modules
   PORT_SPEC(String);
   PORT_SPEC(Field);
   PORT_SPEC(Geometry);
+  PORT_SPEC(OsprayGeometry);
   PORT_SPEC(ColorMap);
   PORT_SPEC(Bundle);
   PORT_SPEC(Nrrd);
   PORT_SPEC(ComplexMatrix);
   PORT_SPEC(Datatype);
+  PORT_SPEC(MetadataObject);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 #define ATTACH_NAMESPACE2(type) SCIRun::Core::Datatypes::type
@@ -338,6 +342,8 @@ namespace Modules
   Dataflow::Networks::StaticPortName< ATTACH_NAMESPACE(type), index> name;
 
 #define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
+
+struct DummyPortName : Dataflow::Networks::StaticPortName<Core::Datatypes::Datatype, 999> {};
 
   /// @todo: make metafunc for Input/Output
 

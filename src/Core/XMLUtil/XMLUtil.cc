@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -43,14 +42,14 @@ get_attribute_by_name(const xmlNodePtr p, const char *name)
 {
   xmlAttr *cur = p->properties;
 
-  while (cur != 0) {
+  while (cur != nullptr) {
     if (cur->type == XML_ATTRIBUTE_NODE &&
         !strcmp(to_char_ptr(cur->name), name)) {
       return cur;
     }
     cur = cur->next;
   }
-  return 0;
+  return nullptr;
 }
 
 bool
@@ -59,7 +58,7 @@ get_attributes(std::vector<xmlNodePtr> &attr, xmlNodePtr p)
   attr.clear();
   xmlAttr *cur = p->properties;
 
-  while (cur != 0) {
+  while (cur != nullptr) {
     if (cur->type == XML_ATTRIBUTE_NODE)
     {
       attr.push_back(cur->children);
@@ -93,7 +92,7 @@ std::string get_serialized_children(xmlNode* d)
 {
   std::string fullstr;
 
-  for (xmlNode *n = d->children; n != 0; n = n->next) {
+  for (xmlNode *n = d->children; n != nullptr; n = n->next) {
     std::string str;
     if (n->type == XML_TEXT_NODE) {
       str = std::string(to_char_ptr(n->content));
@@ -167,7 +166,7 @@ maybe_get_att_as_const_char_str(const xmlNodePtr p,
                                 const char *name)
 {
   xmlAttrPtr attr = get_attribute_by_name(p, name);
-  return attr ? to_char_ptr(attr->children->content) : 0;
+  return attr ? to_char_ptr(attr->children->content) : nullptr;
 }
 
 std::string node_att_as_string(const xmlNodePtr p, const std::string &name)

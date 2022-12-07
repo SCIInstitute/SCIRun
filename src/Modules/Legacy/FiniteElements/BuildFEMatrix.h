@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/FiniteElements/BuildFEMatrix.h
 
 #ifndef MODULES_LEGACY_FINITEELEMENTS_BUILDFEMATRIX_H__
@@ -53,7 +54,7 @@ namespace SCIRun {
         INPUT_PORT(1, Conductivity_Table, Matrix);
         OUTPUT_PORT(0, Stiffness_Matrix, Matrix);
         OUTPUT_PORT(1, Stiffness_Matrix_Complex, ComplexSparseRowMatrix);
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

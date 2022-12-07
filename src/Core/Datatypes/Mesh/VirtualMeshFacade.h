@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Mesh/VirtualMeshFacade.h
 
 #ifndef CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
-#define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
+#define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
 
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Mesh/share.h>
@@ -43,69 +43,68 @@ namespace Datatypes {
   {
   public:
     typedef MeshFacade<VirtualMeshType> my_base;
-    
-    explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
+
+    explicit VirtualMeshFacade(SharedPointer<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
       /// @todo: necessary? interface to vmesh
-      //if (! vmesh->is_latvolmesh() 
-      //  && ! vmesh->is_trisurfmesh() 
+      //if (! vmesh->is_latvolmesh()
+      //  && ! vmesh->is_trisurfmesh()
       //  && ! vmesh->is_tetvolmesh())
       //  THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
 
-    virtual typename my_base::Edges edges() const
+    typename my_base::Edges edges() const override
     {
       return typename my_base::Edges(typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual typename my_base::Faces faces() const
+    typename my_base::Faces faces() const override
     {
       return typename my_base::Faces(typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual typename my_base::Nodes nodes() const
+    typename my_base::Nodes nodes() const override
     {
       return typename my_base::Nodes(typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual typename my_base::Cells cells() const
+    typename my_base::Cells cells() const override
     {
       return typename my_base::Cells(typename SmartCellIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartCellIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual size_t numNodes() const
+    size_t numNodes() const override
     {
       return vmesh_->num_nodes();
     }
 
-    virtual size_t numEdges() const
+    size_t numEdges() const override
     {
       /// @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
       return vmesh_->num_edges();
     }
 
-    virtual size_t numFaces() const 
+    size_t numFaces() const override
     {
       return vmesh_->num_faces();
     }
-    
-    virtual size_t numCells() const
+
+    size_t numCells() const override
     {
       /// @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/* CELLS_E */ 1 << 3);
       return vmesh_->num_cells();
     }
 
-    virtual size_t numElements() const 
+    size_t numElements() const override
     {
       return vmesh_->num_elems();
     }
   private:
-    boost::shared_ptr<VirtualMeshType> vmesh_;
+    SharedPointer<VirtualMeshType> vmesh_;
   };
 
 }}}
 
 #endif
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
+
+#include <Interface/qt_include.h>
 #include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Utility.h>
@@ -42,6 +42,7 @@ namespace
 
 TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
+  setVisible(false);
   setupUi(this);
 
   tagButtons_ = { tagPushButton0_, tagPushButton1_, tagPushButton2_,
@@ -51,34 +52,38 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
     taglineEdit_3, taglineEdit_4, taglineEdit_5,
     taglineEdit_6, taglineEdit_7, taglineEdit_8, taglineEdit_9 };
 
-  for (int i = 0; i < NumberOfTags; ++i)
+  for (int i = 0; i < TagValues::NumberOfTags; ++i)
   {
     tagButtons_[i]->setProperty(tagIndexProperty, i);
-    connect(tagButtons_[i], SIGNAL(clicked()), this, SLOT(editTagColor()));
+    connect(tagButtons_[i], &QPushButton::clicked, this, &TagManagerWindow::editTagColor);
     tagLineEdits_[i]->setProperty(tagIndexProperty, i);
-    connect(tagLineEdits_[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
+    connect(tagLineEdits_[i], &QLineEdit::textChanged, this, &TagManagerWindow::updateTagName);
   }
 
-  tagNames_.resize(NumberOfTags);
-  tagColors_.resize(NumberOfTags);
+  tagNames_.resize(TagValues::NumberOfTags);
+  tagColors_.resize(TagValues::NumberOfTags);
 
-  connect(helpPushButton_, SIGNAL(clicked()), this, SLOT(helpButtonClicked()));
+  connect(helpPushButton_, &QPushButton::clicked, this, &TagManagerWindow::helpButtonClicked);
+  hide();
 }
 
 void TagManagerWindow::editTagColor()
 {
   auto tag = sender()->property(tagIndexProperty).toInt();
   auto color = QString::fromStdString(tagColors_[tag]);
-  auto newColor = QColorDialog::getColor(color, this, "Choose tag " + QString::number(tag) + " color");
-  auto colorStr = colorToString(newColor);
-  qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
-  tagColors_[tag] = colorStr.toStdString();
+  auto newColor = QColorDialog::getColor(stringToColor(color), this, "Choose tag " + QString::number(tag) + " color");
+  if (newColor.isValid())
+  {
+    auto colorStr = colorToString(newColor);
+    qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
+    tagColors_[tag] = colorStr.toStdString();
+  }
 }
 
 void TagManagerWindow::setTagNames(const QVector<QString>& names)
 {
   tagNames_ = names;
-  for (int i = 0; i < NumberOfTags; ++i)
+  for (int i = 0; i < TagValues::NumberOfTags; ++i)
   {
     tagLineEdits_[i]->setText(names[i]);
   }
@@ -91,7 +96,7 @@ void TagManagerWindow::updateTagName(const QString& name)
 
 void TagManagerWindow::setTagColors(const QVector<QString>& colors)
 {
-  for (int i = 0; i < NumberOfTags; ++i)
+  for (int i = 0; i < TagValues::NumberOfTags; ++i)
   {
     if (i >= colors.size() || colors[i].isEmpty())
       tagColors_[i] = colorToString(defaultTagColor(i)).toStdString();
@@ -114,7 +119,7 @@ QColor TagManagerWindow::tagColor(int tag) const
   r = g = b = 155;
   if (validTag(tag))
   {
-    auto colorStr = tagColors_[tag];
+    const auto& colorStr = tagColors_[tag];
     try
     {
       static boost::regex reg("rgb\\((.+), (.+), (.+)\\)");
@@ -134,8 +139,7 @@ QColor TagManagerWindow::tagColor(int tag) const
 
 QString TagManagerWindow::tagName(int tag) const
 {
-  auto name = validTag(tag) ? tagNames_[tag] : "[No tag]";
-  return name;
+  return validTag(tag) ? tagNames_[tag] : "[No tag]";
 }
 
 void TagManagerWindow::showHelp(QWidget* parent)
@@ -147,7 +151,7 @@ void TagManagerWindow::showHelp(QWidget* parent)
     "To use, while in the Network Editor, hold down the Alt / Option key. Then press A to see all module tag groups(each module will be colorized "
     "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
     "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules."
-    "\n\nOnce tags are being used, tag groups can be toggled using Alt-G (show) and Alt-Shift-G (hide). Boxes of the tag color, labelled with the tag's text, will be displayed overlaying the network. "
+    "\n\nOnce tags are being used, tag groups can be toggled using Alt-G (show) and Alt-Shift-G (hide). Boxes of the tag color, labeled with the tag's text, will be displayed overlaying the network. "
     "To display tag groups on network load, double-click on a tag group box and select the display option in the menu. "
     "\n\nTag names saved in the network file can override application-level names--double-click a displayed tag group box and select the rename option."
     );

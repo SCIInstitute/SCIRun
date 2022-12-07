@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /// @todo Documentation Dataflow/Network/PortInterface.cc
 
@@ -77,28 +77,28 @@ bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& po
 {
   if (isFullInputPort(port1) || isFullInputPort(port2))
   {
-    LOG_DEBUG("can't connect since input ports can only take one connection");
+    LOG_TRACE("can't connect since input ports can only take one connection");
     return false;
   }
   if (port1.isInput() == port2.isInput())
   {
-    LOG_DEBUG("can't connect since input/output not compatible");
+    LOG_TRACE("can't connect since input/output not compatible");
     return false;
   }
   if (sharesParentModule(port1, port2))
   {
-    LOG_DEBUG("can't connect since it's the same module");
+    LOG_TRACE("can't connect since it's the same module");
     return false;
   }
   if (isWildPort(port1) || isWildPort(port2))
   {
-    LOG_DEBUG("found wild port");
+    LOG_TRACE("found wild port");
     /// @todo: trying out "wildcard" ports
     return true;
   }
   if (port1.get_typename() != port2.get_typename())
   {
-    LOG_DEBUG("can't connect since colors don't match");
+    LOG_TRACE("can't connect since colors don't match");
     return false;
   }
   return true;

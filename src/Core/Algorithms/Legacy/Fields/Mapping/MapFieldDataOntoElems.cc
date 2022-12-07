@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Thread/Parallel.h>
 #include <Core/Thread/Barrier.h>
@@ -76,7 +76,7 @@ class MapFieldDataOntoElemsPAlgo : public Interruptible
 {
   public:
     explicit MapFieldDataOntoElemsPAlgo(unsigned int numProcs) :
-    algo_(0), is_flux_(false), has_nan_(false), def_value_(0),
+    algo_(nullptr), is_flux_(false), has_nan_(false), def_value_(0),
       barrier_("MapFieldDataOntoElemsPAlgo Barrier", numProcs), nproc(numProcs) {}
 
     void parallel(int proc);
@@ -217,7 +217,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -233,7 +233,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           vol = omesh->get_size(idx);
           omesh->get_normals(norms,coords,idx);
@@ -250,7 +250,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -266,7 +266,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -282,7 +282,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -299,7 +299,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         std::vector<double> common;
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -333,7 +333,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         std::vector<double> median;
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -374,7 +374,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = 0.0; size_t num = 0;
@@ -388,7 +388,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             vol = omesh->get_size(idx);
             datasource->get_data(values,points);
@@ -403,7 +403,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = std::numeric_limits<double>::max();
@@ -417,7 +417,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = -std::numeric_limits<double>::max();
@@ -431,7 +431,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = 0.0; size_t num = 0;
@@ -446,7 +446,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           std::vector<double> common;
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             common.clear();
@@ -478,7 +478,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           std::vector<double> median;
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             median.clear();
@@ -514,7 +514,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = Vector(0,0,0); size_t num = 0;
@@ -528,7 +528,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             vol = omesh->get_size(idx);
             datasource->get_data(values,points);
@@ -543,7 +543,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = Vector(0,0,0);
@@ -568,7 +568,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = Tensor(0); size_t num = 0;
@@ -582,7 +582,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             vol = omesh->get_size(idx);
             datasource->get_data(values,points);
@@ -597,7 +597,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = Tensor(0);
@@ -631,7 +631,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -647,7 +647,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           vol = omesh->get_size(idx);
           omesh->get_normals(norms,coords,idx);
@@ -664,7 +664,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -679,7 +679,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -694,7 +694,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -709,7 +709,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -734,7 +734,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
-          checkForInterruption();
+
           omesh->minterpolate(points,coords,idx);
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
@@ -767,7 +767,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -781,7 +781,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             vol = omesh->get_size(idx);
             datasource->get_data(values,points);
@@ -796,7 +796,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -809,7 +809,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -822,7 +822,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -835,7 +835,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             std::sort(values.begin(),values.end());
@@ -858,7 +858,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             std::sort(values.begin(),values.end());
@@ -886,7 +886,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -900,7 +900,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             vol = omesh->get_size(idx);
             datasource->get_data(values,points);
@@ -915,7 +915,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -941,7 +941,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -955,7 +955,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             vol = omesh->get_size(idx);
             datasource->get_data(values,points);
@@ -970,7 +970,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
-            checkForInterruption();
+
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
             val = values[0];
@@ -1156,7 +1156,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   // Check whether algorithm succeeded
@@ -1284,7 +1284,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
  // Check whether algorithm succeeded

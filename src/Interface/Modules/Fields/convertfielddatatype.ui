@@ -6,21 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>217</width>
-    <height>147</height>
+    <width>272</width>
+    <height>189</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>217</width>
-    <height>147</height>
+    <width>272</width>
+    <height>189</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>ConvertFieldDataType</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Input Field Type</string>
@@ -83,7 +83,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Output Field Type</string>

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_APPLICATION_NOTE_H
 #define INTERFACE_APPLICATION_NOTE_H
 
 #include <Interface/Application/PositionProvider.h>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/tuple/tuple.hpp>
 #include <QString>
 #include <QFont>
@@ -45,17 +45,6 @@ class QGraphicsScene;
 namespace SCIRun {
 namespace Gui {
 
-  enum NotePosition
-  {
-    Default,
-    None,
-    Tooltip,
-    Top,
-    Left,
-    Right,
-    Bottom
-  };
-
   // TODO: refactor. Combine with ModuleNoteXML, and bring together various Note-related classes to support consistent read/write.
   // IDEA: subclass QGraphicsTextItem properly and add a way to associate with a HasNotes object (either module or connection).
   // Then serialization will be uniform for all notes.
@@ -66,8 +55,8 @@ namespace Gui {
     QString plainText_;
     int fontSize_;
     NotePosition position_;
-    Note() : fontSize_(-1), position_(Default) {}
-    Note(const QString& html, const QString& plain, int font, int pos) : html_(html), plainText_(plain), fontSize_(font), position_(NotePosition(pos)) {}
+    Note() : fontSize_(-1), position_(NotePosition::Default) {}
+    Note(const QString& html, const QString& plain, int font, NotePosition pos) : html_(html), plainText_(plain), fontSize_(font), position_(pos) {}
   };
 
   class NoteDisplayStrategy
@@ -77,33 +66,27 @@ namespace Gui {
     virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const = 0;
   };
 
-  typedef boost::shared_ptr<NoteDisplayStrategy> NoteDisplayStrategyPtr;
+  typedef SharedPointer<NoteDisplayStrategy> NoteDisplayStrategyPtr;
   class ModuleWidgetNoteDisplayStrategy;
   class ConnectionNoteDisplayStrategy;
 
   class NoteDisplayHelper
   {
   public:
-    virtual ~NoteDisplayHelper();
     Note currentNote() const;
   protected:
-    explicit NoteDisplayHelper(NoteDisplayStrategyPtr display);
-    virtual void setNoteGraphicsContext() = 0;
+    NoteDisplayHelper(NoteDisplayStrategyPtr display, QGraphicsItem* parent);
     void updateNoteImpl(const Note& note);
     void updateNotePosition();
     void setDefaultNotePositionImpl(NotePosition position);
     void setDefaultNoteSizeImpl(int size);
     void clearNoteCursor();
-    QGraphicsItem* networkObjectWithNote_;
-    QGraphicsScene* scene_;
-    PositionProviderPtr positioner_;
-    void destroy();
+    QGraphicsItem* parent_;
   private:
     QGraphicsTextItem* note_;
     NotePosition notePosition_, defaultNotePosition_;
     int defaultNoteFontSize_{ 20 };
     NoteDisplayStrategyPtr displayStrategy_;
-    bool destroyed_;
 
     QPointF relativeNotePosition();
   };

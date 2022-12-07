@@ -1,3 +1,34 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
 
 #include <set>
 #include <stdexcept>
@@ -82,8 +113,19 @@ const IBOMan::IBOData& IBOMan::getIBOData(const std::string& assetName) const
 // GARBAGE COLLECTION
 //------------------------------------------------------------------------------
 
+#define PRINT_IBO_GC 0
 void IBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 {
+#if PRINT_IBO_GC
+  for(auto& key: validKeys)
+    std::cout << "  \e[33mValid Keys\e[00m: " << key << "\n";
+  std::cout << "\n";
+
+  for(auto& key: mIBOData)
+    std::cout<< "  \e[31mCurrent Keys Pre-GC\e[00m: " << key.first << "\n";
+  std::cout << "\n";
+#endif
+
   // Every GLuint in validKeys should be in our map. If there is not, then
   // there is an error in the system, and it should be reported.
   // The reverse is not expected to be true, and is what we are attempting to
@@ -129,6 +171,12 @@ void IBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
     mIBOData.erase(it++);
     GL(glDeleteBuffers(1, &idToErase));
   }
+
+#if PRINT_IBO_GC
+  for(auto& key: mIBOData)
+    std::cout<< "  \e[34mCurrent Keys Post-GC\e[00m: " << key.first << "\n";
+  std::cout << "\n";
+#endif
 }
 
 class IBOGarbageCollector :
@@ -140,10 +188,15 @@ public:
 
   std::set<GLuint> mValidKeys;
 
-  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
-  void postWalkComponents(spire::ESCoreBase& core)
+  void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<IBOMan> im = core.getStaticComponent<StaticIBOMan>()->instance_;
+
+
+
+
+
     if (std::shared_ptr<IBOMan> man = im.lock()) {
       man->runGCAgainstVaidIDs(mValidKeys);
       mValidKeys.clear();
@@ -178,4 +231,3 @@ const char* IBOMan::getGCName()
 }
 
 } // namespace ren
-

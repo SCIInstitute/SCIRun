@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 ///
 ///@file  Pstreams.cc
 ///@brief Reading/writing persistent objects
@@ -38,7 +36,7 @@
 ///       Michelle Miller
 ///       Department of Computer Science
 ///       University of Utah
-///@date  April 1994, Modified 
+///@date  April 1994, Modified
 ///   Thu Feb 19 17:04:59 MST 1998
 ///
 
@@ -243,7 +241,7 @@ GZPiostream::~GZPiostream()
 }
 
 void
-GZPiostream::reset_post_header() 
+GZPiostream::reset_post_header()
 {
   if (! reading()) return;
 
@@ -252,7 +250,7 @@ GZPiostream::reset_post_header()
   if (version() == 1)
   {
     // Old versions had headers of size 12.
-    char hdr[12];    
+    char hdr[12];
     // read header
     gzread(fp_, hdr, 12);
   }
@@ -260,7 +258,7 @@ GZPiostream::reset_post_header()
   {
     // Versions > 1 have size of 16 to account for endianness in
     // header (LIT | BIG).
-    char hdr[16];    
+    char hdr[16];
     // read header
     gzread(fp_, hdr, 16);
   }
@@ -529,7 +527,7 @@ GZPiostream::io(std::string& data)
       if (buf_size)
       {
         char* buf = new char[buf_size];
-	
+
         // Read in data plus padding.
         if (!gzread(fp_, buf, sizeof(char) * buf_size))
         {
@@ -537,7 +535,7 @@ GZPiostream::io(std::string& data)
           delete [] buf;
           return;
         }
-	
+
         // Only use actual size of string.
         for (unsigned int i=0; i<chars; i++)
           data += buf[i];
@@ -575,7 +573,7 @@ GZPiostream::block_io(void *data, size_t s, size_t nmemb)
     {
       err = true;
       reporter_->error("GZPiostream error writing block io.");
-    }      
+    }
   }
   return true;
 }
@@ -789,9 +787,9 @@ auto_gzistream(const std::string& filename, ProgressReporter *pr)
   int file_endian, version;
   if (!Piostream::readHeader(pr, filename, hdr, 0, version, file_endian))
   {
-    if (pr) 
+    if (pr)
       pr->error("Cannot parse header of file: " + filename);
-    else 
+    else
       std::cerr << "ERROR - Cannot parse header of file: " << filename << std::endl;
     return PiostreamPtr();
   }
@@ -800,10 +798,10 @@ auto_gzistream(const std::string& filename, ProgressReporter *pr)
     const std::string errmsg = "File '" + filename + "' has version " +
       to_string(version) + ", this build only supports up to version " +
       to_string(Piostream::PERSISTENT_VERSION) + ".";
-    
-    if (pr) 
+
+    if (pr)
       pr->error(errmsg);
-    else 
+    else
       std::cerr << "ERROR - " + errmsg;
 
     return PiostreamPtr();
@@ -822,24 +820,24 @@ auto_gzistream(const std::string& filename, ProgressReporter *pr)
       machine_endian = Piostream::Little;
     }
 
-    if (file_endian == machine_endian) 
+    if (file_endian == machine_endian)
       return PiostreamPtr(new GZPiostream(filename, Piostream::Read, version, pr));
-    else 
+    else
       return PiostreamPtr(new GZSwapPiostream(filename, Piostream::Read, version,pr));
   }
   else
   {
-    const std::string msg = "Text based compressed files are not supported."; 
-    if (pr) 
+    const std::string msg = "Text based compressed files are not supported.";
+    if (pr)
       pr->error(msg);
-    else 
+    else
       std::cerr << "ERROR - " + msg << "\n";
     return PiostreamPtr();
   }
 
-  if (pr) 
+  if (pr)
     pr->error(filename + " is an unknown type!");
-  else 
+  else
     std::cerr << filename << " is an unknown type!" << std::endl;
   return PiostreamPtr();
 }
@@ -847,5 +845,3 @@ auto_gzistream(const std::string& filename, ProgressReporter *pr)
 
 
 } // End namespace SCIRun
-
-

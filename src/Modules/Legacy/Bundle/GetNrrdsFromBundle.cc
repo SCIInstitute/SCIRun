@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Bundle.h>
 #include <Core/Datatypes/NrrdData.h>
 
@@ -42,7 +42,7 @@ class GetNrrdsFromBundle : public Module {
 public:
   GetNrrdsFromBundle(GuiContext*);
   virtual void execute();
-  
+
 private:
   GuiString             guinrrd1name_;
   GuiString             guinrrd2name_;
@@ -52,10 +52,10 @@ private:
   GuiString             guinrrd6name_;
   GuiInt                guitransposenrrd1_;
   GuiInt                guitransposenrrd2_;
-  GuiInt                guitransposenrrd3_;  
+  GuiInt                guitransposenrrd3_;
   GuiInt                guitransposenrrd4_;
   GuiInt                guitransposenrrd5_;
-  GuiInt                guitransposenrrd6_;  
+  GuiInt                guitransposenrrd6_;
   GuiString             guinrrds_;
 };
 
@@ -85,24 +85,24 @@ void
 GetNrrdsFromBundle::execute()
 {
   BundleHandle handle;
-  
+
   // Get data from input port:
-  get_input_handle("bundle",handle,true); 
-  
-  if (inputs_changed_ || guinrrd1name_.changed() || 
-      guinrrd2name_.changed() || guinrrd3name_.changed() || 
-      guinrrd4name_.changed() || guinrrd5name_.changed() || 
+  get_input_handle("bundle",handle,true);
+
+  if (inputs_changed_ || guinrrd1name_.changed() ||
+      guinrrd2name_.changed() || guinrrd3name_.changed() ||
+      guinrrd4name_.changed() || guinrrd5name_.changed() ||
       guinrrd6name_.changed() || guitransposenrrd1_.changed() ||
       guitransposenrrd2_.changed() || guitransposenrrd3_.changed() ||
       guitransposenrrd4_.changed() || guitransposenrrd5_.changed() ||
-      guitransposenrrd6_.changed() || !oport_cached("bundle") || 
-      !oport_cached("nrrd1") || !oport_cached("nrrd2") || 
+      guitransposenrrd6_.changed() || !oport_cached("bundle") ||
+      !oport_cached("nrrd1") || !oport_cached("nrrd2") ||
       !oport_cached("nrrd3") || !oport_cached("nrrd4") ||
       !oport_cached("nrrd5") || !oport_cached("nrrd6"))
   {
     update_state(Executing);
     NrrdDataHandle fhandle;
-    
+
     std::string nrrd1name = guinrrd1name_.get();
     std::string nrrd2name = guinrrd2name_.get();
     std::string nrrd3name = guinrrd3name_.get();
@@ -116,7 +116,7 @@ GetNrrdsFromBundle::execute()
     int transposenrrd5 = guitransposenrrd5_.get();
     int transposenrrd6 = guitransposenrrd6_.get();
     std::string nrrdlist;
-        
+
     int numNrrds = handle->numNrrds();
     for (int p = 0; p < numNrrds; p++)
     {
@@ -125,65 +125,64 @@ GetNrrdsFromBundle::execute()
 
     guinrrds_.set(nrrdlist);
     get_ctx()->reset();
-  
+
     // We need to set bundle properties hence we need to detach
     handle.detach();
-    
+
     // Send nrrd1 if we found one that matches the name:
     if (handle->isNrrd(nrrd1name))
     {
       handle->transposeNrrd(false);
-      if (transposenrrd1) handle->transposeNrrd(true);    
+      if (transposenrrd1) handle->transposeNrrd(true);
       fhandle = handle->getNrrd(nrrd1name);
       send_output_handle("nrrd1",fhandle);
-    } 
+    }
 
     // Send nrrd2 if we found one that matches the name:
     if (handle->isNrrd(nrrd2name))
     {
       handle->transposeNrrd(false);
-      if (transposenrrd2) handle->transposeNrrd(true);    
+      if (transposenrrd2) handle->transposeNrrd(true);
       fhandle = handle->getNrrd(nrrd2name);
       send_output_handle("nrrd2",fhandle);
-    } 
+    }
 
     // Send matrix3 if we found one that matches the name:
     if (handle->isNrrd(nrrd3name))
     {
       handle->transposeNrrd(false);
-      if (transposenrrd3) handle->transposeNrrd(true);    
+      if (transposenrrd3) handle->transposeNrrd(true);
       fhandle = handle->getNrrd(nrrd3name);
       send_output_handle("nrrd3",fhandle);
-    } 
-    
+    }
+
     // Send nrrd4 if we found one that matches the name:
     if (handle->isNrrd(nrrd4name))
     {
       handle->transposeNrrd(false);
-      if (transposenrrd4) handle->transposeNrrd(true);    
+      if (transposenrrd4) handle->transposeNrrd(true);
       fhandle = handle->getNrrd(nrrd4name);
       send_output_handle("nrrd4",fhandle);
-    } 
+    }
 
     // Send nrrd5 if we found one that matches the name:
     if (handle->isNrrd(nrrd5name))
     {
       handle->transposeNrrd(false);
-      if (transposenrrd5) handle->transposeNrrd(true);    
+      if (transposenrrd5) handle->transposeNrrd(true);
       fhandle = handle->getNrrd(nrrd5name);
       send_output_handle("nrrd5",fhandle);
-    } 
+    }
 
     // Send matrix6 if we found one that matches the name:
     if (handle->isNrrd(nrrd6name))
     {
       handle->transposeNrrd(false);
-      if (transposenrrd6) handle->transposeNrrd(true);    
+      if (transposenrrd6) handle->transposeNrrd(true);
       fhandle = handle->getNrrd(nrrd6name);
       send_output_handle("nrrd6",fhandle);
-    } 
-        
-    send_output_handle("bundle",handle);    
+    }
+
+    send_output_handle("bundle",handle);
   }
 }
-

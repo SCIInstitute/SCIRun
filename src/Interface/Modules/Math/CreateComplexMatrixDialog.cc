@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/CreateComplexMatrixDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Modules/Math/CreateMatrix.h>
@@ -42,8 +42,8 @@ CreateComplexMatrixDialog::CreateComplexMatrixDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
-  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
+  connect(editCheckBox_, &QCheckBox::stateChanged, this, &CreateComplexMatrixDialog::pushMatrixToState);
+  connect(matrixTextEdit_, &QPlainTextEdit::textChanged, this, &CreateComplexMatrixDialog::editBoxUnsaved);
 }
 
 void CreateComplexMatrixDialog::pushMatrixToState(int state)

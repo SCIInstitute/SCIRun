@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,7 +45,8 @@
 
 #include <Core/Math/MusilRNG.h>
 #include <Core/Math/MiscMath.h> // for M_PI
-#include <math.h>
+#include <memory>
+#include <cmath>
 
 #include <Core/Math/share.h>
 
@@ -59,9 +59,8 @@ class SCISHARE Gaussian {
 public:
   double mean_;
   double sigma_;
-  MusilRNG *mr_;
+  std::unique_ptr<MusilRNG> mr_;
   Gaussian(double mean=0, double sigma=1, int seed=0);
-  ~Gaussian();
 
   //   pick a random value from this Gaussian distribution
   //      - implemented using the Box-Muller transformation

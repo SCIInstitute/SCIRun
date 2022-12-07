@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/make_shared.hpp>
+
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Utils/Exception.h>
 #include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
@@ -41,35 +41,35 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
   switch (type)
   {
   case GlobalCommands::ShowMainWindow:
-    return boost::make_shared<ShowMainWindowGui>();
+    return makeShared<ShowMainWindowGui>();
   case GlobalCommands::ShowSplashScreen:
-    return boost::make_shared<ShowSplashScreenGui>();
+    return makeShared<ShowSplashScreenGui>();
   case GlobalCommands::PrintHelp:
-    return boost::make_shared<PrintHelpCommand>();
+    return makeShared<PrintHelpCommand>();
   case GlobalCommands::PrintVersion:
-    return boost::make_shared<PrintVersionCommand>();
+    return makeShared<PrintVersionCommand>();
   case GlobalCommands::PrintModules:
-    return boost::make_shared<PrintModulesCommand>();
+    return makeShared<PrintModulesCommand>();
   case GlobalCommands::LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandGui>();
+    return makeShared<LoadFileCommandGui>();
   case GlobalCommands::SaveNetworkFile:
-    return boost::make_shared<NetworkSaveCommand>();
+    return makeShared<NetworkSaveCommand>();
   case GlobalCommands::ImportNetworkFile:
-    return boost::make_shared<FileImportCommand>();
+    return makeShared<FileImportCommand>();
   case GlobalCommands::RunPythonScript:
-    return boost::make_shared<RunPythonScriptCommandGui>();
+    return makeShared<RunPythonScriptCommandGui>();
   case GlobalCommands::SetupDataDirectory:
-    return boost::make_shared<SetupDataDirectoryCommandGui>();
+    return makeShared<SetupDataDirectoryCommandGui>();
   case GlobalCommands::ExecuteCurrentNetwork:
-    return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
+    return makeShared<ExecuteCurrentNetworkCommandGui>();
   case GlobalCommands::DisableViewScenes:
-    return boost::make_shared<DisableViewScenesCommandGui>();
+    return makeShared<DisableViewScenesCommandGui>();
   case GlobalCommands::InteractiveMode:
-    return boost::make_shared<InteractiveModeCommandConsole>();
+    return makeShared<InteractiveModeCommandConsole>();
   case GlobalCommands::SetupQuitAfterExecute:
-    return boost::make_shared<QuitAfterExecuteCommandGui>();
+    return makeShared<QuitAfterExecuteCommandGui>();
   case GlobalCommands::QuitCommand:
-    return boost::make_shared<QuitCommandGui>();
+    return makeShared<QuitCommandGui>();
   default:
     THROW_INVALID_ARGUMENT("Unknown global command type.");
   }

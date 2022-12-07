@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,14 +23,13 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
 
 #ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -39,15 +37,14 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(Location);
+
         class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgorithmBase
         {
         public:
           ConvertMeshToPointCloudMeshAlgo();
-
           bool runImpl(FieldHandle input, FieldHandle& output) const;
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
-
-          static AlgorithmParameterName Location;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
       }
@@ -55,5 +52,4 @@ namespace SCIRun {
   }
 }
 
-#endif 
-
+#endif

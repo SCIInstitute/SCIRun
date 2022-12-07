@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : ReportNrrdInfo.cc
-//    Author : Martin Cole
-//    Date   : Tue Feb  4 08:55:34 2003
+
+///  File   : ReportNrrdInfo.cc
+///  Author : Martin Cole
+///  Date   : Tue Feb  4 08:55:34 2003
 
 #include <Modules/Legacy/Teem/Misc/ReportNrrdInfo.h>
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
@@ -53,8 +53,7 @@ void ReportNrrdInfo::setStateDefaults()
 
 template <typename T>
 void
-ReportNrrdInfo::update_axis_var(std::ostringstream& info, const char *name, int axis, const T& val,
-                          const char *pname)
+ReportNrrdInfo::update_axis_var(std::ostringstream& info, const T& val, const char *pname)
 {
   info << '\t' << pname << ": " << val << "\n";
 }
@@ -138,7 +137,7 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
   {
     info << "Axis " << i << ":\n";
     std::string labelstr;
-    if (nh->getNrrd()->axis[i].label == 0 ||
+    if (!nh->getNrrd()->axis[i].label ||
         std::string(nh->getNrrd()->axis[i].label).length() == 0)
     {
       labelstr = "---";
@@ -147,17 +146,17 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
     {
       labelstr = nh->getNrrd()->axis[i].label;
     }
-    update_axis_var(info, "label", i, labelstr, "Label");
+    update_axis_var(info, labelstr, "Label");
 
     int k = nh->getNrrd()->axis[i].kind;
     if (k < 0 || k >= nrrdKindLast) k = 0;
     const char *kindstr = nrrd_kind_strings[k];
-    update_axis_var(info, "kind", i, kindstr, "Kind");
+    update_axis_var(info, kindstr, "Kind");
 
-    update_axis_var(info, "size", i, nh->getNrrd()->axis[i].size, "Size");
+    update_axis_var(info, nh->getNrrd()->axis[i].size, "Size");
 
-    update_axis_var(info, "min", i, nh->getNrrd()->axis[i].min, "Min");
-    update_axis_var(info, "max", i, nh->getNrrd()->axis[i].max, "Max");
+    update_axis_var(info, nh->getNrrd()->axis[i].min, "Min");
+    update_axis_var(info, nh->getNrrd()->axis[i].max, "Max");
 
     std::string locstr;
     switch (nh->getNrrd()->axis[i].center)
@@ -172,10 +171,10 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
       locstr = "Cell";
       break;
     }
-    update_axis_var(info, "center", i, locstr, "Center");
+    update_axis_var(info, locstr, "Center");
 
     if (!haveSpaceInfo) { // no "spaceDirection" info, just "spacing"
-      update_axis_var(info, "spacing", i, (nh->getNrrd()->axis[i].spacing), "Spacing");
+      update_axis_var(info, (nh->getNrrd()->axis[i].spacing), "Spacing");
     } else {
       std::ostringstream spacedir;
       spacedir << "[ ";
@@ -189,15 +188,14 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
           spacedir << ", ";
       }
       spacedir << " ]";
-      update_axis_var(info, "spaceDir", i, spacedir.str(), "Spacing Direction");
-      update_axis_var(info, "spacing", i, (sqrt(l2)), "Spacing");
+      update_axis_var(info, spacedir.str(), "Spacing Direction");
+      update_axis_var(info, (sqrt(l2)), "Spacing");
     }
   }
   get_state()->setTransientValue(Variables::ObjectInfo, info.str());
 }
 
-void
-ReportNrrdInfo::execute()
+void ReportNrrdInfo::execute()
 {
   auto nh = getRequiredInput(Query_Nrrd);
   update_input_attributes(nh);

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef ALGORITHMS_BASE_ALGORITHMLOGGER_H
 #define ALGORITHMS_BASE_ALGORITHMLOGGER_H
@@ -45,10 +45,12 @@ namespace Algorithms {
     Core::Logging::LoggerHandle getLogger() const { return logger_; }
 
     /// functions for the algorithm, so it can forward errors if needed
-    virtual void error(const std::string& error) const;
-    virtual void warning(const std::string& warning) const;
-    virtual void remark(const std::string& remark) const;
-    virtual void status(const std::string& status) const;
+    void error(const std::string& error) const override;
+    bool errorReported() const override;
+    void setErrorFlag(bool flag) override;
+    void warning(const std::string& warning) const override;
+    void remark(const std::string& remark) const override;
+    void status(const std::string& status) const override;
   private:
     Core::Logging::LoggerHandle logger_;
     Core::Logging::LoggerHandle defaultLogger_;

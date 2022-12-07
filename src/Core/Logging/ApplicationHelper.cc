@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Logging/ApplicationHelper.h>
 #include <boost/filesystem.hpp>
@@ -56,7 +56,7 @@ using namespace SCIRun::Core::Logging;
 
 // following ugly code copied from Seg3D.
 
-bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, bool config_path)
+bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, bool)
 {
 #ifdef _WIN32
   TCHAR dir[MAX_PATH];
@@ -64,9 +64,9 @@ bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, b
   // Try to create the local application directory
   // If it already exists return the name of the directory.
 
-  if( config_path )
+  if( true )
   {
-    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_LOCAL_APPDATA, 0, 0, dir ) ) )
+    if ( SUCCEEDED( SHGetFolderPath( nullptr, CSIDL_LOCAL_APPDATA, nullptr, 0, dir ) ) )
     {
       user_dir = boost::filesystem::path( dir );
       return true;
@@ -79,7 +79,7 @@ bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, b
   }
   else
   {
-    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, 0, 0, dir ) ) )
+    if ( SUCCEEDED( SHGetFolderPath( nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, dir ) ) )
     {
       user_dir = boost::filesystem::path( dir );
       return true;

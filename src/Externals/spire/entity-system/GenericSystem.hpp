@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_ENTITY_SYSTEM_GENERICSYSTEM_HPP
 #define SPIRE_ENTITY_SYSTEM_GENERICSYSTEM_HPP
 
@@ -7,7 +35,9 @@
 // the BaseSystem interface to iterate over all systems with the
 // walkComponentsOver override.
 
+#include <es-log/trace-log.h>
 #include <iostream>
+#include <limits>       // std::numeric_limits
 #include <array>
 #include <set>          // Only used in a corner case of walkComponents where
                         // all components are optional.
@@ -16,6 +46,7 @@
 #include "src/ComponentContainer.hpp"
 #include "src/TemplateID.hpp"
 #include "src/ComponentGroup.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -111,9 +142,9 @@ public:
     AddComponentsToGroupInputs<0, Ts...>::exec(core, baseComponents, groupValues);
 
     bool execute = true;
-    for (int i = 0; i < sizeof...(Ts); i++)
+    for (size_t i = 0; i < sizeof...(Ts); i++)
     {
-      if (baseComponents[i] == nullptr)
+      if (!baseComponents[i])
         baseComponents[i] = ESCoreBase::getEmptyContainer();
 
       isStatic[i] = baseComponents[i]->isStatic();
@@ -141,7 +172,7 @@ public:
 
     if (execute)
     {
-      if (GroupComponents == false)
+      if (!GroupComponents)
         RecurseExecute<0, Ts...>::exec(core, this, componentArrays, numComponents,
                                        indices, optionalComponents, isStatic,
                                        nextIndices, values, entityID);
@@ -164,6 +195,7 @@ public:
     postWalkComponents(core);
   }
 
+  //TODO: log the **** out of this function
   void walkComponentsInternal(ESCoreBase& core)
   {
     if (sizeof...(Ts) == 0)
@@ -189,9 +221,9 @@ public:
     // the user about possible performance problems when doing this.
     uint64_t lowestUpperSequence = std::numeric_limits<uint64_t>::max();
     int leadingComponent = -1;
-    for (int i = 0; i < sizeof...(Ts); ++i)
+    for (size_t i = 0; i < sizeof...(Ts); ++i)
     {
-      if (baseComponents[i] == nullptr)
+      if (!baseComponents[i])
         baseComponents[i] = ESCoreBase::getEmptyContainer();
 
       bool optional = optionalComponents[i];
@@ -211,7 +243,7 @@ public:
 
       if (baseComponents[i]->getUpperSequence() < lowestUpperSequence)
       {
-        leadingComponent = i;
+        leadingComponent = static_cast<int>(i);
         lowestUpperSequence = baseComponents[i]->getUpperSequence();
       }
     }
@@ -237,7 +269,7 @@ public:
       {
         // Find the target sequence in the other components.
         bool failed = false;
-        for (int i = 0; i < baseComponents.size(); ++i)
+        for (size_t i = 0; i < baseComponents.size(); ++i)
         {
           uint64_t curSequence = baseComponents[i]->getSequenceFromIndex(indices[i]);
           bool optional = optionalComponents[i];
@@ -281,7 +313,7 @@ public:
         {
           // Execute with indices. This recursive execute will perform a cartesian
           // product.
-          if (GroupComponents == false)
+          if (!GroupComponents)
           {
             if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
                                                 numComponents, indices,
@@ -350,7 +382,7 @@ public:
           uint64_t targetSequence = *it;
 
           // Find the target sequence in the components.
-          for (int i = 0; i < baseComponents.size(); ++i)
+          for (size_t i = 0; i < baseComponents.size(); ++i)
           {
             if (!isStatic[i])
             {
@@ -370,7 +402,7 @@ public:
 
           // Execute with indices. This recursive execute will perform a cartesian
           // product.
-          if (GroupComponents == false)
+          if (!GroupComponents)
           {
             if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
                                                 numComponents, indices,
@@ -405,9 +437,9 @@ public:
         // or recursively. If there are any optional components, then we don't
         // execute at all.
         bool allStatic = true;
-        for (int i = 0; i < sizeof...(Ts); ++i)
+        for (size_t i = 0; i < sizeof...(Ts); ++i)
         {
-          if (isStatic[i] == false)
+          if (!isStatic[i])
           {
             allStatic = false;
             break;
@@ -416,7 +448,7 @@ public:
 
         if (allStatic)
         {
-          if (GroupComponents == false)
+          if (!GroupComponents)
           {
             if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
                                                 numComponents, indices,
@@ -640,7 +672,8 @@ public:
           }
           else
           {
-            if (!optional) std::cerr << "Generic System: invalid sequence on non-optional component!!" << std::endl;
+            if (!optional)
+              std::cerr << "Generic System: invalid sequence on non-optional component!!" << std::endl;
             std::get<TupleIndex>(input) = nullptr;
           }
         }
@@ -676,10 +709,7 @@ public:
           // Terminate early in either case, but with different return values.
           // For optional components, reaching the end of the array does not
           // necessarily mean we should terminate the algorithm.
-          if (optional)
-            return true;
-          else
-            return false;
+          return optional;
         }
 
         // Loop until we find a sequence that is not in our target.
@@ -721,10 +751,7 @@ public:
         }
       }
 
-      if (reachedEnd)
-        return false;
-      else
-        return true;
+      return !reachedEnd;
     }
   };
 
@@ -732,12 +759,12 @@ public:
   struct RecurseExecute<TupleIndex>
   {
     static bool exec(ESCoreBase& core, GenericSystem<GroupComponents, Ts...>* ptr,
-                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& componentArrays,
-                     const std::array<int, sizeof...(Ts)>& componentSizes,
-                     const std::array<int, sizeof...(Ts)>& indices,
-                     const std::array<bool, sizeof...(Ts)>& componentOptional,
-                     const std::array<bool, sizeof...(Ts)>& componentStatic,
-                     std::array<int, sizeof...(Ts)>& nextIndices,
+                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& /*componentArrays*/,
+                     const std::array<int, sizeof...(Ts)>& /*componentSizes*/,
+                     const std::array<int, sizeof...(Ts)>& /*indices*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentOptional*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentStatic*/,
+                     std::array<int, sizeof...(Ts)>& /*nextIndices*/,
                      std::tuple<Ts*...>& input,
                      uint64_t targetSequence)
     {
@@ -856,12 +883,12 @@ public:
   struct GroupExecute<TupleIndex>
   {
     static bool exec(ESCoreBase& core, GenericSystem<GroupComponents, Ts...>* ptr,
-                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& componentArrays,
-                     const std::array<int, sizeof...(Ts)>& componentSizes,
-                     const std::array<int, sizeof...(Ts)>& indices,
-                     const std::array<bool, sizeof...(Ts)>& componentOptional,
-                     const std::array<bool, sizeof...(Ts)>& componentStatic,
-                     std::array<int, sizeof...(Ts)>& nextIndices,
+                     const std::tuple<typename ComponentContainer<Ts>::ComponentItem*...>& /*componentArrays*/,
+                     const std::array<int, sizeof...(Ts)>& /*componentSizes*/,
+                     const std::array<int, sizeof...(Ts)>& /*indices*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentOptional*/,
+                     const std::array<bool, sizeof...(Ts)>& /*componentStatic*/,
+                     std::array<int, sizeof...(Ts)>& /*nextIndices*/,
                      std::tuple<ComponentGroup<Ts>...>& input,
                      uint64_t targetSequence)
     {
@@ -872,14 +899,14 @@ public:
   };
 
   // Non-grouped version of execute.
-  virtual void execute(ESCoreBase&, uint64_t, const Ts*... vs)
+  virtual void execute(ESCoreBase&, uint64_t, const Ts*...)
   {
     std::cerr << "entity-system: Unimplmented system execute." << std::endl;
     throw std::runtime_error("entity-system: Unimplemented system execute.");
   }
 
   // Grouped version of execute.
-  virtual void groupExecute(ESCoreBase&, uint64_t, const ComponentGroup<Ts>&... groups)
+  virtual void groupExecute(ESCoreBase&, uint64_t, const ComponentGroup<Ts>&... /*groups*/)
   {
     std::cerr << "entity-system: Unimplmented system group execute." << std::endl;
     throw std::runtime_error("entity-system: Unimplemented system group execute.");
@@ -887,15 +914,15 @@ public:
 
   /// This function should be overriden and return true for all components
   /// which may be optional.
-  virtual bool isComponentOptional(uint64_t templateID) override {return false;}
+  bool isComponentOptional(uint64_t) override { return false; }
 
   /// This function gets called before we start walking components from the
   /// walkComponents function.
-  virtual void preWalkComponents(ESCoreBase& core)            {}
+  virtual void preWalkComponents(ESCoreBase&)            {}
 
   /// This function gets called after we finish walking components from the
   /// walkComponents function.
-  virtual void postWalkComponents(ESCoreBase& core)           {}
+  virtual void postWalkComponents(ESCoreBase&)           {}
 };
 
 namespace optional_components_impl
@@ -916,7 +943,7 @@ struct OptionalCompImpl<RT, RTs...>
 template <>
 struct OptionalCompImpl<>
 {
-  static bool exec(uint64_t templateID)  {return false;}
+  static bool exec(uint64_t)  {return false;}
 };
 } // namespace optional_components_impl
 

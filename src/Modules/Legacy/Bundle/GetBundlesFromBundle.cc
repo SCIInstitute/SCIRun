@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Bundle.h>
 
 #include <Dataflow/Network/Ports/BundlePort.h>
@@ -40,7 +40,7 @@ class GetBundlesFromBundle : public Module {
 public:
   GetBundlesFromBundle(GuiContext*);
   virtual void execute();
-  
+
 private:
   GuiString             guibundle1name_;
   GuiString             guibundle2name_;
@@ -70,20 +70,20 @@ void GetBundlesFromBundle::execute()
 {
   // Define input handle:
   BundleHandle handle;
-  
+
   // Get data from input port:
   if (!(get_input_handle("bundle",handle,true))) return;
-  
-  if (inputs_changed_ || guibundle1name_.changed() || 
+
+  if (inputs_changed_ || guibundle1name_.changed() ||
       guibundle2name_.changed() || guibundle3name_.changed() ||
       guibundle4name_.changed() || guibundle5name_.changed() ||
-      guibundle6name_.changed() ||!oport_cached("bundle") || 
+      guibundle6name_.changed() ||!oport_cached("bundle") ||
       !oport_cached("bundle1") || !oport_cached("bundle2") ||
       !oport_cached("bundle3") || !oport_cached("bundle4") ||
       !oport_cached("bundle5") || !oport_cached("bundle6"))
   {
     update_state(Executing);
-  
+
     BundleHandle fhandle;
     std::string bundle1name = guibundle1name_.get();
     std::string bundle2name = guibundle2name_.get();
@@ -92,7 +92,7 @@ void GetBundlesFromBundle::execute()
     std::string bundle5name = guibundle5name_.get();
     std::string bundle6name = guibundle6name_.get();
     std::string bundlelist;
-    
+
     int numBundles = handle->numBundles();
     for (int p = 0; p < numBundles; p++)
     {
@@ -100,52 +100,50 @@ void GetBundlesFromBundle::execute()
     }
 
     guibundles_.set(bundlelist);
-    get_ctx()->reset();  
-  
+    get_ctx()->reset();
+
     // Send bundle1 if we found one that matches the name:
     if (handle->isBundle(bundle1name))
     {
       fhandle = handle->getBundle(bundle1name);
       send_output_handle("bundle1",fhandle);
-    } 
-    
+    }
+
     // Send bundle2 if we found one that matches the name:
     if (handle->isBundle(bundle2name))
     {
       fhandle = handle->getBundle(bundle2name);
       send_output_handle("bundle2",fhandle);
-    } 
+    }
 
-    // Send bundle3 if we found one that matches the name:  
+    // Send bundle3 if we found one that matches the name:
     if (handle->isBundle(bundle3name))
     {
       fhandle = handle->getBundle(bundle3name);
       send_output_handle("bundle3",fhandle);
-    } 
-     
+    }
+
     // Send bundle4 if we found one that matches the name:
     if (handle->isBundle(bundle4name))
     {
       fhandle = handle->getBundle(bundle4name);
       send_output_handle("bundle4",fhandle);
-    } 
-     
+    }
+
     // Send bundle5 if we found one that matches the name:
     if (handle->isBundle(bundle5name))
     {
       fhandle = handle->getBundle(bundle5name);
       send_output_handle("bundle5",fhandle);
-    } 
-     
-    // Send bundle6 if we found one that matches the name:  
+    }
+
+    // Send bundle6 if we found one that matches the name:
     if (handle->isBundle(bundle6name))
     {
       fhandle = handle->getBundle(bundle6name);
       send_output_handle("bundle6",fhandle);
-    } 
-             
+    }
+
     send_output_handle("bundle",handle);
   }
 }
-
-

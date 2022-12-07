@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,12 +23,13 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun{
@@ -43,12 +43,12 @@ namespace SCIRun{
         {
           size_t operator()(const edgepair_t &a) const
           {
-            boost::hash<size_t> h;
+            std::hash<size_t> h;
             return h((a.first << 3) ^ a.second);
           }
         };
 
-        typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
+        typedef std::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
 
       }
     }

@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
- License for the specific language governing rights and limitations under
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -32,39 +32,37 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
 
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::TestUtils;
-using ::testing::NotNull;
-using ::testing::TestWithParam;
-using ::testing::Values;
+using namespace Core::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Logging;
+using namespace Core::Algorithms::Fields;
+using namespace Core::Algorithms;
+using namespace TestUtils;
+using testing::NotNull;
+using testing::TestWithParam;
+using testing::Values;
 
 // TODO: surface and volume mesh types (TriSurf, TetVol), other basis types
 
-class JoinFieldsAlgoTests : public ::testing::Test
+class JoinFieldsAlgoTests : public testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(true);
   }
 
-  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=DOUBLE_E)
+  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=data_info_type::DOUBLE_E)
   {
-    FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
+    FieldInformation lfi(mesh_info_type::LATVOLMESH_E, databasis_info_type::LINEARDATA_E, type);
     Point minb(-1.0, -1.0, -1.0);
     Point maxb(1.0, 1.0, 1.0);
     MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
@@ -90,21 +88,21 @@ TEST_F(JoinFieldsAlgoTests, CanLogErrorMessage)
 
 TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVols)
 {
-  JoinFieldsAlgo algo;
+  const JoinFieldsAlgo algo;
 
   FieldList input;
-  input.push_back(CreateEmptyLatVol(2,3,4, INT_E));
+  input.push_back(CreateEmptyLatVol(2,3,4, data_info_type::INT_E));
   EXPECT_EQ(2*3*4, input[0]->vmesh()->num_nodes());
-  input.push_back(CreateEmptyLatVol(5,6,7, INT_E));
+  input.push_back(CreateEmptyLatVol(5,6,7, data_info_type::INT_E));
   EXPECT_EQ(5*6*7, input[1]->vmesh()->num_nodes());
-  input.push_back(CreateEmptyLatVol(8,9,10, INT_E));
+  input.push_back(CreateEmptyLatVol(8,9,10, data_info_type::INT_E));
   EXPECT_EQ(8*9*10, input[2]->vmesh()->num_nodes());
 
   FieldHandle output;
   EXPECT_TRUE(algo.runImpl(input, output));
   EXPECT_EQ(914, output->vmesh()->num_nodes());
 
-  input.push_back(CreateEmptyLatVol(11,12,13, INT_E));
+  input.push_back(CreateEmptyLatVol(11,12,13, data_info_type::INT_E));
   EXPECT_EQ(11*12*13, input[3]->vmesh()->num_nodes());
   EXPECT_TRUE(algo.runImpl(input, output));
   EXPECT_EQ(2588, output->vmesh()->num_nodes());
@@ -129,45 +127,47 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
 
 // Get Parameterized Tests
 
-using ::testing::Bool;
-using ::testing::Values;
-using ::testing::Combine;
+using testing::Bool;
+using testing::Values;
+using testing::Combine;
 
-class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, double> >
+class JoinFieldsAlgoTestsParameterized : public TestWithParam<std::tuple<bool, bool, bool, bool,
+      double>>
 {
 public:
   JoinFieldsAlgo algo_;
   FieldList input;
   FieldHandle output;
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     LogSettings::Instance().setVerbose(true);
     // How to set parameters on an algorithm (that come from the GUI)
-    algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MatchNodeValues, ::std::tr1::get<2>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MakeNoData,      ::std::tr1::get<3>(GetParam()));
-    algo_.set(JoinFieldsAlgo::Tolerance,       ::std::tr1::get<4>(GetParam()));
+    algo_.set(Parameters::merge_nodes,      std::get<0>(GetParam()));
+    algo_.set(Parameters::merge_elems,      std::get<1>(GetParam()));
+    algo_.set(Parameters::match_node_values, std::get<2>(GetParam()));
+    algo_.set(Parameters::make_no_data,      std::get<3>(GetParam()));
+    algo_.set(Parameters::tolerance,       std::get<4>(GetParam()));
   }
-  virtual void TearDown(){ }
+
+  void TearDown() override { }
 };
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
-  input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
-  input.push_back(CreateEmptyLatVol(5, 6, 7, INT_E));
-  input.push_back(CreateEmptyLatVol(8, 9, 10, INT_E));
+  input.push_back(CreateEmptyLatVol(2, 3, 4, data_info_type::INT_E));
+  input.push_back(CreateEmptyLatVol(5, 6, 7, data_info_type::INT_E));
+  input.push_back(CreateEmptyLatVol(8, 9, 10, data_info_type::INT_E));
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_data_types)
 {
   // should just print message about converting data
-  input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
-  input.push_back(CreateEmptyLatVol(5, 6, 7, INT_E));
-  input.push_back(CreateEmptyLatVol(8, 9, 10, INT_E));
-  input.push_back(CreateEmptyLatVol(11, 12, 13, FLOAT_E));
+  input.push_back(CreateEmptyLatVol(2, 3, 4, data_info_type::INT_E));
+  input.push_back(CreateEmptyLatVol(5, 6, 7, data_info_type::INT_E));
+  input.push_back(CreateEmptyLatVol(8, 9, 10, data_info_type::INT_E));
+  input.push_back(CreateEmptyLatVol(11, 12, 13, data_info_type::FLOAT_E));
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
@@ -179,7 +179,7 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_missing_in
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_input_structured)
 {
-  input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
+  input.push_back(CreateEmptyLatVol(2, 3, 4, data_info_type::INT_E));
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
@@ -187,8 +187,8 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_inp
 TEST_P(JoinFieldsAlgoTestsParameterized, DISABLED_JoinFieldsAlgo_Parameterized_single_input_unstructured_match_nodes)
 {
   // sample field has no data
-  input.push_back(TriangleTriSurfConstantBasis(INT_E));
-  algo_.set(JoinFieldsAlgo::MatchNodeValues, true);
+  input.push_back(TriangleTriSurfConstantBasis(data_info_type::INT_E));
+  algo_.set(Parameters::match_node_values, true);
   EXPECT_FALSE(algo_.runImpl(input, output));
 }
 
@@ -196,15 +196,15 @@ TEST_P(JoinFieldsAlgoTestsParameterized, DISABLED_JoinFieldsAlgo_Parameterized_s
 TEST_P(JoinFieldsAlgoTestsParameterized, DISABLED_JoinFieldsAlgo_Parameterized_single_input_unstructured_no_node_match)
 {
   // sample field has no data
-  input.push_back(TriangleTriSurfConstantBasis(INT_E));
-  algo_.set(JoinFieldsAlgo::MatchNodeValues, false);
+  input.push_back(TriangleTriSurfConstantBasis(data_info_type::INT_E));
+  algo_.set(Parameters::match_node_values, false);
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_mismatched_field_geom)
 {
-  input.push_back(CubeTriSurfConstantBasis(INT_E));
-  input.push_back(CubeTetVolConstantBasis(INT_E));
+  input.push_back(CubeTriSurfConstantBasis(data_info_type::INT_E));
+  input.push_back(CubeTetVolConstantBasis(data_info_type::INT_E));
   EXPECT_FALSE(algo_.runImpl(input, output));
 }
 

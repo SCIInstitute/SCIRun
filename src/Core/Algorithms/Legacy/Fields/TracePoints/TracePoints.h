@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_FIELDS_TRACEPOINTS_TRACEPOINTS_H
 #define CORE_ALGORITHMS_FIELDS_TRACEPOINTS_TRACEPOINTS_H 1
@@ -57,13 +57,12 @@ class SCISHARE TracePointsAlgo : public AlgoBase
       add_scalar("value",0.0);
       add_scalar("tolerance",1e-6);
     }
-    
-    bool run(FieldHandle pointcloud, 
-             FieldHandle old_curvefield, 
+
+    bool run(FieldHandle pointcloud,
+             FieldHandle old_curvefield,
              FieldHandle& new_curvefield);
 };
 
 } // end namespace SCIRunAlgo
 
-#endif 
-
+#endif

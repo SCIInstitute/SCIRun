@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
 ///@file  PropertyManager.cc
 ///
@@ -33,7 +33,7 @@
 ///       Yarden Livnat
 ///       Department of Computer Science
 ///       University of Utah
-/// 
+///
 ///@date  March 2001
 ///
 ///@brief Manage properties of persistent objects.
@@ -47,7 +47,7 @@ using namespace SCIRun::Core::Thread;
 namespace SCIRun {
 
 /// @todo: should be using Guards here...
-PersistentTypeID 
+PersistentTypeID
 PropertyBase::type_id("PropertyBase", "Persistent", maker);
 
 std::string PropertyBase::dynamic_type_name() const { return type_id.type; }
@@ -63,14 +63,14 @@ Persistent* make_PropertyManager()
   return new PropertyManager;
 }
 
-PersistentTypeID PropertyManager::type_id("PropertyManager", 
-					  "Persistent", 
+PersistentTypeID PropertyManager::type_id("PropertyManager",
+					  "Persistent",
 					  make_PropertyManager);
 
 std::string PropertyManager::dynamic_type_name() const { return type_id.type; }
 
 
-PropertyManager::PropertyManager() : 
+PropertyManager::PropertyManager() :
   frozen_(false), lock("PropertyManager")
 {
 }
@@ -85,8 +85,8 @@ PropertyManager::PropertyManager(const PropertyManager &copy) :
   frozen_(false),
   lock("PropertyManager")
 {
-  Guard this_guard(lock.get());
-  Guard copy_guard(const_cast<PropertyManager&>(copy).lock.get());
+  Guard this_guard(lock);
+  Guard copy_guard(const_cast<PropertyManager&>(copy).lock);
 
   map_type::const_iterator pi = copy.properties_.begin();
   while (pi != copy.properties_.end())
@@ -100,7 +100,7 @@ PropertyManager::PropertyManager(const PropertyManager &copy) :
 }
 
 
-PropertyManager & 
+PropertyManager &
 PropertyManager::operator=(const PropertyManager &src)
 {
   copy_properties(&src);
@@ -114,13 +114,13 @@ PropertyManager::operator=(const PropertyManager &src)
 void
 PropertyManager::copy_properties(const PropertyManager* src)
 {
-  Guard this_guard(lock.get());
+  Guard this_guard(lock);
 
   clear_transient();
   frozen_ = false;
 
   {
-    Guard src_guard(const_cast<PropertyManager*>(src)->lock.get());
+    Guard src_guard(const_cast<PropertyManager*>(src)->lock);
     map_type::const_iterator pi = src->properties_.begin();
     while (pi != src->properties_.end())
     {
@@ -141,14 +141,14 @@ PropertyManager::operator==(const PropertyManager &pm)
 {
   bool result = true;
 
-  Guard g(lock.get());
+  Guard g(lock);
 
   if (nproperties() != pm.nproperties())
   {
     result = false;
   }
 
-  Guard src_guard(const_cast<PropertyManager&>(pm).lock.get());
+  Guard src_guard(const_cast<PropertyManager&>(pm).lock);
   map_type::const_iterator pi = pm.properties_.begin();
   while (result && pi != pm.properties_.end())
   {
@@ -179,7 +179,7 @@ PropertyManager::operator!=(const PropertyManager &pm)
 
 PropertyManager::~PropertyManager()
 {
-  Guard g(lock.get());
+  Guard g(lock);
   properties_.clear();
 }
 
@@ -195,7 +195,7 @@ PropertyManager::thaw()
   //ASSERT(ref_cnt <= 1);
 
   // Clean up properties.
-  Guard g(lock.get());
+  Guard g(lock);
 
   clear_transient();
   frozen_ = false;
@@ -205,16 +205,16 @@ PropertyManager::thaw()
 void
 PropertyManager::freeze()
 {
-  Guard g(lock.get());
+  Guard g(lock);
 
   frozen_ = true;
 }
 
 
-bool 
+bool
 PropertyManager::is_property(const std::string &name)
 {
-  Guard g(lock.get());
+  Guard g(lock);
 
   bool ans = false;
   map_type::iterator loc = properties_.find(name);
@@ -222,7 +222,7 @@ PropertyManager::is_property(const std::string &name)
     ans = true;
 
   return ans;
-} 
+}
 
 
 std::string
@@ -230,13 +230,13 @@ PropertyManager::get_property_name(size_t index)
 {
   if (index < nproperties())
   {
-    Guard g(lock.get());
+    Guard g(lock);
 
     map_type::const_iterator pi = properties_.begin();
 
     for(size_t i=0; i<index; i++ )
       ++pi;
-    
+
     std::string result = pi->first;
 
     return result;
@@ -244,14 +244,14 @@ PropertyManager::get_property_name(size_t index)
   else
   {
     return std::string();
-  } 
+  }
 }
 
 
 void
 PropertyManager::remove_property( const std::string &name )
 {
-  Guard g(lock.get());
+  Guard g(lock);
 
   map_type::iterator loc = properties_.find(name);
   if (loc != properties_.end())
@@ -295,7 +295,7 @@ PropertyManager::io(Piostream &stream)
   const int version = stream.begin_class("PropertyManager", PROPERTYMANAGER_VERSION);
   if ( stream.writing() )
   {
-    Guard g(lock.get());
+    Guard g(lock);
     PropertyManagerSize nprop = nproperties();
     Pio(stream, nprop);
     for (auto& p : properties_)
@@ -310,7 +310,7 @@ PropertyManager::io(Piostream &stream)
   {
     PropertyManagerSize size;
     Pio( stream, size );
-    Guard g(lock.get());
+    Guard g(lock);
 
     for (unsigned int i=0; i<size; i++ )
     {
@@ -318,7 +318,7 @@ PropertyManager::io(Piostream &stream)
       Pio(stream, name );
       PersistentHandle p;
       stream.io( p, PropertyBase::type_id );
-      properties_[name] = boost::static_pointer_cast<PropertyBase>(p);
+      properties_[name] = std::static_pointer_cast<PropertyBase>(p);
       if (version < 2 && name == "minmax")
       {
         properties_[name]->set_transient(true);

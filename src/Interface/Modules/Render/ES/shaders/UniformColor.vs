@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,23 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Uniforms
-uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
-uniform vec4    uColor;             // Uniform color
-uniform mat4    uInverseView;       // world -> view
 
-// Attributes
 attribute vec3  aPos;
-
-// Outputs to the fragment shader.
-varying vec4    fColor;
-varying vec4    vPos;//for clipping plane calc
-varying vec4    vFogCoord;// for fog calculation
-
 void main( void )
 {
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  fColor      = uColor;
-  vPos = vec4(aPos, 1.0);
-  vFogCoord = uInverseView * vPos;
+  gl_Position = vec4(aPos, 1.0);
 }

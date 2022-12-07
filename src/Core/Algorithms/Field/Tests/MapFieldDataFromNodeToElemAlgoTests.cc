@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -38,6 +39,7 @@
 #include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -113,7 +115,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 {
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Average");
+ algo.setOption(Variables::Method, "Average");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -123,14 +125,14 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
    EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
  }
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Interpolation");
+ algo.setOption(Variables::Method, "Interpolation");
 
  FieldHandle input2=CreateTetMesh2();
 
@@ -138,7 +140,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 
  ASSERT_TRUE(result2->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result2->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result2->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result2->vfield()->get_value(tmp,idx);
@@ -152,7 +154,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnElems)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Average");
+ algo.setOption(Variables::Method, "Average");
 
  FieldHandle input=CreateTetMesh1();
 
@@ -169,7 +171,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMin)
 {
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Min");
+ algo.setOption(Variables::Method, "Min");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -179,7 +181,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMin)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -194,7 +196,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMax)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Max");
+ algo.setOption(Variables::Method, "Max");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -204,7 +206,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMax)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -219,7 +221,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestSum)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Sum");
+ algo.setOption(Variables::Method, "Sum");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -229,7 +231,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestSum)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -244,7 +246,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMedian)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Median");
+ algo.setOption(Variables::Method, "Median");
 
  FieldHandle input=CreateTetMesh2();
 
@@ -254,7 +256,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMedian)
 
  ASSERT_TRUE(result->vfield()->num_values() == 6);
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp=0;
    result->vfield()->get_value(tmp,idx);
@@ -268,7 +270,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestNone)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "None");
+ algo.setOption(Variables::Method, "None");
 
  FieldHandle input=CreateTetMesh2();
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
 #include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
 
@@ -41,12 +41,11 @@ ReportColumnMatrixMisfitDialog::ReportColumnMatrixMisfitDialog(const std::string
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  methodMap_.insert(StringPair("Correlation Coefficient", "CC"));
-  methodMap_.insert(StringPair("Inverse Correlation Coefficient", "CCinv"));
-  methodMap_.insert(StringPair("p Norm", "RMS"));
-  methodMap_.insert(StringPair("Relative RMS", "RMSrel"));
-
-  addComboBoxManager(methodComboBox_, Parameters::MisfitMethod, methodMap_);
+  addComboBoxManager(methodComboBox_, Parameters::MisfitMethod,
+    {{"Correlation Coefficient", "CC"},
+    {"Inverse Correlation Coefficient", "CCinv"},
+    {"p Norm", "RMS"},
+    {"Relative RMS", "RMSrel"}});
   addDoubleSpinBoxManager(pValueDoubleSpinBox_, Parameters::PValue);
   addDoubleLineEditManager(ccInvLineEdit_, Parameters::ccInv);
   addDoubleLineEditManager(rmsRelLineEdit_, Parameters::rmsRel);

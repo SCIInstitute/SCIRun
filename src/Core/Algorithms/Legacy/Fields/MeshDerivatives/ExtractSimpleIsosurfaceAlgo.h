@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -42,6 +41,10 @@ namespace Fields {
   ALGORITHM_PARAMETER_DECL(SingleIsoValue);
   ALGORITHM_PARAMETER_DECL(ListOfIsovalues);
   ALGORITHM_PARAMETER_DECL(QuantityOfIsovalues);
+  ALGORITHM_PARAMETER_DECL(IsovalueListInclusiveExclusive);
+  ALGORITHM_PARAMETER_DECL(IsovalueQuantityFromField);
+  ALGORITHM_PARAMETER_DECL(ManualMinimumIsovalue);
+  ALGORITHM_PARAMETER_DECL(ManualMaximumIsovalue);
   ALGORITHM_PARAMETER_DECL(Isovalues);
   ALGORITHM_PARAMETER_DECL(IsovalueChoice);
   ALGORITHM_PARAMETER_DECL(IsovalueListString);
@@ -53,7 +56,7 @@ public:
 
   bool run(FieldHandle input, const std::vector<double>& isovalues, FieldHandle& output) const;
 
-  AlgorithmOutput run(const AlgorithmInput& input) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +31,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Core/Datatypes/DatatypeFwd.h>
 
 namespace SCIRun {
   namespace Core {
@@ -52,10 +51,9 @@ namespace SCIRun {
           bool runImpl(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
           bool runImpl(FieldHandle input, FieldHandle& output) const;
 
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
       }}}}
 
 #endif
-

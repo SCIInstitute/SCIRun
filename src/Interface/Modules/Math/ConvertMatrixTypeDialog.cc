@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/Algorithms/Math/ConvertMatrixType.h>
@@ -44,10 +44,9 @@ ConvertMatrixTypeDialog::ConvertMatrixTypeDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  map_.insert(StringPair("Same (pass-through)", "passThrough"));
-  map_.insert(StringPair("DenseMatrix", "dense"));
-  map_.insert(StringPair("ColumnMatrix", "column"));
-  map_.insert(StringPair("SparseRowMatrix", "sparse"));
-
-  addComboBoxManager(matrixTypeComboBox_, Parameters::OutputMatrixType, map_);
+  addComboBoxManager(matrixTypeComboBox_, Parameters::OutputMatrixType, 
+    { {"Same (pass-through)", "passThrough"},
+    { "DenseMatrix", "dense" },
+    { "ColumnMatrix", "column" },
+    { "SparseRowMatrix", "sparse" } });
 }

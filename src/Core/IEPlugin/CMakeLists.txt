@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Core_IEPlugin_SRCS
   #BYUSurfField_Plugin.cc
   #CVRTIFileToMatrix_Plugin.cc
@@ -33,7 +33,8 @@ SET(Core_IEPlugin_SRCS
   #DIF_Plugin.cc
   EcgsimFileToMatrix_Plugin.cc
   IgbFileToMatrix_Plugin.cc
-  #EcgsimFileToTriSurf_Plugin.cc
+  EcgsimFileToTriSurf_Plugin.cc
+  #G3DToField_Plugin.cc
   #HexVolField_Plugin.cc
   IEPluginInit.cc
   #MRC_Plugin.cc
@@ -64,7 +65,8 @@ SET(Core_IEPlugin_HEADERS
   #DIF_Plugin.h
   EcgsimFileToMatrix_Plugin.h
   IgbFileToMatrix_Plugin.h
-  #EcgsimFileToTriSurf_Plugin.h
+  EcgsimFileToTriSurf_Plugin.h
+  #G3DToField_Plugin.h
   #HexVolField_Plugin.h
   #MRC_Plugin.h
   #MTextFileToTriSurf_Plugin.h

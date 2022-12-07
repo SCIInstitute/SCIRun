@@ -1,35 +1,33 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-
-Author            : Moritz Dannhauer
-Author            : Spencer Frisby
-Last modification : 9/5/2014
-
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
+
+///  Author:               Moritz Dannhauer, Spencer Frisby
+///  Last Modification:    9/5/2014
 
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -54,17 +52,13 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
-double AddKnownsToLinearSystemAlgo::bound_for_equality = 1e-7;
-
 bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   DenseMatrixHandle rhs,
   DenseMatrixHandle x,
   SparseRowMatrixHandle& output_stiff,
   DenseColumnMatrixHandle& output_rhs) const
 {
-
   SparseRowMatrixFromMap::Values additionalData;
-
 
   // Storing the number of columns in m and rows in n from the stiff matrix, m == n
   const unsigned int numCols = static_cast<unsigned int>(stiff->ncols());
@@ -75,12 +69,12 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   {
     if ( !(((rhs->ncols() == numCols) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == numCols))) )
     {
-      THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A"); 
+      THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A");
     }
   }
 
   // casting rhs to be a column
-  auto rhsCol = rhs ?  convertMatrix::toColumn(rhs) : boost::make_shared<DenseColumnMatrix>(DenseColumnMatrix::Zero(numCols));
+  auto rhsCol = rhs ?  convertMatrix::toColumn(rhs) : makeShared<DenseColumnMatrix>(DenseColumnMatrix::Zero(numCols));
   ENSURE_NOT_NULL(rhsCol, "rhsCol");
   DenseColumnMatrix& rhsColRef = *rhsCol;
 
@@ -92,7 +86,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   else if ( !(((x->ncols() == numCols) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == numCols))) )
   {
     THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector x do not match the dimensions of matrix A");
-  } 
+  }
 
   // casting x to be a column
   auto xCol = castMatrix::toColumn(x);
@@ -112,7 +106,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   for (index_type i=0; i<numRows; i++)
   {
     for (SparseRowMatrix::InnerIterator it(*stiff,i); it; ++it)
-    //for (index_type p=0; p<numCols; p++)    
+    //for (index_type p=0; p<numCols; p++)
     {
       const int p = it.col();
       // making sure the rhs vector is finite
@@ -170,19 +164,19 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   return true;
 }
 
-AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::RHS_Vector("RHS_Vector");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::RHS_Vector("RHS_Vector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
+const AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
 
 AlgorithmOutput AddKnownsToLinearSystemAlgo::run(const AlgorithmInput & input) const
-{ 
+{
   auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
   auto input_rhs = input.get<DenseMatrix>(RHS_Vector);
   auto input_x = input.get<DenseMatrix>(X_Vector);
 
-  if (input_lhs->nrows() != input_lhs->ncols()) 
+  if (input_lhs->nrows() != input_lhs->ncols())
     THROW_ALGORITHM_INPUT_ERROR("Stiffness matrix input needs to be a sparse square matrix!");
 
   SparseRowMatrixHandle output_lhs;
@@ -191,7 +185,7 @@ AlgorithmOutput AddKnownsToLinearSystemAlgo::run(const AlgorithmInput & input) c
   if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
     THROW_ALGORITHM_INPUT_ERROR("False returned on legacy run call.");
 
-  AlgorithmOutput output; 
+  AlgorithmOutput output;
   output[OutPutLHSMatrix] = output_lhs;
   output[OutPutRHSVector] = output_rhs;
 

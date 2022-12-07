@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 # CMakeLists.txt for Dataflow/Modules/Math
 
@@ -109,15 +109,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Math
   Algorithms_Math
   Core_Algorithms_Legacy_FiniteElements
   Core_Parser
-  #Core_Persistent
-  #Core_Thread
-  #Core_Utils
   Dataflow_Network
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
-  #${M_LIBRARY}
-  #${PETSC_UNI_LIBRARY}
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

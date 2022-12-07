@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,12 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_RENDER_VIEWSCENE_H
 #define MODULES_RENDER_VIEWSCENE_H
 
 #include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
+//TODO: split out header with shared state keys.
+#include <Modules/Render/OsprayViewer.h>
 #include <Modules/Render/share.h>
 
 namespace SCIRun
@@ -42,11 +44,104 @@ namespace SCIRun
     {
       namespace Render
       {
+        // these are transient state keys for right now
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
+
+        ALGORITHM_PARAMETER_DECL(IsExecuting);
+        ALGORITHM_PARAMETER_DECL(TimeExecutionFinished);
+        ALGORITHM_PARAMETER_DECL(HasNewGeometry);
+
+        // these should move from transient to saved
         ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
         ALGORITHM_PARAMETER_DECL(ShowFieldStates);
+        // new state variable to save the whole list. Won't break the delicate transient state behavior
+        ALGORITHM_PARAMETER_DECL(VisibleItemListState);
+
+        // save/load confirmed. Need refactoring to standard push/pull model.
+        //ALGORITHM_PARAMETER_DECL(BackgroundColor); -->in OsprayViewer.h
+        ALGORITHM_PARAMETER_DECL(Ambient);
+        ALGORITHM_PARAMETER_DECL(Diffuse);
+        ALGORITHM_PARAMETER_DECL(Specular);
+        ALGORITHM_PARAMETER_DECL(Shine);
+        ALGORITHM_PARAMETER_DECL(Emission); // not connected
+        ALGORITHM_PARAMETER_DECL(FogOn);
+        ALGORITHM_PARAMETER_DECL(ObjectsOnly); // not connected
+        ALGORITHM_PARAMETER_DECL(UseBGColor);
+        ALGORITHM_PARAMETER_DECL(FogStart);
+        ALGORITHM_PARAMETER_DECL(FogEnd);
+        ALGORITHM_PARAMETER_DECL(FogColor);
+        ALGORITHM_PARAMETER_DECL(ShowScaleBar);  // issues with how/when it is shown
+        ALGORITHM_PARAMETER_DECL(ScaleBarUnitValue);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLength);
+        ALGORITHM_PARAMETER_DECL(ScaleBarHeight);
+        ALGORITHM_PARAMETER_DECL(ScaleBarMultiplier);
+        ALGORITHM_PARAMETER_DECL(ScaleBarNumTicks);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLineWidth);
+        ALGORITHM_PARAMETER_DECL(ScaleBarFontSize);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLineColor);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneEnabled);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneNormalReversed);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneX);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneY);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneZ);
+        ALGORITHM_PARAMETER_DECL(ClippingPlaneD);
+        ALGORITHM_PARAMETER_DECL(AxesVisible);
+        ALGORITHM_PARAMETER_DECL(AxesSize);
+        ALGORITHM_PARAMETER_DECL(AxesX);
+        ALGORITHM_PARAMETER_DECL(AxesY);
+
+
+        // save/load confirmed, uses standard widget managers.
+
+        // save/load confirmed, uses pullSpecial.
+        ALGORITHM_PARAMETER_DECL(ShowViewer);
+        ALGORITHM_PARAMETER_DECL(WindowSizeX);
+        ALGORITHM_PARAMETER_DECL(WindowSizeY);
+        ALGORITHM_PARAMETER_DECL(WindowPositionX);
+        ALGORITHM_PARAMETER_DECL(WindowPositionY);
+        ALGORITHM_PARAMETER_DECL(IsFloating);
+        ALGORITHM_PARAMETER_DECL(CameraDistance);
+        ALGORITHM_PARAMETER_DECL(CameraDistanceMinimum);
+        ALGORITHM_PARAMETER_DECL(CameraLookAt);
+        ALGORITHM_PARAMETER_DECL(CameraRotation);
+        ALGORITHM_PARAMETER_DECL(ToolBarMainPosition);
+        ALGORITHM_PARAMETER_DECL(ToolBarRenderPosition);
+        ALGORITHM_PARAMETER_DECL(ToolBarAdvancedPosition);
+
+        // save/load has issues.
+        ALGORITHM_PARAMETER_DECL(HeadLightOn);
+        ALGORITHM_PARAMETER_DECL(Light1On);
+        ALGORITHM_PARAMETER_DECL(Light2On);
+        ALGORITHM_PARAMETER_DECL(Light3On);
+        ALGORITHM_PARAMETER_DECL(HeadLightColor);
+        ALGORITHM_PARAMETER_DECL(Light1Color);
+        ALGORITHM_PARAMETER_DECL(Light2Color);
+        ALGORITHM_PARAMETER_DECL(Light3Color);
+        ALGORITHM_PARAMETER_DECL(HeadLightAzimuth);
+        ALGORITHM_PARAMETER_DECL(Light1Azimuth);
+        ALGORITHM_PARAMETER_DECL(Light2Azimuth);
+        ALGORITHM_PARAMETER_DECL(Light3Azimuth);
+        ALGORITHM_PARAMETER_DECL(HeadLightInclination);
+        ALGORITHM_PARAMETER_DECL(Light1Inclination);
+        ALGORITHM_PARAMETER_DECL(Light2Inclination);
+        ALGORITHM_PARAMETER_DECL(Light3Inclination);
+
+        ALGORITHM_PARAMETER_DECL(ScreenshotDirectory);
+
+        // not used--GUI hidden/never implemented
+        //ALGORITHM_PARAMETER_DECL(Lighting);
+        //ALGORITHM_PARAMETER_DECL(ShowBBox);
+        // ALGORITHM_PARAMETER_DECL(UseClip);
+        // ALGORITHM_PARAMETER_DECL(Stereo);
+        // ALGORITHM_PARAMETER_DECL(BackCull);
+        // ALGORITHM_PARAMETER_DECL(DisplayList);
+        // ALGORITHM_PARAMETER_DECL(StereoFusion);
+        // ALGORITHM_PARAMETER_DECL(PolygonOffset);
+        // ALGORITHM_PARAMETER_DECL(TextOffset);
+        // ALGORITHM_PARAMETER_DECL(FieldOfView);
+
       }
     }
   }
@@ -59,6 +154,30 @@ namespace Render {
     Core::Datatypes::DenseMatrixHandle red;
     Core::Datatypes::DenseMatrixHandle green;
     Core::Datatypes::DenseMatrixHandle blue;
+  };
+
+  class SCISHARE ViewSceneLocks
+  {
+  public:
+    ~ViewSceneLocks();
+    Core::Thread::Mutex& stateMutex() { return mutex_; }
+    Core::Thread::Mutex& screenShotMutex() { return screenShotMutex_; }
+  private:
+    Core::Thread::Mutex mutex_ {"generalVSMutex"};
+    Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};
+  };
+
+  using ViewSceneLocksPtr = std::shared_ptr<ViewSceneLocks>;
+  using ViewSceneLockKey = const SCIRun::Dataflow::Networks::ModuleStateInterface*;
+  using ViewSceneLockManagerMap = std::map<ViewSceneLockKey, ViewSceneLocksPtr>;
+
+  class SCISHARE ViewSceneLockManager
+  {
+  public:
+    static ViewSceneLocksPtr get(ViewSceneLockKey id);
+    static void remove(ViewSceneLockKey id);
+  private:
+    static ViewSceneLockManagerMap lockMap_;
   };
 
   using ShowFieldStatesMap = std::map<std::string, Dataflow::Networks::ModuleStateHandle>;
@@ -77,72 +196,39 @@ namespace Render {
   {
   public:
     ViewScene();
-    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
-    virtual void setStateDefaults() override;
+    ~ViewScene() override;
+    void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
+    void setStateDefaults() override;
 
-    static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
-    static const Core::Algorithms::AlgorithmParameterName Ambient;
-    static const Core::Algorithms::AlgorithmParameterName Diffuse;
-    static const Core::Algorithms::AlgorithmParameterName Specular;
-    static const Core::Algorithms::AlgorithmParameterName Shine;
-    static const Core::Algorithms::AlgorithmParameterName Emission;
-    static const Core::Algorithms::AlgorithmParameterName FogOn;
-    static const Core::Algorithms::AlgorithmParameterName ObjectsOnly;
-    static const Core::Algorithms::AlgorithmParameterName UseBGColor;
-    static const Core::Algorithms::AlgorithmParameterName FogStart;
-    static const Core::Algorithms::AlgorithmParameterName FogEnd;
-    static const Core::Algorithms::AlgorithmParameterName FogColor;
-    static const Core::Algorithms::AlgorithmParameterName ShowScaleBar;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarHeight;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarMultiplier;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
-    static const Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
-    static const Core::Algorithms::AlgorithmParameterName Lighting;
-    static const Core::Algorithms::AlgorithmParameterName ShowBBox;
-    static const Core::Algorithms::AlgorithmParameterName UseClip;
-    static const Core::Algorithms::AlgorithmParameterName Stereo;
-    static const Core::Algorithms::AlgorithmParameterName BackCull;
-    static const Core::Algorithms::AlgorithmParameterName DisplayList;
-    static const Core::Algorithms::AlgorithmParameterName StereoFusion;
-    static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
-    static const Core::Algorithms::AlgorithmParameterName TextOffset;
-    static const Core::Algorithms::AlgorithmParameterName FieldOfView;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightOn;
-    static const Core::Algorithms::AlgorithmParameterName Light1On;
-    static const Core::Algorithms::AlgorithmParameterName Light2On;
-    static const Core::Algorithms::AlgorithmParameterName Light3On;
-    static const Core::Algorithms::AlgorithmParameterName HeadLightColor;
-    static const Core::Algorithms::AlgorithmParameterName Light1Color;
-    static const Core::Algorithms::AlgorithmParameterName Light2Color;
-    static const Core::Algorithms::AlgorithmParameterName Light3Color;
-    static const Core::Algorithms::AlgorithmParameterName ShowViewer;
+    INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject)
+    OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix)
+    OUTPUT_PORT(1, ScreenshotDataGreen, DenseMatrix)
+    OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix)
+    void execute() override;
 
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
-    INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
-    OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix);
-    OUTPUT_PORT(1, ScreenshotDataGreen, DenseMatrix);
-    OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix);
-    virtual void execute() override;
-
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
-
-    static Core::Thread::Mutex mutex_;
-
-    typedef std::set<Core::Datatypes::GeometryBaseHandle> GeomList;
-    typedef boost::shared_ptr<GeomList> GeomListPtr;
+    typedef SharedPointer<Core::Datatypes::GeomList> GeomListPtr;
     typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
   protected:
-    virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
+    void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
   private:
     void processViewSceneObjectFeedback();
     void processMeshComponentSelection();
+    void fireTransientStateChangeSignalForGeomData();
     void updateTransientList();
     void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
+    unsigned long getCurrentTimeSinceEpoch();
+
     ActiveGeometryMap activeGeoms_;
-    std::atomic<int> asyncUpdates_;
+
+    class SCISHARE ScopedExecutionReporter
+    {
+      Dataflow::Networks::ModuleStateHandle state_;
+    public:
+      explicit ScopedExecutionReporter(Dataflow::Networks::ModuleStateHandle state);
+      ~ScopedExecutionReporter();
+    };
   };
 }}}
 

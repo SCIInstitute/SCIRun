@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_VISUALIZATION_MARCHINGCUBES_H
 #define CORE_ALGORITHMS_VISUALIZATION_MARCHINGCUBES_H 1
@@ -48,20 +48,19 @@
 namespace SCIRun {
  namespace Core {
   namespace Algorithms {
+    namespace Fields {
+
+      ALGORITHM_PARAMETER_DECL(transparency);
+      ALGORITHM_PARAMETER_DECL(build_geometry);
+      ALGORITHM_PARAMETER_DECL(num_threads);
+      ALGORITHM_PARAMETER_DECL(build_field);
+      ALGORITHM_PARAMETER_DECL(build_node_interpolant);
+      ALGORITHM_PARAMETER_DECL(build_elem_interpolant);
 
    class SCISHARE MarchingCubesAlgo : public AlgorithmBase
    {
-
-    public:
-
-    MarchingCubesAlgo();
-
-    static AlgorithmParameterName transparency;
-    static AlgorithmParameterName build_geometry;
-    static AlgorithmParameterName build_field;
-    static AlgorithmParameterName build_node_interpolant;
-    static AlgorithmParameterName build_elem_interpolant;
-    static AlgorithmParameterName num_threads;
+   public:
+     MarchingCubesAlgo();
 
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    {
@@ -77,7 +76,7 @@ namespace SCIRun {
     bool run(FieldHandle input, const std::vector<double>& isovalues,
              FieldHandle& field, Datatypes::MatrixHandle& interpolant );
 
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     bool run(FieldHandle input, const std::vector<double>& isovalues,
              FieldHandle& field,
@@ -85,7 +84,8 @@ namespace SCIRun {
              Datatypes::MatrixHandle& elem_interpolant ) const;
    };
 
+ }
   }
- } // End namespace SCIRun
+ }
 }
 #endif

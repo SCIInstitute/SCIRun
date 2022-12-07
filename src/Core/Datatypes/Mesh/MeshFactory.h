@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,17 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/Datatypes/Mesh/MeshFactory.h
 
 #ifndef CORE_DATATYPES_MESHFACTORY_H
-#define CORE_DATATYPES_MESHFACTORY_H 
+#define CORE_DATATYPES_MESHFACTORY_H
 
 #include <boost/noncopyable.hpp>
 #include <Core/Utils/Singleton.h>
 #include <Core/Utils/TypeIDTable.h>
 #include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
-//#include <Core/Datatypes/Mesh/Mesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Mesh/share.h>
 
@@ -59,7 +58,7 @@ namespace Datatypes {
 
   class SCISHARE MeshFactory : boost::noncopyable
   {
-    CORE_SINGLETON( MeshFactory );
+    CORE_SINGLETON( MeshFactory )
 
   public:
     //MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
@@ -74,13 +73,13 @@ namespace Datatypes {
 
   class SCISHARE MeshRegistry : boost::noncopyable
   {
-    CORE_SINGLETON( MeshRegistry );
+    CORE_SINGLETON( MeshRegistry )
   public:
 
     struct SCISHARE MeshTypeID
     {
       MeshTypeID();
-      MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor = 0);
+      MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor = nullptr);
 
       std::string type_;
       MeshDefaultConstructor defCtor_;

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,8 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@file  TestModuleSimple.cc
-///
 
 #include <Modules/String/TestModuleSimple.h>
 #include <Core/Datatypes/String.h>
@@ -37,24 +34,18 @@ using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-/// @class TestModuleSimple
-/// @brief This module splits out a string.
+const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple","String","SCIRun");
 
-MODULE_INFO_DEF(TestModuleSimple, String, SCIRun)
-
-TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
+TestModuleSimple::TestModuleSimple () : Module(staticInfo_,false)
 {
-  INITIALIZE_PORT(OutputString);
+    INITIALIZE_PORT(OutputString);
 }
 
-void
-TestModuleSimple::execute()
+void TestModuleSimple::execute()
 {
+    std::string message_string;
+    message_string="Trying to develop a Module";
 
-  std::string message_string;
-
-  message_string = "You stay classy, Planet Earth!";
-
-  StringHandle msH(new String(message_string));
-  sendOutput(OutputString, msH);
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
 }

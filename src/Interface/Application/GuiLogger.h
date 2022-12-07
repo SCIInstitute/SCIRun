@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,12 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef GUI_LOGGER_H
 #define GUI_LOGGER_H
 
 #include <Core/Utils/Singleton.h>
 #include <Core/Logging/Log.h>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <QString>
 
 namespace SCIRun {
@@ -41,22 +41,32 @@ namespace Gui {
   {
     CORE_SINGLETON(GuiLog)
   public:
-    GuiLog() : Log2("ui") {}
+    GuiLog();
   };
 
   template <class... T>
   void guiLogDebug(const char* fmt, T&&... args)
   {
-    GuiLog::Instance().get()->debug(fmt, args...);
+    auto log = GuiLog::Instance().get();
+    if (log)
+      log->debug(fmt, args...);
+  }
+
+  template <class... T>
+  void guiLogCritical(const char* fmt, T&&... args)
+  {
+    auto log = GuiLog::Instance().get();
+    if (log)
+      log->critical(fmt, args...);
   }
 
   class GuiLogger : boost::noncopyable
   {
   public:
-    static void logInfo(const QString& message);
-    static void logError(const QString& message);
-    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
-    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
+    static void logInfoQ(const QString& message);
+    static void logErrorQ(const QString& message);
+    static void logInfoStd(const std::string& message) { logInfoQ(QString::fromStdString(message)); }
+    static void logErrorStd(const std::string& message) { logErrorQ(QString::fromStdString(message)); }
   private:
     GuiLogger() = delete;
   };

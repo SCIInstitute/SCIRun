@@ -1,0 +1,811 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="6">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>6</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>CreateString:0</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>CreateString</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>1</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>InputString</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>InputString</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>a = [1 2 3; 4 5 6; 7 8 10]</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateString:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>CreateString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString</name>
+								</first>
+								<second>
+									<name>InputString</name>
+									<value>
+										<which>2</which>
+										<value>z = zeros(5,1)</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateString:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>CreateString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString</name>
+								</first>
+								<second>
+									<name>InputString</name>
+									<value>
+										<which>2</which>
+										<value>p = a*inv(a)</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateString:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>CreateString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString</name>
+								</first>
+								<second>
+									<name>InputString</name>
+									<value>
+										<which>2</which>
+										<value>ofield = scirun_test_field(field1)</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>InterfaceWithPython:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Python</category_name_>
+						<module_name_>InterfaceWithPython</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>17</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString:0</name>
+								</first>
+								<second>
+									<name>InputString:0</name>
+									<value>
+										<which>2</which>
+										<value>stringInput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputString:1</name>
+								</first>
+								<second>
+									<name>InputString:1</name>
+									<value>
+										<which>2</which>
+										<value>stringInput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputString:2</name>
+								</first>
+								<second>
+									<name>InputString:2</name>
+									<value>
+										<which>2</which>
+										<value>stringInput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputString:3</name>
+								</first>
+								<second>
+									<name>InputString:3</name>
+									<value>
+										<which>2</which>
+										<value>stringInput4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NumberOfRetries</name>
+								</first>
+								<second>
+									<name>NumberOfRetries</name>
+									<value>
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PollingIntervalMilliseconds</name>
+								</first>
+								<second>
+									<name>PollingIntervalMilliseconds</name>
+									<value>
+										<which>0</which>
+										<value>200</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonCode</name>
+								</first>
+								<second>
+									<name>PythonCode</name>
+									<value>
+										<which>2</which>
+										<value># Insert your Python code here. The SCIRun API package is automatically imported.
+
+
+
+#input is in the form of x= matlabfunc(alpha);
+def stringtotext(input):
+    &quot;&quot;&quot; output_str is the template code. by split commands I extracted the name of input data and replace their name in output_str and then this function read every line of output_str and convert them to python code and execute it and in the end it will return the output.&quot;&quot;&quot;
+    x= str(input)
+    t= x.split(&quot;=&quot;)
+    out = t[0].split(&quot;,&quot;)
+    num_out=len(out)
+    out_scaled=&quot;&quot;
+    out_scaled=out_scaled+out[0]
+    for i in range(num_out-1):
+        out_scaled=out_scaled+&quot;, &quot;+out[i+1]
+    #out_scaled=out_scaled+[&apos;out_scaled&apos;+str(i+1) for i in range(num_out)]
+    y= x[x.find(&quot;(&quot;)+1:x.find(&quot;)&quot;)]
+    z= t[1].split(&quot;(&quot;)
+    inputs= y.split(&quot;,&quot;)
+    num_in=len(inputs)
+    #inputt=zeros(len(num_in))
+    fild=[]
+    fild=fild+[&apos;field&apos;+str(i+1) for i in range(num_in)]
+    k=&quot;&quot;+fild[0]
+    for j in range(num_in-1):
+        k=k+&quot;, &quot;+fild[j+1]
+    k= z[0]+&quot;(&quot;+k+&quot;, &quot;+&quot;nargout=num_out&quot;+&quot;)&quot;
+    #k=t[1].append(&quot;nargout=num_out&quot;)
+    fieldOutput=[]
+    fieldOutput=fieldOutput+[&apos;fieldOutput&apos;+str(i+1) for i in range(num_out)]
+    #fieldOutput=y
+    str_def1=&apos;\nimport matlab.engine\neng = matlab.engine.start_matlab()&apos;
+    str_def2=num_in*[&apos;\nfild[j]=convertfieldtomatlab(INPUT[j])&apos;]
+    str_def3=&apos;\nfield_scaled= eng.tri1(fild)&apos;
+    str_def4=num_out*[&apos;\nout[i]=convertfieldtopython(field_scaled[i])\nfieldOutput[i] = out[i]&apos;]
+    
+
+    counter=0
+    while counter&lt;num_in:
+        str_def2[counter]= str_def2[counter].replace(&quot;fild[j]&quot;,str(fild[counter]))
+        str_def2[counter]= str_def2[counter].replace(&quot;INPUT[j]&quot;,str(inputs[counter]))
+        counter=counter+1
+    counter=0
+    output_str1= str_def1
+    output_str2=&quot;&quot;
+    for j in range(num_in):
+        output_str2= output_str2+str_def2[j]
+        
+        
+        
+        
+#print(&quot;Field is:&quot;,output_str1)
+
+
+    output_str3=str_def3
+    output_str3= output_str3.replace(&quot;tri1(fild)&quot;,k)
+    output_str3= output_str3.replace(&quot;num_out&quot;,str(num_out))
+    output_str3= output_str3.replace(&quot;num_in&quot;,str(num_in))
+    output_str3= output_str3.replace(&quot;field_scaled&quot;,str(out_scaled))
+    counter=0
+    while counter&lt;num_out:
+        str_def4[counter]= str_def4[counter].replace(&quot;field_scaled[i]&quot;,str(out[counter]))
+        str_def4[counter]= str_def4[counter].replace(&quot;num_out&quot;,str(num_out))
+        str_def4[counter]= str_def4[counter].replace(&quot;num_in&quot;,str(num_in))
+        str_def4[counter]= str_def4[counter].replace(&quot;out[i]&quot;,str(out[counter]))
+        str_def4[counter]= str_def4[counter].replace(&quot;fieldOutput[i]&quot;,str(fieldOutput[counter]))
+        counter=counter+1
+        output_str4=&quot;&quot;
+    for i in range(num_out):
+        output_str4=output_str4+str_def4[i]
+
+
+    output_str=output_str1+output_str2+output_str3+output_str4
+#print(&quot;Z is:&quot;,out)
+    return output_str
+def convertfieldtomatlab(field):
+  
+    if not type(field) is dict:
+        raise ValueError(&quot;input is not a field type&quot;)
+
+    new_field={}
+    for key in field:
+        if isinstance(field[key], (list,)):
+            new_field[key] = matlab.double(field[key])
+        else:
+            new_field[key] = field[key]
+
+    return new_field
+
+def convertfieldtopython(field):
+  
+    if not type(field) is dict:
+        raise ValueError(&quot;input is not a field type&quot;)
+  
+    new_field={}
+    
+    for key in field:
+        if isinstance(field[key], (list,tuple,matlab.double)):
+            new_field[key] = converttolist(field[key])
+        elif not hasattr(field[key], &quot;__len__&quot;):
+            new_field[key] = [field[key]]
+        else:
+            new_field[key] = field[key]
+    
+    return new_field
+
+def converttolist(m_doub):
+  
+    if not isinstance(m_doub, (list,tuple,matlab.double)):
+        raise ValueError(&quot;input must be a matlab matrix of doubles&quot;)
+
+    m_list = []
+    for _ in range(m_doub.size[1]):
+        m_list.append(m_doub._data[_*m_doub.size[0]:_*m_doub.size[0]+m_doub.size[0]].tolist())
+
+    m_l = [[row[i] for row in m_list] for i in range(len(m_list[0]))]
+
+    if len(m_l)==1 and isinstance(m_l[0], (list,)):
+        m_l=m_l[0]
+
+    return m_l
+
+
+print(stringInput1)
+print(stringtotext(stringInput1))
+
+print(stringInput2)
+print(stringtotext(stringInput2))
+
+print(stringInput3)
+print(stringtotext(stringInput3))
+
+print(stringInput4)
+print(stringtotext(stringInput4))</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField1Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField2Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField3Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix1Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix2Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix3Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString1Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString2Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString3Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonTopLevelCode</name>
+								</first>
+								<second>
+									<name>PythonTopLevelCode</name>
+									<value>
+										<which>2</which>
+										<value># Main namespace/top level context code goes here; for example, import statements and global variables.
+# This code will be executed before the &apos;Code&apos; tab, and no input/output variables are available.
+
+import re
+#import numpy
+#import matlab.engine</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>InterfaceWithPython:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Python</category_name_>
+						<module_name_>InterfaceWithPython</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>13</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>NumberOfRetries</name>
+								</first>
+								<second>
+									<name>NumberOfRetries</name>
+									<value>
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PollingIntervalMilliseconds</name>
+								</first>
+								<second>
+									<name>PollingIntervalMilliseconds</name>
+									<value>
+										<which>0</which>
+										<value>200</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonCode</name>
+								</first>
+								<second>
+									<name>PythonCode</name>
+									<value>
+										<which>2</which>
+										<value># Insert your Python code here. The SCIRun API package is automatically imported.
+
+/*matlab
+q = doSomeMatlab(fieldInput1)
+matlab*/</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField1Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField2Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField3Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix1Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix2Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix3Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString1Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString2Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString3Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonTopLevelCode</name>
+								</first>
+								<second>
+									<name>PythonTopLevelCode</name>
+									<value>
+										<which>2</which>
+										<value># Main namespace/top level context code goes here; for example, import statements and global variables.
+# This code will be executed before the &apos;Code&apos; tab, and no input/output variables are available.</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>4</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>CreateString:0</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputString</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateString:1</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputString</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateString:2</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputString</name>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateString:3</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputString</name>
+					<id>3</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>CreateString:0</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-1.27000000000000000e+02</first>
+				<second>-3.10000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateString:1</first>
+			<second>
+				<first>2.10000000000000000e+01</first>
+				<second>-1.10000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateString:2</first>
+			<second>
+				<first>1.75000000000000000e+02</first>
+				<second>-2.74000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateString:3</first>
+			<second>
+				<first>2.99000000000000000e+02</first>
+				<second>-1.32000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>InterfaceWithPython:0</first>
+			<second>
+				<first>3.00000000000000000e+01</first>
+				<second>1.30000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>InterfaceWithPython:1</first>
+			<second>
+				<first>2.41000000000000000e+02</first>
+				<second>6.60000000000000000e+01</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>CreateString:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateString:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateString:2</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateString:3</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>InterfaceWithPython:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>InterfaceWithPython:1</first>
+			<second>-1</second>
+		</item>
+	</moduleTags>
+	<disabledModules class_id="21" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
+</networkFile>
+</boost_serialization>
+

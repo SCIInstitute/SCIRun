@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -43,9 +42,9 @@ using namespace Core::Logging;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
 
-namespace detail 
+namespace detail
 {
-class FieldToNrrdAlgoT 
+class FieldToNrrdAlgoT
 {
 public:
   // Converters for node centered data
@@ -93,7 +92,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -120,7 +119,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -145,7 +144,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -170,7 +169,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -194,7 +193,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[0] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -219,7 +218,7 @@ bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[0] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,datatype,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -309,7 +308,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -350,7 +349,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -390,7 +389,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -430,7 +429,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -469,7 +468,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -508,7 +507,7 @@ bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -617,7 +616,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -661,7 +660,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[3] = static_cast<size_t>(sz[2]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -705,7 +704,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -748,7 +747,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[2] = static_cast<size_t>(sz[1]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -791,7 +790,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (nrrd->data == nullptr)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);

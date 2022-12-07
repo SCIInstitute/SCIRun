@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,12 +23,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
 
-
-//    File   : StreamLineIntergrators.h
-//    Author : Allen R. Sanderson
-//    Date   : July 2006
+   Author:      Allen R. Sanderson
+   Date:        July 2006
+*/
 
 
 #ifndef CORE_ALGORITHMS_FIELDS_STREAMLINES_STREAMLINEINTEGRATORS_H
@@ -46,7 +43,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-        enum IntegrationMethod
+        enum class IntegrationMethod
         {
           AdamsBashforth = 0,
           Heun = 2,
@@ -55,7 +52,7 @@ namespace SCIRun {
           CellWalk = 5
         };
 
-        enum StreamlineValue
+        enum class StreamlineValue
         {
           SeedValue,
           SeedIndex,

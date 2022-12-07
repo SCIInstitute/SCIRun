@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef DATAFLOW_NETWORK_MODULETRAITS_H
 #define DATAFLOW_NETWORK_MODULETRAITS_H
 
@@ -34,7 +34,7 @@
 namespace SCIRun {
 namespace Modules
 {
-  enum ModuleFlags
+  enum class ModuleFlags
   {
     NoAlgoOrUI              = 0,
     ModuleHasAlgorithm      = 1 << 0,
@@ -46,51 +46,44 @@ namespace Modules
   template <class ModuleType>
   struct ModuleTraits
   {
-    static const int Flags;
+    static const int Flags = ModuleType::TraitFlags;
   };
 
-  template <class ModuleType>
-  const int ModuleTraits<ModuleType>::Flags = ModuleType::TraitFlags;
-
-#ifndef WIN32 // not working in VS2013
   DEFINE_MEMBER_CHECKER(Flags)
-#endif
 
   template <class ModuleType>
   struct HasUI
   {
-#ifndef WIN32  // not working in VS2013
     static const int ensureModuleDefinesFlags[ModuleTraits<ModuleType>::Flags];
-#endif
     static const bool value;
   };
 
   template <class ModuleType>
-  const bool HasUI<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & ModuleHasUI) != 0;
+  const bool HasUI<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & static_cast<int>(ModuleFlags::ModuleHasUI)) != 0;
 
   template <class ModuleType>
   struct HasAlgorithm
   {
-#ifndef WIN32
     static const int ensureModuleDefinesFlags[ModuleTraits<ModuleType>::Flags];
-#endif
     static const bool value;
   };
 
   template <class ModuleType>
-  const bool HasAlgorithm<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & ModuleHasAlgorithm) != 0;
+  const bool HasAlgorithm<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & static_cast<int>(ModuleFlags::ModuleHasAlgorithm)) != 0;
 
-  #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = value;\
+  #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = static_cast<int>(value);\
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;\
 
   #define MODULE_INFO_DEF(moduleName, category, package) const SCIRun::Dataflow::Networks::ModuleLookupInfo moduleName::staticInfo_(#moduleName, #category, #package);
 
-  #define HAS_DYNAMIC_PORTS public: virtual bool hasDynamicPorts() const override { return true; }
+  #define HAS_DYNAMIC_PORTS public: bool hasDynamicPorts() const override { return true; }
 
-  #define LEGACY_BIOPSE_MODULE public: virtual std::string legacyPackageName() const override { return "BioPSE"; }
-  #define LEGACY_MATLAB_MODULE public: virtual std::string legacyPackageName() const override { return "MatlabInterface"; }
-  #define CONVERTED_VERSION_OF_MODULE(modName) public: virtual std::string legacyModuleName() const override { return #modName; }
-  #define NEW_HELP_WEBPAGE_ONLY public: virtual std::string helpPageUrl() const override { return newHelpPageUrl(); }
+  #define LEGACY_BIOPSE_MODULE public: std::string legacyPackageName() const override { return "BioPSE"; }
+  #define LEGACY_MATLAB_MODULE public: std::string legacyPackageName() const override { return "MatlabInterface"; }
+  #define CONVERTED_VERSION_OF_MODULE(modName) public: std::string legacyModuleName() const override { return #modName; }
+  #define NEW_HELP_WEBPAGE_ONLY public: std::string helpPageUrl() const override { return newHelpPageUrl(); }
+  #define DEPRECATED_MODULE_REPLACE_WITH(modName) public: bool isDeprecated() const override { return true; } std::string replacementModuleName() const override { return #modName; }
+  #define DISABLED_WITHOUT_ABOVE_COMPILE_FLAG public: bool isImplementationDisabled() const override { return true; }
 }
 }
 

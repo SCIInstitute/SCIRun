@@ -1,12 +1,10 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -27,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H 1
 
@@ -41,13 +40,10 @@ namespace SCIRun {
 
 class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase, public Thread::Interruptible
 {
-  public:
-    MapFieldDataFromNodeToElemAlgo();
-
-    static AlgorithmParameterName Method;
-    FieldHandle runImpl(FieldHandle input_field) const;
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
-
+public:
+  MapFieldDataFromNodeToElemAlgo();
+  FieldHandle runImpl(FieldHandle input_field) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

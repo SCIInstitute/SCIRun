@@ -1,21 +1,21 @@
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -28,10 +28,19 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# TODO: update when upgrading
-SET(PY_MAJOR 3)
-SET(PY_MINOR 4)
-SET(PY_PATCH 3)
+SET(DEFAULT_PYTHON_VERSION "3.9.10")
+
+set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
+set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.6.7 3.7.9 3.8.12 3.9.10 3.10.2)
+
+string(REPLACE "." ";" USER_PYTHON_VERSION_LIST ${USER_PYTHON_VERSION})
+list(GET USER_PYTHON_VERSION_LIST 0 USER_PYTHON_VERSION_MAJOR)
+list(GET USER_PYTHON_VERSION_LIST 1 USER_PYTHON_VERSION_MINOR)
+list(GET USER_PYTHON_VERSION_LIST 2 USER_PYTHON_VERSION_PATCH)
+
+SET(PY_MAJOR ${USER_PYTHON_VERSION_MAJOR})
+SET(PY_MINOR ${USER_PYTHON_VERSION_MINOR})
+SET(PY_PATCH ${USER_PYTHON_VERSION_PATCH})
 SET(SCI_PYTHON_VERSION "${PY_MAJOR}.${PY_MINOR}.${PY_PATCH}")
 SET(SCI_PYTHON_VERSION_SHORT "${PY_MAJOR}.${PY_MINOR}")
 SET(SCI_PYTHON_VERSION_SHORT_WIN32 "${PY_MAJOR}${PY_MINOR}")
@@ -46,7 +55,7 @@ SET(python_ABIFLAG_PYDEBUG)
 SET(python_ABIFLAG_PYMALLOC "m")
 SET(ABIFLAGS "${python_ABIFLAG_PYMALLOC}${python_ABIFLAG_PYDEBUG}")
 
-SET(python_GIT_TAG "origin/master")
+SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
 SET(python_GIT_URL "https://github.com/CIBC-Internal/python.git")
 
 SET(python_WIN32_ARCH)
@@ -57,7 +66,6 @@ IF(UNIX)
   # TODO: figure out pip package
   SET(python_CONFIGURE_FLAGS
     "--prefix=<INSTALL_DIR>"
-    "--with-threads"
     "--with-ensurepip=no"
   )
   IF(APPLE)
@@ -83,7 +91,7 @@ IF(UNIX)
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
     BUILD_IN_SOURCE ON
-    CONFIGURE_COMMAND <SOURCE_DIR>/configure ${python_CONFIGURE_FLAGS}
+    CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
   )
   IF(APPLE)
@@ -99,7 +107,7 @@ ELSE()
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
     PATCH_COMMAND ""
-    CONFIGURE_COMMAND ""
+    CONFIGURE_COMMAND PCbuild/build.bat
     BUILD_IN_SOURCE ON
     BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_if_different
@@ -142,7 +150,7 @@ IF(UNIX)
     SET(SCI_PYTHON_FRAMEWORK_ARCHIVE ${INSTALL_DIR}/${python_FRAMEWORK_ARCHIVE})
   ELSE()
     SET(SCI_PYTHON_ROOT_DIR ${INSTALL_DIR})
-    SET(SCI_PYTHON_INCLUDE ${INSTALL_DIR}/include/${SCI_PYTHON_NAME}${ABIFLAGS})
+    SET(SCI_PYTHON_INCLUDE ${INSTALL_DIR}/include/${SCI_PYTHON_NAME})
     SET(SCI_PYTHON_LIBRARY_DIR ${SCI_PYTHON_ROOT_DIR}/lib)
     SET(SCI_PYTHON_LINK_LIBRARY_DIRS ${SCI_PYTHON_LIBRARY_DIR})
     IF(SCIRUN_BITS MATCHES 64)
@@ -150,7 +158,7 @@ IF(UNIX)
       SET(SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH ${INSTALL_DIR}/lib64/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
     ENDIF()
     SET(SCI_PYTHON_EXE ${INSTALL_DIR}/bin/${SCI_PYTHON_NAME})
-    SET(SCI_PYTHON_LIBRARY ${SCI_PYTHON_NAME}${ABIFLAGS})
+    SET(SCI_PYTHON_LIBRARY ${SCI_PYTHON_NAME})
 
     # required by interpreter interface
     SET(PYTHON_MODULE_SEARCH_PATH ${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)

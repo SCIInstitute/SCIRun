@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,83 +23,72 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author: Fangxiang Jiao
+   Date:   March 25 2010
 */
 
-// File:   ConvertBundleToField.cc
-// Author: Fangxiang Jiao
-// Date:   March 25 2010
 
-#include <Core/Algorithms/Converter/ConvertBundleToField.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Algorithms/Fields/MergeFields/JoinFields.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Containers/SearchGridT.h>
-#include <vector>
+#include <Core/Algorithms/Legacy/Converter/ConvertBundleToField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Converters;
 
-namespace SCIRunAlgo {
+ALGORITHM_PARAMETER_DEF(Converters, MergeNodes);
+ALGORITHM_PARAMETER_DEF(Converters, Tolerance);
+ALGORITHM_PARAMETER_DEF(Converters, MatchNodeValues);
+ALGORITHM_PARAMETER_DEF(Converters, MakeNoData);
 
 ConvertBundleToFieldAlgo::ConvertBundleToFieldAlgo()
 {
+  using namespace Parameters;
   //! Merge duplicate nodes?
-  add_bool("merge_nodes", true);
+  addParameter(Parameters::MergeNodes, true);
 
   //! Tolerance for merging duplicate nodes?
-  add_scalar("tolerance", 1e-6);
+  addParameter(Parameters::Tolerance, 1e-6);
 
   //! Only merge nodes whose value is the same
   //! in this module, this option always set false
-  add_bool("match_node_values", false);
+  addParameter(Parameters::MatchNodeValues, false);
 
   //! Create a field with no data
-  add_bool("make_no_data", false);
+  addParameter(Parameters::MakeNoData, false);
 }
 
-ConvertBundleToFieldAlgo::~ConvertBundleToFieldAlgo() {}
-
-bool 
-ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
+bool ConvertBundleToFieldAlgo::runImpl(const BundleHandle& input, FieldHandle& output) const
 {
-  // Mark that we are starting the algorithm
-  algo_start("ConvertBundleToField");
+  ScopedAlgorithmStatusReporter asr(this, "ConvertBundleToField");
 
-  std::vector<FieldHandle> inputs;
-  FieldHandle fhandle;    
-  std::string fieldname;
-
-  int numFields = input->numFields();
-
-  //! deal with the empty field, if the field is empty, just return and do nothing
-  //if (numFields==0) return true;
-
-  for (int p = 0; p < numFields; p++)
-  {
-    fieldname=input->getFieldName(p);
-    fhandle = input->getField(fieldname); 
-    inputs.push_back(fhandle);
-  }
-
+  const auto inputs = input->getFields();
   if (inputs.empty())
   {
     error("Input bundle is empty");
-    algo_end();
     return false;
   }
 
-  bool match_node_values = get_bool("match_node_values");
-  bool make_no_data = get_bool("make_no_data");
-  bool merge_nodes = get_bool("merge_nodes");
-  double tol = get_scalar("tolerance");
+  const bool match_node_values = get(Parameters::MatchNodeValues).toBool();
+  const bool make_no_data = get(Parameters::MakeNoData).toBool();
+  const bool merge_nodes = get(Parameters::MergeNodes).toBool();
+  const double tol = get(Parameters::Tolerance).toDouble();
   const double tol2 = tol*tol;
-  
+
   // Check whether mesh types are the same
   FieldInformation first(inputs[0]);
   first.make_unstructuredmesh();
-  
+
   //! Make sure mesh and mesh basis order are equal
   for (size_t p = 1; p < inputs.size(); p++)
   {
@@ -109,18 +97,16 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
     if (fi.get_mesh_type() != first.get_mesh_type())
     {
       error("Mesh elements need to be equal in order to join multiple fields together");
-      algo_end();
-      return false;      
+      return false;
     }
-  
+
     if (fi.mesh_basis_order() != first.mesh_basis_order())
     {
       error("Mesh elements need to be of the same order in for joining multiple fields together");
-      algo_end();
-      return false;          
+      return false;
     }
   }
- 
+
   if (make_no_data)
   {
     first.make_nodata();
@@ -133,10 +119,10 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
       if (fi.field_basis_order() != first.field_basis_order())
       {
         error("Fields need to have the same basis order");
-        algo_end();
-        return false;                        
+
+        return false;
       }
-      
+
       if (fi.get_data_type() != first.get_data_type())
       {
         if (fi.is_scalar() && first.is_scalar())
@@ -147,8 +133,7 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
         else
         {
           error("Fields have different, possibly non-scalar, data types");
-          algo_end();
-          return false;                  
+          return false;
         }
       }
     }
@@ -162,10 +147,9 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
       if (! fi.is_scalar() )
       {
         error("Node values can only be matched for scalar values");
-        algo_end();
         return false;
       }
-      
+
       if (fi.is_float() || fi.is_double())
       {
         remark("Converting floating point values into integers for matching values");
@@ -175,12 +159,12 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
   }
 
   BBox box;
-  Handle<SearchGridT<index_type> > node_grid;
-  size_type ni = 0, nj = 0, nk = 0;    
-        
+  std::unique_ptr<SearchGridT<index_type>> node_grid;
+  size_type ni = 0, nj = 0, nk = 0;
+
   size_type tot_num_nodes = 0;
   size_type tot_num_elems = 0;
-  
+
   // Compute bounding box and number of nodes
   // and elements
   for (size_t p = 0; p < inputs.size(); p++)
@@ -193,12 +177,12 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
     tot_num_nodes += imesh->num_nodes();
     tot_num_elems += imesh->num_elems();
   }
-  
+
   // Add an epsilon so all nodes will be inside
   if (merge_nodes)
   {
     box.extend(1e-6*box.diagonal().length());
-    
+
     const size_type s =
       3 * static_cast<size_type>(
         ( ceil( pow(static_cast<double>(tot_num_nodes), (1.0/3.0)) ) ) / 2.0 + 1.0);
@@ -208,40 +192,38 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
     size_type sx = static_cast<size_type>(ceil(diag.x() / trace*s));
     size_type sy = static_cast<size_type>(ceil(diag.y() / trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z() / trace*s));
-    
-    node_grid = new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max());
-    
+
+    node_grid = std::make_unique<SearchGridT<index_type>>(sx, sy, sz, box.get_min(), box.get_max());
+
     ni = node_grid->get_ni() - 1;
     nj = node_grid->get_nj() - 1;
-    nk = node_grid->get_nk() - 1;    
+    nk = node_grid->get_nk() - 1;
   }
 
-  MeshHandle mesh = CreateMesh(first);
-  if (mesh.get_rep() == 0)
+  auto mesh = CreateMesh(first);
+  if (!mesh)
   {
     error("Could not create output mesh");
-    algo_end();
+
     return false;
   }
-  
-  output = CreateField(first,mesh);
-  if (output.get_rep() == 0)
+
+  output = CreateField(first, mesh);
+  if (!output)
   {
     error("Could not create output field");
-    algo_end();
     return false;
   }
 
   VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
-  
+
   omesh->node_reserve(tot_num_nodes);
   omesh->elem_reserve(tot_num_elems);
 
-  size_type nodes_offset = 0;      
-  size_type elems_offset = 0;  
-  size_type nodes_count = 0;      
-  size_type elems_count = 0;  
+  size_type elems_offset = 0;
+  size_type nodes_count = 0;
+  size_type elems_count = 0;
 
   Point P;
   Point* points = 0;
@@ -256,20 +238,20 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
   {
     elems_count = 0;
     nodes_count = 0;
-    
+
     VMesh* imesh = inputs[p]->vmesh();
     VField* ifield = inputs[p]->vfield();
-    
+
     VMesh::Node::array_type nodes, newnodes;
 
     size_type num_elems = imesh->num_elems();
     size_type num_nodes = imesh->num_nodes();
     std::vector<VMesh::Node::index_type> local_to_global(num_nodes, -1);
-    
+
     for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
     {
       imesh->get_nodes(nodes, idx);
-      
+
       newnodes.resize(nodes.size());
       for(size_t q=0; q< nodes.size(); q++)
       {
@@ -283,10 +265,10 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
           if (merge_nodes)
           {
             imesh->get_center(P,nodeq);
-             
+
             if (match_node_values)
               ifield->get_value(curval,nodeq);
-             
+
             // Convert to grid coordinates.
             index_type bi, bj, bk, ei, ej, ek;
             node_grid->unsafe_locate(bi, bj, bk, P);
@@ -303,15 +285,15 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
 
             ei = bi;
             ej = bj;
-            ek = bk;          
+            ek = bk;
 
             index_type cidx = -1;
             double dmin = tol2;
             bool found;
-            
-            do 
+
+            do
             {
-              found = true; 
+              found = true;
               for (index_type i = bi; i <= ei; i++)
               {
                 if (i < 0 || i > ni) continue;
@@ -329,7 +311,7 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
                         SearchGridT<index_type>::iterator it, eit;
                         node_grid->lookup_ijk(it, eit, i, j, k);
 
-                        if (match_node_values) 
+                        if (match_node_values)
                         {
                           while (it != eit)
                           {
@@ -338,14 +320,14 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
                               const Point point = points[*it];
                               const double dist = (P-point).length2();
 
-                              if (dist < dmin) 
-                              { 
-                                cidx = *it; 
-                                dmin = dist; 
+                              if (dist < dmin)
+                              {
+                                cidx = *it;
+                                dmin = dist;
                               }
                             }
                             ++it;
-                          }                        
+                          }
                         }
                         else
                         {
@@ -354,10 +336,10 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
                             const Point point = points[*it];
                             const double dist  = (P-point).length2();
 
-                            if (dist < dmin) 
-                            { 
-                              cidx = *it; 
-                              dmin = dist; 
+                            if (dist < dmin)
+                            {
+                              cidx = *it;
+                              dmin = dist;
                             }
                             ++it;
                           }
@@ -370,7 +352,7 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
               bi--;ei++;
               bj--;ej++;
               bk--;ek++;
-            } 
+            }
             while (!found);
 
             if (cidx >= 0)
@@ -396,8 +378,8 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
           {
             Point P;
             imesh->get_center(P,nodeq);
-          
-            index_type nidx = omesh->add_point(P); 
+
+            index_type nidx = omesh->add_point(P);
             points = omesh->get_points_pointer();
             nodes_count++;
             newnodes[q] = nidx;
@@ -405,11 +387,11 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
           }
         }
       }
-      
-      omesh->add_elem(newnodes);          
+
+      omesh->add_elem(newnodes);
       elems_count++;
     }
- 
+
     if (ofield->basis_order() == 0)
     {
       ofield->resize_values();
@@ -426,15 +408,28 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
         }
       }
     }
-    
+
     elems_offset += elems_count;
-    nodes_offset += nodes_count;
-    
-    update_progress(p+1, inputs.size());
+
+    update_progress_max(p+1, inputs.size());
   }
 
-  algo_end();
   return true;
 }
 
-} // end namespace SCIRunAlgo
+const AlgorithmInputName ConvertBundleToFieldAlgo::InputBundle("InputBundle");
+
+AlgorithmOutput ConvertBundleToFieldAlgo::run(const AlgorithmInput& input) const
+{
+  auto bundle = input.get<Bundle>(InputBundle);
+
+  FieldHandle outputField;
+
+  if (!runImpl(bundle, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False thrown on legacy run call");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+
+  return output;
+}

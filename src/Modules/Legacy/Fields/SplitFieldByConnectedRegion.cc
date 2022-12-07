@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,9 +24,13 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun;
@@ -51,12 +54,13 @@ SplitFieldByConnectedRegion::SplitFieldByConnectedRegion()
   INITIALIZE_PORT(OutputField6);
   INITIALIZE_PORT(OutputField7);
   INITIALIZE_PORT(OutputField8);
+  INITIALIZE_PORT(OutputBundle);
 }
 
 void SplitFieldByConnectedRegion::setStateDefaults()
 {
- setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
- setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortAscending());
+ setStateBoolFromAlgo(Parameters::SortDomainBySize);
+ setStateBoolFromAlgo(Parameters::SortAscending);
 }
 
 void SplitFieldByConnectedRegion::execute()
@@ -65,8 +69,8 @@ void SplitFieldByConnectedRegion::execute()
 
  if (needToExecute())
   {
-    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
-    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortAscending());
+    setAlgoBoolFromState(Parameters::SortDomainBySize);
+    setAlgoBoolFromState(Parameters::SortAscending);
 
     auto output = algo().run(make_input((InputField, input_field)));
 
@@ -79,14 +83,7 @@ void SplitFieldByConnectedRegion::execute()
     sendOutputFromAlgorithm(OutputField7, output);
     sendOutputFromAlgorithm(OutputField8, output);
 
-    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    boutput = new Bundle;
-    for (size_t j=0; j< output.size(); j++)
-    {
-      std::ostringstream oss;
-      oss << "Field" << j;
-      boutput->setField(oss.str(),output[j]);
-    }
-    #endif
+    
+    sendOutputFromAlgorithm(OutputBundle, output);
   }
 }

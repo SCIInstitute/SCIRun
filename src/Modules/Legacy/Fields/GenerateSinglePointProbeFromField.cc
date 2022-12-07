@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,18 +25,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+
 #include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/Feedback.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/WidgetBuilders.h>
+#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Feedback.h>
 
 using namespace SCIRun;
 using namespace Core;
@@ -63,6 +65,8 @@ ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
 ALGORITHM_PARAMETER_DEF(Fields, SnapToNode);
 ALGORITHM_PARAMETER_DEF(Fields, SnapToElement);
+ALGORITHM_PARAMETER_DEF(Fields, BBoxSize);
+ALGORITHM_PARAMETER_DEF(Fields, UseBBoxSize);
 
 namespace SCIRun
 {
@@ -70,22 +74,17 @@ namespace SCIRun
   {
     namespace Fields
     {
-      PointWidgetStub::PointWidgetStub() : scale_(1) {}
-      Point PointWidgetStub::position() const { return pos_; }
-      void PointWidgetStub::setPosition(const Point& p) { pos_ = p; }
-
       class GenerateSinglePointProbeFromFieldImpl
       {
       public:
         GenerateSinglePointProbeFromFieldImpl() :
-          widget_(new PointWidgetStub),
           widgetid_(0), l2norm_(0), color_changed_(false) {}
-        PointWidgetPtr widget_;
         BBox last_bounds_;
+        Point widgetLocation_;
         int widgetid_;
         double l2norm_;
         bool color_changed_;
-        GeometryHandle buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
+          GeometryHandle buildWidgetObject(const std::optional<SharedPointer<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
         RenderState getWidgetRenderState(ModuleStateHandle state);
         Transform previousTransform_;
       };
@@ -105,8 +104,7 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (vsf.selectionName.find(get_id()) != std::string::npos &&
-      impl_->previousTransform_ != vsf.transform)
+    if (vsf.matchesWithModuleId(id()) && impl_->previousTransform_ != vsf.transform)
     {
       adjustPositionFromTransform(vsf.transform);
       enqueueExecuteAgain(false);
@@ -171,6 +169,8 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
   state->setValue(SnapToNode, false);
   state->setValue(SnapToElement, false);
+  state->setValue(Parameters::BBoxSize, 10.0);
+  state->setValue(Parameters::UseBBoxSize, false);
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
@@ -185,20 +185,31 @@ Point GenerateSinglePointProbeFromField::currentLocation() const
 void GenerateSinglePointProbeFromField::execute()
 {
   auto ifieldOption = getOptionalInput(InputField);
+
+  // First, the total needs to be scaled to half since we need the radius instead of the diameter
+  // Second, we want to divide by 3 to get the average of the bbox lengths
+  const static double SCALE_CORRECTION = 1.0 / 6.0;
+  double fieldScale = 0.0;
+  if (ifieldOption)
+  {
+    auto bbox = ifieldOption->get()->vmesh()->get_bounding_box();
+    fieldScale = SCALE_CORRECTION * (bbox.x_length() + bbox.y_length() + bbox.z_length());
+  }
+
   if (needToExecute())
   {
     auto field = GenerateOutputField(ifieldOption);
     sendOutput(GeneratedPoint, field);
 
     auto index = GenerateIndex();
-    sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
+    sendOutput(ElementIndex, makeShared<Int32>(static_cast<int>(index)));
 
-    auto geom = impl_->buildWidgetObject(field, get_state(), *this);
+    auto geom = impl_->buildWidgetObject(ifieldOption, field, fieldScale, get_state(), *this);
     sendOutput(GeneratedWidget, geom);
   }
 }
 
-FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::optional<FieldHandle> ifieldOption)
+FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(std::optional<FieldHandle> ifieldOption)
 {
   FieldHandle ifield;
   const double THRESHOLD = 1e-6;
@@ -258,7 +269,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       center = curloc;
     }
 
-    impl_->widget_->setPosition(center);
+    impl_->widgetLocation_ = center;
 
     impl_->last_bounds_ = bbox;
   }
@@ -269,7 +280,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   if (moveto == "Location")
   {
     const auto newloc = currentLocation();
-    impl_->widget_->setPosition(newloc);
+    impl_->widgetLocation_ = newloc;
     moved_p = true;
   }
   else if (moveto == "Center")
@@ -297,7 +308,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
     auto center = bmin + Vector(bmax - bmin) * 0.5;
 
-    impl_->widget_->setPosition(center);
+    impl_->widgetLocation_ = center;
     moved_p = true;
   }
   else if (!moveto.empty() && ifieldOption)
@@ -309,7 +320,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       {
         Point p;
         ifield->vmesh()->get_center(p, VMesh::Node::index_type(idx));
-        impl_->widget_->setPosition(p);
+        impl_->widgetLocation_ = p;
         moved_p = true;
       }
     }
@@ -320,7 +331,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       {
         Point p;
         ifield->vmesh()->get_center(p, VMesh::Elem::index_type(idx));
-        impl_->widget_->setPosition(p);
+        impl_->widgetLocation_ = p;
         moved_p = true;
       }
     }
@@ -335,7 +346,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 #endif
   }
 
-  const auto location = impl_->widget_->position();
+  const auto location = impl_->widgetLocation_;
 
   FieldInformation fi("PointCloudMesh", 0, "double");
   auto mesh = CreateMesh(fi);
@@ -472,71 +483,36 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
   return index;
 }
 
-GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
+GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(const std::optional<SharedPointer<Field>> ifield, FieldHandle ofield, double fieldScale, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
-  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
-
-  auto mesh = field->vmesh();
-
-  auto colorScheme = ColorScheme::COLOR_UNIFORM;
-  ColorRGB node_color;
+  using namespace Parameters;
+  auto mesh = ofield->vmesh();
+  double radius;
+  if (state->getValue(UseBBoxSize).toBool())
+  {
+    if (ifield)
+      radius = fieldScale * (0.01*state->getValue(BBoxSize).toDouble());
+    else
+      THROW_INVALID_ARGUMENT("A field input must be given to use the Bounding Box scaling percentage.");
+  }
+  else
+    radius = state->getValue(ProbeSize).toDouble();
 
   mesh->synchronize(Mesh::NODES_E);
-
-  VMesh::Node::iterator eiter, eiter_end;
+  // todo: quicker way to get a single point
+  VMesh::Node::iterator eiter;
   mesh->begin(eiter);
-  mesh->end(eiter_end);
+  Point point;
+  mesh->get_point(point, *eiter);
 
-  using namespace Parameters;
-  double radius = state->getValue(ProbeSize).toDouble();
-  double num_strips = 10;
-  if (radius < 0) radius = 1.;
-  if (num_strips < 0) num_strips = 10.;
-  std::stringstream ss;
-  ss << radius << num_strips << static_cast<int>(colorScheme);
-
-  auto uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
-
-  auto primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
-  Graphics::GlyphGeom glyphs;
-  while (eiter != eiter_end)
-  {
-    Point p;
-    mesh->get_point(p, *eiter);
-    glyphs.addSphere(p, radius, num_strips, node_color);
-
-    ++eiter;
-  }
-
-  auto renState = getWidgetRenderState(state);
-
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, primIn, mesh->get_bounding_box());
-
-  return geom;
-}
-
-RenderState GenerateSinglePointProbeFromFieldImpl::getWidgetRenderState(ModuleStateHandle state)
-{
-  RenderState renState;
-
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(state->getValue(Parameters::ProbeColor).toString());
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-    renState.defaultColor.g() > 1.0 ||
-    renState.defaultColor.b() > 1.0) ?
-    ColorRGB(
-    renState.defaultColor.r() / 255.,
-    renState.defaultColor.g() / 255.,
-    renState.defaultColor.b() / 255.)
-    : renState.defaultColor;
-
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
-
-  return renState;
+  return SphereWidgetBuilder(idGenerator)
+    .tag("GSPPFF")
+    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
+    .scale(radius)
+    .defaultColor(state->getValue(Parameters::ProbeColor).toString())
+    .origin(point)
+    .boundingBox(mesh->get_bounding_box())
+    .resolution(10)
+    .centerPoint(point)
+    .build();
 }

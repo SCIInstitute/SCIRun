@@ -1,55 +1,54 @@
-//
-//  For more information, please see: http://software.sci.utah.edu
-//
-//  The MIT License
-//
-//  Copyright (c) 2015 Scientific Computing and Imaging Institute,
-//  University of Utah.
-//
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included
-//  in all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
-//
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 //    File   : NetworkIO.cc
 //    Author : Martin Cole
 //    Date   : Mon Feb  6 14:32:15 2006
 
-
-// TODO: change string concatenation to string streams
-
-// Disable concepts compliance detection for problem compiler.
-// See boost/range/concepts.hpp for other problem compilers.
-#if defined __clang__
-#if __clang_major__ == 4 && __clang_minor__ == 2
-
-#define BOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
-
-#endif
-#endif
+//
+// // TODO: change string concatenation to string streams
+//
+// // Disable concepts compliance detection for problem compiler.
+// // See boost/range/concepts.hpp for other problem compilers.
+// #if defined __clang__
+// #if __clang_major__ == 4 && __clang_minor__ == 2
+//
+// #define BOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
+//
+// #endif
+// #endif
 
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Core/XMLUtil/XMLUtil.h>
-//#include <Dataflow/Network/NetworkEditor.h>
 #include <Dataflow/Network/Module.h>
-//#include <Core/Util/Environment.h>
-#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <sci_debug.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
@@ -57,6 +56,10 @@
 #include <Core/Logging/Log.h>
 #include <iostream>
 #include <sstream>
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -66,8 +69,7 @@ LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory
   std::ostringstream& simpleLog) :
 net_file_("new.srn"),
 done_writing_(false),
-doc_(0),
-out_fname_(""),
+doc_(nullptr),
 sn_count_(0),
 sn_ctx_(0),
 dtdPath_(dtdpath),
@@ -78,6 +80,13 @@ modFactory_(modFactory)
   netid_to_conid_.push(id_map_t());
 }
 
+LegacyNetworkStateConversion LegacyNetworkIO::legacyState_;
+
+void LegacyNetworkIO::initializeStateConverter(std::istream& file)
+{
+  legacyState_.readImporterMap(file);
+}
+
 std::string
 LegacyNetworkIO::get_mod_id(const std::string& id)
 {
@@ -86,66 +95,26 @@ LegacyNetworkIO::get_mod_id(const std::string& id)
   return (id == sn) ? sn : mmap[id];
 }
 
-std::string
-LegacyNetworkIO::gui_push_subnet_ctx()
+namespace
 {
-  std::string cmmd = "set sn_ctx $Subnet(Loading)";
-  //std::string s = TCLInterface::eval(cmmd);
-  return cmmd;
+  static const char* placeholder = "PlaceholderModule";
+  bool isPlaceholderModule(const std::string& name)
+  {
+    return name == placeholder;
+  }
+
+  std::pair<std::string, std::string> unconvertedModule(const std::string& m)
+  {
+    return { m, placeholder };
+  }
 }
-
-
 void
-LegacyNetworkIO::gui_pop_subnet_ctx(const std::string& ctx)
-{
-  std::string cmmd = "set Subnet(Loading) " + ctx;
-  simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
-#if 0
-  --sn_ctx_;
-  netid_to_modid_.pop();
-  netid_to_conid_.pop();
-  #endif
-}
-
-void
-LegacyNetworkIO::gui_add_subnet_at_position(const std::string &mod_id,
-const std::string &module,
-const std::string& x,
-const std::string &y)
-{
-  #if 0
-  ++sn_count_;
-  // map the subnet to a local var before we push maps.
-  id_map_t &mmap = netid_to_modid_.top();
-
-  std::ostringstream snic;
-  snic << "SubnetIcon" << sn_count_;
-  mmap[mod_id] = snic.str();
-
-  netid_to_modid_.push(id_map_t());
-  netid_to_conid_.push(id_map_t());
-
-  std::ostringstream cmmd;
-
-  cmmd << "set Subnet(Loading) [makeSubnetEditorWindow "
-    << sn_ctx_ << " " << x  << " " << y << "]";
-  TCLInterface::eval(cmmd.str());
-  ++sn_ctx_;
-
-  std::ostringstream cmmd1;
-  cmmd1 << "set Subnet(Subnet" << sn_count_ << "_Name) \"" << module << "\"";
-  TCLInterface::eval(cmmd1.str());
-  #endif
-}
-
-void
-LegacyNetworkIO::gui_add_module_at_position(const std::string &mod_id,
-const std::string &cpackage,
-const std::string &ccategory,
-const std::string &moduleNameOrig,
-const std::string &cversion,
-const std::string& x,
-const std::string &y)
+LegacyNetworkIO::gui_add_module_at_position(const std::string& mod_id,
+    const std::string& cpackage,
+    const std::string& ccategory,
+    const std::string& moduleNameOrig,
+    const std::string& x,
+    const std::string& y)
 {
   if (!xmlData_)
     return;
@@ -163,7 +132,23 @@ const std::string &y)
     nextId = *std::max_element(existingIdsWithThisModuleName.begin(), existingIdsWithThisModuleName.end()) + 1;
   moduleIdMap_[mod_id] = ModuleId(cmodule, nextId);
 
-  ModuleLookupInfoXML& mod = xmlData_->network.modules[moduleIdMap_[mod_id]].module;
+  if (isPlaceholderModule(cmodule))
+  {
+    xmlData_->network.modules[moduleIdMap_[mod_id]].state.setValue(Variables::Filename, std::string(moduleNameOrig));
+  }
+
+  if (!modFactory_.moduleImplementationExists(cmodule))
+  {
+    simpleLog_ << "ERROR: module not implemented: " << cmodule << std::endl;
+    simpleLog_ << "\t~~~ File an issue at github.com/SCIInstitute/SCIRun for conversion (if not already created, please search first). ~~~" << std::endl;
+
+    std::ostringstream ostr;
+    ostr << "Error: Undefined module \"" << cmodule << "\"";
+    logCritical("LegacyNetworkIO error: Undefined module \"{}\"", cmodule);
+    THROW_INVALID_ARGUMENT(ostr.str());
+  }
+
+  auto& mod = xmlData_->network.modules[moduleIdMap_[mod_id]].module;
   mod.package_name_ = cpackage;
   mod.category_name_ = ccategory;
   mod.module_name_= cmodule;
@@ -179,25 +164,144 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
   {
     {"MapFieldDataOntoElems", "MapFieldDataOntoElements"},
     {"GetColumnOrRowFromMatrix", "GetMatrixSlice"},
-    {"CreateStandardColorMaps", "CreateStandardColorMap"}
+    {"CreateStandardColorMaps", "CreateStandardColorMap"},
+    { "EvaluateLinAlgBinary", "EvaluateLinearAlgebraBinary" },
+    { "EvaluateLinAlgUnary", "EvaluateLinearAlgebraUnary" },
+    { "ExtractIsosurface", "ExtractSimpleIsosurface" }, //TODO: needs rename after issue
+    { "CalculateFieldData2", "CalculateFieldData" },
+    { "CalculateFieldData3", "CalculateFieldData" },
+    { "CalculateFieldData4", "CalculateFieldData" },
+    { "CalculateFieldData5", "CalculateFieldData" },
+    { "InterfaceWithCleaver", "InterfaceWithCleaver2" },
+    unconvertedModule("InterfaceWithNeuroFEMForward"),
+    { "ClipFieldByFunction2", "ClipFieldByFunction" },
+    unconvertedModule("ViewLeadSignals"),
+    unconvertedModule("ShowMatrix"),
+    unconvertedModule("ConvertFieldDataFromIndicesToTensors"),
+    unconvertedModule("CalculateMisfitField"),
+    unconvertedModule("SwapNodeLocationsWithMatrixEntries"),
+    unconvertedModule("BuildElemLeadField"),
+    unconvertedModule("OptimizeDipole"),
+    unconvertedModule("OptimizeConductivities"),
+    { "CalculateNodeNormals", "GenerateNodeNormals" },
+    { "ChooseField", "ChooseInput" },
+    { "ChooseColorMap", "ChooseInput" },
+    unconvertedModule("SynchronizeGeometry"),
+    unconvertedModule("TransformData"),
+    unconvertedModule("SetFieldOrMeshStringProperty"),
+    unconvertedModule("Viewer"),
+    unconvertedModule("HDF5DataReader"),
+    unconvertedModule("MapDataToMeshCoord"),
+    unconvertedModule("ShowFieldV1"),
+    unconvertedModule("InterfaceWithMatlab"),
+    unconvertedModule("ShowTextureSlices"),
+    unconvertedModule("CalculateLatVolGradientsAtNodes"),
+    unconvertedModule("ConvertLatVolDataFromElemToNode"),
+    unconvertedModule("CreateStructHex"),
+    unconvertedModule("ConvertLatVolDataFromNodeToElem"),
+    unconvertedModule("ConvertMeshToIrregularMesh"),
+    unconvertedModule("ConvertBundleToField"),
+    unconvertedModule("RemoveZerosFromMatrix"),
+    unconvertedModule("ReportScalarFieldStats"),
+    unconvertedModule("ClipFieldToFieldOrWidget"),
+    unconvertedModule("ClipLatVolByIndicesOrWidget"),
+    unconvertedModule("ExtractIsosurfaceByFunction"),
+    unconvertedModule("ConvertRegularMeshToStructuredMesh"),
+    unconvertedModule("GetDomainStructure"),
+    unconvertedModule("ConvertFieldToNrrd"),
+    unconvertedModule("MergeFields"),
+    unconvertedModule("InsertHexVolSheetAlongSurface"),
+    unconvertedModule("SubsampleStructuredFieldByIndices"),
+    unconvertedModule("EvaluateLinAlgGeneral"),
+    unconvertedModule("ShowTextureVolume"),
+    unconvertedModule("CreateAndEditColorMap2D"),
+    unconvertedModule("ShowLinePath"),
+    unconvertedModule("ShowFieldMesh"),
+    unconvertedModule("CreateMeshFromNrrd"),
+    unconvertedModule("JoinBundles"),
+    unconvertedModule("WriteBundle"),
+    unconvertedModule("SplitVectorArrayInXYZ"),
+    unconvertedModule("ManageFieldData"),
+    unconvertedModule("UnuCrop"),
+    unconvertedModule("Isosurface"),
+    unconvertedModule("FieldSlicer"),
+    unconvertedModule("GenStandardColorMaps"),
+    unconvertedModule("CalculateDataArray"),
+    unconvertedModule("InterfaceWithMatlabViaBundles"),
+    unconvertedModule("TendAnvol"),
+    unconvertedModule("TendBmat"),
+    unconvertedModule("Unu1op"),
+    unconvertedModule("Unu2op"),
+    unconvertedModule("Unu3op"),
+    unconvertedModule("UnuCmedian"),
+    unconvertedModule("UnuConvert"),
+    unconvertedModule("UnuJoin"),
+    unconvertedModule("UnuCrop"),
+    unconvertedModule("UnuFlip"),
+    unconvertedModule("UnuGamma"),
+    unconvertedModule("UnuPad"),
+    unconvertedModule("UnuPermute"),
+    unconvertedModule("UnuQuantize"),
+    unconvertedModule("UnuResample"),
+    unconvertedModule("UnuReshape"),
+    unconvertedModule("UnuShuffle"),
+    unconvertedModule("UnuSlice"),
+    unconvertedModule("UnuHeq"),
+    unconvertedModule("ConvertNrrdsToTexture"),
+    unconvertedModule("GetAllSegmentationBoundaries"),
+    unconvertedModule("ShowPointPath"),
+    unconvertedModule("BuildNrrdGradientAndMagnitude"),
+    unconvertedModule("ConvertFieldsToTexture"),
+    unconvertedModule("CreateViewerClockIcon"),
+    unconvertedModule("UnuJhisto"),
+    unconvertedModule("NrrdToField"),
+    unconvertedModule("MDSPlusDataReader"),
+    unconvertedModule("VectorMagnitude"),
+    unconvertedModule("FieldSubSample"),
+    unconvertedModule("NIMRODConverter"),
+    unconvertedModule("StreamLines"),
+    unconvertedModule("FieldSubSample"),
+    unconvertedModule("SampleLattice"),
+    unconvertedModule("NrrdSelectTime"),
+    unconvertedModule("NrrdSetProperty"),
+    { "ReportMatrixColumnMeasure", "ReportMatrixSliceMeasure" },
+    { "ReportMatrixRowMeasure", "ReportMatrixSliceMeasure" },
+    { "GetSubmatrix", "SelectSubMatrix" },
+    unconvertedModule("FieldInfo"),
+    unconvertedModule("SampleField"),
+    unconvertedModule("TextureBuilder"),
+    unconvertedModule("ShowTextureSurface"),
+    unconvertedModule("UnuProject")
   };
+
+#if 0
+LegacyNetworkIO::LegacyImporterMap LegacyNetworkIO::legacyNetworks_;
+#endif
 
 std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalName)
 {
   auto rename = moduleRenameMap_.find(originalName);
   if (rename != moduleRenameMap_.end())
+  {
     return rename->second;
+  }
   return originalName;
 }
 
-void
-LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to,
-  const std::string& from_port, const std::string& to_port, const std::string& con_id)
+void LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port, const std::string& con_id)
 {
   auto fromId = moduleIdMap_[from];
   auto toId = moduleIdMap_[to];
 
+  if (isPlaceholderModule(fromId.name_) || isPlaceholderModule(toId.name_))
+    return;
+
   if (!xmlData_)
+    return;
+
+  if (!modFactory_.moduleImplementationExists(fromId.name_))
+    return;
+  if (!modFactory_.moduleImplementationExists(toId.name_))
     return;
 
   try
@@ -210,25 +314,48 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
     out.moduleId_ = fromId;
 
     auto fromIndex = boost::lexical_cast<int>(from_port);
+    if (fromDesc.output_ports_.empty())
+    {
+      simpleLog_ << "Module description has changed: output ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
     if (fromIndex >= fromDesc.output_ports_.size() && fromDesc.output_ports_.back().isDynamic)
     {
       out.portId_ = fromDesc.output_ports_.back().id;
       out.portId_.id = fromIndex;
     }
-    else
+    else if (0 <= fromIndex && fromIndex < fromDesc.output_ports_.size())
+    {
       out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
+    }
+    else
+    {
+      simpleLog_ << "Module description has changed: output ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
     IncomingConnectionDescription in;
     in.moduleId_ = toId;
 
     auto toIndex = boost::lexical_cast<int>(to_port);
-
+    if (toDesc.input_ports_.empty())
+    {
+      simpleLog_ << "Module description has changed: input ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
     if (toIndex >= toDesc.input_ports_.size() && toDesc.input_ports_.back().isDynamic)
     {
       in.portId_ = toDesc.input_ports_.back().id;
       in.portId_.id = toIndex;
     }
-    else
+    else if (0 <= toIndex && toIndex < toDesc.input_ports_.size())
+    {
       in.portId_ = toDesc.input_ports_.at(toIndex).id;
+    }
+    else
+    {
+      simpleLog_ << "Module description has changed: output ports are different in SCIRun 5--connection not created between modules " << fromId << " and " << toId << std::endl;
+      return;
+    }
 
     ConnectionDescriptionXML conn;
     conn.out_ = out;
@@ -249,11 +376,9 @@ const std::string &from_port,
 const std::string &to_id,
 const std::string &to_port0)
 {
-  std::string to_port = to_port0;
-  std::string from = get_mod_id(from_id);
-  std::string to = get_mod_id(to_id);
-  if (from.find("Subnet") == std::string::npos &&
-    to.find("Subnet") == std::string::npos)
+  const auto from = get_mod_id(from_id);
+  const auto to = get_mod_id(to_id);
+  if (from.find("Subnet") == std::string::npos && to.find("Subnet") == std::string::npos)
   {
     createConnectionNew(from_id, to_id, from_port, to_port0, con_id);
   }
@@ -290,8 +415,7 @@ NetworkIO::gui_call_module_callback(const std::string &id, const std::string &ca
 #endif
 
 void
-LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::string &var,
-const std::string &val)
+LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::string &var, const std::string &val)
 {
   std::string cmmd;
   std::string mod = get_mod_id(mod_id);
@@ -312,32 +436,38 @@ const std::string &val)
 
   if (!xmlData_)
     return;
+  if (var == "ui_geometry")
+    return;
 
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
-  auto moduleNameMapIter = nameLookup_.find(moduleName);
-  if (moduleNameMapIter == nameLookup_.end())
+  //logCritical("getStateConverter {} {}", moduleName, var);
+  auto converterObj = legacyState_.getStateConverter(moduleName, var);
+  if (converterObj && converterObj->valueConverter)
   {
-    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
-    return;
+    std::string stripBraces(val.begin() + 1, val.end() - 1);
+    // simpleLog_ << ">>> Attempting state conversion function: name{" << converterObj->name << "} "
+    //   << (converterObj->valueConverter ? "<func>" : "null func") << " from " << stripBraces << " to " << converterObj->valueConverter(stripBraces) << std::endl;
+    stateXML.setValue(converterObj->name, converterObj->valueConverter(stripBraces));
   }
-  auto valueConverterForModuleIter = valueConverter_.find(moduleName);
-  if (valueConverterForModuleIter == valueConverter_.end())
+  else
   {
-    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
-    return;
+    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
+    simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
   }
-  std::string stripBraces(val.begin() + 1, val.end() - 1);
-  stateXML.setValue(moduleNameMapIter->second[var], valueConverterForModuleIter->second[var](stripBraces));
 }
 
 namespace
 {
-  ValueConverter toInt = [](const std::string& s) { return boost::lexical_cast<int>(s); };
-  ValueConverter toDouble = [](const std::string& s) { return boost::lexical_cast<double>(s); };
+  ValueConverter toInt = [](const std::string& s) { return std::stoi(s); };
+  ValueConverter toDouble = [](const std::string& s)
+  {
+    if(s == "Inf") return DBL_MAX;
+    return boost::lexical_cast<double>(s);
+  };
   ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };
-
+  ValueConverter toString = [](const std::string& s) { return s;};
   //TODO: mapping macro or find a boost lib to do pattern matching with funcs easily
   ValueConverter data_at = [](const std::string& s)
   {
@@ -352,39 +482,216 @@ namespace
     return 1;
   };
 
-  ValueConverter throwAway = [](const std::string& s) { return 0; };
+  ValueConverter throwAway = [](const std::string&) { return 0; };
+  ValueConverter negateBool = [](const std::string& s)
+  {
+    if (s == "1") return 0;
+    return 1;
+  };
+  ValueConverter dataOrNodes = [](const std::string& s)
+  {
+    if (std::stoi(s) == 1) return std::string("data");
+    return std::string("node");
+  };
+  ValueConverter opStringToInt = [](const std::string& s)
+  {
+    if (s == "Add") return 0;
+    if (s == "Mult") return 2;
+    return 3;
+  };
+  ValueConverter capFirstLetter = [](const std::string& s)
+  {
+    std::string result = s;
+    result[0] = std::toupper(s[0]);
+    return result;
+  };
+  ValueConverter shortenMethodForLinearSystem = [](const std::string& s)
+  {
+    if (s[0] == 'C') return std::string("cg");
+    if (s[0] == 'B') return std::string("bicg");
+    if (s[0] == 'J') return std::string("jacobi");
+    return std::string("minres");
+  };
+  ValueConverter createMatrixFormat = [](const std::string& s)
+  {
+    std::string result;
+    bool newLineStart = false;
+    for (const auto &c : s)
+    {
+      if (c == '{') continue;
+      if (c == ' ' && newLineStart)
+      {
+        newLineStart = false;
+        continue;
+      }
+      if (c == '}')
+      {
+        result += '\n';
+        newLineStart = true;
+      }
+      else result += c;
+    }
+    return result;
+  };
+  ValueConverter directionForStreamLines = [](const std::string& s)
+  {
+    if (s == "0") return std::string("Negative");
+    if (s == "1") return std::string("Both");
+    return std::string("Positive");
+  };
+  ValueConverter valueForStreamLines = [](const std::string& s)
+  {
+    if (s == "0") return std::string("Seed value");
+    if (s == "1") return std::string("Seed index");
+    if (s == "2") return std::string("Integration index");
+    if (s == "3") return std::string("Integration step");
+    if (s == "4") return std::string("Distance from seed");
+    return std::string("Streamline length");
+  };
+  ValueConverter methodForStreamLines = [](const std::string& s)
+  {
+    if (s == "0") return std::string("CellWalk");
+    if (s == "1") return std::string("AdamsBashforth");
+    if (s == "2") return std::string("Heun");
+    if (s == "3") return std::string("RungeKutta");
+    return std::string("RungeKuttaFehlberg");
+  };
+  ValueConverter lengthForShowColorMap = [](const std::string& s)
+  {
+    if (s == "full") return 1;
+    if (s == "half1") return 0;
+    return 2;
+  };
+  ValueConverter sideForShowColorMap = [](const std::string& s)
+  {
+    if (s == "left") return 0;
+    return 1;
+  };
+  ValueConverter conditionsForFEMVoltage = [](const std::string& s)
+  {
+    if (s == "DirSub") return 1;
+    return 0;
+  };
+  ValueConverter opStringToIntUnary = [](const std::string& s)
+  {
+    if (s == "Transpose") return 0;
+    return 3;
+  };
+
+  static std::string colorState;
+  ValueConverter startColorR = [](const std::string& s)
+  {
+    colorState = "Color(" + s;
+    //SCIRun::logCritical("startColorR {} -+- {}", s, colorState);
+    return colorState;
+  };
+  ValueConverter appendColorG = [](const std::string& s)
+  {
+    colorState += "," + s;
+    //SCIRun::logCritical("appendColorG {} -+- {}", s, colorState);
+    return colorState;
+  };
+  ValueConverter appendColorB = [](const std::string& s)
+  {
+    colorState += "," + s + ")";
+    //SCIRun::logCritical("appendColorB {} -+- {}", s, colorState);
+    return colorState;
+  };
+
+  typedef std::map<std::string, ValueConverter> StringToFunctorMap;
+
+  static StringToFunctorMap functorLookup_ =
+  {
+    {"toInt", toInt},
+    {"toDouble", toDouble},
+    {"toPercent", toPercent},
+    {"data_at", data_at},
+    {"element_size", element_size},
+    {"throwAway", throwAway},
+    {"toString", toString},
+    {"negateBool", negateBool},
+    {"colorR", startColorR}, //TODO: initState},
+    {"colorG", appendColorG}, //TODO: appendState},
+    {"colorB", appendColorB}, //TODO: appendState},
+    {"useState", throwAway}, //TODO: useState},
+    {"dataOrNodes", dataOrNodes},
+    {"opStringToInt", opStringToInt},
+    {"capFirstLetter", capFirstLetter},
+    {"shortenMethodForLinearSystem", shortenMethodForLinearSystem},
+    {"createMatrixFormat", createMatrixFormat},
+    {"directionForStreamLines", directionForStreamLines},
+    {"valueForStreamLines", valueForStreamLines},
+    {"methodForStreamLines", methodForStreamLines},
+    {"lengthForShowColorMap", lengthForShowColorMap},
+    {"sideForShowColorMap", sideForShowColorMap},
+    {"conditionsForFEMVoltage", conditionsForFEMVoltage},
+    {"opStringToIntUnary", opStringToIntUnary}
+  };
 }
 
-NameLookup LegacyNetworkIO::nameLookup_ =
+LegacyNetworkStateConversion::LegacyNetworkStateConversion()
 {
+#if 0
+  initState = [this](const std::string& s)
   {
-    "CreateLatVol",
-    {
-      { "sizex", Name("XSize") },
-      { "sizey", Name("YSize") },
-      { "sizez", Name("ZSize") },
-      { "padpercent", Name("PadPercent") },
-      { "data-at", Name("DataAtLocation") },
-      { "element-size", Name("ElementSizeNormalized") }
-    }
-  }
-};
+    v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(s));
+    return s;
+  };
+  appendState = [this](const std::string& s)
+  {
+    *v4MergeStateToV5_ += "," + s;
+    return *v4MergeStateToV5_;
+  };
+  useState = [this](const std::string& s)
+  {
+    if(*v4MergeStateToV5_ == "linear")
+      return std::string("interpolateddata");
+    if(std::stoi(s) == 1)
+      return std::string("singledestination");
+    return std::string("closestdata");
+  };
+#endif
+}
 
-ValueConverterMap LegacyNetworkIO::valueConverter_ =
+void LegacyNetworkStateConversion::readImporterMap(std::istream& file)
 {
+  using boost::property_tree::ptree;
+  using boost::property_tree::read_xml;
+  ptree tree;
+  read_xml(file, tree);
+  for (const auto& module : tree.get_child("modules"))
   {
-    "CreateLatVol",
+    auto moduleName = LegacyNetworkIO::checkForModuleRename(module.second.get<std::string>("<xmlattr>.name"));
+    for (const auto& keys : module.second.get_child(""))
     {
-      { "sizex", toInt },
-      { "sizey", toInt },
-      { "sizez", toInt },
-      { "padpercent", toPercent },
-      { "data-at", data_at },
-      { "element-size", element_size },
-      { "ui_geometry", throwAway }
+      if (keys.first == "<xmlattr>")
+        continue;
+
+      // std::cout << moduleName << "," << keys.second.get<std::string>("from")
+      //   << ": " << keys.second.get<std::string>("to") << " -- " <<
+      //   keys.second.get<std::string>("type") << std::endl;
+
+      nameAndValLookup_[moduleName][keys.second.get<std::string>("from")] =
+        { Name(keys.second.get<std::string>("to")),
+          functorLookup_[keys.second.get<std::string>("type")]};
     }
   }
-};
+}
+
+std::optional<NewNameAndValueConverter> LegacyNetworkStateConversion::getStateConverter(const std::string& moduleName, const std::string& oldStateName) const
+{
+  auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
+  if (moduleNameMapIter == nameAndValLookup_.end())
+  {
+    return {};
+  }
+  auto varNameIter = moduleNameMapIter->second.find(oldStateName);
+  if (varNameIter == moduleNameMapIter->second.end())
+  {
+    return {};
+  }
+  return varNameIter->second;
+}
 
 #if 0
 void
@@ -399,7 +706,7 @@ NetworkIO::gui_call_mod_post_read(const std::string &mod_id)
 
 void
 LegacyNetworkIO::gui_set_module_note(const std::string &mod_id, const std::string &pos,
-const std::string &col, const std::string &note)
+  const std::string&, const std::string &note)
 {
   if (!xmlData_)
     return;
@@ -417,7 +724,7 @@ int LegacyNetworkIO::getNotePosition(const std::string& position) const
     return 0;
   char oldPos = position[1];
   /* copied from gui header; should move type down here
-  enum NotePosition
+  enum class NotePosition
   {
     Default,  0
     None,     1
@@ -446,8 +753,8 @@ int LegacyNetworkIO::getNotePosition(const std::string& position) const
 }
 
 void
-LegacyNetworkIO::gui_set_connection_note(const std::string &con_id, const std::string &pos,
-const std::string &col, const std::string &note)
+LegacyNetworkIO::gui_set_connection_note(const std::string &con_id, const std::string&,
+const std::string&, const std::string& note)
 {
   std::string stripBraces(note.begin() + 1, note.end() - 1);
   NoteXML noteXml(stripBraces, 0, stripBraces);
@@ -459,7 +766,7 @@ void
 LegacyNetworkIO::gui_set_variable(const std::string &var, const std::string &val)
 {
   std::string cmd = "set " + var +  " " + val;
-  simpleLog_ << "TCLInterface::eval " << cmd << std::endl;
+  //simpleLog_ << "TCLInterface::eval " << cmd << std::endl;
 }
 
 void
@@ -467,14 +774,14 @@ LegacyNetworkIO::gui_open_module_gui(const std::string &mod_id)
 {
   std::string mod = get_mod_id(mod_id);
   std::string cmmd = mod + " initialize_ui";
-  simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
+  //simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
 }
 
 void
 LegacyNetworkIO::process_environment(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next)
+  for (; node; node = node->next)
   {
     if (std::string(to_char_ptr(node->name)) == std::string("var"))
     {
@@ -490,25 +797,24 @@ void
 LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next)
+  for (; node; node = node->next)
   {
     if (std::string(to_char_ptr(node->name)) == std::string("module") ||
       std::string(to_char_ptr(node->name)) == std::string("subnet"))
     {
       bool do_subnet = std::string(to_char_ptr(node->name)) == std::string("subnet");
-      xmlNodePtr network_node = 0;
+      //xmlNodePtr network_node = nullptr;
 
       std::string x,y;
       xmlAttrPtr id_att = get_attribute_by_name(node, "id");
       xmlAttrPtr package_att = get_attribute_by_name(node, "package");
       xmlAttrPtr category_att = get_attribute_by_name(node, "category");
       xmlAttrPtr name_att = get_attribute_by_name(node, "name");
-      xmlAttrPtr version_att = get_attribute_by_name(node, "version");
 
       std::string mname = std::string(to_char_ptr(name_att->children->content));
       std::string mid = std::string(to_char_ptr(id_att->children->content));
       xmlNodePtr pnode = node->children;
-      for (; pnode != 0; pnode = pnode->next)
+      for (; pnode; pnode = pnode->next)
       {
         if (std::string(to_char_ptr(pnode->name)) == std::string("position"))
         {
@@ -519,27 +825,19 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
 
           if (do_subnet)
           {
-            std::string old_ctx = gui_push_subnet_ctx();
-            gui_add_subnet_at_position(mid, mname, x, y);
 
-            ASSERT(network_node != 0);
-            process_network_node(network_node);
-            gui_pop_subnet_ctx(old_ctx);
           }
           else
           {
             std::string package = std::string(to_char_ptr(package_att->children->content));
             std::string category = std::string(to_char_ptr(category_att->children->content));
-            std::string version = "1.0";
-            if (version_att != 0) version = std::string(to_char_ptr(version_att->children->content));
 
-            gui_add_module_at_position(mid, package, category,
-              mname, version, x, y);
+            gui_add_module_at_position(mid, package, category, mname, x, y);
           }
         }
         else if (std::string(to_char_ptr(pnode->name)) == std::string("network"))
         {
-          network_node = pnode;
+          //network_node = pnode;
         }
         else if (std::string(to_char_ptr(pnode->name)) == std::string("note"))
         {
@@ -557,7 +855,7 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
         else if (std::string(to_char_ptr(pnode->name)) == std::string("port_caching"))
         {
           xmlNodePtr pc_node = pnode->children;
-          for (; pc_node != 0; pc_node = pc_node->next)
+          for (; pc_node; pc_node = pc_node->next)
           {
             if (std::string(to_char_ptr(pc_node->name)) == std::string("port"))
             {
@@ -580,7 +878,7 @@ void
 LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next)
+  for (; node; node = node->next)
   {
     if (std::string(to_char_ptr(node->name)) == std::string("module"))
     {
@@ -591,7 +889,7 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
       xmlNodePtr pnode;
 
       pnode = node->children;
-      for (; pnode != 0; pnode = pnode->next)
+      for (; pnode != nullptr; pnode = pnode->next)
       {
         if (std::string(to_char_ptr(pnode->name)) == std::string("var"))
         {
@@ -603,11 +901,9 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
           std::string val = std::string(to_char_ptr(val_att->children->content));
 
           std::string filename = "no";
-          if (filename_att != 0) filename =
-            std::string(to_char_ptr(filename_att->children->content));
+          if (filename_att) filename = std::string(to_char_ptr(filename_att->children->content));
           std::string substitute = "yes";
-          if (substitute_att != 0) substitute =
-            std::string(to_char_ptr(substitute_att->children->content));
+          if (substitute_att) substitute = std::string(to_char_ptr(substitute_att->children->content));
 
           if (filename == "yes")
           {
@@ -630,13 +926,13 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
 
       bool has_gui_callback = false;
       pnode = node->children;
-      for (; pnode != 0; pnode = pnode->next)
+      for (; pnode; pnode = pnode->next)
       {
         if (std::string(to_char_ptr(pnode->name)) == std::string("gui_callback"))
         {
           has_gui_callback = true;
           xmlNodePtr gc_node = pnode->children;
-          for (; gc_node != 0; gc_node = gc_node->next)
+          for (; gc_node; gc_node = gc_node->next)
           {
             if (std::string(to_char_ptr(gc_node->name)) == std::string("callback"))
             {
@@ -655,7 +951,7 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
       if (has_gui_callback)
       {
         pnode = node->children;
-        for (; pnode != 0; pnode = pnode->next)
+        for (; pnode; pnode = pnode->next)
         {
           if (std::string(to_char_ptr(pnode->name)) == std::string("var"))
           {
@@ -667,10 +963,10 @@ LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
             std::string val = std::string(to_char_ptr(val_att->children->content));
 
             std::string filename = "no";
-            if (filename_att != 0) filename =
+            if (filename_att) filename =
               std::string(to_char_ptr(filename_att->children->content));
             std::string substitute = "yes";
-            if (substitute_att != 0) substitute =
+            if (substitute_att) substitute =
               std::string(to_char_ptr(substitute_att->children->content));
 
             if (filename == "yes")
@@ -710,7 +1006,7 @@ void
 LegacyNetworkIO::process_connections(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
-  for (; node != 0; node = node->next) {
+  for (; node; node = node->next) {
     if (std::string(to_char_ptr(node->name)) == std::string("connection")) {
       xmlAttrPtr id_att = get_attribute_by_name(node, "id");
       xmlAttrPtr from_att = get_attribute_by_name(node, "from");
@@ -737,7 +1033,7 @@ LegacyNetworkIO::process_connections(const xmlNodePtr enode)
 
 
       xmlNodePtr cnode = node->children;
-      for (; cnode != 0; cnode = cnode->next)
+      for (; cnode; cnode = cnode->next)
       {
         if (std::string(to_char_ptr(cnode->name)) == std::string("route"))
         {
@@ -776,12 +1072,9 @@ LegacyNetworkIO::process_filename(const std::string &orig)
   // Remove blanks and tabs from the input
   // (Some could have editted the XML file manually and may have left spaces)
 
-  if (filename.size() > 0)
+  if (!filename.empty() && filename[0] == '{')
   {
-    if (filename[0] == '{')
-    {
-      filename = filename.substr(1,filename.size()-2);
-    }
+    filename = filename.substr(1,filename.size()-2);
   }
 
   while (filename.size() > 0 &&
@@ -869,7 +1162,8 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
       {
         subst = std::string("sphere");
       }
-      while (idx != std::string::npos) {
+      while (idx != std::string::npos)
+      {
         src = src.replace(idx, key.size(), subst);
         idx = src.find(key);
       }
@@ -883,12 +1177,15 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
 NetworkFileHandle
 LegacyNetworkIO::load_net(const std::string &net)
 {
-//  FullFileName netfile(net);
+  //logCritical("^^^^^ Importing network: {}", net);
   net_file_ = net;
-  //sci_putenv("SCIRUN_NETFILE", net);
   if (!load_network())
+  {
+    //logCritical("!!!!!!! Network import unsuccessful: {}", net);
     return nullptr;
+  }
 
+  //logCritical("~~~ ~~~ ~~~ Network import successful: {}", net);
   return xmlData_;
 }
 
@@ -898,7 +1195,7 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
   // have to multi pass this document to workaround tcl timing issues.
   // PASS 1 - create the modules and connections
   xmlNode* node = network_node;
-  for (; node != 0; node = node->next) {
+  for (; node; node = node->next) {
     // skip all but the component node.
     if (node->type == XML_ELEMENT_NODE &&
       std::string(to_char_ptr(node->name)) == std::string("network"))
@@ -934,25 +1231,24 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
       }
 
       xmlNode* enode = node->children;
-      for (; enode != 0; enode = enode->next) {
-
-        if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("environment"))
+      for (; enode; enode = enode->next)
+      {
+        auto name = std::string(to_char_ptr(enode->name));
+        if (enode->type == XML_ELEMENT_NODE && name == "environment")
         {
           process_environment(enode);
-        } else if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("modules"))
+        }
+        else if (enode->type == XML_ELEMENT_NODE && name == "modules")
         {
           process_modules_pass1(enode);
-        } else if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("connections"))
+        }
+        else if (enode->type == XML_ELEMENT_NODE && name == "connections")
         {
           process_connections(enode);
-        } else if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("note"))
+        }
+        else if (enode->type == XML_ELEMENT_NODE && name == "note")
         {
-          gui_set_variable(std::string("notes"),
-            std::string(to_char_ptr(enode->children->content)));
+          gui_set_variable(std::string("notes"), std::string(to_char_ptr(enode->children->content)));
         }
       }
     }
@@ -960,13 +1256,13 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
 
   // PASS 2 -- call the callbacks and set the variables
   node = network_node;
-  for (; node != 0; node = node->next) {
+  for (; node; node = node->next) {
     // skip all but the component node.
     if (node->type == XML_ELEMENT_NODE &&
       std::string(to_char_ptr(node->name)) == std::string("network"))
     {
       xmlNode* enode = node->children;
-      for (; enode != 0; enode = enode->next) {
+      for (; enode; enode = enode->next) {
 
         if (enode->type == XML_ELEMENT_NODE &&
           std::string(to_char_ptr(enode->name)) == std::string("modules"))
@@ -1025,14 +1321,14 @@ LegacyNetworkIO::load_network()
 #else
   flags |= XML_PARSE_NOWARNING;
 #endif
-  doc = xmlCtxtReadFile(ctxt, net_file_.c_str(), 0, flags);
+  doc = xmlCtxtReadFile(ctxt, net_file_.c_str(), nullptr, flags);
   /* check if parsing suceeded */
-  if (doc == 0) {
+  if (!doc) {
     simpleLog_ << "LegacyNetworkIO.cc: Failed to parse " << net_file_
       << std::endl;
     return false;
   } else {
-    /* check if validation suceeded */
+    /* check if validation succeeded */
     if (ctxt->valid == 0) {
       simpleLog_ << "LegacyNetworkIO.cc: Failed to validate " << net_file_
         << std::endl;

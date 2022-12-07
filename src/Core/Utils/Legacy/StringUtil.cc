@@ -1,12 +1,11 @@
- /*
+/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Utils/Legacy/StringUtil.cc
 
 #include <Core/Utils/Legacy/StringUtil.h>
@@ -56,13 +57,13 @@ split_string(const std::string& str, char sep)
     std::string::size_type first = s.find(sep);
     if(first < s.size())
     {
-      if (first) 
+      if (first)
       {
         result.push_back(s.substr(0, first));
       }
       s = s.substr(first+1);
-    } 
-    else 
+    }
+    else
     {
       result.push_back(s);
       break;
@@ -116,17 +117,17 @@ string_Cify(const std::string &str)
 
 
 // replaces all occurrences of 'substr' in 'str' with 'replacement'
-std::string 
-replace_substring(std::string str, 
-		  const std::string &substr, 
-		  const std::string &replacement) 
+std::string
+replace_substring(std::string str,
+		  const std::string &substr,
+		  const std::string &replacement)
 {
   std::string::size_type pos;
   do {
     pos = str.find(substr);
     if (pos != std::string::npos)
-      str = str.replace(str.begin()+pos, 
-                        str.begin()+pos+substr.length(), 
+      str = str.replace(str.begin()+pos,
+                        str.begin()+pos+substr.length(),
                         replacement);
   } while (pos != std::string::npos);
   return str;
@@ -137,11 +138,11 @@ bool
 ends_with(const std::string &str, const std::string &substr)
 {
   return str.rfind(substr) == str.size()-substr.size();
-}  
+}
 
 
 std::string
-string_toupper(std::string str) 
+string_toupper(std::string str)
 {
   std::string::iterator iter = str.begin();
   std::string::iterator iend = str.end();
@@ -151,7 +152,7 @@ string_toupper(std::string str)
 }
 
 std::string
-string_tolower(std::string str) 
+string_tolower(std::string str)
 {
   std::string::iterator iter = str.begin();
   std::string::iterator iend = str.end();
@@ -164,10 +165,10 @@ bool from_string(const std::string &str, double &value)
 {
   std::string dstr = str + "\0";
   strip_spaces(dstr);
-  
+
   // if empty just return
   if (dstr.empty()) return (false);
-  
+
   const double nan = std::numeric_limits<double>::quiet_NaN();
   const double inf = std::numeric_limits<double>::infinity();
   // Handle special cases: nan, inf, and -inf
@@ -179,15 +180,15 @@ bool from_string(const std::string &str, double &value)
     }
     else if (dstr.compare(0,3,"NaN") == 0)
     {
-      value = nan; return (true);    
+      value = nan; return (true);
     }
     else if (dstr.compare(0,3,"Nan") == 0)
     {
-      value = nan; return (true);    
+      value = nan; return (true);
     }
     else if (dstr.compare(0,3,"NAN") == 0)
     {
-      value = nan; return (true);    
+      value = nan; return (true);
     }
   }
   else if (dstr[0] == 'i' || dstr[0] == 'I')
@@ -198,12 +199,12 @@ bool from_string(const std::string &str, double &value)
     }
     else if (dstr.compare(0,3,"Inf") == 0)
     {
-      value = inf; return (true);    
+      value = inf; return (true);
     }
     else if (dstr.compare(0,3,"INF") == 0)
     {
-      value = inf; return (true);    
-    }  
+      value = inf; return (true);
+    }
   }
   else if (dstr.size() > 1 && dstr[0] == '-' && (dstr[1] == 'i' || dstr[1] == 'I'))
   {
@@ -213,14 +214,14 @@ bool from_string(const std::string &str, double &value)
     }
     else if (dstr.compare(0,4,"-Inf") == 0)
     {
-      value = -inf; return (true);    
+      value = -inf; return (true);
     }
     else if (dstr.compare(0,4,"-INF") == 0)
     {
-      value = -inf; return (true);    
-    }  
+      value = -inf; return (true);
+    }
   }
-  
+
   // Default conversion
   char* eptr;
   value = strtod(&(dstr[0]),&eptr);
@@ -232,10 +233,10 @@ bool from_string(const std::string &str, float &value)
 {
   std::string dstr = str + "\0";
   strip_spaces(dstr);
-  
+
   // if empty just return
   if (dstr.empty()) return (false);
-  
+
   const float nan = std::numeric_limits<float>::quiet_NaN();
   const float inf = std::numeric_limits<float>::infinity();
   // Handle special cases: nan, inf, and -inf
@@ -247,15 +248,15 @@ bool from_string(const std::string &str, float &value)
     }
     else if (dstr.compare(0,3,"NaN") == 0)
     {
-      value = nan; return (true);    
+      value = nan; return (true);
     }
     else if (dstr.compare(0,3,"Nan") == 0)
     {
-      value = nan; return (true);    
+      value = nan; return (true);
     }
     else if (dstr.compare(0,3,"NAN") == 0)
     {
-      value = nan; return (true);    
+      value = nan; return (true);
     }
   }
   else if (dstr[0] == 'i' || dstr[0] == 'I')
@@ -266,12 +267,12 @@ bool from_string(const std::string &str, float &value)
     }
     else if (dstr.compare(0,3,"Inf") == 0)
     {
-      value = inf; return (true);    
+      value = inf; return (true);
     }
     else if (dstr.compare(0,3,"INF") == 0)
     {
-      value = inf; return (true);    
-    }  
+      value = inf; return (true);
+    }
   }
   else if (dstr.size() > 1 && dstr[0] == '-' && (dstr[1] == 'i' || dstr[1] == 'I'))
   {
@@ -281,14 +282,14 @@ bool from_string(const std::string &str, float &value)
     }
     else if (dstr.compare(0,4,"-Inf") == 0)
     {
-      value = -inf; return (true);    
+      value = -inf; return (true);
     }
     else if (dstr.compare(0,4,"-INF") == 0)
     {
-      value = -inf; return (true);    
-    }  
+      value = -inf; return (true);
+    }
   }
-  
+
   // Handle normal numbers
   char *eptr;
   double tempValue = strtod(&(dstr[0]),&eptr);
@@ -296,7 +297,7 @@ bool from_string(const std::string &str, float &value)
   if (eptr == &(dstr[0])) return (false);
   return (true);
 }
-  
+
 bool from_string(const std::string &str, int &value)
 {
   std::string dstr = str+ "\0";
@@ -336,7 +337,7 @@ bool from_string(const std::string &str, unsigned long &value)
 bool from_string(const std::string &str, long long &value)
 {
   std::string dstr = str+ "\0";
-  char *eptr;  
+  char *eptr;
   value = static_cast<long long>(strtol(&(dstr[0]),&eptr,0));
   if (eptr == &(dstr[0])) return (false);
   return (true);
@@ -358,12 +359,12 @@ strip_spaces(std::string& str)
 {
   size_t esize = str.size();
   size_t idx = 0;
-  
+
   // Strip out spaces at the start of the str
   while((idx <esize)&&((str[idx] == ' ') ||(str[idx] == '\t')||
         (str[idx] == '\n') || (str[idx] == '\r')||
         (str[idx] == '\f') || (str[idx] == '\v'))) idx++;
-    
+
   // Get the substring without spaces at the start or at the end
   str = str.substr(idx,(str.size()-idx));
 }
@@ -375,20 +376,20 @@ strip_surrounding_spaces(std::string& str)
 {
   size_t esize = str.size();
   size_t idx = 0;
-  
+
   // Strip out spaces at the start of the str
   while((idx <esize)&&((str[idx] == ' ') ||(str[idx] == '\t')||
         (str[idx] == '\n') || (str[idx] == '\r')||
         (str[idx] == '\f') || (str[idx] == '\v'))) idx++;
-  
+
   size_t ridx = 0;
   if (str.size()) ridx = str.size()-1;
-  
+
   // Strip out spaces at the end of the str
   while((ridx > 0)&&((str[ridx] == ' ') ||(str[ridx] == '\t')||
         (str[ridx] == '\n') || (str[ridx] == '\r')||
         (str[ridx] == '\f') || (str[ridx] == '\v'))) ridx--;
-  
+
   // Get the substring without spaces at the start or at the end
   str = str.substr(idx,(ridx-idx+1));
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
 #define ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
@@ -51,10 +51,12 @@ public:
   static const AlgorithmParameterName FileTypeList;
   static const AlgorithmParameterName FileExtension;
   static const AlgorithmParameterName FileTypeName;
+  static const AlgorithmParameterName GuiFileTypeName;
   static const AlgorithmParameterName FormatString;
 	static const AlgorithmParameterName FunctionString;
   static const AlgorithmParameterName ObjectInfo;
   static const AlgorithmParameterName ScriptEnvironmentVariable;
+  static const AlgorithmParameterName ProgrammableInputPortEnabled;
 
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;

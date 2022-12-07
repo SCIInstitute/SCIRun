@@ -1,6 +1,35 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_ENTITY_SYSTEM_ESCORE_BASE_HPP
 #define SPIRE_ENTITY_SYSTEM_ESCORE_BASE_HPP
 
+#include <es-log/trace-log.h>
 #include <map>
 #include <list>
 #include <iostream>
@@ -8,6 +37,7 @@
 #include "BaseSystem.hpp"
 #include "src/ComponentContainer.hpp"
 #include "src/EmptyComponentContainer.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -25,7 +55,7 @@ uint64_t getESTypeID()
 /// for an example implementation. I cannot enforce the existence of template
 /// functions in a derived class, but this class is fairly useless without
 /// the ability to add components.
-class ESCoreBase
+class SCISHARE ESCoreBase
 {
 public:
   ESCoreBase();
@@ -115,10 +145,10 @@ public:
   template <typename T>
   typename ComponentContainer<T>::ComponentItem* getStaticComponents()
   {
-    BaseComponentContainer* componentContainer = getComponentContainer(getESTypeID<T>());
-    if (componentContainer != nullptr)
+    auto componentContainer = getComponentContainer(getESTypeID<T>());
+    if (componentContainer)
     {
-      ComponentContainer<T>* concreteContainer = dynamic_cast<ComponentContainer<T>*>(componentContainer);
+      auto concreteContainer = dynamic_cast<ComponentContainer<T>*>(componentContainer);
       return concreteContainer->getComponentArray();
     }
     else
@@ -128,14 +158,14 @@ public:
   }
 
   template <typename T>
-  T* getStaticComponent(int index = 0)
+  T* getStaticComponent(size_t index = 0)
   {
-    BaseComponentContainer* componentContainer = getComponentContainer(getESTypeID<T>());
-    if (componentContainer != nullptr)
+    auto componentContainer = getComponentContainer(getESTypeID<T>());
+    if (componentContainer)
     {
       auto concreteContainer = dynamic_cast<ComponentContainer<T>*>(componentContainer);
       auto components = concreteContainer->getComponentArray();
-      if (components != nullptr && index < concreteContainer->getNumComponents())
+      if (components && index < concreteContainer->getNumComponents())
         return &components[index].component;
       else
         return nullptr;
@@ -173,26 +203,10 @@ protected:
       return;
     }
 
-    BaseComponentContainer* componentContainer = ensureComponentArrayExists<T, CompCont>();
-    CompCont* concreteContainer = dynamic_cast<CompCont*>(componentContainer);
+    auto componentContainer = ensureComponentArrayExists<T, CompCont>();
+    auto concreteContainer = dynamic_cast<CompCont*>(componentContainer);
     concreteContainer->addComponent(entityID, component);
   }
-
-  ///// Same function as above, but we bind to an rvalue reference.
-  //template <typename T, class CompCont = ComponentContainer<T>>
-  //void coreAddComponent(uint64_t entityID, T&& component)
-  //{
-  //  if (entityID == 0)
-  //  {
-  //    std::cerr << "entity-system: Attempting to add a component of entityID 0! Not allowed." << std::endl;
-  //    throw std::runtime_error("Attempting to add a component of entityID 0.");
-  //    return;
-  //  }
-
-  //  BaseComponentContainer* componentContainer = ensureComponentArrayExists<T, CompCont>();
-  //  CompCont* concreteContainer = dynamic_cast<CompCont*>(componentContainer);
-  //  concreteContainer->addComponent(entityID, std::move(component));
-  //}
 
   /// Adds a static component. Static components work exactly like normal
   /// components, except that they are not associated with an entityID and are
@@ -216,16 +230,16 @@ protected:
   {
    // If the container isn't already marked as static, mark it and ensure
    // that it is empty.
-   BaseComponentContainer* componentContainer = ensureComponentArrayExists<T, CompCont>();
-   CompCont* concreteContainer = dynamic_cast<CompCont*>(componentContainer);
+   auto componentContainer = ensureComponentArrayExists<T, CompCont>();
+   auto concreteContainer = dynamic_cast<CompCont*>(componentContainer);
    return concreteContainer->addStaticComponent(std::forward<T>(component));
   }
 
   template <typename T, class CompCont>
   BaseComponentContainer* ensureComponentArrayExists()
   {
-    BaseComponentContainer* componentContainer = getComponentContainer(getESTypeID<T>());
-    if (componentContainer == nullptr)
+    auto componentContainer = getComponentContainer(getESTypeID<T>());
+    if (!componentContainer)
     {
       componentContainer = new CompCont();
       addComponentContainer(componentContainer, getESTypeID<T>());

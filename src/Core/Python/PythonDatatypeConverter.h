@@ -1,42 +1,42 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 
 #ifdef BUILD_WITH_PYTHON
 #ifndef CORE_PYTHON_PYTHONDATATYPECONVERTER_H
 #define CORE_PYTHON_PYTHONDATATYPECONVERTER_H
 
+#include <Core/Algorithms/Base/Variable.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <boost/any.hpp>
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
 #include <vector>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/Variable.h>
-
-
 #include <Core/Python/share.h>
 
 namespace SCIRun
@@ -89,11 +89,18 @@ namespace SCIRun
 
       SCISHARE boost::python::dict convertFieldToPython(FieldHandle field);
       SCISHARE boost::python::list convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
-      SCISHARE boost::python::object convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
+      SCISHARE boost::python::dict convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
-
+      SCISHARE boost::python::dict wrapDatatypesInMap(
+        const std::vector<Datatypes::MatrixHandle>& matrices,
+        const std::vector<FieldHandle>& fields,
+        const std::vector<Datatypes::StringHandle>& strings);
+      const std::string getClassName(const boost::python::object& object);
       SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
+      SCISHARE Algorithms::Variable convertPythonObjectToVariableWithTypeInference(
+        const boost::python::object& object, const Algorithms::Variable& var);
       SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);
+      SCISHARE boost::python::object convertTransientVariableToPythonObject(const std::optional<boost::any>& v);
 
       class SCISHARE DatatypePythonExtractor
       {
@@ -111,27 +118,29 @@ namespace SCIRun
       {
       public:
         explicit DenseMatrixExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
-        virtual bool check() const override;
-        virtual Datatypes::DatatypeHandle operator()() const override;
-        virtual std::string label() const override { return "dense matrix"; }
+        bool check() const override;
+        Datatypes::DatatypeHandle operator()() const override;
+        std::string label() const override { return "dense matrix"; }
       };
 
       class SCISHARE SparseRowMatrixExtractor : public DatatypePythonExtractor
       {
       public:
         explicit SparseRowMatrixExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
-        virtual bool check() const override;
-        virtual Datatypes::DatatypeHandle operator()() const override;
-        virtual std::string label() const override { return "sparse matrix"; }
+        bool check() const override;
+        Datatypes::DatatypeHandle operator()() const override;
+        std::string label() const override { return "sparse matrix"; }
+      private:
+        static std::set<std::string> validKeys_;
       };
 
       class SCISHARE FieldExtractor : public DatatypePythonExtractor
       {
       public:
         explicit FieldExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
-        virtual bool check() const override;
-        virtual Datatypes::DatatypeHandle operator()() const override;
-        virtual std::string label() const override { return "field"; }
+        bool check() const override;
+        Datatypes::DatatypeHandle operator()() const override;
+        std::string label() const override { return "field"; }
       };
 
       SCISHARE std::string pyDenseMatrixLabel();

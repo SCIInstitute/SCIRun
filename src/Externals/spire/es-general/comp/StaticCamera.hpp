@@ -1,10 +1,40 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_GENERAL_COMPONENTS_STATIC_CAMERA_HPP
 #define SPIRE_GENERAL_COMPONENTS_STATIC_CAMERA_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <tuple>
+#include <spire/scishare.h>
 
 namespace gen {
 
@@ -13,9 +43,9 @@ namespace gen {
 // care anything about the camera itself.
 struct StaticCameraData
 {
-  glm::mat4 projIV;           // projection * iv
-  glm::mat4 worldToView;      // Inverse view (iv)
-  glm::mat4 projection;       // Projection matrix.
+  glm::mat4 view {1.0f};
+  glm::mat4 projection {1.0f};
+  glm::mat4 viewProjection {1.0f};
 
   // Misc variables. fovy only applies to perspective matrices.
   float fovy;
@@ -49,24 +79,23 @@ struct StaticCameraData
     winWidth   = 0.0f;
   }
 
-  void setView(const glm::mat4& view)
+  void setView(const glm::mat4& view_in)
   {
-    worldToView = glm::affineInverse(view);
-    projIV = projection * worldToView;
+    view = view_in;
+    viewProjection = projection * view;
   }
 
-  void setProjection(const glm::mat4& projectionIn, float fovy_in, float aspect_in,
+  void setProjection(const glm::mat4& projection_in, float fovy_in, float aspect_in,
                      float znear_in, float zfar_in)
   {
-    fovy   = fovy_in;
-    aspect = aspect_in;
-    znear  = znear_in;
-    zfar   = zfar_in;
-
-    projection = projectionIn;
+    projection = projection_in;
+    fovy       = fovy_in;
+    aspect     = aspect_in;
+    znear      = znear_in;
+    zfar       = zfar_in;
 
     // Setup frustum details.
-		float zDist = fabs(zfar - znear);
+		float zDist  = fabs(zfar - znear);
 		float tanVal = tanf(0.5f * (fovy));
 		//for (int i = 0; i < mNumFrustumSections + 1; i++)
 
@@ -212,9 +241,9 @@ struct StaticCameraData
     zppHHeight = std::get<1>(halfWH);
   }
 
-  glm::mat4 getView() const
+  glm::mat4 getInverseView() const
   {
-    return glm::affineInverse(worldToView);
+    return glm::affineInverse(view);
   }
 };
 

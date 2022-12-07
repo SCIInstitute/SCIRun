@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
 #define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
 
@@ -34,7 +34,6 @@
 #include <Dataflow/Network/ConnectionId.h>
 #ifndef Q_MOC_RUN
 #include <Dataflow/Network/ModuleInterface.h>
-#include <boost/optional/optional.hpp>
 #endif
 
 namespace SCIRun {
@@ -48,22 +47,22 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller, NetworkEditor* editor);
+    NetworkEditorControllerGuiProxy(SharedPointer<SCIRun::Dataflow::Engine::NetworkEditorController> controller, NetworkEditor* editor);
     ~NetworkEditorControllerGuiProxy();
   public Q_SLOTS:
     void addModule(const std::string& moduleName);
     void removeModule(const SCIRun::Dataflow::Networks::ModuleId& id);
-    void interrupt(const SCIRun::Dataflow::Networks::ModuleId& id);
-    boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    std::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
-    void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnectUponInsertion);
+    void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     SCIRun::Dataflow::Networks::NetworkFileHandle serializeNetworkFragment(SCIRun::Dataflow::Networks::ModuleFilter modFilter, SCIRun::Dataflow::Networks::ConnectionFilter connFilter) const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
-    void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
-    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, bool executeUpstream);
+    void executeAll();
+    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, bool executeUpstream);
     size_t numModules() const;
     std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
     int errorCode() const;
@@ -72,14 +71,16 @@ namespace Gui {
   public:
     const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
-    boost::shared_ptr<SCIRun::Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortSwitch();
-    boost::shared_ptr<NetworkEditorControllerGuiProxy> withSubnet(NetworkEditor* subnet) const;
+    SharedPointer<SCIRun::Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortSwitch();
+    SharedPointer<NetworkEditorControllerGuiProxy> withSubnet(NetworkEditor* subnet) const;
     NetworkEditor* activeNetwork() const { return editor_; }
+    void setExecutableLookup(const SCIRun::Dataflow::Networks::ExecutableLookup* lookup);
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
     void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
+    void connectionStatusChanged(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
     void portAdded(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
     void portRemoved(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
     void executionStarted();
@@ -87,7 +88,7 @@ namespace Gui {
     void networkDoneLoading(int nMod);
     void snippetNeedsMoving(const std::string& name);
   private:
-    boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
+    SharedPointer<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
     NetworkEditor* editor_;
     std::vector<boost::signals2::connection> connections_;
   };

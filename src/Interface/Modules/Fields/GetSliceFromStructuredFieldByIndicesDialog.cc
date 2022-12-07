@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h>
 #include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
@@ -50,33 +50,37 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   addCheckBoxManager(axisExecuteCheckBox_, AxisReexecute);
   addCheckBoxManager(sliderExecuteCheckBox_, SliderReexecute);
 
-  connect(iAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(jAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(kAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
-  connect(iAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(jAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(kAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
-  connect(iAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
-  connect(jAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
-  connect(kAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
+  connect(iAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(jAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(kAxisHorizontalSlider_, &QSlider::sliderReleased, this, &GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged);
+  connect(iAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(jAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(kAxisSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked);
+  connect(iAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
+  connect(jAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
+  connect(kAxisRadioButton_, &QPushButton::clicked, this, &GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked);
 }
 
 void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()
 {
   using namespace Parameters;
 
-  iAxisSpinBox_->setMaximum(state_->getValue(Dim_i).toInt());
+  auto iMax = state_->getValue(Dim_i).toInt() - 1;
+  auto jMax = state_->getValue(Dim_j).toInt() - 1;
+  auto kMax = state_->getValue(Dim_k).toInt() - 1;
+
+  iAxisSpinBox_->setMaximum(iMax);
   iAxisSpinBox_->setEnabled(iAxisRadioButton_->isChecked());
-  jAxisSpinBox_->setMaximum(state_->getValue(Dim_j).toInt());
+  jAxisSpinBox_->setMaximum(jMax);
   jAxisSpinBox_->setEnabled(jAxisRadioButton_->isChecked());
-  kAxisSpinBox_->setMaximum(state_->getValue(Dim_k).toInt());
+  kAxisSpinBox_->setMaximum(kMax);
   kAxisSpinBox_->setEnabled(kAxisRadioButton_->isChecked());
 
-  iAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_i).toInt());
+  iAxisHorizontalSlider_->setMaximum(iMax);
   iAxisHorizontalSlider_->setEnabled(iAxisRadioButton_->isChecked());
-  jAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_j).toInt());
+  jAxisHorizontalSlider_->setMaximum(jMax);
   jAxisHorizontalSlider_->setEnabled(jAxisRadioButton_->isChecked());
-  kAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_k).toInt());
+  kAxisHorizontalSlider_->setMaximum(kMax);
   kAxisHorizontalSlider_->setEnabled(kAxisRadioButton_->isChecked());
 }
 
@@ -103,7 +107,7 @@ void GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked()
     Q_EMIT executeFromStateChangeTriggered();
 }
 
-void GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked(int value)
+void GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked(int)
 {
   auto spinBox = qobject_cast<QSpinBox*>(sender());
   bool reexecute = false;

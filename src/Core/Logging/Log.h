@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Logging/Log.h
 
 #ifndef CORE_LOGGING_LOG_H
@@ -35,7 +36,13 @@
 #ifndef Q_MOC_RUN
 #include <Core/Utils/Singleton.h>
 #include <boost/filesystem/path.hpp>
+
+// older Mac compiler does not support thread-local storage
+#if defined(__APPLE__) && defined(DISABLE_SPDLOG_TLS)
+#define SPDLOG_NO_TLS
+#endif
 #include <spdlog/spdlog.h>
+
 #endif
 #include <Core/Logging/share.h>
 
@@ -52,7 +59,9 @@ namespace SCIRun
         virtual void log4(const std::string& message) const = 0;
       };
 
-      typedef boost::shared_ptr<LogAppenderStrategy> LogAppenderStrategyPtr;
+      typedef SharedPointer<LogAppenderStrategy> LogAppenderStrategyPtr;
+
+      SCISHARE bool useLogCheckForWindows7();
 
       class SCISHARE LogSettings final
       {
@@ -68,17 +77,12 @@ namespace SCIRun
         boost::filesystem::path directory_;
       };
 
-      using Logger2 = std::shared_ptr<spdlog::logger>;
-
       class SCISHARE Log2
       {
       public:
-        explicit Log2(const std::string& name);
+        Log2(const std::string& name, bool useLog);
         Logger2 get();
-        void addSink(spdlog::sink_ptr sink)
-        {
-          sinks_.push_back(sink);
-        }
+        void addSink(spdlog::sink_ptr sink);
         void addCustomSink(LogAppenderStrategyPtr appender)
         {
           customSinks_.push_back(appender);
@@ -87,6 +91,7 @@ namespace SCIRun
         bool verbose() const;
       protected:
         void addColorConsoleSink();
+        bool useLog_;
       private:
         Logger2 logger_;
         std::string name_;
@@ -99,7 +104,7 @@ namespace SCIRun
       {
         CORE_SINGLETON(ModuleLog)
       public:
-        ModuleLog() : Log2("module") { addColorConsoleSink(); }
+        ModuleLog();
       };
 
       class SCISHARE GeneralLog final : public Log2
@@ -108,19 +113,65 @@ namespace SCIRun
       public:
         GeneralLog();
       };
-
-      template <class... T>
-      void LOG_DEBUG(const char* fmt, T&&... args)
-      {
-        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(fmt, args...);
-      }
-
-      inline void LOG_DEBUG(const std::string& str)
-      {
-        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
-      }
     }
   }
+
+  template <class... T>
+  void LOG_DEBUG(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->debug(fmt, args...);
+  }
+
+  inline void LOG_DEBUG(const std::string& str)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->debug(str);
+  }
+
+  template <class... T>
+  void LOG_TRACE(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->trace(fmt, args...);
+  }
+
+  template <class... T>
+  void logInfo(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->info(fmt, args...);
+  }
+
+  template <class... T>
+  void logWarning(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->warn(fmt, args...);
+  }
+
+  template <class... T>
+  void logError(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->error(fmt, args...);
+  }
+
+  template <class... T>
+  void logCritical(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->critical(fmt, args...);
+  }
+
+  #define DEBUG_LOG_LINE_INFO LOG_DEBUG("Debugging info: file {} line {} function {}", __FILE__, __LINE__, LOG_FUNC);
 }
 
 #endif

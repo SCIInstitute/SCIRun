@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -58,8 +57,7 @@
 
 #include <Core/Utils/Legacy/CheckSum.h>
 
-#include <boost/thread.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 
@@ -147,7 +145,7 @@ public:
   typedef SCIRun::size_type                 size_type;
   typedef SCIRun::mask_type                 mask_type;
 
-  typedef boost::shared_ptr<TetVolMesh<Basis> > handle_type;
+  typedef SharedPointer<TetVolMesh<Basis> > handle_type;
   typedef Basis                             basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -359,22 +357,22 @@ public:
 
   /// Clone function for detaching the mesh and automatically generating
   /// a new version if needed.
-  virtual TetVolMesh *clone() const override { return new TetVolMesh(*this); }
+  TetVolMesh *clone() const override { return new TetVolMesh(*this); }
 
   /// Destructor
   virtual ~TetVolMesh();
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() override { return vmesh_.get(); }
+  VMesh* vmesh() override { return vmesh_.get(); }
 
   MeshFacadeHandle getFacade() const override
   {
-    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+    return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// This one should go at some point, should be reroute through the
   /// virtual interface
-  virtual int basis_order() override { return (basis_.polynomial_order()); }
+  int basis_order() override { return (basis_.polynomial_order()); }
 
   /// Topological dimension
   virtual int  dimensionality() const { return 3; }
@@ -408,8 +406,8 @@ public:
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
-  virtual bool synchronize(mask_type mask) override;
-  virtual bool unsynchronize(mask_type mask) override;
+  bool synchronize(mask_type mask) override;
+  bool unsynchronize(mask_type mask) override;
   bool clear_synchronization();
 
   /// Get the basis class.
@@ -530,7 +528,7 @@ public:
   /// piecewise linear approximation of an edge.
   template<class VECTOR, class INDEX>
   void pwl_approx_edge(std::vector<VECTOR > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned which_edge,
                        unsigned div_per_unit) const
   {
@@ -541,7 +539,7 @@ public:
   /// piecewise linear approximation of an face.
   template<class VECTOR, class INDEX>
   void pwl_approx_face(std::vector<std::vector<VECTOR > > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned which_face,
                        unsigned div_per_unit) const
   {
@@ -1394,7 +1392,7 @@ public:
   }
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&) override;
+  void io(Piostream&) override;
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
@@ -1404,11 +1402,11 @@ public:
 
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const override { return tetvolmesh_typeid.type; }
+  std::string dynamic_type_name() const override { return tetvolmesh_typeid.type; }
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Soem of this should be obsolete
-  virtual const TypeDescription *get_type_description() const override;
+  const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -1419,7 +1417,7 @@ public:
   /// This function returns a maker for Pio.
   static Persistent* maker() { return new TetVolMesh(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<TetVolMesh>(); }
+  static MeshHandle mesh_maker() { return makeShared<TetVolMesh>(); }
 
   //////////////////////////////////////////////////////////////////
   // Mesh specific functions (these are not implemented in every mesh)
@@ -2550,10 +2548,10 @@ protected:
     }
   };
 
-  using face_ht = boost::unordered_map<PFace, typename Face::index_type, FaceHash>;
-  using face_nt = boost::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
-  using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
-  using edge_nt = boost::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
+  using face_ht = std::unordered_map<PFace, typename Face::index_type, FaceHash>;
+  using face_nt = std::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
+  using edge_ht = std::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
+  using edge_nt = std::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
 
   typedef std::vector<PFaceCell> face_ct;
   typedef std::vector<PEdgeCell> edge_ct;
@@ -2605,8 +2603,8 @@ protected:
   ///  tets overlap that grid cell -- to find the tet which contains a
   ///  point, we simply find which grid cell contains that point, and
   ///  then search just those tets that overlap that grid cell.
-  boost::shared_ptr<SearchGridT<index_type> >  node_grid_;
-  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_;
+  SharedPointer<SearchGridT<index_type> >  node_grid_;
+  SharedPointer<SearchGridT<index_type> >  elem_grid_;
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex                 synchronize_lock_;
@@ -2624,7 +2622,7 @@ protected:
   double                epsilon3_;
 
   /// Pointer to virtual interface
-  boost::shared_ptr<VMesh>         vmesh_;
+  SharedPointer<VMesh>         vmesh_;
 
 public:
 
@@ -2788,7 +2786,7 @@ TetVolMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -2970,15 +2968,20 @@ TetVolMesh<Basis>::hash_face(typename Node::index_type n1,
     PFace f = (*iter).first;
     if (f.cells_[1] != MESH_NO_NEIGHBOR)
     {
+      //TODO: inject new logger
+      /*
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
            << (f.cells_[0]>>2) << ", #" << (f.cells_[1]>>2) << ", and #"
            << (combined_index>>2) << " are illegally adjacent." << std::endl;
+           */
     }
     else if ((f.cells_[0]>>2) == (combined_index>>2))
     {
+      //TODO: inject new logger
+      /*
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
            << (f.cells_[0]>>2) << " and #" << (combined_index>>2)
-           << " are the same." << std::endl;
+           << " are the same." << std::endl;*/
     }
     else
     {
@@ -3202,7 +3205,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::EDGES_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::FACES_E)
@@ -3216,7 +3219,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::FACES_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -3230,7 +3233,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -3244,7 +3247,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -3258,7 +3261,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -3272,7 +3275,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   // Wait until threads are done
@@ -3717,7 +3720,7 @@ TetVolMesh<Basis>::get_weights(const Core::Geometry::Point &p, typename Node::ar
 
 template <class Basis>
 void
-TetVolMesh<Basis>::insert_elem_into_grid(typename Cell::index_type ci)
+TetVolMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
 {
   /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
@@ -3735,7 +3738,7 @@ TetVolMesh<Basis>::insert_elem_into_grid(typename Cell::index_type ci)
 
 template <class Basis>
 void
-TetVolMesh<Basis>::remove_elem_from_grid(typename Cell::index_type ci)
+TetVolMesh<Basis>::remove_elem_from_grid(typename Elem::index_type ci)
 {
   const index_type idx = ci*4;
   Core::Geometry::BBox box;
@@ -4405,10 +4408,10 @@ TetVolMesh<Basis>::io(Piostream &stream)
 template <class Basis>
 const TypeDescription* get_type_description(TetVolMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("TetVolMesh", subs,
@@ -4423,18 +4426,18 @@ template <class Basis>
 const TypeDescription*
 TetVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((TetVolMesh<Basis> *)nullptr);
 }
 
 template <class Basis>
 const TypeDescription*
 TetVolMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4447,11 +4450,11 @@ template <class Basis>
 const TypeDescription*
 TetVolMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4464,11 +4467,11 @@ template <class Basis>
 const TypeDescription*
 TetVolMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4481,11 +4484,11 @@ template <class Basis>
 const TypeDescription*
 TetVolMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

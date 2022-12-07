@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,40 +23,35 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author: Fangxiang Jiao
+   Date:   March 25 2010
 */
 
-// File:   ConvertBundleToField.cc
-// Author: Fangxiang Jiao
-// Date:   March 25 2010
 
 #ifndef CORE_ALGORITHMS_CONVERTER_CONVERTBUNDLETOFIELD_H
 #define CORE_ALGORITHMS_CONVERTER_CONVERTBUNDLETOFIELD_H 1
 
-//! Datatypes used
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
-//! Base for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Converter/share.h>
-
-namespace SCIRunAlgo {
-
-class SCISHARE ConvertBundleToFieldAlgo : public AlgoBase
+namespace SCIRun::Core::Algorithms::Converters
 {
-  public:
-    // Algorithm defaults
-    ConvertBundleToFieldAlgo();
-    ~ConvertBundleToFieldAlgo();
+  ALGORITHM_PARAMETER_DECL(MergeNodes);
+  ALGORITHM_PARAMETER_DECL(Tolerance);
+  ALGORITHM_PARAMETER_DECL(MatchNodeValues);
+  ALGORITHM_PARAMETER_DECL(MakeNoData);
 
-  public:
-    // Algorithm Functions
-    bool run(SCIRun::BundleHandle& input, SCIRun::FieldHandle& output);
+class SCISHARE ConvertBundleToFieldAlgo : public AlgorithmBase
+{
+public:
+  ConvertBundleToFieldAlgo();
+  static const AlgorithmInputName InputBundle;
+  bool runImpl(const SCIRun::Core::Datatypes::BundleHandle& input, SCIRun::FieldHandle& output) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
-} // namespace SCIRunAlgo
+}
 
 #endif
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,18 +25,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Core/PersistentFwd.h
 
 #ifndef CORE_PERSISTENT_FWD_H
-#define CORE_PERSISTENT_FWD_H 
+#define CORE_PERSISTENT_FWD_H
 
 #include <Core/Persistent/share.h>
 
 namespace SCIRun {
 
   namespace Core {
-    namespace Thread {class Mutex; }}
-  
+    namespace Thread {class NamedMutex; }}
+
 class Persistent;
 class Piostream;
 class Piostream;

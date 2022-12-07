@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -66,15 +65,15 @@ namespace SCIRun {
       {
       public:
         SolveMinNormLeastSqSystem();
-        virtual void execute() override;
-        virtual void setStateDefaults() override {}
+        void execute() override;
+        void setStateDefaults() override {}
         INPUT_PORT(0, BasisVector1, DenseColumnMatrix);
         INPUT_PORT(1, BasisVector2, DenseColumnMatrix);
         INPUT_PORT(2, BasisVector3, DenseColumnMatrix);
         INPUT_PORT(3, TargetVector, DenseColumnMatrix);
         OUTPUT_PORT(0, WeightVector, DenseColumnMatrix);
         OUTPUT_PORT(1, ResultVector, DenseColumnMatrix);
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
       };
 }}}
 

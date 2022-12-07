@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +27,7 @@
 
 
 // NOTE: This MatlabIO file is used in different projects as well. Please, do not
-// make it depend on other scirun code. This way it is easier to maintain matlabIO 
+// make it depend on other scirun code. This way it is easier to maintain matlabIO
 // code among different projects. Thank you.
 
 /*
@@ -39,4 +38,3 @@
 
 // This will include as well all the other include files
 #include <Packages/MatlabInterface/Core/Datatypes/matlabfile.h>
-

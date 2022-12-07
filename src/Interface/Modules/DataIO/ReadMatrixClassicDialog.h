@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef INTERFACE_MODULES_READ_MATRIX_CLASSIC_H
 #define INTERFACE_MODULES_READ_MATRIX_CLASSIC_H
@@ -45,9 +45,9 @@ class SCISHARE ReadMatrixClassicDialog : public ModuleDialogGeneric,
 public:
   ReadMatrixClassicDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
-  virtual void pullSpecial();
+        void pullSpecial() override;
 
 private Q_SLOTS:
   void pushFileNameToState();

@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,12 +25,13 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Algorithms_Legacy_Inverse_SRCS
   TikhonovAlgoAbstractBase.cc
   TikhonovImpl.cc
   SolveInverseProblemWithStandardTikhonovImpl.cc
   SolveInverseProblemWithTikhonovSVD_impl.cc
-  SolveInverseProblemWithTikhonovTSVD_impl.cc
+  SolveInverseProblemWithTSVD_impl.cc
 )
 
 SET(Algorithms_Legacy_Inverse_HEADERS
@@ -39,7 +39,7 @@ SET(Algorithms_Legacy_Inverse_HEADERS
   TikhonovImpl.h
   SolveInverseProblemWithStandardTikhonovImpl.h
   SolveInverseProblemWithTikhonovSVD_impl.h
-  SolveInverseProblemWithTikhonovTSVD_impl.h
+  SolveInverseProblemWithTSVD_impl.h
   share.h
 )
 

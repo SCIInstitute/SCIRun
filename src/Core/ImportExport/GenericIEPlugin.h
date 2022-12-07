@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef SCI_project_GenericIEPlugin_h
 #define SCI_project_GenericIEPlugin_h 1
 
@@ -38,9 +38,9 @@
 #include <boost/lexical_cast.hpp>
 #include <Core/ImportExport/share.h>
 
-namespace SCIRun {
+namespace SCIRun
+{
 
-//----------------------------------------------------------------------
 template <class Data>
 class GenericIEPluginInterface
 {
@@ -50,8 +50,8 @@ public:
   virtual std::string fileExtension() const = 0;
   virtual std::string fileMagic() const = 0;
 
-  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
-  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
+  virtual SharedPointer<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
+  virtual bool writeFile(SharedPointer<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
   virtual bool equals(const GenericIEPluginInterface<Data>& other) const = 0;
   virtual bool hasReader() const = 0;
   virtual bool hasWriter() const = 0;
@@ -74,21 +74,21 @@ template <class Data>
 class IEPluginLegacyAdapter : public GenericIEPluginInterface<Data>
 {
 public:
-  virtual std::string pluginname() const override { return pluginname_; }
-  virtual std::string fileExtension() const override { return fileextension_; }
-  virtual std::string fileMagic() const override { return filemagic_; }
-  virtual bool hasReader() const override { return filereader_ != nullptr; }
-  virtual bool hasWriter() const override { return filewriter_ != nullptr; }
+  std::string pluginname() const override { return pluginname_; }
+  std::string fileExtension() const override { return fileextension_; }
+  std::string fileMagic() const override { return filemagic_; }
+  bool hasReader() const override { return filereader_ != nullptr; }
+  bool hasWriter() const override { return filewriter_ != nullptr; }
 
-  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
-  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
-  virtual bool equals(const GenericIEPluginInterface<Data>& other) const override;
+  SharedPointer<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
+  bool writeFile(SharedPointer<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
+  bool equals(const GenericIEPluginInterface<Data>& other) const override;
 
   IEPluginLegacyAdapter(const std::string &name,
     const std::string &fileextension,
     const std::string &filemagic,
-    boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename) = nullptr,
-    bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename) = nullptr);
+    SharedPointer<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename) = nullptr,
+    bool (*fwriter)(Core::Logging::LoggerHandle pr, SharedPointer<Data> f, const char *filename) = nullptr);
 
   ~IEPluginLegacyAdapter();
 
@@ -99,9 +99,9 @@ private:
   const std::string fileextension_;
   const std::string filemagic_;
 
-  boost::shared_ptr<Data> (*filereader_)(Core::Logging::LoggerHandle pr, const char *filename);
+  SharedPointer<Data> (*filereader_)(Core::Logging::LoggerHandle pr, const char *filename);
   bool (*filewriter_)(Core::Logging::LoggerHandle pr,
-    boost::shared_ptr<Data> f, const char *filename);
+    SharedPointer<Data> f, const char *filename);
 };
 
 template <class Data>
@@ -179,7 +179,7 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
     return;
   }
 
-  Core::Thread::Guard s(map_.getLock().get());
+  Core::Thread::Guard s(map_.getLock());
   for (const auto& plugin : map_.getMap())
   {
     if (plugin.second->hasReader())
@@ -195,7 +195,7 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
     return;
   }
 
-  Core::Thread::Guard s(map_.getLock().get());
+  Core::Thread::Guard s(map_.getLock());
   for (const auto& plugin : map_.getMap())
   {
     if (plugin.second->hasWriter())
@@ -209,7 +209,7 @@ GenericIEPluginInterface<Data>* GenericIEPluginManager<Data>::get_plugin(const s
   if (0 == map_.numPlugins())
     return nullptr;
 
-  Core::Thread::Guard s(map_.getLock().get());
+  Core::Thread::Guard s(map_.getLock());
   // Should check for invalid name.
   auto loc = map_.getMap().find(name);
   if (loc == map_.getMap().end())
@@ -234,15 +234,15 @@ template <class Data>
 IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
   const std::string& fextension,
   const std::string& fmagic,
-  boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename),
-  bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename))
+  SharedPointer<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename),
+  bool (*fwriter)(Core::Logging::LoggerHandle pr, SharedPointer<Data> f, const char *filename))
   : pluginname_(pname),
   fileextension_(fextension),
   filemagic_(fmagic),
   filereader_(freader),
   filewriter_(fwriter)
 {
-  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock().get());
+  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock());
 
   GenericIEPluginManager<Data>::getMap().createMap();
 
@@ -259,11 +259,11 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
     }
     if (*(*loc).second == *this)
     {
-      std::cerr << "WARNING: IEPlugin '" << tmppname << "' duplicated.\n";
+      //TODO: inject new logger std::cerr << "WARNING: IEPlugin '" << tmppname << "' duplicated.\n";
       break;
     }
 
-    std::cout << "WARNING: Multiple IEPlugins with '" << pluginname_ << "' name.\n";
+    //TODO: inject new logger std::cout << "WARNING: Multiple IEPlugins with '" << pluginname_ << "' name.\n";
     tmppname = pluginname_ + "(" + boost::lexical_cast<std::string>(counter) + ")";
     counter++;
   }
@@ -272,12 +272,12 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
 template <class Data>
 IEPluginLegacyAdapter<Data>::~IEPluginLegacyAdapter()
 {
-  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock().get());
+  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock());
 
   auto iter = GenericIEPluginManager<Data>::getMap().getMap().find(pluginname_);
   if (iter == GenericIEPluginManager<Data>::getMap().getMap().end())
   {
-    std::cerr << "WARNING: IEPlugin " << pluginname_ << " not found in database for removal.\n";
+    //TODO: inject new logger std::cerr << "WARNING: IEPlugin " << pluginname_ << " not found in database for removal.\n";
   }
   else
   {
@@ -291,13 +291,13 @@ IEPluginLegacyAdapter<Data>::~IEPluginLegacyAdapter()
 }
 
 template <class Data>
-boost::shared_ptr<Data> IEPluginLegacyAdapter<Data>::readFile(const std::string& filename, Core::Logging::LoggerHandle log) const
+SharedPointer<Data> IEPluginLegacyAdapter<Data>::readFile(const std::string& filename, Core::Logging::LoggerHandle log) const
 {
   return filereader_(log, filename.c_str());
 }
 
 template <class Data>
-bool IEPluginLegacyAdapter<Data>::writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const
+bool IEPluginLegacyAdapter<Data>::writeFile(SharedPointer<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const
 {
   return filewriter_(log, f, filename.c_str());
 }
@@ -322,7 +322,7 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
 }
 
 template <class Data>
-std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = nullptr)
+std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* = nullptr)
 {
   return "";
 }
@@ -351,6 +351,12 @@ std::string dialogBoxFilterFromFileTypeDescription(const GenericIEPluginManager<
 }
 
 template <class Data>
+std::function<std::string(const std::string&)> dialogBoxFilterFromFileTypeDescription(const GenericIEPluginManager<Data>& mgr)
+{
+  return [&mgr](const std::string& name) { return dialogBoxFilterFromFileTypeDescription(mgr, name); };
+}
+
+template <class Data>
 std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>& mgr, const std::string& defaultType, const std::vector<std::string>& pluginNames)
 {
   std::ostringstream types;
@@ -374,7 +380,7 @@ std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
 }
 
 template <class Data>
-std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = nullptr)
+std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* = nullptr)
 {
   return "";
 }

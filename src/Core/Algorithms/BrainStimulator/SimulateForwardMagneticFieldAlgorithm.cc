@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Thread/Barrier.h>
@@ -65,7 +65,7 @@ class CalcFMField
   public:
 
     CalcFMField(const AlgorithmBase* algo) : algo_(algo),
-      np_(-1),efld_(0),ctfld_(0),dipfld_(0),detfld_(0),emsh_(0),ctmsh_(0),dipmsh_(0),detmsh_(0),magfld_(0),magmagfld_(0)
+      np_(-1),efld_(nullptr),ctfld_(nullptr),dipfld_(nullptr),detfld_(nullptr),emsh_(nullptr),ctmsh_(nullptr),dipmsh_(nullptr),detmsh_(nullptr),magfld_(nullptr),magmagfld_(nullptr)
     {
     }
 
@@ -263,7 +263,7 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
 
   if (!efld_ || !ctfld_ || !ctmsh_ || !dipfld_ || !detfld_ || !emsh_ || !dipmsh_ || !detmsh_)
   {
-     algo_->error("At least one required input field/mesh has a NULL pointer.");
+     algo_->error("At least one required input field/mesh has a null pointer.");
   }
 
   have_tensors_=false; /// we dont support a conductivity_table in a FieldHandle (could not be set in SCIRun4 as well)
@@ -318,7 +318,7 @@ boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(Fie
 {
   if (!ElectricField || !DipoleSources || !DetectorLocations || !ConductivityTensors)
   {
-    THROW_ALGORITHM_INPUT_ERROR("At least one required input has a NULL pointer.");
+    THROW_ALGORITHM_INPUT_ERROR("At least one required input has a null pointer.");
   }
 
   if (!ElectricField->vfield()->is_vector())

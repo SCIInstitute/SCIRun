@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,13 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
-#include <sstream>
-#include <string>
-#include <vector>
 
+#include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/VariableHelper.h>
 
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
@@ -63,6 +60,8 @@ ExportFieldsToMatlab::ExportFieldsToMatlab() : Module(staticInfo_)
 void ExportFieldsToMatlab::setStateDefaults()
 {
   get_state()->setValue(Variables::Filename, std::string());
+  get_state()->setValue(Parameters::FieldNames, Variable::List());
+  get_state()->setValue(Parameters::FieldFormats, Variable::List());
 }
 
 void ExportFieldsToMatlab::execute()
@@ -80,7 +79,6 @@ void ExportFieldsToMatlab::execute()
       auto filename = (*filenameInputOption)->value();
       state->setValue(Variables::Filename, filename);
     }
-
 
     auto filename = state->getValue(Variables::Filename).toFilename();
 
@@ -120,7 +118,7 @@ void ExportFieldsToMatlab::execute()
 
     for (int i = 0; i < fields.size(); ++i)
     {
-      fieldnames.push_back(state->getValue(Name((*fieldPortNameIterator++)->id().toString())).toString());
+      fieldnames.push_back(state->getValue(Name((*fieldPortNameIterator++)->internalId().toString())).toString());
     }
 
     auto fieldformats = toStringVector(state->getValue(Parameters::FieldFormats).toVector());

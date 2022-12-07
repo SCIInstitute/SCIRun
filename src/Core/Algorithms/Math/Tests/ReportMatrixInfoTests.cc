@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
+
 #include <gtest/gtest.h>
 
 #include <fstream>
@@ -44,15 +44,15 @@ namespace
 {
   DenseMatrixHandle matrix1Dense()
   {
-    auto m(boost::make_shared<DenseMatrix>(3, 4));
+    auto m(makeShared<DenseMatrix>(3, 4));
     for (int i = 0; i < m->rows(); ++ i)
       for (int j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j - 5;
     return m;
   }
-  SparseRowMatrixHandle matrix1Sparse() 
+  SparseRowMatrixHandle matrix1Sparse()
   {
-    auto m(boost::make_shared<SparseRowMatrix>(5,5));
+    auto m(makeShared<SparseRowMatrix>(5,5));
     m->insert(0,0) = 1;
     m->insert(1,2) = -1;
     m->insert(4,4) = 2;
@@ -62,9 +62,9 @@ namespace
   }
   DenseColumnMatrixHandle matrix1DenseColumn()
   {
-    auto m(boost::make_shared<DenseColumnMatrix>(4));
+    auto m(makeShared<DenseColumnMatrix>(4));
     m -> setZero();
-    *m << 1,2,3,4; 
+    *m << 1,2,3,4;
     return m;
   }
 }
@@ -79,7 +79,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
   m = matrix1Sparse();
   result = algo.runImpl(m);
   EXPECT_EQ("SparseRowMatrix", result.get<0>());
-  m = matrix1DenseColumn(); 
+  m = matrix1DenseColumn();
   result = algo.runImpl(m);
   EXPECT_EQ("DenseColumnMatrix", result.get<0>());
 }
@@ -100,7 +100,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfElements)
 
   MatrixHandle m(matrix1Dense());
   auto result = algo.runImpl(m);
-  
+
   EXPECT_EQ(12, result.get<3>());
 }
 
@@ -138,7 +138,7 @@ TEST(ReportMatrixInfoAlgorithmTests, NullInputThrows)
 TEST(ReportMatrixInfoAlgorithmTests, EmptyInputDoesNotThrow)
 {
   ReportMatrixInfoAlgorithm algo;
-  auto empty(boost::make_shared<DenseMatrix>());
+  auto empty(makeShared<DenseMatrix>());
 
   auto result = algo.runImpl(empty);
   EXPECT_EQ(0, result.get<1>());

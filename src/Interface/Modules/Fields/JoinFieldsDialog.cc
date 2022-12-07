@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
@@ -42,10 +42,10 @@ JoinFieldsDialog::JoinFieldsDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(forcePointCloudCheckBox_, SCIRun::Modules::Fields::JoinFields::ForcePointCloud);
-  addCheckBoxManager(mergeDuplicateElementsCheckBox_, JoinFieldsAlgo::MergeElems);
-  addCheckBoxManager(mergeDuplicateNodesCheckBox_, JoinFieldsAlgo::MergeNodes);
-  addCheckBoxManager(mergeMeshOnlyCheckBox_, JoinFieldsAlgo::MakeNoData);
-  addCheckBoxManager(onlyMergeSameValueCheckBox_, JoinFieldsAlgo::MatchNodeValues);
-  addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, JoinFieldsAlgo::Tolerance);
+  addCheckBoxManager(forcePointCloudCheckBox_, Parameters::ForcePointCloud);
+  addCheckBoxManager(mergeDuplicateElementsCheckBox_, Parameters::merge_elems);
+  addCheckBoxManager(mergeDuplicateNodesCheckBox_, Parameters::merge_nodes);
+  addCheckBoxManager(mergeMeshOnlyCheckBox_, Parameters::make_no_data);
+  addCheckBoxManager(onlyMergeSameValueCheckBox_, Parameters::match_node_values);
+  addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, Parameters::tolerance);
 }

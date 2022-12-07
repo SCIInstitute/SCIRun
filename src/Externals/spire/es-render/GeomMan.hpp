@@ -1,6 +1,35 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef SPIRE_ES_RENDER_GEOMMAN_HPP
 #define SPIRE_ES_RENDER_GEOMMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <map>
 #include <set>
 #include <es-cereal/CerealCore.hpp>
@@ -8,20 +37,20 @@
 #include <entity-system/BaseSystem.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <es-acorn/Acorn.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
 /// Geometry manager. Will load geometry from a single file. Any shaders
-/// associated with the geometry will also be loaded alongside VBOs and IBOs. 
-class GeomMan
+/// associated with the geometry will also be loaded alongside VBOs and IBOs.
+class SCISHARE GeomMan
 {
 public:
   /// \param  numRetries  The number of retries we have to load the asset.
   ///                     Zombie promises will remain present in the system
   ///                     and a load will be re-attempted again when
   ///                     serialized and deserialized.
-  GeomMan(int numRetries = 2);
-  virtual ~GeomMan();
+  explicit GeomMan(int numRetries = 2);
 
   /// Loads geometry from disk and associates any loaded VBOs, IBOs, and
   /// shaders with the given entityID.
@@ -106,6 +135,6 @@ private:
   int32_t mNumRetries;
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

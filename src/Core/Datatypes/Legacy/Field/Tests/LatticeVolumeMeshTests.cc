@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
@@ -43,7 +43,7 @@ using namespace boost::assign;
 class LatticeVolumeMeshTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     int basisOrder = 1;
     FieldInformation lfi("LatVolMesh", basisOrder, "double");
@@ -80,7 +80,7 @@ TEST_F(LatticeVolumeMeshTests, BasicCubeTest)
 {
   ASSERT_TRUE(mesh_.get() != nullptr);
   ASSERT_TRUE(field_.get() != nullptr);
-  
+
   auto latVolVMesh = mesh_->vmesh();
   ASSERT_TRUE(latVolVMesh);
 

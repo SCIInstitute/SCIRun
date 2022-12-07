@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,6 @@
 */
 
 
-
 ///
 ///@file  Assert.h
 ///@brief Utility for specifying data invariants (Assertions)
@@ -45,7 +43,6 @@
 #include <sci_defs/error_defs.h>
 
 #include <Core/Exceptions/AssertionFailed.h>
-#include <Core/Exceptions/ArrayIndexOutOfBounds.h>
 
 /// @todo: make sure default SCI_ASSERTION_LEVEL is consistent across platforms
 
@@ -81,13 +78,8 @@
      if(!(condition)){ \
         SCI_THROW(SCIRun::AssertionFailed(#condition, __FILE__, __LINE__)); \
      }
-#  define CHECKARRAYBOUNDS(value, lower, upper) \
-     if(value < lower || value >= upper){ \
-        SCI_THROW(SCIRun::ArrayIndexOutOfBounds(value, lower, upper, __FILE__, __LINE__)); \
-     }
 #else
 #  define ASSERTL3(condition)
-#  define CHECKARRAYBOUNDS(value, lower, upper)
 #endif
 
 #if SCI_ASSERTION_LEVEL == 0
@@ -103,7 +95,7 @@
 #endif
 
 /* USE_IF_ASSERTS_ON allows us to remove lines that are necessary for
-   code that is needed if asserts are on but causes warnings if 
+   code that is needed if asserts are on but causes warnings if
    asserts are off (ie: in optimized builds).  All it does it remove
    the line or put the line in. */
 

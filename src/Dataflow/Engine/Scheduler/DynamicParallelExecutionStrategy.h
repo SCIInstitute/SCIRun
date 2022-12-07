@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ENGINE_SCHEDULER_DYNAMIC_PARALLEL_EXECUTION_STRATEGY_H
 #define ENGINE_SCHEDULER_DYNAMIC_PARALLEL_EXECUTION_STRATEGY_H
 
@@ -39,7 +39,7 @@ namespace SCIRun {
       class SCISHARE DynamicParallelExecutionStrategy : public ExecutionStrategy
       {
       public:
-        virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
+        std::future<int> execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
       };
 
     }

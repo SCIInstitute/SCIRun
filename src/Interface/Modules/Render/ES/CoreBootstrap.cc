@@ -1,3 +1,31 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
 #include <cstdint>
 #include <entity-system/EmptySystem.hpp>
 #include <es-systems/SystemCore.hpp>
@@ -43,7 +71,7 @@ class CoreBootstrap : public spire::EmptySystem
 public:
   static const char* getName() {return "scirun:CoreBootstrap";}
 
-  void execute(spire::ESCoreBase& baseCore)
+  void execute(spire::ESCoreBase& baseCore) override
   {
     // Dynamic cast core into our core so that we have access to the systems
     // factory.
@@ -74,7 +102,7 @@ public:
     core.addKernelSystem(ren::TextureMan::getGCName(), 1000 * 60 * 5);
 
     // -- Promise Fulfillment --
-    // Run shader promise fulfillment 5 times a second. 
+    // Run shader promise fulfillment 5 times a second.
     core.addKernelSystem(ren::ShaderMan::getPromiseVFFulfillmentName(), 200);
     core.addKernelSystem(ren::TextureMan::getPromiseSystemName(), 200, 0, 50);
     core.addKernelSystem(ren::GeomMan::getPromiseSystemName(), 200, 0, 100);
@@ -98,8 +126,8 @@ public:
     core.addStaticComponent(ren::StaticIBOMan());
     core.addExemptComponent<ren::StaticIBOMan>();
 
-	core.addStaticComponent(ren::StaticFBOMan());
-	core.addExemptComponent<ren::StaticFBOMan>();
+	  core.addStaticComponent(ren::StaticFBOMan());
+	  core.addExemptComponent<ren::StaticFBOMan>();
 
     core.addStaticComponent(ren::StaticTextureMan());
     core.addExemptComponent<ren::StaticTextureMan>();
@@ -140,7 +168,7 @@ public:
     float perspZFar = 2000.0f;
     glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
     cam.data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
-    cam.data.setView(glm::mat4());
+    cam.data.setView(glm::mat4(1.0f));
 
     // float desZ = std::get<0>(cam.data.getPPDesWidth(6.0f));
     // std::cout << "Desired Z: " << desZ << std::endl;
@@ -175,7 +203,7 @@ public:
                    /*bottom*/ -1.0f,      /*top*/   1.0f,
                    /*znear*/  orthoZNear, /*zfar*/  orthoZFar);
     orthoCam.data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
-    orthoCam.data.setView(glm::mat4());
+    orthoCam.data.setView(glm::mat4(1.0f));
     core.addStaticComponent(orthoCam);
     core.addExemptComponent<gen::StaticOrthoCamera>();
 
@@ -196,5 +224,3 @@ const char* getSystemName_CoreBootstrap() {return CoreBootstrap::getName();}
 
 } // namespace Render
 } // namespace SCIRun
-
-

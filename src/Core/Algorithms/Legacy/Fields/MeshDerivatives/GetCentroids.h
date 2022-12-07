@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,35 +29,26 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETCENTROIDS_H
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETCENTROIDS_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+  ALGORITHM_PARAMETER_DECL(Centroids);
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetCentroidsAlgo : public AlgoBase
-{
+  class SCISHARE GetCentroids : public AlgorithmBase
+  {
   public:
     /// Set defaults
-    GetCentroidsAlgo()
-    {
-      /// The output type
-      add_option("centroid","elem","node|edge|face|cell|elem|delem");
-    }
-  
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
+    GetCentroids();
 
-} // end namespace SCIRunAlgo
+    /// run the algorithm
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
+  };
+
+}}}}
 
 #endif
-

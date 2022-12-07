@@ -3,18 +3,17 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
-   copy of pr_ software and associated documentation files (the "Software"),
+   copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
    and/or sell copies of the Software, and to permit persons to whom the
    Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and pr_ permission notice shall be included
+   The above copyright notice and this permission notice shall be included
    in all copies or substantial portions of the Software.
 
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/DataIO/DataIOAlgo.h>
 #include <Core/Persistent/Persistent.h>
@@ -163,7 +163,7 @@ bool DataIOAlgo::readNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
       if (!nrrd) return (false);
 
       NrrdData::lock_teem();
-      if (nrrdLoad(nrrd->getNrrd(), airStrdup(filename.c_str()), 0))
+      if (nrrdLoad(nrrd->getNrrd(), airStrdup(filename.c_str()), nullptr))
       {
         char *err = biffGetDone(NRRD);
         error("Could not read nrrd '" + filename + "' because teem crashed for the following reason: " + err);
@@ -629,7 +629,7 @@ bool DataIOAlgo::WritePath(const std::string& filename, PathHandle& path, const 
 }
 #endif
 
-AlgorithmOutput DataIOAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput DataIOAlgo::run(const AlgorithmInput&) const
 {
   throw "not implemented";
 }

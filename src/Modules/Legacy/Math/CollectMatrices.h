@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_MATH_COLLECTMATRICES_H_
 #define MODULES_LEGACY_MATH_COLLECTMATRICES_H_
 
@@ -42,18 +42,18 @@ namespace SCIRun {
 			{
 			public:
 				CollectMatrices();
-				virtual void setStateDefaults() override;
-				virtual void execute() override;
+				void setStateDefaults() override;
+				void execute() override;
 
 				INPUT_PORT(0, Optional_BaseMatrix, Matrix);
 				INPUT_PORT(1, SubMatrix, Matrix);
 				OUTPUT_PORT(0, CompositeMatrix, Matrix);
 
-				MODULE_TRAITS_AND_INFO(ModuleHasUI)
+				MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       protected:
-        virtual void postStateChangeInternalSignalHookup() override;
+        void postStateChangeInternalSignalHookup() override;
       private:
-        boost::shared_ptr<class CollectMatricesImpl> impl_;
+        SharedPointer<class CollectMatricesImpl> impl_;
         void checkForClearOutput();
 			};
 

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -53,7 +52,7 @@ namespace SCIRun
         explicit ObjToFieldReader(Logging::LoggerHandle log);
         bool read(const std::string& filename, FieldHandle& field_handle);
         bool write(const std::string& filename, const FieldHandle& field);
-        virtual AlgorithmOutput run(const AlgorithmInput&) const override { throw "not implemented"; }
+        AlgorithmOutput run(const AlgorithmInput&) const override { throw "not implemented"; }
       private:
         Logging::LoggerHandle log_;
       };

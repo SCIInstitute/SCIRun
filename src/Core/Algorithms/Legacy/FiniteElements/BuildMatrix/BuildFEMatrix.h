@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -61,7 +60,7 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
       addParameter(GenerateBasis, false);
     }
 
-    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 }}}}

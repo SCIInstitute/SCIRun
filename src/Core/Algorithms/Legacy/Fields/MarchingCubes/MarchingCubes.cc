@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
  #include <Core/Thread/Thread.h>
@@ -58,33 +58,31 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
-using namespace SCIRun::Core::Algorithm::Fields;
-using namespace SCIRun::Core::Algorithm::Fields::Math;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Math;
+
+ALGORITHM_PARAMETER_DEF(Fields, transparency);
+ALGORITHM_PARAMETER_DEF(Fields, build_geometry);
+ALGORITHM_PARAMETER_DEF(Fields, num_threads);
+ALGORITHM_PARAMETER_DEF(Fields, build_field);
+ALGORITHM_PARAMETER_DEF(Fields, build_node_interpolant);
+ALGORITHM_PARAMETER_DEF(Fields, build_elem_interpolant);
 
 MarchingCubesAlgo::MarchingCubesAlgo()
 {
-  addParameter(transparency,false);
-  addParameter(build_geometry,false);
-  addParameter(build_field,false);
-  addParameter(build_node_interpolant,false);
-  addParameter(build_elem_interpolant,false);
-  addParameter(num_threads,-1);
+  addParameter(Parameters::transparency,false);
+  addParameter(Parameters::build_geometry,false);
+  addParameter(Parameters::build_field,false);
+  addParameter(Parameters::build_node_interpolant,false);
+  addParameter(Parameters::build_elem_interpolant,false);
+  addParameter(Parameters::num_threads,-1);
 }
 
-AlgorithmParameterName MarchingCubesAlgo::transparency("transparency");
-AlgorithmParameterName MarchingCubesAlgo::build_geometry("build_geometry");
-AlgorithmParameterName MarchingCubesAlgo::build_field("build_field");
-AlgorithmParameterName MarchingCubesAlgo::build_node_interpolant("build_node_interpolant");
-AlgorithmParameterName MarchingCubesAlgo::build_elem_interpolant("build_elem_interpolant");
-AlgorithmParameterName MarchingCubesAlgo::num_threads("num_threads");
-
-AlgorithmOutput MarchingCubesAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput MarchingCubesAlgo::run(const AlgorithmInput&) const
 {
-
   AlgorithmOutput output;
   return output;
 }
-
 
 template <class TESSELATOR>
 class MarchingCubesAlgoP {
@@ -152,8 +150,8 @@ template <class TESSELATOR>
 bool
 MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
                         FieldHandle& output,
-                        MatrixHandle& node_interpolant,
-                        MatrixHandle& elem_interpolant)
+                        MatrixHandle&,
+                        MatrixHandle&)
 {
   algo_ = algo;
 
@@ -180,11 +178,11 @@ MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
   output_parent_cell_matrix_.resize(np*num_values);
   //output_geometry_.resize(np*num_values);
 
-  build_field_ = algo->get(MarchingCubesAlgo::build_field).toBool();
-  build_geometry_ = algo->get(MarchingCubesAlgo::build_geometry).toBool();
-  build_node_interpolant_ = algo->get(MarchingCubesAlgo::build_node_interpolant).toBool();
-  build_elem_interpolant_ = algo->get(MarchingCubesAlgo::build_elem_interpolant).toBool();
-  transparency_ = algo->get(MarchingCubesAlgo::transparency).toBool();
+  build_field_ = algo->get(Parameters::build_field).toBool();
+  build_geometry_ = algo->get(Parameters::build_geometry).toBool();
+  build_node_interpolant_ = algo->get(Parameters::build_node_interpolant).toBool();
+  build_elem_interpolant_ = algo->get(Parameters::build_elem_interpolant).toBool();
+  transparency_ = algo->get(Parameters::transparency).toBool();
 
  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   append_fields_.set_progress_reporter(algo->get_progress_reporter());
@@ -301,7 +299,7 @@ bool MarchingCubesAlgo::run(FieldHandle input, const std::vector<double>& isoval
     }
   }
 
-  return true;
+  return success;
 }
 
 
@@ -336,9 +334,9 @@ void MarchingCubesAlgoP<TESSELATOR>::parallel( int proc, int nproc, size_t iso)
     }
   }
 
-  output_field_[iso*nproc+proc] = 0;
-  output_interpolant_matrix_[iso*nproc+proc] = 0;
-  output_parent_cell_matrix_[iso*nproc+proc] = 0;
+  output_field_[iso*nproc+proc] = nullptr;
+  output_interpolant_matrix_[iso*nproc+proc] = nullptr;
+  output_parent_cell_matrix_[iso*nproc+proc] = nullptr;
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    output_geometry_[iso*nproc+proc] = 0;

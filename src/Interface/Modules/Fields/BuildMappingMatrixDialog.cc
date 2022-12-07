@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
@@ -42,13 +42,12 @@ BuildMappingMatrixDialog::BuildMappingMatrixDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  map_.insert(StringPair("Linear (\"weighted\")", "interpolateddata"));
-  map_.insert(StringPair("Constant mapping: each destination gets nearest source value", "closestdata"));
-  map_.insert(StringPair("Constant mapping: each source projects to just one destination", "singledestination"));
-
-  addComboBoxManager(methodComboBox_, Parameters::MappingMethod, map_);
+  addComboBoxManager(methodComboBox_, Parameters::MappingMethod,
+    { {"Linear (\"weighted\")", "interpolateddata"},
+    { "Constant mapping: each destination gets nearest source value", "closestdata" },
+    { "Constant mapping: each source projects to just one destination", "singledestination" } });
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
-  connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));
+  connect(noMaxCheckBox_, &QCheckBox::stateChanged, this, &BuildMappingMatrixDialog::setNoMaximumValue);
 }
 
 void BuildMappingMatrixDialog::pullSpecial()

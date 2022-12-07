@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Network/NullModuleState.h
 
 #ifndef DATAFLOW_STATE_NULLMODULESTATE_H
@@ -37,20 +37,21 @@
 namespace SCIRun {
 namespace Engine {
 namespace State {
-  
+
   class SCISHARE NullModuleState : public SCIRun::Dataflow::Networks::ModuleStateInterface
   {
   public:
-    virtual void setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&) override;
-    virtual const Value getValue(const Name&) const override;
-    virtual Keys getKeys() const override;
-    virtual bool containsKey(const Name&) const override;
-    virtual SCIRun::Dataflow::Networks::ModuleStateHandle clone() const override;
-    virtual TransientValueOption getTransientValue(const Name& name) const override;
-    virtual void setTransientValue(const Name& name, const TransientValue& value, bool b) override;
-    virtual boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) override;
-    virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) override;
-    virtual void fireTransientStateChangeSignal() override {}
+    void setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&) override;
+    const Value getValue(const Name&) const override;
+    Keys getKeys() const override;
+    bool containsKey(const Name&) const override;
+    SCIRun::Dataflow::Networks::ModuleStateHandle clone() const override;
+    TransientValueOption getTransientValue(const Name& name) const override;
+    void setTransientValue(const Name& name, const TransientValue& value, bool b) override;
+    boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) override;
+    boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) override;
+    void fireTransientStateChangeSignal() override {}
+    void disconnectAll() override {}
   };
 
 }}}

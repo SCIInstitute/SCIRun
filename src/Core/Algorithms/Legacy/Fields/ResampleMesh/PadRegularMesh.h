@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_FIELDS_RESAMPLEMESH_PADREGULARMESH_H
 #define CORE_ALGORITHMS_FIELDS_RESAMPLEMESH_PADREGULARMESH_H 1
@@ -45,15 +45,15 @@ using namespace SCIRun;
 
 class SCISHARE PadRegularMeshAlgo : public AlgoBase
 {
-  public:  
+  public:
     /// Set defaults
     PadRegularMeshAlgo()
-    { 
+    {
       /// What value to use in the padded region
       add_scalar("pad-value",0.0);
       add_int("pad-size",1);
     }
-    
+
     /// Run the algorithm
     bool run(FieldHandle input, FieldHandle& output);
 };

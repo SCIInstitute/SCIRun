@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2016 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #ifdef BUILD_WITH_PYTHON
+#include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
+#include <Core/Logging/Log.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <boost/algorithm/string.hpp>
@@ -45,6 +47,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, PythonCode);
+ALGORITHM_PARAMETER_DEF(Python, PythonTopLevelCode);
 ALGORITHM_PARAMETER_DEF(Python, PythonInputStringNames);
 ALGORITHM_PARAMETER_DEF(Python, PythonInputMatrixNames);
 ALGORITHM_PARAMETER_DEF(Python, PythonInputFieldNames);
@@ -61,6 +64,7 @@ ALGORITHM_PARAMETER_DEF(Python, PythonOutputField3Name);
 MODULE_INFO_DEF(InterfaceWithPython, Python, SCIRun)
 
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
+bool InterfaceWithPython::matlabInitialized_{ false };
 
 InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
 {
@@ -76,6 +80,10 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
   INITIALIZE_PORT(PythonMatrix3);
   INITIALIZE_PORT(PythonField3);
   INITIALIZE_PORT(PythonString3);
+
+#ifdef BUILD_WITH_PYTHON
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(), outputNameParameters()));
+#endif
 }
 
 void InterfaceWithPython::setStateDefaults()
@@ -83,6 +91,9 @@ void InterfaceWithPython::setStateDefaults()
   auto state = get_state();
 
   state->setValue(Parameters::PythonCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
+  state->setValue(Parameters::PythonTopLevelCode,
+    std::string("# Main namespace/top level context code goes here; for example, import statements and global variables.\n"
+    "# This code will be executed before the 'Code' tab, and no input/output variables are available."));
   state->setValue(Parameters::PollingIntervalMilliseconds, 200);
   state->setValue(Parameters::NumberOfRetries, 50);
 
@@ -103,53 +114,20 @@ std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
 {
   return { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name,
     Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
-    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
+    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name};
 }
 
-std::string InterfaceWithPython::convertOutputSyntax(const std::string& code) const
+std::vector<std::string> InterfaceWithPython::connectedPortIds() const
 {
-  auto outputVarsToCheck = outputNameParameters();
-
-  for (const auto& var : outputVarsToCheck)
-  {
-    auto varName = cstate()->getValue(var).toString();
-
-    auto regexString = "(\\h*)" + varName + " = (.+)";
-    //std::cout << "REGEX STRING " << regexString << std::endl;
-    boost::regex outputRegex(regexString);
-    boost::smatch what;
-    if (regex_match(code, what, outputRegex))
-    {
-      int rhsIndex = what.size() > 2 ? 2 : 1;
-      auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
-      auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
-      auto converted = whitespace + "scirun_set_module_transient_state(\"" + get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
-      //std::cout << "CONVERTED TO " << converted << std::endl;
-      return converted;
-    }
-  }
-
-  return code;
-}
-
-std::string InterfaceWithPython::convertInputSyntax(const std::string& code) const
-{
+  std::vector<std::string> ids;
   for (const auto& port : inputPorts())
   {
     if (port->nconnections() > 0)
     {
-      auto inputName = cstate()->getValue(Name(port->id().toString())).toString();
-      //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
-      //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << get_id() << "\", \"" << port->id().toString() << "\")" << std::endl;
-      auto index = code.find(inputName);
-      if (index != std::string::npos)
-      {
-        auto codeCopy = code;
-        return codeCopy.replace(index, inputName.length(), "scirun_get_module_input_value(\"" + get_id().id_ + "\", \"" + port->id().toString() + "\")");
-      }
+      ids.push_back(port->internalId().toString());
     }
   }
-  return code;
+  return ids;
 }
 
 void InterfaceWithPython::execute()
@@ -158,48 +136,64 @@ void InterfaceWithPython::execute()
   auto matrices = getOptionalDynamicInputs(InputMatrix);
   auto fields = getOptionalDynamicInputs(InputField);
   auto strings = getOptionalDynamicInputs(InputString);
-  if (needToExecute())
+  if (needToExecute() || alwaysExecuteEnabled())
   {
     auto state = get_state();
     {
       Guard g(lock_.get());
 
+      runTopLevelCode();
+
+      translator_->updatePorts(connectedPortIds());
       auto code = state->getValue(Parameters::PythonCode).toString();
-
-      std::ostringstream convertedCode;
-      std::vector<std::string> lines;
-      boost::split(lines, code, boost::is_any_of("\n"));
-      for (const auto& line : lines)
-      {
-        convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
-      }
-
+      auto convertedCode = translator_->translate(code);
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
-      PythonInterpreter::Instance().run_script(convertedCode.str());
+      if (convertedCode.isMatlab && !matlabInitialized_)
+      {
+        PythonInterpreter::Instance().run_string("import matlab.engine");
+        PythonInterpreter::Instance().run_string("__eng = matlab.engine.start_matlab()");
+        PythonInterpreter::Instance().run_string("from MatlabConversion import *");
+        matlabInitialized_ = true;
+      }
+      PythonInterpreter::Instance().run_script(convertedCode.code);
     }
 
     PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
 
+    DummyPortName nil;
     if (oport_connected(PythonString1))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, nil, nil);
     if (oport_connected(PythonString2))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, nil, nil);
     if (oport_connected(PythonString3))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString3Name).toString(), PythonString3, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString3Name).toString(), PythonString3, nil, nil);
     if (oport_connected(PythonMatrix1))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), nil, PythonMatrix1, nil);
     if (oport_connected(PythonMatrix2))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), PythonString1, PythonMatrix2, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), nil, PythonMatrix2, nil);
     if (oport_connected(PythonMatrix3))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix3Name).toString(), PythonString1, PythonMatrix3, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix3Name).toString(), nil, PythonMatrix3, nil);
     if (oport_connected(PythonField1))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), nil, nil, PythonField1);
     if (oport_connected(PythonField2))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), PythonString1, PythonMatrix1, PythonField2);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), nil, nil, PythonField2);
     if (oport_connected(PythonField3))
-      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), PythonString1, PythonMatrix1, PythonField3);
+      impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), nil, nil, PythonField3);
   }
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
+#endif
+}
+
+void InterfaceWithPython::runTopLevelCode() const
+{
+#ifdef BUILD_WITH_PYTHON
+  auto topLevelCode = cstate()->getValue(Parameters::PythonTopLevelCode).toString();
+  std::vector<std::string> lines;
+  boost::split(lines, topLevelCode, boost::is_any_of("\n"));
+  for (const auto& line : lines)
+  {
+    PythonInterpreter::Instance().run_string(line);
+  }
 #endif
 }

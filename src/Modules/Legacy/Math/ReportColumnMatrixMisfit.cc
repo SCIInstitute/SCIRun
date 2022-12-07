@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -27,12 +26,12 @@
 */
 
 
-///@file  ReportColumnMatrixMisfit.cc
+/// @file  ReportColumnMatrixMisfit.cc
 ///
-///@author
-///   David Weinstein
-///   University of Utah
-///@date  June 1999
+/// @author
+///    David Weinstein
+///    University of Utah
+/// @date  June 1999
 
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -135,7 +134,7 @@ void ReportColumnMatrixMisfit::execute()
       val = 0;
     }
     std::cout << "Error val: " << val << std::endl;
-    //sendOutput(Error_Out, boost::make_shared<Double>(val));
+    //sendOutput(Error_Out, makeShared<Double>(val));
   }
 }
 

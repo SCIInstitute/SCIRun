@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+ 
 
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -53,15 +53,15 @@ namespace impl
   class TransposeMatrix : public Matrix::Visitor
   {
   public:
-    virtual void visit(DenseMatrixGeneric<double>& dense) override
+    void visit(DenseMatrixGeneric<double>& dense) override
     {
       dense.transposeInPlace();
     }
-    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
+    void visit(SparseRowMatrixGeneric<double>& sparse) override
     {
       sparse = sparse.transpose();
     }
-    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
+    void visit(DenseColumnMatrixGeneric<double>& column) override
     {
       column = column.transpose();
     }
@@ -73,37 +73,34 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "matrix");
   MatrixHandle result;
 
-  Operator oper = params.get<0>();
+  Operator oper = params.op;
 
   /// @todo: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
-  case NEGATE:
+  case Operator::NEGATE:
   {
     result.reset(matrix->clone());
     NegateMatrix negate;
     result->accept(negate);
     break;
   }
-  case TRANSPOSE:
+  case Operator::TRANSPOSE:
   {
     result.reset(matrix->clone());
     impl::TransposeMatrix tr;
     result->accept(tr);
     break;
   }
-  case SCALAR_MULTIPLY:
+  case Operator::SCALAR_MULTIPLY:
   {
-    boost::optional<double> scalarOption = params.get<1>();
-    if (!scalarOption)
-      THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
-    double scalar = scalarOption.get();
+    auto scalar = params.scalar;
     result.reset(matrix->clone());
     ScalarMultiplyMatrix mult(scalar);
     result->accept(mult);
   }
   break;
-  case FUNCTION:
+  case Operator::FUNCTION:
   {
     // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result.
     // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
@@ -117,8 +114,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
     if (!(engine.add_input_fullmatrix("x", matrix)))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
 
-    boost::optional<std::string> func = params.get<2>();
-    std::string function_string = func.get();
+    auto function_string = params.func;
 
     function_string = "RESULT=" + function_string;
     engine.add_expressions(function_string);
@@ -143,10 +139,10 @@ AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run(const AlgorithmInput& i
 {
   auto matrix = input.get<Matrix>(Variables::InputMatrix);
 
-  auto scalar = boost::make_optional(get(Variables::ScalarValue).toDouble());
-	auto function = boost::make_optional(get(Variables::FunctionString).toString());
+  auto scalar = get(Variables::ScalarValue).toDouble();
+	auto function = get(Variables::FunctionString).toString();
 
-  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).toInt()), scalar, function));
+  auto result = run(matrix, { Operator(get(Variables::Operator).toInt()), scalar, function });
 
   AlgorithmOutput output;
   output[Variables::Result] = result;

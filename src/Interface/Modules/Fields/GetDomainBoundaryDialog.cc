@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
@@ -42,8 +42,8 @@ GetDomainBoundaryDialog::GetDomainBoundaryDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(compartmentRadioButton_, &QPushButton::clicked, this, &GetDomainBoundaryDialog::push);
+  connect(compartmentsRangeRadioButton_, &QPushButton::clicked, this, &GetDomainBoundaryDialog::push);
 
   using namespace Parameters;
   addCheckBoxManager(disconnectBoundariesCheckBox_, DisconnectBoundaries);

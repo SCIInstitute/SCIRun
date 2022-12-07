@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Network/Port.h>
 #include <Dataflow/Network/Connection.h>
@@ -47,11 +47,11 @@ using ::testing::DefaultValue;
 class InputPortTest : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle());
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
-    
+
     inputModule.reset(new NiceMock<MockModule>);
     outputModule.reset(new NiceMock<MockModule>);
   }
@@ -74,7 +74,7 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
   EXPECT_CALL(*sink, waitForData()).Times(0);
   EXPECT_CALL(*sink, receive()).Times(0);
   DatatypeHandleOption data = inputPort->getData();
-  EXPECT_FALSE(data.is_initialized());
+  EXPECT_FALSE(data.has_value());
 }
 
 //let's just use all "real" objects to see if it works.
@@ -83,24 +83,24 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   PortId id(0, "ForwardMatrix");
   Port::ConstructionParams pcp(id, "Matrix", false);
 
-  boost::shared_ptr<SimpleSink> sink(new SimpleSink);
+  SCIRun::SharedPointer<SimpleSink> sink(new SimpleSink);
 
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
 
-  boost::shared_ptr<SimpleSource> source(new SimpleSource);
+  SCIRun::SharedPointer<SimpleSource> source(new SimpleSource);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, source));
   //EXPECT_CALL(*inputModule, get_input_port(p2)).WillOnce(Return(inputPort));
   //EXPECT_CALL(*outputModule, get_output_port(p1)).WillOnce(Return(outputPort));
 
-  Connection c(outputPort, inputPort, "test");
+  Connection c(outputPort, inputPort, "test", false);
 
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
   outputPort->sendData(dataToPush);
-  
+
   DatatypeHandleOption data = inputPort->getData();
-  EXPECT_TRUE(data.is_initialized());
-  EXPECT_EQ(dataValue, (*data)->as<Int32>()->value());
+  EXPECT_TRUE(data.has_value());
+  EXPECT_EQ(dataValue, (*data)->as<Int32>()->toInt());
 }
 
 TEST_F(InputPortTest, CanClone)
@@ -108,14 +108,14 @@ TEST_F(InputPortTest, CanClone)
   PortId id(0, "ForwardMatrix");
   Port::ConstructionParams pcp(id, "Matrix", true);
 
-  boost::shared_ptr<SimpleSink> sink(new SimpleSink);
+  SCIRun::SharedPointer<SimpleSink> sink(new SimpleSink);
 
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
 
   ASSERT_TRUE(inputPort != nullptr);
 
   InputPortHandle clone(inputPort->clone());
-  
+
   ASSERT_TRUE(clone != nullptr);
   ASSERT_NE(clone, inputPort);
   EXPECT_EQ(inputPort->get_portname(), clone->get_portname());

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,10 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// Class definition of this one
-#include <Core/Algorithms/Legacy/Fields/MergeFields/AppendFieldsAlgo.h>
 
-/// Need to find out what type of field we are dealing with
+#include <Core/Algorithms/Legacy/Fields/MergeFields/AppendFieldsAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -38,14 +35,15 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
-using namespace SCIRun::Core::Algorithm::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 AppendFieldsAlgorithm::AppendFieldsAlgorithm()
 {
   //addParameter(Variables::RowsOrColumns, 0);
 }
 
-AlgorithmOutput AppendFieldsAlgorithm::run(const AlgorithmInput& input) const
+AlgorithmOutput AppendFieldsAlgorithm::run(const AlgorithmInput&) const
 {
   throw "not implemented";
 /*  auto inputFields = input.getList<Field>(Variables::InputFields);
@@ -99,10 +97,8 @@ bool AppendFieldsAlgorithm::run(const std::vector<FieldHandle>& input, FieldHand
   /// Make sure mesh and mesh basis order are equal
 
   VMesh*  mesh  = inputs[0]->vmesh();
-  VField* field = inputs[0]->vfield();
   size_type num_nodes  = mesh->num_nodes();
   size_type num_elems  = mesh->num_elems();
-  size_type num_values = field->num_values();
 
   for (size_t p=1; p<inputs.size(); p++)
   {
@@ -113,11 +109,9 @@ bool AppendFieldsAlgorithm::run(const std::vector<FieldHandle>& input, FieldHand
       return (false);
     }
     mesh  = inputs[p]->vmesh();
-    field = inputs[p]->vfield();
 
     num_nodes  += mesh->num_nodes();
     num_elems  += mesh->num_elems();
-    num_values += field->num_values();
   }
 
   output = CreateField(first);
@@ -127,7 +121,6 @@ bool AppendFieldsAlgorithm::run(const std::vector<FieldHandle>& input, FieldHand
     error("Could not create output field");
     return (false);
   }
-
 
   VMesh*  omesh  = output->vmesh();
   VField* ofield = output->vfield();

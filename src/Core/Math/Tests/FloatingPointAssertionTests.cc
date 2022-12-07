@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 #include <boost/test/floating_point_comparison.hpp>
 #include <Core/Math/MiscMath.h>
@@ -34,8 +34,13 @@ using namespace SCIRun;
 
 TEST(FloatComparisonTest, BoostCheck)
 {
-  using namespace boost::test_tools;
-  close_at_tolerance<double> comp(percent_tolerance(1e-5));
+#if BOOST_VERSION >= 106700
+	namespace btt = boost::math::fpc;
+#else
+	namespace btt = boost::test_tools;
+#endif
+
+  btt::close_at_tolerance<double> comp(btt::percent_tolerance(1e-5));
   EXPECT_TRUE(comp(1, 1));
   EXPECT_FALSE(comp(1.0/3, 0.33333));
   EXPECT_TRUE(comp(1.0/3, 0.333333333));

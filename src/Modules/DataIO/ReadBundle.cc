@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,9 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Modules/DataIO/ReadBundle.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;

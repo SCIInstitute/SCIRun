@@ -1,38 +1,39 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef BUILD_WITH_PYTHON
 #ifndef CORE_PYTHON_PYTHONINTERPRETER_H
 #define CORE_PYTHON_PYTHONINTERPRETER_H
 
+
+#ifdef BUILD_WITH_PYTHON
+
 #include <boost/python.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/signals2/signal.hpp>
 
 #include <Core/Utils/Singleton.h>
@@ -40,7 +41,7 @@
 
 class PythonStdIO;
 
-namespace SCIRun 
+namespace SCIRun
 {
 namespace Core
 {
@@ -50,11 +51,11 @@ namespace Core
 ///@details It calls the python interpreter on a separate thread.
 
 class PythonInterpreterPrivate;
-typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
+typedef SharedPointer< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
-class SCISHARE PythonInterpreter /*: private Core::EventHandler*/
+class SCISHARE PythonInterpreter
 {
-	CORE_SINGLETON( PythonInterpreter );
+	CORE_SINGLETON( PythonInterpreter )
 
 public:
   typedef std::pair< std::string, PyObject* ( * )( void ) > module_entry_type;
@@ -89,7 +90,7 @@ public:
 	/// Execute a python script.
 	/// NOTE: The script is run in its own local namespace.
 	void run_script( const std::string& script );
-  
+
 	// RUN_FILE:
 	/// Execute a python script from file.
 	/// NOTE: The script is run in its own local namespace.
@@ -126,4 +127,17 @@ public:
 }}
 
 #endif
+
+namespace SCIRun::Core
+{
+  inline void runPythonString(const std::string& cmd)
+  {
+    #ifdef BUILD_WITH_PYTHON
+    PythonInterpreter::Instance().run_string(cmd);
+    #else
+    (void)cmd;
+    #endif
+  }
+}
+
 #endif

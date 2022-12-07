@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MODULES_LEGACY_MATH_SETSUBMATRIX_H_
 #define MODULES_LEGACY_MATH_SETSUBMATRIX_H_ 1
@@ -56,15 +56,15 @@ namespace SCIRun {
 			{
 				public:
 					SetSubmatrix();
-					virtual void setStateDefaults() override;
-					virtual void execute() override;
+					void setStateDefaults() override;
+					void execute() override;
 
 					INPUT_PORT(0, InputMatrix, Matrix);
 					INPUT_PORT(1, Input_Submatrix, Matrix);
 					INPUT_PORT(2, Optional_Start_Bounds, Matrix);
 					OUTPUT_PORT(0, OutputMatrix, Matrix);
 
-					MODULE_TRAITS_AND_INFO(ModuleHasUI)
+					MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 			};
 
 }}};

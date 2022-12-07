@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,10 +24,12 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/String.h
 
 #ifndef CORE_DATATYPES_STRING_H
-#define CORE_DATATYPES_STRING_H 
+#define CORE_DATATYPES_STRING_H
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/share.h>
@@ -43,13 +44,13 @@ namespace Datatypes {
     explicit String(const std::string& s = "");
 
     const std::string& value() const { return value_; }
-    virtual String* clone() const override { return new String(*this); }
+    String* clone() const override { return new String(*this); }
 
     //! Persistent representation
-    virtual void io(Piostream&) override;
+    void io(Piostream&) override;
     static PersistentTypeID type_id_obj;
     static PersistentTypeID type_id_func();
-    virtual std::string dynamic_type_name() const override;
+    std::string dynamic_type_name() const override;
     std::string type_name() const;
 
   private:

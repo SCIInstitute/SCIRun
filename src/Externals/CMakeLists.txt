@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,18 +25,18 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 MESSAGE(STATUS "Configuring External Packages")
 
 # TODO: move to external repository
-
-MESSAGE(STATUS "Configuring google-mock")
-ADD_SUBDIRECTORY(gmock)
-
-MESSAGE(STATUS "Configuring cleaver 1")
-ADD_SUBDIRECTORY(cleaver)
 
 MESSAGE(STATUS "Configuring libxml2")
 ADD_SUBDIRECTORY(libxml2)
 
 MESSAGE(STATUS "Configuring spire")
 ADD_SUBDIRECTORY(spire)
+
+MESSAGE(STATUS "Configuring pugixml")
+ADD_SUBDIRECTORY(pugixml)
+
+ADD_SUBDIRECTORY(submodules)

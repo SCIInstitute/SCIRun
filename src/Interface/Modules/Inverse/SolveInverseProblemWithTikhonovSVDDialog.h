@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
 #define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
 
 #include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovSVDDialog.h>
-#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
+#include <Core/Utils/SmartPointers.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Inverse/share.h>
 
@@ -45,8 +46,8 @@ class SCISHARE SolveInverseProblemWithTikhonovSVDDialog : public ModuleDialogGen
 public:
   SolveInverseProblemWithTikhonovSVDDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
+    QWidget* parent = nullptr);
+  void moduleExecuted() override { pullAndDisplayInfo(); }
 
 private Q_SLOTS:
   void setSpinBoxValue(int value);
@@ -56,7 +57,7 @@ private Q_SLOTS:
   void setSliderStep(double value);
   void pullAndDisplayInfo();
 private:
-  GuiStringTranslationMap lambdaMethod_;
+  LCurvePlotWidgetHelper lCurvePlotWidgetHelper_;
 };
 
 }

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/MarchingCubes.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -35,7 +35,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include <algorithm>
 #include <set>
@@ -94,8 +94,8 @@ namespace detail
     }
   };
 
-  typedef boost::unordered_map<VField::index_type, VMesh::Node::index_type> node_hash_type;
-  typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
+  typedef std::unordered_map<VField::index_type, VMesh::Node::index_type> node_hash_type;
+  typedef std::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
 
   bool operator==(const edgepair_t &a, const edgepair_t &b)
   {
@@ -132,14 +132,17 @@ namespace detail
     }
   };
 
-  typedef boost::unordered_map<facetriple_t, VMesh::Node::index_type, facetriplehash> face_hash_type;
+  typedef std::unordered_map<facetriple_t, VMesh::Node::index_type, facetriplehash> face_hash_type;
 
 }
 
+ALGORITHM_PARAMETER_DEF(Fields, LessThanIsoValue);
+ALGORITHM_PARAMETER_DEF(Fields, ScalarIsoValue);
+
 ClipMeshByIsovalueAlgo::ClipMeshByIsovalueAlgo()
 {
- addParameter(LessThanIsoValue, 1);
- addParameter(ScalarIsoValue, 0.0);
+  addParameter(Parameters::LessThanIsoValue, 1);
+  addParameter(Parameters::ScalarIsoValue, 0.0);
 }
 
 class ClipMeshByIsovalueAlgoTet {
@@ -235,7 +238,7 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::face_lookup(VField::index_typ
   }
 }
 
-bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
+bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &/*mapping*/) const
 {
   VField* field = input->vfield();
   VMesh*  mesh  = input->vmesh();
@@ -250,9 +253,9 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
   std::vector<double> v(4);
   std::vector<Point> p(4);
 
-  double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
+  double isoval = algo->get(Parameters::ScalarIsoValue).toDouble();
 
-  bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
+  bool lte = !algo->get(Parameters::LessThanIsoValue).toBool();
 
   VMesh::size_type num_elems = mesh->num_elems();
 
@@ -688,7 +691,7 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTri::edge_lookup(VField::index_typ
   }
 }
 
-bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
+bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &) const
 {
   VField* field = input->vfield();
   VMesh*  mesh  = input->vmesh();
@@ -703,9 +706,9 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
   std::vector<double> v(3);
   std::vector<Point>  p(3);
 
-  double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
+  double isoval = algo->get(Parameters::ScalarIsoValue).toDouble();
 
-  bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
+  bool lte = !algo->get(Parameters::LessThanIsoValue).toBool();
 
   VMesh::size_type num_elems = mesh->num_elems();
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
@@ -947,7 +950,7 @@ class ClipMeshByIsovalueAlgoHex
 
 };
 
-bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
+bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &) const
 {
   // Do marching cubes
   FieldHandle tri_field;
@@ -957,10 +960,10 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
    mc_algo.set_progress_reporter(algo->get_progress_reporter());
   #endif
 
-  double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
-  mc_algo.set(MarchingCubesAlgo::build_field, true);
+  double isoval = algo->get(Parameters::ScalarIsoValue).toDouble();
+  mc_algo.set(Parameters::build_field, true);
 
-  bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
+  bool lte = !algo->get(Parameters::LessThanIsoValue).toBool();
 
   std::vector<double> isovals(1);
   isovals[0] = isoval;
@@ -1000,7 +1003,7 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   // Create a map to help differentiate between new nodes created for
   // the inserted sheet, and the nodes on the stair stepped boundary.
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> clipped_to_original_nodemap;
-  typedef boost::unordered_map<VField::index_type, VMesh::Node::index_type> hash_type;
+  typedef std::unordered_map<VField::index_type, VMesh::Node::index_type> hash_type;
 
   hash_type nodemap;
 
@@ -1151,7 +1154,8 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   // the isosurface create a map between the clipped boundary nodes
   // and the new nodes to help us create hexes with the correct
   // connectivity later.
-  tri_mesh->synchronize( Mesh::FIND_CLOSEST_ELEM_E );
+  if (!tri_mesh->is_empty())
+    tri_mesh->synchronize( Mesh::FIND_CLOSEST_ELEM_E );
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> new_map;
 
   int cnt = 0;
@@ -1439,14 +1443,9 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output, MatrixH
   return (true);
 }
 
-AlgorithmInputName ClipMeshByIsovalueAlgo::InputField("InputField");
-AlgorithmOutputName ClipMeshByIsovalueAlgo::OutputField("OutputField");
-AlgorithmParameterName ClipMeshByIsovalueAlgo::LessThanIsoValue("LessThanIsoValue");
-AlgorithmParameterName ClipMeshByIsovalueAlgo::ScalarIsoValue("ScalarIsoValue");
-
 AlgorithmOutput ClipMeshByIsovalueAlgo::run(const AlgorithmInput& input) const
 {
-  auto inputField = input.get<Field>(InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
 
   FieldHandle output_fld;
 
@@ -1454,7 +1453,7 @@ AlgorithmOutput ClipMeshByIsovalueAlgo::run(const AlgorithmInput& input) const
     error("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = output_fld;
+  output[Variables::OutputField] = output_fld;
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    output[Mapping] = mapping;

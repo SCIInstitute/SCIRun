@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -64,7 +63,7 @@ public:
   bool WriteColorMap(const std::string& filename, Datatypes::ColorMapHandle colorMap, const std::string& exporter = "");
 #endif
 
-  virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   bool ReadColorMap2(const std::string& filename, ColorMap2Handle& colorMap2, const std::string& importer = "");

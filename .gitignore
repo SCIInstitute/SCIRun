@@ -6,6 +6,7 @@
 *.swp
 *.vcxproj*
 *DS_Store
+src/.ccls-cache
 src/Documentation/*/*/*.aux
 src/Documentation/*/*/*.blg
 src/Documentation/*/*/*.bbl
@@ -23,9 +24,12 @@ src/Doxyfile
 *.orig
 CMakeCache.txt
 CMakeFiles
-Makefile
+src/Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
 DartConfiguration.tcl
 cmake
+
+# Sphinx builds
+docs/_build/

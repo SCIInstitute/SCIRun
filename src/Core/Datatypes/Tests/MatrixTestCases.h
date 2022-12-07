@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,13 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MATRIX_TEST_CASES_H
 #define MATRIX_TEST_CASES_H
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
 namespace TestUtils
 {
@@ -67,11 +67,11 @@ namespace TestUtils
   }
   static inline Core::Datatypes::SparseRowMatrixHandle matrix1sparse()
   {
-    return Core::Datatypes::convertMatrix::toSparse(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
+    return Core::Datatypes::convertMatrix::toSparse(makeShared<Core::Datatypes::DenseMatrix>(matrix1()));
   }
   static inline Core::Datatypes::DenseColumnMatrixHandle matrix1column()
   {
-    return Core::Datatypes::convertMatrix::toColumn(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
+    return Core::Datatypes::convertMatrix::toColumn(makeShared<Core::Datatypes::DenseMatrix>(matrix1()));
   }
   static inline Core::Datatypes::DenseMatrix matrixNonSquare()
   {
@@ -86,7 +86,7 @@ namespace TestUtils
 }
 
 #define EXPECT_SPARSE_EQ(m1, m2) EXPECT_EQ(\
-  *SCIRun::Core::Datatypes::convertMatrix::toDense(boost::make_shared<SCIRun::Core::Datatypes::SparseRowMatrix>(m1)), \
-  *SCIRun::Core::Datatypes::convertMatrix::toDense(boost::make_shared<SCIRun::Core::Datatypes::SparseRowMatrix>(m2)))
+  *SCIRun::Core::Datatypes::convertMatrix::toDense(makeShared<SCIRun::Core::Datatypes::SparseRowMatrix>(m1)), \
+  *SCIRun::Core::Datatypes::convertMatrix::toDense(makeShared<SCIRun::Core::Datatypes::SparseRowMatrix>(m2)))
 
 #endif

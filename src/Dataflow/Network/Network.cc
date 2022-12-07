@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,20 +25,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Network/Network.cc
 
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/thread.hpp>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -58,18 +56,19 @@ Network::~Network()
 
 ModuleHandle Network::add_module(const ModuleLookupInfo& info)
 {
-  ModuleHandle module = moduleFactory_->create(moduleFactory_->lookupDescription(info));
+  auto module = moduleFactory_->create(moduleFactory_->lookupDescription(info));
   modules_.push_back(module);
   if (module)
   {
-    module->connectErrorListener(boost::bind(&NetworkInterface::incrementErrorCode, this, _1));
+    module->connectErrorListener([this](const ModuleId& id) { incrementErrorCode(id); });
   }
   return module;
 }
 
 bool Network::remove_module(const ModuleId& id)
 {
-  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
+  auto loc = std::find_if(modules_.begin(), modules_.end(),
+    [&](ModuleHandle m) { return m->id() == id; } );
   if (loc != modules_.end())
   {
     // Inform the module that it is about to be erased from the network...
@@ -107,22 +106,23 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   }
 
   ConnectionId id = ConnectionId::create(ConnectionDescription(
-    OutgoingConnectionDescription(outputModule->get_id(), outputPortId),
-    IncomingConnectionDescription(inputModule->get_id(), inputPortId)));
+    OutgoingConnectionDescription(outputModule->id(), outputPortId),
+    IncomingConnectionDescription(inputModule->id(), inputPortId)));
   if (connections_.find(id) == connections_.end())
   {
     try
     {
-      ConnectionHandle conn(boost::make_shared<Connection>(outputModule->getOutputPort(outputPortId), inputModule->getInputPort(inputPortId), id));
-
-      connections_[id] = conn;
+      bool virtualConnection = outputModule->checkForVirtualConnection(*inputModule);
+      connections_[id] = makeShared<Connection>(
+        outputModule->getOutputPort(outputPortId),
+        inputModule->getInputPort(inputPortId),
+        id, virtualConnection);
 
       return id;
     }
     catch (const SCIRun::Core::ExceptionBase& e)
     {
-      std::cout << "Caught exception making a connection: " << e.what() << std::endl;
-      ///????????
+      logCritical("Caught exception making a connection: {}", e.what());
       return ConnectionId(""); //??
     }
   }
@@ -140,9 +140,34 @@ bool Network::disconnect(const ConnectionId& id)
   return false;
 }
 
-void Network::disable_connection(const ConnectionId&)
+ConnectionHandle Network::lookupConnection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) const
 {
-  /// @todo
+  auto fromMod = lookupModule(ModuleId(moduleIdFrom));
+  if (!fromMod)
+    return nullptr;
+  auto fromPorts = fromMod->outputPorts();
+  if (fromIndex < 0 || fromIndex >= fromPorts.size())
+    return nullptr;
+  const auto outputPortId = fromPorts[fromIndex]->externalId();
+
+  auto toMod = lookupModule(ModuleId(moduleIdTo));
+  if (!toMod)
+    return nullptr;
+  auto toPorts = toMod->inputPorts();
+  if (toIndex < 0 || toIndex >= toPorts.size())
+    return nullptr;
+  const auto inputPortId = toPorts[toIndex]->externalId();
+
+  const ConnectionId id = ConnectionId::create(ConnectionDescription(
+    OutgoingConnectionDescription(ModuleId(moduleIdFrom), outputPortId),
+    IncomingConnectionDescription(ModuleId(moduleIdTo), inputPortId)));
+  const auto connIter = connections_.find(id);
+  if (connIter != connections_.end())
+  {
+    return connIter->second;
+  }
+
+  return nullptr;
 }
 
 size_t Network::nmodules() const
@@ -160,7 +185,8 @@ ModuleHandle Network::module(size_t i) const
 
 ModuleHandle Network::lookupModule(const ModuleId& id) const
 {
-  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
+  auto i = std::find_if(modules_.begin(), modules_.end(),
+    [&](ModuleHandle m) { return m->id() == id; });
   return i == modules_.end() ? nullptr : *i;
 }
 
@@ -184,7 +210,6 @@ struct GetConnectionIds
 
 std::string Network::toString() const
 {
-  using boost::lambda::bind;
   std::ostringstream ostr;
   ostr << "~~~NETWORK DESCRIPTION~~~\n";
   ostr << "Modules:\n";
@@ -194,18 +219,14 @@ std::string Network::toString() const
   return ostr.str();
 }
 
-struct Describe
+NetworkStateInterface::ConnectionDescriptionList Network::connections(bool includeVirtual) const
 {
-  ConnectionDescription operator()(const Network::Connections::value_type& p) const
-  {
-    return p.first.describe();
-  }
-};
-
-NetworkInterface::ConnectionDescriptionList Network::connections() const
-{
+  Connections toDescribe;
+  std::copy_if(connections_.begin(), connections_.end(), std::inserter(toDescribe, toDescribe.begin()),
+    [includeVirtual](const Connections::value_type& c) { return includeVirtual || !c.second->isVirtual(); });
   ConnectionDescriptionList conns;
-  std::transform(connections_.begin(), connections_.end(), std::back_inserter(conns), Describe());
+  std::transform(toDescribe.begin(), toDescribe.end(), std::back_inserter(conns),
+    [](const Connections::value_type& c) { return c.first.describe(); });
   return conns;
 }
 
@@ -214,7 +235,7 @@ int Network::errorCode() const
   return errorCode_;
 }
 
-void Network::incrementErrorCode(const ModuleId& moduleId)
+void Network::incrementErrorCode(const ModuleId&)
 {
   errorCode_++;
   /// @todo: store errored modules in a list or something
@@ -256,23 +277,13 @@ void Network::clear()
 
 bool Network::containsViewScene() const
 {
-  return std::find_if(modules_.begin(), modules_.end(), [](ModuleHandle m) { return m->get_module_name() == "ViewScene"; }) != modules_.end();
+  return std::find_if(modules_.begin(), modules_.end(), [](ModuleHandle m) { return m->name() == "ViewScene"; }) != modules_.end();
 }
 
-boost::signals2::connection Network::connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const
-{
-  return interruptModule_.connect(subscriber);
-}
-
-void Network::interruptModuleRequest(const ModuleId& id)
-{
-  interruptModule_(id.id_);
-}
-
-ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->id())
+ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->internalId())
 {
 }
 
-ConnectionInputPort::ConnectionInputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->inputPorts().at(index)->id())
+ConnectionInputPort::ConnectionInputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->inputPorts().at(index)->internalId())
 {
 }

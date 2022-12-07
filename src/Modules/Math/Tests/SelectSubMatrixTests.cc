@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
@@ -49,7 +49,7 @@ class SelectSubMatrixModuleTest : public ModuleTest
 
 DenseMatrixHandle CreateDenseMatrix()
 {
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle m(makeShared<DenseMatrix>(3,1));
   (*m)(0,0) = 1;
   (*m)(1,0) = 2;
   (*m)(2,0) = 3;
@@ -58,7 +58,7 @@ DenseMatrixHandle CreateDenseMatrix()
 
 DenseColumnMatrixHandle CreateColumnMatrix()
 {
-  DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+  DenseColumnMatrixHandle m(makeShared<DenseColumnMatrix>(3));
   (*m)(0) = 1;
   (*m)(1) = 2;
   (*m)(2) = 3;
@@ -67,7 +67,7 @@ DenseColumnMatrixHandle CreateColumnMatrix()
 
 SparseRowMatrixHandle CreateSparseMatrix()
 {
-  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  SparseRowMatrixHandle m(makeShared<SparseRowMatrix>(3,3));
   m->insert(0,0) = 1;
   m->insert(1,1) = 2;
   m->insert(2,2) = 3;
@@ -173,5 +173,3 @@ TEST_F(SelectSubMatrixModuleTest, DenseMatrixOnPortZeroOneTwo)
   stubPortNWithThisData(sls, 2, CreateDenseMatrix());
   EXPECT_NO_THROW(sls->execute());
 }
-
-

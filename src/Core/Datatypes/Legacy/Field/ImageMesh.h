@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_DATATYPES_IMAGEMESH_H
 #define CORE_DATATYPES_IMAGEMESH_H 1
@@ -64,7 +64,7 @@ class ImageMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVImageMesh(MESH*) { return (0); }
+VMesh* CreateVImageMesh(MESH*) { return (nullptr); }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -93,7 +93,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<ImageMesh<Basis> >  handle_type;
+  typedef SharedPointer<ImageMesh<Basis> >  handle_type;
   typedef Basis                             basis_type;
   struct ImageIndex;
   friend struct ImageIndex;
@@ -101,7 +101,7 @@ public:
   struct ImageIndex
   {
   public:
-    ImageIndex() : i_(0), j_(0), mesh_(0) {}
+    ImageIndex() : i_(0), j_(0), mesh_(nullptr) {}
 
     ImageIndex(const ImageMesh *m, size_type i, size_type j)
       : i_(i), j_(j), mesh_(m) {}
@@ -159,7 +159,7 @@ public:
     }
   };
 
-  struct INodeIter : public ImageIter
+  struct INodeIter : ImageIter
   {
     INodeIter() : ImageIter() {}
     INodeIter(const ImageMesh *m, index_type i, index_type j)
@@ -188,7 +188,7 @@ public:
   };
 
 
-  struct IFaceIter : public ImageIter
+  struct IFaceIter : ImageIter
   {
     IFaceIter() : ImageIter() {}
     IFaceIter(const ImageMesh *m, index_type i, index_type j)
@@ -198,7 +198,7 @@ public:
 
     IFaceIter &operator++()
     {
-      this->i_++;
+      ++this->i_;
       if (this->i_ >= this->mesh_->min_i_+this->mesh_->ni_-1)
       {
         this->i_ = this->mesh_->min_i_;
@@ -219,7 +219,6 @@ public:
 
   struct ImageSize
   {
-  public:
     ImageSize() : i_(0), j_(0) {}
     ImageSize(index_type i, index_type j) : i_(i), j_(j) {}
 
@@ -350,8 +349,8 @@ public:
       Core::Geometry::Point p(index_.i_, index_.j_, 0.0);
       return mesh_.transform_.project(p);
     }
-    inline
-    const Core::Geometry::Point node1() const
+
+     Core::Geometry::Point node1() const
     {
       Core::Geometry::Point p(index_.i_ + 1, index_.j_, 0.0);
       return mesh_.transform_.project(p);
@@ -417,21 +416,21 @@ public:
     vmesh_.reset(CreateVImageMesh(this));
   }
 
-  virtual ImageMesh *clone() const { return new ImageMesh(*this); }
+ImageMesh *clone() const override { return new ImageMesh(*this); }
   virtual ~ImageMesh()
   {
     DEBUG_DESTRUCTOR("ImageMesh")
   }
 
-  MeshFacadeHandle getFacade() const
+  MeshFacadeHandle getFacade() const override
   {
-    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+    return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return vmesh_.get(); }
+VMesh* vmesh() override { return vmesh_.get(); }
 
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+int basis_order() override { return (basis_.polynomial_order()); }
 
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
@@ -672,8 +671,8 @@ public:
   virtual Core::Geometry::BBox get_bounding_box() const;
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
-  virtual bool synchronize(mask_type sync);
-  virtual bool unsynchronize(mask_type sync);
+bool synchronize(mask_type sync) override;
+bool unsynchronize(mask_type sync) override;
   bool clear_synchronization();
 
   /// set the mesh statistics
@@ -737,12 +736,9 @@ public:
   { a.push_back(f); }
 
   /// get the parent element(s) of the given index
-  void get_elems(typename Elem::array_type &result,
-                 typename Node::index_type idx) const;
-  void get_elems(typename Elem::array_type &result,
-                 typename Edge::index_type idx) const;
-  void get_elems(typename Elem::array_type&,
-                 typename Face::index_type) const {}
+  void get_elems(typename Elem::array_type &result, typename Node::index_type idx) const;
+  void get_elems(typename Elem::array_type &result, typename Edge::index_type idx) const;
+  void get_elems(typename Elem::array_type&, typename Face::index_type) const {}
 
 
   /// Wrapper to get the derivative elements from this element.
@@ -830,14 +826,14 @@ public:
 
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
   /// These IDs are created as soon as this class will be instantiated
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.  static PersistentTypeID type_idts;
   static PersistentTypeID imagemesh_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return imagemesh_typeid.type; }
+std::string dynamic_type_name() const override { return imagemesh_typeid.type; }
 
   // Unsafe due to non-constness of unproject.
   Core::Geometry::Transform &get_transform() { return transform_; }
@@ -849,7 +845,7 @@ public:
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -862,10 +858,10 @@ public:
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new ImageMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<ImageMesh<Basis>>();}
+  static MeshHandle mesh_maker() { return makeShared<ImageMesh<Basis>>();}
   /// This function returns a handle for the virtual interface.
   static MeshHandle image_maker(size_type x, size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
-    { return boost::make_shared<ImageMesh<Basis>>(x,y,min,max); }
+    { return makeShared<ImageMesh<Basis>>(x,y,min,max); }
 
   /// This function will find the closest element and the location on that
   /// element that is the closest
@@ -920,9 +916,9 @@ public:
     const double nii = static_cast<double>(ni_-2);
     const double njj = static_cast<double>(nj_-2);
 
-    if (ii < 0.0) ii = 0.0; 
+    if (ii < 0.0) ii = 0.0;
     if (ii > nii) ii = nii;
-    if (jj < 0.0) jj = 0.0; 
+    if (jj < 0.0) jj = 0.0;
     if (jj > njj) jj = njj;
 
     const double fi = floor(ii);
@@ -973,7 +969,7 @@ protected:
   Basis                  basis_;
 
   /// Virtual mesh
-  boost::shared_ptr<VMesh>          vmesh_;
+  SharedPointer<VMesh>          vmesh_;
   // The jacobian is the same for every element
   // hence store them as soon as we know the transfrom_
   // This should speed up FE computations on these regular grids.
@@ -1214,8 +1210,7 @@ ImageMesh<Basis>::get_edges(typename Edge::array_type &array,
 
 template<class Basis>
 void
-ImageMesh<Basis>::get_elems(typename Face::array_type &array,
-                                          typename Edge::index_type idx) const
+ImageMesh<Basis>::get_elems(typename Elem::array_type &array, typename Edge::index_type idx) const
 {
   array.reserve(2);
   array.clear();
@@ -1297,8 +1292,7 @@ ImageMesh<Basis>::get_neighbors(typename Face::array_type &array,
 
 template<class Basis>
 void
-ImageMesh<Basis>::get_elems(typename Elem::array_type &result,
-                            const typename Node::index_type idx) const
+ImageMesh<Basis>::get_elems(typename Elem::array_type &result, const typename Node::index_type idx) const
 {
   result.reserve(4);
   result.clear();
@@ -1446,7 +1440,7 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::node_index_type_description()
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription(ImageMesh<Basis>::type_name(-1) +
                                 std::string("::INodeIndex"),
@@ -1461,7 +1455,7 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::face_index_type_description()
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription(ImageMesh<Basis>::type_name(-1) +
                                 std::string("::IFaceIndex"),
@@ -1555,7 +1549,7 @@ ImageMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -1683,10 +1677,10 @@ template<class Basis>
 const TypeDescription*
 get_type_description(ImageMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("ImageMesh", subs,
@@ -1702,7 +1696,7 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((ImageMesh *)0);
+  return SCIRun::get_type_description((ImageMesh *)nullptr);
 }
 
 
@@ -1710,11 +1704,11 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1728,11 +1722,11 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1746,11 +1740,11 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1764,11 +1758,11 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

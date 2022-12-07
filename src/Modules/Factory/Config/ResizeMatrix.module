@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ResizeMatrix",
+    "namespace": "Math",
+    "status": "new module",
+    "description": "Resizes the matrix as per the need of the user",
+    "header": "Modules/Math/ResizeMatrix.h"
+  },
+  "algorithm": {
+    "name": "ResizeMatrixAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ResizeMatrixAlgo.h"
+  },
+  "UI": {
+    "name": "ResizeMatrixDialog",
+    "header": "Interface/Modules/Math/ResizeMatrixDialog.h"
+  }
+}

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -95,7 +94,7 @@ class SCISHARE ConverterAlgo : public AlgorithmBase
     bool MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output);
 
 
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   private:
     Core::Logging::LoggerHandle pr_;
 };

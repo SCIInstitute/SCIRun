@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -44,26 +44,26 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName AlignMeshBoundingBoxesAlgo::RotateData("rotate_data");
+ALGORITHM_PARAMETER_DEF(Fields, RotateData);
 
 AlignMeshBoundingBoxesAlgo::AlignMeshBoundingBoxesAlgo()
 {
-  addParameter(RotateData, true);
+  addParameter(Parameters::RotateData, true);
 }
 
-bool 
+bool
 AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHandle& output, MatrixHandle& transform_matrix) const
 {
   ScopedAlgorithmStatusReporter asr(this, "AlignMeshBoundingBoxes");
-  
-  bool rotate_data = get(RotateData).toBool();
+
+  bool rotate_data = get(Parameters::RotateData).toBool();
   // Step 0:
   // Safety test:
   // Test whether we received actually a field. A handle can point to no object.
   // Using a null handle will cause the program to crash. Hence it is a good
   // policy to check all incoming handles and to see whether they point to actual
   // objects.
-  
+
   if (!input)
   {
     error("No input field");
@@ -72,12 +72,12 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
 
   // Copy the field
   output.reset(input->deep_clone());
- 
+
   BBox obbox = object->vmesh()->get_bounding_box();
   BBox ibbox = input->vmesh()->get_bounding_box();
-  
+
   Transform transform;
- 
+
   Vector iscale = ibbox.diagonal();
   Vector oscale = obbox.diagonal();
   Vector itrans(-ibbox.get_min());
@@ -85,7 +85,7 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
   transform.pre_translate(itrans);
   transform.pre_scale(Vector(oscale.x()/iscale.x(),oscale.y()/iscale.y(),oscale.z()/iscale.z()));
   transform.pre_translate(otrans);
-  
+
   output->vmesh()->transform(transform);
 
   VField* field = output->vfield();
@@ -114,26 +114,25 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
           v = transform*v*transform;
           field->set_value(v,i);
         }
-      }    
+      }
     }
   }
 
   transform_matrix.reset(new DenseMatrix(transform));
-  
+
   if (!transform_matrix)
   {
     error("Could not allocate transform matrix");
-    return (false);  
+    return (false);
   }
-  
+
   CopyProperties(*input, *output);
-   
+
   // Success:
   return (true);
 }
 
 AlgorithmInputName AlignMeshBoundingBoxesAlgo::AlignmentField("AlignmentField");
-AlgorithmOutputName AlignMeshBoundingBoxesAlgo::OutputField("OutputField");
 AlgorithmOutputName AlignMeshBoundingBoxesAlgo::TransformMatrix("TransformMatrix");
 
 AlgorithmOutput AlignMeshBoundingBoxesAlgo::run(const AlgorithmInput& input) const
@@ -147,7 +146,7 @@ AlgorithmOutput AlignMeshBoundingBoxesAlgo::run(const AlgorithmInput& input) con
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = outputField;
+  output[Variables::OutputField] = outputField;
   output[TransformMatrix] = transform;
   return output;
 }

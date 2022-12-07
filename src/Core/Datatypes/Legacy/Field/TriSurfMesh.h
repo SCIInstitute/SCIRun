@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_DATATYPES_TRISURFMESH_H
 #define CORE_DATATYPES_TRISURFMESH_H 1
@@ -56,10 +56,10 @@
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <boost/thread.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include <set>
+#include <future>
 
 #include <Core/Datatypes/Legacy/Field/share.h>
 
@@ -76,7 +76,7 @@ template<class MESH> class TriSurfMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVTriSurfMesh(MESH*) { return (0); }
+VMesh* CreateVTriSurfMesh(MESH*) { return (nullptr); }
 
 #if (SCIRUN_TRISURF_SUPPORT > 0)
 /// Declare that these can be found in a library that is already
@@ -112,7 +112,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef boost::shared_ptr<TriSurfMesh<Basis> > handle_type;
+  typedef SharedPointer<TriSurfMesh<Basis> > handle_type;
   typedef Basis                              basis_type;
 
   /// Index and Iterator types required for Mesh Concept.
@@ -301,19 +301,19 @@ public:
 
   /// Clone function for detaching the mesh and automatically generating
   /// a new version if needed.
-  virtual TriSurfMesh *clone() const { return new TriSurfMesh(*this); }
+TriSurfMesh *clone() const override { return new TriSurfMesh(*this); }
 
-  virtual MeshFacadeHandle getFacade() const { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
+MeshFacadeHandle getFacade() const override { return makeShared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
   /// Destructor
   virtual ~TriSurfMesh();
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get()); }
+VMesh* vmesh() override { return (vmesh_.get()); }
 
   /// This one should go at some point, should be reroute through the
   /// virtual interface
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+int basis_order() override { return (basis_.polynomial_order()); }
 
   /// Topological dimension
   virtual int dimensionality() const { return 2; }
@@ -345,8 +345,8 @@ public:
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
-  virtual bool synchronize(mask_type mask);
-  virtual bool unsynchronize(mask_type mask);
+bool synchronize(mask_type mask) override;
+bool unsynchronize(mask_type mask) override;
   bool clear_synchronization();
 
   /// Get the basis class.
@@ -442,7 +442,7 @@ public:
   /// piecewise linear approximation of an edge.
   template<class VECTOR, class INDEX>
   void pwl_approx_edge(std::vector<VECTOR > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned int which_edge,
                        unsigned int div_per_unit) const
   {
@@ -453,7 +453,7 @@ public:
   /// piecewise linear approximation of an face.
   template<class VECTOR, class INDEX>
   void pwl_approx_face(std::vector<std::vector<VECTOR > > &coords,
-                       INDEX ci,
+                       INDEX,
                        unsigned int which_face,
                        unsigned int div_per_unit) const
   {
@@ -795,11 +795,11 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
@@ -892,18 +892,18 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; 
+    if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; 
+    if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -963,18 +963,18 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
     if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -1069,16 +1069,16 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) 
-      bi = ni; 
-    if (bi < 0) 
+    if (bi > ni)
+      bi = ni;
+    if (bi < 0)
       bi = 0;
-    if (bj > nj) 
-      bj = nj; 
-    if (bj < 0) 
+    if (bj > nj)
+      bj = nj;
+    if (bj < 0)
       bj = 0;
-    if (bk > nk) 
-      bk = nk; 
+    if (bk > nk)
+      bk = nk;
     if (bk < 0)
       bk = 0;
 
@@ -1116,31 +1116,31 @@ public:
                 {
                   Core::Geometry::Point r, r_pert;
                   index_type idx = (*it) * 3;
-                  
+
                   closest_point_on_tri(r, p, points_[faces_[idx]], points_[faces_[idx+1]], points_[faces_[idx+2]]);
                   double dtmp = (p - r).length2();
-                  
-                  
+
+
                   //test triangle size for scaling
                   Core::Geometry::Vector v1= Core::Geometry::Vector(points_[faces_[idx+1]]-points_[faces_[idx  ]]); v1.normalize();
                   Core::Geometry::Vector v2= Core::Geometry::Vector(points_[faces_[idx+2]]-points_[faces_[idx  ]]); v2.normalize();
-                  
+
                   Core::Geometry::Vector n=Cross(v1,v2); n.normalize();
                   Core::Geometry::Vector pr=Core::Geometry::Vector(r-p); pr.normalize();
-                  
+
                   if (std::abs(Dot(pr,n))>1-perturb)
                   {
                     r_pert=r;
                   }
                   else
                   {
-                      
+
                     Core::Geometry::Vector pp=Cross(n,pr); pp.normalize();
                     Core::Geometry::Vector vect=Cross(pp,n); vect.normalize();
-                    
+
                     r_pert=Core::Geometry::Point(r+vect*perturb);
                   }
-                  
+
                   double dtmp2=(p-r_pert).length2();
 
                   //check for closest face and check within precision
@@ -1153,13 +1153,13 @@ public:
                       face = INDEX(*it);
                       dmin = dtmp;
                       dmean =dtmp2;
-                      
+
                       if (dmin < epsilon2_)
                       {
-                        
+
                         pdist = sqrt(dmin);
                         pdist = sqrt(dmean);
-                            
+
                         ElemData ed(*this,face);
                         basis_.get_coords(coords,result,ed);
                         return (true);
@@ -1182,10 +1182,10 @@ public:
                       dmean =dtmp2;
                       if (dmin < epsilon2_)
                       {
-                        
+
                         pdist = sqrt(dmin);
                         pdist = sqrt(dmean);
-                        
+
                         ElemData ed(*this,face);
                         basis_.get_coords(coords,result,ed);
                       }
@@ -1198,7 +1198,7 @@ public:
                       dmean =dtmp2;
                     }
                   }
-                  
+
 
                   ++it;
                 }
@@ -1292,16 +1292,16 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) 
-      bi = ni; 
-    if (bi < 0) 
+    if (bi > ni)
+      bi = ni;
+    if (bi < 0)
       bi = 0;
-    if (bj > nj) 
-      bj = nj; 
-    if (bj < 0) 
+    if (bj > nj)
+      bj = nj;
+    if (bj < 0)
       bj = 0;
-    if (bk > nk) 
-      bk = nk; 
+    if (bk > nk)
+      bk = nk;
     if (bk < 0)
       bk = 0;
 
@@ -1379,16 +1379,16 @@ public:
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+void io(Piostream&) override;
 
   /// This ID is created as soon as this class will be instantiated
   static PersistentTypeID trisurf_typeid;
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return trisurf_typeid.type; }
+std::string dynamic_type_name() const override { return trisurf_typeid.type; }
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Some of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -1399,7 +1399,7 @@ public:
   /// This function returns a maker for Pio.
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return boost::make_shared<TriSurfMesh<Basis>>(); }
+  static MeshHandle mesh_maker() { return makeShared<TriSurfMesh<Basis>>(); }
 
 
   //////////////////////////////////////////////////////////////////
@@ -1758,9 +1758,9 @@ protected:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi =ni; 
+    if (bi > ni) bi =ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj =nj; 
+    if (bj > nj) bj =nj;
     if (bj < 0) bj = 0;
     if (bk > nk) bk =nk;
     if (bk < 0) bk = 0;
@@ -2036,8 +2036,8 @@ protected:
   std::vector<std::vector<index_type> > node_neighbors_; // Node neighbor connectivity
   std::vector<std::vector<index_type> > edge_on_node_; // Edges emanating from a node
 
-  boost::shared_ptr<SearchGridT<index_type> > node_grid_; // Lookup table for nodes
-  boost::shared_ptr<SearchGridT<index_type> > elem_grid_; // Lookup table for elements
+  SharedPointer<SearchGridT<index_type> > node_grid_; // Lookup table for nodes
+  SharedPointer<SearchGridT<index_type> > elem_grid_; // Lookup table for elements
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex         synchronize_lock_;
@@ -2054,19 +2054,19 @@ protected:
   double                epsilon_;           // Epsilon to use for computation 1e-8 of bbox diagonal
   double                epsilon2_;          // Square of epsilon
 
-  boost::shared_ptr<VMesh>         vmesh_;             // Handle to virtual function table
+  SharedPointer<VMesh>         vmesh_;             // Handle to virtual function table
 
   struct edgehash
   {
-    boost::hash<int> hasher_;
+    std::hash<int> hasher_;
     size_t operator()(const std::pair<index_type, index_type> &a) const
     {
       return hasher_(static_cast<int>(hasher_(a.first) + a.second));
     }
   };
 
-  using EdgeMapType = boost::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
-  using EdgeMapType2 = boost::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
+  using EdgeMapType = std::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
+  using EdgeMapType2 = std::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
 };
 
 
@@ -2099,7 +2099,7 @@ TriSurfMesh<Basis>::type_name(int n)
   }
   else
   {
-    return find_type_name((Basis *)0);
+    return find_type_name((Basis *)nullptr);
   }
 }
 
@@ -2450,7 +2450,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::EDGES_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NORMALS_E)
@@ -2464,7 +2464,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NORMALS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -2478,7 +2478,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::ELEM_NEIGHBORS_E)
@@ -2492,7 +2492,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_NEIGHBORS_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -2506,7 +2506,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -2520,7 +2520,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -2534,7 +2534,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
     Synchronize syncclass(this,tosync);
-    boost::thread syncthread(syncclass);
+    Core::Thread::Util::launchAsyncThread(syncclass);
   }
 
   // Wait until threads are done
@@ -3832,10 +3832,10 @@ template <class Basis>
 const TypeDescription*
 get_type_description(TriSurfMesh<Basis> *)
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
-    const TypeDescription *sub = get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)nullptr);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("TriSurfMesh", subs,
@@ -3851,7 +3851,7 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+  return SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
 }
 
 
@@ -3859,11 +3859,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::node_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3877,11 +3877,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::edge_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3895,11 +3895,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::face_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3913,11 +3913,11 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::cell_type_description()
 {
-  static TypeDescription *td = 0;
+  static TypeDescription *td = nullptr;
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)nullptr);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

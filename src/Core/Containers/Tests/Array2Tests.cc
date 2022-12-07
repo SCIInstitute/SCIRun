@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 #include <Core/Containers/Array2.h>
 
@@ -36,12 +36,11 @@ namespace
   template <typename Array>
   void print(std::ostream& os, const Array& A)
   {
-    typename Array::const_iterator i;
     os << "[";
-    for (i = A.begin(); i != A.end(); ++i) 
+    for (auto i = A.begin(); i != A.end(); ++i)
     {
       print(os, *i);
-      if (boost::next(i) != A.end())
+      if (i + 1 != A.end())
         os << ',';
     }
     os << "]";
@@ -69,17 +68,17 @@ TEST(Array2Test, CanResize)
 TEST(Array2Test, CanAccessUnderlyingStorageWithSingleIndexer)
 {
   Array2<double> a;
-  Array2<double>::impl_type& aImpl(a.getImpl());
+  auto& aImpl(a.getImpl());
   a.resize(2, 3);
   for (int i = 0; i < 2; ++i)
     for (int j = 0; j < 3; ++j)
       aImpl[i][j] = 1 + i + j;
-  
+
   print(std::cout, aImpl);
   std::cout << std::endl;
 
-  Array2<double> b(a);
-  Array2<double>::impl_type& bImpl(b.getImpl());
+  auto b(a);
+  auto& bImpl(b.getImpl());
 
   std::for_each(bImpl.origin(), bImpl.origin() + b.size(), [](double& d) {d *= 0.5;});
 

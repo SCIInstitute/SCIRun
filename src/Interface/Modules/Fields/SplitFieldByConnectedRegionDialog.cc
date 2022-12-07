@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
@@ -43,6 +44,6 @@ SplitFieldByConnectedRegionDialog::SplitFieldByConnectedRegionDialog(const std::
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(SortDomainBySize, SplitFieldByConnectedRegionAlgo::SortDomainBySize());
-  addCheckBoxManager(SortAscending, SplitFieldByConnectedRegionAlgo::SortAscending());
+  addCheckBoxManager(SortDomainBySize, Parameters::SortDomainBySize);
+  addCheckBoxManager(SortAscending, Parameters::SortAscending);
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Visualization/ShowString.cc
 
 #include <Modules/Visualization/ShowString.h>
@@ -55,7 +56,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, CoordinateVertical);
 
 MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
 
-ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(boost::make_shared<TextBuilder>())
+ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(makeShared<TextBuilder>())
 {
   INITIALIZE_PORT(String);
   INITIALIZE_PORT(RenderedString);
@@ -76,26 +77,6 @@ void ShowString::setStateDefaults()
   state->setValue(Parameters::FixedVertical, std::string("Top"));
   state->setValue(Parameters::CoordinateHorizontal, 0.5);
   state->setValue(Parameters::CoordinateVertical, 0.5);
-
-  getOutputPort(RenderedString)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWindowResizeFeedback(var); });
-}
-
-void ShowString::processWindowResizeFeedback(const ModuleFeedback& var)
-{
-  try
-  {
-    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (lastWindowSize_ != vsf.windowSize)
-    {
-      lastWindowSize_ = vsf.windowSize;
-      needReexecute_ = true;
-      enqueueExecuteAgain(false);
-    }
-  }
-  catch (std::bad_cast&)
-  {
-    //ignore
-  }
 }
 
 void ShowString::execute()
@@ -107,6 +88,7 @@ void ShowString::execute()
     auto geom = buildGeometryObject(str->value());
     sendOutput(RenderedString, geom);
     needReexecute_ = false;
+    executedOnce_ = true;
   }
 }
 
@@ -154,7 +136,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(0));
   std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(0));
 
-  auto uniqueNodeID = get_id().id_ + "_showString_" + text;
+  auto uniqueNodeID = id().id_ + "_showString_" + text;
   auto vboName = uniqueNodeID + "VBO";
   auto iboName = uniqueNodeID + "IBO";
   auto passName = uniqueNodeID + "Pass";
@@ -172,12 +154,12 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   uniforms.push_back(SpireSubPass::Uniform("uXTranslate", xTrans));
   uniforms.push_back(SpireSubPass::Uniform("uYTranslate", yTrans));
 
-  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, BBox(), true);
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, BBox(Point{}, Point{}), true);
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::HAS_DATA, true);
+  renState.set(RenderState::ActionFlags::IS_ON, true);
+  renState.set(RenderState::ActionFlags::HAS_DATA, true);
 
   SpireText spiretext;
 
@@ -187,11 +169,11 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowString", false));
+  auto geom(makeShared<GeometryObjectSpire>(*this, "ShowString", false));
 
-  geom->mIBOs.push_back(geomIBO);
-  geom->mVBOs.push_back(geomVBO);
-  geom->mPasses.push_back(pass);
+  geom->ibos().push_back(geomIBO);
+  geom->vbos().push_back(geomVBO);
+  geom->passes().push_back(pass);
 
   auto state = get_state();
   auto fontSize = state->getValue(Parameters::FontSize).toInt();

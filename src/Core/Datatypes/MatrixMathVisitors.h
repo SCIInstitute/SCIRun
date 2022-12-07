@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,10 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #ifndef CORE_DATATYPES_MATRIX_MATH_VISITORS_H
-#define CORE_DATATYPES_MATRIX_MATH_VISITORS_H 
+#define CORE_DATATYPES_MATRIX_MATH_VISITORS_H
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/share.h>
@@ -51,9 +51,9 @@ namespace SCIRun {
         public:
           explicit AddMatrices(MatrixHandle addend);
 
-          virtual void visit(DenseMatrixGeneric<double>& dense) override;
-          virtual void visit(SparseRowMatrixGeneric<double>& sparse) override;
-          virtual void visit(DenseColumnMatrixGeneric<double>& column) override;
+          void visit(DenseMatrixGeneric<double>& dense) override;
+          void visit(SparseRowMatrixGeneric<double>& sparse) override;
+          void visit(DenseColumnMatrixGeneric<double>& column) override;
 
           MatrixHandle sum_;
         };
@@ -63,9 +63,9 @@ namespace SCIRun {
         public:
           explicit MultiplyMatrices(MatrixHandle factor);
 
-          virtual void visit(DenseMatrixGeneric<double>& dense) override;
-          virtual void visit(SparseRowMatrixGeneric<double>& sparse) override;
-          virtual void visit(DenseColumnMatrixGeneric<double>& column) override;
+          void visit(DenseMatrixGeneric<double>& dense) override;
+          void visit(SparseRowMatrixGeneric<double>& sparse) override;
+          void visit(DenseColumnMatrixGeneric<double>& column) override;
 
           MatrixHandle getProduct() const { return product_; }
         private:
@@ -75,18 +75,18 @@ namespace SCIRun {
         class SCISHARE NegateMatrix : public Matrix::Visitor
         {
         public:
-          virtual void visit(DenseMatrixGeneric<double>& dense) override;
-          virtual void visit(SparseRowMatrixGeneric<double>& sparse) override;
-          virtual void visit(DenseColumnMatrixGeneric<double>& column) override;
+          void visit(DenseMatrixGeneric<double>& dense) override;
+          void visit(SparseRowMatrixGeneric<double>& sparse) override;
+          void visit(DenseColumnMatrixGeneric<double>& column) override;
         };
 
         class SCISHARE ScalarMultiplyMatrix : public Matrix::Visitor
         {
         public:
           explicit ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}
-          virtual void visit(DenseMatrixGeneric<double>& dense) override;
-          virtual void visit(SparseRowMatrixGeneric<double>& sparse) override;
-          virtual void visit(DenseColumnMatrixGeneric<double>& column) override;
+          void visit(DenseMatrixGeneric<double>& dense) override;
+          void visit(SparseRowMatrixGeneric<double>& sparse) override;
+          void visit(DenseColumnMatrixGeneric<double>& column) override;
         private:
           double scalar_;
         };
@@ -100,17 +100,17 @@ namespace SCIRun {
         NumberOfElements() : value_(0) {}
         size_t value_;
 
-        virtual void visit(DenseMatrixGeneric<T>& m) override
+        void visit(DenseMatrixGeneric<T>& m) override
         {
           value_ = m.rows() * m.cols();
         }
 
-        virtual void visit(DenseColumnMatrixGeneric<T>& m) override
+        void visit(DenseColumnMatrixGeneric<T>& m) override
         {
           value_ = m.nrows();
         }
 
-        virtual void visit(SparseRowMatrixGeneric<T>& m) override
+        void visit(SparseRowMatrixGeneric<T>& m) override
         {
           value_ = m.nonZeros();
         }

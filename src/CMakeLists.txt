@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -24,31 +23,18 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+#
 
-IF(UNIX)
-  # temporary - needed to make Travis CI build work
-  # TODO: revisit and delete when CMake 2.8.11 or greater is available
-  # or switch to another CI tool
-  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7 FATAL_ERROR)
-ELSE()
-  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
-ENDIF()
-
-IF(POLICY CMP0042)
-  # TODO: when support for versions older than 2.8.12 is dropped,
-  # enable new policy and get rid of version check
-  #
-  # see https://cmake.org/cmake/help/v3.0/policy/CMP0042.html
-  CMAKE_POLICY(SET CMP0042 OLD)
-ENDIF()
-IF(POLICY CMP0043)
-  CMAKE_POLICY(SET CMP0043 OLD)
-ENDIF()
-IF(POLICY CMP0049)
-  CMAKE_POLICY(SET CMP0049 NEW)
-ENDIF()
+CMAKE_MINIMUM_REQUIRED(VERSION 3.9 FATAL_ERROR)
 
 PROJECT(SCIRun)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+IF(GENERATE_COMPILATION_DATABASE)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ENDIF()
 
 ###############################################################################
 # Don't allow the user to build in the src directory...
@@ -62,18 +48,13 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
+include(CheckCCompilerFlag)
+
 ########################################################################
 # Build shared libraries by default
 
 OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
 MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
-
-########################################################################
-# Headless build
-#
-#OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
-#MARK_AS_ADVANCED(BUILD_HEADLESS)
-
 
 ########################################################################
 # Set default CMAKE_BUILD_TYPE
@@ -119,8 +100,8 @@ string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\-(beta.[A-Za-z0-9_]+)\\-?.*" "\\1" VERS
 #MESSAGE(STATUS "Git version patch name: " "${VERSION_PATCH}")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules/Version.cc.in
- ${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc)
-set(version_file "${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc")
+ ${CMAKE_CURRENT_BINARY_DIR}/Core/Application/Version.cc)
+set(version_file "${CMAKE_CURRENT_BINARY_DIR}/Core/Application/Version.cc")
 
 
 ########################################################################
@@ -194,11 +175,9 @@ IF(BUILD_TESTING)
   SET(BUILDNAME "${BUILDNAME_SCIRun}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 
-  #INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestDataConfig.cmake)
-  #TEST_DATA()
-
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
+  OPTION(RUN_IMPORT_TESTS "Run v4 import tests" ON)
 
   IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
@@ -206,6 +185,18 @@ IF(BUILD_TESTING)
 
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
+
+#########################################################################
+# Configure Spdlog
+set (cxxfeaturelist ${CMAKE_CXX_COMPILE_FEATURES})
+
+list (FIND cxxfeaturelist "cxx_thread_local" _index)
+if (${_index} GREATER -1)
+  #message("Found cxx_thread_local")
+else()
+  message(WARNING "Did NOT find cxx_thread_local--turning off feature of spdlog")
+  add_definitions(-DDISABLE_SPDLOG_TLS=1)
+endif()
 
 #########################################################################
 # External projects
@@ -220,9 +211,6 @@ ENDMACRO()
 CONFIG_STANDARD_EXTERNAL( Zlib ZlibConfig.cmake ${Zlib_DIR} )
 INCLUDE(${ZLIB_USE_FILE})
 
-CONFIG_STANDARD_EXTERNAL( LibPNG LibPNGConfig.cmake ${LibPNG_DIR} )
-INCLUDE(${PNG_USE_FILE})
-
 CONFIG_STANDARD_EXTERNAL( SQLite SQLiteConfig.cmake ${SQLite_DIR} )
 INCLUDE(${SQLITE_USE_FILE})
 
@@ -231,6 +219,9 @@ INCLUDE(${Teem_USE_FILE})
 
 CONFIG_STANDARD_EXTERNAL( Freetype FreetypeConfig.cmake ${Freetype_DIR} )
 INCLUDE(${FREETYPE_USE_FILE})
+
+CONFIG_STANDARD_EXTERNAL( Cleaver2 Cleaver2Config.cmake ${CLEAVER2_DIR} )
+INCLUDE(${CLEAVER2_USE_FILE})
 
 IF(BUILD_WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
@@ -251,9 +242,19 @@ IF(WITH_TETGEN)
   INCLUDE(${TETGEN_USE_FILE})
 ENDIF()
 
+IF(WITH_OSPRAY)
+  set(ospray_DIR ${Ospray_External_Dir}/install/ospray/lib/cmake/ospray-2.0.1)
+  find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
+ENDIF()
+
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
+ENDIF()
+
+IF(NOT BUILD_HEADLESS)
+  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
+  INCLUDE(${QWT_USE_FILE})
 ENDIF()
 
 ########################################################################
@@ -262,34 +263,9 @@ ENDIF()
 # TODO: Better compiler check for OS X?
 # Try CMAKE_<LANG>_COMPILER_ID MATCHES Clang? Or check for Intel, GNU?
 IF(UNIX)
-  SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++11")
-  CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX11_FLAG)
-  IF(NOT USE_CXX11_FLAG)
-    SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++0x")
-    CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX0x_FLAG)
-    IF(NOT USE_CXX0x_FLAG)
-      SET(CXX_LANGUAGE_STANDARD_FLAG "")
-    ENDIF()
-  ENDIF()
-
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall")
-
-  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth=1024")
-  endif()
-
   IF(NOT APPLE)
     SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed -ldl -lrt")
   ENDIF()
-ENDIF()
-
-IF(APPLE)
-  SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-  SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -ftemplate-depth=256")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
-
-  ADD_DEFINITIONS(-DGTEST_USE_OWN_TR1_TUPLE=1)
 ENDIF()
 
 ########################################################################
@@ -309,7 +285,9 @@ MARK_AS_ADVANCED(BUILD_BUNDLE)
 # should be installed by default, searching system paths only
 IF(APPLE)
   FIND_PROGRAM(MACDEPLOYQT
+    HINTS ${Qt_PATH} ${Qt_PATH}/bin
     NAMES macdeployqt
+    NO_DEFAULT_PATH
   )
   MARK_AS_ADVANCED(MACDEPLOYQT)
 
@@ -345,32 +323,21 @@ IF(BUILD_DOXYGEN_DOCUMENTATION)
   ENDIF()
 ENDIF()
 
-# TODO: uncomment when LaTeX files are available
-# OPTION(BUILD_LATEX_DOCUMENTATION "Compile SCIRun LaTeX manuals and tutorials to PDF." OFF)
-# MARK_AS_ADVANCED(BUILD_LATEX_DOCUMENTATION)
-#
-# IF(BUILD_LATEX_DOCUMENTATION)
-#   FIND_PACKAGE(LATEX)
-#   IF(PDFLATEX_COMPILER)
-#     IF(BUILD_DOCUMENTATION)
-#     ADD_SUBDIRECTORY(Documentation/Manuals)
-#   ENDIF()
-# ENDIF()
-
 ########################################################################
-# Configure tetgen module build
+# Configure ospray module build
 
-IF(WITH_TETGEN)
-  ADD_DEFINITIONS(-DWITH_TETGEN)
+IF(WITH_OSPRAY)
+  ADD_DEFINITIONS(-DWITH_OSPRAY)
+  SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
 ########################################################################
-# Configure ospray module build-- TODO: convert into real external
+# Detailed renderer logging
 
-OPTION(WITH_OSPRAY "Build with Ospray support." OFF)
-MARK_AS_ADVANCED(WITH_OSPRAY)
-IF(WITH_OSPRAY)
-  ADD_DEFINITIONS(-DWITH_OSPRAY)
+OPTION(RENDERER_TRACE_ON "Enable detailed renderer logging." OFF)
+MARK_AS_ADVANCED(RENDERER_TRACE_ON)
+IF(RENDERER_TRACE_ON)
+  ADD_DEFINITIONS(-DRENDERER_TRACE_ON)
 ENDIF()
 
 ########################################################################
@@ -436,19 +403,67 @@ FIND_PACKAGE(OpenGL REQUIRED)
 ########################################################################
 # Find and configure Qt
 
-# TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
-  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL REQUIRED)
+  if (${QT_VERSION_MAJOR} STREQUAL "6")
+    FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
+  else()
+    FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt_PATH})
+  endif()
 
-  IF(QT_FOUND)
+  IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
+    MESSAGE(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}")
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Core_INCLUDE_DIRS})
+	  INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Widgets_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Gui_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Network_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}OpenGL_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Concurrent_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}PrintSupport_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Svg_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}DBus_INCLUDE_DIRS})
+  ELSE()
+    MESSAGE(FATAL_ERROR "Qt is required for building the SCIRun GUI")
+  ENDIF()
+
+  IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
     INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-    INCLUDE(${QT_USE_FILE})
     ADD_DEFINITIONS(${QT_DEFINITIONS})
   ELSE()
-    MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun")
+    MESSAGE(FATAL_ERROR "Qt 5.13 or greater is required to build SCIRun")
   ENDIF()
 
   ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
+
+  if (${QT_VERSION_MAJOR} STREQUAL "6")
+    ADD_DEFINITIONS(-DSCIRUN_QT6_ENABLED)
+  endif()
+
+  if (${QT_VERSION_MAJOR} STREQUAL "5")
+    MACRO(QT_WRAP_UI arg1 arg2)
+      QT5_WRAP_UI(${arg1} ${arg2})
+    ENDMACRO(QT_WRAP_UI)
+
+    MACRO(QT_WRAP_CPP arg1 arg2)
+      QT5_WRAP_CPP(${arg1} ${arg2})
+    ENDMACRO(QT_WRAP_CPP)
+
+    MACRO(QT_ADD_RESOURCES arg1 arg2)
+      QT5_ADD_RESOURCES(${arg1} ${arg2})
+    ENDMACRO(QT_ADD_RESOURCES)
+
+    SET(QT_GRAPHICS_LIBRARIES Qt5::OpenGL)
+    SET(QT_NETWORK_LIBRARIES Qt5::Network)
+    SET(QT_LIBRARIES Qt5::Widgets)
+  else()
+    SET(QT_GRAPHICS_LIBRARIES Qt::OpenGL Qt::OpenGLWidgets)
+    SET(QT_NETWORK_LIBRARIES Qt::Network)
+    SET(QT_LIBRARIES Qt::Widgets)
+  endif()
+
+ENDIF()
+
+IF(Qt${QT_VERSION_MAJOR}Widgets_VERSION VERSION_LESS 5.13.0)
+  ADD_DEFINITIONS(-DOLDER_QT_SUPPORT_NEEDED)
 ENDIF()
 
 ########################################################################
@@ -464,25 +479,30 @@ ENDIF()
 
 SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
+#message("SCI_CTK_INCLUDE")
+#message(${SCI_CTK_INCLUDE})
+
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
   ${SCIRun_SOURCE_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
-  ${SCIRun_SOURCE_DIR}/Externals/gmock/include
   ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/spire/
+  ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googletest/include
+  ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googlemock/include
   ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/eigen
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${GLM_DIR}
   ${SPDLOG_DIR}/include
+  ${Eigen_DIR}
   ${SCI_TNY_INCLUDE}
   ${SCI_LODEPNG_INCLUDE}
+  ${SCI_QWT_INCLUDE}
+  ${SCI_CLEAVER2_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -498,6 +518,7 @@ MACRO(SCIRUN_ADD_UNIT_TEST test)
   ADD_EXECUTABLE(${test} ${ARGN})
   LIST(APPEND tmp ${test} ${UNIT_TEST_LIST})
   SET(UNIT_TEST_LIST ${tmp} CACHE INTERNAL "List of unit tests." FORCE)
+  TARGET_COMPILE_DEFINITIONS(${test} PRIVATE -DGTEST_LINKED_AS_SHARED_LIBRARY)
 ENDMACRO()
 
 MACRO(SCIRUN_ADD_TEST_DIR directory)
@@ -508,6 +529,19 @@ ENDMACRO()
 
 MACRO(SCIRUN_ADD_LIBRARY library)
   ADD_LIBRARY(${library} ${ARGN})
+
+  if(MSVC)
+    # TODO:
+    # target_compile_options(${library} PRIVATE /W4 /WX)
+  else()
+    # TODO:
+    if(APPLE)
+      target_compile_options(${library} PRIVATE -Wall -Werror -Wunused-parameter -Winfinite-recursion)
+          #eventually: -Wall -Wextra -pedantic -Werror)
+    else()
+      target_compile_options(${library} PRIVATE -Wall -Wunused-parameter)
+    endif()
+  endif()
 
   # Set up installer package (Release build only)
   IF(WIN32)
@@ -663,14 +697,14 @@ SET_PROPERTY(TARGET Core_XMLUtil         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Exceptions_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Util_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Containers         PROPERTY FOLDER "Core")
-SET_PROPERTY(TARGET Core_Thread_Legacy         PROPERTY FOLDER "Core")
+#SET_PROPERTY(TARGET Core_Thread_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Core_Serialization_Network_Importer         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET bundle_toolkit         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
-SET_PROPERTY(TARGET spire PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET ${SPIRE_LIBRARY_NAME} PROPERTY FOLDER "Graphics")
 
 IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
@@ -711,19 +745,25 @@ SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO
 SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Legacy_Teem_DataIO   PROPERTY FOLDER "Modules/Teem")
 SET_PROPERTY(TARGET Modules_Legacy_Teem_Misc   PROPERTY FOLDER "Modules/Teem")
+SET_PROPERTY(TARGET Modules_Legacy_Teem_Tend   PROPERTY FOLDER "Modules/Teem")
 SET_PROPERTY(TARGET Modules_Legacy_Teem_Converters   PROPERTY FOLDER "Modules/Teem")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET spire   PROPERTY FOLDER "Graphics")
 
-SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET pugixml   PROPERTY FOLDER "Externals")
+
+IF(BUILD_TESTING)
+  SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+ENDIF()
 
 IF(BUILD_TESTING)
 
@@ -758,6 +798,8 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_DatabaseManager_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_IEPlugin_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Graphics_Widgets_Tests         PROPERTY FOLDER "Graphics/Tests")
+  SET_PROPERTY(TARGET Graphics_Datatypes_Tests PROPERTY FOLDER "Graphics/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
@@ -792,7 +834,6 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)

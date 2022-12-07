@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,63 +25,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Algorithms/Fields/Cleanup/CleanupTetMesh.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/Fields/CleanupTetMesh.h>
+#include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
 
-namespace SCIRun {
-
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-/// @class CleanupTetMesh
-/// @brief This module tidies up node orientation and removes degenerate
-/// tetrahedral elements on a given tetrahedral mesh. 
+MODULE_INFO_DEF(CleanupTetMesh, ChangeFieldData, SCIRun)
 
-class CleanupTetMesh : public Module {
-  public:
-    CleanupTetMesh(GuiContext*);
-    virtual ~CleanupTetMesh() {}
-    virtual void execute();
-
-  private:
-    GuiInt  fix_orientation_;
-    GuiInt  remove_degenerate_;
-    
-    SCIRunAlgo::CleanupTetMeshAlgo algo_;
-};
-
-
-DECLARE_MAKER(CleanupTetMesh)
-
-CleanupTetMesh::CleanupTetMesh(GuiContext* ctx) :
-  Module("CleanupTetMesh", ctx, Source, "ChangeMesh", "SCIRun"),
-    fix_orientation_(get_ctx()->subVar("fix-orientation"),1),
-    remove_degenerate_(get_ctx()->subVar("remove-degenerate"),1)
+CleanupTetMesh::CleanupTetMesh() :  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputTetMesh);
+  INITIALIZE_PORT(OutputTetMesh);
 }
 
-void
-CleanupTetMesh::execute()
+void CleanupTetMesh::setStateDefaults()
 {
-  FieldHandle input, output;
-  get_input_handle("Field",input,true);
-  
-  if (inputs_changed_ || fix_orientation_.changed() || 
-      remove_degenerate_.changed() || !oport_cached("Field"))
+  auto state = get_state();
+  setStateBoolFromAlgo(Parameters::FixOrientationCheckBox);
+  setStateBoolFromAlgo(Parameters::RemoveDegenerateCheckBox);
+}
+
+void CleanupTetMesh::execute()
+{
+
+  auto ifield = getRequiredInput(InputTetMesh);
+
+  if (needToExecute())
   {
-    update_state(Executing);
-    
-    algo_.set_bool("fix_orientation",fix_orientation_.get());
-    algo_.set_bool("remove_degenerate",remove_degenerate_.get());
-    if(!(algo_.run(input,output))) return;
-    
-    send_output_handle("Field",output);
+    setAlgoBoolFromState(Parameters::FixOrientationCheckBox);
+    setAlgoBoolFromState(Parameters::RemoveDegenerateCheckBox);
+    auto output = algo().run(withInputData((InputTetMesh, ifield)));
+
+    sendOutputFromAlgorithm(OutputTetMesh, output);
   }
 }
-
-} // End namespace SCIRun
-
-

@@ -1,12 +1,41 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
 
 #ifndef SPIRE_RENDER_BMFONT_HPP
 #define SPIRE_RENDER_BMFONT_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <cstddef>
 #include <vector>
 #include <string>
 #include <map>
+#include <spire/scishare.h>
 
 // Forward declare a class that we need for parsing BMFont files.
 namespace spire {
@@ -15,15 +44,15 @@ class BSerialize;
 
 namespace ren {
 
-/// \note The texture names are stored in the page block. 
+/// \note The texture names are stored in the page block.
 
 /// Loads a BMFont file from memory and stores relevant BMFont blocks.
-class BMFont
+class SCISHARE BMFont
 {
 public:
   BMFont();
   virtual ~BMFont();
-  
+
   void clear();
 
   void loadFromBuffer(uint8_t* buffer, size_t bytesRead);
@@ -105,7 +134,7 @@ public:
     /// For the absolute meaning of all of these values, please consult
     /// http://www.angelcode.com/products/bmfont/doc/render_text.html.
     /// @{
-    uint16_t x;         ///< The left position of the character image in the texture. 
+    uint16_t x;         ///< The left position of the character image in the texture.
     uint16_t y;         ///< The top position of the character image in the texture.
     uint16_t width;     ///< The width of the character image in the texture.
     uint16_t height;    ///< The height of the character image in the texture.
@@ -161,6 +190,6 @@ private:
   std::multimap<uint32_t, KernInfo> mKernMultiMap;
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

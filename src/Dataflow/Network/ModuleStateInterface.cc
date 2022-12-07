@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Logging/Log.h>
@@ -60,7 +60,7 @@ void StateChangeObserver::initStateObserver(ModuleStateInterface* state)
   if (state)
   {
     //LOG_DEBUG("StateChangeObserver::initStateObserver(), connecting to state" << std::endl);
-    conn_ = state->connectStateChanged(boost::bind(&StateChangeObserver::stateChanged, this));
+    conn_ = state->connectStateChanged([this] { stateChanged(); });
   }
 }
 
@@ -106,4 +106,25 @@ void MetadataMap::setMetadata(const std::string& key, const std::string& value)
 StringMap MetadataMap::getFullMap() const
 {
   return transient_value_cast<StringMap>(state_->getTransientValue(metadataKey));
+}
+
+namespace
+{
+  const char* alwaysExecuteKey = "__INTERNAL__forceAlwaysExecute";
+}
+
+void SCIRun::Dataflow::Networks::setModuleAlwaysExecute(ModuleStateHandle state, bool toggle)
+{
+  if (!state)
+    return;
+
+  state->setTransientValue(alwaysExecuteKey, toggle);
+}
+
+bool SCIRun::Dataflow::Networks::getModuleAlwaysExecute(ModuleStateHandle state)
+{
+  if (!state)
+    return false;
+
+  return transient_value_cast<bool>(state->getTransientValue(alwaysExecuteKey));
 }

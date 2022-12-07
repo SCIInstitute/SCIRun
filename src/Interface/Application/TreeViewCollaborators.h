@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_APPLICATION_TREEVIEWCOLLABORATORS_H
 #define INTERFACE_APPLICATION_TREEVIEWCOLLABORATORS_H
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -49,21 +49,34 @@ namespace Gui {
   }
 
   template <class Func>
-  void visitTree(QTreeWidget* tree, Func& itemFunc) 
+  void visitTree(QTreeWidget* tree, Func& itemFunc)
   {
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
       visitItem(tree->topLevelItem(i), itemFunc);
   }
 
+  static constexpr auto hasUIDataFlag = Qt::UserRole + 1;
+
   struct HideItemsNotMatchingString
   {
-    explicit HideItemsNotMatchingString(bool useRegex, const QString& pattern);
-    QRegExp match_;
+    enum class SearchType
+    {
+      STARTS_WITH,
+      WILDCARDS,
+      FUZZY_SEARCH,
+      HIDE_NON_UI
+    };
+
+    explicit HideItemsNotMatchingString(SearchType searchType, const QString& pattern);
+    QRegularExpression match_;
     QString start_;
-    bool useRegex_;
+    SearchType searchType_;
 
     void operator()(QTreeWidgetItem* item);
     bool shouldHide(QTreeWidgetItem* item);
+    bool fuzzySearchAllPatterns(const QString& text, const QString& pattern);
+    bool fuzzySearch(const std::string& text, const std::string& pattern);
+    std::string removeAllSpecialCharacters(const std::string& str);
   };
 
   struct ShowAll

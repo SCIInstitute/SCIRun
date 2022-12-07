@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <QtGui>
 #include <Interface/Modules/Base/HasParserHelpDialog.h>
 
@@ -37,14 +37,40 @@ void ModuleDialogWithParserHelp::popUpParserHelp()
     help_ = new ParserHelpDialog(this);
 
   help_->show();
+  help_->activateWindow();
+  help_->raise();
+  help_->move(10,10);
 }
 
 void ModuleDialogWithParserHelp::connectParserHelpButton(QPushButton* button)
 {
-  connect(button, SIGNAL(clicked()), this, SLOT(popUpParserHelp()));
+  connect(button, &QPushButton::clicked, this, &ModuleDialogWithParserHelp::popUpParserHelp);
 }
 
 ParserHelpDialog::ParserHelpDialog(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
+  connect(searchLineEdit_, &QLineEdit::returnPressed, this, &ParserHelpDialog::searchText);
+  connect(searchButton_, &QPushButton::clicked, this, &ParserHelpDialog::searchText);
+  connect(searchLineEdit_, &QLineEdit::textChanged, this, &ParserHelpDialog::resetFormatting);
+}
+
+void ParserHelpDialog::searchText()
+{
+  if(!textBrowser_->find(searchLineEdit_->text()))
+  {
+    auto cursor = textBrowser_->textCursor();
+    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+    textBrowser_->setTextCursor(cursor);
+    if(!textBrowser_->find(searchLineEdit_->text()))
+      searchLineEdit_->setStyleSheet("QLineEdit#searchLineEdit_{color:red}");
+  }
+  return;
+}
+
+void ParserHelpDialog::resetFormatting(const QString& text)
+{
+  searchLineEdit_->setStyleSheet(styleSheet());
+  if(text.size() == 0)
+    textBrowser_->find("");
 }

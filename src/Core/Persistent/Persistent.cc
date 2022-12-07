@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -59,11 +58,11 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Thread;
 
 namespace SCIRun {
-  
+
 const int Piostream::PERSISTENT_VERSION = 2;
 
 //----------------------------------------------------------------------
-PersistentTypeID::PersistentTypeID(const std::string& type, 
+PersistentTypeID::PersistentTypeID(const std::string& type,
                                    const std::string& parent,
                                    PersistentMaker0 maker,
                                    Persistent* (*bc_maker1)(),
@@ -77,8 +76,8 @@ bc_maker2(bc_maker2)
   Persistent::add_class(type, parent, maker, bc_maker1, bc_maker2);
 }
 
-PersistentTypeID::PersistentTypeID() : maker(0), bc_maker1(0), bc_maker2(0) {}
-  
+PersistentTypeID::PersistentTypeID() : maker(nullptr), bc_maker1(nullptr), bc_maker2(nullptr) {}
+
 //----------------------------------------------------------------------
 Persistent::~Persistent()
 {
@@ -94,8 +93,8 @@ Piostream::Piostream(Direction dir, int version, const std::string &name,
   : dir(dir),
     version_(version),
     err(false),
-    outpointers(0),
-    inpointers(0),
+    outpointers(nullptr),
+    inpointers(nullptr),
     current_pointer_id(1),
     have_peekname_(false),
     reporter_(pr),
@@ -141,12 +140,12 @@ Piostream::begin_class(const std::string& classname, int current_version)
   if (err) return -1;
   int version = current_version;
   std::string gname;
-  if (dir == Write)
+  if (dir == Direction::Write)
   {
     gname = classname;
     io(gname);
   }
-  else if (dir == Read && have_peekname_)
+  else if (dir == Direction::Read && have_peekname_)
   {
     gname = peekname_;
   }
@@ -158,7 +157,7 @@ Piostream::begin_class(const std::string& classname, int current_version)
 
   io(version);
 
-  if (dir == Read && version > current_version)
+  if (dir == Direction::Read && version > current_version)
   {
     err = true;
     reporter_->error("File too new.  " + classname + " has version " +
@@ -191,7 +190,7 @@ Piostream::io(bool& data)
   if (err) return;
   unsigned char tmp = data;
   io(tmp);
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     data = tmp;
   }
@@ -209,11 +208,11 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
 //  std::cerr << "looking for pid: "<<pid.type.c_str()<<" "<<pid.parent.c_str()<<std::endl;
 #endif
   if (err) return;
-  if (dir == Read)
+  if (dir == Direction::Read)
   {
     int have_data;
     int pointer_id;
-    data = 0;
+    data = nullptr;
     emit_pointer(have_data, pointer_id);
 
 #if DEBUG
@@ -227,15 +226,15 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
       // error.
       const std::string in_name(peek_class());
       const std::string want_name(pid.type);
-      
+
 #if DEBUG
 //      std::cerr << "in here: "<< in_name<<", "<< want_name<<std::endl;
 #endif
 
-      Persistent* (*maker)() = 0;
-      Persistent* (*bc_maker1)() = 0;
-      Persistent* (*bc_maker2)() = 0;
-      
+      Persistent* (*maker)() = nullptr;
+      Persistent* (*bc_maker1)() = nullptr;
+      Persistent* (*bc_maker2)() = nullptr;
+
       /// @todo ULTRA HACKY CODE
       if (in_name == "Manager")
         return;
@@ -247,7 +246,7 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
       else
       {
         PersistentTypeIDPtr found_pid = Persistent::find_derived(in_name, want_name);
-        
+
         if (found_pid)
         {
           maker =     found_pid->maker;
@@ -257,7 +256,7 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
         }
         else
         {
-          std::ostringstream ostr; 
+          std::ostringstream ostr;
           ostr << "Did not find a PersistentTypeID with class name [" << in_name << "], base name [" << want_name << "]";
           reporter_->error(ostr.str());
         }
@@ -270,13 +269,13 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
         BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << SCIRun::Core::ErrorMessage("Could not find persistent maker for: " + in_name));
         return;
       }
-      
+
       // Make it.
       data.reset((*maker)());
 
       // Read it in.
       data->io(*this);
-      if (err && backwards_compat_id_) 
+      if (err && backwards_compat_id_)
       {
         err = 0;
         reset_post_header();
@@ -290,7 +289,7 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
         data.reset((*bc_maker1)());
         // Read it in.
         data->io(*this);
-        if (err && bc_maker2) 
+        if (err && bc_maker2)
         {
           err = 0;
           reset_post_header();
@@ -306,7 +305,7 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
           data->io(*this);
         }
       }
-    
+
       // Insert this pointer in the database.
       if (!inpointers)
       {
@@ -321,7 +320,7 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
       {
         data.reset();
       }
-      else 
+      else
       {
         MapIntPersistent::iterator initer;
         if (inpointers) initer = inpointers->find(pointer_id);
@@ -336,10 +335,10 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
     }
   }
   else // dir == Write
-  {		
+  {
     int have_data;
     int pointer_id;
-    
+
     MapPersistentInt::iterator outiter;
     if (outpointers)
     {
@@ -349,13 +348,13 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
       else
         pointer_id = 0;
     }
-    
+
     if (!data)
     {
       have_data = 0;
       pointer_id = 0;
     }
-    else if (outpointers && outiter != outpointers->end() && 
+    else if (outpointers && outiter != outpointers->end() &&
              !disable_pointer_hashing_)
     {
       // Already emitted, pointer id fetched from hashtable.
@@ -372,9 +371,9 @@ Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
       }
       (*outpointers)[data] = pointer_id;
     }
-    
+
     emit_pointer(have_data, pointer_id);
-    
+
     if (have_data)
     {
       data->io(*this);
@@ -404,7 +403,7 @@ auto_istream(const std::string& filename, LoggerHandle pr)
 
   // Create a header of size 16 to account for new endianness
   // flag in binary headers when the version > 1.
-  char hdr[16]; 
+  char hdr[16];
   in.read(hdr, 16);
 
   if (!in)
@@ -418,9 +417,10 @@ auto_istream(const std::string& filename, LoggerHandle pr)
   in.close();
 
   // Determine endianness of file.
-  int file_endian, version;
+  Piostream::Endian file_endian;
+  int version;
 
-  if (!Piostream::readHeader(pr, filename, hdr, 0, version, file_endian))
+  if (!Piostream::readHeader(pr, filename, hdr, nullptr, version, file_endian))
   {
     if (pr) pr->error("Cannot parse header of file: " + filename);
     else std::cerr << "ERROR - Cannot parse header of file: " << filename << std::endl;
@@ -444,16 +444,16 @@ auto_istream(const std::string& filename, LoggerHandle pr)
     // Old versions of Pio used XDR which always wrote big endian so if
     // the version = 1, readHeader would return BIG, otherwise it will
     // read it from the header.
-    int machine_endian = Piostream::Little;
+    auto machine_endian = Piostream::Endian::Little;
 
-    if (file_endian == machine_endian) 
-      return PiostreamPtr(new BinaryPiostream(filename, Piostream::Read, version, pr));
-    else 
-      return PiostreamPtr(new BinarySwapPiostream(filename, Piostream::Read, version,pr));
+    if (file_endian == machine_endian)
+      return PiostreamPtr(new BinaryPiostream(filename, Piostream::Direction::Read, version, pr));
+    else
+      return PiostreamPtr(new BinarySwapPiostream(filename, Piostream::Direction::Read, version,pr));
   }
   else if (m1 == 'A' && m2 == 'S' && m3 == 'C')
   {
-    return PiostreamPtr(new TextPiostream(filename, Piostream::Read, pr));
+    return PiostreamPtr(new TextPiostream(filename, Piostream::Direction::Read, pr));
   }
 
   if (pr) pr->error(filename + " is an unknown type!");
@@ -467,30 +467,28 @@ PiostreamPtr
 auto_ostream(const std::string& filename, const std::string& type, LoggerHandle pr)
 {
   // Based on the type string do the following
-  //     Binary:  Return a BinaryPiostream 
+  //     Binary:  Return a BinaryPiostream
   //     Fast:    Return FastPiostream
   //     Text:    Return a TextPiostream
-  //     Default: Return BinaryPiostream 
+  //     Default: Return BinaryPiostream
   // NOTE: Binary will never return BinarySwap so we always write
   //       out the endianness of the machine we are on
-  Piostream* stream;
   if (type == "Binary")
   {
-    stream = new BinaryPiostream(filename, Piostream::Write, -1, pr);
+    return makeShared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
   }
   else if (type == "Text")
   {
-    stream = new TextPiostream(filename, Piostream::Write, pr);
+    return makeShared<TextPiostream>(filename, Piostream::Direction::Write, pr);
   }
   else if (type == "Fast")
   {
-    stream = new FastPiostream(filename, Piostream::Write, pr);
+    return makeShared<FastPiostream>(filename, Piostream::Direction::Write, pr);
   }
   else
   {
-    stream = new BinaryPiostream(filename, Piostream::Write, -1, pr);
+    return makeShared<BinaryPiostream>(filename, Piostream::Direction::Write, -1, pr);
   }
-  return PiostreamPtr(stream);
 }
 
 
@@ -499,7 +497,7 @@ bool
 Piostream::readHeader( LoggerHandle pr,
                        const std::string& filename, char* hdr,
                        const char* filetype, int& version,
-                       int& endian)
+                       Endian& endian)
 {
   char m1=hdr[0];
   char m2=hdr[1];
@@ -552,24 +550,24 @@ Piostream::readHeader( LoggerHandle pr,
       return false;
     }
   }
-  
+
   bool is_binary = false;
   if (hdr[4] == 'B' && hdr[5] == 'I' && hdr[6] == 'N' && hdr[7] == '\n')
     is_binary = true;
-  if(version > 1 && is_binary) 
+  if(version > 1 && is_binary)
   {
     // can only be BIG or LIT
-    if (hdr[12] == 'B' && hdr[13] == 'I' && 
-      hdr[14] == 'G' && hdr[15] == '\n') 
+    if (hdr[12] == 'B' && hdr[13] == 'I' &&
+      hdr[14] == 'G' && hdr[15] == '\n')
     {
-      endian = Big;
-    } 
-    else if (hdr[12] == 'L' && hdr[13] == 'I' && 
-	       hdr[14] == 'T' && hdr[15] == '\n') 
+      endian = Endian::Big;
+    }
+    else if (hdr[12] == 'L' && hdr[13] == 'I' &&
+	       hdr[14] == 'T' && hdr[15] == '\n')
     {
-      endian = Little;
-    } 
-    else 
+      endian = Endian::Little;
+    }
+    else
     {
       if (pr)
       {
@@ -583,21 +581,21 @@ Piostream::readHeader( LoggerHandle pr,
       }
       return false;
     }
-  } 
-  else 
+  }
+  else
   {
-    endian = Big; // old system using XDR always read/wrote big endian
+    endian = Endian::Big; // old system using XDR always read/wrote big endian
   }
   return true;
 }
 
 
-void Pio_index(Piostream& stream, index_type* data, 
+void Pio_index(Piostream& stream, index_type* data,
                size_type size)
 {
   int data_size = sizeof(index_type);
   stream.io(data_size);
-  
+
   if ((data_size == 4)&&(sizeof(index_type)==4))
   {
     if (!stream.block_io(data,sizeof(index_type),size))
@@ -613,7 +611,7 @@ void Pio_index(Piostream& stream, index_type* data,
     {
       for (index_type i=0;i < size; i++) stream.io(temp[i]);
     }
-    for (index_type i=0; i <size; i++) 
+    for (index_type i=0; i <size; i++)
       data[i] = static_cast<index_type>(temp[i]);
   }
   else if ((data_size == 8)&&(sizeof(index_type)==4))
@@ -624,7 +622,7 @@ void Pio_index(Piostream& stream, index_type* data,
     {
       for (index_type i=0;i < size; i++) stream.io(temp[i]);
     }
-    for (index_type i=0; i <size; i++) 
+    for (index_type i=0; i <size; i++)
       data[i] = static_cast<index_type>(temp[i]);
   }
   else if ((data_size == 8)&&(sizeof(index_type)==8))
@@ -632,7 +630,7 @@ void Pio_index(Piostream& stream, index_type* data,
     if (!stream.block_io(data,sizeof(index_type),size))
     {
       for (index_type i=0;i < size; i++) stream.io(data[i]);
-    }  
+    }
   }
   else
   {
@@ -644,18 +642,18 @@ void Pio_index(Piostream& stream, index_type* data,
 
 //----------------------------------------------------------------------
 
-Mutex* Persistent::persistent_mutex_ = 0;
-Persistent::MapStringPersistentID* Persistent::persistent_table_ = 0; 
+Mutex* Persistent::persistent_mutex_ = nullptr;
+Persistent::MapStringPersistentID* Persistent::persistent_table_ = nullptr;
 
 void
 Persistent::initialize()
 {
-  if (0 == persistent_mutex_)
+  if (nullptr == persistent_mutex_)
   {
     persistent_mutex_ = new Mutex("Persistent Mutex");
   }
-  
-  if (0 == persistent_table_)
+
+  if (nullptr == persistent_table_)
   {
     persistent_table_ = new MapStringPersistentID;
   }
@@ -663,18 +661,18 @@ Persistent::initialize()
 
 
 PersistentTypeIDPtr
-Persistent::find_derived( const std::string& classname, 
+Persistent::find_derived( const std::string& classname,
                           const std::string& basename )
 {
   PersistentTypeIDPtr pid;
   MapStringPersistentID::iterator iter;
-  
+
   {
     initialize();
-    Guard g(persistent_mutex_->get());
+    Guard g(*persistent_mutex_);
 
     iter = persistent_table_->find(classname);
-    if (iter == persistent_table_->end()) 
+    if (iter == persistent_table_->end())
     {
       return PersistentTypeIDPtr();
     }
@@ -685,25 +683,25 @@ Persistent::find_derived( const std::string& classname,
   {
     return PersistentTypeIDPtr();
   }
-  
-  if (basename == pid->parent) 
+
+  if (basename == pid->parent)
     return pid;
-  if (find_derived(pid->parent, basename)) 
+  if (find_derived(pid->parent, basename))
     return pid;
-  
+
   return PersistentTypeIDPtr();
 }
 
 void
-Persistent::add_class(const std::string& type, 
+Persistent::add_class(const std::string& type,
                       const std::string& parent,
                       PersistentMaker0 maker,
                       Persistent* (*bc_maker1)(),
                       Persistent* (*bc_maker2)())
 {
   initialize();
-  Guard g(persistent_mutex_->get());
-   
+  Guard g(*persistent_mutex_);
+
   MapStringPersistentID::iterator iter = persistent_table_->find(type);
 
   if (iter != persistent_table_->end())
@@ -717,7 +715,7 @@ Persistent::add_class(const std::string& type,
       return;
     }
   }
-  
+
   (*persistent_table_)[type].reset(new PersistentTypeID);
   (*persistent_table_)[type]->type = type;
   (*persistent_table_)[type]->parent = parent;
@@ -728,7 +726,7 @@ Persistent::add_class(const std::string& type,
 
 
 void
-Persistent::add_mesh_class(const std::string& type, 
+Persistent::add_mesh_class(const std::string& type,
                       PersistentMaker0 maker,
                       Persistent* (*bc_maker1)(),
                       Persistent* (*bc_maker2)())
@@ -738,7 +736,7 @@ Persistent::add_mesh_class(const std::string& type,
 
 
 void
-Persistent::add_field_class(const std::string& type, 
+Persistent::add_field_class(const std::string& type,
                       PersistentMaker0 maker,
                       Persistent* (*bc_maker1)(),
                       Persistent* (*bc_maker2)())
@@ -751,7 +749,7 @@ Persistent::is_base_of(const std::string& parent, const std::string& type)
 {
   if (parent == type)
     return true;
-  
+
   PersistentTypeIDPtr found_pid = find_derived(type, parent);
   return found_pid.get() != nullptr;
 }

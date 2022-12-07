@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateImage",
+    "namespace": "Fields",
+    "status": "Converted, crashes when executed",
+    "description": "Makes an image field",
+    "header": "Modules/Legacy/Fields/CreateImage.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CreateImageDialog",
+    "header": "Interface/Modules/Fields/CreateImageDialog.h"
+  }
+}

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,64 +25,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/MeshDerivatives/GetCentroids.h>
 
-// The module class
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/GetCentroidsFromMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-// We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-/// @class GetCentroidsFromMesh
-/// @brief This module computes a PointCloudField containing all of the element centers for a field. 
+MODULE_INFO_DEF(GetCentroidsFromMesh, NewField, SCIRun)
 
-class GetCentroidsFromMesh : public Module {
-  public:
-    GetCentroidsFromMesh(GuiContext* ctx);
-    virtual ~GetCentroidsFromMesh() {}
-    
-    virtual void execute();
-
-  private:  
-    SCIRunAlgo::GetCentroidsAlgo algo_;
-
-    GuiString component_;
-};
-
-
-DECLARE_MAKER(GetCentroidsFromMesh)
-
-
-GetCentroidsFromMesh::GetCentroidsFromMesh(GuiContext* ctx)
-  : Module("GetCentroidsFromMesh", ctx, Filter, "NewField", "SCIRun"),
-    component_(get_ctx()->subVar("component"),"elem")
+GetCentroidsFromMesh::GetCentroidsFromMesh() : Module(staticInfo_)
 {
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
-void
-GetCentroidsFromMesh::execute()
+void GetCentroidsFromMesh::setStateDefaults()
 {
-  FieldHandle input, output;
-  if (!get_input_handle("Field", input)) return;
+  setStateStringFromAlgoOption(Parameters::Centroids);
+}
 
-  if (inputs_changed_ && !oport_cached("Field"))
+void GetCentroidsFromMesh::execute()
+{
+  auto input = getRequiredInput(InputField);
+  if (needToExecute())
   {
-    update_state(Executing);
-    /// Set the component we want to extract
-    algo_.set_option("centroid",component_.get());
-
-    /// Run the algorithm
-    if(!(algo_.run(input,output))) return;
-    
-    send_output_handle("Field", output);
+    setAlgoOptionFromState(Parameters::Centroids);
+    auto output = algo().run(withInputData((InputField, input)));
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-} // End namespace SCIRun
-
-

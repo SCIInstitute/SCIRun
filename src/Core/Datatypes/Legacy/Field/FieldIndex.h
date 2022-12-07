@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -51,18 +50,18 @@ template <class T>
 class FieldIndexBase {
 public:
   typedef T value_type;
-  
+
   FieldIndexBase(T i) :
     index_(i) {}
 
   /// Required interface for an Index.
   operator T const &() const { return index_; }
-  
+
   std::ostream& str_render(std::ostream& os) const {
     os << index_;
     return os;
   }
-  
+
   T index_;
 };
 
@@ -104,17 +103,17 @@ struct CellIndex : public FieldIndexBase<T> {
 };
 
 // the following operators only exist to get the generic interpolate to compile
-// 
+//
 template <class T>
 std::vector<CellIndex<T> >
-operator*(const std::vector<CellIndex<T> >& r, double &) {
+operator*(const std::vector<CellIndex<T>>& r, double &) {
   ASSERTFAIL("FieldIndex.h Bogus operator");
   return r;
 }
 
 template <class T>
 std::vector<CellIndex<T> >
-operator+=(const std::vector<CellIndex<T> >& l, const std::vector<CellIndex<T> >& r) {
+operator+=(const std::vector<CellIndex<T> >& l, const std::vector<CellIndex<T>>&) {
   ASSERTFAIL("FieldIndex.h Bogus operator");
   return l;
 }
@@ -122,10 +121,10 @@ operator+=(const std::vector<CellIndex<T> >& l, const std::vector<CellIndex<T> >
 template <class T>
 const TypeDescription* get_type_description(NodeIndex<T>*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
 
   if(!td){
-    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(nullptr));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("NodeIndex", subs, __FILE__, "SCIRun");
@@ -136,9 +135,9 @@ const TypeDescription* get_type_description(NodeIndex<T>*)
 template <class T>
 const TypeDescription* get_type_description(EdgeIndex<T>*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
-    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(nullptr));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("EdgeIndex", subs, __FILE__, "SCIRun");
@@ -149,9 +148,9 @@ const TypeDescription* get_type_description(EdgeIndex<T>*)
 template <class T>
 const TypeDescription* get_type_description(FaceIndex<T>*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
-    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(nullptr));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("FaceIndex", subs, __FILE__, "SCIRun");
@@ -162,9 +161,9 @@ const TypeDescription* get_type_description(FaceIndex<T>*)
 template <class T>
 const TypeDescription* get_type_description(CellIndex<T>*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
-    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(nullptr));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("CellIndex", subs, __FILE__, "SCIRun");
@@ -182,25 +181,25 @@ void Pio(Piostream& stream, FieldIndexBase<T>& data)
 
 template <class T> const std::string find_type_name(NodeIndex<T> *)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("NodeIndex", find_type_name(static_cast<T*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("NodeIndex", find_type_name(static_cast<T*>(nullptr)));
   return name;
 }
 
 template <class T> const std::string find_type_name(EdgeIndex<T> *)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("EdgeIndex", find_type_name(static_cast<T*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("EdgeIndex", find_type_name(static_cast<T*>(nullptr)));
   return name;
 }
 
 template <class T> const std::string find_type_name(FaceIndex<T> *)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("FaceIndex", find_type_name(static_cast<T*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("FaceIndex", find_type_name(static_cast<T*>(nullptr)));
   return name;
 }
 
 template <class T> const std::string find_type_name(CellIndex<T> *)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("CellIndex", find_type_name(static_cast<T*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("CellIndex", find_type_name(static_cast<T*>(nullptr)));
   return name;
 }
 

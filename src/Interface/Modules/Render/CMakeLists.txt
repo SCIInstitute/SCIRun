@@ -1,12 +1,10 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -27,7 +25,8 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_DEFINITIONS(-DGLM_SWIZZLE -DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
+
+ADD_DEFINITIONS(-DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
 
 IF(UNIX)
   ADD_DEFINITIONS(-Wno-missing-braces)
@@ -36,16 +35,34 @@ ENDIF()
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
   ViewSceneControls.ui
+  ViewOspraySceneConfig.ui
+  OsprayViewer.ui
+  AutoRotateSettings.ui
+  ColorOptions.ui
+  Fog.ui
+  Materials.ui
+  ObjectSelection.ui
+  OrientationAxes.ui
+  Screenshot.ui
+  ScaleBar.ui
+  ClippingPlanes.ui
+  InputControls.ui
+  CameraLocks.ui
+  DevControls.ui
+  LightControls.ui
+  ViewAxisChooser.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewScene.h
+  ViewSceneManager.h
+  ViewSceneUtility.h
   ViewSceneControlsDock.h
+  ViewOspraySceneConfig.h
   GLWidget.h
-  GLContext.h
   GLContextPlatformCompatibility.h
-  QtGLContext.h
   Screenshot.h
+  OsprayViewerDialog.h
 )
 
 SET(Interface_Modules_Render_HEADERS_NO_MOC
@@ -57,8 +74,12 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
   ES/CoreBootstrap.h
   ES/AssetBootstrap.h
   ES/Registration.h
+  ES/RendererInterface.h
+  ES/RendererInterfaceFwd.h
+  ES/RendererCollaborators.h
+  ES/RendererInterfaceCollaborators.h
+  ES/ObjectTransformCalculators.h
   ES/comp/RenderBasicGeom.h
-  ES/comp/StaticSRInterface.h
   ES/comp/StaticWorldLight.h
   ES/comp/StaticClippingPlanes.h
   ES/comp/LightingUniforms.h
@@ -72,11 +93,13 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
 
 SET(Interface_Modules_Render_SOURCES
   ViewScene.cc
+  ViewSceneManager.cc
+  ViewSceneUtility.cc
   ViewSceneControlsDock.cc
   GLWidget.cc
-  GLContext.cc
-  QtGLContext.cc
   Screenshot.cc
+  OsprayViewerDialog.cc
+  ViewOspraySceneConfig.cc
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc
@@ -84,6 +107,8 @@ SET(Interface_Modules_Render_SOURCES
   ES/CoreBootstrap.cc
   ES/Registration.cc
   ES/AssetBootstrap.cc
+  ES/ObjectTransformCalculators.cc
+  ES/WidgetHandling.cc
   ES/comp/LightingUniforms.cc
   ES/comp/ClippingPlaneUniforms.cc
   ES/systems/RenderBasicSys.cc
@@ -91,8 +116,8 @@ SET(Interface_Modules_Render_SOURCES
   ES/systems/RenderTransText.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Render_HEADERS_MOC ${Interface_Modules_Render_HEADERS_TO_MOC})
+QT_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS "${Interface_Modules_Render_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Render_HEADERS_MOC "${Interface_Modules_Render_HEADERS_TO_MOC}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Render
   ${Interface_Modules_Render_HEADERS_TO_MOC}
@@ -114,7 +139,10 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_FREETYPE_LIBRARY}
   ${SCI_LODEPNG_LIBRARY}
   ${SCI_TNY_LIBRARY}
+  ${SCI_QWT_LIBRARY}
 )
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Render ${QT_GRAPHICS_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)
@@ -123,3 +151,11 @@ ENDIF(BUILD_SHARED_LIBS)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 SCIRUN_ADD_TEST_DIR(Tests)
+
+IF(WITH_OSPRAY)
+  ADD_SUBDIRECTORY(Ospray)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Render
+    Interface_Modules_Render_Ospray
+    ospray::ospray
+  )
+ENDIF()

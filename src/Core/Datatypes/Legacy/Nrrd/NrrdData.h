@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 /*
  *@file  NrrdData.h
@@ -56,11 +56,11 @@ public:
   explicit NrrdData(const NrrdData&);
   virtual ~NrrdData();
 
-  virtual NrrdData* clone() const override;
+  NrrdData* clone() const override;
 
-  virtual void io(Piostream&) override;
+  void io(Piostream&) override;
   static PersistentTypeID type_id;
-  virtual std::string dynamic_type_name() const override { return type_id.type; }
+  std::string dynamic_type_name() const override { return type_id.type; }
 
   // Separate raw files.
   void set_embed_object(bool v) { embed_object_ = v; }

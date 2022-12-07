@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,9 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File       : SolveInverseProblemWithTikhonov.h
-//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
-//    Date       : September 06th, 2017 (last update)
+
+///  File       : SolveInverseProblemWithTikhonov.h
+///  Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+///  Date       : September 06th, 2017 (last update)
 
 #ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
 #define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
@@ -46,20 +46,19 @@ namespace Inverse {
 	{
 	public:
 		SolveInverseProblemWithTikhonov();
-		virtual void execute();
-		virtual void setStateDefaults();
-    
+    void execute() override;
+    void setStateDefaults() override;
 
-		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
-		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
-		INPUT_PORT(2, MeasuredPotentials, DenseMatrix);
-		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix);
+		INPUT_PORT(0, ForwardMatrix, DenseMatrix)
+		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix)
+		INPUT_PORT(2, MeasuredPotentials, DenseMatrix)
+		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix)
 
-		OUTPUT_PORT(0, InverseSolution, DenseMatrix);
-		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
-		OUTPUT_PORT(2, RegInverse, DenseMatrix);
+		OUTPUT_PORT(0, InverseSolution, DenseMatrix)
+		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix)
+		OUTPUT_PORT(2, RegInverse, DenseMatrix)
 
-		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+		MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
 	private:
 	};

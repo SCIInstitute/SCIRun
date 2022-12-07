@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Network/Network.h
 
 
@@ -42,7 +43,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  class SCISHARE Network : public NetworkInterface, boost::noncopyable
+  class SCISHARE Network : public NetworkStateInterface, boost::noncopyable
   {
   public:
     using Connections = std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId>;
@@ -60,8 +61,8 @@ namespace Networks {
     ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&) override;
     bool disconnect(const ConnectionId&) override;
     size_t nconnections() const override;
-    void disable_connection(const ConnectionId&) override;
-    ConnectionDescriptionList connections() const override;
+    ConnectionHandle lookupConnection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) const override;
+    ConnectionDescriptionList connections(bool includeVirtual) const override;
     int errorCode() const override;
     void incrementErrorCode(const ModuleId& moduleId) override;
     bool containsViewScene() const override;
@@ -70,8 +71,6 @@ namespace Networks {
     void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) override;
     std::vector<ModuleExecutionState::Value> moduleExecutionStates() const override;
     void setExpandedModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) override;
-    boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const override;
-    void interruptModuleRequest(const ModuleId& id) override;
     void clear() override;
   private:
     ModuleFactoryHandle moduleFactory_;
@@ -80,7 +79,6 @@ namespace Networks {
     Modules modules_;
     int errorCode_;
     NetworkGlobalSettings settings_;
-    mutable ModuleInterruptedSignal interruptModule_;
   };
 
 }}}

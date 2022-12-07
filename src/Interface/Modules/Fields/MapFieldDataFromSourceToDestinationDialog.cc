@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
@@ -36,35 +36,23 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-  namespace Gui {
-    class MapFieldDataFromSourceToDestinationDialogImpl
-    {
-    public:
-      MapFieldDataFromSourceToDestinationDialogImpl()
-      {
-        mappingNameLookup_.insert(StringPair("Linear (\"weighted\")", "interpolateddata"));
-        mappingNameLookup_.insert(StringPair("Constant mapping: each destination gets nearest source value", "closestdata"));
-        mappingNameLookup_.insert(StringPair("Constant mapping: each source projects to just one destination", "singledestination"));
-      }
-      GuiStringTranslationMap mappingNameLookup_;
-    };
-  }}
-
 MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-  impl_(new MapFieldDataFromSourceToDestinationDialogImpl)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(methodComboBox_, Parameters::MappingMethod, impl_->mappingNameLookup_);
+  addComboBoxManager(methodComboBox_, Parameters::MappingMethod,
+    {{"Linear (\"weighted\")", "interpolateddata"},
+    {"Constant mapping: each destination gets nearest source value", "closestdata"},
+    {"Constant mapping: each source projects to just one destination", "singledestination"}}
+  );
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
   addDoubleSpinBoxManager(defaultValueDoubleSpinBox_, Parameters::DefaultValue);
-  connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));
-  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
+  connect(noMaxCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue);
+  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues);
 }
 
 void MapFieldDataFromSourceToDestinationDialog::pullSpecial()

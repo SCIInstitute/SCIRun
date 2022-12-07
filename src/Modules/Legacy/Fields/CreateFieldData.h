@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef MODULES_LEGACY_FIELDS_CREATEFIELDDATA_H__
 #define MODULES_LEGACY_FIELDS_CREATEFIELDDATA_H__
@@ -48,8 +48,8 @@ namespace SCIRun {
       public:
         CreateFieldData();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputField, Field);
@@ -57,10 +57,8 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(2, DataArray, Matrix);
         OUTPUT_PORT(0, OutputField, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
-        static const Core::Algorithms::AlgorithmParameterName FunctionString;
-        static const Core::Algorithms::AlgorithmParameterName FormatString;
         static const Core::Algorithms::AlgorithmParameterName BasisString;
       };
 

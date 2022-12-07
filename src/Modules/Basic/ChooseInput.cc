@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Basic/ChooseInput.h>
 
@@ -68,7 +68,7 @@ void ChooseInput::execute()
 void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId&)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == get_id())
+  if (mid == id())
   {
     portChangeImpl();
   }
@@ -77,7 +77,7 @@ void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId&)
 void ChooseInput::portRemovedSlot(const ModuleId& mid, const PortId&)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == get_id())
+  if (mid == id())
   {
     portChangeImpl();
   }
@@ -85,6 +85,6 @@ void ChooseInput::portRemovedSlot(const ModuleId& mid, const PortId&)
 
 void ChooseInput::portChangeImpl()
 {
-  int inputs = num_input_ports() - 1; // -1 for empty end
+  int inputs = numInputPorts() - 1; // -1 for empty end
   get_state()->setTransientValue(Parameters::PortMax, inputs);
 }

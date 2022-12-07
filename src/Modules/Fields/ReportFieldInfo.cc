@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Fields/ReportFieldInfo.cc
 
 #include <Core/Datatypes/Scalar.h>
@@ -56,22 +57,22 @@ ReportFieldInfo::ReportFieldInfo() : Module(staticInfo_)
 
 void ReportFieldInfo::execute()
 {
-  auto field = getRequiredInput(InputField);
+  const auto field = getRequiredInput(InputField);
 
-  auto output = algo().run(withInputData((InputField, field)));
+  const auto output = algo().run(withInputData((InputField, field)));
 
   get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
   auto info = transient_value_cast<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
   /// @todo: requires knowledge of algorithm type
 
-  sendOutput(NumNodes, boost::make_shared<Int32>(info.numnodes_));
-  sendOutput(NumElements, boost::make_shared<Int32>(info.numelements_));
-  sendOutput(NumData, boost::make_shared<Int32>(info.numdata_));
-  sendOutput(DataMin, boost::make_shared<Double>(info.dataMin));
-  sendOutput(DataMax, boost::make_shared<Double>(info.dataMax));
-  sendOutput(FieldSize, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.size)));
-  sendOutput(FieldCenter, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.center)));
-  sendOutput(Dimensions, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.dims)));
-  sendOutput(GeomSize, boost::make_shared<Double>(info.geometricSize));
+  sendOutput(NumNodes, makeShared<Int32>(info.numnodes_));
+  sendOutput(NumElements, makeShared<Int32>(info.numelements_));
+  sendOutput(NumData, makeShared<Int32>(info.numdata_));
+  sendOutput(DataMin, makeShared<Double>(info.dataMin));
+  sendOutput(DataMax, makeShared<Double>(info.dataMax));
+  sendOutput(FieldSize, makeShared<DenseMatrix>(DenseMatrix::fromPoint(info.size)));
+  sendOutput(FieldCenter, makeShared<DenseMatrix>(DenseMatrix::fromPoint(info.center)));
+  sendOutput(Dimensions, makeShared<DenseMatrix>(DenseMatrix::fromPoint(info.dims)));
+  sendOutput(GeomSize, makeShared<Double>(info.geometricSize));
 }

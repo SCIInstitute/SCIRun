@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,19 +23,15 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author:              Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+   Last Modification:   September 6 2017
 */
 
-//    File       : SolveInverseProblemWithTikhonov.cc
-//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
-//    Date       : September 06th, 2017 (last update)
-
-#include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 
-#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -44,20 +39,19 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-#include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Inverse;
+using namespace Core;
+using namespace Datatypes;
+using namespace Logging;
+using namespace Algorithms;
+using namespace Inverse;
 
 
 /////////////////////////
 ///////// compute Inverse solution
-    DenseMatrix SolveInverseProblemWithStandardTikhonovImpl::computeInverseSolution( double lambda, bool inverseCalculation) const
+    DenseMatrix SolveInverseProblemWithStandardTikhonovImpl::computeInverseSolution( double lambda, bool) const
     {
         //............................
         //  OPERATIONS PERFORMED IN THIS SECTION:
@@ -98,16 +92,18 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////// precomputeInverseMatrices
 ///////////////
-    void SolveInverseProblemWithStandardTikhonovImpl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_)
+    void SolveInverseProblemWithStandardTikhonovImpl::preAllocateInverseMatrices(const DenseMatrix& forwardMatrix, const
+        DenseMatrix& measuredData_ , const DenseMatrix& , const DenseMatrix& , const TikhonovAlgoAbstractBase::AlgorithmChoice regularizationChoice,
+      const int , const int )
     {
 
         // TODO: use DimensionMismatch exception where appropriate
         // DIMENSION CHECK!!
-        const int M = forwardMatrix_.nrows();
-        const int N = forwardMatrix_.ncols();
+        const int M = forwardMatrix.nrows();
+        const int N = forwardMatrix.ncols();
 
         // PREALOCATE VARIABLES and MATRICES
-        DenseMatrix forward_transpose = forwardMatrix_.transpose();
+        DenseMatrix forward_transpose = forwardMatrix.transpose();
 
 		// get Parameters
 		// auto  regularizationChoice_ = get(regularizationChoice).toInt();
@@ -115,7 +111,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 		// auto regularizationResidualSubcase_ = get(regularizationResidualSubcase).toInt();
 
         // select underdetermined case if user decides so or the option is set to automatic and number of measurements is smaller than number of unknowns.
-        if ( ( (M < N) && (regularizationChoice_ ==  TikhonovAlgoAbstractBase::automatic) ) || (regularizationChoice_ ==  TikhonovAlgoAbstractBase::underdetermined))
+        if ( ( (M < N) && (regularizationChoice ==  TikhonovAlgoAbstractBase::AlgorithmChoice::automatic) ) || (regularizationChoice ==  TikhonovAlgoAbstractBase::AlgorithmChoice::underdetermined))
         {
             //UNDERDETERMINED CASE
             //.........................................................................
@@ -145,27 +141,27 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             else
             {
 
-                // if provided the non-squared version of R
-                if( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained )
-                {
-                    RRtr = sourceWeighting_.transpose() * sourceWeighting_;
-                }
-                // otherwise, if the source regularization is provided as the squared version (RR^T)
-                else if ( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained_squared )
-                {
-                    RRtr = sourceWeighting_;
-                }
+    //            // if provided the non-squared version of R
+    //            if( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained )
+    //            {
+    //                RRtr = sourceWeighting_.transpose() * sourceWeighting_;
+    //            }
+    //            // otherwise, if the source regularization is provided as the squared version (RR^T)
+    //            else if ( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained_squared )
+    //            {
+    //                RRtr = sourceWeighting_;
+    //            }
 
-                // check if squared regularization matrix is invertible
-				auto LURRtr = RRtr.fullPivLu();
-                if ( !LURRtr.isInvertible() )
-                {
+    //            // check if squared regularization matrix is invertible
+				//auto LURRtr = RRtr.fullPivLu();
+    //            if ( !LURRtr.isInvertible() )
+    //            {
 
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Regularization matrix in the source space is not invertible.");
-                }
+    //                THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Regularization matrix in the source space is not invertible.");
+    //            }
 
-                // COMPUTE inverse
-                iRRtr = LURRtr.inverse().eval();
+    //            // COMPUTE inverse
+    //            iRRtr = LURRtr.inverse().eval();
 
             }
 
@@ -180,28 +176,28 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             }
             else
             {
-                // if measurement covariance matrix provided in non-squared form
-                if (regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained)
-                {
-                    // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
-                    if(M != sensorWeighting_.ncols())
-                    {
-                        CCtr = sensorWeighting_.transpose() * sensorWeighting_;
-                    }
-                }
-                // otherwise if the source covariance matrix is provided in squared form
-                else if  ( regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained_squared )
-                {
-                    CCtr = sensorWeighting_;
-                }
+    //            // if measurement covariance matrix provided in non-squared form
+    //            if (regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained)
+    //            {
+    //                // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
+    //                if(M != sensorWeighting_.ncols())
+    //                {
+    //                    CCtr = sensorWeighting_.transpose() * sensorWeighting_;
+    //                }
+    //            }
+    //            // otherwise if the source covariance matrix is provided in squared form
+    //            else if  ( regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained_squared )
+    //            {
+    //                CCtr = sensorWeighting_;
+    //            }
 
-                // check if squared regularization matrix is invertible
-				auto LUCCtr = CCtr.fullPivLu();
-                if ( !LUCCtr.isInvertible() )
-                {
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Residual covariance matrix is not invertible.");
-                }
-                iCCtr = LUCCtr.inverse().eval();
+    //            // check if squared regularization matrix is invertible
+				//auto LUCCtr = CCtr.fullPivLu();
+    //            if ( !LUCCtr.isInvertible() )
+    //            {
+    //                THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Residual covariance matrix is not invertible.");
+    //            }
+    //            iCCtr = LUCCtr.inverse().eval();
 
 
 
@@ -209,7 +205,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
             // DEFINE  M1 = (A * (R^T*R)^-1 * A^T MATRIX FOR FASTER COMPUTATION
             DenseMatrix RAtr = iRRtr * forward_transpose;
-            M1 = forwardMatrix_ * RAtr;
+            M1 = forwardMatrix * RAtr;
 
             // DEFINE M2 = (C^TC)^-1
             M2 = iCCtr;
@@ -228,7 +224,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         }
         //OVERDETERMINED CASE,
         //similar procedure as underdetermined case (documentation comments similar, see above)
-        else if ( ( (regularizationChoice_ ==  TikhonovAlgoAbstractBase::automatic) && (M>=N) ) || (regularizationChoice_ ==  TikhonovAlgoAbstractBase::overdetermined) )
+        else if ( ( (regularizationChoice ==  TikhonovAlgoAbstractBase::AlgorithmChoice::automatic) && (M>=N) ) || (regularizationChoice ==  TikhonovAlgoAbstractBase::AlgorithmChoice::overdetermined) )
         {
             //.........................................................................
             // OPERATE ON DATA:
@@ -258,20 +254,20 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             }
             else
             {
-                // if provided the non-squared version of R
-                if( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained )
-                {
-                    RtrR = sourceWeighting_.transpose() * sourceWeighting_;
-                }
-                // otherwise, if the source regularization is provided as the squared version (RR^T)
-                else if (  regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained_squared  )
-                {
-                    RtrR = sourceWeighting_;
-                }
+                //// if provided the non-squared version of R
+                //if( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained )
+                //{
+                //    RtrR = sourceWeighting_.transpose() * sourceWeighting_;
+                //}
+                //// otherwise, if the source regularization is provided as the squared version (RR^T)
+                //else if (  regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained_squared  )
+                //{
+                //    RtrR = sourceWeighting_;
+                //}
             }
 
 
-            // DEFINITIONS AND PREALOCATIONS OF MEASUREMENTS COVARIANCE MATRIX 'C'
+            // DEFINITIONS AND PREALLOCATIONS OF MEASUREMENTS COVARIANCE MATRIX 'C'
             // if C does not exist, set as identity of size equal to M (rows of fwd matrix)
             if (true)//(&sensorWeighting_==NULL)
             {
@@ -279,21 +275,21 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             }
             else
             {
-                // if measurement covariance matrix provided in non-squared form
-                if (regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained)
-                {
-                    CtrC = sensorWeighting_.transpose() * sensorWeighting_;
-                }
-                // otherwise if the source covariance matrix is provided in squared form
-                else if  ( regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained_squared )
-                {
-                    CtrC = sensorWeighting_;
-                }
+                //// if measurement covariance matrix provided in non-squared form
+                //if (regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained)
+                //{
+                //    CtrC = sensorWeighting_.transpose() * sensorWeighting_;
+                //}
+                //// otherwise if the source covariance matrix is provided in squared form
+                //else if  ( regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained_squared )
+                //{
+                //    CtrC = sensorWeighting_;
+                //}
 
             }
 
             // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
-            DenseMatrix CtrCA = CtrC * (forwardMatrix_);
+            DenseMatrix CtrCA = CtrC * (forwardMatrix);
             M1 = forward_transpose * CtrCA;
 
             // DEFINE M2 = (CC^T)^-1
@@ -302,7 +298,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             // DEFINE M3 = identity (size of number of measurements)
             M3 = DenseMatrix::Identity(N, N);
 
-            // DEFINT M4 = A^T* C^T * C
+            // DEFINE M4 = A^T* C^T * C
             M4 = CtrCA.transpose();
 
             // DEFINE measurement vector
@@ -311,5 +307,5 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         }
 
     }
-//////// End of prealocation of matrices
+//////// End of preallocation of matrices
 ////////////

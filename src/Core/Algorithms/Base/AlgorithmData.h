@@ -1,30 +1,30 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+  For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+  The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
-   University of Utah.
+  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+  University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+  Permission is hereby granted, free of charge, to any person obtaining a
+  copy of this software and associated documentation files (the "Software"),
+  to deal in the Software without restriction, including without limitation
+  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  and/or sell copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef ALGORITHMS_BASE_ALGORITHMDATA_H
 #define ALGORITHMS_BASE_ALGORITHMDATA_H
@@ -50,23 +50,23 @@ namespace Algorithms {
     Datatypes::DatatypeHandle& operator[](const Name& name);
 
     template <typename T>
-    boost::shared_ptr<T> get(const Name& name) const
+    SharedPointer<T> get(const Name& name) const
     {
       auto it = data_.find(name);
       /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? nullptr : boost::dynamic_pointer_cast<T>(it->second[0]);
+      return it == data_.end() ? nullptr : std::dynamic_pointer_cast<T>(it->second[0]);
     }
 
     template <typename T>
-    std::vector<boost::shared_ptr<T>> getList(const Name& name) const
+    std::vector<SharedPointer<T>> getList(const Name& name) const
     {
       auto it = data_.find(name);
       /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(it->second);
+      return it == data_.end() ? std::vector<SharedPointer<T>>() : downcast_range<T>(it->second);
     }
 
     template <typename T>
-    void setList(const Name& name, const std::vector<boost::shared_ptr<T>>& list)
+    void setList(const Name& name, const std::vector<SharedPointer<T>>& list)
     {
       data_[name] = upcast_range<Datatypes::Datatype>(list);
     }
@@ -75,7 +75,7 @@ namespace Algorithms {
     void setTransient(boost::any t) { transient_ = t; }
     boost::any getTransient() const { return transient_; }
 
-  private:
+  protected:
     Map data_;
     boost::any transient_;
   };
@@ -92,6 +92,15 @@ namespace Algorithms {
   public:
     VariableHandle additionalAlgoOutput() const { return additionalAlgoOutput_; }
     void setAdditionalAlgoOutput(VariableHandle var) { additionalAlgoOutput_ = var; }
+    Datatypes::DatatypeHandle at(size_t index) const
+    {
+      if (index >= size())
+        return nullptr;
+      auto iter = data_.begin();
+      std::advance(iter, index);
+      return iter->second[0];
+    }
+    size_t size() const { return data_.size(); }
   private:
     VariableHandle additionalAlgoOutput_;
   };

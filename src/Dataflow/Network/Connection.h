@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Network/Connection.h
 
 #ifndef DATAFLOW_NETWORK_CONNECTION_H
@@ -41,7 +42,7 @@ namespace SCIRun {
       class SCISHARE Connection
       {
       public:
-        Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id);
+        Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id, bool isVirtual);
         ~Connection();
 
         OutputPortHandle oport_;
@@ -52,8 +53,11 @@ namespace SCIRun {
 
         bool disabled() const { return disabled_; }
         void setDisable(bool disable);
+
+        bool isVirtual() const { return virtual_; }
       private:
         bool disabled_ {false};
+        bool virtual_ {false};
       };
 
 }}}

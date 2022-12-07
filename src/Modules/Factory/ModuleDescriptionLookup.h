@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULE_DESCRIPTION_LOOKUP_H
 #define MODULE_DESCRIPTION_LOOKUP_H
 
@@ -44,7 +44,7 @@ namespace SCIRun {
         ModuleDescriptionLookup();
         Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const;
         Dataflow::Networks::ModuleDescriptionMap descMap_;
-        Dataflow::Networks::DirectModuleDescriptionLookupMap lookup_;
+        Dataflow::Networks::DirectModuleDescriptionLookupMap moduleLookup_;
       private:
         bool includeTestingModules_;
 
@@ -70,7 +70,7 @@ namespace SCIRun {
           description.hasUI_ = HasUI<ModuleType>::value;
           description.hasAlgo_ = HasAlgorithm<ModuleType>::value;
 
-          lookup_[info] = description;
+          moduleLookup_[info] = description;
 
           descMap_[info.package_name_][info.category_name_][info.module_name_] = description;
         }

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/MarchingCubes.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -38,7 +38,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -49,6 +49,10 @@ using namespace SCIRun::Core::Geometry;
 ALGORITHM_PARAMETER_DEF(Fields, Isovalues);
 ALGORITHM_PARAMETER_DEF(Fields, SingleIsoValue);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueChoice);
+ALGORITHM_PARAMETER_DEF(Fields, IsovalueListInclusiveExclusive);
+ALGORITHM_PARAMETER_DEF(Fields, IsovalueQuantityFromField);
+ALGORITHM_PARAMETER_DEF(Fields, ManualMinimumIsovalue);
+ALGORITHM_PARAMETER_DEF(Fields, ManualMaximumIsovalue);
 ALGORITHM_PARAMETER_DEF(Fields, ListOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, QuantityOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueListString);
@@ -57,8 +61,12 @@ ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
 {
   addParameter(Parameters::SingleIsoValue, 0.0);
   addParameter(Parameters::Isovalues, VariableList());
+  addParameter(Parameters::IsovalueListInclusiveExclusive, 0);
   addParameter(Parameters::ListOfIsovalues, std::string());
   addParameter(Parameters::QuantityOfIsovalues, 1);
+  addParameter(Parameters::IsovalueQuantityFromField, 1);
+  addParameter(Parameters::ManualMaximumIsovalue, 0.0);
+  addParameter(Parameters::ManualMinimumIsovalue, 0.0);
   addOption(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");
 }
 
@@ -70,8 +78,7 @@ bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, const std::vector<doubl
   }
 
   MarchingCubesAlgo marching_;
-  marching_.set(MarchingCubesAlgo::build_field, true);
-
+  marching_.set(Parameters::build_field, true);
   marching_.run(input, isovalues, output);
 
   return (true);
@@ -88,8 +95,12 @@ AlgorithmOutput ExtractSimpleIsosurfaceAlgo::run(const AlgorithmInput& input) co
   if (!run(field, iso_value_vector, output_field))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
+  DenseMatrixHandle output_matrix( new DenseMatrix(iso_value_vector.size(),1,0.0));
+  for (size_t k=0;k<iso_value_vector.size();k++) {(*output_matrix)(k,0) = iso_value_vector[k];}
+
   AlgorithmOutput output;
   output[Variables::OutputField] = output_field;
+  output[Variables::OutputMatrix] = output_matrix;
 
   return output;
 }

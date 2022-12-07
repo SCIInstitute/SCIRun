@@ -1,30 +1,31 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
 
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
 /// @todo Documentation Core/Utils/StringUtil.h
 
 #ifndef CORE_UTILS_STRINGUTIL_H
@@ -36,7 +37,7 @@
 #include <vector>
 #include <iterator>
 #include <type_traits>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/atomic.hpp>
 #ifndef Q_MOC_RUN
 #include <boost/iterator/zip_iterator.hpp>
@@ -50,11 +51,11 @@ namespace Core
 {
 
 template <typename T>
-std::vector<T*> toVectorOfRawPointers(const std::vector<boost::shared_ptr<T>>& vec)
+std::vector<T*> toVectorOfRawPointers(const std::vector<SharedPointer<T>>& vec)
 {
   std::vector<T*> raws;
   raws.reserve(vec.size());
-  std::transform(vec.begin(), vec.end(), std::back_inserter(raws), [](boost::shared_ptr<T> ptr) { return ptr.get(); });
+  std::transform(vec.begin(), vec.end(), std::back_inserter(raws), [](SharedPointer<T> ptr) { return ptr.get(); });
   return raws;
 }
 
@@ -76,30 +77,30 @@ std::vector<T> parseLineOfNumbers(const std::string& line)
 }
 
 template <class T, class Iter>
-std::vector<boost::shared_ptr<T>> downcast_range(Iter begin, Iter end)
+std::vector<SharedPointer<T>> downcast_range(Iter begin, Iter end)
 {
-  std::vector<boost::shared_ptr<T>> output;
-  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::dynamic_pointer_cast<T>(p); });
-  return std::move(output);
+  std::vector<SharedPointer<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return std::dynamic_pointer_cast<T>(p); });
+  return output;
 }
 
 template <class T, class Cont>
-std::vector<boost::shared_ptr<T>> downcast_range(const Cont& container)
+std::vector<SharedPointer<T>> downcast_range(const Cont& container)
 {
   return downcast_range<T>(container.begin(), container.end());
 }
 
 template <class T, class Iter>
-std::vector<boost::shared_ptr<T>> upcast_range(Iter begin, Iter end)
+std::vector<SharedPointer<T>> upcast_range(Iter begin, Iter end)
 {
   //BOOST_STATIC_ASSERT(boost::is_base_of<T, typename Iter::value_type>::value);
-  std::vector<boost::shared_ptr<T>> output;
-  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::static_pointer_cast<T>(p); });
-  return std::move(output);
+  std::vector<SharedPointer<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return std::static_pointer_cast<T>(p); });
+  return output;
 }
 
 template <class T, class Cont>
-std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
+std::vector<SharedPointer<T>> upcast_range(const Cont& container)
 {
   return upcast_range<T>(container.begin(), container.end());
 }

@@ -1,30 +1,34 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
 
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
@@ -110,7 +114,7 @@ public:
       spire::ESCoreBase&, uint64_t /* entityID */,
       const spire::ComponentGroup<RenderBasicGeom>& geom,
       const spire::ComponentGroup<SRRenderState>& srstate,
-      const spire::ComponentGroup<RenderList>& rlist,
+      const spire::ComponentGroup<RenderList>&,
       const spire::ComponentGroup<LightingUniforms>& lightUniforms,
       const spire::ComponentGroup<ClippingPlaneUniforms>& clippingPlaneUniforms,
       const spire::ComponentGroup<gen::Transform>& trafo,
@@ -128,18 +132,18 @@ public:
       const spire::ComponentGroup<gen::StaticCamera>& camera,
       const spire::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const spire::ComponentGroup<ren::StaticVBOMan>& vboMan,
-      const spire::ComponentGroup<ren::StaticTextureMan>& texMan) override
+      const spire::ComponentGroup<ren::StaticTextureMan>&) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
       return;
     }
-    
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY) || 
-        srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) || 
-        srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES) ||
-        srstate.front().state.get(RenderState::IS_TEXT))
+
+    if (srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENCY) ||
+        srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES) ||
+        srstate.front().state.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES) ||
+        srstate.front().state.get(RenderState::ActionFlags::IS_TEXT))
     {
       return;
     }
@@ -206,15 +210,15 @@ public:
     // Bind VBO and IBO
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
-    
+
     bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
-    
+
     GL(glDepthMask(GL_TRUE));
     GL(glDisable(GL_CULL_FACE));
     GL(glDisable(GL_BLEND));
-		
+
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
     {
@@ -251,119 +255,8 @@ public:
 
     geom.front().attribs.bind();
 
-    if (rlist.size() > 0)
-    {
-      glm::mat4 rlistTrafo = trafo.front().transform;
+    GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims, ibo.front().primType, nullptr));
 
-      GLint uniformColorLoc = 0;
-      for (const ren::VecUniform& unif : vecUniforms)
-      {
-        if (std::string(unif.uniformName) == "uColor")
-        {
-          uniformColorLoc = unif.uniformLocation;
-        }
-      }
-
-      // Note: Some of this work can be done beforehand. But we elect not to
-      // since it is feasible that the data contained in the VBO can change
-      // fairly dramatically.
-
-      // Build BSerialize object.
-      spire::BSerialize posDeserialize(
-          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
-
-      spire::BSerialize colorDeserialize(
-          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
-
-      int64_t posSize     = 0;
-      int64_t colorSize   = 0;
-      int64_t stride      = 0;  // Stride of entire attributes buffer.
-
-      // Determine stride for our buffer. Also determine appropriate position
-      // and color information offsets, and set the offsets. Also determine
-      // attribute size in bytes.
-      for (const auto& attrib : rlist.front().attributes)
-      {
-        if (attrib.name == "aPos")
-        {
-          if (stride != 0) {posDeserialize.readBytes(stride);}
-          posSize = attrib.sizeInBytes;
-        }
-        else if (attrib.name == "aColor")
-        {
-          if (stride != 0) {colorDeserialize.readBytes(stride);}
-          colorSize = attrib.sizeInBytes;
-        }
-
-        stride += attrib.sizeInBytes;
-      }
-
-      int64_t posStride   = stride - posSize;
-      int64_t colorStride = stride - colorSize;
-
-      // Render using a draw list. We will be using the VBO and IBO attached
-      // to this object as the basic rendering primitive.
-      for (int i = 0; i < rlist.front().numElements; ++i)
-      {
-        // Read position.
-        float x = posDeserialize.read<float>();
-        float y = posDeserialize.read<float>();
-        float z = posDeserialize.read<float>();
-        posDeserialize.readBytes(posStride);
-
-        // Read color if available.
-        if (colorSize > 0)
-        {
-          float r = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          float g = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          float b = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          float a = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          if (colorDeserialize.getBytesLeft() > colorStride)
-          {
-            colorDeserialize.readBytes(colorStride);
-          }
-          GL(glUniform4f(uniformColorLoc, r, g, b, a));
-        }
-
-        // Update transform.
-        rlistTrafo[3].x = x;
-        rlistTrafo[3].y = y;
-        rlistTrafo[3].z = z;
-        commonUniforms.front().applyCommonUniforms(
-            rlistTrafo, camera.front().data, time.front().globalTime);
-
-        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
-      }
-    }
-    else
-    {
-      if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
-      {
-        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
-      }
-      else
-      {
-        GL(glEnable(GL_CULL_FACE));
-        // Double sided rendering. Mimic SCIRun4 and use GL_FRONT and GL_BACK
-        // to mimic forward facing and back facing polygons.
-
-        // Draw front facing polygons.
-        GLint fdToggleLoc = glGetUniformLocation(shader.front().glid, "uFDToggle");
-
-        GL(glUniform1f(fdToggleLoc, 1.0f));
-        glCullFace(GL_BACK);
-        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
-
-        GL(glUniform1f(fdToggleLoc, 0.0f));
-        glCullFace(GL_FRONT);
-        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                          ibo.front().primType, 0));
-      }
-    }
-		
     if (!depthMask)
     {
       GL(glDepthMask(GL_FALSE));
@@ -407,4 +300,3 @@ const char* getSystemName_RenderBasicGeom()
 
 } // namespace Render
 } // namespace SCIRun
-

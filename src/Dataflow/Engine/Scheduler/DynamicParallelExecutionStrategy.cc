@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,20 +25,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
+
 #include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Engine/Scheduler/DynamicMultithreadedNetworkExecutor.h>
-#include <Dataflow/Network/NetworkInterface.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-void DynamicParallelExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
+std::future<int> DynamicParallelExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
 {
-  auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
+  const auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
   BoostGraphParallelScheduler scheduler(filter);
-  DynamicMultithreadedNetworkExecutor executor(context.network);
-  executeWithCycleCheck(scheduler, executor, context, executionLock);
+  DynamicMultithreadedNetworkExecutor executor(context.network());
+  return executeWithCycleCheck(scheduler, executor, context, executionLock);
 }

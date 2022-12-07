@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_MATH_REPORTCOMPLEXMATRIXINFO_H
 #define MODULES_MATH_REPORTCOMPLEXMATRIXINFO_H
 
@@ -42,14 +42,14 @@ namespace Math {
   {
   public:
     ReportComplexMatrixInfo();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    void execute() override;
+    void setStateDefaults() override {}
     INPUT_PORT(0, InputMatrix, ComplexMatrix);
     OUTPUT_PORT(0, NumRows, Int32);
     OUTPUT_PORT(1, NumCols, Int32);
     OUTPUT_PORT(2, NumElements, Int32);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
     NEW_HELP_WEBPAGE_ONLY
   };
 }}}

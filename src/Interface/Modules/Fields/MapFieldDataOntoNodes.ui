@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>405</width>
-    <height>185</height>
+    <height>200</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>405</width>
-    <height>185</height>
+    <height>200</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -50,6 +50,12 @@
       </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="quantityComboBox_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>value</string>
@@ -81,14 +87,15 @@
       </item>
       <item row="1" column="1">
        <widget class="QComboBox" name="interpolationComboBox_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>interpolateddata</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>interpolatedataonly</string>
          </property>
         </item>
         <item>
@@ -98,7 +105,7 @@
         </item>
         <item>
          <property name="text">
-          <string>closestinterpolatedata</string>
+          <string>closestinterpolateddata</string>
          </property>
         </item>
        </widget>

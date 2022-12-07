@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
 
 #include <Interface/Modules/Fields/EditMeshBoundingBoxDialog.h>
 #include <Modules/Fields/EditMeshBoundingBox.h>
@@ -58,18 +58,18 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
   addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
 
-  connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleUpPush()));
-  connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleUpPush()));
-  connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDownPush()));
-  connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleDownPush()));
+  connect(upScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleUpPush);
+  connect(doubleUpScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleDoubleUpPush);
+  connect(downScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleDownPush);
+  connect(doubleDownScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleDoubleDownPush);
 
   setScaleButtonsEnabled(false);
 
-  connect(resetSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(resetCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(setCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(setSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(resetAllPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(resetSizePushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(resetCenterPushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(setCenterPushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(setSizePushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
+  connect(resetAllPushButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::userSetWidget);
 
   connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_,
     setCenterPushButton_, setSizePushButton_, resetSizePushButton_, resetCenterPushButton_, resetAllPushButton_ });
@@ -124,7 +124,6 @@ void EditMeshBoundingBoxDialog::userSetWidget()
   }
   else if (button.startsWith("resetAll"))
   {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetToInput, true);
   }
 }

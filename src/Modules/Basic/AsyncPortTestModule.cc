@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Basic/AsyncPortTestModule.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -64,7 +64,7 @@ void AsyncPortTestModule::asyncExecute(const PortId& pid, DatatypeHandle data)
   // handle(field);
   counter_.fetch_add(1);
   std::cout << "Async port test. Latest data on port " << pid.toString() << " is a ";
-  auto field = boost::dynamic_pointer_cast<Field>(data);
+  auto field = std::dynamic_pointer_cast<Field>(data);
   if (field)
   {
     ReportFieldInfoAlgorithm algo;

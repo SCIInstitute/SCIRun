@@ -1,13 +1,11 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,9 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
@@ -40,6 +40,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -123,12 +124,12 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestInterpolateWithFile)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = 0;
    expected_result->vfield()->get_value(tmp,idx);
@@ -142,7 +143,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMin)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Min");
+ algo.setOption(Variables::Method, "Min");
 
  FieldHandle  result = algo.runImpl(TetMesh1());
 
@@ -150,14 +151,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMin)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_min = test_mapfielddatafromelemtonodeFLD_Min();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_min)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);
@@ -170,7 +171,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMax)
 {
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Max");
+ algo.setOption(Variables::Method, "Max");
 
  FieldHandle  result = algo.runImpl(TetMesh1());
 
@@ -178,14 +179,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMax)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_max = test_mapfielddatafromelemtonodeFLD_Max();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_max)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);
@@ -198,7 +199,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestSum)
 {
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Sum");
+ algo.setOption(Variables::Method, "Sum");
 
  FieldHandle  result = algo.runImpl(TetMesh1());
 
@@ -206,14 +207,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestSum)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_sum = test_mapfielddatafromelemtonodeFLD_Sum();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_sum)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);
@@ -227,7 +228,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMed)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Median");
+ algo.setOption(Variables::Method, "Median");
 
  FieldHandle  result = algo.runImpl(TetMesh1());
 
@@ -235,14 +236,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMed)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_med = test_mapfielddatafromelemtonodeFLD_Med();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_med)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);

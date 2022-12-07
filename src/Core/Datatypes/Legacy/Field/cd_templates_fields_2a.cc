@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Datatypes/Legacy/Field/cd_templates_fields_2.cc
 
 #include <Core/Persistent/PersistentSTL.h>
@@ -59,20 +60,20 @@ typedef CrvLinearLgn<unsigned long>         FDulongBasis;
 typedef ScanlineMesh<CrvLinearLgn<Point> > SLMesh;
 
 namespace SCIRun {
-  
+
   template class ScanlineMesh<CrvLinearLgn<Point> >;
-  
+
 //Linear
-template class GenericField<SLMesh, FDTensorBasis, std::vector<Tensor> >;       
-template class GenericField<SLMesh, FDVectorBasis, std::vector<Vector> >;       
-template class GenericField<SLMesh, FDdoubleBasis, std::vector<double> >;       
+template class GenericField<SLMesh, FDTensorBasis, std::vector<Tensor> >;
+template class GenericField<SLMesh, FDVectorBasis, std::vector<Vector> >;
+template class GenericField<SLMesh, FDdoubleBasis, std::vector<double> >;
 template class GenericField<SLMesh, FDfloatBasis,  std::vector<float> >;
 template class GenericField<SLMesh, FDcomplexBasis, std::vector<complex> >;
-template class GenericField<SLMesh, FDintBasis,    std::vector<int> >;          
-template class GenericField<SLMesh, FDlonglongBasis,std::vector<long long> >;          
-template class GenericField<SLMesh, FDshortBasis,  std::vector<short> >;        
-template class GenericField<SLMesh, FDcharBasis,   std::vector<char> >;         
-template class GenericField<SLMesh, FDuintBasis,   std::vector<unsigned int> >; 
+template class GenericField<SLMesh, FDintBasis,    std::vector<int> >;
+template class GenericField<SLMesh, FDlonglongBasis,std::vector<long long> >;
+template class GenericField<SLMesh, FDshortBasis,  std::vector<short> >;
+template class GenericField<SLMesh, FDcharBasis,   std::vector<char> >;
+template class GenericField<SLMesh, FDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<SLMesh, FDushortBasis, std::vector<unsigned short> >;
 template class GenericField<SLMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<SLMesh, FDulongBasis,  std::vector<unsigned long> >;
@@ -82,4 +83,3 @@ namespace SCIRun {
 template class PointCloudMesh<ConstantBasis<Point> >;
 
 }
-

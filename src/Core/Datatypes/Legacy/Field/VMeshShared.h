@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -132,29 +131,29 @@ public:
 
   virtual ~VMeshShared() {}
 
-  virtual bool synchronize(unsigned int sync);
-  virtual bool unsynchronize(unsigned int sync);
-  virtual bool clear_synchronization();
+  bool synchronize(unsigned int sync) override;
+  bool unsynchronize(unsigned int sync) override;
+  bool clear_synchronization() override;
 
-  virtual Core::Geometry::BBox get_bounding_box() const;
-  virtual void transform(const Core::Geometry::Transform &t);
+  Core::Geometry::BBox get_bounding_box() const override;
+  void transform(const Core::Geometry::Transform &t) override;
 
-  virtual double get_epsilon() const;
+  double get_epsilon() const override;
 
-  virtual void get_weights(const VMesh::coords_type& coords,
+  void get_weights(const VMesh::coords_type& coords,
                            std::vector<double>& weights,
-                           int basis_order) const;
+                           int basis_order) const override;
 
-  virtual void get_derivate_weights(const VMesh::coords_type& coords,
+  void get_derivate_weights(const VMesh::coords_type& coords,
                            std::vector<double>& weights,
-                           int basis_order) const;
+                           int basis_order) const override;
 
-  virtual void get_gaussian_scheme(std::vector<VMesh::coords_type>& coords,
-                                   std::vector<double>& weights, int order) const;
-  virtual void get_regular_scheme(std::vector<VMesh::coords_type>& coords,
-                                  std::vector<double>& weights, int order) const;
+  void get_gaussian_scheme(std::vector<VMesh::coords_type>& coords,
+                                   std::vector<double>& weights, int order) const override;
+  void get_regular_scheme(std::vector<VMesh::coords_type>& coords,
+                                  std::vector<double>& weights, int order) const override;
 
-  virtual void get_canonical_transform(Core::Geometry::Transform &t);
+  void get_canonical_transform(Core::Geometry::Transform &t) override;
 
 protected:
   MESH*                           mesh_;

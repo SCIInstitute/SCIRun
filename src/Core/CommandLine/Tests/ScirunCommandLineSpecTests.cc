@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 #include <Core/CommandLine/CommandLine.h>
 
@@ -36,7 +36,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   CommandLineParser parser;
 
   const std::string expectedHelp =
-    "SCIRun5 basic options:\n"
+    "SCIRun 5 command line options:\n"
     "  -h [ --help ]           prints usage information\n"
     "  -v [ --version ]        prints out version information\n"
     "  -e [ --execute ]        executes the given network on startup\n"
@@ -44,21 +44,18 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "                          done\n"
     "  -d [ --datadir ] arg    scirun data directory\n"
     "  -r [ --regression ] arg regression test a network\n"
-    "  -l [ --logfile ] arg    add output messages to a logfile--TODO\n"
     "  -1 [ --most-recent ]    load the most recently used file\n"
     "  -i [ --interactive ]    interactive mode\n"
+    "  -z [ --save-images ]    save all ViewScene images before quitting\n"
     "  -x [ --headless ]       disable GUI\n"
     "  --input-file arg        SCIRun Network Input File\n"
     "  -s [ --script ] arg     Python script--interpret and drop into embedded \n"
     "                          console\n"
     "  -S [ --Script ] arg     Python script--interpret and quit after one SCIRun \n"
     "                          execution pass\n"
+    "  --import arg            Import a network from SCIRun 4.7\n"
     "  -0 [ --no_splash ]      Turn off splash screen\n"
     "  --verbose               Turn on debug log information\n"
-    "  --threadMode arg        network execution threading mode--DEVELOPER USE ONLY\n"
-    "  --reexecuteMode arg     network reexecution mode--DEVELOPER USE ONLY\n"
-    "  --frameInitLimit arg    ViewScene frame init limit--increase if renderer \n"
-    "                          fails\n"
     "  --guiExpandFactor arg   Expansion factor for high resolution displays\n"
     "  --max-cores arg         Limit the number of cores used by multithreaded \n"
     "                          algorithms\n"
@@ -143,25 +140,25 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     EXPECT_EQ("net.srn5", aph->inputFiles()[0]);
   }
 
-  {
-    const char* argv[] = {"scirun.exe", "--threadMode", "serial"};
-    int argc = sizeof(argv)/sizeof(char*);
+  // {
+  //   const char* argv[] = {"scirun.exe", "--threadMode", "serial"};
+  //   int argc = sizeof(argv)/sizeof(char*);
+  //
+  //   auto aph = parser.parse(argc, argv);
+  //
+  //   ASSERT_TRUE(!!aph->developerParameters()->threadMode());
+  //   EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
+  // }
 
-    auto aph = parser.parse(argc, argv);
-
-    ASSERT_TRUE(!!aph->developerParameters()->threadMode());
-    EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
-  }
-
-  {
-    const char* argv[] = {"scirun.exe", "--threadMode=serial"};
-    int argc = sizeof(argv)/sizeof(char*);
-
-    auto aph = parser.parse(argc, argv);
-
-    ASSERT_TRUE(!!aph->developerParameters()->threadMode());
-    EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
-  }
+  // {
+  //   const char* argv[] = {"scirun.exe", "--threadMode=serial"};
+  //   int argc = sizeof(argv)/sizeof(char*);
+  //
+  //   auto aph = parser.parse(argc, argv);
+  //
+  //   ASSERT_TRUE(!!aph->developerParameters()->threadMode());
+  //   EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
+  // }
 
   {
     const char* argv[] = { "scirun.exe", "-1" };
@@ -191,5 +188,15 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     EXPECT_TRUE(!!aph->pythonScriptFile());
     EXPECT_EQ("scr1.py", *aph->pythonScriptFile());
     EXPECT_TRUE(aph->quitAfterOneScriptedExecution());
+  }
+
+  {
+    const char* argv[] = { "scirun.exe", "--import", "oldnetwork.srn" };
+    int argc = sizeof(argv) / sizeof(char*);
+
+    auto aph = parser.parse(argc, argv);
+
+    EXPECT_TRUE(!!aph->importNetworkFile());
+    EXPECT_EQ("oldnetwork.srn", *aph->importNetworkFile());
   }
 }

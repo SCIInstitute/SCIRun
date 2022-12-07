@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,21 +26,10 @@
 */
 
 
-
 #ifndef CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H
 #define CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H 1
 
-/// STL datatypes needed
-#include <algorithm>
-
-/// Datatypes used
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Math/MiscMath.h>
-/// Base for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-/// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -52,16 +40,16 @@ namespace SCIRun {
 class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
 {
   public:
-    static AlgorithmInputName Source;
-    static AlgorithmInputName Destination;
-    static AlgorithmInputName Mapping;
-    static AlgorithmOutputName Output;  
+    static const AlgorithmInputName Source;
+    static const AlgorithmInputName Destination;
+    static const AlgorithmInputName Mapping;
+    static const AlgorithmOutputName Output;
     /// Algorithm defaults
     ApplyMappingMatrixAlgo();
 
     /// Algorithm Functions
     FieldHandle run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping) const;
-    virtual AlgorithmOutput run(const AlgorithmInput &) const;
+    AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 } /// namespace SCIRunAlgo

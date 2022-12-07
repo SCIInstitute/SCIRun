@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Fields/TransformMesh/PolarProjectionTools.h>
 
 #include <Core/Geometry/Transform.h>
@@ -39,11 +39,11 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-bool GenerateEdgeProjection(VMesh* vmesh, 
+bool GenerateEdgeProjection(VMesh* vmesh,
                             VMesh::Node::index_type start_node,
                             Vector normal,
                             Vector axis,
-                            double maxdist, 
+                            double maxdist,
                             VMesh::Node::index_type final_node,
                             Point& fpoint,
                             double &cum_dist)
@@ -68,11 +68,11 @@ bool GenerateEdgeProjection(VMesh* vmesh,
   VMesh::DElem::index_type fedge = -1;
   VMesh::Elem::index_type  felem = -1;
   VMesh::Elem::index_type  felem2 = -1;
-  
+
   VMesh::Elem::array_type selem(1);
   VMesh::Node::array_type nodes;
   VMesh::DElem::array_type delems;
-  
+
   bool found_end = false;
   bool found_next = false;
 
@@ -89,7 +89,7 @@ bool GenerateEdgeProjection(VMesh* vmesh,
       // we are passing through a node
       vmesh->get_elems(selem,fnode);
       // mark out the element we just passed through
-      for (size_t j=0;j<selem.size();j++) 
+      for (size_t j=0;j<selem.size();j++)
       {
         if (selem[j] == felem) selem[j] = -1;
         if (selem[j] == felem2) selem[j] = -1;
@@ -103,7 +103,7 @@ bool GenerateEdgeProjection(VMesh* vmesh,
       if (selem[0] == felem) selem[0] = -1;
       if (selem[0] == felem2) selem[0] = -1;
     }
-  
+
     found_next = false;
     // Now search through list of possible elements
     for (size_t j =0; j<selem.size(); j++)
@@ -117,9 +117,9 @@ bool GenerateEdgeProjection(VMesh* vmesh,
         {
           // ignore the current point and the previous point if there are any
           if ((nodes[i] ==  fnode)||(nodes[i] == fnode2)) continue;
-          
+
           vmesh->get_center(p,nodes[i]);
-          
+
           Vector pop = (po-p); pop.normalize();
           if (Abs(Dot(pop,normal)) < epsilon2 && Dot(pop,Cross(normal,axis)) > 0)
           {
@@ -139,28 +139,28 @@ bool GenerateEdgeProjection(VMesh* vmesh,
         if (found_next) break;
       }
     }
-    
+
     if (!found_next)
     {
       for (size_t j =0; j<selem.size(); j++)
       {
         if (selem[j] >= 0)
         {
-          // search through edges    
+          // search through edges
           vmesh->get_delems(delems,selem[j]);
-    
+
           for (size_t i=0; i<delems.size(); i++)
           {
             if (delems[i] == fedge) continue;
             vmesh->get_nodes(nodes,delems[i]);
             if (nodes.size() != 2) continue;
             if (nodes[0] == fnode || nodes[1] == fnode) continue;
-            
+
             vmesh->get_centers(ps,nodes);
-            
+
             double alpha1 = Dot(normal,po-ps[0]);
             double alpha2 = Dot(normal,po-ps[1]);
-            
+
             if (alpha1*alpha2 < epsilon2)
             {
               p = ps[0] + Abs(alpha1)/(Abs(alpha1)+Abs(alpha2))*(ps[1]-ps[0]);
@@ -183,10 +183,10 @@ bool GenerateEdgeProjection(VMesh* vmesh,
         }
         if (found_next) break;
       }
-    }    
-    
+    }
+
     if (!found_next)
-    {   
+    {
       return (false);
     }
 
@@ -210,13 +210,13 @@ bool GenerateEdgeProjection(VMesh* vmesh,
         found_end = true;
         fpoint = point2;
       }
-    } 
+    }
     else if (found_end)
     {
-      fpoint = point2;    
+      fpoint = point2;
     }
   }
-  
+
   return (true);
 }
 

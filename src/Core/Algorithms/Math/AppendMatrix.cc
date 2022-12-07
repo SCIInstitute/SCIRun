@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,20 +24,19 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-   Author : Moritz Dannhauer (reimplementation)
-   Date:   August 2017
+   Author:        Moritz Dannhauer (reimplementation)
+   Date:          August 2017
 */
+
 
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Eigen/Sparse>
 
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
+using namespace Math;
 using namespace SCIRun::Core::Datatypes;
 
 const AlgorithmInputName AppendMatrixAlgorithm::InputMatrices("InputMatrices");
@@ -49,38 +47,42 @@ AppendMatrixAlgorithm::AppendMatrixAlgorithm()
 }
 
 
-bool AppendMatrixAlgorithm::check_dimensions(const Matrix& mat1, const Matrix& mat2, const AppendMatrixAlgorithm::Parameters& params) const
+bool AppendMatrixAlgorithm::check_dimensions(
+    const Matrix& mat1, const Matrix& mat2, const Parameters& params)
 {
- auto rows_m1=mat1.nrows(),rows_m2=mat2.nrows(),cols_m1=mat1.ncols(),cols_m2=mat2.ncols();
- if (params == ROWS)
- {
-  if(cols_m1!=cols_m2) return false;
- } else
-  if(rows_m1!=rows_m2) return false;
+  auto rows_m1 = mat1.nrows(), rows_m2 = mat2.nrows(), cols_m1 = mat1.ncols(),
+       cols_m2 = mat2.ncols();
+  if (params == Option::ROWS)
+  {
+    if (cols_m1 != cols_m2) return false;
+  }
+  else if (rows_m1 != rows_m2)
+    return false;
 
- return true;
+  return true;
 }
 
-AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::ConcatenateMatrices(const MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Matrix>> input_matrices, const AppendMatrixAlgorithm::Parameters& params) const
+AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::concatenateMatrices(
+    MatrixHandle base_matrix, const std::vector<SharedPointer<Matrix>>& input_matrices,
+    const Parameters& params) const
 {
+  if (input_matrices.empty()) 
+    return base_matrix;
 
- if (input_matrices.size()==0)
-   return base_matrix;
+  auto outputs = run(std::make_tuple(base_matrix, input_matrices[0]), params);
+  for (size_t c = 1; c < input_matrices.size(); c++)
+  {
+    const auto concatenated = run(std::make_tuple(outputs, input_matrices[c]), params);
+    outputs = concatenated;
+  }
 
- Outputs outputs = run(boost::make_tuple(base_matrix, input_matrices[0]), params);
- for(Eigen::Index c=1; c<input_matrices.size(); c++)
- {
-  auto concatenated = run(boost::make_tuple(outputs, input_matrices[c]), params);
-  outputs=concatenated;
- }
-
- return outputs;
+  return outputs;
 }
 
-AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
+AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
-  auto lhsPtr = input.get<0>();
-  auto rhsPtr = input.get<1>();
+  const auto lhsPtr = std::get<0>(input);
+  const auto rhsPtr = std::get<1>(input);
   if (!lhsPtr || !rhsPtr)
    error(" At least two matrices are needed to run this module. ");
 
@@ -97,45 +99,44 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
   }
 
   Eigen::MatrixXd result;
-  if(matrixIs::dense(lhsPtr) || matrixIs::column(lhsPtr))
+  if (matrixIs::dense(lhsPtr) || matrixIs::column(lhsPtr))
   {
-   if(params == ROWS)
-     result=Eigen::MatrixXd(lhsPtr->nrows()+rhsPtr->nrows(),lhsPtr->ncols());
+    if (params == Option::ROWS)
+      result = Eigen::MatrixXd(lhsPtr->nrows() + rhsPtr->nrows(), lhsPtr->ncols());
     else
-     result=Eigen::MatrixXd(lhsPtr->nrows(),lhsPtr->ncols()+rhsPtr->ncols());
+      result = Eigen::MatrixXd(lhsPtr->nrows(), lhsPtr->ncols() + rhsPtr->ncols());
 
-   if(matrixIs::dense(lhsPtr))
-     result << *castMatrix::toDense(lhsPtr), *castMatrix::toDense(rhsPtr);
-   else
-    result << *castMatrix::toColumn(lhsPtr), *castMatrix::toColumn(rhsPtr);
+    if (matrixIs::dense(lhsPtr))
+      result << *castMatrix::toDense(lhsPtr), *castMatrix::toDense(rhsPtr);
+    else
+      result << *castMatrix::toColumn(lhsPtr), *castMatrix::toColumn(rhsPtr);
 
-   if (matrixIs::column(lhsPtr) && (result.rows()==1 || result.cols()==1))
-    return boost::make_shared<DenseColumnMatrix>(result);
+    if (matrixIs::column(lhsPtr) && (result.rows() == 1 || result.cols() == 1))
+      return makeShared<DenseColumnMatrix>(result);
 
-   return boost::make_shared<DenseMatrix>(result);
-  } else
-  if (matrixIs::sparse(lhsPtr))
-    return SparseRowMatrixFromMap::concatenateSparseMatrices(*castMatrix::toSparse(lhsPtr),*castMatrix::toSparse(rhsPtr),params==ROWS);
-  else
-  {
-   error(" This matrix type is not supported");
+    return makeShared<DenseMatrix>(result);
   }
 
- return Outputs();
+  if (matrixIs::sparse(lhsPtr))
+    return SparseRowMatrixFromMap::concatenateSparseMatrices(
+        *castMatrix::toSparse(lhsPtr), *castMatrix::toSparse(rhsPtr), params == Option::ROWS);
+
+  error("This matrix type is not supported");
+
+  return Outputs();
 }
 
 AlgorithmOutput AppendMatrixAlgorithm::run(const AlgorithmInput& input) const
 {
-  auto lhs = input.get<Matrix>(Variables::FirstMatrix);
-  auto rhs = input.get<Matrix>(Variables::SecondMatrix);
-  auto input_matrices = input.getList<Matrix>(AppendMatrixAlgorithm::InputMatrices);
+  const auto lhs = input.get<Matrix>(Variables::FirstMatrix);
+  const auto rhs = input.get<Matrix>(Variables::SecondMatrix);
+  const auto inputMatrices = input.getList<Matrix>(InputMatrices);
 
-  Outputs outputs;
-  Parameters params=Option(get(Variables::RowsOrColumns).toInt());
-  outputs = run(boost::make_tuple(lhs, rhs), params);
+  const auto params = static_cast<Option>(get(Variables::RowsOrColumns).toInt());
+  auto outputs = run(std::make_tuple(lhs, rhs), params);
 
-  if (input_matrices.size()>0)
-   outputs = ConcatenateMatrices(outputs, input_matrices, params);
+  if (inputMatrices.size() > 0)
+   outputs = concatenateMatrices(outputs, inputMatrices, params);
 
   AlgorithmOutput output;
   output[Variables::ResultMatrix] = outputs;

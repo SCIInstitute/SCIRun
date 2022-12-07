@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>429</width>
-    <height>612</height>
+    <width>643</width>
+    <height>943</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -273,7 +273,7 @@
           <widget class="QPushButton" name="resetCenterPushButton_">
            <property name="minimumSize">
             <size>
-             <width>110</width>
+             <width>150</width>
              <height>0</height>
             </size>
            </property>
@@ -298,6 +298,12 @@
           <widget class="QDoubleSpinBox" name="outputCenterXSpinBox_">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>209</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -367,7 +373,7 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>0</height>
             </size>
            </property>
@@ -473,7 +479,7 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>0</height>
             </size>
            </property>
@@ -498,7 +504,7 @@
           <widget class="QPushButton" name="resetSizePushButton_">
            <property name="minimumSize">
             <size>
-             <width>110</width>
+             <width>150</width>
              <height>0</height>
             </size>
            </property>

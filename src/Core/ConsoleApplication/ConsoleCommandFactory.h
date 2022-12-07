@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_CONSOLEAPPLICATION_CONSOLECOMMANDFACTORY_H
 #define CORE_CONSOLEAPPLICATION_CONSOLECOMMANDFACTORY_H
 
@@ -39,7 +39,7 @@ namespace Console {
   class SCISHARE ConsoleGlobalCommandFactory : public Core::Commands::GlobalCommandFactory
   {
   public:
-    virtual Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type) const override;
+    Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type) const override;
   };
 
 }}}

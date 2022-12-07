@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -66,7 +65,7 @@ class MapFieldDataOntoNodesPAlgo : public Interruptible
 {
   public:
     explicit MapFieldDataOntoNodesPAlgo(unsigned int numProcs) :
-    algo_(0), is_flux_(false),
+    algo_(nullptr), is_flux_(false),
       barrier_("MapFieldDataOntoNodesPAlgo Barrier", numProcs), nproc(numProcs) {}
 
     void parallel(int proc);
@@ -124,7 +123,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
     Point p; Vector val; Vector norm;
     for (VMesh::Node::index_type idx=start; idx<end; idx++)
     {
-      checkForInterruption();
       omesh->get_center(p,idx);
       omesh->get_normal(norm,idx);
       datasource->get_data(val,p);
@@ -140,7 +138,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; double val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
-        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -152,7 +149,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; Vector val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
-        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -164,7 +160,6 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; Tensor val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
-        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -201,15 +196,20 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   fo.make_lineardata();
 
   std::string quantity = getOption(Parameters::Quantity);
-  std::string value = getOption(Parameters::InterpolationModel);
+  std::string mappingModel = getOption(Parameters::InterpolationModel);
 
-  if (value == "closestnodedata")
+  if (mappingModel == "closestnodedata")
   {
-    if (!fi.is_lineardata())
+    if (!fi.is_lineardata() && !fi.is_pointcloud())
     {
-      error("Closest node data only works for source data located at the nodes.");
+      error("Closest node data mapping only works for source data located at the nodes with linear basis.");
       return (false);
     }
+  }
+
+  if (fi.is_pointcloud() && (mappingModel == "interpolateddata" || mappingModel == "closestinterpolateddata"))
+  {
+    warning("Point cloud source data will produce the same mapping as a closestnodedata mapping since the data lacks a basis for interpolation. See https://github.com/SCIInstitute/SCIRun/issues/2155");
   }
 
   if (fi.is_nodata())
@@ -221,7 +221,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   if (weights)
   {
     FieldInformation wfi(weights);
-    if (value == "closestnodedata")
+    if (mappingModel == "closestnodedata")
     {
       if (!wfi.is_lineardata())
       {
@@ -327,7 +327,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   // Mark whether it is a flux computation
   algo.is_flux_ = quantity == "flux";
 
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
  // Check whether algorithm succeeded
@@ -367,15 +367,20 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   fo.make_lineardata();
 
   std::string quantity = getOption(Parameters::Quantity);
-  std::string value = getOption(Parameters::InterpolationModel);
+  std::string mappingModel = getOption(Parameters::InterpolationModel);
 
-  if (value == "closestnodedata")
+  if (mappingModel == "closestnodedata")
   {
-    if (!fi.is_lineardata())
+    if (!fi.is_lineardata() && !fi.is_pointcloud())
     {
-      error("Closest node data only works for source data located at the nodes.");
+      error("Closest node data mapping only works for source data located at the nodes with linear basis.");
       return (false);
     }
+  }
+
+  if (fi.is_pointcloud() && (mappingModel == "interpolateddata" || mappingModel == "closestinterpolateddata"))
+  {
+    warning("Point cloud source data will produce the same mapping as a closestnodedata mapping since the data lacks a basis for interpolation. See https://github.com/SCIInstitute/SCIRun/issues/2155");
   }
 
   if (fi.is_nodata())
@@ -451,7 +456,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   // Mark whether it is a flux computation
   algo.is_flux_ = quantity == "flux";
 
-  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  auto task_i = [&algo](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
  // Check whether algorithm succeeded

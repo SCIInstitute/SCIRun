@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -77,7 +77,7 @@ TEST_F(SplitFieldByConnectedRegionModuleTests, ThrowsForNullInput)
 TEST_F(SplitFieldByConnectedRegionModuleTests, WrongDataType)
 {
   auto test = makeModule("SplitFieldByConnectedRegion");
-  DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+  DenseMatrixHandle m (makeShared<DenseMatrix>(3,1));
 	for (int i=0; i<3; i++)
 		(*m)(i, 0) = 1;
   stubPortNWithThisData(test, 0, m);

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +23,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
+
+
 #include <Modules/Visualization/TextBuilder.h>
 
 #include <sstream>
@@ -235,18 +236,18 @@ void TextBuilder::printString(const std::string& oneline,
     uniforms.push_back(SpireSubPass::Uniform("uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0)));
     uniforms.push_back(SpireSubPass::Uniform("uColor", color_));
     auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
-      numVBOElements, BBox(), true);
+      numVBOElements, BBox(Point{}, Point{}), true);
 
-    geom.mVBOs.push_back(geomVBO);
+    geom.vbos().push_back(geomVBO);
 
     // Construct IBO.
 
     SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
-    geom.mIBOs.push_back(geomIBO);
+    geom.ibos().push_back(geomIBO);
     RenderState renState;
-    renState.set(RenderState::USE_COLORMAP, false);
-    renState.set(RenderState::USE_TRANSPARENCY, false);
-    renState.set(RenderState::IS_TEXT, true);
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, false);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
+    renState.set(RenderState::ActionFlags::IS_TEXT, true);
     char c[2] = { p, 0 };
     SpireText text(c, ftFace_);
 
@@ -256,7 +257,7 @@ void TextBuilder::printString(const std::string& oneline,
     // Add all uniforms generated above to the pass.
     for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
 
-    geom.mPasses.push_back(pass2);
+    geom.passes().push_back(pass2);
   }
 }
 

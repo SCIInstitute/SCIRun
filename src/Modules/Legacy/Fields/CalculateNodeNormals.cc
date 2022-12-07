@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/FieldInformation.h>
 #include <Core/Datatypes/Field.h>
@@ -58,53 +58,53 @@ void
 CalculateNodeNormals::execute()
 {
   FieldHandle ifieldhandle, ofieldhandle, ipointhandle;
-  
+
   get_input_handle("Input Field", ifieldhandle,true);
   get_input_handle("Input Point", ipointhandle,true);
 
   if ( inputs_changed_ || !oport_cached("Output Field"))
   {
     update_state(Executing);
-    
+
     VField* point_field = ipointhandle->vfield();
     VMesh*  point_mesh  = ipointhandle->vmesh();
-    
+
     if (point_mesh->num_nodes() != 1)
     {
       error("Input Point needs to have a single nopde only");
       return;
     }
-  
+
     Point attract_point;
     Vector dir;
     bool has_vector = false;
     point_mesh->get_center(attract_point,VMesh::Node::index_type(0));
-    
+
     if (point_field->is_vector())
     {
       has_vector = true;
       point_field->get_value(dir,0);
     }
-    
+
     VField* field = ifieldhandle->vfield();
-    
+
     VField::size_type num_values = field->num_values();
-    
+
     FieldInformation fi(ifieldhandle);
     if (fi.field_basis_order() < 1)
     {
       fi.make_lineardata();
       fi.make_vector();
     }
-    
+
     fi.make_vector();
-    
+
     ofieldhandle = CreateField(fi,ifieldhandle->mesh());
     VField* ofield = ofieldhandle->vfield();
     ofield->resize_values();
-    
+
     int cnt = 0;
-    
+
     if (field->is_scalar() && field->basis_order() == 1)
     {
       Point c; Vector vec; Vector diff; double val;
@@ -122,7 +122,7 @@ CalculateNodeNormals::execute()
           vec = (attract_point - c);
           vec.safe_normalize();
         }
-        
+
         field->get_value(val,idx);
         if (val == 0.0) val = 1e-3;
         vec = vec*val;
@@ -151,7 +151,7 @@ CalculateNodeNormals::execute()
         cnt++; if (cnt == 400) { cnt=0; update_progress(idx,num_values); }
       }
     }
-    
+
     send_output_handle("Output Field", ofieldhandle,true);
   }
 }

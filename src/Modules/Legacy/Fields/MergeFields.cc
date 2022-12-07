@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 ///
 ///@file  MergeFields.cc
@@ -57,7 +57,7 @@
 namespace SCIRun {
 
 /// @class MergeFields
-/// @brief This module insers the elements from a field into a TetVol or TriSurf field. 
+/// @brief This module insers the elements from a field into a TetVol or TriSurf field.
 
 class MergeFields : public Module
 {
@@ -126,18 +126,18 @@ MergeFields::execute()
   get_input_handle("Insert Field", insert_field,true);
 
   update_state(Executing);
-    
+
   bool update = false;
 
   // Check to see if the source field has changed.
-  if( tet_generation_ != tet_field->generation ) 
+  if( tet_generation_ != tet_field->generation )
   {
     tet_generation_ = tet_field->generation;
     update = true;
   }
 
   // Check to see if the source field has changed.
-  if( insert_generation_ != insert_field->generation ) 
+  if( insert_generation_ != insert_field->generation )
   {
     insert_generation_ = insert_field->generation;
     update = true;
@@ -191,7 +191,7 @@ MergeFields::execute()
         }
 
         tmesh->clear_synchronization();
-        tfield->resize_values();      
+        tfield->resize_values();
       }
       if (dim >= 1)
       {
@@ -310,7 +310,7 @@ MergeFields::execute()
         imesh->end(iei);
 
         std::vector<Point> points;
-          
+
         while (ibi != iei)
         {
           VMesh::Node::array_type fnodes;
@@ -325,7 +325,7 @@ MergeFields::execute()
             imesh->get_center(p, fnodes[i]);
             tri.push_back(p);
           }
-          
+
           // Test each triangle in the face (fan the polygon).
           for (i = 2; i < tri.size(); i++)
           {
@@ -351,7 +351,7 @@ MergeFields::execute()
               double t, u, v;
               const bool hit = RayTriangleIntersection(t, u, v, false, e0, dir,
                                                        tri[0], tri[i-1], tri[i]);
-            
+
               if (hit && t > 0 && t < 1.0)
               {
                 points.push_back(e0 + t * dir);
@@ -371,7 +371,7 @@ MergeFields::execute()
           if (tmesh->locate(elem, points[j]))
           {
             tmesh->insert_node_into_elem(newelems, newnode, elem, points[j]);
-            
+
             added_nodes.push_back(newnode);
             for (size_t k = 0; k < newelems.size(); k++)
             {
@@ -442,7 +442,7 @@ MergeFields::execute()
         while (ibi != iei)
         {
           VMesh::Node::array_type nodes;
-          
+
           imesh->get_nodes(nodes, *ibi);
           Point p[2];
           imesh->get_center(p[0], nodes[0]);
@@ -466,16 +466,16 @@ MergeFields::execute()
           {
             VMesh::Node::array_type tnodes;
             tmesh->get_nodes(tnodes, elem);
-          
+
             VMesh::points_type tp;
             VMesh::Elem::index_type nelem;
 
             bool found = false;
-            
+
             VMesh::Edge::array_type edges;
             VMesh::Node::array_type nodes;
             tmesh->get_edges(edges, elem);
-            
+
             for (size_t k = 0; k < edges.size(); k++)
             {
               tmesh->get_nodes(nodes,edges[k]);
@@ -483,7 +483,7 @@ MergeFields::execute()
 
               double s, t;
               closest_line_to_line(s, t, closest[0], closest[1], tp[0], tp[1]);
-                
+
               if (s > 1e-12 && s < 1.0 - 1e-12 &&
                   t > 1e-12 && t < 1.0 - 1e-12)
               {
@@ -521,7 +521,7 @@ MergeFields::execute()
         }
 
         tfield->resize_values();
-      }    
+      }
     }
 
     VMesh  *tmesh = combined_->vmesh();
@@ -595,7 +595,7 @@ MergeFields::execute()
                 break;
               }
             }
-            
+
             if (all_found)
             {
               std::sort(newnodes.begin(), newnodes.end());
@@ -706,9 +706,9 @@ MergeFields::execute()
       d[j] = 1.0;
     }
     rr[j] = j;
-    
-    mapping_ = new SparseRowMatrix(nrows, ncols, sparseData, nrows);  
-  
+
+    mapping_ = new SparseRowMatrix(nrows, ncols, sparseData, nrows);
+
   }
 
   send_output_handle("Combined Field", combined_, true);
@@ -718,4 +718,3 @@ MergeFields::execute()
 
 
 } // End namespace SCIRun
-

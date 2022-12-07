@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Serialization/Network/NetworkXMLSerializer.cc
 
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
@@ -36,148 +36,25 @@
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <fstream>
-#include <boost/lambda/lambda.hpp>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Algorithms;
 
-class ScopedControllerSignalDisabler
-{
-public:
-  explicit ScopedControllerSignalDisabler(NetworkEditorControllerInterface* nec) : nec_(nec)
-  {
-    nec_->disableSignals();
-  }
-  ~ScopedControllerSignalDisabler()
-  {
-    nec_->enableSignals();
-  }
-private:
-  NetworkEditorControllerInterface* nec_;
-};
-
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory,
-  ReexecuteStrategyFactoryHandle reexFactory,
-  NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory),
-  reexFactory_(reexFactory),
-  controller_(nec), nesm_(nesm)
-{
-}
-
-////////
-// TODO: refactor the next two functions into one
-///////
-
-NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
-{
-  /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
-  NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_, reexFactory_));
-  controller_->setNetwork(network);
-
-  {
-    ScopedControllerSignalDisabler scsd(controller_);
-    for (const auto& modPair : data.modules)
-    {
-      try
-      {
-        auto module = controller_->addModule(modPair.second.module);
-        module->set_id(modPair.first);
-        ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
-        module->set_state(state);
-      }
-      catch (Core::InvalidArgumentException& e)
-      {
-        static std::ofstream missingModulesFile((Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string());
-        missingModulesFile << "File load problem: " << e.what() << std::endl;
-      }
-    }
-  }
-
-  std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
-  std::sort(connectionsSorted.begin(), connectionsSorted.end());
-  for (const auto& conn : connectionsSorted)
-  {
-    auto from = network->lookupModule(conn.out_.moduleId_);
-    auto to = network->lookupModule(conn.in_.moduleId_);
-
-    if (from && to)
-      controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
-    else
-    {
-      Core::Logging::GeneralLog::Instance().get()->error(
-        "File load error: connection not created between modules {} and {}.",
-        conn.out_.moduleId_.id_, conn.in_.moduleId_.id_);
-    }
-  }
-
-  return network;
-}
-
-NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const NetworkXML& data)
-{
-  auto network = controller_->getNetwork();
-  NetworkAppendInfo info;
-  info.newModuleStartIndex = network->nmodules();
-  {
-    ScopedControllerSignalDisabler scsd(controller_);
-    for (const auto& modPair : data.modules)
-    {
-      ModuleId newId(modPair.first);
-      while (network->lookupModule(newId))
-      {
-        //std::cout << "found module by ID : " << modPair.first << std::endl;
-        ++newId;
-      }
-
-      auto module = controller_->addModule(modPair.second.module);
-
-      //std::cout << "setting module id to " << newId << std::endl;
-      info.moduleIdMapping[modPair.first] = newId;
-      module->set_id(newId);
-      ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
-      module->set_state(state);
-    }
-  }
-
-  auto connectionsSorted(data.connections);
-  std::sort(connectionsSorted.begin(), connectionsSorted.end());
-
-  for (const auto& conn : connectionsSorted)
-  {
-    auto modOut = info.moduleIdMapping.find(conn.out_.moduleId_);
-    auto modIn = info.moduleIdMapping.find(conn.in_.moduleId_);
-    if (modOut != info.moduleIdMapping.end() && modIn != info.moduleIdMapping.end())
-    {
-      auto from = network->lookupModule(ModuleId(modOut->second));
-      auto to = network->lookupModule(ModuleId(modIn->second));
-      if (from && to)
-        controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
-    }
-  }
-  return info;
-}
-
 NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm)
   : nesm_(nesm)
 {}
 
-NetworkFileHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
+NetworkFileHandle NetworkToXML::to_xml_data(const NetworkStateHandle& network)
 {
-  return NetworkToXML(nesm_).to_xml_data(network);
+  return to_xml_data(network, [](ModuleHandle) { return true; }, [](const ConnectionDescription&) { return true; });
 }
 
-NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
-{
-  return to_xml_data(network, boost::lambda::constant(true), boost::lambda::constant(true));
-}
-
-NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
+NetworkFileHandle NetworkToXML::to_xml_data(const NetworkStateHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
 {
   NetworkXML networkXML;
-  auto conns = network->connections();
+  auto conns = network->connections(true);
   for (const auto& desc : conns)
   {
     if (connFilter(desc))
@@ -190,11 +67,11 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
     {
       auto state = module->get_state();
       auto stateXML = make_state_xml(state);
-      networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
+      networkXML.modules[module->id()] = ModuleWithState(module->info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
     }
   }
 
-  auto file(boost::make_shared<NetworkFile>());
+  auto file(makeShared<NetworkFile>());
   file->network = networkXML;
   if (nesm_)
   {
@@ -203,7 +80,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
     file->connectionNotes = *nesm_->dumpConnectionNotes(connFilter);
     file->moduleTags = *nesm_->dumpModuleTags(modFilter);
     file->disabledComponents = *nesm_->dumpDisabledComponents(modFilter, connFilter);
-    file->subnetworks = *nesm_->dumpSubnetworks(modFilter);
+    //file->subnetworks = *nesm_->dumpSubnetworks(modFilter);
   }
   return file;
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Network/Port.cc
 
 #include <Dataflow/Network/Port.h>
@@ -42,7 +42,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Logging;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
-  : module_(module), index_(0), id_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
+  : module_(module), index_(0), internalId_(params.id_), externalId_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name)),
+  connectionCountIncreasedFlag_(false)
 {
   ENSURE_NOT_NULL(module_, "port cannot have null module");
   if (typeName_.empty() || portName_.empty() || colorName_.empty())
@@ -57,6 +58,14 @@ Port::~Port()
 void Port::attach(Connection* conn)
 {
   connections_.push_back(conn);
+  connectionCountIncreasedFlag_ = true;
+}
+
+bool Port::hasConnectionCountIncreased() const
+{
+  auto val = connectionCountIncreasedFlag_;
+  connectionCountIncreasedFlag_ = false;
+  return val;
 }
 
 void Port::detach(Connection* conn)
@@ -64,7 +73,7 @@ void Port::detach(Connection* conn)
   auto pos = std::find(connections_.begin(), connections_.end(), conn);
   if (pos == connections_.end())
   {
-    LOG_DEBUG("{} Port::detach: Connection not found", id().toString());
+    LOG_DEBUG("{} Port::detach: Connection not found", internalId().toString());
   }
   connections_.erase(pos);
 }
@@ -74,9 +83,9 @@ Connection* Port::connection(size_t i) const
   return connections_[i];
 }
 
-boost::optional<ConnectionId> Port::firstConnectionId() const
+std::optional<ConnectionId> Port::firstConnectionId() const
 {
-  return !connections_.empty() ? connections_[0]->id_ : boost::optional<ConnectionId>();
+  return !connections_.empty() ? connections_[0]->id_ : std::optional<ConnectionId>();
 }
 
 void Port::setIndex(size_t index)
@@ -91,7 +100,7 @@ size_t Port::nconnections() const
 
 ModuleId Port::getUnderlyingModuleId() const
 {
-  return module_->get_id();
+  return module_->id();
 }
 
 size_t Port::getIndex() const
@@ -147,7 +156,7 @@ InputPortInterface* InputPort::clone() const
   DatatypeSinkInterfaceHandle sink(sink_->clone());
   if (!isDynamic_)
     THROW_INVALID_ARGUMENT("Cannot clone non-dynamic port.");
-  PortId cloneId(id_.id + 1, id_.name);
+  PortId cloneId(internalId_.id + 1, internalId_.name);
   return new InputPort(module_, ConstructionParams(cloneId, typeName_, isDynamic_), sink);
 }
 
@@ -162,7 +171,7 @@ boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnP
   {
     if (this->shouldTriggerDataChange())
     {
-      subscriber(this->id(), data);
+      subscriber(this->internalId(), data);
     }
   });
 }
@@ -179,10 +188,10 @@ void InputPort::resendNewDataSignal()
   sink()->forceFireDataHasChanged();
 }
 
-boost::optional<std::string> InputPort::connectedModuleId() const
+std::optional<std::string> InputPort::connectedModuleId() const
 {
   if (connections_.empty())
-    return boost::none;
+    return std::nullopt;
   return connections_[0]->oport_->getUnderlyingModuleId().id_;
 }
 
@@ -218,6 +227,7 @@ void OutputPort::sendData(DatatypeHandle data)
       source_->send(c->iport_->sink());
     }
   }
+  connectionCountIncreasedFlag_ = false;
 }
 
 bool OutputPort::hasData() const
@@ -225,16 +235,23 @@ bool OutputPort::hasData() const
   if (!source_)
     return false;
   auto ret = source_->hasData();
-  LOG_DEBUG("{} OutputPort::hasData returns {}", id().toString(), ret);
+  LOG_TRACE("{} OutputPort::hasData returns {}", internalId().toString(), ret);
   return ret;
 }
 
 void OutputPort::attach(Connection* conn)
 {
-  if (hasData() && conn && conn->iport_)
+  if (hasData() && conn && conn->iport_ && get_typename() != "Geometry")
+  {
     source_->send(conn->iport_->sink());
+  }
 
   Port::attach(conn);
+}
+
+DatatypeHandle OutputPort::peekData() const
+{
+  return source_->peekData();
 }
 
 PortDataDescriber OutputPort::getPortDataDescriber() const

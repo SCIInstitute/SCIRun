@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,10 +24,13 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Engine/Python/NetworkEditorPythonAPI.cc
 
 #include <Python.h>
 #include <iostream>
+#include <Core/Logging/Log.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <boost/range/adaptors.hpp>
@@ -38,7 +40,7 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
+SharedPointer<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
 ExecutableLookup* NetworkEditorPythonAPI::lookup_ = nullptr;
 Mutex NetworkEditorPythonAPI::pythonLock_("Python");
 std::atomic<bool> NetworkEditorPythonAPI::executeLockedFromPython_(false);
@@ -60,7 +62,7 @@ public:
   }
 };
 
-void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl)
+void NetworkEditorPythonAPI::setImpl(SharedPointer<NetworkEditorPythonInterface> impl)
 {
   if (!impl_)
   {
@@ -69,8 +71,8 @@ void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterf
 
     if (!convertersRegistered_)
     {
-      boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >,
-        StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
+      boost::python::to_python_converter< std::vector< SharedPointer<PyModule> >,
+        StdVectorToListConverter< SharedPointer<PyModule> >, true >();
       boost::python::to_python_converter< std::vector< std::string >,
         StdVectorToListConverter< std::string >, true >();
       convertersRegistered_ = true;
@@ -88,9 +90,9 @@ void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
   lookup_ = lookup;
 }
 
-boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
+SharedPointer<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return nullptr;
@@ -108,7 +110,7 @@ boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string&
 
 std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -123,9 +125,9 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
   }
 }
 
-std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
+std::vector<SharedPointer<PyModule>> NetworkEditorPythonAPI::modules()
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
   return impl_->moduleList();
 }
 
@@ -140,7 +142,7 @@ std::string NetworkEditorPythonAPI::executeAll()
     pythonLock_.lock();
     executeLockedFromPython_ = true;
     //std::cout << "executionMutex_->lock call done" << boost::this_thread::get_id() << std::endl;
-    return impl_->executeAll(lookup_);
+    return impl_->executeAll();
   }
   else
   {
@@ -157,7 +159,7 @@ void NetworkEditorPythonAPI::unlock()
 
 std::string NetworkEditorPythonAPI::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -172,7 +174,7 @@ std::string NetworkEditorPythonAPI::connect(const std::string& moduleIdFrom, int
 
 std::string NetworkEditorPythonAPI::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -187,7 +189,7 @@ std::string NetworkEditorPythonAPI::disconnect(const std::string& moduleIdFrom, 
 
 std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -202,7 +204,7 @@ std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
 
 std::string NetworkEditorPythonAPI::currentNetworkFile()
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_)
     return impl_->currentNetworkFile();
@@ -214,7 +216,7 @@ std::string NetworkEditorPythonAPI::currentNetworkFile()
 
 std::string NetworkEditorPythonAPI::loadNetwork(const std::string& filename)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -229,7 +231,7 @@ std::string NetworkEditorPythonAPI::loadNetwork(const std::string& filename)
 
 std::string NetworkEditorPythonAPI::importNetwork(const std::string& filename)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -244,7 +246,7 @@ std::string NetworkEditorPythonAPI::importNetwork(const std::string& filename)
 
 std::string NetworkEditorPythonAPI::runScript(const std::string& filename)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -259,7 +261,7 @@ std::string NetworkEditorPythonAPI::runScript(const std::string& filename)
 
 std::string NetworkEditorPythonAPI::quit(bool force)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
@@ -274,7 +276,7 @@ std::string NetworkEditorPythonAPI::quit(bool force)
 
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
   auto module = impl_->findModule(moduleId);
   if (module)
     return module->getattr(stateVariable, false);
@@ -283,7 +285,7 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std:
 
 std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
   auto module = impl_->findModule(moduleId);
   if (module)
   {
@@ -296,15 +298,18 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
         return "UI adjusted";
       }
     }
-    module->setattr(stateVariable, value, false);
-    return "Value set";
+    else
+    {
+      module->setattr(stateVariable, value, false);
+      return "Value set";
+    }
   }
   return "Module or value not found";
 }
 
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_transient_state(const std::string& moduleId, const std::string& stateVariable)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
   auto module = impl_->findModule(moduleId);
   if (module)
     return module->getattr(stateVariable, true);
@@ -313,7 +318,7 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_transient_state(
 
 std::string NetworkEditorPythonAPI::scirun_set_module_transient_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
-  //Guard g(pythonLock_.get());
+  //Guard g(pythonLock_);
   auto module = impl_->findModule(moduleId);
   if (module)
   {
@@ -325,7 +330,7 @@ std::string NetworkEditorPythonAPI::scirun_set_module_transient_state(const std:
 
 std::string NetworkEditorPythonAPI::scirun_dump_module_state(const std::string& moduleId)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
   auto module = impl_->findModule(moduleId);
   if (module)
   {
@@ -335,9 +340,9 @@ std::string NetworkEditorPythonAPI::scirun_dump_module_state(const std::string& 
 }
 
 /// @todo: bizarre reason for this return type and casting. but it works.
-boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
+SharedPointer<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
-  Guard g(NetworkEditorPythonAPI::getLock().get());
+  Guard g(NetworkEditorPythonAPI::getLock());
   from.connect(to);
   auto ptr = const_cast<PyPort&>(to).shared_from_this();
   return boost::ref(ptr);
@@ -361,7 +366,7 @@ std::string SimplePythonAPI::scirun_force_quit()
 
 std::string NetworkEditorPythonAPI::scirun_get_module_input_type(const std::string& moduleId, int portIndex)
 {
-  Guard g(pythonLock_.get());
+  Guard g(pythonLock_);
 
   auto module = impl_->findModule(moduleId);
   if (module)
@@ -378,9 +383,9 @@ std::string NetworkEditorPythonAPI::scirun_get_module_input_type(const std::stri
 }
 
 //TODO: refactor copy/paste
-boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object_index(const std::string& moduleId, int portIndex)
+SharedPointer<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object_index(const std::string& moduleId, int portIndex)
 {
-  Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
+  Guard g(pythonLock_/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
 
   auto module = impl_->findModule(moduleId);
   if (module)
@@ -394,9 +399,9 @@ boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_ob
   return nullptr;
 }
 
-boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object(const std::string& moduleId, const std::string& portName)
+SharedPointer<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object(const std::string& moduleId, const std::string& portName)
 {
-  Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
+  Guard g(pythonLock_/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
 
   auto module = impl_->findModule(moduleId);
   if (module)
@@ -413,19 +418,79 @@ boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_ob
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value_index(const std::string& moduleId, int portIndex)
 {
   auto pyData = scirun_get_module_input_object_index(moduleId, portIndex);
-  Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input_copy"*/);
+  Guard g(pythonLock_/*, "NetworkEditorPythonAPI::scirun_get_module_input_copy"*/);
   if (pyData)
     return pyData->value();
   return {};
 }
 
+boost::python::dict NetworkEditorPythonAPI::get_input_data(const std::string& moduleId)
+{
+  boost::python::dict allInputs;
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    auto inputs = module->input();
+    for (int i = 0; i < inputs->size(); ++i)
+    {
+      auto port = inputs->getitem(i);
+      if (port && port->data())
+      {
+        allInputs[port->id()] = port->data()->value();
+      }
+    }
+  }
+  return allInputs;
+}
+
+boost::python::dict NetworkEditorPythonAPI::get_output_data(const std::string& moduleId)
+{
+  //logCritical("get_output_data {}", "begins");
+  boost::python::dict allOutputs;
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    auto outputs = module->output();
+    //logCritical("get_output_data {}", outputs->size());
+    for (int i = 0; i < outputs->size(); ++i)
+    {
+      //logCritical("get_output_data {}", i);
+      auto port = outputs->getitem(i);
+      //logCritical("get_output_data {}", port->id());
+      if (port && port->data())
+      {
+        //logCritical("get_output_data {}", "data found");
+        allOutputs[port->id()] = port->data()->value();
+      }
+    }
+  }
+  return allOutputs;
+}
+
+std::string NetworkEditorPythonAPI::set_output_data(const std::string& moduleId, const boost::python::dict& outputMap)
+{
+  (void)moduleId;
+  (void)outputMap;
+  return "not implemented";
+}
+
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(const std::string& moduleId, const std::string& portName)
 {
   auto pyData = scirun_get_module_input_object(moduleId, portName);
-  Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input_copy"*/);
+  Guard g(pythonLock_/*, "NetworkEditorPythonAPI::scirun_get_module_input_copy"*/);
   if (pyData)
     return pyData->value();
   return {};
+}
+
+std::string NetworkEditorPythonAPI::scirun_enable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  return impl_->setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, true);
+}
+
+std::string NetworkEditorPythonAPI::scirun_disable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  return impl_->setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, false);
 }
 
 boost::python::object SimplePythonAPI::scirun_module_ids()

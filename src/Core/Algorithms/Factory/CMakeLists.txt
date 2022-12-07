@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 SET(Algorithms_Factory_SRCS
   HardCodedAlgorithmFactory.cc
@@ -76,6 +76,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_Math
   Algorithms_DataIO
   Algorithms_Field
+  Core_Algorithms_Visualization
   Core_Algorithms_Legacy_FiniteElements
   Core_Algorithms_Legacy_Converter
   ${SCI_BOOST_LIBRARY}
@@ -85,5 +86,6 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Factory)
 ENDIF(BUILD_SHARED_LIBS)
 
-# Framework test: always build
-ADD_SUBDIRECTORY(Tests)
+IF(BUILD_TESTING)
+  ADD_SUBDIRECTORY(Tests)
+ENDIF()

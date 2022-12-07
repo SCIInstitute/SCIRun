@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 
@@ -43,7 +43,7 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
+void InsertFieldsIntoBundleDialog::updateFromPortChange(int, const std::string& portId, DynamicPortChange type)
 {
   //qDebug() << "updateFromPortChange" << portId.c_str() << type;
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
@@ -51,7 +51,7 @@ void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std:
 
   static const std::string typeName = "Fields";
   const int lineEditColumn = 1;
-  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type, 
+  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type,
   { { 2,
       [&]()
       {
@@ -60,6 +60,6 @@ void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std:
         check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
         return check;
       } },
-    { 3, 
+    { 3,
       [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); } } });
 }

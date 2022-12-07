@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
 
 #ifndef INTERFACE_MODULES_RENDER_VIEWSCENEPLATFORMCOMPATIBILITY_H
@@ -41,12 +41,10 @@
 
 #  include <QtGui>
 
-#  include <Interface/Modules/Render/QtGLContext.h>
 #else
 #  include <QtGui>
 
 #  include <Core/Datatypes/Geometry.h>
-#  include <Interface/Modules/Render/QtGLContext.h>
 #  include <Interface/Modules/Render/ViewScene.h>
 #endif
 

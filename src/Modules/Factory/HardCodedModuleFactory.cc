@@ -1,30 +1,30 @@
 /*
- For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
- The MIT License
+   The MIT License
 
- Copyright (c) 2015 Scientific Computing and Imaging Institute,
- University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
- License for the specific language governing rights and limitations under
- Permission is hereby granted, free of charge, to any person obtaining a
- copy of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense,
- and/or sell copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
- The above copyright notice and this permission notice shall be included
- in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- DEALINGS IN THE SOFTWARE.
- */
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
 
 /// @todo Documentation HardCodedModuleFactory.cc
 
@@ -69,12 +69,13 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
 ModuleDescription ModuleDescriptionLookup::lookupDescription(const ModuleLookupInfo& info) const
 {
-  auto iter = lookup_.find(info);
-  if (iter == lookup_.end())
+  auto iter = moduleLookup_.find(info);
+  if (iter == moduleLookup_.end())
   {
     /// @todo: log
     std::ostringstream ostr;
     ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
+    logCritical("ModuleDescriptionLookup error: Undefined module \"{}\"", info.module_name_);
     THROW_INVALID_ARGUMENT(ostr.str());
   }
   return iter->second;
@@ -126,10 +127,13 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc) const
   {
     builder.add_input_port(Port::ConstructionParams(input.id, input.datatype, input.isDynamic));
   }
+  builder.add_input_port(Port::ConstructionParams(ProgrammablePortId(), "MetadataObject", false));
   for (const auto& output : desc.output_ports_)
   {
     builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }
+
+  builder.setInfoStrings(desc);
 
   return builder.setStateDefaults().build();
 }
@@ -146,5 +150,11 @@ const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescrip
 
 const DirectModuleDescriptionLookupMap& HardCodedModuleFactory::getDirectModuleDescriptionLookupMap() const
 {
-  return impl_->lookup.lookup_;
+  return impl_->lookup.moduleLookup_;
+}
+
+bool HardCodedModuleFactory::moduleImplementationExists(const std::string& name) const
+{
+  auto map = getDirectModuleDescriptionLookupMap();
+  return map.find(ModuleLookupInfo(name, "", "")) != map.end();
 }

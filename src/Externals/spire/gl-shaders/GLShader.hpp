@@ -1,19 +1,49 @@
-/// \author James Hughes
-/// \date   January 2014
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+/// author James Hughes
+/// date   January 2014
 
 #ifndef SPIRE_GLSHADER_HPP
 #define SPIRE_GLSHADER_HPP
 
+#include <es-log/trace-log.h>
 // All functions below assume there is a valid OpenGL context active.
 #include <vector>
 #include <list>
 #include <tuple>
 #include <cstdint>
 #include <gl-platform/GLPlatform.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
-struct ShaderSource
+struct SCISHARE ShaderSource
 {
   /// \p source     Sources for the shader. Input directly into 'glShaderSource'.
   /// \p shaderType One of: GL_COMPUTE_SHADER, GL_VERTEX_SHADER,
@@ -33,7 +63,7 @@ struct ShaderSource
 /// important information regarding errors.
 GLuint loadShaderProgram(const std::list<ShaderSource>& shaders);
 
-struct ShaderAttribute
+struct SCISHARE ShaderAttribute
 {
   ShaderAttribute();
 
@@ -73,10 +103,10 @@ bool operator!=(const ShaderAttribute& a, const ShaderAttribute& b);
 int hasAttribute(const ShaderAttribute* array, size_t size, const std::string& name);
 
 /// Collects all shader attributes into a vector of ShaderAttribute.
-std::vector<ShaderAttribute> getProgramAttributes(GLuint program);
+SCISHARE std::vector<ShaderAttribute> getProgramAttributes(GLuint program);
 
 /// Sorts a vector of shader attributes alphabetically by 'nameInCode'.
-void sortAttributesAlphabetically(std::vector<ShaderAttribute>& attribs);
+SCISHARE void sortAttributesAlphabetically(std::vector<ShaderAttribute>& attribs);
 
 /// Binds all attributes in given ShaderAttribute array.
 /// Note: Be sure to set the normalize ShaderAttribute variable appropriately.
@@ -100,7 +130,7 @@ void unbindSubsetAttributes(const ShaderAttribute* superset, size_t supersetSize
                             const ShaderAttribute* subset, size_t subsetSize);
 
 /// Minimal structure based on the intersection between shader and VBO.
-struct ShaderAttributeApplied
+struct SCISHARE ShaderAttributeApplied
 {
   GLint       attribLoc;    ///< Attribute location from the shader.
   GLenum      baseType;     ///< Base OpenGL type of the attribute.
@@ -109,7 +139,7 @@ struct ShaderAttributeApplied
   uint32_t    offset;       ///< Calculated offset into VBO's memory.
 };
 
-/// Builds a sequence of applied attributes. Use this to set set up a VBO for 
+/// Builds a sequence of applied attributes. Use this to set set up a VBO for
 /// rendering with a particular shader. If an error occurs, a runtime exception
 /// will be thrown, but the tuple <0,0> will be returned on systems that do not
 /// use exceptions.
@@ -128,7 +158,7 @@ struct ShaderAttributeApplied
 ///         all components combined together.
 /// \note  *ONLY* the following attributes are used inside of super set (the
 ///         rest are ignored: nameInCode, sizeBytes, and normalize.
-std::tuple<size_t, size_t> buildPreappliedAttrib(
+SCISHARE std::tuple<size_t, size_t> buildPreappliedAttrib(
     const ShaderAttribute* superset, size_t supersetSize,
     const ShaderAttribute* subset, size_t subsetSize,
     ShaderAttributeApplied* out, size_t outMaxSize);
@@ -139,14 +169,14 @@ std::tuple<size_t, size_t> buildPreappliedAttrib(
 /// \param array  \p out from buildPreAppliedAttrib.
 /// \param size   First tuple parameter from buildPreAppliedAttrib.
 /// \param stride Second tuple parameter from buildPreAppliedAttrib.
-void bindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size,
+SCISHARE void bindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size,
                           size_t stride);
 
 /// Unbind all attributes bound in bindPreappliedAttrib.
-void unbindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size);
+SCISHARE void unbindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size);
 
 /// Generic structure for holding a shader uniform.
-struct ShaderUniform
+struct SCISHARE ShaderUniform
 {
   ShaderUniform(const std::string& name, GLint s, GLenum t, GLint loc);
 
@@ -160,8 +190,8 @@ bool operator==(const ShaderUniform& a, const ShaderUniform& b);
 bool operator!=(const ShaderUniform& a, const ShaderUniform& b);
 
 /// Collects all shader uniforms into a vector of ShaderUniform.
-std::vector<ShaderUniform> getProgramUniforms(GLuint program);
+SCISHARE std::vector<ShaderUniform> getProgramUniforms(GLuint program);
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

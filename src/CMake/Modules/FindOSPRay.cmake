@@ -50,14 +50,15 @@ else()
       ${OSPRAY_BUILD_DIR}
       ${OSPRAY_BUILD_DIR}/include
       ${OSPRAY_SOURCE_DIR}
+      ${OSPRAY_SOURCE_DIR}/components
       ${OSPRAY_SOURCE_DIR}/ospray/include
       )
 
 	  # message(${OSP_embree_DIR})
 	  # message(${OSP_embree_DIR}/bin)
     # set(LIB_OSPRAY_EMBREE LIB_OSPRAY_EMBREE-NOTFOUND)
-    # find_library(LIB_OSPRAY_EMBREE NAMES ospray_embree embree 
-      # PATHS ${OSPRAY_BUILD_DIR} ${OSPRAY_BUILD_DIR}/Release 
+    # find_library(LIB_OSPRAY_EMBREE NAMES ospray_embree embree
+      # PATHS ${OSPRAY_BUILD_DIR} ${OSPRAY_BUILD_DIR}/Release
 	  # ${OSP_embree_DIR} ${OSP_embree_DIR}/bin NO_DEFAULT_PATH)
     # mark_as_advanced(LIB_OSPRAY_EMBREE)
 

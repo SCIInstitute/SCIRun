@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <QtGui>
 #include <Interface/Modules/Base/ModuleButtonBar.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -36,7 +36,7 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
 {
   setupUi(this);
 
-  for (auto b : { closeToolButton_, executeDownOnlyToolButton_, executeToolButton_, findToolButton_, helpToolButton_ })
+  for (auto b : std::vector<QWidget*>{ closeToolButton_, executeDownOnlyToolButton_, executeToolButton_, findToolButton_, helpToolButton_, forceAlwaysExecuteCheckBox_, executeInteractivelyCheckBox_ })
   {
     b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
   }
@@ -47,13 +47,13 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
   helpToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/help.png"));
   collapseToolButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ToolBarVerticalExtensionButton));
 
-  connect(executeDownOnlyToolButton_, SIGNAL(clicked()), parent->getExecuteDownstreamAction(), SIGNAL(triggered()));
-  connect(executeToolButton_, SIGNAL(clicked()), parent->getExecuteAction(), SIGNAL(triggered()));
-  connect(closeToolButton_, SIGNAL(clicked()), parent, SIGNAL(closeButtonClicked()));
-  connect(helpToolButton_, SIGNAL(clicked()), parent, SIGNAL(helpButtonClicked()));
-  connect(findToolButton_, SIGNAL(clicked()), parent, SIGNAL(findButtonClicked()));
-  connect(collapseToolButton_, SIGNAL(clicked()), parent, SLOT(toggleCollapse()));
-  connect(collapseToolButton_, SIGNAL(clicked()), this, SLOT(switchIcons()));
+  connect(executeDownOnlyToolButton_, &QPushButton::clicked, parent->getExecuteDownstreamAction(), &QAction::triggered);
+  connect(executeToolButton_, &QPushButton::clicked, parent->getExecuteAction(), &QAction::triggered);
+  connect(closeToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::closeButtonClicked);
+  connect(helpToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::helpButtonClicked);
+  connect(findToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::findButtonClicked);
+  connect(collapseToolButton_, &QPushButton::clicked, parent, &ModuleDialogGeneric::toggleCollapse);
+  connect(collapseToolButton_, &QPushButton::clicked, this, &ModuleButtonBar::switchIcons);
 }
 
 void ModuleButtonBar::setTitle(const QString& title)

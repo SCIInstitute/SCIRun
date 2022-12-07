@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <boost/assign.hpp>
@@ -49,7 +49,7 @@ using ::testing::NiceMock;
 class NetworkTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle(new NiceMock<MockInputPort>));
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle(new NiceMock<MockOutputPort>));
@@ -58,7 +58,7 @@ protected:
     moduleFactory_.reset(new MockModuleFactory);
   }
 
-  virtual void TearDown()
+  void TearDown() override
   {
     moduleFactory_.reset();
     sf_.reset();
@@ -83,10 +83,10 @@ TEST_F(NetworkTests, CanAddAndRemoveModules)
   ModuleLookupInfo mli;
   mli.module_name_ = "Module1";
   ModuleHandle m = network.add_module(mli);
-  EXPECT_EQ(mli.module_name_, m->get_module_name());
+  EXPECT_EQ(mli.module_name_, m->name());
   EXPECT_EQ(1, network.nmodules());
   EXPECT_EQ(m, network.module(0));
-  EXPECT_TRUE(network.remove_module(ModuleId(m->get_id())));
+  EXPECT_TRUE(network.remove_module(ModuleId(m->id())));
   EXPECT_EQ(0, network.nmodules());
   EXPECT_FALSE(network.remove_module(ModuleId("not in the network4")));
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef INTERFACE_APPLICATION_PREFERENCES_H
 #define INTERFACE_APPLICATION_PREFERENCES_H
@@ -55,6 +55,11 @@ public:
   void setModuleErrorInlineMessages(bool showInlineErrors);
 
   void setHighDPIAdjustment(bool highDPI);
+  void setModuleExecuteDownstreamOnly(bool mode);
+  void setAutoRotateViewerOnMouseRelease(bool mode);
+  void setWidgetSelectionCorrection(bool mode);
+  void setToolBarPopupShowDelay(int delay);
+  void setToolBarPopupHideDelay(int delay);
 
 public Q_SLOTS:
   void updateModuleErrorDialogOption(int state);
@@ -62,6 +67,12 @@ public Q_SLOTS:
   void updateSaveBeforeExecuteOption(int state);
   void updateAutoNotesState(int state);
   void updateHighDPIAdjust(int state);
+  void updateForceGridBackground(int state);
+  void updateWidgetSelectionCorrection(int state);
+  void updateAutoRotateViewer(int state);
+  void updateToolBarPopupShowDelay(int delay);
+  void updateToolBarPopupHideDelay(int delay);
+  void updateModuleExecuteDownstream(int state);
 
 protected:
   void hideEvent(QHideEvent * event) override;

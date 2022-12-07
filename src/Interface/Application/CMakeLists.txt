@@ -1,12 +1,10 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -27,27 +25,26 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-##################################################
-# Set sources
-##################################################
-
 
 SET(Interface_Application_SOURCES
   ClosestPortFinder.cc
   DeveloperConsole.cc
-  DialogErrorControl.cc
   GuiApplication.cc
   GuiCommandFactory.cc
   GuiCommands.cc
   GuiLogger.cc
   MainWindowCollaborators.cc
-  ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
   NetworkExecutionProgressBar.cc
   ProvenanceWindow.cc
   SCIRunMainWindow.cc
-  Node.cc
+  SCIRunMainWindowSlotsPublic.cc
+  SCIRunMainWindowSlotsPrivate.cc
+  SCIRunMainWindowQtOverrides.cc
+  SCIRunMainWindowCommandInterface.cc
+  SCIRunMainWindowTreeFunctions.cc
+  SCIRunMainWindowSetup.cc
   Note.cc
   NoteEditor.cc
   Port.cc
@@ -63,19 +60,20 @@ SET(Interface_Application_SOURCES
   ModuleWizard/ModuleWizard.cc
   TriggeredEventsWindow.cc
   Subnetworks.cc
+  MacroEditor.cc
+  StateViewer.cc
+  ModuleOptionsDialogConfiguration.cc
 )
 
 SET(Interface_Application_HEADERS
   ClosestPortFinder.h
   DeveloperConsole.h
-  DialogErrorControl.h
   GuiApplication.h
   GuiCommandFactory.h
   GuiCommands.h
   GuiLogger.h
   HasNotes.h
   MainWindowCollaborators.h
-  ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
   NetworkExecutionProgressBar.h
@@ -83,7 +81,6 @@ SET(Interface_Application_HEADERS
   ProvenanceWindow.h
   SCIRunMainWindow.h
   ShortcutsInterface.h
-  Node.h
   Note.h
   NoteEditor.h
   Connection.h
@@ -99,18 +96,23 @@ SET(Interface_Application_HEADERS
   Subnetworks.h
   ModuleWizard/ModuleWizard.h
   TriggeredEventsWindow.h
+  MacroEditor.h
+  StateViewer.h
+  ModuleOptionsDialogConfiguration.h
 )
 
 SET(Interface_Application_FORMS
   DeveloperConsole.ui
   Module.ui
-  ModuleLogWindow.ui
   ConnectionStyleWizardPage.ui
   OtherSettingsWizardPage.ui
   NetworkSearch.ui
   NoteEditor.ui
   Preferences.ui
   ProvenanceWindow.ui
+  PythonWizardPage.ui
+  PythonWizardCodePage.ui
+  IntWithPythonPage.ui
   SCIRunMainWindow.ui
   ShortcutsInterface.ui
   SubnetEditor.ui
@@ -118,15 +120,21 @@ SET(Interface_Application_FORMS
   RenderWindow.ui
   TagManager.ui
   TriggeredEventsWindow.ui
+  MacroEditor.ui
+  StateViewer.ui
 )
 
 SET(Interface_Application_RESOURCES
 scirun5.qrc
 )
 
-QT4_WRAP_UI(Interface_Application_FORMS_HEADERS ${Interface_Application_FORMS})
-QT4_WRAP_CPP(Interface_Application_HEADERS_MOC ${Interface_Application_HEADERS})
-QT4_ADD_RESOURCES(Interface_Application_RESOURCES_RCC ${Interface_Application_RESOURCES})
+QT_WRAP_UI(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
+QT_WRAP_CPP(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
+QT_ADD_RESOURCES(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
+
+IF(BUILD_BUNDLE)
+  ADD_DEFINITIONS(-DBUILD_BUNDLE)
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_SOURCES}
@@ -167,6 +175,8 @@ TARGET_LINK_LIBRARIES(Interface_Application
 
 ENDIF()
 
+TARGET_LINK_LIBRARIES(Interface_Application
+  ${QT_NETWORK_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Application)

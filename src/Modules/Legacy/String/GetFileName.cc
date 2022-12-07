@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 ///
-///@file  GetFileName.cc
+/// @file  GetFileName.cc
 ///
-///@author
-///   jeroen
+/// @author
+///    jeroen
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/StringPort.h>
@@ -43,7 +43,7 @@ namespace SCIRun {
 using namespace SCIRun;
 
 /// @class GetFileName
-/// @brief This Module gets a filename and stores it in a string. 
+/// @brief This Module gets a filename and stores it in a string.
 
 class GetFileName : public Module {
 public:
@@ -84,20 +84,20 @@ GetFileName::~GetFileName()
 void
 GetFileName::execute()
 {
-  // If there are strings in the list send them down 
+  // If there are strings in the list send them down
   if( stringHandles_.size() )
   {
     StringHandle sHandle = stringHandles_[0];
     stringHandles_.erase( stringHandles_.begin() );
 
     send_output_handle("Full Filename", sHandle );
-      
+
     // If there are still some strings in the list execute again.
     if( stringHandles_.size() )
     {
       want_to_execute();
     }
-  } 
+  }
 
   // Check to see if the input has changed.
   else if( gui_filename_.changed( true ) ||
@@ -115,7 +115,7 @@ GetFileName::execute()
     DenseMatrix *selected = new DenseMatrix(1,1);
 
     selected->put(0, 0, gui_number_in_series_.get() );
- 
+
     // Send the data downstream.
     MatrixHandle handle(selected);
 

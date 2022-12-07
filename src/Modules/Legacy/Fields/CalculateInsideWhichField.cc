@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,90 +25,62 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/Module.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
+#include <Modules/Legacy/Fields/CalculateInsideWhichField.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateInsideWhichFieldAlgorithm.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateIsInsideField.h>
 
-#include <Core/Algorithms/Fields/DistanceField/CalculateInsideWhichField.h>
 
-namespace SCIRun {
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-/// @class CalculateInsideWhichField
-/// @brief Calculate inside which field of a number of given fields a certain
-/// element is located. 
+MODULE_INFO_DEF(CalculateInsideWhichField, NewField, SCIRun)
 
-class CalculateInsideWhichField : public Module 
+CalculateInsideWhichField::CalculateInsideWhichField() : Module(staticInfo_)
 {
-  public:
-    CalculateInsideWhichField(GuiContext*);
-    virtual ~CalculateInsideWhichField() {}
-    virtual void execute();
-    
-  private:
-    GuiString gui_sampling_scheme_;
-    GuiDouble gui_outside_value_;
-    GuiDouble gui_start_value_;
-    GuiString gui_method_;
-    GuiString gui_change_outside_values_;
-    GuiString gui_output_type_;  
-    GuiString gui_datalocation_;
-    
-    SCIRunAlgo::CalculateInsideWhichFieldAlgo algo_;
-};
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputFields);
 
-
-DECLARE_MAKER(CalculateInsideWhichField)
-CalculateInsideWhichField::CalculateInsideWhichField(GuiContext* ctx)
-  : Module("CalculateInsideWhichField", ctx, Source, "ChangeFieldData", "SCIRun"),
-    gui_sampling_scheme_(ctx->subVar("sampling-scheme"),"regular2"),
-    gui_outside_value_(ctx->subVar("outside-value"),0.0),
-    gui_start_value_(ctx->subVar("start-value"),1.0),
-    gui_method_(ctx->subVar("method"),"one"),
-    gui_change_outside_values_(ctx->subVar("change-output-values"),"true"), 
-    gui_output_type_(ctx->subVar("outputtype"),"same as input"),
-    gui_datalocation_(ctx->subVar("datalocation"),"elem")
-{
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(OutputField);
 }
 
+void CalculateInsideWhichField::setStateDefaults()
+{
+  setStateStringFromAlgoOption(Parameters::Method);
+  setStateStringFromAlgoOption(Parameters::SamplingScheme);
+  setStateStringFromAlgoOption(Parameters::ChangeOutsideValue);
+  setStateDoubleFromAlgo(Parameters::OutsideValue);
+  setStateDoubleFromAlgo(Parameters::StartValue);
+  setStateStringFromAlgoOption(Parameters::OutputType);
+  setStateStringFromAlgoOption(Parameters::DataLocation);
+}
 
 void CalculateInsideWhichField::execute()
 {
-  SCIRun::FieldHandle input, output;
-  std::vector<SCIRun::FieldHandle> objectfields;
-  
-  get_input_handle("Field",input,true);
-  get_dynamic_input_handles("Object",objectfields,true);
+  auto field=getRequiredInput(InputField);
+  auto fields = getRequiredDynamicInputs(InputFields);
 
-  if (objectfields.size() == 0) return;
-  
-  if (inputs_changed_ || gui_output_type_.changed() || 
-      gui_sampling_scheme_.changed() ||
-      gui_outside_value_.changed() ||
-      gui_start_value_.changed() ||
-      gui_method_.changed() ||
-      gui_change_outside_values_.changed() || 
-      gui_datalocation_.changed() || 
-      !oport_cached("Field"))
+  if (needToExecute())
   {
-    update_state(Executing);
-    
-    algo_.set_option("sampling_scheme",gui_sampling_scheme_.get());
-    algo_.set_scalar("outside_value",gui_outside_value_.get());
-    algo_.set_scalar("start_value",gui_start_value_.get());
-    algo_.set_option("method",gui_method_.get());
-    algo_.set_bool("change_outside_values",(gui_change_outside_values_.get()=="true"));
-    algo_.set_option("output_type",gui_output_type_.get());
-    algo_.set_option("data_location",gui_datalocation_.get());
+    setAlgoOptionFromState(Parameters::Method);
+    setAlgoOptionFromState(Parameters::SamplingScheme);
+    setAlgoOptionFromState(Parameters::ChangeOutsideValue);
+    setAlgoDoubleFromState(Parameters::OutsideValue);
+    setAlgoDoubleFromState(Parameters::StartValue);
+    setAlgoOptionFromState(Parameters::OutputType);
+    setAlgoOptionFromState(Parameters::DataLocation);
 
-    if(!(algo_.run(input,objectfields,output))) return; 
-    send_output_handle("Field", output);
+    auto output = algo().run(withInputData((InputField, field)(InputFields, fields)));
+
+    sendOutputFromAlgorithm(OutputField,output);
   }
 }
-
-} // End namespace SCIRun
-

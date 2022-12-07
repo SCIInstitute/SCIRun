@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,13 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef TESTING_UTIL_MATRIXTESTUTILITIES
 #define TESTING_UTIL_MATRIXTESTUTILITIES 1
 
 #include <gtest/gtest.h>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/timer.hpp>
 #include <boost/assign.hpp>
 #include <boost/filesystem.hpp>
 #include <stdexcept>
@@ -41,43 +40,50 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Utils/StringUtil.h>
+#include <Core/Logging/ScopedTimeRemarker.h>
 
 #include <Testing/Utils/share.h>
 
-namespace SCIRun 
-{ 
+
+
+namespace SCIRun
+{
 
 namespace TestUtils
 {
 
 inline bool equal_size(const Core::Datatypes::Matrix& m1, const Core::Datatypes::Matrix& m2)
 {
-  return m1.nrows() == m2.nrows() 
+  return m1.nrows() == m2.nrows()
     && m1.ncols() == m2.ncols();
 }
+
+#if BOOST_VERSION >= 106700
+namespace btt = boost::math::fpc;
+#else
+namespace btt = boost::test_tools;
+#endif
 
 #define DEFAULT_MATRIX_PERCENT_TOLERANCE 1e-5
 
 //TODO improve error reporting
 inline bool compare_with_tolerance(const Core::Datatypes::DenseMatrix& m1, const Core::Datatypes::DenseMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
 {
-  using namespace boost::test_tools;
   return equal_size(m1, m2) &&
     std::equal(m1.data(), m1.data() + m1.size(), m2.data(),
-    close_at_tolerance<double>(percent_tolerance(percentTolerance)));
+		btt::close_at_tolerance<double>(btt::percent_tolerance(percentTolerance)));
 }
 
 inline bool compare_with_tolerance(const Core::Datatypes::SparseRowMatrix& m1, const Core::Datatypes::SparseRowMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
 {
-  using namespace boost::test_tools;
   return equal_size(m1, m2) &&
     std::equal(m1.valuePtr(), m1.valuePtr() + m1.nonZeros(), m2.valuePtr(),
-    close_at_tolerance<double>(percent_tolerance(percentTolerance)));
+		btt::close_at_tolerance<double>(btt::percent_tolerance(percentTolerance)));
 }
 
 inline ::testing::AssertionResult compare_with_tolerance_readable(const Core::Datatypes::DenseMatrix& m1, const Core::Datatypes::DenseMatrix& m2, double percentTolerance, int printSize = 50)
 {
-  return compare_with_tolerance(m1, m2, percentTolerance) ? 
+  return compare_with_tolerance(m1, m2, percentTolerance) ?
     ::testing::AssertionSuccess() :
   ::testing::AssertionFailure() << "Matrix 1: \n"<< matrix_to_string(m1).substr(0, printSize) << "\nMatrix 2: \n" << matrix_to_string(m2).substr(0, printSize);
 }
@@ -96,12 +102,12 @@ inline double relative_infinity_norm(const Core::Datatypes::DenseColumnMatrix& x
   double num = diff.lpNorm<Eigen::Infinity>();
   double denom = xhat.lpNorm<Eigen::Infinity>();
 
-  return num / denom; 
+  return num / denom;
 }
 
 inline ::testing::AssertionResult compare_with_relative_infinity_norm(const Core::Datatypes::DenseColumnMatrix& x, const Core::Datatypes::DenseColumnMatrix& xhat, double relativeError = DEFAULT_MATRIX_PERCENT_TOLERANCE, int printSize = 50)
 {
-  return relative_infinity_norm(x, xhat) < relativeError ? 
+  return relative_infinity_norm(x, xhat) < relativeError ?
     ::testing::AssertionSuccess() :
   ::testing::AssertionFailure() << "ColumnMatrix 1: \n"<< matrix_to_string(x).substr(0, printSize) << "ColumnMatrix 2: \n" << matrix_to_string(xhat).substr(0, printSize);
 }
@@ -110,7 +116,7 @@ inline ::testing::AssertionResult compare_with_relative_infinity_norm(const Core
 inline ::testing::AssertionResult compare_with_two_norm(const Core::Datatypes::DenseColumnMatrix& x, const Core::Datatypes::DenseColumnMatrix& xhat, double error = 1e-15, int printSize = 50)
 {
   double delta = (x - xhat).norm();
-  return delta < error ? 
+  return delta < error ?
     ::testing::AssertionSuccess() :
   ::testing::AssertionFailure() <<
     "Vectors are " << delta << " apart, expect less than " << error << " distance apart.\n" <<
@@ -128,7 +134,7 @@ inline void copyDenseToSparse(const Core::Datatypes::DenseMatrix& from, Core::Da
 
 inline Core::Datatypes::SparseRowMatrixHandle toSparseHandle(const Core::Datatypes::DenseMatrix& dense)
 {
-  Core::Datatypes::SparseRowMatrixHandle sp(boost::make_shared<Core::Datatypes::SparseRowMatrix>(static_cast<int>(dense.rows()), static_cast<int>(dense.cols())));
+  Core::Datatypes::SparseRowMatrixHandle sp(makeShared<Core::Datatypes::SparseRowMatrix>(static_cast<int>(dense.rows()), static_cast<int>(dense.cols())));
   copyDenseToSparse(dense, *sp);
   sp->makeCompressed();
   return sp;
@@ -146,7 +152,7 @@ inline Core::Datatypes::DenseMatrixHandle makeDense(const Core::Datatypes::Spars
   }
   return dense;
 }
- 
+
 //TODO improve failure reporting
 
 #define EXPECT_MATRIX_EQ_TOLERANCE(actual, expected, tolerance) EXPECT_TRUE(compare_with_tolerance_readable((actual), (expected), (tolerance)))
@@ -167,7 +173,7 @@ inline Core::Datatypes::DenseMatrixHandle makeDense(const Core::Datatypes::Spars
 
 // Note: this approach is limited to matrices with <= 5 columns, due to the implementation of boost::assign::tuple_list_of.
 template <class Tuple>
-Core::Datatypes::DenseMatrix convertDataToMatrix(const std::vector<Tuple>& matrixData) 
+Core::Datatypes::DenseMatrix convertDataToMatrix(const std::vector<Tuple>& matrixData)
 {
   typedef typename boost::tuples::element<0,Tuple>::type element0type;
   typedef boost::is_convertible<element0type, double> CanConvertToDouble;
@@ -201,26 +207,25 @@ inline std::vector<typename Cont::value_type> to_vector(const Cont& cont)
 
 #define MAKE_DENSE_MATRIX(x) (convertDataToMatrix(to_vector(boost::assign::tuple_list_of x)))
 
-#define MAKE_DENSE_MATRIX_HANDLE(x) (boost::make_shared<SCIRun::Core::Datatypes::DenseMatrix>(MAKE_DENSE_MATRIX(x)))
+#define MAKE_DENSE_MATRIX_HANDLE(x) (makeShared<SCIRun::Core::Datatypes::DenseMatrix>(MAKE_DENSE_MATRIX(x)))
 
 #define MAKE_SPARSE_MATRIX_HANDLE(x) (toSparseHandle(MAKE_DENSE_MATRIX(x)))
 
 struct SCISHARE ScopedTimer
 {
-  explicit ScopedTimer(const std::string& name) : name_(name) 
+  explicit ScopedTimer(const std::string& name) : name_(name)
   {
     std::cout << "Starting timer " << name_ << std::endl;
-    t_.restart();
   }
 
   ~ScopedTimer()
   {
-    double elapsed = t_.elapsed();
+    const auto elapsed = t_.elapsedSeconds();
     std::cout << "Timer " << name_ << " stopped at " << elapsed << " seconds." << std::endl;
   }
 
   std::string name_;
-  boost::timer t_;
+  Core::Logging::SimpleScopedTimer t_;
 };
 
 // TODO: move to Field utils file

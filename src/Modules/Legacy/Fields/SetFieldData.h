@@ -1,11 +1,10 @@
-/*
+/*/*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_FIELDS_SetFieldData_H__
 #define MODULES_FIELDS_SetFieldData_H__
 
@@ -43,15 +43,15 @@ namespace SCIRun {
       public:
         SetFieldData();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
         INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, InputMatrix, Matrix);
         INPUT_PORT(2, InputNrrd, NrrdDataType);
         INPUT_PORT(3, InputComplexMatrix, ComplexDenseMatrix);
         OUTPUT_PORT(0, OutputField, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
 
     }

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -73,7 +73,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Elem::index_type idx = start; idx < end; idx++)
         {
-          checkForInterruption();
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
 
@@ -140,7 +140,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0) val = -(val);
             }
           }
-          checkForInterruption();
+
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -158,7 +158,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Node::index_type idx =start; idx <end; idx++)
         {
-          checkForInterruption();
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,fidx,p);
@@ -224,7 +224,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption();
+
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -242,7 +242,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::ENode::index_type idx=start; idx < end; idx++)
         {
-          checkForInterruption();
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,fidx,p);
@@ -308,7 +308,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption();
+
           ofield->set_evalue(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -338,7 +338,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Elem::index_type idx = start; idx < end; idx++)
         {
-          checkForInterruption();
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
 
@@ -405,7 +405,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0) val = -(val);
             }
           }
-          checkForInterruption();
+
           ofield->set_value(val,idx);
           if (objfield->is_scalar())
           {
@@ -442,7 +442,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Node::index_type idx =start; idx <end; idx++)
         {
-          checkForInterruption();
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,coords,fidx,p);
@@ -509,7 +509,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption();
+
           ofield->set_value(val,idx);
           if (objfield->is_scalar())
           {
@@ -546,7 +546,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::ENode::index_type idx=start; idx < end; idx++)
         {
-          checkForInterruption();
+
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,coords,fidx,p);
@@ -612,7 +612,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
-          checkForInterruption();
+
           ofield->set_evalue(val,idx);
           if (objfield->is_scalar())
           {
@@ -721,7 +721,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, ofield, this);
   const int numThreads = Parallel::NumCores();
-  auto task_i = [&palgo,numThreads,this](int i) { palgo.parallel(i, numThreads); };
+  auto task_i = [&palgo,numThreads](int i) { palgo.parallel(i, numThreads); };
   Parallel::RunTasks(task_i, numThreads);
 
   return (true);
@@ -810,7 +810,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
 
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, objfield, dfield, vfield, this);
 
-  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  auto task_i = [&palgo](int i) { palgo.parallel2(i, Parallel::NumCores()); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);

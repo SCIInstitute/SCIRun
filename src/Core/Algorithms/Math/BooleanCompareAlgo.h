@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #ifndef CORE_ALGORITHMS_MATH_BooleanCompareALGO_H
 #define CORE_ALGORITHMS_MATH_BooleanCompareALGO_H
@@ -53,13 +53,13 @@ namespace Math {
   ALGORITHM_PARAMETER_DECL(Then_Option);
   ALGORITHM_PARAMETER_DECL(Else_Option);
   ALGORITHM_PARAMETER_DECL(Comparison_Option);
-                           
+
 class SCISHARE BooleanCompareAlgo : public AlgorithmBase
 {
 
   public:
     BooleanCompareAlgo();
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   bool runImpl(Datatypes::DenseMatrixHandle matrixa, Datatypes::DenseMatrixHandle matrixb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const;
   bool runImpl(Datatypes::DenseMatrixHandle matrixa, std::string valoptA, std::string& cond_statement, int& cond_state) const;
   bool return_check(int& cond_state, Datatypes::DenseMatrixHandle& cond_matrix, Datatypes::MatrixHandle& out_matrix, std::string then_result, std::string else_result, Datatypes::MatrixHandle matrixa, Datatypes::MatrixHandle matrixb, Datatypes::MatrixHandle possout) const;

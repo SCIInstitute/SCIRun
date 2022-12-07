@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
@@ -44,4 +44,14 @@ GeneratePointSamplesFromFieldDialog::GeneratePointSamplesFromFieldDialog(const s
 
   addDoubleSpinBoxManager(seedSizeDoubleSpinBox_, Parameters::ProbeScale);
   addSpinBoxManager(numberOfSeedsSpinBox_, Parameters::NumSeeds);
+  addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxScale);
+  addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxScale);
+
+  connect(bboxScaleCheckBox_, &QCheckBox::stateChanged, this, &GeneratePointSamplesFromFieldDialog::toggleSpinBoxes);
+}
+
+void GeneratePointSamplesFromFieldDialog::toggleSpinBoxes()
+{
+  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
+  seedSizeDoubleSpinBox_->setEnabled(!seedSizeDoubleSpinBox_->isEnabled());
 }

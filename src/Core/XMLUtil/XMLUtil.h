@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -59,13 +58,13 @@ bool string_is(const xmlChar *childname, const char *const name) {
 SCISHARE xmlAttrPtr get_attribute_by_name(const xmlNodePtr p, const char *name);
 SCISHARE bool get_attributes(std::vector<xmlNodePtr> &att, const xmlNodePtr p);
 
-      
+
 //////////////////////////////
 // getSerializedChildren()
 // returns a string in XML format that
 // represents the children of the node
 // named "node".
-      
+
 SCISHARE std::string get_serialized_children(xmlNode* node);
 
 
@@ -87,17 +86,17 @@ SCISHARE std::string get_serialized_children(xmlNode* node);
       else
         return std::string("");
     }
-    
+
     SCISHARE bool node_is_element(const xmlNodePtr p, const char *);
     SCISHARE bool node_is_dtd(const xmlNodePtr p, const std::string &);
     SCISHARE bool node_is_comment(const xmlNodePtr p);
 
     SCISHARE const char *maybe_get_att_as_const_char_str(const xmlNodePtr p, const char *);
-    SCISHARE bool maybe_get_att_as_int(const xmlNodePtr p, const std::string &, 
+    SCISHARE bool maybe_get_att_as_int(const xmlNodePtr p, const std::string &,
                                        int &);
-    SCISHARE bool maybe_get_att_as_double(const xmlNodePtr p, const std::string &, 
+    SCISHARE bool maybe_get_att_as_double(const xmlNodePtr p, const std::string &,
                                           double&);
-    SCISHARE bool maybe_get_att_as_string(const xmlNodePtr p, const std::string &, 
+    SCISHARE bool maybe_get_att_as_string(const xmlNodePtr p, const std::string &,
                                           std::string&);
 
 

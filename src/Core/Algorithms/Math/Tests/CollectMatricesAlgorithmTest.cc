@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/MatrixFwd.h>
@@ -36,7 +36,7 @@
 
 #include <Testing/Utils/MatrixTestUtilities.h>
 
-using namespace boost::assign; 
+using namespace boost::assign;
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -89,7 +89,7 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendZeroColumns)
 
   EXPECT_MATRIX_EQ(*denseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<DenseMatrix>(-*m1);
+  auto neg_m1 = makeShared<DenseMatrix>(-*m1);
   out = algo.concat_cols(m2, neg_m1);
   denseOut = castMatrix::toDense(out);
   EXPECT_MATRIX_EQ(*denseOut, *neg_m1);
@@ -107,7 +107,7 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendZeroRows)
 
   EXPECT_MATRIX_EQ(*denseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<DenseMatrix>(-*m1);
+  auto neg_m1 = makeShared<DenseMatrix>(-*m1);
   out = algo.concat_rows(m2, neg_m1);
   denseOut = castMatrix::toDense(out);
 
@@ -123,7 +123,7 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendColumns)
   SparseRowMatrixHandle m1 = MAKE_SPARSE_MATRIX_HANDLE((1, 2, 3)(4, 5, 6)(7, 8, 9));
   SparseRowMatrixHandle m2 = MAKE_SPARSE_MATRIX_HANDLE((-1, -2)(-4, -5)(-7, -8));
   MatrixHandle out = algo.concat_cols(m1, m2);
-  
+
   ASSERT_TRUE(matrixIs::sparse(out));
   auto sparseOut = castMatrix::toSparse(out);
   //convert to dense for comparison
@@ -168,10 +168,10 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendZeroColumns)
   auto sparseOut = castMatrix::toSparse(out);
   //convert to dense for comparison
   //auto denseOut = makeDense(*sparseOut);
-  
+
   EXPECT_MATRIX_EQ(*sparseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<SparseRowMatrix>(-*m1);
+  auto neg_m1 = makeShared<SparseRowMatrix>(-*m1);
   out = algo.concat_cols(m2, neg_m1);
   sparseOut = castMatrix::toSparse(out);
 
@@ -188,10 +188,10 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendZeroRows)
 
   ASSERT_TRUE(matrixIs::sparse(out));
   auto sparseOut = castMatrix::toSparse(out);
-  
+
   EXPECT_MATRIX_EQ(*sparseOut, *m1);
 
-  auto neg_m1 = boost::make_shared<SparseRowMatrix>(-*m1);
+  auto neg_m1 = makeShared<SparseRowMatrix>(-*m1);
   out = algo.concat_rows(m2, neg_m1);
   sparseOut = castMatrix::toSparse(out);
 

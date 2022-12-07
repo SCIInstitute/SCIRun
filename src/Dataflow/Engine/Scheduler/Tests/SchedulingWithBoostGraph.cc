@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,20 +25,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
@@ -51,23 +48,10 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
 
-#include <boost/config.hpp> // put this first to suppress some VC++ warnings
-#include <boost/lockfree/spsc_queue.hpp>
-
-#include <iostream>
-#include <iterator>
-#include <algorithm>
-#include <numeric>
 #include <queue>
-#include <ctime>
 
-#include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/graph/visitors.hpp>
-#include <boost/thread.hpp>
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
@@ -94,15 +78,15 @@ namespace
   {
   public:
     InstanceCountIdGenerator() : instanceCount_(0) {}
-    virtual int makeId(const std::string& /*name*/) override final
+    int makeId(const std::string& /*name*/) override final
     {
       return instanceCount_++;
     }
-    virtual bool takeId(const std::string& name, int id) override final
+    bool takeId(const std::string& name, int id) override final
     {
       return false;
     }
-    virtual void reset() override final
+    void reset() override final
     {
       instanceCount_ = 0;
     }
@@ -208,12 +192,12 @@ protected:
     //Set module parameters.
     matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
     matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix2str());
-    transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-    negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-    scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+    transpose->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE));
+    negate->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
+    scalar->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
     scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
-    multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-    add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+    multiply->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::MULTIPLY));
+    add->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraBinaryAlgorithm::Operator::ADD));
   }
 };
 
@@ -229,7 +213,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   executor.execute(context, order, m);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
+  std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
@@ -258,9 +242,8 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   EXPECT_EQ(2, matrixMathNetwork.nconnections());
 
   //Set module parameters.
-  negate->get_state()->setValue(Variables::Operator,
-    EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  negate->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE));
+  scalar->get_state()->setValue(Variables::Operator, static_cast<int>(EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY));
   scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
 
   BoostGraphSerialScheduler scheduler;
@@ -277,15 +260,15 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   //BasicMultithreadedNetworkExecutor executor;
   //executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
   BasicParallelExecutionStrategy strategy;
-  ExecutionContext context(matrixMathNetwork, matrixMathNetwork);
+  ExecutionContext context(matrixMathNetwork, &matrixMathNetwork);
   Mutex m("exec");
   strategy.execute(context, m);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
+  std::this_thread::sleep_for(std::chrono::milliseconds(800));
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  auto reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
   //DenseMatrixHandle receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   //ASSERT_TRUE(receivedMatrix.get() != nullptr);
@@ -345,7 +328,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
 {
   setupBasicNetwork();
 
-  ModuleFilter filter = [](ModuleHandle mh) { return mh->get_module_name().find("Unary") == std::string::npos; };
+  ModuleFilter filter = [](ModuleHandle mh) { return mh->name().find("Unary") == std::string::npos; };
   BoostGraphParallelScheduler scheduler(filter);
   auto order = scheduler.schedule(matrixMathNetwork);
   std::ostringstream ostr;
@@ -450,12 +433,12 @@ namespace ThreadingPrototype
 
     void run()
     {
-      boost::this_thread::sleep(boost::posix_time::milliseconds(runtime));
+      std::this_thread::sleep_for(std::chrono::milliseconds(runtime));
       done = true;
     }
   };
 
-  typedef boost::shared_ptr<Unit> UnitPtr;
+  typedef SharedPointer<Unit> UnitPtr;
 
   bool operator<(const Unit& lhs, const Unit& rhs)
   {
@@ -489,7 +472,7 @@ namespace ThreadingPrototype
 
   UnitPtr makeUnit()
   {
-    return UnitPtr(new Unit(boost::lexical_cast<std::string>(rand())));
+    return UnitPtr(new Unit(std::to_string(rand())));
   }
 
   std::ostream& operator<<(std::ostream& o, const UnitPtr& u)
@@ -643,8 +626,8 @@ namespace ThreadingPrototype
     DoneList done;
     WorkUnitConsumer consumer(workQ, producer, done, mutex);
 
-    boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer::run, producer));
-    boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer::run, consumer));
+    std::thread tR(boost::bind(&WorkUnitProducer::run, producer));
+    std::thread tC(boost::bind(&WorkUnitConsumer::run, consumer));
 
     tR.join();
     tC.join();
@@ -787,8 +770,8 @@ namespace ThreadingPrototype
     DoneList done;
     WorkUnitConsumer2 consumer(workQ, producer, done);
 
-    boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer2::run, producer));
-    boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer2::run, consumer));
+    std::thread tR(boost::bind(&WorkUnitProducer2::run, producer));
+    std::thread tC(boost::bind(&WorkUnitConsumer2::run, consumer));
 
     tR.join();
     tC.join();

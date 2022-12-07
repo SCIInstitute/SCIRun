@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,89 +25,76 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
-#include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-namespace SCIRun {
+#include <Modules/Legacy/Fields/ApplyFilterToFieldData.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Legacy/Fields/FilterFieldData/DilateFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FilterFieldData/ErodeFieldData.h>
 
 using namespace SCIRun;
-using namespace SCIRunAlgo;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+MODULE_INFO_DEF(ApplyFilterToFieldData, ChangeFieldData, SCIRun)
+
+ALGORITHM_PARAMETER_DEF(Fields, Erode)
+ALGORITHM_PARAMETER_DEF(Fields, Dilate)
+
+ApplyFilterToFieldData::ApplyFilterToFieldData() :
+  Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
 
 /// @class ApplyFilterToFieldData
-/// @brief Applies a dilate or erode filter to a regular mesh. 
+/// @brief Applies a dilate or erode filter to a regular mesh.
 
-class ApplyFilterToFieldData : public Module {
-  public:
-    ApplyFilterToFieldData(GuiContext*);
-    virtual ~ApplyFilterToFieldData() {}
-    virtual void execute();
-
-  private:
-    GuiString method_;
-    GuiString edmethod_;
-    GuiInt edniter_;
-    
-    SCIRunAlgo::ErodeFieldDataAlgo  erode_algo_;
-    SCIRunAlgo::DilateFieldDataAlgo dilate_algo_;
-};
-
-
-DECLARE_MAKER(ApplyFilterToFieldData)
-
-ApplyFilterToFieldData::ApplyFilterToFieldData(GuiContext* ctx) :
-  Module("ApplyFilterToFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
-    method_(ctx->subVar("method")),
-    edmethod_(ctx->subVar("ed-method")),
-    edniter_(ctx->subVar("ed-iterations"))
+void ApplyFilterToFieldData::setStateDefaults()
 {
-  erode_algo_.set_progress_reporter(this);
-  dilate_algo_.set_progress_reporter(this);
+  auto state = get_state();
+  state->setValue(Core::Algorithms::Variables::MaxIterations, 2);
+  state->setValue(Parameters::Erode, true);
+  state->setValue(Parameters::Dilate, false);
 }
 
-
-void
-ApplyFilterToFieldData::execute()
+void ApplyFilterToFieldData::execute()
 {
-  FieldHandle input, output;
-  
-  get_input_handle("Field",input,true);
-  
-  if (inputs_changed_ || !oport_cached("Field") || method_.changed() ||
-      edmethod_.changed() || edniter_.changed())
+  auto input = getRequiredInput(InputField);
+
+  if (needToExecute())
   {
-    // Inform module that execution started
-    update_state(Executing);
-  
-    if (method_.get() == "erodedilate")
+    auto state = get_state();
+    auto iters = state->getValue(Variables::MaxIterations).toInt();
+    auto doDilate = state->getValue(Parameters::Dilate).toBool();
+    auto doErode = state->getValue(Parameters::Erode).toBool();
+    FieldHandle output;
+    // Dilate then erode
+    if (doDilate)
     {
-      if (edmethod_.get() == "erode")
+      DilateFieldDataAlgo dilate;
+      dilate.set(Variables::MaxIterations, iters);
+      if (!dilate.runImpl(input, output))
       {
-        erode_algo_.set_int("num_iterations",edniter_.get());
-        if(!(erode_algo_.run(input,output))) return;
+        THROW_ALGORITHM_PROCESSING_ERROR("Error in dilate algo");
       }
-      else  if (edmethod_.get() == "dilate")
+      input = output;
+    }
+    if (doErode)
+    {
+      ErodeFieldDataAlgo erode;
+      erode.set(Variables::MaxIterations, iters);
+      if (!erode.runImpl(input, output))
       {
-        dilate_algo_.set_int("num_iterations",edniter_.get());
-        if(!(dilate_algo_.run(input,output))) return;
-      }
-      else
-      {
-        erode_algo_.set_int("num_iterations",edniter_.get());
-        dilate_algo_.set_int("num_iterations",edniter_.get());
-        if(!(erode_algo_.run(input,output))) return;
-        if(!(dilate_algo_.run(output,output))) return;
+        THROW_ALGORITHM_PROCESSING_ERROR("Error in erode algo");
       }
     }
-  
-    // Send output to output ports
-    send_output_handle("Field",output,true);
+    if (doDilate || doErode)
+      sendOutput(OutputField, output);
+    else //legacy behavior--unfiltered input
+      sendOutput(OutputField, input);
   }
 }
-
-
-} // End namespace SCIRun
-
-

@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,14 +25,25 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Modules_Python_SRCS
   PythonObjectForwarder.cc
   InterfaceWithPython.cc
+  PythonInterfaceParser.cc
+  ModuleStateModifierTester.cc
+  LoopEnd.cc
+  LoopStart.cc
+  #LoopIncrement.cc
 )
 
 SET(Modules_Python_HEADERS
   PythonObjectForwarder.h
   InterfaceWithPython.h
+  PythonInterfaceParser.h
+  ModuleStateModifierTester.h
+  LoopEnd.h
+  LoopStart.h
+  #LoopIncrement.h
   share.h
 )
 

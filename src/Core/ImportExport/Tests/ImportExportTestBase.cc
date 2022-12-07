@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
@@ -208,7 +208,7 @@ TEST(ImportExportPluginManagerTest, DuplicatesByNameGetAddedUnderIncrementedName
 
 TEST(WriteMatrixTests, FileExtensionRegex)
 {
-  EXPECT_EQ("SCIRun Field File", fileTypeDescriptionFromDialogBoxFilter(defaultImportTypeForFile<Field>(0)));
+  EXPECT_EQ("SCIRun Field File", fileTypeDescriptionFromDialogBoxFilter(defaultImportTypeForFile<Field>(nullptr)));
   EXPECT_EQ("ObjToField", fileTypeDescriptionFromDialogBoxFilter("ObjToField (*.obj)"));
   EXPECT_EQ("SCIRun Field ASCII", fileTypeDescriptionFromDialogBoxFilter("SCIRun Field ASCII (*.fld)"));
   EXPECT_EQ("SCIRun Field Binary", fileTypeDescriptionFromDialogBoxFilter("SCIRun Field Binary (*.fld)"));

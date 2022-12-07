@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,12 +23,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+	 Author: 				Allen R. Sanderson
+	 Date: 					July 2006
 */
-
-
-//    File   : StreamLineIntegrators.cc
-//    Author : Allen R. Sanderson
-//    Date   : July 2006
 
 
 #include <Core/Algorithms/Legacy/Fields/StreamLines/StreamLineIntegrators.h>
@@ -262,21 +259,21 @@ StreamLineIntegrators::ComputeRKFTerms(Vector v[6],       // storage for terms
 void
 StreamLineIntegrators::integrate(IntegrationMethod method)
 {
-  switch ( method ) 
+  switch ( method )
   {
-  case AdamsBashforth:
+  case IntegrationMethod::AdamsBashforth:
     FindAdamsBashforth();
     break;
 
-  case Heun:
+  case IntegrationMethod::Heun:
     FindHeun();
     break;
 
-  case RungeKutta:
+  case IntegrationMethod::RungeKutta:
     FindRK4();
     break;
 
-  case RungeKuttaFehlberg:
+  case IntegrationMethod::RungeKuttaFehlberg:
     FindRKF();
     break;
   default:

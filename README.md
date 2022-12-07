@@ -1,10 +1,13 @@
 ![SCIRun Banner](http://www.sci.utah.edu/images/software/SCIRun/scirun.png "")
 
 ## SCIRun 5
-https://github.com/SCIInstitute/SCIRun
+<!-- https://github.com/SCIInstitute/SCIRun -->
 
 [![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
-[![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun)
+![mac-build](https://github.com/SCIInstitute/SCIRun/workflows/mac-build/badge.svg)
+![linux-build](https://github.com/SCIInstitute/SCIRun/workflows/linux-build/badge.svg)
+![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
+<!-- [![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun) -->
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
@@ -27,23 +30,23 @@ SCIRun 5 is a complete rewrite of the GUI front end and graphical components of 
 efficient middle layer, with support for Python scripting.
 
 ### Documentation
-For documentation, please see: http://sciinstitute.github.io/scirun.pages
+For documentation, please see: https://scirun.readthedocs.io/en/latest/
 
 #### Build
-Please see http://sciinstitute.github.io/scirun.pages/build.html
+Please see https://scirun.readthedocs.io/en/latest/start/build.html
 
 #### Python API
-Please see http://sciinstitute.github.io/scirun.pages/python.html
+Please see https://scirun.readthedocs.io/en/latest/user_doc/python.html
 
 ### Questions and Answers
-For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
+For help, check out the discussion page: https://github.com/SCIInstitute/SCIRun/discussions.
 
 ### License and Credits
   For more information, please see: http://software.sci.utah.edu
 
   The MIT License
 
-  Copyright (c) 2016 Scientific Computing and Imaging Institute,
+  Copyright (c) 2020 Scientific Computing and Imaging Institute,
   University of Utah.
 
 

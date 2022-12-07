@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 /// @todo Documentation Dataflow/Network/ModuleStateInterface.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
@@ -34,7 +34,6 @@
 #include <string>
 #include <iostream>
 #include <boost/signals2/signal.hpp>
-#include <boost/optional.hpp>
 #include <boost/any.hpp>
 #include <boost/atomic.hpp>
 #include <Core/Algorithms/Base/Name.h>
@@ -46,11 +45,17 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+/*
+  Big change coming: separate into three different "Solid/Liquid/Gas" states. All with same interface, with
+  more fine-grained signal control.
+  Or, have each state key/value be setup with a save/load spec object, that could provide the signaling behavior
+*/
+
   class SCISHARE ModuleStateInterface
   {
   public:
     virtual ~ModuleStateInterface();
-    
+
     typedef SCIRun::Core::Algorithms::AlgorithmParameterName Name;
     typedef SCIRun::Core::Algorithms::AlgorithmParameter Value;
     typedef std::vector<Name> Keys;
@@ -61,13 +66,13 @@ namespace Networks {
     virtual bool containsKey(const Name& name) const = 0;
     virtual Keys getKeys() const = 0;
     virtual ModuleStateHandle clone() const = 0;
-    
+
     // this function preserves key/value pairs not in other
     void overwriteWith(const ModuleStateInterface& other);
 
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
     typedef boost::any TransientValue;
-    typedef boost::optional<TransientValue> TransientValueOption;
+    typedef std::optional<TransientValue> TransientValueOption;
     virtual TransientValueOption getTransientValue(const Name& name) const = 0;
     TransientValueOption getTransientValue(const std::string& name) const { return getTransientValue(Name(name)); }
     virtual void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) = 0;
@@ -79,7 +84,11 @@ namespace Networks {
 
     virtual boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) = 0;
     virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) = 0;
+    virtual void disconnectAll() = 0;
   };
+
+  SCISHARE void setModuleAlwaysExecute(ModuleStateHandle state, bool toggle);
+  SCISHARE bool getModuleAlwaysExecute(ModuleStateHandle state);
 
   class SCISHARE ModuleStateInterfaceFactory
   {
@@ -107,7 +116,7 @@ namespace Networks {
   template <class T>
   T transient_value_cast(const ModuleStateInterface::TransientValueOption& x)
   {
-    return x ? any_cast_or_default_<T>(*x) : T();
+    return x.has_value() ? any_cast_or_default_<T>(*x) : T();
   }
 
   template <class T>
@@ -143,7 +152,7 @@ namespace Networks {
   T transient_value_cast_with_variable_check(const ModuleStateInterface::TransientValueOption& x)
   {
     if (!x)
-      return{};
+      return {};
 
     if (transient_value_check<T>(x))
       return any_cast_or_default_<T>(*x);

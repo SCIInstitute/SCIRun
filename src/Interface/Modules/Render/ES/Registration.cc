@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,12 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 // ReSharper disable once CppUnusedIncludeDirective
 #include <gl-platform/GLPlatform.hpp>
 #include "Registration.h"
 #include "CoreBootstrap.h"
 #include "AssetBootstrap.h"
-#include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
@@ -56,7 +55,6 @@ void rendererRegisterAll(spire::Acorn& core)
   registerSystem_RenderTransTextGeom(core);
 
   // Register components
-  core.registerComponent<StaticSRInterface>();
   core.registerComponent<StaticWorldLight>();
   core.registerComponent<StaticClippingPlanes>();
   core.registerComponent<LightingUniforms>();
@@ -69,4 +67,3 @@ void rendererRegisterAll(spire::Acorn& core)
 
 } // namespace Render
 } // namespace SCIRun
-

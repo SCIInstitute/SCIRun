@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_FIELDS_REGISTERWITHCORRESPONDENCES_H__
 #define MODULES_LEGACY_FIELDS_REGISTERWITHCORRESPONDENCES_H__
 
@@ -38,20 +38,21 @@ namespace SCIRun {
 
       class SCISHARE RegisterWithCorrespondences : public Dataflow::Networks::Module,
         public Has3InputPorts<FieldPortTag, FieldPortTag, FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has2OutputPorts<FieldPortTag,MatrixPortTag>
       {
       public:
         RegisterWithCorrespondences();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, Correspondences1, Field);
         INPUT_PORT(2, Correspondences2, Field);
         OUTPUT_PORT(0, OutputField, Field);
+        OUTPUT_PORT(1, TransformMatrix, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
       };
     }
   }

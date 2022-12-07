@@ -1,29 +1,28 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
@@ -90,7 +89,7 @@ void BuildBEMatrixBase::getOmega(
   Vector Ny( y1.length() , y2.length() , y3.length() );
 
   Vector Nyij( y21.length() , y32.length() , y13.length() );
-  
+
   Vector gamma( 0 , 0 , 0 );
   double NomGamma , DenomGamma;
 
@@ -113,8 +112,8 @@ void BuildBEMatrixBase::getOmega(
   double d = Dot( y1, Cross(y2, y3) );
 
   Vector OmegaVec = (gamma[2]-gamma[0])*y1 + (gamma[0]-gamma[1])*y2 + (gamma[1]-gamma[2])*y3;
-  
-  
+
+
 
   /*
   In order to avoid problems with the arctan used in de Muncks paper
@@ -129,7 +128,7 @@ void BuildBEMatrixBase::getOmega(
 
   double Nn=0 , Omega=0 ;
   Nn = Ny[0]*Ny[1]*Ny[2] + Ny[0]*Dot(y2,y3) + Ny[2]*Dot(y1,y2) + Ny[1]*Dot(y3,y1);
-  
+
   if (Nn > 0)  Omega = 2 * atan( d / Nn );
   if (Nn < 0)  Omega = 2 * atan( d / Nn ) + 2*M_PI ;
   if (Nn == 0)
@@ -149,7 +148,7 @@ void BuildBEMatrixBase::getOmega(
   coef(0,0) = (1/A2) * ( Zn1*Omega + d * Dot(y32, OmegaVec) );
   coef(0,1) = (1/A2) * ( Zn2*Omega + d * Dot(y13, OmegaVec) );
   coef(0,2) = (1/A2) * ( Zn3*Omega + d * Dot(y21, OmegaVec) );
-  
+
 }
 
 void  BuildBEMatrixBase::get_cruse_weights(
@@ -272,10 +271,7 @@ void BuildBEMatrixBase::bem_sing(
   const Vector& p2,
   const Vector& p3,
   unsigned int op_n,
-  DenseMatrix& g_values,
-  double s,
-  double r,
-  DenseMatrix& R_W)
+  DenseMatrix& g_values)
 {
   /*
   This is Jeroen's method, converted from his Matlab code, for dealing with weightings corresponding to singular triangles
@@ -499,19 +495,18 @@ class BuildBEMatrixBaseCompute : public BuildBEMatrixBase
 {
 public:
   template <class MatrixType>
-  static void make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond);
+  static void make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond);
 
   template <class MatrixType>
-  static void make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond, double op_cond);
+  static void make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond);
 
   template <class MatrixType>
-  static void make_auto_G_compute(VMesh* hsurf, MatrixType& auto_G, double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn);
+  static void make_auto_G_compute(VMesh* hsurf, MatrixType& auto_G, double in_cond, double out_cond, const std::vector<double>& avInn);
 
   template <class MatrixType>
   static void make_cross_G_compute( VMesh*,
   VMesh*,
   MatrixType&,
-  double,
   double,
   double,
   const std::vector<double>& );
@@ -524,15 +519,15 @@ void BuildBEMatrixBase::make_auto_G_allocate(VMesh* hsurf, DenseMatrixHandle &h_
 }
 
 void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
-double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
+double in_cond, double out_cond, const std::vector<double>& avInn)
 {
   make_auto_G_allocate(hsurf, h_GG_);
-  BuildBEMatrixBaseCompute::make_auto_G_compute(hsurf, *h_GG_, in_cond, out_cond, op_cond, avInn);
+  BuildBEMatrixBaseCompute::make_auto_G_compute(hsurf, *h_GG_, in_cond, out_cond, avInn);
 }
 
 template <class MatrixType>
 void BuildBEMatrixBaseCompute::make_auto_G_compute(VMesh* hsurf, MatrixType& auto_G,
-  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
+  double in_cond, double out_cond, const std::vector<double>& avInn)
 {
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
@@ -581,9 +576,9 @@ void BuildBEMatrixBaseCompute::make_auto_G_compute(VMesh* hsurf, MatrixType& aut
       VMesh::Node::index_type ppi = *ni;
       Vector op(hsurf->get_point(ppi));
 
-      if (ppi == nodes[0])       bem_sing(p1, p2, p3, 0, g_values, s, r, R_W);
-      else if (ppi == nodes[1])       bem_sing(p1, p2, p3, 1, g_values, s, r, R_W);
-      else if (ppi == nodes[2])       bem_sing(p1, p2, p3, 2, g_values, s, r, R_W);
+      if (ppi == nodes[0])       bem_sing(p1, p2, p3, 0, g_values);
+      else if (ppi == nodes[1])       bem_sing(p1, p2, p3, 1, g_values);
+      else if (ppi == nodes[2])       bem_sing(p1, p2, p3, 2, g_values);
       else
       {
         get_g_coef(p1, p2, p3, op, s, r, centroid, g_coef);
@@ -594,7 +589,7 @@ void BuildBEMatrixBaseCompute::make_auto_G_compute(VMesh* hsurf, MatrixType& aut
       } // else
 
       for (int i=0; i<3; ++i)
-        auto_G(ppi, nodes[i])+=g_values(i,0)*mult;
+        auto_G(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))+=g_values(i,0)*mult;
     }
   }
 }
@@ -605,15 +600,15 @@ void BuildBEMatrixBase::make_cross_G_allocate(VMesh* hsurf1, VMesh* hsurf2, Dens
 }
 
 void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_GG_,
-  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
+  double in_cond, double out_cond, const std::vector<double>& avInn)
 {
   make_cross_G_allocate(hsurf1, hsurf2, h_GG_);
-  BuildBEMatrixBaseCompute::make_cross_G_compute(hsurf1, hsurf2, *h_GG_, in_cond, out_cond, op_cond, avInn);
+  BuildBEMatrixBaseCompute::make_cross_G_compute(hsurf1, hsurf2, *h_GG_, in_cond, out_cond, avInn);
 }
 
 template <class MatrixType>
 void BuildBEMatrixBaseCompute::make_cross_G_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_G,
-  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
+  double in_cond, double out_cond, const std::vector<double>& avInn)
 {
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
   //   out_cond and in_cond belong to hsurf2 and op_cond is the out_cond of hsurf1 for all the surfaces but the outermost surface which in op_cond=in_cond
@@ -669,7 +664,7 @@ void BuildBEMatrixBaseCompute::make_cross_G_compute(VMesh* hsurf1, VMesh* hsurf2
       g_values = area * (cruse_weights * temp.transpose());
 
       for (int i=0; i<3; ++i)
-        cross_G(ppi, nodes[i])+=g_values(i,0)*mult;
+        cross_G(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))+=g_values(i,0)*mult;
     }
   }
 }
@@ -680,14 +675,14 @@ void BuildBEMatrixBase::make_cross_P_allocate(VMesh* hsurf1, VMesh* hsurf2, Dens
 }
 
 void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_PP_,
-  double in_cond, double out_cond, double op_cond)
+  double in_cond, double out_cond)
 {
   make_cross_P_allocate(hsurf1, hsurf2, h_PP_);
-  BuildBEMatrixBaseCompute::make_cross_P_compute(hsurf1, hsurf2, *h_PP_, in_cond, out_cond, op_cond);
+  BuildBEMatrixBaseCompute::make_cross_P_compute(hsurf1, hsurf2, *h_PP_, in_cond, out_cond);
 }
 
 template <class MatrixType>
-void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond, double op_cond)
+void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond)
 {
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
   //   out_cond and in_cond belong to hsurf2 and op_cond is the out_cond of hsurf1 for all the surfaces but the outermost surface which in op_cond=in_cond
@@ -714,7 +709,7 @@ void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2
       getOmega(v1, v2, v3, coef);
 
       for (i=0; i<3; ++i)
-        cross_P(ppi, nodes[i])-=coef(0,i)*mult;
+        cross_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))-=coef(0,i)*mult;
     }
   }
 }
@@ -738,13 +733,9 @@ int BuildBEMatrixBase::numNodes(VMesh* hsurf)
 }
 
 template <class MatrixType>
-void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond)
+void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond)
 {
   auto nnodes = auto_P.rows();
-  
-  
-
-  //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
 
   VMesh::Node::array_type nodes;
@@ -757,24 +748,26 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
 
   hsurf->begin(ni); hsurf->end(nie);
 
-  for (; ni != nie; ++ni){ //! for every node
+  for (; ni != nie; ++ni)
+  { //! for every node
     VMesh::Node::index_type ppi = *ni;
     Point pp = hsurf->get_point(ppi);
 
     hsurf->begin(fi); hsurf->end(fie);
-    
-    for (; fi != fie; ++fi) { //! find contributions from every triangle
 
+    for (; fi != fie; ++fi)
+    { //! find contributions from every triangle
       hsurf->get_nodes(nodes, *fi);
-      if (ppi!=nodes[0] && ppi!=nodes[1] && ppi!=nodes[2]){
+      if (ppi!=nodes[0] && ppi!=nodes[1] && ppi!=nodes[2])
+      {
         Vector v1 = hsurf->get_point(nodes[0]) - pp;
         Vector v2 = hsurf->get_point(nodes[1]) - pp;
         Vector v3 = hsurf->get_point(nodes[2]) - pp;
-        
+
         getOmega(v1, v2, v3, coef);
 
         for (i=0; i<3; ++i)
-          auto_P(ppi, nodes[i])-=coef(0,i)*mult;
+          auto_P(static_cast<uint64_t>(ppi), static_cast<uint64_t>(nodes[i]))-=coef(0,i)*mult;
       }
     }
   }
@@ -788,10 +781,10 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
 }
 
 void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
-  double in_cond, double out_cond, double op_cond)
+  double in_cond, double out_cond)
 {
   make_auto_P_allocate(hsurf, h_PP_);
-  BuildBEMatrixBaseCompute::make_auto_P_compute(hsurf, *h_PP_, in_cond, out_cond, op_cond);
+  BuildBEMatrixBaseCompute::make_auto_P_compute(hsurf, *h_PP_, in_cond, out_cond);
 }
 
 // precalculate triangles area
@@ -943,13 +936,13 @@ bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::ve
 class SurfaceAndPoints : public BEMAlgoImpl, public BuildBEMatrixBaseCompute
 {
 public:
-  virtual MatrixHandle compute(const bemfield_vector& fields) const override;
+  MatrixHandle compute(const bemfield_vector& fields) const override;
 };
 
 class SurfaceToSurface : public BEMAlgoImpl, public BuildBEMatrixBaseCompute
 {
 public:
-  virtual MatrixHandle compute(const bemfield_vector& fields) const override;
+  MatrixHandle compute(const bemfield_vector& fields) const override;
 };
 
 BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
@@ -995,7 +988,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
     // If all of the checks above don't flag meets_conditions as false,
     // return a value that indicates the algorithm to use is the surface-to-nodes case
     if ( meets_conditions )
-      return boost::make_shared<SurfaceAndPoints>();
+      return makeShared<SurfaceAndPoints>();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1020,7 +1013,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   // if all fields are surfaces, there exists a measurement and a source surface, then use the surface-to-surface algorithm... else fail
   if (allsurfaces && hasmeasurementsurf && hassourcesurf)
   {
-    return boost::make_shared<SurfaceToSurface>();
+    return makeShared<SurfaceToSurface>();
   }
   else
   {
@@ -1028,7 +1021,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   }
 }
 
-static void printInfo(const DenseMatrix& m, const std::string& name)
+static void printInfo(const DenseMatrix&, const std::string&)
 {
 #if 0
   std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
@@ -1067,7 +1060,6 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //
 
   const size_t Nfields = fields.size();
-  double op_cond=0.0; // op_cond is not used in this formulation -- someone needs to check this math and make a better decision about how to handle this value below
 
   // Count the number of fields that have been specified as being "sources" or "measurements" (and keep track of indices)
   int Nsources = 0;
@@ -1090,7 +1082,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   }
 
   std::vector<int> fieldNodeSize(fields.size());
-  std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
+  std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [](const bemfield& f) { return numNodes(f.field_); } );
   DenseBlockMatrix EE(fieldNodeSize, fieldNodeSize);
 
   // Calculate EE in block matrix form
@@ -1101,12 +1093,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       if (i == j)
       {
         auto block = EE.blockRef(i, j);
-        make_auto_P_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+        make_auto_P_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity);
       }
       else
       {
         auto block = EE.blockRef(i, j);
-        make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[j].insideconductivity, fields[j].outsideconductivity, op_cond);
+        make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[j].insideconductivity, fields[j].outsideconductivity);
       }
     }
   }
@@ -1119,7 +1111,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //auto transformer = [this](const bemfield& f) -> int { return numNodes(f.field_); };
   //auto trans = filt | boost::adaptors::transformed(transformer);
   //boost::copy(trans, sourceFieldNodeSize.begin());
-  std::transform(sourceFields.begin(), sourceFields.end(), sourceFieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
+  std::transform(sourceFields.begin(), sourceFields.end(), sourceFieldNodeSize.begin(), [](const bemfield& f) { return numNodes(f.field_); } );
 
   DenseBlockMatrix EJ(fieldNodeSize, sourceFieldNodeSize);
 
@@ -1137,12 +1129,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       if (i == sourcefieldindices[j])
       {
         auto block = EJ.blockRef(i,j);
-        make_auto_G_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
+        make_auto_G_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, triangleareas);
       }
       else
       {
         auto block = EJ.blockRef(i,j);
-        make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[j].insideconductivity, fields[j].outsideconductivity, op_cond, triangleareas);
+        make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[j].insideconductivity, fields[j].outsideconductivity, triangleareas);
       }
     }
   }
@@ -1151,7 +1143,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   // This needs to be checked.  It was taken out because the deflation was producing errors
   // Jeroen's matlab code, which was the basis of this code, only does a defation in test cases.
-  
+
   // Perform deflation on EE matrix
   //const double deflationconstant = 1.0/EE.matrix().ncols();
   //EE.matrix() = EE.matrix().array() + deflationconstant;
@@ -1162,7 +1154,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //auto transformer = [this](const bemfield& f) -> int { return numNodes(f.field_); };
   //auto trans = filt | boost::adaptors::transformed(transformer);
   //boost::copy(trans, sourceFieldNodeSize.begin());
-  std::transform(measFields.begin(), measFields.end(), measurementNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
+  std::transform(measFields.begin(), measFields.end(), measurementNodeSize.begin(), [](const bemfield& f) { return numNodes(f.field_); } );
 
   // Split EE apart into Pmm, Pss, Pms, and Psm
   // -----------------------------------------------
@@ -1245,7 +1237,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   auto D = Y * Pss.matrix() - Pms.matrix();
 
   auto T = C.inverse() * D; // T = inv(C)*D
-  return boost::make_shared<DenseMatrix>(T);
+  return makeShared<DenseMatrix>(T);
 
   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
   //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
@@ -1295,8 +1287,8 @@ MatrixHandle SurfaceAndPoints::compute(const bemfield_vector& fields) const
   // In other words the transfer matrix is
   // P_nodes_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf
 
-  VMesh *nodes = 0;
-  VMesh *surface = 0;
+  VMesh *nodes = nullptr;
+  VMesh *surface = nullptr;
 
   for (int i=0; i<2; i++)
   {
@@ -1310,14 +1302,14 @@ MatrixHandle SurfaceAndPoints::compute(const bemfield_vector& fields) const
   DenseMatrixHandle Gss;
   DenseMatrixHandle Pns;
   DenseMatrixHandle Gns;
-  make_auto_P( surface, Pss, 1.0, 0.0, 1.0 );
-  make_cross_P( nodes, surface, Pns, 1.0, 0.0, 1.0 );
+  make_auto_P(surface, Pss, 1.0, 0.0);
+  make_cross_P(nodes, surface, Pns, 1.0, 0.0);
 
   std::vector<double> area;
   pre_calc_tri_areas( surface, area );
 
-  make_auto_G( surface, Gss, 1.0, 0.0, 1.0, area );
-  make_cross_G( nodes, surface, Gns, 1.0, 0.0, 1.0, area );
+  make_auto_G( surface, Gss, 1.0, 0.0, area );
+  make_cross_G( nodes, surface, Gns, 1.0, 0.0, area );
 
-  return boost::make_shared<DenseMatrix>(*Pns - (*Gns * Gss->inverse() * *Pss));
+  return makeShared<DenseMatrix>(*Pns - (*Gns * Gss->inverse() * *Pss));
 }

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ALGORITHMS_BASE_ALGORITHMMACROS_H
 #define ALGORITHMS_BASE_ALGORITHMMACROS_H
 
@@ -37,9 +37,9 @@ namespace SCIRun {
     namespace Algorithms {
 
       template <typename T>
-      boost::shared_ptr<T> optionalAlgoInput(boost::optional<boost::shared_ptr<T>> opt)
+      SharedPointer<T> optionalAlgoInput(const std::optional<SharedPointer<T>>& opt)
       {
-        return opt.get_value_or(nullptr);
+        return opt.value_or(nullptr);
       }
 
     }}}
@@ -48,7 +48,7 @@ namespace SCIRun {
 #define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
 #define withInputData(list) make_input(list)
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
-#define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
+#define get_output(outputObj, portName, type) std::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
 #define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern SCIRun::Core::Algorithms::AlgorithmParameterName _init_##name(); static const SCIRun::Core::Algorithms::AlgorithmParameterName& name(_init_##name()); }
 #define ALGORITHM_PARAMETER_DEF(ns, name) SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::_init_##name() { return SCIRun::Core::Algorithms::AlgorithmParameterName(#name); }
 

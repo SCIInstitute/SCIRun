@@ -1,5 +1,37 @@
-/// \author James Hughes
-/// \date   January 2014
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
+/// author James Hughes
+/// date   January 2014
 
 #include <stdexcept>
 #include <cstring>
@@ -102,7 +134,7 @@ GLuint loadShaderProgram(const std::list<ShaderSource>& shaders)
   // Link program.
   GL(glLinkProgram(program));
 
-	// Check the link status 
+	// Check the link status
 	GLint linked;
 	GL(glGetProgramiv(program, GL_LINK_STATUS, &linked));
 	if (!linked)
@@ -208,7 +240,7 @@ void bindSubsetAttributes(const ShaderAttribute* superset, size_t supersetSize,
       GL(glEnableVertexAttribArray(static_cast<GLuint>(subset[attribIndex].attribLoc)));
       GL(glVertexAttribPointer(static_cast<GLuint>(subset[attribIndex].attribLoc),
                                subset[attribIndex].numComps, subset[attribIndex].baseType,
-                               superset[i].normalize, stride, 
+                               superset[i].normalize, stride,
                                reinterpret_cast<const void*>(offset)));
     }
     offset += superset[i].sizeBytes;
@@ -278,7 +310,7 @@ void bindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size, size
 
 void unbindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size)
 {
-  for (size_t i = 0; i < size; ++i)  
+  for (size_t i = 0; i < size; ++i)
   {
     GL(glDisableVertexAttribArray(static_cast<GLuint>(array[i].attribLoc)));
   }
@@ -552,5 +584,3 @@ size_t getSizeOfBaseGLType(GLenum type)
 }
 
 } // namespace spire
-
-

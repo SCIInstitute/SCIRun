@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 MESSAGE(STATUS "Configuring Spire Meta-library")
 
 PROJECT ( Spire )
@@ -44,7 +44,7 @@ SET(BUILD_SHARED_LIBS OFF)
 
 SET(SCI_SPIRE_LIBRARY ${SPIRE_LIBRARY_NAME} CACHE INTERNAL "spire library name." FORCE)
 
-ADD_DEFINITIONS(-DGLM_SWIZZLE -DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
+ADD_DEFINITIONS(-DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -212,12 +212,20 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   gl-state/GLState.cpp
   glm-aabb/AABB.cpp
   var-buffer/VarBuffer.cpp
+  #es-log/trace-log.h
+  #es-log/trace-log.cc
+  scishare.h
   )
 
 target_link_libraries(${SCI_SPIRE_LIBRARY}
   ${SCI_LODEPNG_LIBRARY}
-  ${SCI_TNY_LIBRARY})
+  ${SCI_TNY_LIBRARY}
+  ${OPENGL_LIBRARIES})
 
 IF(WIN32)
   target_link_libraries(${SCI_SPIRE_LIBRARY} ${SCI_GLEW_LIBRARY})
 ENDIF()
+
+IF(BUILD_SHARED_LIBS)
+	ADD_DEFINITIONS(-DBUILD_spire_ES)
+ENDIF(BUILD_SHARED_LIBS)

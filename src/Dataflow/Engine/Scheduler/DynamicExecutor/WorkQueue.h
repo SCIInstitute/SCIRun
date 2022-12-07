@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKQUEUE_H
 #define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKQUEUE_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <boost/next_prior.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 #include <Dataflow/Engine/Scheduler/share.h>
 
@@ -39,14 +40,10 @@ namespace Engine {
   namespace DynamicExecutor {
 
     template <class Unit>
-    class WorkQueue
-    {
-    public:
-      typedef boost::lockfree::spsc_queue<Unit> Impl;
-    };
+    using WorkQueue = boost::lockfree::spsc_queue<Unit>;
 
-    typedef WorkQueue<Networks::ModuleHandle>::Impl ModuleWorkQueue;
-    typedef boost::shared_ptr<ModuleWorkQueue> ModuleWorkQueuePtr;
+    typedef WorkQueue<Networks::ModuleHandle> ModuleWorkQueue;
+    typedef SharedPointer<ModuleWorkQueue> ModuleWorkQueuePtr;
 
   }}
 

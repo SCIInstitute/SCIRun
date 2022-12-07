@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   Author: Spencer Frisby
-   Date:   August 2014
 */
 
+
+/// Author: Spencer Frisby
+/// Date:   August 2014
 
 #include <iostream>
 #include <Core/Datatypes/String.h>
@@ -46,8 +45,8 @@ using namespace SCIRun::Dataflow::Networks;
 
 SetConductivitiesToMesh::SetConductivitiesToMesh() : Module(ModuleLookupInfo("SetConductivitiesToMesh", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(InputField);
- INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
 void SetConductivitiesToMesh::setStateDefaults()
@@ -65,7 +64,7 @@ void SetConductivitiesToMesh::setStateDefaults()
 void SetConductivitiesToMesh::execute()
 {
   auto mesh = getRequiredInput(InputField);
-  
+
   if (needToExecute())
   {
     setAlgoDoubleFromState(Parameters::Skin);
@@ -80,7 +79,7 @@ void SetConductivitiesToMesh::execute()
     /// algorithm input and run,
     auto input = make_input((InputField, mesh));
     auto output = algo().run(input);
-   
+
     /// algorithm output
     sendOutputFromAlgorithm(OutputField, output);
   }

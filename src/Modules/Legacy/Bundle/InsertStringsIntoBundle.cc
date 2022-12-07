@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Modules/Legacy/Bundle/InsertStringsIntoBundle.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
@@ -91,7 +91,7 @@ void InsertStringsIntoBundle::execute()
     for (int i = 0; i < strings.size(); ++i)
     {
       auto str = strings[i];
-      auto stateName = state->getValue(Name((*stringPortNameIterator++)->id().toString())).toString();
+      auto stateName = state->getValue(Name((*stringPortNameIterator++)->internalId().toString())).toString();
       if (str)
       {
         auto name = !stateName.empty() ? stateName : ("string" + boost::lexical_cast<std::string>(i));

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,7 +24,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 
 
 /*
@@ -55,7 +53,7 @@ protected:
   FILE* fp_;
 
   virtual const char *endianness();
-  virtual void reset_post_header();
+  void reset_post_header() override;
 private:
   template <class T> void gen_io(T&, const char *);
 
@@ -66,29 +64,29 @@ public:
                   Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~BinaryPiostream();
 
-  virtual void io(char&);
-  virtual void io(signed char&);
-  virtual void io(unsigned char&);
-  virtual void io(short&);
-  virtual void io(unsigned short&);
-  virtual void io(int&);
-  virtual void io(unsigned int&);
-  virtual void io(long&);
-  virtual void io(unsigned long&);
-  virtual void io(long long&);
-  virtual void io(unsigned long long&);
-  virtual void io(double&);
-  virtual void io(float&);
-  virtual void io(std::string& str);
+  void io(char&) override;
+  void io(signed char&) override;
+  void io(unsigned char&) override;
+  void io(short&) override;
+  void io(unsigned short&) override;
+  void io(int&) override;
+  void io(unsigned int&) override;
+  void io(long&) override;
+  void io(unsigned long&) override;
+  void io(long long&) override;
+  void io(unsigned long long&) override;
+  void io(double&) override;
+  void io(float&) override;
+  void io(std::string& str) override;
 
-  virtual bool supports_block_io() { return (version() > 1); }
-  virtual bool block_io(void*, size_t, size_t);
+  bool supports_block_io() override { return (version() > 1); }
+  bool block_io(void*, size_t, size_t) override;
 };
 
 
 class SCISHARE BinarySwapPiostream : public BinaryPiostream {
 protected:
-  virtual const char *endianness();
+  const char *endianness() override;
 private:
   template <class T> void gen_io(T&, const char *);
 
@@ -99,19 +97,19 @@ public:
                       Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~BinarySwapPiostream();
 
-  virtual void io(short&);
-  virtual void io(unsigned short&);
-  virtual void io(int&);
-  virtual void io(unsigned int&);
-  virtual void io(long&);
-  virtual void io(unsigned long&);
-  virtual void io(long long&);
-  virtual void io(unsigned long long&);
-  virtual void io(double&);
-  virtual void io(float&);
+  void io(short&) override;
+  void io(unsigned short&) override;
+  void io(int&) override;
+  void io(unsigned int&) override;
+  void io(long&) override;
+  void io(unsigned long&) override;
+  void io(long long&) override;
+  void io(unsigned long long&) override;
+  void io(double&) override;
+  void io(float&) override;
 
-  virtual bool supports_block_io() { return false; }
-  virtual bool block_io(void*, size_t, size_t) { return false; }
+  bool supports_block_io() override { return false; }
+  bool block_io(void*, size_t, size_t) override { return false; }
 };
 
 
@@ -123,10 +121,10 @@ private:
 
   void expect(char);
   void next_entry();
-  virtual void emit_pointer(int&, int&);
+  void emit_pointer(int&, int&) override;
   void ioString(bool do_quotes, std::string& str);
 protected:
-  virtual void reset_post_header();
+  void reset_post_header() override;
 public:
   TextPiostream(const std::string& filename, Direction dir,
                 Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
@@ -134,28 +132,28 @@ public:
   TextPiostream(std::ostream *strm, Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~TextPiostream();
 
-  virtual std::string peek_class();
-  virtual int begin_class(const std::string& name, int);
-  virtual void end_class();
-  virtual void begin_cheap_delim();
-  virtual void end_cheap_delim();
+  std::string peek_class() override;
+  int begin_class(const std::string& name, int) override;
+  void end_class() override;
+  void begin_cheap_delim() override;
+  void end_cheap_delim() override;
 
-  virtual void io(bool&);
-  virtual void io(char&);
-  virtual void io(signed char&);
-  virtual void io(unsigned char&);
-  virtual void io(short&);
-  virtual void io(unsigned short&);
-  virtual void io(int&);
-  virtual void io(unsigned int&);
-  virtual void io(long&);
-  virtual void io(unsigned long&);
-  virtual void io(long long&);
-  virtual void io(unsigned long long&);
-  virtual void io(double&);
-  virtual void io(float&);
-  virtual void io(std::string& str);
-  virtual bool eof();
+  void io(bool&) override;
+  void io(char&) override;
+  void io(signed char&) override;
+  void io(unsigned char&) override;
+  void io(short&) override;
+  void io(unsigned short&) override;
+  void io(int&) override;
+  void io(unsigned int&) override;
+  void io(long&) override;
+  void io(unsigned long&) override;
+  void io(long long&) override;
+  void io(unsigned long long&) override;
+  void io(double&) override;
+  void io(float&) override;
+  void io(std::string& str) override;
+  bool eof() override;
 };
 
 
@@ -168,7 +166,7 @@ private:
   void report_error(const char *);
   template <class T> void gen_io(T&, const char *);
 protected:
-  virtual void reset_post_header();
+  void reset_post_header() override;
 public:
   FastPiostream(const std::string& filename, Direction dir,
                 Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
@@ -176,24 +174,24 @@ public:
                 Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~FastPiostream();
 
-  virtual void io(bool&);
-  virtual void io(char&);
-  virtual void io(signed char&);
-  virtual void io(unsigned char&);
-  virtual void io(short&);
-  virtual void io(unsigned short&);
-  virtual void io(int&);
-  virtual void io(unsigned int&);
-  virtual void io(long&);
-  virtual void io(unsigned long&);
-  virtual void io(long long&);
-  virtual void io(unsigned long long&);
-  virtual void io(double&);
-  virtual void io(float&);
-  virtual void io(std::string& str);
+  void io(bool&) override;
+  void io(char&) override;
+  void io(signed char&) override;
+  void io(unsigned char&) override;
+  void io(short&) override;
+  void io(unsigned short&) override;
+  void io(int&) override;
+  void io(unsigned int&) override;
+  void io(long&) override;
+  void io(unsigned long&) override;
+  void io(long long&) override;
+  void io(unsigned long long&) override;
+  void io(double&) override;
+  void io(float&) override;
+  void io(std::string& str) override;
 
-  virtual bool supports_block_io() { return true; }
-  virtual bool block_io(void*, size_t, size_t);
+  bool supports_block_io() override { return true; }
+  bool block_io(void*, size_t, size_t) override;
 };
 
 

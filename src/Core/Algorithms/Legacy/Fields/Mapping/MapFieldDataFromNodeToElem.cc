@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -57,7 +57,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   /// Get the method the user selected.
   /// Since we do a check of valid entries when then user sets the
   /// algorithm, we can assume it is one of the specified ones
-   std::string method = algo->getOption(MapFieldDataFromNodeToElemAlgo::Method);
+   std::string method = algo->getOption(Variables::Method);
   /// Get pointers to the virtual interfaces of the fields
   /// We need these to obtain the data values
 
@@ -85,7 +85,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -110,7 +110,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   {
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -139,7 +139,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -167,7 +167,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -191,7 +191,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     std::vector<DATA> valarray;
     while (it != eit)
     {
-      Interruptible::checkForInterruption();
+
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       valarray.resize(nsize);
@@ -219,10 +219,8 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
 
 MapFieldDataFromNodeToElemAlgo::MapFieldDataFromNodeToElemAlgo()
 {
-  addOption(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
+  addOption(Variables::Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
-
-AlgorithmParameterName MapFieldDataFromNodeToElemAlgo::Method("Method");
 
 AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run(const AlgorithmInput& input) const
 {

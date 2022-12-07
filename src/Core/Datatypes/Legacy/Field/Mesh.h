@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -46,7 +45,7 @@ public:
   Mesh(const Mesh& copy);
 
   virtual ~Mesh();
-  virtual Mesh *clone() const = 0;
+  Mesh *clone() const override = 0;
   virtual MeshFacadeHandle getFacade() const = 0;
 
   /// These will become obsolete at some point
@@ -91,7 +90,7 @@ public:
   virtual int basis_order();
 
   /// Persistent I/O.
-  void    io(Piostream &stream);
+  void    io(Piostream &stream) override;
   static  PersistentTypeID type_id;
   static  const std::string type_name(int n = -1);
   virtual const TypeDescription *get_type_description() const = 0;
@@ -176,24 +175,7 @@ SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,size_type x,size_type y,size_
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<size_type>& x);
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<size_type>& x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 
-/// General case locate, search each elem.
-template <class INDEX, class MESH>
-bool elem_locate(INDEX &elem, MESH &msh, const Core::Geometry::Point &p)
-{
-  typename MESH::Elem::iterator iter, end;
-  msh.begin(iter);
-  msh.end(end);
-  std::vector<double> coords(msh.dimensionality());
-  while (iter != end) {
-    if (msh.get_coords(coords, p, *iter))
-    {
-      elem = INDEX(*iter);
-      return true;
-    }
-    ++iter;
-  }
-  return false;
-}
+
 
 
 } // end namespace SCIRun

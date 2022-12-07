@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef INTERFACE_MODULES_MODULEDIALOGFACTORY_H
 #define INTERFACE_MODULES_MODULEDIALOGFACTORY_H
 
@@ -38,21 +38,20 @@ namespace SCIRun
 {
   namespace Gui
   {
-    class SCISHARE ModuleDialogFactory
+    class SCISHARE ModuleDialogFactory : public ModuleDialogFactoryInterface
     {
     public:
       ModuleDialogFactory(QWidget* parentToUse, ExecutionDisablingServiceFunction disablerAdd,
         ExecutionDisablingServiceFunction disablerRemove);
-      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
+      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state) const override; 
 
-      typedef boost::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
+      typedef std::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
       typedef std::map<std::string, DialogMaker> DialogMakerMap;
 
       const DialogMakerMap& getMap() const { return dialogMakerMap_; }
     private:
       QWidget* parentToUse_;
       DialogMakerMap dialogMakerMap_;
-      ExecutionDisablingServiceFunction disabler_;
       void addDialogsToMakerMap1();
       void addDialogsToMakerMap2();
       void addDialogsToMakerMapGenerated();

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -61,7 +61,7 @@ FieldHandle SCIRun::VtkToTriSurfField_reader(LoggerHandle pr, const char *filena
 
 FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
+  FieldHandle result = nullptr;
 
   std::string fac_fn(filename);
   std::string pts_fn(filename);
@@ -471,7 +471,7 @@ FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filen
 
 FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
+  FieldHandle result = nullptr;
 
   FieldInformation fi("TriSurfMesh", "TriLinearLgn", "double");
   result = CreateField(fi);
@@ -482,7 +482,7 @@ FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename
 
   if (instr.fail()) {
     if (pr) pr->error("could not open file " + std::string(filename));
-    return 0;
+    return nullptr;
   }
 
   unsigned int line = 1;
@@ -517,7 +517,7 @@ FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename
       std::ostringstream oss;
       oss << "parsing error:" << type << ": at line: " << line;
       if (pr) pr->error(oss.str());
-      return 0;
+      return nullptr;
     }
     line++;
   }
@@ -789,7 +789,7 @@ bool SCIRun::TriSurfFieldToM_writer(LoggerHandle pr, FieldHandle fh, const char 
     {
       Point p;
       mesh->get_center(p, *nodeIter);
-      outputfile << "Vertex " << count++ << " " << p.x() << " " << p.y() << " " << p.z() << std::endl;
+      outputfile << "Vertex " << count++ << " " << p.x() << " " << p.y() << " " << p.z() << '\n';
       ++nodeIter;
     }
 
@@ -802,9 +802,10 @@ bool SCIRun::TriSurfFieldToM_writer(LoggerHandle pr, FieldHandle fh, const char 
     mesh->begin(faceIter);
     mesh->end(faceIterEnd);
     count = 1;
-    while (faceIter != faceIterEnd) {
+    while (faceIter != faceIterEnd) 
+    {
       mesh->get_nodes(faceNodes, *faceIter);
-      outputfile << "Face " << count++ << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << std::endl;
+      outputfile << "Face " << count++ << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << '\n';
       ++faceIter;
     }
   }
@@ -855,9 +856,9 @@ bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const cha
     ff |= outputfile.fixed; // write floating point values in fixed-point notation
     outputfile.flags(ff);
 
-    outputfile << "# vtk DataFile Version 3.0" << std::endl
-               << "vtk output\nASCII"<< std::endl
-              << "DATASET POLYDATA" << std::endl << std::endl;
+    outputfile << "# vtk DataFile Version 3.0" << '\n'
+               << "vtk output\nASCII"<< '\n'
+              << "DATASET POLYDATA" << '\n' << '\n';
 
     VMesh::Node::iterator nodeIter;
     VMesh::Node::iterator nodeIterEnd;
@@ -872,7 +873,7 @@ bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const cha
     {
       Point p;
       mesh->get_center(p, *nodeIter);
-      outputfile << p.x() << " " << p.y() << " " << p.z() << std::endl;
+      outputfile << p.x() << " " << p.y() << " " << p.z() << '\n';
       ++nodeIter;
     }
 
@@ -886,9 +887,10 @@ bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const cha
     mesh->end(faceIterEnd);
 
     outputfile << "POLYGONS " << faceSize << " " << faceSize * 4 << std::endl;
-    while (faceIter != faceIterEnd) {
+    while (faceIter != faceIterEnd) 
+    {
       mesh->get_nodes(faceNodes, *faceIter);
-      outputfile << "3 " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << std::endl;
+      outputfile << "3 " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << '\n';
       ++faceIter;
     }
   }

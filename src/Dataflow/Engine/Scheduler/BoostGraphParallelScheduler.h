@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h
 
 #ifndef ENGINE_SCHEDULER_PARALLELSCHEDULER_H
@@ -42,7 +43,7 @@ namespace Engine {
   {
   public:
     explicit BoostGraphParallelScheduler(const Networks::ModuleFilter& filter);
-    virtual ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const;
+    ParallelModuleExecutionOrder schedule(const Networks::NetworkStateInterface& network) const override;
   private:
     Networks::ModuleFilter filter_;
   };

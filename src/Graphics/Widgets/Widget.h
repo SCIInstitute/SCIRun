@@ -3,9 +3,8 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
+Copyright (c) 2020 Scientific Computing and Imaging Institute,
 University of Utah.
-
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -26,21 +25,83 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef Graphics_Graphics_Widgets_Widget_H
 #define Graphics_Graphics_Widgets_Widget_H
 
-#include <Graphics/Glyphs/share.h>
+#include <Core/Datatypes/Feedback.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/WidgetParameters.h>
+#include <Graphics/Widgets/share.h>
 
-namespace SCIRun {
-  namespace Graphics {
-
-    class SCISHARE Widget
+namespace SCIRun
+{
+  namespace Graphics
+  {
+    namespace Datatypes
     {
-    public:
-      Widget();
+      class SCISHARE WidgetBase : public GeometryObjectSpire,
+        public WidgetMovementMediator,
+        public InputTransformMapper,
+        public Transformable
+      {
+      public:
+        explicit WidgetBase(const WidgetBaseParameters& params);
+        WidgetBase(const WidgetBase&) = delete;
 
-    };// class Widget
-  }// Graphics
-} // SCIRun
-#endif // Graphics_Graphics_Widgets_Widget_H
+        Core::Geometry::Point position() const;
+        void setPosition(const Core::Geometry::Point& p);
 
+        const std::string& name() const { return name_; }
+
+      protected:
+        Core::Geometry::Point position_;
+        std::string name_;
+      };
+
+      using WidgetHandle = SharedPointer<WidgetBase>;
+      using WidgetList = std::vector<WidgetHandle>;
+      using WidgetListIterator = WidgetList::const_iterator;
+
+      class SCISHARE CompositeWidget : public WidgetBase
+      {
+      public:
+        template <typename WidgetIter>
+        CompositeWidget(const WidgetBaseParameters& params, WidgetIter begin, WidgetIter end)
+          : WidgetBase(params), widgets_(begin, end)
+        {}
+        explicit CompositeWidget(const WidgetBaseParameters& params) : WidgetBase(params)
+        {}
+
+        void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
+        WidgetListIterator subwidgetBegin() const { return widgets_.begin(); }
+        WidgetListIterator subwidgetEnd() const { return widgets_.end(); }
+
+      protected:
+        WidgetList widgets_;
+        void registerAllSiblingWidgetsForEvent(WidgetHandle selected, Core::Datatypes::WidgetMovement movement);
+      };
+
+      using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
+
+      template <int MovementEventType>
+      struct propagatesEvent
+      {
+        static const Core::Datatypes::WidgetMovement to = static_cast<Core::Datatypes::WidgetMovement>(MovementEventType);
+      };
+
+      struct TransformPropagationProxy
+      {
+        std::function<void(WidgetHandle)> registrationApplier;
+      };
+
+      SCISHARE TransformPropagationProxy operator<<(WidgetHandle widget, Core::Datatypes::WidgetMovement movement);
+      SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, WidgetHandle widget);
+      using TheseWidgets = std::vector<WidgetHandle>;
+      SCISHARE TransformPropagationProxy operator<<(const TransformPropagationProxy& proxy, const TheseWidgets& widgets);
+    }
+  }
+}
+
+#endif

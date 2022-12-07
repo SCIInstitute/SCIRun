@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Modules/Legacy/FiniteElements/BuildTDCSMatrix.h
 
 #ifndef MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
@@ -57,7 +58,7 @@ namespace SCIRun {
         INPUT_PORT(5, Contact_Impedance, DenseMatrix);
         OUTPUT_PORT(0, TDCSMatrix, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
       };
 
     }

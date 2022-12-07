@@ -1,3 +1,34 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
 
 #include <set>
 #include <stdexcept>
@@ -136,7 +167,7 @@ namespace ren {
       tex.textureHeight = npixely;
       GL(glTexImage2D(fbo.textureType, 0, tex.internalFormat,
         tex.textureWidth, tex.textureHeight, 0,
-        tex.format, tex.type, 0));
+        tex.format, tex.type, nullptr));
       //modify
       contTex->modifyIndex(tex, compTex.second, 0);
     }
@@ -148,26 +179,23 @@ namespace ren {
     GLsizei npixelx, GLsizei npixely, GLsizei npixelz,
     const std::string& assetName)
   {
-    //get fbo
-    //uint64_t containerID = spire::getESTypeID<ren::FBO>();
-    //spire::BaseComponentContainer* container =
-    //	core.getComponentContainer(containerID);
-    //spire::CerealHeap<ren::FBO>* contFBO =
-    //	dynamic_cast<spire::CerealHeap<ren::FBO>*>(container);
-    spire::CerealHeap<ren::FBO>* contFBO =
-      core.getOrCreateComponentContainer<ren::FBO>();
-    std::pair<const ren::FBO*, size_t> component =
-      contFBO->getComponent(getEntityIDForName(assetName));
-    if (component.first == nullptr)
+    auto contFBO = core.getOrCreateComponentContainer<ren::FBO>();
+    auto component = contFBO->getComponent(getEntityIDForName(assetName));
+    if (!component.first)
+    {
       return createFBO(core, ttype, npixelx, npixely, npixelz, assetName);
+    }
     else
     {
       FBOData fboData = getFBOData(assetName);
-      if (fboData.numPixelsX == npixelx &&
-        fboData.numPixelsY == npixely)
+      if (fboData.numPixelsX == npixelx && fboData.numPixelsY == npixely)
+      {
         return component.first->glid;
+      }
       else
+      {
         return resizeFBO(core, assetName, npixelx, npixely, npixelz);
+      }
     }
   }
 
@@ -265,7 +293,6 @@ namespace ren {
         return it->second;
       }
     }
-
     throw std::runtime_error("FBOMan: Unable to find FBO data");
   }
 
@@ -321,7 +348,7 @@ namespace ren {
   // GARBAGE COLLECTION
   //------------------------------------------------------------------------------
 
-  void FBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
+  void FBOMan::runGCAgainstValidIDs(const std::set<GLuint>& validKeys)
   {
     // Every GLuint in validKeys should be in our map. If there is not, then
     // there is an error in the system, and it should be reported.
@@ -343,7 +370,7 @@ namespace ren {
 
       if (it == mFBOData.end())
       {
-        std::cerr << "runGCAgainstVaidIDs: terminating early, validKeys contains "
+        std::cerr << "runGCAgainstValidIDs: terminating early, validKeys contains "
           << "elements not in FBO map." << std::endl;
         break;
       }
@@ -353,7 +380,7 @@ namespace ren {
       // component, this is not an error.
       if (it->first > id)
       {
-        std::cerr << "runGCAgainstVaidIDs: validKeys contains elements not in the FBO map." << std::endl;
+        std::cerr << "runGCAgainstValidIDs: validKeys contains elements not in the FBO map." << std::endl;
       }
 
       // Increment passed current validKey id.
@@ -379,12 +406,13 @@ namespace ren {
 
     std::set<GLuint> mValidKeys;
 
-    void preWalkComponents(spire::ESCoreBase&) { mValidKeys.clear(); }
-    void postWalkComponents(spire::ESCoreBase& core)
+    void preWalkComponents(spire::ESCoreBase&) override { mValidKeys.clear(); }
+    void postWalkComponents(spire::ESCoreBase& core) override
     {
       std::weak_ptr<FBOMan> im = core.getStaticComponent<StaticFBOMan>()->instance_;
-      if (std::shared_ptr<FBOMan> man = im.lock()) {
-        man->runGCAgainstVaidIDs(mValidKeys);
+      if (std::shared_ptr<FBOMan> man = im.lock())
+      {
+        man->runGCAgainstValidIDs(mValidKeys);
         mValidKeys.clear();
       }
       else
@@ -417,4 +445,3 @@ namespace ren {
   }
 
 } // namespace ren
-

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,8 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 // Uniforms
-uniform float    uAspectRatio  ;      
+uniform float    uAspectRatio  ;
 uniform float    uWindowWidth  ;
 uniform vec4     uTrans        ;
 
@@ -42,8 +42,8 @@ void main( void )
 {
   float x_scale = 2. / uWindowWidth;
   float y_scale = 2. / (uWindowWidth / uAspectRatio);
-  gl_Position = vec4(aPos.x * x_scale + uTrans.x - 1.0, 
+  gl_Position = vec4(aPos.x * x_scale + uTrans.x - 1.0,
                      aPos.y * y_scale + uTrans.y - 1.0,
-                     0.0, 1.0);
+                     -1.0, 1.0);
   fTexCoord = aTexCoord;
 }

@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,10 +23,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+         Author: 							Jaume Coll-Font
+         Last Modification:		September 6 2017
 */
-//    File       : TikhonovAlgoAbstractBase.h
-//    Author     : Jaume Coll-Font
-//    Date       : September 06th, 2017 (last update)
+
 #ifndef BioPSE_TikhonovAlgoAbstractBase_H__
 #define BioPSE_TikhonovAlgoAbstractBase_H__
 
@@ -35,72 +35,83 @@
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/share.h>
 
-
 namespace SCIRun {
 namespace Core {
-namespace Algorithms {
-namespace Inverse {
+  namespace Algorithms {
+    namespace Inverse {
 
+      ALGORITHM_PARAMETER_DECL(TikhonovImplementation);
+      ALGORITHM_PARAMETER_DECL(RegularizationMethod);
+      ALGORITHM_PARAMETER_DECL(regularizationChoice);
+      ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);
+      ALGORITHM_PARAMETER_DECL(regularizationResidualSubcase);
+      ALGORITHM_PARAMETER_DECL(LambdaFromDirectEntry);
+      ALGORITHM_PARAMETER_DECL(LambdaMin);
+      ALGORITHM_PARAMETER_DECL(LambdaMax);
+      ALGORITHM_PARAMETER_DECL(LambdaNum);
+      ALGORITHM_PARAMETER_DECL(LambdaResolution);
+      ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
+      // ALGORITHM_PARAMETER_DECL(LambdaCorner);
+      // ALGORITHM_PARAMETER_DECL(LCurveText);
 
-	ALGORITHM_PARAMETER_DECL(TikhonovImplementation);
-	ALGORITHM_PARAMETER_DECL(RegularizationMethod);
-	ALGORITHM_PARAMETER_DECL(regularizationChoice);
-	ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);
-	ALGORITHM_PARAMETER_DECL(regularizationResidualSubcase);
-	ALGORITHM_PARAMETER_DECL(LambdaFromDirectEntry);
-	ALGORITHM_PARAMETER_DECL(LambdaMin);
-	ALGORITHM_PARAMETER_DECL(LambdaMax);
-	ALGORITHM_PARAMETER_DECL(LambdaNum);
-	ALGORITHM_PARAMETER_DECL(LambdaResolution);
-	ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
-	//ALGORITHM_PARAMETER_DECL(LambdaCorner);
-	//ALGORITHM_PARAMETER_DECL(LCurveText);
+      class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
+      {
+       public:
+        // define input names
+        static const AlgorithmInputName ForwardMatrix;
+        static const AlgorithmInputName MeasuredPotentials;
+        static const AlgorithmInputName WeightingInSourceSpace;
+        static const AlgorithmInputName WeightingInSensorSpace;
 
-	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
-	{
-	public:
-		// define input names
-		static const AlgorithmInputName ForwardMatrix;
-		static  const AlgorithmInputName MeasuredPotentials;
-		static  const AlgorithmInputName WeightingInSourceSpace;
-		static  const AlgorithmInputName WeightingInSensorSpace;
+        // input names particular for the SVD case
+        static const AlgorithmInputName matrixU;
+        static const AlgorithmInputName singularValues;
+        static const AlgorithmInputName matrixV;
 
-		// input names particular for the SVD case
-		static  const AlgorithmInputName matrixU;
-		static  const AlgorithmInputName singularValues;
-		static  const AlgorithmInputName matrixV;
+        // define output names
+        static const AlgorithmOutputName InverseSolution;
+        static const AlgorithmOutputName RegularizationParameter;
+        static const AlgorithmOutputName RegInverse;
+        static const AlgorithmOutputName LambdaArray;
+        static const AlgorithmOutputName Lambda_Index;
 
-		// define output names
-		static const AlgorithmOutputName InverseSolution;
-		static const AlgorithmOutputName RegularizationParameter;
-		static const AlgorithmOutputName RegInverse;
-    static const AlgorithmOutputName LambdaArray;
-    static const AlgorithmOutputName Lambda_Index;
+        // Define algorithm choices
+        enum class AlgorithmChoice
+        {
+          automatic,
+          underdetermined,
+          overdetermined
+        };
+        enum class AlgorithmSolutionSubcase
+        {
+          solution_constrained,
+          solution_constrained_squared
+        };
+        enum class AlgorithmResidualSubcase
+        {
+          residual_constrained,
+          residual_constrained_squared
+        };
 
-		// Define algorithm choices
-		enum AlgorithmChoice {
-			automatic,
-			underdetermined,
-			overdetermined
-		};
-		enum AlgorithmSolutionSubcase {
-			solution_constrained,
-			solution_constrained_squared
-		};
-		enum AlgorithmResidualSubcase {
-			residual_constrained,
-			residual_constrained_squared
-		};
+        TikhonovAlgoAbstractBase();
+        AlgorithmOutput run(const AlgorithmInput&) const override;
 
-		TikhonovAlgoAbstractBase();
-		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+        static double FindCorner(const std::vector<double>& rho, const std::vector<double>& eta,
+            const std::vector<double>& lambdaArray, const int nLambda, int& lambda_index);
+        double computeLcurve(const TikhonovImpl& algoImpl,
+            const AlgorithmInput& input, Datatypes::DenseMatrixHandle& lambdamatrix,
+            int& lambda_index) const;
 
-		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda,int& lambda_index );
-    double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input,  SCIRun::Core::Datatypes::DenseMatrixHandle& lambdamatrix, int& lambda_index ) const;
+        bool checkInputMatrixSizes(const AlgorithmInput& input) const;
 
-		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
-	};
+       private:
+        static Datatypes::DenseColumnMatrix InterpolateCurvatureWithSplines(
+            const Datatypes::DenseMatrix& samplePoints);
+      };
 
-	}}}}
+    }
+  }
+}
+}
 
 #endif

@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+
 SET(Core_Logging_SRCS
   ConsoleLogger.cc
   Logger.cc
@@ -40,6 +40,7 @@ SET(Core_Logging_HEADERS
   LoggerFwd.h
   ScopedTimeRemarker.h
   ApplicationHelper.h
+  ScopedFunctionLogger.h
   share.h
 )
 
@@ -50,7 +51,6 @@ SCIRUN_ADD_LIBRARY(Core_Logging
 
 TARGET_LINK_LIBRARIES(Core_Logging
   Core_Utils
-  Core_Thread
 )
 
 IF(BUILD_SHARED_LIBS)

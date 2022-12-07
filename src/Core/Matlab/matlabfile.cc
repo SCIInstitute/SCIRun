@@ -1,34 +1,33 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 
 // NOTE: This MatlabIO file is used in different projects as well. Please, do not
-// make it depend on other scirun code. This way it is easier to maintain matlabIO 
+// make it depend on other scirun code. This way it is easier to maintain matlabIO
 // code among different projects. Thank you.
 
 /*
@@ -98,12 +97,12 @@ void matlabfile::open(const std::string& filename,const std::string& accessmode)
 
       strstack.push(mfd.getstring());
       ptrstack.push(tagptr);
-      tagptr = nexttag();    		
+      tagptr = nexttag();
     }
 
     matrixaddress_.resize(ptrstack.size());
     matrixname_.resize(strstack.size());
-    for (int p=static_cast<int>(ptrstack.size()-1);p>=0;p--) 
+    for (int p=static_cast<int>(ptrstack.size()-1);p>=0;p--)
     {
       matrixaddress_[p] = ptrstack.top();
       ptrstack.pop();
@@ -126,12 +125,12 @@ matlabfile::mitype matlabfile::converttype(matlabfile::mxtype type)
   switch (type)
   {    // no break statements needed
   case mxUINT8: case mxCHAR: return(miUINT8);
-  case mxINT8: return(miINT8);   
+  case mxINT8: return(miINT8);
   case mxUINT16: return(miUINT16);
   case mxINT16: return(miINT16);
   case mxUINT32: return(miUINT32);
   case mxINT32: return(miINT32);
-  case mxSINGLE: return(miSINGLE);		
+  case mxSINGLE: return(miSINGLE);
   case mxDOUBLE: case mxSPARSE: return(miDOUBLE);
   case mxCELL: case mxSTRUCT: case mxOBJECT: return(miMATRIX);
   default: return(miUNKNOWN);
@@ -186,7 +185,7 @@ void matlabfile::exportmatlabarray(matlabarray &matrix)
 
   std::vector<unsigned int> classinfo(2);
 
-  if (matrix.isempty()) 
+  if (matrix.isempty())
   {   // in case of an empty matrix goto the next one
 
     // Write an empty matrix if no data was given
@@ -245,7 +244,7 @@ void matlabfile::exportmatlabarray(matlabarray &matrix)
   switch(mtype)
   {
     // numeric types
-  case mxINT8: case mxUINT8: case mxINT16: case mxUINT16: 
+  case mxINT8: case mxUINT8: case mxINT16: case mxUINT16:
   case mxINT32: case mxUINT32: case mxSINGLE: case mxDOUBLE:
     {
       matfiledata preal;
@@ -288,7 +287,7 @@ void matlabfile::exportmatlabarray(matlabarray &matrix)
         ma = matrix.getcell(p);
         exportmatlabarray(ma);
       }
-    } 
+    }
     break;
 
   case mxSTRUCT:
@@ -313,7 +312,7 @@ void matlabfile::exportmatlabarray(matlabarray &matrix)
         ma = matrix.getcell(p);
         exportmatlabarray(ma);
       }
-    } 
+    }
     break;
 
   case mxOBJECT:
@@ -342,7 +341,7 @@ void matlabfile::exportmatlabarray(matlabarray &matrix)
         ma = matrix.getcell(p);
         exportmatlabarray(ma);
       }
-    } 
+    }
     break;
 
   case mxCHAR:
@@ -397,12 +396,12 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
 
   if (!openchild()) return;
 
-  if (!firsttag()) { closechild(); return; } 
+  if (!firsttag()) { closechild(); return; }
   readdat(matrixclass);
-  if (!nexttag()) { closechild(); return; } 
-  readdat(matrixdims);  
   if (!nexttag()) { closechild(); return; }
-  readdat(matrixname);  
+  readdat(matrixdims);
+  if (!nexttag()) { closechild(); return; }
+  readdat(matrixname);
 
   // convert the matrix class information
   // only the lowest 8bits are used for the class identifier
@@ -428,7 +427,7 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
   switch(matrixtype)
   {
     // numeric types
-  case mxINT8: case mxUINT8: case mxINT16: case mxUINT16: 
+  case mxINT8: case mxUINT8: case mxINT16: case mxUINT16:
   case mxINT32: case mxUINT32: case mxSINGLE: case mxDOUBLE:
 
     {
@@ -436,10 +435,10 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
       matrix.createdensearray(dims,converttype(matrixtype));
       matrix.setname(name);
 
-      // read the real and imaginary (optional) parts of the data    
-      if (nexttag()) 
+      // read the real and imaginary (optional) parts of the data
+      if (nexttag())
       { matfiledata preal = matrix.getpreal(); if ((mode == 2)||(numelems < 10)) { readdat(preal); } else { readtag(preal); } }
-      if (nexttag()) 
+      if (nexttag())
       { matfiledata pimag = matrix.getpimag(); if ((mode == 2)||(numelems < 10)) { readdat(pimag); } else { readtag(pimag); } }
     }
     break;
@@ -450,9 +449,9 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
       matrix.createcellarray(dims);
       matrix.setname(name);
       // the second byte contains flags.
-      // logical = logical matrix 
+      // logical = logical matrix
       // global  = variable was defined in the global workspace
-      // complex = matrix complex  
+      // complex = matrix complex
       if (classinfo & 0x0200) matrix.setlogical(1);
       if (classinfo & 0x0400) matrix.setglobal(1);
       if (classinfo & 0x0800) matrix.setcomplex(1);
@@ -486,12 +485,12 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
       int fieldnamelength = matrixfieldnamelength.getandcastvalue<int>(0);
       std::vector<std::string> fieldnames = matrixfieldnames.getstringarray(fieldnamelength);
 
-      matrix.createstructarray(dims,fieldnames); 
+      matrix.createstructarray(dims,fieldnames);
       matrix.setname(name);
       // the second byte contains flags.
-      // logical = logical matrix 
+      // logical = logical matrix
       // global  = variable was defined in the global workspace
-      // complex = matrix complex  
+      // complex = matrix complex
       if (classinfo & 0x0200) matrix.setlogical(1);
       if (classinfo & 0x0400) matrix.setglobal(1);
       if (classinfo & 0x0800) matrix.setcomplex(1);
@@ -528,13 +527,13 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
       std::vector<std::string> fieldnames = matrixfieldnames.getstringarray(fieldnamelength);
       std::string classname = matrixclassname.getstring();
 
-      matrix.createclassarray(dims,fieldnames,classname); 
+      matrix.createclassarray(dims,fieldnames,classname);
       matrix.setname(name);
 
       // the second byte contains flags.
-      // logical = logical matrix 
+      // logical = logical matrix
       // global  = variable was defined in the global workspace
-      // complex = matrix complex  
+      // complex = matrix complex
       if (classinfo & 0x0200) matrix.setlogical(1);
       if (classinfo & 0x0400) matrix.setglobal(1);
       if (classinfo & 0x0800) matrix.setcomplex(1);
@@ -560,16 +559,16 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
       nexttag();
       readdat(matrixstring);
 
-      std::string str = matrixstring.getstring();            
+      std::string str = matrixstring.getstring();
       matrix.createstringarray(str);
       matrix.setname(name);
       // the second byte contains flags.
-      // logical = logical matrix 
+      // logical = logical matrix
       // global  = variable was defined in the global workspace
-      // complex = matrix complex  
+      // complex = matrix complex
       if (classinfo & 0x0200) matrix.setlogical(1);
       if (classinfo & 0x0400) matrix.setglobal(1);
-      if (classinfo & 0x0800) matrix.setcomplex(1);            
+      if (classinfo & 0x0800) matrix.setcomplex(1);
 
 
     }
@@ -579,9 +578,9 @@ void matlabfile::importmatlabarray(matlabarray& matrix,int mode)
       matrix.createsparsearray(dims,miDOUBLE);
       matrix.setname(name);
       // the second byte contains flags.
-      // logical = logical matrix 
+      // logical = logical matrix
       // global  = variable was defined in the global workspace
-      // complex = matrix complex  
+      // complex = matrix complex
       if (classinfo & 0x0200) matrix.setlogical(1);
       if (classinfo & 0x0400) matrix.setglobal(1);
       if (classinfo & 0x0800) matrix.setcomplex(1);
@@ -630,7 +629,7 @@ matlabarray matlabfile::getmatlabarrayshortinfo(int matrixindex)
 
   matlabarray ma;
   rewind();
-  if (!gototag(matrixaddress_[matrixindex])) 
+  if (!gototag(matrixaddress_[matrixindex]))
   {
     std::cerr << "internal error in getmatlabarrayshortinfo()\n";
     throw internal_error();
@@ -644,7 +643,7 @@ matlabarray matlabfile::getmatlabarrayshortinfo(const std::string& matrixname)
 {
   if (iswriteaccess()) throw invalid_file_access();
   int matrixindex = -1;
-  for (int p=0;p<static_cast<int>(matrixname_.size());p++) 
+  for (int p=0;p<static_cast<int>(matrixname_.size());p++)
   {
     if (matrixname_[p] == matrixname) { matrixindex = p; break; }
   }
@@ -653,7 +652,7 @@ matlabarray matlabfile::getmatlabarrayshortinfo(const std::string& matrixname)
   matlabarray ma;
   rewind();
 
-  if (!gototag(matrixaddress_[matrixindex])) 
+  if (!gototag(matrixaddress_[matrixindex]))
   {
     std::cerr << "internal error in getmatlabarrayshortinfo()\n";
     throw internal_error();
@@ -669,7 +668,7 @@ matlabarray matlabfile::getmatlabarrayinfo(int matrixindex)
 
   matlabarray ma;
   rewind();
-  if (!gototag(matrixaddress_[matrixindex])) 
+  if (!gototag(matrixaddress_[matrixindex]))
   {
     std::cerr << "internal error in getmatlabarrayinfo()\n";
     throw internal_error();
@@ -683,7 +682,7 @@ matlabarray matlabfile::getmatlabarrayinfo(const std::string& matrixname)
 {
   if (iswriteaccess()) throw invalid_file_access();
   int matrixindex = -1;
-  for (int p=0;p<static_cast<int>(matrixname_.size());p++) 
+  for (int p=0;p<static_cast<int>(matrixname_.size());p++)
   {
     if (matrixname_[p] == matrixname) { matrixindex = p; break; }
   }
@@ -692,7 +691,7 @@ matlabarray matlabfile::getmatlabarrayinfo(const std::string& matrixname)
   matlabarray ma;
   rewind();
 
-  if (!gototag(matrixaddress_[matrixindex])) 
+  if (!gototag(matrixaddress_[matrixindex]))
   {
     std::cerr << "internal error in getmatlabarrayinfo()\n";
     throw internal_error();
@@ -721,7 +720,7 @@ matlabarray matlabfile::getmatlabarray(const std::string& matrixname)
 {
   if (iswriteaccess()) throw invalid_file_access();
   int matrixindex = -1;
-  for (int p=0;p<static_cast<int>(matrixname_.size());p++) 
+  for (int p=0;p<static_cast<int>(matrixname_.size());p++)
   {
     if (matrixname_[p] == matrixname) { matrixindex = p; break; }
   }
@@ -743,4 +742,23 @@ void matlabfile::putmatlabarray(matlabarray& ma,const std::string& matrixname)
 {
   ma.setname(matrixname);
   exportmatlabarray(ma);
+}
+
+matlabarray SCIRun::MatlabIO::readmatlabarray(matlabfile& mfile, const std::string& matlabName)
+{
+  matlabarray marray;
+
+  if (matlabName.empty())
+  {
+    // return an empty array
+    return(marray);
+  }
+
+  if (matlabName == "<none>")
+  {
+    // return an empty array
+    return(marray);
+  }
+
+  return mfile.getmatlabarray(matlabName);
 }

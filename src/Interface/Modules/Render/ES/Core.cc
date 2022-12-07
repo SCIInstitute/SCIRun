@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
+#ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include "Core.h"
 
 #include <es-fs/Registration.hpp>
@@ -39,7 +43,7 @@
 namespace SCIRun {
 namespace Render {
 
-  ESCore::ESCore() : r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
+ESCore::ESCore() : mCurrentTime(0.0f), r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
 {
   // Register common systems.
   gen::registerAll(*this);
@@ -63,21 +67,84 @@ ESCore::~ESCore()
 {
 }
 
-void ESCore::execute(double currentTime, double constantFrameTime)
+std::string ESCore::toString(std::string prefix) const
 {
-  ++mCoreSequence;
+  std::string output = prefix + "ES_CORE:\n";
+  prefix += "  ";
 
-  const int fpsAvgLength = 180;
-  if (mCoreSequence % fpsAvgLength == 0)
+  output += prefix + "ComponentContainers: " + std::to_string(mComponents.size()) + "\n";
+  for(auto& comp : mComponents)
+    if(comp.second->getNumComponents() >= 0)
+    {
+      output += prefix + "Container: " + std::to_string(comp.first)
+        + "  Components: " + std::to_string(comp.second->getNumComponents());
+      if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end())
+        output += "  Name: \"" + mComponentIDNameMap.at(comp.first) + "\"";
+      else
+        output += "  Name: not found ";
+      output += "\n" + comp.second->toString(prefix);
+    }
+  output += "\n";
+
+  output += prefix + "KernelSystems: " + std::to_string(mKernelSystems.size()) + "\n";
+  for(auto& name: mKernelSystems)
+    output += prefix + "  Name: " + name + "\n";
+  output+= "\n";
+
+  output += prefix + "UserSystems: " + std::to_string(mUserSystems.size()) + "\n";
+  for(auto& name: mUserSystems)
+    output += prefix + "  Name: " + name + "\n";
+  output += "\n";
+
+  output += prefix + "GarbageCollectorSystems: " + std::to_string(mGarbageCollectorSystems.size()) + "\n";
+  for(auto& name: mGarbageCollectorSystems)
+    output+= prefix + "  Name: " + name + "\n";
+  output += "\n";
+
+  auto systems = mSystems.get();
+  output += systems->toString(prefix) + "\n";
+
+  output += prefix + "Current Time: " + std::to_string(static_cast<uint64_t>(mCurrentTime * 1000.0)) + "\n";
+
+  return output;
+}
+
+bool ESCore::hasGeomPromise() const
+{
+  for(auto& comp : mComponents)
   {
-    mFPS /= fpsAvgLength;
-    mFPS = 0.0f;
+    if(comp.second->getNumComponents() > 0)
+    {
+      if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end() &&
+         mComponentIDNameMap.at(comp.first) == "ren:GeomPromise")
+        return true;
+    }
   }
+  return false;
+}
 
-  // Add up FPS. Will average when we loop back around.
-  mFPS += 1.0f / (static_cast<float>(currentTime) - mLastRealTime);
-  mLastRealTime = static_cast<float>(currentTime);
+bool ESCore::hasShaderPromise() const
+{
+  for(auto& comp : mComponents)
+  {
+    if(comp.second->getNumComponents() > 0)
+    {
+      if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end() &&
+         mComponentIDNameMap.at(comp.first) == "ren:ShaderPromiseVF")
+        return true;
+    }
+  }
+  return false;
+}
 
+void ESCore::executeWithoutAdvancingClock()
+{
+  execute(0);
+}
+
+void ESCore::execute(double constantFrameTime)
+{
+  mCurrentTime += constantFrameTime;
   // Update the current static time component before renormalization.
   {
     gen::StaticGlobalTime globalTime;
@@ -86,22 +153,21 @@ void ESCore::execute(double currentTime, double constantFrameTime)
 
     // Modify 'input'. If it doesn't already exist in the system, create it.
     gen::StaticGlobalTime* esGlobalTime = getStaticComponent<gen::StaticGlobalTime>();
-
-    if (esGlobalTime == nullptr)
-    {
-      addStaticComponent(globalTime);
-    }
-    else
-    {
-      *esGlobalTime = globalTime;
-    }
+    if (esGlobalTime == nullptr) addStaticComponent(globalTime);
+    else *esGlobalTime = globalTime;
   }
 
   // Ensure all systems are appropriately added and removed.
   renormalize(true);
   mSystems->renormalize();
 
-  // Perform garbage collection if requested.
+  // Perform garbage collection if requested and safe
+  if(runGC)
+  {
+    if(!hasGeomPromise())
+      runCompleteGC();
+    runGC = false;
+  }
 
   // Perform debug serialization here. You can save the frame here as well.
   // Might be useful for debugging.
@@ -112,8 +178,6 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   {
     // Reset the GL state (we shouldn't really need to do this, but we will anyways).
     mDefaultGLState.apply();
-
-    //lClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearColor(r_, g_, b_, a_);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
@@ -121,8 +185,6 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   // Perform execution of systems.
   uint64_t timeInMS = static_cast<uint64_t>(mCurrentTime * 1000.0);
   mSystems->runSystems(*this, timeInMS);
-
-  mCurrentTime += constantFrameTime;
 }
 
 void ESCore::setBackgroundColor(float r, float g, float b, float a)
@@ -135,4 +197,3 @@ void ESCore::setBackgroundColor(float r, float g, float b, float a)
 
 } // namespace Render
 } // namespace SCIRun
-

@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
@@ -44,7 +44,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, NullInputThrowsException)
 {
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  EXPECT_THROW(algo.run(DenseMatrixHandle(), EvaluateLinearAlgebraUnaryAlgorithm::NEGATE), AlgorithmInputException);
+  EXPECT_THROW(algo.run(nullptr, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE }), AlgorithmInputException);
 }
 
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegateDense)
@@ -52,7 +52,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegateDense)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   DenseMatrixHandle m(matrix1().clone());
-  DenseMatrixHandle result = castMatrix::toDense(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE));
+  auto result = castMatrix::toDense(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE }));
   EXPECT_EQ(-*m, *result);
 }
 
@@ -61,7 +61,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanTransposeDense)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   DenseMatrixHandle m(matrix1().clone());
-  DenseMatrixHandle result = castMatrix::toDense(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE));
+  auto result = castMatrix::toDense(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE }));
   DenseMatrix expected(m->transpose());
   EXPECT_EQ(expected, *result);
 }
@@ -71,7 +71,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiplyDense)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   DenseMatrixHandle m(matrix1().clone());
-  DenseMatrixHandle result = castMatrix::toDense(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.5)));
+  auto result = castMatrix::toDense(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY, 2.5 }));
   EXPECT_EQ(2.5* *m, *result);
 }
 
@@ -80,8 +80,8 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanUseFunctionDense)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   DenseMatrixHandle m(matrix1().clone());
-	std::string functionArg = "x+5"; 
-  DenseMatrixHandle result = castMatrix::toDense(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::FUNCTION, 0.0, functionArg)));
+  const std::string functionArg = "x+5";
+  auto result = castMatrix::toDense(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::FUNCTION, 0.0, functionArg }));
   EXPECT_EQ( (m->array()+5).matrix(), *result);
 }
 
@@ -90,7 +90,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegateSparse)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   SparseRowMatrixHandle m(matrix1sparse()->clone());
-  SparseRowMatrixHandle result = castMatrix::toSparse(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE));
+  auto result = castMatrix::toSparse(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE }));
   EXPECT_SPARSE_EQ(-*m, *result);
 }
 
@@ -99,7 +99,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanTransposeSparse)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   SparseRowMatrixHandle m(matrix1sparse()->clone());
-  SparseRowMatrixHandle result = castMatrix::toSparse(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE));
+  auto result = castMatrix::toSparse(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE }));
   SparseRowMatrix expected(m->transpose());
   EXPECT_SPARSE_EQ(expected, *result);
 }
@@ -109,7 +109,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiplySparse)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   SparseRowMatrixHandle m(matrix1sparse()->clone());
-  SparseRowMatrixHandle result = castMatrix::toSparse(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.5)));
+  auto result = castMatrix::toSparse(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY, 2.5 }));
   EXPECT_SPARSE_EQ(2.5* *m, *result);
 }
 
@@ -117,10 +117,10 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanUseFunctionSparse)
 {
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  SparseRowMatrixHandle m(matrix1sparse()->clone());
+  const SparseRowMatrixHandle m(matrix1sparse()->clone());
   std::string functionArg = "x+5";
-  SparseRowMatrixHandle result = castMatrix::toSparse(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::FUNCTION, 0.0, functionArg)));
-  SparseRowMatrixHandle expected = convertMatrix::toSparse(boost::make_shared<DenseMatrix>((matrix1().array() + 5).matrix()));
+  auto result = castMatrix::toSparse(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::FUNCTION, 0.0, functionArg }));
+  auto expected = convertMatrix::toSparse(makeShared<DenseMatrix>((matrix1().array() + 5).matrix()));
   EXPECT_SPARSE_EQ(*expected, *result);
 }
 
@@ -129,7 +129,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegateColumn)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   DenseColumnMatrixHandle m(matrix1column()->clone());
-  DenseColumnMatrixHandle result = castMatrix::toColumn(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE));
+  auto result = castMatrix::toColumn(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::NEGATE }));
   EXPECT_EQ(-*m, *result);
 }
 
@@ -139,7 +139,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, DISABLED_CanTransposeColumn)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   DenseColumnMatrixHandle m(matrix1column()->clone());
-  DenseMatrixHandle result = convertMatrix::toDense(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE));
+  auto result = convertMatrix::toDense(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::TRANSPOSE }));
   DenseMatrix expected(m->transpose());
   EXPECT_EQ(expected, *result);
 }
@@ -149,7 +149,7 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiplyColumn)
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
   DenseColumnMatrixHandle m(matrix1column()->clone());
-  DenseColumnMatrixHandle result = castMatrix::toColumn(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.5)));
+  auto result = castMatrix::toColumn(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::SCALAR_MULTIPLY, 2.5 }));
   EXPECT_EQ(2.5* *m, *result);
 }
 
@@ -159,6 +159,6 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanUseFunctionColumn)
 
   DenseColumnMatrixHandle m(matrix1column()->clone());
   std::string functionArg = "x+5";
-  DenseColumnMatrixHandle result = castMatrix::toColumn(algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::FUNCTION, 0.0, functionArg)));
+  auto result = castMatrix::toColumn(algo.run(m, { EvaluateLinearAlgebraUnaryAlgorithm::Operator::FUNCTION, 0.0, functionArg }));
   EXPECT_EQ((m->array() + 5).matrix(), *result);
 }

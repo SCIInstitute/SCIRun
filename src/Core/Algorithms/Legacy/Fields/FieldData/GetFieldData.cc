@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -24,10 +23,12 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   Author            : Moritz Dannhauer
-   Last modification : March 16 2014 (ported from SCIRun4)
+
+   Author:              Moritz Dannhauer
+   Last Modification:   March 16 2014 (ported from SCIRun4)
    TODO: Nrrd aoutput
 */
+
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -96,7 +97,7 @@ NrrdDataHandle GetFieldDataAlgo::runNrrd(FieldHandle input_field) const
 }
 
 template <class MatrixReturnType>
-boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle input_field) const
+SharedPointer<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle input_field) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldData");
 
@@ -120,7 +121,7 @@ boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle
     THROW_ALGORITHM_INPUT_ERROR("Invalid input field (no data)");
   }
 
-  boost::shared_ptr<MatrixReturnType> mat;
+  SharedPointer<MatrixReturnType> mat;
   if (vfield1->is_scalar())
     if (GetScalarFieldDataV(input_field, mat)) return mat;
   if (vfield1->is_vector())
@@ -149,7 +150,7 @@ namespace SCIRun {
         }
 
         template <class ValueType>
-        bool GetFieldDataAlgo::GetScalarFieldDataVDenseImpl(FieldHandle input, boost::shared_ptr<DenseMatrixGeneric<ValueType>>& output) const
+        bool GetFieldDataAlgo::GetScalarFieldDataVDenseImpl(FieldHandle input, SharedPointer<DenseMatrixGeneric<ValueType>>& output) const
         {
           /// Obtain virtual interface
           VField* vfield = input->vfield();
@@ -169,14 +170,14 @@ namespace SCIRun {
 
           for (VMesh::Elem::index_type idx = 0; idx < size; ++idx)
           {
-            vfield->get_value((*output)(idx, 0), idx);
+            vfield->get_value((*output)(static_cast<int>(idx), 0), idx);
           }
           if (vfield->basis_order() == 2)
           {
             vfield->vmesh()->synchronize(Mesh::EDGES_E);
             for (VMesh::Elem::index_type idx = size; idx < size + esize; ++idx)
             {
-              vfield->get_evalue((*output)(idx, 0), idx);
+              vfield->get_evalue((*output)(static_cast<int>(idx), 0), idx);
             }
           }
 

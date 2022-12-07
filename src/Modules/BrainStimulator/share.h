@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #undef SCISHARE
 
 #if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
@@ -38,4 +38,4 @@
 #define SCISHARE
 #endif
 
-#define NEW_BRAIN_STIMULATOR_MODULE public: virtual std::string helpPageUrl() const override { return "https://github.com/SCIInstitute/BrainStimulator"; }
+#define NEW_BRAIN_STIMULATOR_MODULE public: std::string newHelpPageUrl() const override { return "https://github.com/SCIInstitute/BrainStimulator"; }

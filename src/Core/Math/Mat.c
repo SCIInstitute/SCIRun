@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,13 +26,11 @@
 */
 
 
-
-
 ///
 ///@class Mat
 ///@brief Simple matrix calculations
 ///
-///@author 
+///@author
 ///       Steven G. Parker
 ///       Department of Computer Science
 ///       University of Utah
@@ -72,7 +69,7 @@ void min_norm_least_sq_3(double *A[3], double *b, double *x, double *bprime, int
     AtA[0][1] += A[0][i]*A[1][i];
     AtA[0][2] += A[0][i]*A[2][i];
     AtA[1][1] += A[1][i]*A[1][i];
-    AtA[1][2] += A[1][i]*A[2][i];  
+    AtA[1][2] += A[1][i]*A[2][i];
     AtA[2][2] += A[2][i]*A[2][i];
   }
   AtA[1][0] = AtA[0][1];
@@ -92,7 +89,7 @@ void min_norm_least_sq_3(double *A[3], double *b, double *x, double *bprime, int
       bprime[i] += x[j]*A[j][i];
   }
 }
-  
+
 void matsolve3by3(double mat[3][3], double rhs[3])
 {
     double B[3];

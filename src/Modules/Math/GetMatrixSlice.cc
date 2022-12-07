@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,12 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -76,18 +75,18 @@ void GetMatrixSlice::execute()
     {
       auto output = algo().run(withInputData((InputMatrix, input)));
       sendOutputFromAlgorithm(OutputMatrix, output);
-      sendOutput(Selected_Index, boost::make_shared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
+      sendOutput(Selected_Index, makeShared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
       maxIndex = output.additionalAlgoOutput()->toInt();
       state->setValue(Parameters::MaxIndex, maxIndex);
     }
     catch (const Core::Algorithms::AlgorithmInputException&)
     {
-      state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+      state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PAUSE));
       throw;
     }
 
-    auto playMode = transient_value_cast_with_variable_check<int>(state->getTransientValue(Parameters::PlayModeActive));
-    if (playMode == GetMatrixSliceAlgo::PLAY)
+    auto playMode = static_cast<GetMatrixSliceAlgo::PlayMode>(transient_value_cast_with_variable_check<int>(state->getTransientValue(Parameters::PlayModeActive)));
+    if (playMode == GetMatrixSliceAlgo::PlayMode::PLAY)
     {
       auto sliceIncrement = state->getValue(Parameters::SliceIncrement).toInt();
       auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + sliceIncrement;
@@ -101,7 +100,7 @@ void GetMatrixSlice::execute()
         if (nextIndex >= (maxIndex + 1))
         {
           playing_ = false;
-          state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+          state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PlayMode::PAUSE));
         }
         else
         {
@@ -109,11 +108,11 @@ void GetMatrixSlice::execute()
         }
       }
     }
-    else if (playMode == GetMatrixSliceAlgo::PAUSE)
+    else if (playMode == GetMatrixSliceAlgo::PlayMode::PAUSE)
     {
       playing_ = false;
     }
-    else if (playMode != 0)
+    else if (playMode != static_cast<GetMatrixSliceAlgo::PlayMode>(0))
     {
       playing_ = false;
       remark("Logical error: received invalid play mode value");
@@ -128,6 +127,6 @@ void GetMatrixSlice::playAgain(int nextIndex)
   playing_ = true;
   int delay = state->getValue(Parameters::PlayModeDelay).toInt();
   //std::cout << "delaying here for " << delay << " milliseconds" << std::endl;
-  boost::this_thread::sleep(boost::posix_time::milliseconds(delay));
+  std::this_thread::sleep_for(std::chrono::milliseconds(delay));
   enqueueExecuteAgain(false);
 }

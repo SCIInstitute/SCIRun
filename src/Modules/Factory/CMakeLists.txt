@@ -3,9 +3,8 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
 
 SET(Modules_Factory_SRCS
   HardCodedModuleFactory.cc
@@ -92,13 +92,19 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Converters
   Modules_Legacy_Teem_DataIO
   Modules_Legacy_Teem_Misc
+  Modules_Legacy_Teem_Tend
   Modules_Legacy_Teem_Converters
   Modules_Legacy_String
 )
+
+IF(WITH_TETGEN)
+  ADD_DEFINITIONS(-DWITH_TETGEN)
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Factory)
 ENDIF(BUILD_SHARED_LIBS)
 
-# Framework test: always build
-ADD_SUBDIRECTORY(Tests)
+IF(BUILD_TESTING)
+  ADD_SUBDIRECTORY(Tests)
+ENDIF()

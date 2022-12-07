@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -49,22 +49,22 @@ public:
   MOCK_METHOD0(clear, void());
 };
 
-typedef boost::shared_ptr<MockNetworkIO> MockNetworkIOPtr;
+typedef SharedPointer<MockNetworkIO> MockNetworkIOPtr;
 
 class ProvenanceManagerTests : public ::testing::Test
 {
 protected:
-  virtual void SetUp()
+  void SetUp() override
   {
     controller_.reset(new NiceMock<MockNetworkIO>);
   }
-  
+
   class DummyProvenanceItem : public ProvenanceItem<std::string>
   {
   public:
     explicit DummyProvenanceItem(const std::string& name) : name_(name) {}
-    virtual std::string name() const { return name_; }
-    virtual std::string memento() const { return name_; }
+    std::string name() const override { return name_; }
+    std::string memento() const override { return name_; }
   private:
     std::string name_;
   };
@@ -81,7 +81,7 @@ protected:
 TEST_F(ProvenanceManagerTests, CanAddItems)
 {
   ProvenanceManager<std::string> manager(controller_.get());
-  
+
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 

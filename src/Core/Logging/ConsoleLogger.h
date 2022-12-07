@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -25,6 +24,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+
 /// @todo Documentation Core/Logging/ConsoleLogger.h
 
 #ifndef CORE_LOGGING_CONSOLELOGGER_H
@@ -42,19 +43,25 @@ namespace SCIRun
       class SCISHARE ConsoleLogger : public LegacyLoggerInterface
       {
       public:
-        virtual void error(const std::string& msg) const override;
-        virtual void warning(const std::string& msg) const override;
-        virtual void remark(const std::string& msg) const override;
-        virtual void status(const std::string& msg) const override;
+        void error(const std::string& msg) const override;
+        void warning(const std::string& msg) const override;
+        void remark(const std::string& msg) const override;
+        void status(const std::string& msg) const override;
+        bool errorReported() const override { return errorReported_; }
+        void setErrorFlag(bool flag) override { errorReported_ = flag; }
+      private:
+        mutable bool errorReported_{ false };
       };
 
       class SCISHARE NullLogger : public LegacyLoggerInterface
       {
       public:
-        virtual void error(const std::string& msg) const override {}
-        virtual void warning(const std::string& msg) const override {}
-        virtual void remark(const std::string& msg) const override {}
-        virtual void status(const std::string& msg) const override {}
+        void error(const std::string&) const override {}
+        void warning(const std::string&) const override {}
+        void remark(const std::string&) const override {}
+        void status(const std::string&) const override {}
+        bool errorReported() const override { return false; }
+        void setErrorFlag(bool) override {}
       };
     }
   }

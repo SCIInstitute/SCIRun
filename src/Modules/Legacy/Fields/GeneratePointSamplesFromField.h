@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
 #define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
 
@@ -43,6 +43,9 @@ namespace SCIRun {
       {
         ALGORITHM_PARAMETER_DECL(NumSeeds);
         ALGORITHM_PARAMETER_DECL(ProbeScale);
+        ALGORITHM_PARAMETER_DECL(PointPositions);
+        ALGORITHM_PARAMETER_DECL(BBoxScale);
+        ALGORITHM_PARAMETER_DECL(UseBBoxScale);
       }
     }
   }
@@ -57,17 +60,20 @@ namespace SCIRun {
       public:
         GeneratePointSamplesFromField();
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
         OUTPUT_PORT(1, GeneratedPoints, Field);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
       private:
-        boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
+        SharedPointer<class GeneratePointSamplesFromFieldImpl> impl_;
         FieldHandle GenerateOutputField();
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);
+        int moveCount_ {0};
       };
 
     }

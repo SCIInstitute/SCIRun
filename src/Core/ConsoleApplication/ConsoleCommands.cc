@@ -1,30 +1,30 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
 
-License for the specific language governing rights and limitations under
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <Core/ConsoleApplication/ConsoleCommands.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -110,11 +110,11 @@ bool SaveFileCommandConsole::execute()
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   LOG_CONSOLE("Executing network...");
-  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
+  Application::Instance().controller()->connectStaticNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
   Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
-  auto t = Application::Instance().controller()->executeAll(nullptr);
+  auto val = Application::Instance().controller()->executeAll();
   LOG_CONSOLE("Execution started.");
-  t->join();
+  val.wait();
   LOG_CONSOLE("Execute thread stopped. Entering interactive mode.");
 
   InteractiveModeCommandConsole interactive;
@@ -129,7 +129,7 @@ QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
 bool QuitAfterExecuteCommandConsole::execute()
 {
   LOG_CONSOLE("Quit after execute is set.");
-  Application::Instance().controller()->connectNetworkExecutionFinished([](int code)
+  Application::Instance().controller()->connectStaticNetworkExecutionFinished([](int code)
   {
     LOG_CONSOLE("Goodbye! Exit code: " << code);
     exit(code);
@@ -215,7 +215,7 @@ bool RunPythonScriptCommandConsole::execute()
 
     if (app.parameters()->quitAfterOneScriptedExecution())
     {
-      app.controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
+      app.controller()->connectStaticNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
       app.controller()->stopExecutionContextLoopWhenExecutionFinishes();
     }
 
@@ -243,9 +243,10 @@ bool RunPythonScriptCommandConsole::execute()
 
 bool SetupDataDirectoryCommand::execute()
 {
-  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  auto dir = *Application::Instance().parameters()->dataDirectory();
   LOG_DEBUG("Data dir set to: {}", dir.string());
 
-  Preferences::Instance().setDataDirectory(dir);
+  runPythonString(Preferences::Instance().setDataDirectory(dir));
+
   return true;
 }

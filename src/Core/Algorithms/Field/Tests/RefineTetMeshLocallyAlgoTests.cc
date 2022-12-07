@@ -3,10 +3,9 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +24,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 
 #include <gtest/gtest.h>
 
@@ -53,7 +53,7 @@ FieldList LoadAllCasesInputField()
    if (!(i==31 || i==47 || i==55 || i==59 || i==61 || i==62))
    {
     auto file = (TestResources::rootDir() / "Fields/refinetetmeshlocally/all57outof64case_input/").string() + std::to_string(i) + ".mat";
-    FieldHandle field = MatlabField_reader(0, file.c_str());
+    FieldHandle field = MatlabField_reader(nullptr, file.c_str());
     result.push_back(field);
    }
   }
@@ -70,7 +70,7 @@ FieldList LoadAllCasesResultField()
     auto str = file.string();
     str.append(std::to_string(i));
     str.append(".mat");
-    result.push_back(MatlabField_reader(0, str.c_str()));
+    result.push_back(MatlabField_reader(nullptr, str.c_str()));
   }
 
   return result;

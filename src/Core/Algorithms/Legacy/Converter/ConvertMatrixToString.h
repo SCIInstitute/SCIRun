@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H
 #define CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H 1
 
@@ -42,10 +42,10 @@ namespace SCIRun {
 		class SCISHARE ConvertMatrixToStringAlgo : public AlgorithmBase
 		{
 			public:
-				static AlgorithmOutputName ResultString;
+				static const AlgorithmOutputName ResultString;
 				ConvertMatrixToStringAlgo() {}
 				bool run(Datatypes::MatrixHandle input, Datatypes::StringHandle& output) const;
-				virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+        AlgorithmOutput run(const AlgorithmInput& input) const override;
 		};
 }}}}
 
