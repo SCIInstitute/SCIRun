@@ -35,7 +35,6 @@ SET(Modules_ParticleInCell_SRCS
   VectorMeshReader.cc
   ParticleReader.cc
   PIConGPUReader.cc
-  PIConGPUReaderAsynch.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -47,7 +46,6 @@ SET(Modules_ParticleInCell_HEADERS
   VectorMeshReader.h
   ParticleReader.h
   PIConGPUReader.h
-  PIConGPUReaderAsynch.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell
