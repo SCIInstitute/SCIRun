@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "PIConGPUReaderAsynch",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "An asynchronous execution PIConGPU openPMD Reader module",
+    "header": "Modules/ParticleInCell/PIConGPUReaderAsynch.h"
+     },
+
+"algorithm":
+    {
+    "name": "PIConGPUReaderAlgoAsynch",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/PIConGPUReaderAlgoAsynch.h"
+    },
+
+"UI":
+    {
+    "name": "PIConGPUReaderDialogAsynch",
+    "header": "Interface/Modules/ParticleInCell/PIConGPUReaderDialogAsynch.h"
+    }
+}
