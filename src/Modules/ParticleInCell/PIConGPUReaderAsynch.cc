@@ -146,15 +146,15 @@ void PIConGPUReaderAsynch::execute()
 
 //        std::string SST_dir = "../../../scratch/runs/SST/simOutput/openPMD/simData.sst";
 //        std::string SST_dir = "/home/kj/Project/scratch/runs/SST/simOutput/openPMD/simData.sst";
-        std::string SST_dir = "~/scratch/runs/SST/simOutput/openPMD/simData.sst";
+        std::string SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
         while(!std::filesystem::exists(SST_dir)) sleep(1);
 //        Series series = Series("/home/kj/Project/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-        Series series = Series("~/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
 
         for (IndexedIteration iteration : series.readIterations())
             {
-            cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
+            cout << "\nFrom PIConGPUReaderAsynch: Current iteration is: " << iteration.iterationIndex << std::endl;
 
                                                                      //Start Particle data processing
             std::string particle_type = "e";                         //set particle related input variables
