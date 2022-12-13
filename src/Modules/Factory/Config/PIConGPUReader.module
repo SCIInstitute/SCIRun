@@ -6,7 +6,7 @@
     "status": "new module",
     "description": "PIConGPU openPMD Reader module",
     "header": "Modules/ParticleInCell/PIConGPUReader.h"
-    },
+     },
 
 "algorithm":
     {

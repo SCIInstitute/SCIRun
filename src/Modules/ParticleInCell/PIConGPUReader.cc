@@ -243,5 +243,5 @@ void PIConGPUReader::execute()
             iteration.close();
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
-    }  //end of the "PIConGPUReader::execute()" function
+    }  //end of the "PIConGPU::execute()" function
 
