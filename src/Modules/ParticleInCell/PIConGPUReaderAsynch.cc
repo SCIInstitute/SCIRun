@@ -29,8 +29,8 @@
 #include <filesystem>
 
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Modules/ParticleInCell/PIConGPUReader.h>
-#include <Core/Algorithms/ParticleInCell/PIConGPUReaderAlgo.h>
+#include <Modules/ParticleInCell/PIConGPUReaderAsynch.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUReaderAlgoAsynch.h>
 
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -52,20 +52,20 @@ using namespace openPMD;
 
 using position_t = float;                                            //Remove this line when position_t is set in the .h file
 
-MODULE_INFO_DEF(PIConGPUReader,ParticleInCell,SCIRun);
+MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
 
-const AlgorithmOutputName PIConGPUReaderAlgo::Particles("Particles");
-const AlgorithmOutputName PIConGPUReaderAlgo::ScalarField("ScalarField");
-const AlgorithmOutputName PIConGPUReaderAlgo::VectorField("VectorField");
+const AlgorithmOutputName PIConGPUReaderAlgoAsynch::Particles("Particles");
+const AlgorithmOutputName PIConGPUReaderAlgoAsynch::ScalarField("ScalarField");
+const AlgorithmOutputName PIConGPUReaderAlgoAsynch::VectorField("VectorField");
 
-PIConGPUReader::PIConGPUReader() : Module(staticInfo_)
+PIConGPUReaderAsynch::PIConGPUReaderAsynch() : Module(staticInfo_)
     {
     INITIALIZE_PORT(Particles);
     INITIALIZE_PORT(ScalarField);
     INITIALIZE_PORT(VectorField);
     }
 
-void PIConGPUReader::setStateDefaults()
+void PIConGPUReaderAsynch::setStateDefaults()
     {
 //    setStateIntFromAlgo(Parameters::particle_sample_rate);
 //    setStateStringFromAlgo(Parameters::particle_type);
@@ -73,7 +73,7 @@ void PIConGPUReader::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
     }
 
-FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
+FieldHandle PIConGPUReaderAsynch::particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
     {
     FieldInformation pcfi("PointCloudMesh",0,"int");
     FieldHandle ofh = CreateField(pcfi);
@@ -84,7 +84,7 @@ FieldHandle PIConGPUReader::particleData(int buffer_size, float component_x[], f
     return ofh;
     }
 
-FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
+FieldHandle PIConGPUReaderAsynch::scalarField(const int numvals, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
     {
     FieldInformation lfi("LatVolMesh",1,"float");
     std::vector<float> values(numvals);
@@ -104,7 +104,7 @@ FieldHandle PIConGPUReader::scalarField(const int numvals, std::shared_ptr<float
     return ofh;
     }
 
-FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
+FieldHandle PIConGPUReaderAsynch::vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
     {
     FieldInformation lfi("LatVolMesh",1,"float");
     lfi.make_vector();
@@ -127,7 +127,7 @@ FieldHandle PIConGPUReader::vectorField(const int numvals, std::vector<long unsi
     return ofh;
     }
 
-void PIConGPUReader::execute()
+void PIConGPUReaderAsynch::execute()
     {
     AlgorithmInput input;
 //    if(needToExecute())
@@ -145,10 +145,12 @@ void PIConGPUReader::execute()
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
 
 //        std::string SST_dir = "../../../scratch/runs/SST/simOutput/openPMD/simData.sst";
-        std::string SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
+//        std::string SST_dir = "/home/kj/Project/scratch/runs/SST/simOutput/openPMD/simData.sst";
+        std::string SST_dir = "~/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
         while(!std::filesystem::exists(SST_dir)) sleep(1);
-        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+//        Series series = Series("/home/kj/Project/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        Series series = Series("~/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
 
         for (IndexedIteration iteration : series.readIterations())
             {
@@ -243,5 +245,5 @@ void PIConGPUReader::execute()
             iteration.close();
             }  //end of the openPMD reader loop
         }  //end of the "needToExecute" block
-    }  //end of the "PIConGPUReader::execute()" function
+    }  //end of the "PIConGPUReaderAsynch::execute()" function
 

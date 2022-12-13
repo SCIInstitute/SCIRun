@@ -31,6 +31,7 @@ SET(Interface_Modules_ParticleInCell_FORMS
   GravitySimulationDialog.ui
   PIConGPUDialog.ui
   PIConGPUReaderDialog.ui
+  PIConGPUReaderDialogAsynch.ui
   ParticleReaderDialog.ui
   ScalarMeshReaderDialog.ui
   VectorMeshReaderDialog.ui
@@ -41,6 +42,7 @@ SET(Interface_Modules_ParticleInCell_HEADERS
   GravitySimulationDialog.h
   PIConGPUDialog.h
   PIConGPUReaderDialog.h
+  PIConGPUReaderDialogAsynch.h
   ParticleReaderDialog.h
   ScalarMeshReaderDialog.h
   VectorMeshReaderDialog.h
@@ -52,6 +54,7 @@ SET(Interface_Modules_ParticleInCell_SOURCES
   GravitySimulationDialog.cc
   PIConGPUDialog.cc
   PIConGPUReaderDialog.cc
+  PIConGPUReaderDialogAsynch.cc
   ParticleReaderDialog.cc
   ScalarMeshReaderDialog.cc
   VectorMeshReaderDialog.cc
