@@ -59,6 +59,12 @@
 
 using namespace SCIRun::MatlabIO;
 
+#ifdef MATLAB_STRING_OUTPUT_SIGNED_TYPE_FIX_FOR_SCIPY
+#define MATLAB_STRING_OUTPUT_DATATYPE miINT8
+#else
+#define MATLAB_STRING_OUTPUT_DATATYPE miUINT8
+#endif
+
 matfiledata::matfiledata()
   : m_(nullptr), ptr_(nullptr)
 {
@@ -273,13 +279,13 @@ void matfiledata::putstring(const std::string& str)
   clear();
 	if (dsize > 0)
 	{
-		newdatabuffer(dsize,miUINT8);
+		newdatabuffer(dsize, MATLAB_STRING_OUTPUT_DATATYPE);
 		ptr = static_cast<char *>(databuffer());
 		for (int p=0;p<dsize;p++) { ptr[p] = str[p];}
 	}
 	else
 	{
-		m_->type_ = miUINT8;
+		m_->type_ = MATLAB_STRING_OUTPUT_DATATYPE;
 	}
 }
 
