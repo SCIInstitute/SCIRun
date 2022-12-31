@@ -25,25 +25,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPU_H
-#define MODULES_PARTICLEINCELL_PIConGPU_H
+#include <Modules/ParticleInCell/TestModuleSimple.h>
+#include <Core/Datatypes/String.h>
 
-#include <Modules/Fields/share.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun         {
-namespace Modules        {
-namespace ParticleInCell {
+MODULE_INFO_DEF(TestModuleSimple, ParticleInCell, SCIRun);
 
-class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public HasNoOutputPorts
+TestModuleSimple::TestModuleSimple() : Module(staticInfo_, false)
+    {
+    INITIALIZE_PORT(OutputString);
+    }
+
+void TestModuleSimple::execute()
+    {
+    for (int i=0; i<2; i++)
         {
-        public:
-            PIConGPU();
-            virtual void execute();
-            virtual void setStateDefaults();
-            MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
-        };
-}}}
-#endif
+        auto s = std::to_string(i);
+        std::string message_string;
+        message_string = "Message "+s;
+        StringHandle msH(new String(message_string));
+        sleep(3);
+        sendOutput(OutputString, msH);
+        }
+    }
+
