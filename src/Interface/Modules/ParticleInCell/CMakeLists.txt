@@ -32,9 +32,6 @@ SET(Interface_Modules_ParticleInCell_FORMS
   PIConGPUDialog.ui
   PIConGPUReaderDialog.ui
   PIConGPUReaderDialogAsynch.ui
-  ParticleReaderDialog.ui
-  ScalarMeshReaderDialog.ui
-  VectorMeshReaderDialog.ui
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
@@ -43,9 +40,7 @@ SET(Interface_Modules_ParticleInCell_HEADERS
   PIConGPUDialog.h
   PIConGPUReaderDialog.h
   PIConGPUReaderDialogAsynch.h
-  ParticleReaderDialog.h
-  ScalarMeshReaderDialog.h
-  VectorMeshReaderDialog.h
+
   share.h
 )
 
@@ -55,9 +50,6 @@ SET(Interface_Modules_ParticleInCell_SOURCES
   PIConGPUDialog.cc
   PIConGPUReaderDialog.cc
   PIConGPUReaderDialogAsynch.cc
-  ParticleReaderDialog.cc
-  ScalarMeshReaderDialog.cc
-  VectorMeshReaderDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")

@@ -26,7 +26,7 @@
 */
 
 #include <Interface/Modules/ParticleInCell/PIConGPUReaderDialog.h>
-#include <Core/Algorithms/ParticleInCell/ParticleReaderAlgo.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUReaderAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;

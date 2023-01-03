@@ -35,9 +35,6 @@ SET(Algorithms_ParticleInCell_SRCS
   Species.cpp
   World.cpp
   PIConGPUAlgo.cc
-  ScalarMeshReaderAlgo.cc
-  VectorMeshReaderAlgo.cc
-  ParticleReaderAlgo.cc
   PIConGPUReaderAlgo.cc
   PIConGPUReaderAlgoAsynch.cc
 )
@@ -50,9 +47,6 @@ SET(Algorithms_ParticleInCell_HEADERS
   Species.h
   World.h
   PIConGPUAlgo.h
-  ScalarMeshReaderAlgo.h
-  VectorMeshReaderAlgo.h
-  ParticleReaderAlgo.h
   PIConGPUReaderAlgo.h
   PIConGPUReaderAlgoAsynch.h
 )
