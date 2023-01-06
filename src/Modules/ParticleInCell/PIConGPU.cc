@@ -90,37 +90,52 @@ void PIConGPU::execute()
             cout << "The Series contains " << series.iterations.size() << " iterations\n";
 
                                                         //Output data about particles
-            cout << "\nParticle data \n";
-            for (auto const &ps : iter.particles)
+            if(iter.particles.size())
                 {
-                cout << "\n\t" << ps.first;
-                cout << "\n";
-                for (auto const &r : ps.second) cout << "\n\t" << r.first;
+                cout << "\nParticle data \n";
+                for (auto const &ps : iter.particles)
+                    {
+                    cout << "\n\t" << ps.first;
+                    cout << "\n";
+                    for (auto const &r : ps.second) cout << "\n\t" << r.first;
+                    }
+                cout << '\n';
                 }
-            cout << '\n';
                                                         //Output data about meshes
-            cout << "\nMesh data \n";
-
-            for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
-            cout << "\n";
+            if(iter.meshes.size())
+                {
+                cout << "\nMesh data \n";
+                for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
+                cout << "\n";
+                }
 /*
             MeshRecordComponent B_x = iter.meshes["B"]["x"];
             Extent extent_B = B_x.getExtent();
-            cout << "\nField B has shape (";
-            for (auto const &dim : extent_B) cout << dim << ',';
-            cout << ") and has datatype " << B_x.getDatatype() << '\n';
+            if(extent_B)
+                {
+                cout << "\nField B has shape (";
+                for (auto const &dim : extent_B) cout << dim << ',';
+                cout << ") and has datatype " << B_x.getDatatype() << '\n';
+                }
+
 */
             MeshRecordComponent E_x = iter.meshes["E"]["x"];
             Extent extent_E = E_x.getExtent();
-            cout << "\nField E is vector valued, has shape (";
-            for (auto const &dim : extent_E) cout << dim << ',';
-            cout << ") and has datatype " << E_x.getDatatype() << '\n';
+            if(extent_E)
+                {
+                cout << "\nField E is vector valued, has shape (";
+                for (auto const &dim : extent_E) cout << dim << ',';
+                cout << ") and has datatype " << E_x.getDatatype() << '\n';
+                }
 
             MeshRecordComponent E_charge_density = iter.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
             Extent extent_cd = E_charge_density.getExtent();
-            cout << "\nField e_all_chargeDensity is scalar valued, has shape (";
-            for (auto const &dim : extent_cd) cout << dim << ',';
-            cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
+            if(extent_cd)
+                {
+                cout << "\nField e_all_chargeDensity is scalar valued, has shape (";
+                for (auto const &dim : extent_cd) cout << dim << ',';
+                cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
+                }
 //            cout << "\n----------" << std::endl;
             }
 /**/

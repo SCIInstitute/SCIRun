@@ -48,7 +48,7 @@ void TestModuleSimple::execute()
         std::string message_string;
         message_string = "Message "+s;
         StringHandle msH(new String(message_string));
-        sleep(3);
+        sleep(1);
         sendOutput(OutputString, msH);
         }
     }

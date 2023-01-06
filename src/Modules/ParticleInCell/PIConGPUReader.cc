@@ -154,54 +154,57 @@ void PIConGPUReader::execute()
             {
             cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
-                                                                     //Start Particle data processing
-            std::string particle_type = "e";                         //set particle related input variables
-//            int particle_sample_rate  = 100;
-            int particle_sample_rate  = 10;
-                                                                     //Read particle data
-            Record particlePositions       = iteration.particles[particle_type]["position"];
-            Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];                     //see 25 August email from Franz
-
-            std::array<std::shared_ptr<position_t>, 3> loadedChunks;
-            std::array<std::shared_ptr<int>,        3> loadedChunks1;
-            std::array<Extent,                      3> extents;
-            std::array<std::string,                 3> const dimensions{{"x", "y", "z"}};
-
-            for (size_t i_dim = 0; i_dim < 3; ++i_dim)
+            Iteration iter = series.iterations[iteration.iterationIndex];
+            if(iter.particles.size())
                 {
-                std::string dim_str  = dimensions[i_dim];
-                RecordComponent rc   = particlePositions[dim_str];
-                RecordComponent rc1  = particlePositionOffsets[dim_str];
+                                                                         //Start Particle data processing
+                std::string particle_type = "e";                         //set particle related input variables
+    //            int particle_sample_rate  = 100;
+                int particle_sample_rate  = 10;
+                                                                         //Read particle data
+                Record particlePositions       = iteration.particles[particle_type]["position"];
+                Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];        //see 25 August email from Franz
 
-                loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
-                loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
-                extents[i_dim]       = rc.getExtent();
-                }
+                std::array<std::shared_ptr<position_t>, 3> loadedChunks;
+                std::array<std::shared_ptr<int>,        3> loadedChunks1;
+                std::array<Extent,                      3> extents;
+                std::array<std::string,                 3> const dimensions{{"x", "y", "z"}};
 
-            iteration.seriesFlush();                                 //Data is now available
+                for (size_t i_dim = 0; i_dim < 3; ++i_dim)
+                    {
+                    std::string dim_str  = dimensions[i_dim];
+                    RecordComponent rc   = particlePositions[dim_str];
+                    RecordComponent rc1  = particlePositionOffsets[dim_str];
 
-            Extent const &extent_0 = extents[0];
-            int num_particles      = extent_0[0];
+                    loadedChunks[i_dim]  = rc.loadChunk<position_t>(Offset(rc.getDimensionality(), 0), rc.getExtent());
+                    loadedChunks1[i_dim] = rc1.loadChunk<int>(Offset(rc1.getDimensionality(), 0), rc1.getExtent());
+                    extents[i_dim]       = rc.getExtent();
+                    }
 
-            const int buffer_size  = 1+(num_particles/particle_sample_rate);
-            auto component_x       = new float[buffer_size];
-            auto component_y       = new float[buffer_size];
-            auto component_z       = new float[buffer_size];
+                iteration.seriesFlush();                                 //Data is now available
 
-            for (size_t i_pos = 0; i_pos < 3; ++i_pos)
-                {
-                std::string dim_str = dimensions[i_pos];
-                auto chunk          = loadedChunks[i_pos];
-                auto chunk1         = loadedChunks1[i_pos];
-                                                                     //Load (dimensionless) particle xyz position
-                if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] + chunk.get()[k];
-                if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk1.get()[i] + chunk.get()[i];
-                if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk1.get()[m] + chunk.get()[m];
-                }
-                                                                     //Call the output function
-            auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
-            sendOutput(Particles, Particle_Output);
-                                                                     //End of Particle data processing
+                Extent const &extent_0 = extents[0];
+                int num_particles      = extent_0[0];
+
+                const int buffer_size  = 1+(num_particles/particle_sample_rate);
+                auto component_x       = new float[buffer_size];
+                auto component_y       = new float[buffer_size];
+                auto component_z       = new float[buffer_size];
+
+                for (size_t i_pos = 0; i_pos < 3; ++i_pos)
+                    {
+                    std::string dim_str = dimensions[i_pos];
+                    auto chunk          = loadedChunks[i_pos];
+                    auto chunk1         = loadedChunks1[i_pos];
+                                                                         //Load (dimensionless) particle xyz position
+                    if(i_pos==0) for (size_t k = 0; k<num_particles; k+=particle_sample_rate) component_x[k/particle_sample_rate] = chunk1.get()[k] + chunk.get()[k];
+                    if(i_pos==1) for (size_t i = 0; i<num_particles; i+=particle_sample_rate) component_y[i/particle_sample_rate] = chunk1.get()[i] + chunk.get()[i];
+                    if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk1.get()[m] + chunk.get()[m];
+                    }
+                                                                         //Call the output function
+                auto Particle_Output = particleData(buffer_size, component_x, component_y, component_z);
+                sendOutput(Particles, Particle_Output);
+                }                                                         //End of Particle data processing
 
                                                                      //Start Scalar field data processing Note: See Franz Poschel email, 17 May 2022)
                                                                      //set Scalar field related input variable
