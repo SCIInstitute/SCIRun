@@ -157,7 +157,7 @@ void PIConGPUReader::execute()
             Iteration iter = series.iterations[iteration.iterationIndex];
             if(iter.particles.size())
                 {
-                                                                         //Start Particle data processing
+                                                                          //Start Particle data processing
                 std::string particle_type = "e";                         //set particle related input variables
     //            int particle_sample_rate  = 100;
                 int particle_sample_rate  = 10;
