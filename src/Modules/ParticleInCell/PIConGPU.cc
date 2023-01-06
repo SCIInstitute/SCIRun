@@ -117,11 +117,11 @@ void PIConGPU::execute()
                 for (auto const &dim : extent_B) cout << dim << ',';
                 cout << ") and has datatype " << B_x.getDatatype() << '\n';
                 }
-
 */
+
             MeshRecordComponent E_x = iter.meshes["E"]["x"];
             Extent extent_E = E_x.getExtent();
-            if(extent_E)
+            //if(extent_E)
                 {
                 cout << "\nField E is vector valued, has shape (";
                 for (auto const &dim : extent_E) cout << dim << ',';
@@ -130,7 +130,7 @@ void PIConGPU::execute()
 
             MeshRecordComponent E_charge_density = iter.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
             Extent extent_cd = E_charge_density.getExtent();
-            if(extent_cd)
+            //if(extent_cd)
                 {
                 cout << "\nField e_all_chargeDensity is scalar valued, has shape (";
                 for (auto const &dim : extent_cd) cout << dim << ',';

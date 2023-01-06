@@ -223,7 +223,7 @@ void PIConGPUReader::execute()
             auto Scalar_Output = scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
             sendOutput(ScalarField, Scalar_Output);
                                                                      //End of Scalar field data processing
-
+/**/
                                                                      //Start Vector field data processing Note: See Franz Poschel email, 17 May 2022)
             std::string vector_field_type = "E";                     //set Vector field related input variable
 
@@ -241,6 +241,7 @@ void PIConGPUReader::execute()
                                                                      //Call the output function
             auto Vector_Output = vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
             sendOutput(VectorField, Vector_Output);
+
                                                                      //End of Vector field data processing
 
             iteration.close();
