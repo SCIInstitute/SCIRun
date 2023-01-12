@@ -37,6 +37,10 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
+
+  SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
+
+
     class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
@@ -49,11 +53,21 @@ namespace ParticleInCell {
                 FieldHandle scalarField(const int buffer_size_sFD, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD);
                 FieldHandle vectorField(const int buffer_size_vFD, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
 
+                // override these methods in subclass
+                virtual void setupStream();
+                virtual bool hasData() const;
+                virtual Core::Datatypes::BundleHandle nextData() const;
+                virtual void shutdownStream();
+
                 OUTPUT_PORT(0, Particles, Field);
                 OUTPUT_PORT(1, ScalarField, Field);
                 OUTPUT_PORT(2, VectorField, Field);
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+
+            private:
+                std::unique_ptr<class StreamAppenderImpl> streamer_;
+                std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
             };
 }}}
 #endif
