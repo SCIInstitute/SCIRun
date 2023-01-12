@@ -31,6 +31,9 @@
 #include <Modules/Fields/share.h>
 #include <Dataflow/Network/Module.h>
 
+#include <Modules/Basic/AsyncStreamingTestModule.h>
+#include <Modules/Basic/share.h>
+
 //using position_t = float;
 
 namespace SCIRun         {
@@ -46,6 +49,8 @@ namespace ParticleInCell {
         public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
             {
             public:
+                SimulationStreamingReaderBase();
+                ~SimulationStreamingReaderBase();
                 PIConGPUReaderAsynch();
                 virtual void execute();
                 virtual void setStateDefaults();
@@ -56,9 +61,10 @@ namespace ParticleInCell {
                 // override these methods in subclass
                 virtual void setupStream();
                 virtual bool hasData() const;
-                virtual Core::Datatypes::BundleHandle nextData() const;
+                //virtual Core::Datatypes::BundleHandle nextData() const;
                 virtual void shutdownStream();
 
+                //OUTPUT_PORT(0, OutputData, Bundle);
                 OUTPUT_PORT(0, Particles, Field);
                 OUTPUT_PORT(1, ScalarField, Field);
                 OUTPUT_PORT(2, VectorField, Field);
