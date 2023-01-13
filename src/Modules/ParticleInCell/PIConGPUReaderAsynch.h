@@ -31,7 +31,7 @@
 #include <Modules/Fields/share.h>
 #include <Dataflow/Network/Module.h>
 
-#include <Modules/Basic/AsyncStreamingTestModule.h>
+//#include <Modules/Basic/AsyncStreamingTestModule.h>
 #include <Modules/Basic/share.h>
 
 //using position_t = float;
@@ -49,8 +49,8 @@ namespace ParticleInCell {
         public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
             {
             public:
-                SimulationStreamingReaderBase();
-                ~SimulationStreamingReaderBase();
+                //SimulationStreamingReaderBase();
+                //~SimulationStreamingReaderBase();
                 PIConGPUReaderAsynch();
                 virtual void execute();
                 virtual void setStateDefaults();
@@ -59,10 +59,10 @@ namespace ParticleInCell {
                 FieldHandle vectorField(const int buffer_size_vFD, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
 
                 // override these methods in subclass
-                virtual void setupStream();
-                virtual bool hasData() const;
+                //virtual void setupStream();
+                //virtual bool hasData() const;
                 //virtual Core::Datatypes::BundleHandle nextData() const;
-                virtual void shutdownStream();
+                //virtual void shutdownStream();
 
                 //OUTPUT_PORT(0, OutputData, Bundle);
                 OUTPUT_PORT(0, Particles, Field);
@@ -71,9 +71,9 @@ namespace ParticleInCell {
 
                 MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
 
-            private:
-                std::unique_ptr<class StreamAppenderImpl> streamer_;
-                std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
+            //private:
+                //std::unique_ptr<class StreamAppenderImpl> streamer_;
+                //std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
             };
 }}}
 #endif

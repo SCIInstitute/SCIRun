@@ -52,6 +52,7 @@ using namespace openPMD;
 
 using position_t = float;                                            //Remove this line when position_t is set in the .h file
 
+/*
 namespace SCIRun::Modules::ParticleInCell
 {
   using DataChunk = BundleHandle;
@@ -155,8 +156,10 @@ public:
   openPMDStub::Series series;
   mutable openPMDStub::IndexedIterationIterator iterationIterator, iterationIteratorEnd;
   bool setup_{ false };
+*/
+  //FieldHandle particleData(/*int buffer_size, float component_x[], float component_y[], float component_z[]*/)
 
-  FieldHandle particleData(/*int buffer_size, float component_x[], float component_y[], float component_z[]*/)
+/*
   {
     FieldInformation pcfi("PointCloudMesh",0,"int");
     FieldHandle ofh = CreateField(pcfi);
@@ -166,9 +169,9 @@ public:
 #endif
     return ofh;
   }
-
-  FieldHandle scalarField(const int numvals, /*std::shared_ptr<float> scalarFieldData_buffer,*/ std::vector<long unsigned int> extent_sFD, double dataStub)
-  {
+*/
+  //FieldHandle scalarField(const int numvals, /*std::shared_ptr<float> scalarFieldData_buffer,*/ std::vector<long unsigned int> extent_sFD, double dataStub)
+/*  {
     FieldInformation lfi("LatVolMesh",1,"float");
     std::vector<float> values(numvals, dataStub);
     MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(extent_sFD[0],extent_sFD[1],extent_sFD[2]));
@@ -224,8 +227,9 @@ public:
 #endif
     return openPMDStub::Series(SST_dir, openPMDStub::Access::READ_ONLY);
   }
-
-  void setupStuff(const openPMDStub::IndexedIteration& /*iteration*/)
+*/
+  //void setupStuff(const openPMDStub::IndexedIteration& /*iteration*/)
+/*
   {
     //std::cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
 
@@ -277,8 +281,9 @@ public:
     }
 #endif
   }
-
-  void scalarFieldSetup1(const openPMD::IndexedIteration& /*iteration*/)
+*/
+  //void scalarFieldSetup1(const openPMD::IndexedIteration& /*iteration*/)
+/*
   {
 #if openPMDIsAvailable
     std::string scalar_field_component = "e_all_chargeDensity";
@@ -319,8 +324,9 @@ public:
   {
     setupStuff(iteration);
     iteration.seriesFlush();
-    dataForParticleField();
-    return particleData(/*buffer_size, component_x, component_y, component_z*/);
+    dataForParticleField();*/
+    //return particleData(/*buffer_size, component_x, component_y, component_z*/);
+/*
   }
 
   FieldHandle makeScalarOutput(const openPMDStub::IndexedIteration& iteration)
@@ -331,7 +337,9 @@ public:
 
     std::vector<long unsigned int> extent_sFD {2,3,4};
     auto buffer_size_sFD = std::accumulate(extent_sFD.begin(), extent_sFD.end(), 1, std::multiplies<long unsigned int>());
-    return scalarField(buffer_size_sFD, extent_sFD/*, scalarFieldData_buffer*/, static_cast<double>(iteration.iterationIndex));
+*/
+    //return scalarField(buffer_size_sFD, extent_sFD/*, scalarFieldData_buffer*/, static_cast<double>(iteration.iterationIndex));
+/*
   }
 
   FieldHandle makeVectorOutput(const openPMDStub::IndexedIteration& iteration)
@@ -341,11 +349,13 @@ public:
     vectorFieldSetup2();
 
     std::vector<long unsigned int> extent_vFD {2,3,4};
-    return vectorField(extent_vFD /*, vFD_component_x, vFD_component_y, vFD_component_z*/);
+*/
+    //return vectorField(extent_vFD /*, vFD_component_x, vFD_component_y, vFD_component_z*/);
+/*
   }
 };
 }
-
+*/
 
 
 
@@ -430,6 +440,7 @@ FieldHandle PIConGPUReaderAsynch::vectorField(const int numvals, std::vector<lon
     return ofh;
     }
 
+/*
 void SimulationStreamingReaderBase::execute()
 {
   if (needToExecute())
@@ -485,7 +496,7 @@ Core::Datatypes::BundleHandle SCIRun::Modules::Basic::bundleOutputs(std::initial
   }
   return bundle;
 }
-
+*/
 
 
 
