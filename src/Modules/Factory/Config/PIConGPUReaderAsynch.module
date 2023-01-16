@@ -10,14 +10,14 @@
 
 "algorithm":
     {
-    "name": "PIConGPUReaderAlgoAsynch",
+    "name": "PIConGPUReaderAsynchAlgo",
     "namespace": "ParticleInCell",
-    "header": "Core/Algorithms/ParticleInCell/PIConGPUReaderAlgoAsynch.h"
+    "header": "Core/Algorithms/ParticleInCell/PIConGPUReaderAsynchAlgo.h"
     },
 
 "UI":
     {
-    "name": "PIConGPUReaderDialogAsynch",
-    "header": "Interface/Modules/ParticleInCell/PIConGPUReaderDialogAsynch.h"
+    "name": "PIConGPUReaderAsynchDialog",
+    "header": "Interface/Modules/ParticleInCell/PIConGPUReaderAsynchDialog.h"
     }
 }

@@ -36,7 +36,7 @@ SET(Algorithms_ParticleInCell_SRCS
   World.cpp
   PIConGPUAlgo.cc
   PIConGPUReaderAlgo.cc
-  PIConGPUReaderAlgoAsynch.cc
+  PIConGPUReaderAsynchAlgo.cc
 )
 
 SET(Algorithms_ParticleInCell_HEADERS
@@ -48,7 +48,7 @@ SET(Algorithms_ParticleInCell_HEADERS
   World.h
   PIConGPUAlgo.h
   PIConGPUReaderAlgo.h
-  PIConGPUReaderAlgoAsynch.h
+  PIConGPUReaderAsynchAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_ParticleInCell

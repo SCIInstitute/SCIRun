@@ -513,7 +513,7 @@
 									<name>SimulationFile</name>
 									<value object_id="_36">
 										<which>2</which>
-										<value>$PIC_EXAMPLES/LaserWakefield</value>
+										<value>$PIC_EXAMPLES/V-LaserWakefield</value>
 									</value>
 								</second>
 							</item>
@@ -2713,7 +2713,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_232">
 										<which>0</which>
-										<value>1085</value>
+										<value>1083</value>
 									</value>
 								</second>
 							</item>
@@ -2725,7 +2725,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_233">
 										<which>0</which>
-										<value>507</value>
+										<value>486</value>
 									</value>
 								</second>
 							</item>

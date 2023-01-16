@@ -25,15 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/ParticleInCell/PIConGPUReaderDialogAsynch.h>
-//#include <Core/Algorithms/ParticleInCell/ParticleReaderAlgo.h>
+#include <Interface/Modules/ParticleInCell/PIConGPUReaderAsynchDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-PIConGPUReaderDialogAsynch::PIConGPUReaderDialogAsynch(const std::string& name, ModuleStateHandle state,
+PIConGPUReaderAsynchDialog::PIConGPUReaderAsynchDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = nullptr */)
   : ModuleDialogGeneric(state, parent)
     {
