@@ -41,7 +41,6 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
-//class SCISHARE SimulationStreamingReaderBase : public SCIRun::Dataflow::Networks::Module,
 class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
     public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
@@ -52,18 +51,12 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
             PIConGPUReaderAsynch();
             virtual void execute();
             virtual void setStateDefaults();
-            //FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[]);
-            //FieldHandle scalarField(const int buffer_size_sFD, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD);
-            //FieldHandle vectorField(const int buffer_size_vFD, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
-            //void makeParticleOutput(openPMD::IndexedIteration iteration);
-            //void makeScalarOutput(openPMD::IndexedIteration iteration);
-            //void makeVectorOutput(openPMD::IndexedIteration iteration);
 
             // override these methods in subclass
-            virtual void setupStream();
-            virtual bool hasData() const;
-            virtual Core::Datatypes::BundleHandle nextData() const;
-            virtual void shutdownStream();
+            //virtual void setupStream();
+            //virtual bool hasData() const;
+            //virtual Core::Datatypes::BundleHandle nextData() const;
+            //virtual void shutdownStream();
 
             OUTPUT_PORT(0, Particles, Field);
             OUTPUT_PORT(1, ScalarField, Field);
@@ -72,7 +65,7 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
             MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
 
         private:
-            //std::unique_ptr<class StreamAppenderImpl> streamer_;
+            std::unique_ptr<class StreamAppenderImpl> streamer_;
             std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
         };
 }}}

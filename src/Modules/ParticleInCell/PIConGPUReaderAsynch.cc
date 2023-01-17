@@ -58,7 +58,6 @@ using std::cout;
 using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
-//MODULE_INFO_DEF(SimulationStreamingReaderBase, ParticleInCell, SCIRun)
 
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::Particles("Particles");
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::ScalarField("ScalarField");
@@ -66,7 +65,6 @@ const AlgorithmOutputName PIConGPUReaderAsynchAlgo::VectorField("VectorField");
 
 PIConGPUReaderAsynch::PIConGPUReaderAsynch() : Module(staticInfo_)
 //SimulationStreamingReaderBase::SimulationStreamingReaderBase() : Module(staticInfo_), impl_(new SimulationStreamingReaderBaseImpl)
-//SimulationStreamingReaderBase::SimulationStreamingReaderBase() : Module(staticInfo_)
     {
     INITIALIZE_PORT(Particles);
     INITIALIZE_PORT(ScalarField);
@@ -82,103 +80,32 @@ void PIConGPUReaderAsynch::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
     }
 
-
-
 namespace SCIRun::Modules::ParticleInCell
     {
     using DataChunk = BundleHandle;
     using DataStream = std::queue<DataChunk>;
 
     class StreamAppenderImpl
-        { /**/
+        {
         public:
-            //explicit StreamAppenderImpl(SimulationStreamingReaderBase* module) : module_(module) {} 
+            explicit StreamAppenderImpl(PIConGPUReaderAsynch* module) : module_(module) {} 
             DataStream& stream() { return stream_; } 
-
-            void pushDataToStream()
-                {
-                //while (module_->hasData())
-                    //{
-                //auto value = module_->nextData();
-                    //{
-                    //Guard g(dataMutex_.get());
-                    //stream_.push(value);
-                    //}
-
-                    //std::this_thread::sleep_for(std::chrono::milliseconds(appendWaitTime_));
-                    //}
-                }
-
-            void beginPushDataAsync()
-                {
-                f_ = std::async([this]() { pushDataToStream(); });
-                }
 
             void waitAndOutputEach()
                 {
-                //if (module_->hasData())
-                    //{
-                    //wait for result.
-                    //while (stream().empty()) std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                        
-                    //once data is available, output to ports
-                    auto data = stream().front();
-                        {
-                        Guard g(dataMutex_.get());
-                        stream().pop();
-                        }
-
-                    //module_->sendOutput(module_->OutputData, data);
-                    //module_->enqueueExecuteAgain(false);
-                    //}
-                //else
-                //module_->shutdownStream();
+                module_->enqueueExecuteAgain(false);
                 }
 
         private:
-            //SimulationStreamingReaderBase* module_;
+            PIConGPUReaderAsynch* module_;
             DataStream stream_;
             //const int appendWaitTime_ = 2000;
 
             std::future<void> f_;
             Mutex dataMutex_{ "streamingData" };
         };
-    } 
+    }
 
-/*
-namespace openPMDStub
-{
-  class IndexedIteration
-  {
-  public:
-    int iterationIndex{ 0 };
-    IndexedIteration(int i) : iterationIndex(i) {}
-    void seriesFlush() const {}
-    void close() const {}
-  };
-
-  enum class Access
-  {
-    READ_ONLY
-  };
-
-  using IndexedIterationContainer = std::vector<IndexedIteration>;
-  using IndexedIterationIterator = IndexedIterationContainer::const_iterator;
-
-
-  class Series
-  {
-  public:
-    Series() {}
-    Series(const std::string&, Access) {}
-    const IndexedIterationContainer& readIterations() const { return dummySeriesData_; }
-  private:
-    IndexedIterationContainer dummySeriesData_ {1,2,3,4,5,6};
-  };
-}
-*/
-
-//namespace SCIRun::Modules::Basic
 namespace SCIRun::Modules::ParticleInCell
 {
 
@@ -189,7 +116,6 @@ class SimulationStreamingReaderBaseImpl
     //mutable openPMDStub::IndexedIterationIterator iterationIterator, iterationIteratorEnd;
     bool setup_{ false };
 
-    //FieldHandle PIConGPUReaderAsynch::particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
     FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
         {
         FieldInformation pcfi("PointCloudMesh",0,"int");
@@ -201,7 +127,6 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    //FieldHandle PIConGPUReaderAsynch::scalarField(const int numvals, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
     FieldHandle scalarField(const int numvals, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
         {
         FieldInformation lfi("LatVolMesh",1,"float");
@@ -222,7 +147,6 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    //FieldHandle PIConGPUReaderAsynch::vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
     FieldHandle vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
         {
         FieldInformation lfi("LatVolMesh",1,"float");
@@ -246,8 +170,6 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    //void PIConGPUReaderAsynch::makeParticleOutput(openPMD::IndexedIteration iteration)
-    //void makeParticleOutput(openPMD::IndexedIteration iteration)
     FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration)
         {
         std::string particle_type = "e";
@@ -294,13 +216,10 @@ class SimulationStreamingReaderBaseImpl
             if(i_pos==2) for (size_t m = 0; m<num_particles; m+=particle_sample_rate) component_z[m/particle_sample_rate] = chunk1.get()[m] + chunk.get()[m];
             }
                                                                  //Send data to output
-        //sendOutput(Particles, particleData(buffer_size, component_x, component_y, component_z));
         return particleData(buffer_size, component_x, component_y, component_z);
 
         }
 
-    //void PIConGPUReaderAsynch::makeScalarOutput(openPMD::IndexedIteration iteration)
-    //void makeScalarOutput(openPMD::IndexedIteration iteration)
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration)
         {
         std::string scalar_field_component = "e_all_chargeDensity";
@@ -314,12 +233,9 @@ class SimulationStreamingReaderBaseImpl
         const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
 
                                                                  //Send data to output
-        //sendOutput(ScalarField, scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD));
         return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
         }
 
-    //void PIConGPUReaderAsynch::makeVectorOutput(openPMD::IndexedIteration iteration)
-    //void makeVectorOutput(openPMD::IndexedIteration iteration)
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration)
         {
         std::string vector_field_type = "E";
@@ -335,7 +251,6 @@ class SimulationStreamingReaderBaseImpl
         const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
                                                                  //Send data to output
-        //sendOutput(VectorField, vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z));
         return vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
         }
     }; //end of class SimulationStreamingReaderBaseImpl
@@ -343,78 +258,28 @@ class SimulationStreamingReaderBaseImpl
 
 
 void PIConGPUReaderAsynch::execute()
-//void SimulationStreamingReaderBase::execute()
     {
     AlgorithmInput input;
 //    if(needToExecute())
         {
         auto state = get_state();
         auto output=algo().run(input);
-        //setupStream();
+        SimulationStreamingReaderBaseImpl P;
+        streamer_ = std::make_unique<StreamAppenderImpl>(this);
         std::string SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
+
         while(!std::filesystem::exists(SST_dir)) sleep(1);
         Series series = Series(SST_dir, Access::READ_ONLY);
         for (IndexedIteration iteration : series.readIterations())
             {
             cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
             Iteration iter = series.iterations[iteration.iterationIndex];
-            //if(iter.particles.size()) makeParticleOutput(iteration);
-            //if(1)makeScalarOutput(iteration);
-            //if(1)makeVectorOutput(iteration);
-
-            //streamer_ = std::make_unique<StreamAppenderImpl>(this);
-            //streamer_->beginPushDataAsync();
+            if(iter.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
+            if(true)                  sendOutput(ScalarField, P.makeScalarOutput(iteration));
+            if(true)                  sendOutput(VectorField, P.makeVectorOutput(iteration));
             iteration.close();
+
+            streamer_->waitAndOutputEach();
             }
         }
-    //streamer_->waitAndOutputEach();
     }
-
-/**/
-//void SimulationStreamingReaderBase::setupStream()
-void PIConGPUReaderAsynch::setupStream()
-    {
-    if (!impl_->setup_)
-        {
-        //impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
-        //impl_->iterationIterator = impl_->series.readIterations().cbegin();
-        //impl_->iterationIteratorEnd = impl_->series.readIterations().cend();
-        impl_->setup_ = true;
-        }
-    }
-
-//void SimulationStreamingReaderBase::shutdownStream()
-void PIConGPUReaderAsynch::shutdownStream()
-    {
-    //impl_->series = {};
-    //impl_->iterationIterator = {};
-    //impl_->iterationIteratorEnd = {};
-    impl_->setup_ = false;
-    }
-
-//bool SimulationStreamingReaderBase::hasData() const
-bool PIConGPUReaderAsynch::hasData() const
-    {
-    //return impl_->iterationIterator != impl_->iterationIteratorEnd;
-    return true;
-    }
-
-//BundleHandle SimulationStreamingReaderBase::nextData() const
-BundleHandle PIConGPUReaderAsynch::nextData() const
-    {
-    //const auto& ii = *(impl_->iterationIterator++);
-    //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {impl_->makeParticleOutput(ii), impl_->makeScalarOutput(ii), impl_->makeVectorOutput(ii)});
-    //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {SimulationStreamingReaderBaseImpl::makeParticleOutput,SimulationStreamingReaderBaseImpl::makeScalarOutput,SimulationStreamingReaderBaseImpl::makeVectorOutput});
-    }
-
-/*
-//Core::Datatypes::BundleHandle SCIRun::Modules::Basic::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
-Core::Datatypes::BundleHandle SCIRun::Modules::ParticleInCell::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
-    {
-    auto bundle = makeShared<Bundle>();
-    auto nIter = names.begin();
-    auto dIter = dataList.begin();
-    for (; nIter != names.end(); ++nIter, ++dIter) bundle->set(*nIter, *dIter);
-    return bundle;
-    }
-*/
