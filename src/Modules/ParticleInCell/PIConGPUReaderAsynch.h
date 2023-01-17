@@ -46,17 +46,9 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
     public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
         {
         public:
-            //SimulationStreamingReaderBase();
-            //~SimulationStreamingReaderBase();
             PIConGPUReaderAsynch();
             virtual void execute();
             virtual void setStateDefaults();
-
-            // override these methods in subclass
-            //virtual void setupStream();
-            //virtual bool hasData() const;
-            //virtual Core::Datatypes::BundleHandle nextData() const;
-            //virtual void shutdownStream();
 
             OUTPUT_PORT(0, Particles, Field);
             OUTPUT_PORT(1, ScalarField, Field);

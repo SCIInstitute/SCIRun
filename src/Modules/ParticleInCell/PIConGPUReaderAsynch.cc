@@ -251,6 +251,7 @@ void PIConGPUReaderAsynch::execute()
     AlgorithmInput input;
     //if(needToExecute())                                            //try un-deleting this
         {
+        //cout << "\nDebug execute step 1" << "\n";
         auto state = get_state();
         auto output=algo().run(input);
         SimulationStreamingReaderBaseImpl P;
