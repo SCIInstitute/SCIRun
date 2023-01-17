@@ -82,15 +82,11 @@ void PIConGPUReaderAsynch::setStateDefaults()
 
 namespace SCIRun::Modules::ParticleInCell
     {
-    using DataChunk = BundleHandle;
-    using DataStream = std::queue<DataChunk>;
 
     class StreamAppenderImpl
         {
         public:
             explicit StreamAppenderImpl(PIConGPUReaderAsynch* module) : module_(module) {} 
-            DataStream& stream() { return stream_; } 
-
             void waitAndOutputEach()
                 {
                 module_->enqueueExecuteAgain(false);
@@ -98,9 +94,6 @@ namespace SCIRun::Modules::ParticleInCell
 
         private:
             PIConGPUReaderAsynch* module_;
-            DataStream stream_;
-            //const int appendWaitTime_ = 2000;
-
             std::future<void> f_;
             Mutex dataMutex_{ "streamingData" };
         };
@@ -112,9 +105,6 @@ namespace SCIRun::Modules::ParticleInCell
 class SimulationStreamingReaderBaseImpl
     {
     public:
-    //openPMDStub::Series series;
-    //mutable openPMDStub::IndexedIterationIterator iterationIterator, iterationIteratorEnd;
-    bool setup_{ false };
 
     FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
         {
@@ -256,11 +246,10 @@ class SimulationStreamingReaderBaseImpl
     }; //end of class SimulationStreamingReaderBaseImpl
 } //end of namespace SCIRun::Modules::ParticleInCell
 
-
 void PIConGPUReaderAsynch::execute()
     {
     AlgorithmInput input;
-//    if(needToExecute())
+    //if(needToExecute())                                            //try un-deleting this
         {
         auto state = get_state();
         auto output=algo().run(input);
