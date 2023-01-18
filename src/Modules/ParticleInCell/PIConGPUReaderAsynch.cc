@@ -259,7 +259,7 @@ void PIConGPUReaderAsynch::execute()
         std::string SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
         while(!std::filesystem::exists(SST_dir)) sleep(1);
-        Series series = Series(SST_dir, Access::READ_ONLY);
+        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
         for (IndexedIteration iteration : series.readIterations())
             {
             cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
