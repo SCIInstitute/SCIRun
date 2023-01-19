@@ -5,7 +5,7 @@
 
 
 ## Overview
-SCIRun is a modular dataflow programming Problem Solving Environment (PSE). SCIRun has a set of Modules that perform specific functions on a data stream. Each module reads data from its input ports, calculates the data, and sends new data from output ports. In SCIRun, a module is represented by a rectangular box on the Network Editor canvas. Data flowing between modules is represented by pipes connecting the modules. A group of connected modules is called a Dataflow Network, or Net (see {numref}`fig-ex-network`). An infinite number of nets can be created, each solving a separate problem.
+SCIRun is a modular dataflow programming Problem Solving Environment (PSE). SCIRun has a set of Modules that perform specific functions on a data stream. In SCIRun, a module is represented by a rectangular box on the Network Editor canvas.  Each module reads data from its input ports, calculates the data, and sends new data from output ports. Data flowing between modules is represented by pipes connecting the modules. A group of connected modules is called a Dataflow Network (see {numref}`fig-ex-network`), and are saved as `.srn5` files.  Any number of nets can be created, each solving a separate problem.
 
 This tutorial demonstrates the use of SCIRun to visualize a tetrahedral mesh and the construction of a network comprised of three standard modules: ReadField, ShowField, and ViewScene. This tutorial also instructs the user on reading Field data from a file, setting rendering properties for the nodes, edges, and faces (**the nodes are rendered as blue spheres**), and rendering geometry to the screen in an interactive ViewScene window).
 
@@ -13,11 +13,16 @@ This tutorial demonstrates the use of SCIRun to visualize a tetrahedral mesh and
 
 #### SCIRun
 
-All available downloads for SCIRun version and the SCIRunData archive are available from [SCI software portal](https://github.com/SCIInstitute/SCIRun). Make sure to update to the most up-to-date release available, which will include the latest bug fixes.
+SCIRun is available for download on the [GitHub release page](https://github.com/SCIInstitute/SCIRun/releases). Make sure to update to the most up-to-date release available, which will include the latest bug fixes.  Use the supplied installers to install SCIRun on your local machine.  Linux users may have to [build from source](../start/build.html).  
 
-Currently, the easiest way to get started with SCIRun version is to download and install a binary version for Mac OS X. Sources are also available for Linux, however this option is recommended only for advanced Linux users.
+Download the SCIRunData file as a [zip](https://www.sci.utah.edu/releases/scirun_v4.7/SCIRunData_4.7_20160120_data.zip) or [tgz](https://www.sci.utah.edu/releases/scirun_v4.7/SCIRunData_4.7_20160120_data.tgz).  Unpack it in a  convenient location, then add the base directory to the SCIRun Data Path in the SCIRun preference window, under the Paths tab ({numref}`fig-set-path`)
 
-Unpack the SCIRunData archive in a convenient location. Recall from the User Guide that the path to data can be set using the environment variable or by setting in the *.scirunrc* file.
+:::{figure-md} fig-set-path
+
+![Screen shot showing where the SCIRun Data Path.  Image shows the Paths tab of the SCIRun preference window and highlights the first text box labeled SCIRun Data Path.](ClassicTutorial_figures/set-paths.png)
+
+The the Paths tab of the SCIRun preference window.  
+:::
 
 
 ## Starting SCIRun
