@@ -60,12 +60,12 @@ SCIRun Module icon
 
 **Pipes**: Data is transferred from one module to another using dataflow connections, commonly referred to as Pipes. Each dataflow pipe transfers a specific datatype in SCIRun, denoted by a unique color. Pipes run from the output Port of one module to the input Port(s) of one or more other modules. Ports of the same color correspond to the same datatype and can be connected.
 
-Two or more connected modules form a SCIRun network, or net.
+Two or more connected modules form a SCIRun network.
 
 
 ## ReadField Module
 
-Now it is time to begin creating a SCIRun dataflow net. First, create a **ReadField** module, which will be used to load a SCIRun Field dataset from disk.
+Now it is time to begin creating a SCIRun network. First, create a **ReadField** module, which will be used to load a SCIRun Field dataset from disk.
 
 Select **ReadField** under the DataIO section in the module selector located on the left side the the main SCIRun window, as show in ({numref}`fig-module-selection`).
 
@@ -242,15 +242,16 @@ ViewScene window controls
 
 ## Saving and reloading networks
 
-Now that a three-module network has been created, save the net to disk. The net can easily be reloaded in a future SCIRun session.
+Now that a three-module network has been created, save it to disk. The .srn5 file can easily be reloaded in a future SCIRun session.
 
 ### Saving a SCIRun network:
 
 1. Click on the File menu (at the top of the Network Editor window) and select "Save As."
-2. When the file browser appears, follow the prompt to choose a location and filename for the net. By convention, most nets are stored in the SCIRun/src/nets/ directory, but can be stored in another location.
+2. When the file browser appears, follow the prompt to choose a location and filename for the network. Many example networks are stored in the ExampleNets directory, which is distributed with the binaries, or in SCIRun/src/ExampleNets. The network can be stored in any location with write access.  
+-TODO: update show-torso-mesh.srn to SR5 and add to example nets
 3. For this example, store the net as SCIRun/src/nets/show-torso-mesh.srn, as in {numref}`fig-save-as`. The .srn suffix is used for SCIRun network files
 
-**Please note, to avoid losing work, it is strongly recommended that nets be saved frequently.**
+**Please note, to avoid losing work, it is strongly recommended that nets be saved frequently.  Auto-save can also be enabled in the SCIRun Preferences window.**
 
 :::{figure-md} fig-save-as
 
