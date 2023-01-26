@@ -25,40 +25,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/ParticleInCell/TestModuleSimple.h>
-#include <Core/Datatypes/String.h>
+#ifndef INTERFACE_MODULES_ParticleInCell_PIConGPUReaderSimpleDialog_H
+#define INTERFACE_MODULES_ParticleInCell_PIConGPUReaderSimpleDialog_H
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::StringManip;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <Interface/Modules/ParticleInCell/ui_PIConGPUReaderSimpleDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-MODULE_INFO_DEF(TestModuleSimple, ParticleInCell, SCIRun);
+namespace SCIRun {
+namespace Gui    {
 
-TestModuleSimple::TestModuleSimple() : Module(staticInfo_, false)
-    {
-    INITIALIZE_PORT(OutputString);
-    }
+class SCISHARE PIConGPUReaderSimpleDialog : public ModuleDialogGeneric,
+    public Ui::PIConGPUReaderSimpleDialog
+        {
+        Q_OBJECT
 
-void TestModuleSimple::setStateDefaults()
-    {
-    //setStateIntFromAlgo(Variables::Method);
-    current_iteration = 0;
-    }
-
-void TestModuleSimple::execute()
-    {
-    //setAlgoIntFromState(Variables::Method);
-
-    if(current_iteration == last_iteration + 1) current_iteration = 0;
-    std::string s              = std::to_string(current_iteration);
-    std::string message_string = "Message "+s;
-    StringHandle msH(new String(message_string));
-
-    sendOutput(OutputString, msH);
-
-    sleep(1);
-    current_iteration = current_iteration + 1;
-    if(current_iteration < last_iteration + 1) enqueueExecuteAgain(false);
-    }
-
+        public:
+            PIConGPUReaderSimpleDialog(const std::string& name,
+            SCIRun::Dataflow::Networks::ModuleStateHandle state,
+            QWidget* parent = nullptr);
+        };
+}}
+#endif

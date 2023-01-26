@@ -32,6 +32,7 @@ SET(Interface_Modules_ParticleInCell_FORMS
   PIConGPUDialog.ui
   PIConGPUReaderDialog.ui
   PIConGPUReaderAsynchDialog.ui
+  PIConGPUReaderSimpleDialog.ui
 )
 
 SET(Interface_Modules_ParticleInCell_HEADERS
@@ -40,7 +41,7 @@ SET(Interface_Modules_ParticleInCell_HEADERS
   PIConGPUDialog.h
   PIConGPUReaderDialog.h
   PIConGPUReaderAsynchDialog.h
-
+  PIConGPUReaderSimpleDialog.h
   share.h
 )
 
@@ -50,6 +51,7 @@ SET(Interface_Modules_ParticleInCell_SOURCES
   PIConGPUDialog.cc
   PIConGPUReaderDialog.cc
   PIConGPUReaderAsynchDialog.cc
+  PIConGPUReaderSimpleDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_ParticleInCell_FORMS_HEADERS "${Interface_Modules_ParticleInCell_FORMS}")

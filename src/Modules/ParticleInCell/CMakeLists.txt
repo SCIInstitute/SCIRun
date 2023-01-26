@@ -34,6 +34,7 @@ SET(Modules_ParticleInCell_SRCS
   PIConGPUReader.cc
   PIConGPUReaderAsynch.cc
   TestModuleSimple.cc
+  PIConGPUReaderSimple.cc
 )
 
 SET(Modules_ParticleInCell_HEADERS
@@ -44,6 +45,7 @@ SET(Modules_ParticleInCell_HEADERS
   PIConGPUReader.h
   PIConGPUReaderAsynch.h
   TestModuleSimple.h
+  PIConGPUReaderSimple.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_ParticleInCell

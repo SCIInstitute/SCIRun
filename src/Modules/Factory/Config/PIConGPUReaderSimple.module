@@ -1,0 +1,23 @@
+{
+"module":
+    {
+    "name": "PIConGPUReaderSimple",
+    "namespace": "ParticleInCell",
+    "status": "new module",
+    "description": "A simplified PIConGPU openPMD Reader module",
+    "header": "Modules/ParticleInCell/PIConGPUReaderSimple.h"
+     },
+
+"algorithm":
+    {
+    "name": "PIConGPUReaderSimpleAlgo",
+    "namespace": "ParticleInCell",
+    "header": "Core/Algorithms/ParticleInCell/PIConGPUReaderSimpleAlgo.h"
+    },
+
+"UI":
+    {
+    "name": "PIConGPUReaderSimpleDialog",
+    "header": "Interface/Modules/ParticleInCell/PIConGPUReaderSimpleDialog.h"
+    }
+}

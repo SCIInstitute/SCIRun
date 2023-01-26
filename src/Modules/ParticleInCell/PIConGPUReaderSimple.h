@@ -25,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPUReaderAsynch_H
-#define MODULES_PARTICLEINCELL_PIConGPUReaderAsynch_H
+#ifndef MODULES_PARTICLEINCELL_PIConGPUReaderSimple_H
+#define MODULES_PARTICLEINCELL_PIConGPUReaderSimple_H
 
 #include <openPMD/openPMD.hpp>
 #include <Modules/Fields/share.h>
@@ -39,35 +39,23 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
-inline int current_iteration;
-inline int last_iteration;
-
-SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
-
-class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE PIConGPUReaderSimple : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
-    public Has4OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag, BundlePortTag>
+    public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
         {
         public:
-            PIConGPUReaderAsynch();
+            PIConGPUReaderSimple();
             virtual void execute();
             virtual void setStateDefaults();
-
-            // override these methods in subclass
-            //virtual void setupStream();
-            //virtual bool hasData() const;
-            //virtual Core::Datatypes::BundleHandle nextData() const;
-            //virtual void shutdownStream();
 
             OUTPUT_PORT(0, Particles, Field);
             OUTPUT_PORT(1, ScalarField, Field);
             OUTPUT_PORT(2, VectorField, Field);
-            OUTPUT_PORT(3, OutputData, Bundle);
 
             MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
 
         private:
-            std::unique_ptr<class StreamAppenderImpl> streamer_;
+            //std::unique_ptr<class StreamAppenderImpl> streamer_;
             std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
         };
 }}}

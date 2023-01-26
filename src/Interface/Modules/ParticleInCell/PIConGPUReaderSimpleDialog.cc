@@ -25,40 +25,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/ParticleInCell/TestModuleSimple.h>
-#include <Core/Datatypes/String.h>
+#include <Interface/Modules/ParticleInCell/PIConGPUReaderSimpleDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::StringManip;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(TestModuleSimple, ParticleInCell, SCIRun);
-
-TestModuleSimple::TestModuleSimple() : Module(staticInfo_, false)
+PIConGPUReaderSimpleDialog::PIConGPUReaderSimpleDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = nullptr */)
+  : ModuleDialogGeneric(state, parent)
     {
-    INITIALIZE_PORT(OutputString);
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+
+//    addSpinBoxManager({sampleRate_},            Variables::particle_sample_rate);
+//    addComboBoxManager({particleType_},         Variables::particle_type);
+//    addComboBoxManager({vectorFieldType_},      Variables::vector_field_type);
+//    addComboBoxManager({scalarFieldComponent_}, Variables::scalar_field_component);
     }
-
-void TestModuleSimple::setStateDefaults()
-    {
-    //setStateIntFromAlgo(Variables::Method);
-    current_iteration = 0;
-    }
-
-void TestModuleSimple::execute()
-    {
-    //setAlgoIntFromState(Variables::Method);
-
-    if(current_iteration == last_iteration + 1) current_iteration = 0;
-    std::string s              = std::to_string(current_iteration);
-    std::string message_string = "Message "+s;
-    StringHandle msH(new String(message_string));
-
-    sendOutput(OutputString, msH);
-
-    sleep(1);
-    current_iteration = current_iteration + 1;
-    if(current_iteration < last_iteration + 1) enqueueExecuteAgain(false);
-    }
-
