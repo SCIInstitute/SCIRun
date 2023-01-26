@@ -42,15 +42,13 @@ TestModuleSimple::TestModuleSimple() : Module(staticInfo_, false)
 
 void TestModuleSimple::setStateDefaults()
     {
-    //setStateIntFromAlgo(Variables::Method);
     current_iteration = 0;
     }
 
 void TestModuleSimple::execute()
     {
-    //setAlgoIntFromState(Variables::Method);
-
     if(current_iteration == last_iteration + 1) current_iteration = 0;
+
     std::string s              = std::to_string(current_iteration);
     std::string message_string = "Message "+s;
     StringHandle msH(new String(message_string));

@@ -38,7 +38,7 @@ namespace StringManip {
 inline int current_iteration;        //Note: The TestModuleSimple : Module() function is executed when the network is run.  It is not executed when enqueueExecuteAgain(false) is run.
                                      //(continued) You can use the re_run input variable to trigger a current_iteration = 0 re-set, remove the statement from TestModuleSimple : Module()
                                      //(continued) and put if(re_run) current_iteration = 0; in the execute function in place of the current if(current_iteration == last_iteration + 1)
-inline int last_iteration    = 3;    //Note: The loop is inclusive, so last_iteration is to be included in the execute output
+inline int last_iteration = 3;       //Note: The loop is inclusive, so last_iteration is to be included in the execute output
 
 class SCISHARE TestModuleSimple : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
@@ -47,7 +47,6 @@ class SCISHARE TestModuleSimple : public SCIRun::Dataflow::Networks::Module,
         public:
             TestModuleSimple();
             virtual void execute();
-            //virtual void setStateDefaults() {};
             virtual void setStateDefaults();
             OUTPUT_PORT(0, OutputString, String);
             MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::NoAlgoOrUI);
