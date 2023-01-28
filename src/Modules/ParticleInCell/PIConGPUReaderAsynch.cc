@@ -80,7 +80,7 @@ void PIConGPUReaderAsynch::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::particle_type);
 //    setStateStringFromAlgo(Parameters::vector_field_type);
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
-    current_iteration = 0;
+    current_iteration = 0;  //The current_iteration is initialized here for testing.  Move it to a more appropriate place as needed.
     }
 
 namespace SCIRun::Modules::ParticleInCell
@@ -290,7 +290,6 @@ class SimulationStreamingReaderBaseImpl
             }
                                                                  //Send data to output
         return particleData(buffer_size, component_x, component_y, component_z);
-
         }
 
     //FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration)
@@ -333,37 +332,24 @@ class SimulationStreamingReaderBaseImpl
 
 void PIConGPUReaderAsynch::execute()
     {
-    if(current_iteration == 0)
-        {
-        AlgorithmInput input;
+    AlgorithmInput input;
+    //if(needToExecute())
+        //{
         auto state = get_state();
         auto output=algo().run(input);
         SimulationStreamingReaderBaseImpl P;
 
-        std::string SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
         while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
         Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
+        if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
+        if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
+        if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
+        iteration.close();
 
-        IndexedIteration iteration = series.readIterations[current_iteration];
-        }
-
-
-    iteration = series.readIterations[current_iteration];      //Need to have a statement that sets iteration to the current IndexedIteration
-
-
-    //cout << "\nFrom PIConGPUReaderAsynch: The Series contains " << series.iterations.size() << " iterations";
-    //cout << "\nFrom PIConGPUReaderAsynch: Current iteration is: " << iteration.iterationIndex << std::endl;
-    if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
-    if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
-    if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
-    iteration.close();
-    //series.close();
-
-
-    current_iteration = current_iteration + 100;               //Need to have a statement here that increments the current_iteration
-
-
-    if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
+        current_iteration = current_iteration + 100;
+        //if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
+        //}
     }
 
 /*

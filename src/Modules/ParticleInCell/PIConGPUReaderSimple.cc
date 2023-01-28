@@ -233,9 +233,8 @@ void PIConGPUReaderSimple::execute()
         auto state = get_state();
         auto output=algo().run(input);
         SimulationStreamingReaderBaseImpl P;
-        std::string SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
-        while(!std::filesystem::exists(SST_dir)) sleep(1);
+        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
         Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
         for (IndexedIteration iteration : series.readIterations())
             {
