@@ -186,7 +186,7 @@ class SimulationStreamingReaderBaseImpl
     public:
     //openPMDStub::Series series;
     //mutable openPMDStub::IndexedIterationIterator iterationIterator, iterationIteratorEnd;
-    //bool setup_{ false };
+    bool setup_{ false };
 
     FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
         {
@@ -339,8 +339,10 @@ void PIConGPUReaderAsynch::execute()
         auto output=algo().run(input);
         SimulationStreamingReaderBaseImpl P;
 
-        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        setupStream();
+
+        //while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+        //Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
         Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
         if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
         if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
@@ -352,12 +354,18 @@ void PIConGPUReaderAsynch::execute()
         //}
     }
 
-/*
+/**/
 void PIConGPUReaderAsynch::setupStream()
     {
     if (!impl_->setup_)
         {
         //impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+
+
+        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);  //how to get 'series' to PIConGPUReaderAsynch::execute()
+
+
         //impl_->iterationIterator = impl_->series.readIterations().cbegin();
         //impl_->iterationIteratorEnd = impl_->series.readIterations().cend();
         impl_->setup_ = true;
@@ -385,7 +393,7 @@ BundleHandle PIConGPUReaderAsynch::nextData() const
     //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {impl_->makeParticleOutput(ii), impl_->makeScalarOutput(ii), impl_->makeVectorOutput(ii)});
     //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {SimulationStreamingReaderBaseImpl::makeParticleOutput,SimulationStreamingReaderBaseImpl::makeScalarOutput,SimulationStreamingReaderBaseImpl::makeVectorOutput});
     }
-*/
+
 
 Core::Datatypes::BundleHandle SCIRun::Modules::ParticleInCell::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
     {
