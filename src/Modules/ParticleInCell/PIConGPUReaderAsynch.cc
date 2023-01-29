@@ -339,10 +339,10 @@ void PIConGPUReaderAsynch::execute()
         auto output=algo().run(input);
         SimulationStreamingReaderBaseImpl P;
 
-        setupStream();
+        //Series series1 = setupStream();
 
-        //while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-        //Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
         Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
         if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
         if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
@@ -360,10 +360,10 @@ void PIConGPUReaderAsynch::setupStream()
     if (!impl_->setup_)
         {
         //impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
-        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+        //while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
 
 
-        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);  //how to get 'series' to PIConGPUReaderAsynch::execute()
+        //Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);  //how to get 'series' to PIConGPUReaderAsynch::execute()
 
 
         //impl_->iterationIterator = impl_->series.readIterations().cbegin();

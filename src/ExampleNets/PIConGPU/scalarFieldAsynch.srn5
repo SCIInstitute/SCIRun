@@ -465,7 +465,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_32">
 										<which>2</which>
-										<value>$PIC_CFG/sst.cfg</value>
+										<value>$PIC_CFG/sst_2.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -2713,7 +2713,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_232">
 										<which>0</which>
-										<value>1077</value>
+										<value>1073</value>
 									</value>
 								</second>
 							</item>
@@ -2725,7 +2725,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_233">
 										<which>0</which>
-										<value>423</value>
+										<value>381</value>
 									</value>
 								</second>
 							</item>
