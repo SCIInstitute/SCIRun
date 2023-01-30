@@ -355,34 +355,17 @@ void PIConGPUReaderAsynch::execute()
 
     while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
     Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-    //for (IndexedIteration iteration : series.readIterations())
-        //{
-//    Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
-
-
-
-
     auto end = series.readIterations().end();
-    //for (SeriesIterator it = series.readIterations().begin(); it != end; ++it)
-        //{
     SeriesIterator it = series.readIterations().begin();
-
-
-
-
     IndexedIteration iteration = *it;
+
     if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
     if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
     if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
     iteration.close();
-        //}
 
-    //current_iteration = current_iteration + 100;
-    //if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
-
+    if(it != end) enqueueExecuteAgain(false);
     ++it;
-    //if(it < end++) enqueueExecuteAgain(false);
-    if(it != it) enqueueExecuteAgain(false);
     }
 
 /**/
