@@ -57,8 +57,9 @@ using namespace SCIRun::Core::Thread;
 
 using std::cout;
 using namespace openPMD;
-int current_iteration = 0;
-int last_iteration = 1;
+
+//int current_iteration = 0;
+//int last_iteration = 1;
 
 MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
 
@@ -80,7 +81,7 @@ void PIConGPUReaderAsynch::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::particle_type);
 //    setStateStringFromAlgo(Parameters::vector_field_type);
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
-    current_iteration = 0;  //The current_iteration is initialized here for testing.  Move it to a more appropriate place as needed.
+    //current_iteration = 0;  //The current_iteration is initialized here for testing.  Move it to a more appropriate place as needed.
     }
 
 namespace SCIRun::Modules::ParticleInCell
@@ -242,8 +243,8 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    //FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration)
-    FieldHandle makeParticleOutput(openPMD::Iteration iteration)
+    FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration)
+    //FieldHandle makeParticleOutput(openPMD::Iteration iteration)
         {
         std::string particle_type = "e";
     //        int particle_sample_rate  = 100;
@@ -292,8 +293,8 @@ class SimulationStreamingReaderBaseImpl
         return particleData(buffer_size, component_x, component_y, component_z);
         }
 
-    //FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration)
-    FieldHandle makeScalarOutput(openPMD::Iteration iteration)
+    FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration)
+    //FieldHandle makeScalarOutput(openPMD::Iteration iteration)
         {
         std::string scalar_field_component = "e_all_chargeDensity";
                                                                  //Read scalar field data
@@ -309,8 +310,8 @@ class SimulationStreamingReaderBaseImpl
         return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
         }
 
-    //FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration)
-    FieldHandle makeVectorOutput(openPMD::Iteration iteration)
+    FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration)
+    //FieldHandle makeVectorOutput(openPMD::Iteration iteration)
         {
         std::string vector_field_type = "E";
                                                                  //Read Vector field data
@@ -351,17 +352,37 @@ void PIConGPUReaderAsynch::execute()
     auto state = get_state();
     auto output=algo().run(input);
     SimulationStreamingReaderBaseImpl P;
+
     while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
     Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+    //for (IndexedIteration iteration : series.readIterations())
+        //{
+//    Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
 
-    Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
+
+
+
+    auto end = series.readIterations().end();
+    //for (SeriesIterator it = series.readIterations().begin(); it != end; ++it)
+        //{
+    SeriesIterator it = series.readIterations().begin();
+
+
+
+
+    IndexedIteration iteration = *it;
     if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
     if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
     if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
     iteration.close();
+        //}
 
-    current_iteration = current_iteration + 100;
-    if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
+    //current_iteration = current_iteration + 100;
+    //if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
+
+    ++it;
+    //if(it < end + 1) enqueueExecuteAgain(false);
+    if(it < 0 + 1) enqueueExecuteAgain(false);
     }
 
 /**/

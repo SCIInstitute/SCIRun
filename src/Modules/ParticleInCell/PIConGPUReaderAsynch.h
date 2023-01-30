@@ -39,8 +39,8 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
-inline int current_iteration;
-inline int last_iteration = 100;
+//inline int current_iteration;
+//inline int last_iteration = 100;
 
 SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
