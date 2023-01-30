@@ -381,8 +381,8 @@ void PIConGPUReaderAsynch::execute()
     //if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
 
     ++it;
-    //if(it < end + 1) enqueueExecuteAgain(false);
-    if(it < 0 + 1) enqueueExecuteAgain(false);
+    //if(it < end++) enqueueExecuteAgain(false);
+    if(it != it) enqueueExecuteAgain(false);
     }
 
 /**/
@@ -412,12 +412,12 @@ bool PIConGPUReaderAsynch::hasData() const
     return true;
     }
 
-BundleHandle PIConGPUReaderAsynch::nextData() const
-    {
+//BundleHandle PIConGPUReaderAsynch::nextData() const
+    //{
     //const auto& ii = *(impl_->iterationIterator++);
     //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {impl_->makeParticleOutput(ii), impl_->makeScalarOutput(ii), impl_->makeVectorOutput(ii)});
     //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {SimulationStreamingReaderBaseImpl::makeParticleOutput,SimulationStreamingReaderBaseImpl::makeScalarOutput,SimulationStreamingReaderBaseImpl::makeVectorOutput});
-    }
+    //}
 
 
 Core::Datatypes::BundleHandle SCIRun::Modules::ParticleInCell::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
