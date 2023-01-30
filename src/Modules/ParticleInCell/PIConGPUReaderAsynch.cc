@@ -327,31 +327,41 @@ class SimulationStreamingReaderBaseImpl
                                                                  //Send data to output
         return vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
         }
+
+
+
+/*
+    openPMDStub::Series getSeries(const std::string& SST_dir)
+        {
+        //Wait for simulation output data to be generated and posted via SST
+        while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
+        return openPMDStub::Series(SST_dir, openPMDStub::Access::READ_ONLY);
+        }   
+*/
+
+
+
     }; //end of class SimulationStreamingReaderBaseImpl
 } //end of namespace SCIRun::Modules::ParticleInCell
 
 void PIConGPUReaderAsynch::execute()
     {
     AlgorithmInput input;
-    //if(needToExecute())
-        //{
-        auto state = get_state();
-        auto output=algo().run(input);
-        SimulationStreamingReaderBaseImpl P;
 
-        //Series series1 = setupStream();
+    auto state = get_state();
+    auto output=algo().run(input);
+    SimulationStreamingReaderBaseImpl P;
+    while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+    Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
 
-        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-        Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
-        if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
-        if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
-        if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
-        iteration.close();
+    Iteration iteration = series.iterations[0]; //For testing this is using iteration 0, it may eventually be set to use current_iteration
+    if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
+    if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
+    if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
+    iteration.close();
 
-        current_iteration = current_iteration + 100;
-        //if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
-        //}
+    current_iteration = current_iteration + 100;
+    if(current_iteration < last_iteration + 100) enqueueExecuteAgain(false);
     }
 
 /**/
@@ -360,12 +370,6 @@ void PIConGPUReaderAsynch::setupStream()
     if (!impl_->setup_)
         {
         //impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
-        //while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-
-
-        //Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);  //how to get 'series' to PIConGPUReaderAsynch::execute()
-
-
         //impl_->iterationIterator = impl_->series.readIterations().cbegin();
         //impl_->iterationIteratorEnd = impl_->series.readIterations().cend();
         impl_->setup_ = true;

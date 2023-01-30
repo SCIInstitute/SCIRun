@@ -66,7 +66,7 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::SimulationFile);
         auto output=algo().run(input);
-/**/
+/*                                                      // This block of code is the openPMG Reader
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code
 
@@ -108,16 +108,16 @@ void PIConGPU::execute()
                 for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
                 cout << "\n";
                 }
-/*
-            MeshRecordComponent B_x = iter.meshes["B"]["x"];
-            Extent extent_B = B_x.getExtent();
-            if(extent_B)
-                {
-                cout << "\nField B has shape (";
-                for (auto const &dim : extent_B) cout << dim << ',';
-                cout << ") and has datatype " << B_x.getDatatype() << '\n';
-                }
-*/
+
+            //MeshRecordComponent B_x = iter.meshes["B"]["x"];
+            //Extent extent_B = B_x.getExtent();
+            //if(extent_B)
+                //{
+                //cout << "\nField B has shape (";
+                //for (auto const &dim : extent_B) cout << dim << ',';
+                //cout << ") and has datatype " << B_x.getDatatype() << '\n';
+                //}
+
 
             MeshRecordComponent E_x = iter.meshes["E"]["x"];
             Extent extent_E = E_x.getExtent();
@@ -136,9 +136,8 @@ void PIConGPU::execute()
                 for (auto const &dim : extent_cd) cout << dim << ',';
                 cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
                 }
-//            cout << "\n----------" << std::endl;
             }
-/**/
-        }
-    }
+*/
+        }  //end if(needToExecute())
+    }  //end PIConGPU::execute()
 
