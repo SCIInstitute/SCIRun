@@ -364,8 +364,8 @@ void PIConGPUReaderAsynch::execute()
     if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
     iteration.close();
 
-    if(it != end) enqueueExecuteAgain(false);
     ++it;
+    if(it != end) enqueueExecuteAgain(false);
     }
 
 /**/
