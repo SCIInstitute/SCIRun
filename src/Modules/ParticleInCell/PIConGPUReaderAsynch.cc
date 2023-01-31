@@ -365,7 +365,7 @@ void PIConGPUReaderAsynch::execute()
     iteration.close();
 
     if(it != end) enqueueExecuteAgain(false);
-    ++it;
+    //++it;
     }
 
 /**/
