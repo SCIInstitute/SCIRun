@@ -40,7 +40,7 @@ The main SCIRun window and components
 
 Lets begin constructing the network pictured in ({numref}`fig-ex-network`). (Note: subsequent tutorial chapters expand on this network, adding more features and functionality.) This network loads a geometric mesh from a data file and renders it to the screen.
 
-:::{figure-md} fig-ex-window
+:::{figure-md} fig-ex-network
 
 ![Network editor after building example network](ClassicTutorial_figures/exnetwork.png)
 
