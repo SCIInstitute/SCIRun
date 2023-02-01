@@ -39,9 +39,6 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
-//inline int current_iteration;
-//inline int last_iteration = 100;
-
 SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
 class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
@@ -54,10 +51,10 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
             virtual void setStateDefaults();
 
             // override these methods in subclass
-            virtual void setupStream();
-            virtual bool hasData() const;
+            //virtual void setupStream();
+            //virtual bool hasData() const;
             //virtual Core::Datatypes::BundleHandle nextData() const;
-            virtual void shutdownStream();
+            //virtual void shutdownStream();
 
             OUTPUT_PORT(0, Particles, Field);
             OUTPUT_PORT(1, ScalarField, Field);
@@ -67,7 +64,7 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
             MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
 
         private:
-            std::unique_ptr<class StreamAppenderImpl> streamer_;
+            //std::unique_ptr<class StreamAppenderImpl> streamer_;
             std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
         };
 }}}

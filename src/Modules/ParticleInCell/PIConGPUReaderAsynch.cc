@@ -58,9 +58,6 @@ using namespace SCIRun::Core::Thread;
 using std::cout;
 using namespace openPMD;
 
-//int current_iteration = 0;
-//int last_iteration = 1;
-
 MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
 
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::Particles("Particles");
@@ -81,9 +78,9 @@ void PIConGPUReaderAsynch::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::particle_type);
 //    setStateStringFromAlgo(Parameters::vector_field_type);
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
-    //current_iteration = 0;  //The current_iteration is initialized here for testing.  Move it to a more appropriate place as needed.
     }
 
+/*
 namespace SCIRun::Modules::ParticleInCell
     {
     using DataChunk = BundleHandle;
@@ -145,7 +142,7 @@ namespace SCIRun::Modules::ParticleInCell
             Mutex dataMutex_{ "streamingData" };
         };
     } 
-
+*/
 /*
 namespace openPMDStub
 {
@@ -362,13 +359,15 @@ void PIConGPUReaderAsynch::execute()
     if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
     if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
     if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
+    BundleHandle TheData = bundleOutputs({"ScalarField", "VectorField"}, {P.makeScalarOutput(iteration), P.makeVectorOutput(iteration)});
+    sendOutput(OutputData, TheData);
     iteration.close();
 
     if(it != end) enqueueExecuteAgain(false);
     //++it;
     }
 
-/**/
+/*
 void PIConGPUReaderAsynch::setupStream()
     {
     if (!impl_->setup_)
@@ -401,7 +400,7 @@ bool PIConGPUReaderAsynch::hasData() const
     //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {impl_->makeParticleOutput(ii), impl_->makeScalarOutput(ii), impl_->makeVectorOutput(ii)});
     //return bundleOutputs({"Particles", "ScalarField", "VectorField"}, {SimulationStreamingReaderBaseImpl::makeParticleOutput,SimulationStreamingReaderBaseImpl::makeScalarOutput,SimulationStreamingReaderBaseImpl::makeVectorOutput});
     //}
-
+*/
 
 Core::Datatypes::BundleHandle SCIRun::Modules::ParticleInCell::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
     {
