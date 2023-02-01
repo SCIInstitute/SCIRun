@@ -19,7 +19,7 @@ Download the SCIRunData file as a [zip](https://www.sci.utah.edu/releases/scirun
 
 :::{figure-md} fig-set-path
 
-![Screen shot showing where the SCIRun Data Path.  Image shows the Paths tab of the SCIRun preference window and highlights the first text box labeled SCIRun Data Path.](ClassicTutorial_figures/set-paths.png)
+![Screen shot showing where the SCIRun Data Path.  Image shows the Paths tab of the SCIRun preference window and highlights the first text box labeled SCIRun Data Path.](ClassicTutorial_figures/set-path.png)
 
 The the Paths tab of the SCIRun preference window.  
 :::
@@ -105,9 +105,9 @@ See [Appendix 1](#appendix-1) for a description of various types of geometric me
 Now add a second module to the network. This module is used to visualize various Field types. Then connect the two modules in the canvas so data can flow between them.
 
 1. Create a **ShowField** module using the DataIO section in the module selector (use the same menus used to create the ReadField module).
-2. Position the mouse pointer over the yellow output port on the **ReadField**. Press and hold the right mouse button. The name of the port and lines indicating possible data pipe connections will appear.
-3. Continue to hold the right middle button and drag the mouse toward the first yellow **ShowField** input port.
-4. The line turns gray, showing the desired connection has been selected. See ({numref}`fig-pipe-selection`).
+2. Position the mouse pointer over the yellow output port on the **ReadField**. Press and hold the left mouse button. The name of the port and lines indicating possible data pipe connections will appear.
+3. Continue to hold the left mouse button and drag the mouse toward the first yellow **ShowField** input port.
+4. The line turns red, showing the desired connection has been selected. See ({numref}`fig-pipe-selection`).
 
 :::{figure-md} fig-pipe-selection
 
@@ -126,18 +126,9 @@ Connected Dataflow Pipe
 :::
 
 
-## Dynamic Commpilation
+## Setting the ShowField User INTERFACE_MODULES_
 
-**ShowField** works with all SCIRun Field data types. However, these data types must first be compiled into a shared library (as needed) where they are saved for future use. This process is called "Dynamic Compilation."
-
-Dynamic Compilation causes a delay when the module executes the first time. For more details, refer to [Dynamic Compilation](http://www.sci.utah.edu/publications/mcole01/dyn.pdf).
-
-In addition, the module turns light yellow while it compiles, and compilation output goes to the module's log as a remark. Note that SGI computers can take over 30 seconds to perform dynamic compilation. When compilation is done, the modules color returns to a light gray.
-
-
-### Setting the ShowField User INTERFACE_MODULES_
-
-The **ShowField** module has options for changing the visual representations of a Field's geometry. To illustrate the module's functionality, change **ShowField** parameters using its GUI. Specifically, change the color of the nodes to blue spheres.
+The **ShowField** module has options for changing the visual representations of a Field's geometry. To illustrate the module's functionality, change **ShowField** parameters using its GUI (found by clicking the GUI button on the **ShowField** module ({numref}`fig-module-info`)). Specifically, change the color of the nodes to blue spheres.
 
 1. Select the UI button on the **ShowField** module.
 2. Select the Default Color button near the top of the GUI to change the default color and a separate Color Chooser GUI appears.
@@ -185,23 +176,20 @@ ViewScene window showing the utahtorso-lowres-voltage data
 
 In the Viewer, the mouse can be used to rotate, scale, and translate the image.
 
-### Translating the image (Left Button)
+### Translating the image (Right Button)
 1. Move the mouse to the center of the image.
-2. Click and hold the left mouse button.
+2. Click and hold the right mouse button.
 3. Move the mouse to translate the image.
 4. Release the button, and the image stays in its new location.
 
-### Rotating the image (Middle Button)
-1. Click and hold the middle mouse button.
+### Rotating the image (Left Button)
+1. Click and hold the left mouse button.
 2. Move the mouse to rotate the image.
 3. Release the mouse button.
-4. If the mouse button is released while dragging, the image will continue to rotate.
-5. Click the middle mouse button to stop rotation.
 
-### Scaling the scene (Right Button)
-1. Click the right mouse button and drag the mouse.
-2. Move the mouse up or to the left to zoom the image out.
-3. Move the mouse down or to the right to zoom the image in.
+### Scaling the scene (Scroll Wheel)
+2. Scroll up to zoom the image out.
+3. Scroll down to zoom the image in.
 
 
 ## Setting Visualization Parameters
@@ -249,7 +237,7 @@ Now that a three-module network has been created, save it to disk. The .srn5 fil
 1. Click on the File menu (at the top of the Network Editor window) and select "Save As."
 2. When the file browser appears, follow the prompt to choose a location and filename for the network. Many example networks are stored in the ExampleNets directory, which is distributed with the binaries, or in SCIRun/src/ExampleNets. The network can be stored in any location with write access.  
 -TODO: update show-torso-mesh.srn to SR5 and add to example nets
-3. For this example, store the net as SCIRun/src/nets/show-torso-mesh.srn, as in {numref}`fig-save-as`. The .srn suffix is used for SCIRun network files
+3. For this example, store the net as SCIRun/src/nets/show-torso-mesh.srn5, as in {numref}`fig-save-as`. The .srn5 suffix is used for SCIRun network files
 
 **Please note, to avoid losing work, it is strongly recommended that nets be saved frequently.  Auto-save can also be enabled in the SCIRun Preferences window.**
 
@@ -267,7 +255,7 @@ Now that a three-module network has been created, save it to disk. The .srn5 fil
 
 1. Start SCIRun.
 2. From the File drop-down menu, select the the Load... option.
-3. Select SCIRun/src/nets/show-torso-mesh.srn.
+3. Select SCIRun/src/nets/show-torso-mesh.srn5.
 
 The net reloads into SCIRun, where it was previously saved. If the net was saved with any of the module UIs open, those UIs automatically re-open when loaded to the net. After changing module settings (e.g., rotating the image in the ViewWindow or changing the rendering color of the nodes in ShowField), there are two options for re-saving the net:
 
