@@ -235,8 +235,7 @@ Now that a three-module network has been created, save it to disk. The .srn5 fil
 ### Saving a SCIRun network:
 
 1. Click on the File menu (at the top of the Network Editor window) and select "Save As."
-2. When the file browser appears, follow the prompt to choose a location and filename for the network. Many example networks are stored in the ExampleNets directory, which is distributed with the binaries, or in SCIRun/src/ExampleNets. The network can be stored in any location with write access.  
--TODO: update show-torso-mesh.srn to SR5 and add to example nets
+2. When the file browser appears, follow the prompt to choose a location and filename for the network. Many example networks are stored in the ExampleNets directory, which is distributed with the binaries, or in SCIRun/src/ExampleNets. The network can be stored in any location with write access.
 3. For this example, store the net as SCIRun/src/nets/show-torso-mesh.srn5, as in {numref}`fig-save-as`. The .srn5 suffix is used for SCIRun network files
 
 **Please note, to avoid losing work, it is strongly recommended that nets be saved frequently.  Auto-save can also be enabled in the SCIRun Preferences window.**
@@ -255,11 +254,11 @@ Now that a three-module network has been created, save it to disk. The .srn5 fil
 
 1. Start SCIRun.
 2. From the File drop-down menu, select the the Load... option.
-3. Select SCIRun/src/nets/show-torso-mesh.srn5.
+3. Select the previously [saved net](#saving-a-scirun-network) (SCIRun/src/nets/show-torso-mesh.srn5).
 
 The net reloads into SCIRun, where it was previously saved. If the net was saved with any of the module UIs open, those UIs automatically re-open when loaded to the net. After changing module settings (e.g., rotating the image in the ViewWindow or changing the rendering color of the nodes in ShowField), there are two options for re-saving the net:
 
-1. Overwrite existing show-torso-mesh.srn file by using File->Save from the drop-down menu.
+1. Overwrite existing show-torso-mesh.srn5 file by using File->Save from the drop-down menu.
 2. Save the net to a new file by using File->Save As...
 
 
