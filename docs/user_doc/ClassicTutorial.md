@@ -266,18 +266,29 @@ The net reloads into SCIRun, where it was previously saved. If the net was saved
 
 SCIRun has nine geometric meshes available for Fields:
 
-- **PointCloudMesh**: unconnected points
-- **ScanlineMesh**: regularly segmented straight line (a regular 1D grid)
-- **CurveMesh:** segmented curve
-- **ImageMesh**: regular 2D grid (see note below)
-- **Structured Quad Surface mesh**: surface made of connected quadrilaterals on a structured grid
-- **Structured Hex Volume mesh**: subdivision of space into structured hexagonal elements
-- **TriSurfMesh**: surface made of connected triangles
-- **QuadSurfMesh**: surface made of connected quadrilaterals
-- **LatVolMesh**: regular 3D grid
-- **TetVolMesh**: subdivision of space into tetrahedral elements
-- **HexVolMesh**: subdivision of space into hexagonal elements
-- **PrismVolMesh**: five faces, two triangular faces connected together by three quadrilateral faces.
+![point-cloud-mesh](ClassicTutorial_figures/Pointcloud.gif) **PointCloudMesh**: unconnected points
+
+![scanline-mesh](ClassicTutorial_figures/ScanlineField.gif) **ScanlineMesh**: regularly segmented straight line (a regular 1D grid)
+
+![curve-mesh](ClassicTutorial_figures/ContourField.gif) **CurveMesh:** segmented curve
+
+![image-mesh](ClassicTutorial_figures/ImageField.gif)**ImageMesh**: regular 2D grid (see note below)
+
+![structured-quad-mesh](ClassicTutorial_figures/StructQuadSurf2.gif) **Structured Quad Surface mesh**: surface made of connected quadrilaterals on a structured grid
+
+![structured-hex-mesh](ClassicTutorial_figures/StructHexVol2.gif) **Structured Hex Volume mesh**: subdivision of space into structured hexagonal elements
+
+![trisurf-mesh](ClassicTutorial_figures/Trisurf.gif) **TriSurfMesh**: surface made of connected triangles
+
+![quad-surf-mesh](ClassicTutorial_figures/Quadsurf.gif) **QuadSurfMesh**: surface made of connected quadrilaterals
+
+![latvol-mesh](ClassicTutorial_figures/Latticevol.gif) **LatVolMesh**: regular 3D grid
+
+![tetvol-mesh](ClassicTutorial_figures/Tetvol.gif) **TetVolMesh**: subdivision of space into tetrahedral elements
+
+![hexvol-mesh](ClassicTutorial_figures/Hexvol.gif) **HexVolMesh**: subdivision of space into hexagonal elements
+
+![prismvol-mesh](ClassicTutorial_figures/Prismvol.gif) **PrismVolMesh**: five faces, two triangular faces connected together by three quadrilateral faces.
 
 
 The following data types can be stored in a Field:
