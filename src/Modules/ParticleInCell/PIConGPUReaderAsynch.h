@@ -39,6 +39,8 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
+inline int iteration_counter;
+
 SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
 class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,

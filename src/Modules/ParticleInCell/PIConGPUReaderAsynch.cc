@@ -78,6 +78,7 @@ void PIConGPUReaderAsynch::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::particle_type);
 //    setStateStringFromAlgo(Parameters::vector_field_type);
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
+    iteration_counter = 0;
     }
 
 /*
@@ -363,8 +364,11 @@ void PIConGPUReaderAsynch::execute()
     sendOutput(OutputData, TheData);
     iteration.close();
 
+    cout << "The Series contains " << series.iterations.size() << " iterations\n";
+    cout << "Iteration index is " << iteration.iterationIndex <<"\n";
+    cout << "iteration_counter is " << iteration_counter <<"\n";
+    ++iteration_counter;
     if(it != end) enqueueExecuteAgain(false);
-    //++it;
     }
 
 /*
