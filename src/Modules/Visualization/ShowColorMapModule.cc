@@ -200,13 +200,13 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
 
   auto geom(makeShared<GeometryObjectSpire>(*this, idname, false));
 
-  //geom->setColorMap(cm->getColorMapName());
   geom->ibos().push_back(geomIBO);
   geom->vbos().push_back(geomVBO);
   geom->passes().push_back(pass);
 
   //text
-  char str2[128];
+  constexpr int valueBufferSize = 128;
+  char str2[valueBufferSize];
   std::stringstream sd;
   sd << "%." << sigdig << "g";
   std::vector<Vector> txt_coords;
@@ -226,7 +226,8 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
     std::stringstream lineStream;
-    sprintf(str2, sd.str().c_str(), (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale);
+    const double colorValue = (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale;
+    snprintf(str2, valueBufferSize, sd.str().c_str(), colorValue);
     lineStream << str2 << " " << state->getValue(Units).toString();
     const auto line = lineStream.str();
     bool ds = displaySide == 0;

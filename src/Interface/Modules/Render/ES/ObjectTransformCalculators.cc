@@ -29,7 +29,6 @@
 #include <Interface/Modules/Render/ES/ObjectTransformCalculators.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 #include <glm/gtx/transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <Core/Math/MiscMath.h>
 #include <glm/gtx/vec_swizzle.hpp>
 
