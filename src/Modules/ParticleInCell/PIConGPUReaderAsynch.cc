@@ -60,6 +60,8 @@ using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
 
+PIConGPUReaderAsynch::SimulationStreamingReaderBase() : Module(staticInfo_, false), impl_(new SimulationStreamingReaderBaseImpl)
+
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::Particles("Particles");
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::ScalarField("ScalarField");
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::VectorField("VectorField");
@@ -351,6 +353,8 @@ void PIConGPUReaderAsynch::execute()
     auto output=algo().run(input);
     SimulationStreamingReaderBaseImpl P;
 
+    setupStream();
+
     while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
     Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
     auto end = series.readIterations().end();
@@ -371,7 +375,7 @@ void PIConGPUReaderAsynch::execute()
     if(it != end) enqueueExecuteAgain(false);
     }
 
-/*
+
 void PIConGPUReaderAsynch::setupStream()
     {
     if (!impl_->setup_)
@@ -382,6 +386,7 @@ void PIConGPUReaderAsynch::setupStream()
         impl_->setup_ = true;
         }
     }
+/*
 
 void PIConGPUReaderAsynch::shutdownStream()
     {

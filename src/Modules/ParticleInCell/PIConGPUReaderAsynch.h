@@ -53,7 +53,7 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
             virtual void setStateDefaults();
 
             // override these methods in subclass
-            //virtual void setupStream();
+            virtual void setupStream();
             //virtual bool hasData() const;
             //virtual Core::Datatypes::BundleHandle nextData() const;
             //virtual void shutdownStream();
