@@ -42,30 +42,24 @@ TestModuleSimple::TestModuleSimple() : Module(staticInfo_, false)
 
 void TestModuleSimple::setStateDefaults()
     {
-    int begin = 0;
-    int end = 3;
-    //current_iteration = 0;
-    current_iteration = begin;
+    begin_iteration   = 0;
+    end_iteration     = 3;
+    current_iteration = begin_iteration;
     }
 
 void TestModuleSimple::execute()
     {
-    //if(current_iteration == last_iteration + 1) current_iteration = 0;
-    if(current_iteration == end + 1) current_iteration = 0;
-
     std::string s              = std::to_string(current_iteration);
     std::string message_string = "Message "+s;
     StringHandle msH(new String(message_string));
-
     sendOutput(OutputString, msH);
 
     sleep(1);
-    current_iteration = current_iteration + 1;
-    //if(current_iteration < last_iteration + 1) enqueueExecuteAgain(false);
-    if(current_iteration < end)
+    if(current_iteration != end_iteration)
         {
         enqueueExecuteAgain(false);
         ++current_iteration;
         }
+    //else current_iteration = begin_iteration;
     }
 

@@ -35,9 +35,10 @@ namespace SCIRun      {
 namespace Modules     {
 namespace StringManip {
 
-//inline int current_iteration;        //Note: The Module() function and setStateDefaults() function are executed when the network is run, 
-                                     //(continued) and are not executed when enqueueExecuteAgain(false) is run.  You can use this to implement control of the loop
-//inline int last_iteration = 3;       //Note: The loop is inclusive in openPMD, so strive to set up the loop so that last_iteration is included in the execute output
+inline int begin_iteration;
+inline int current_iteration;        //Note: The Module() function and setStateDefaults() function are executed when the network is run, 
+                                     //      and are not executed when enqueueExecuteAgain(false) is run.  You can use this to implement control of the loop
+inline int end_iteration;            //Note: The loop is inclusive in openPMD, so strive to set up the loop so that last_iteration is included in the execute output
 
 class SCISHARE TestModuleSimple : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
