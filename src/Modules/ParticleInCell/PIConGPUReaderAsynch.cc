@@ -60,8 +60,6 @@ using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
 
-PIConGPUReaderAsynch::SimulationStreamingReaderBase() : Module(staticInfo_, false), impl_(new SimulationStreamingReaderBaseImpl)
-
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::Particles("Particles");
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::ScalarField("ScalarField");
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::VectorField("VectorField");
@@ -345,6 +343,8 @@ class SimulationStreamingReaderBaseImpl
     }; //end of class SimulationStreamingReaderBaseImpl
 } //end of namespace SCIRun::Modules::ParticleInCell
 
+
+
 void PIConGPUReaderAsynch::execute()
     {
     AlgorithmInput input;
@@ -353,12 +353,15 @@ void PIConGPUReaderAsynch::execute()
     auto output=algo().run(input);
     SimulationStreamingReaderBaseImpl P;
 
-    setupStream();
-
+    //The following 4 lines of code should be accomplished in the setupStream function
     while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
     Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
     auto end = series.readIterations().end();
     SeriesIterator it = series.readIterations().begin();
+    //
+
+    //setupStream();  //setupStream (see line 390) creates 'it' and 'end' and somehow makes them accessible from here
+
     IndexedIteration iteration = *it;
 
     if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
@@ -368,11 +371,17 @@ void PIConGPUReaderAsynch::execute()
     sendOutput(OutputData, TheData);
     iteration.close();
 
-    cout << "The Series contains " << series.iterations.size() << " iterations\n";
-    cout << "Iteration index is " << iteration.iterationIndex <<"\n";
-    cout << "iteration_counter is " << iteration_counter <<"\n";
-    ++iteration_counter;
-    if(it != end) enqueueExecuteAgain(false);
+    //The following 4 lines of code are for debug purposes.  
+    //cout << "The Series contains " << series.iterations.size() << " iterations\n";
+    //cout << "Iteration index is " << iteration.iterationIndex <<"\n";
+    //cout << "iteration_counter is " << iteration_counter <<"\n";
+    //++iteration_counter;
+
+    if(it != end)  //When it == end, the simulation is done, so this step handles ending the Reader loop
+        {
+        enqueueExecuteAgain(false);
+        ++it;
+        }
     }
 
 
@@ -380,10 +389,13 @@ void PIConGPUReaderAsynch::setupStream()
     {
     if (!impl_->setup_)
         {
-        //impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
-        //impl_->iterationIterator = impl_->series.readIterations().cbegin();
-        //impl_->iterationIteratorEnd = impl_->series.readIterations().cend();
         impl_->setup_ = true;
+        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        auto end = series.readIterations().end();
+        SeriesIterator it = series.readIterations().begin();
+
+        //The iterator variable 'it' and the iterator variable 'end' need to be accessible from the execute function.  I don't know how to do that.
         }
     }
 /*
