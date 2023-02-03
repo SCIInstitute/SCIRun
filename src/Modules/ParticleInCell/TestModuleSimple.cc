@@ -42,12 +42,16 @@ TestModuleSimple::TestModuleSimple() : Module(staticInfo_, false)
 
 void TestModuleSimple::setStateDefaults()
     {
-    current_iteration = 0;
+    int begin = 0;
+    int end = 3;
+    //current_iteration = 0;
+    current_iteration = begin;
     }
 
 void TestModuleSimple::execute()
     {
-    if(current_iteration == last_iteration + 1) current_iteration = 0;
+    //if(current_iteration == last_iteration + 1) current_iteration = 0;
+    if(current_iteration == end + 1) current_iteration = 0;
 
     std::string s              = std::to_string(current_iteration);
     std::string message_string = "Message "+s;
@@ -57,6 +61,11 @@ void TestModuleSimple::execute()
 
     sleep(1);
     current_iteration = current_iteration + 1;
-    if(current_iteration < last_iteration + 1) enqueueExecuteAgain(false);
+    //if(current_iteration < last_iteration + 1) enqueueExecuteAgain(false);
+    if(current_iteration < end)
+        {
+        enqueueExecuteAgain(false);
+        ++current_iteration;
+        }
     }
 
