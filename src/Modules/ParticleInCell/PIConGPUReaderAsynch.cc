@@ -398,7 +398,13 @@ void PIConGPUReaderAsynch::setupStream()
         auto end = series.readIterations().end();
         SeriesIterator it = series.readIterations().begin();
 
-        //The iterator variable 'it' and the iterator variable 'end' need to be accessible from the execute function.  I don't know how to do that.
+        //The iterator variable 'it' and the iterator variable 'end' defined here need to be accessible from the execute function.  I don't know how to do that.
+
+
+        //impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+        //impl_->iterationIterator = impl_->series.readIterations().cbegin();
+        //impl_->iterationIteratorEnd = impl_->series.readIterations().cend();
+        //impl_->setup_ = true;
         }
     }
 /*
