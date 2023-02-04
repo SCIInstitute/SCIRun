@@ -366,11 +366,13 @@ void PIConGPUReaderAsynch::execute()
     iteration.close();
 
     cout << "Debug xx: iteration counter is " << iteration_counter <<"\n";
-    //if(it != end)  //When it == end, the simulation is done, so this step should handle ending the Reader loop, but doesn't
-    if(iteration_counter != 20)
+    ++it;
+    //if(it != end)
+    if(it != end)
+    //if(iteration_counter != 20)
         {
         enqueueExecuteAgain(false);
-        ++it;
+        //++it;
         }
 
     ++iteration_counter;
