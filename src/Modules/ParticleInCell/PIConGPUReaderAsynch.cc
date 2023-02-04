@@ -183,10 +183,10 @@ class SimulationStreamingReaderBaseImpl
     {
     public:
     //openPMDStub::Series series;
-    Series series;
+    //Series series;
     //mutable openPMDStub::IndexedIterationIterator iterationIterator, iterationIteratorEnd;
-    mutable SeriesIterator it, end;
-    bool setup_{ false };
+    //mutable SeriesIterator it, end;
+    //bool setup_{ false };
 
     FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
         {
@@ -366,19 +366,19 @@ void PIConGPUReaderAsynch::execute()
     iteration.close();
 
     cout << "Debug xx: iteration counter is " << iteration_counter <<"\n";
-    //if(it != end)  //When it == end, the simulation is done, so this step handles ending the Reader loop (assuming series, end and it are not re-initialized)
+    //if(it != end)  //When it == end, the simulation is done, so this step should handle ending the Reader loop, but doesn't
     if(iteration_counter != 20)
         {
         enqueueExecuteAgain(false);
         ++it;
         }
-    //else enqueueExecuteAgain(true);  This didn't do anything to fix the error being reported
+
+    ++iteration_counter;
 
     //The following lines of code are for debug purposes.  
     //cout << "The Series contains " << series.iterations.size() << " iterations\n";
     //cout << "Iteration index is " << iteration.iterationIndex <<"\n";
     //cout << "iteration_counter is " << iteration_counter <<"\n";
-    ++iteration_counter;
     }
 
 /*

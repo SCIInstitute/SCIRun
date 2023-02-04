@@ -39,8 +39,6 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
-
-    //  These variables need to be initially created somewhere that is not here and made accessible from here.  Thinking of expanding getSeries to do that
     Series series;
     SeriesIterator it, end;
     bool setup_{ false };
