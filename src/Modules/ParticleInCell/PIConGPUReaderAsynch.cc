@@ -78,7 +78,6 @@ void PIConGPUReaderAsynch::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::particle_type);
 //    setStateStringFromAlgo(Parameters::vector_field_type);
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
-    //iteration_counter = 0;
     }
 
 /*
@@ -349,13 +348,6 @@ void PIConGPUReaderAsynch::execute()
     auto state = get_state();
     auto output=algo().run(input);
     SimulationStreamingReaderBaseImpl P;
-
-
-
-
-
-
-    //  The lines below need to be accomplished in a way that makes 'it' and 'end' accessible from here.  Thinking of expanding getSeries to do that, possibly using impl_??
     if (!setup_)
         {
         while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -365,9 +357,6 @@ void PIConGPUReaderAsynch::execute()
         setup_ = true;
         }
 
-
-
-
     IndexedIteration iteration = *it;
     if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
     if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
@@ -376,17 +365,20 @@ void PIConGPUReaderAsynch::execute()
     sendOutput(OutputData, TheData);
     iteration.close();
 
-    if(it != end)  //When it == end, the simulation is done, so this step handles ending the Reader loop (assuming series, end and it are not re-initialized)
+    cout << "Debug xx: iteration counter is " << iteration_counter <<"\n";
+    //if(it != end)  //When it == end, the simulation is done, so this step handles ending the Reader loop (assuming series, end and it are not re-initialized)
+    if(iteration_counter != 20)
         {
         enqueueExecuteAgain(false);
         ++it;
         }
+    //else enqueueExecuteAgain(true);  This didn't do anything to fix the error being reported
 
     //The following lines of code are for debug purposes.  
     //cout << "The Series contains " << series.iterations.size() << " iterations\n";
     //cout << "Iteration index is " << iteration.iterationIndex <<"\n";
     //cout << "iteration_counter is " << iteration_counter <<"\n";
-    //++iteration_counter;
+    ++iteration_counter;
     }
 
 /*

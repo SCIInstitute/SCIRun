@@ -45,8 +45,7 @@ using namespace openPMD;
     SeriesIterator it, end;
     bool setup_{ false };
 
-
-//inline int iteration_counter;
+    int iteration_counter=0;
 
 SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
