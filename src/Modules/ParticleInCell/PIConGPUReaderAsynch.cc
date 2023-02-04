@@ -184,7 +184,9 @@ class SimulationStreamingReaderBaseImpl
     {
     public:
     //openPMDStub::Series series;
+    Series series;
     //mutable openPMDStub::IndexedIterationIterator iterationIterator, iterationIteratorEnd;
+    mutable SeriesIterator it, end;
     bool setup_{ false };
 
     FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
@@ -327,22 +329,16 @@ class SimulationStreamingReaderBaseImpl
         return vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
         }
 
-
-
-/*
-    openPMDStub::Series getSeries(const std::string& SST_dir)
+    Series getSeries(const std::string& SST_dir)
         {
+        //Note: I have temporarily stopped using SST_dir, and am just use the literal "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst" for now
         //Wait for simulation output data to be generated and posted via SST
-        //while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
-        //return openPMDStub::Series(SST_dir, openPMDStub::Access::READ_ONLY);
-        }   
-*/
-
-
+        while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
+        return Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        } //end of the getSeries fn
 
     }; //end of class SimulationStreamingReaderBaseImpl
 } //end of namespace SCIRun::Modules::ParticleInCell
-
 
 
 void PIConGPUReaderAsynch::execute()
@@ -353,14 +349,23 @@ void PIConGPUReaderAsynch::execute()
     auto output=algo().run(input);
     SimulationStreamingReaderBaseImpl P;
 
-    //  These 4 lines need to be accomplished somewhere else.  Currently looking at using the function setupStream to create 'it' and 'end' and make them accessible from here
-    while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-    Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-    auto end = series.readIterations().end();
-    SeriesIterator it = series.readIterations().begin();
-    //
 
-    //setupStream();  //setupStream (see line 391)
+
+
+    //  These variables need to be initially created somewhere that is not here and made accessible from here.  Thinking of expanding getSeries to do that
+    Series series;
+    SeriesIterator it, end;
+    bool setup_{ false };
+
+    //  The lines below need to be accomplished in a way that makes 'it' and 'end' accessible from here.  Thinking of expanding getSeries to do that, possibly using impl_??
+    if (!setup_)
+        {
+        series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+        end = series.readIterations().end();
+        it = series.readIterations().begin();
+        setup_ = true;
+        }
+
 
 
 
@@ -378,36 +383,25 @@ void PIConGPUReaderAsynch::execute()
         ++it;
         }
 
-
-
-    //The following 4 lines of code are for debug purposes.  
+    //The following lines of code are for debug purposes.  
     //cout << "The Series contains " << series.iterations.size() << " iterations\n";
     //cout << "Iteration index is " << iteration.iterationIndex <<"\n";
     //cout << "iteration_counter is " << iteration_counter <<"\n";
     //++iteration_counter;
     }
 
-
+/*
 void PIConGPUReaderAsynch::setupStream()
     {
     if (!impl_->setup_)
         {
+        impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+        impl_->it = impl_->series.readIterations().begin();
+        impl_->end = impl_->series.readIterations().end();
         impl_->setup_ = true;
-        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-        auto end = series.readIterations().end();
-        SeriesIterator it = series.readIterations().begin();
-
-        //The iterator variable 'it' and the iterator variable 'end' defined here need to be accessible from the execute function.  I don't know how to do that.
-
-
-        //impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
-        //impl_->iterationIterator = impl_->series.readIterations().cbegin();
-        //impl_->iterationIteratorEnd = impl_->series.readIterations().cend();
-        //impl_->setup_ = true;
         }
     }
-/*
+
 
 void PIConGPUReaderAsynch::shutdownStream()
     {
