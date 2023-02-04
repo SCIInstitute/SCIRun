@@ -182,11 +182,6 @@ namespace SCIRun::Modules::ParticleInCell
 class SimulationStreamingReaderBaseImpl
     {
     public:
-    //openPMDStub::Series series;
-    //Series series;
-    //mutable openPMDStub::IndexedIterationIterator iterationIterator, iterationIteratorEnd;
-    //mutable SeriesIterator it, end;
-    //bool setup_{ false };
 
     FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
         {
@@ -243,7 +238,6 @@ class SimulationStreamingReaderBaseImpl
         }
 
     FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration)
-    //FieldHandle makeParticleOutput(openPMD::Iteration iteration)
         {
         std::string particle_type = "e";
     //        int particle_sample_rate  = 100;
@@ -293,7 +287,6 @@ class SimulationStreamingReaderBaseImpl
         }
 
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration)
-    //FieldHandle makeScalarOutput(openPMD::Iteration iteration)
         {
         std::string scalar_field_component = "e_all_chargeDensity";
                                                                  //Read scalar field data
@@ -310,7 +303,6 @@ class SimulationStreamingReaderBaseImpl
         }
 
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration)
-    //FieldHandle makeVectorOutput(openPMD::Iteration iteration)
         {
         std::string vector_field_type = "E";
                                                                  //Read Vector field data
@@ -365,22 +357,10 @@ void PIConGPUReaderAsynch::execute()
     sendOutput(OutputData, TheData);
     iteration.close();
 
-    cout << "Debug xx: iteration counter is " << iteration_counter <<"\n";
+    cout << "Loop status: iteration counter is " << iteration_counter <<"\n";
     ++it;
-    //if(it != end)
-    if(it != end)
-    //if(iteration_counter != 20)
-        {
-        enqueueExecuteAgain(false);
-        //++it;
-        }
-
     ++iteration_counter;
-
-    //The following lines of code are for debug purposes.  
-    //cout << "The Series contains " << series.iterations.size() << " iterations\n";
-    //cout << "Iteration index is " << iteration.iterationIndex <<"\n";
-    //cout << "iteration_counter is " << iteration_counter <<"\n";
+    if(it != end) enqueueExecuteAgain(false);
     }
 
 /*
