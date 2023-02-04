@@ -344,8 +344,8 @@ void PIConGPUReaderAsynch::execute()
         {
         while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
         series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-        end = series.readIterations().end();
-        it = series.readIterations().begin();
+        end    = series.readIterations().end();
+        it     = series.readIterations().begin();
         setup_ = true;
         }
 
