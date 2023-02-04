@@ -39,7 +39,14 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
-inline int iteration_counter;
+
+    //  These variables need to be initially created somewhere that is not here and made accessible from here.  Thinking of expanding getSeries to do that
+    Series series;
+    SeriesIterator it, end;
+    bool setup_{ false };
+
+
+//inline int iteration_counter;
 
 SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
@@ -53,7 +60,7 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
             virtual void setStateDefaults();
 
             // override these methods in subclass
-            virtual void setupStream();
+            //virtual void setupStream();
             //virtual bool hasData() const;
             //virtual Core::Datatypes::BundleHandle nextData() const;
             //virtual void shutdownStream();

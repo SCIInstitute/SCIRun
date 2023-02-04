@@ -42,24 +42,24 @@ TestModuleSimple::TestModuleSimple() : Module(staticInfo_, false)
 
 void TestModuleSimple::setStateDefaults()
     {
-    begin_iteration   = 0;
-    end_iteration     = 3;
-    current_iteration = begin_iteration;
+    current_iteration = 0;
+    end = 3;
     }
 
 void TestModuleSimple::execute()
     {
-    std::string s              = std::to_string(current_iteration);
+    std::string s = std::to_string(current_iteration);
     std::string message_string = "Message "+s;
     StringHandle msH(new String(message_string));
     sendOutput(OutputString, msH);
 
     sleep(1);
-    if(current_iteration != end_iteration)
+    if(current_iteration != end)  //Note: The != logical comparion is defined for use with opemPMD iterators, so I used it here, see email from Franz 30 Jan 2023
         {
         enqueueExecuteAgain(false);
-        ++current_iteration;
+        ++current_iteration;      //Note: The openPMD IndexedIteration loop is inclusive, so I implemented that here, see email from Franz 30 Jan 2023
         }
-    //else current_iteration = begin_iteration;
+    else current_iteration = 0;
+
     }
 

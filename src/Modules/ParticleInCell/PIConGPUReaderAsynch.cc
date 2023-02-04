@@ -78,7 +78,7 @@ void PIConGPUReaderAsynch::setStateDefaults()
 //    setStateStringFromAlgo(Parameters::particle_type);
 //    setStateStringFromAlgo(Parameters::vector_field_type);
 //    setStateStringFromAlgo(Parameters::scalar_field_component);
-    iteration_counter = 0;
+    //iteration_counter = 0;
     }
 
 /*
@@ -328,7 +328,7 @@ class SimulationStreamingReaderBaseImpl
                                                                  //Send data to output
         return vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
         }
-
+/*
     Series getSeries(const std::string& SST_dir)
         {
         //Note: I have temporarily stopped using SST_dir, and am just use the literal "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst" for now
@@ -336,6 +336,7 @@ class SimulationStreamingReaderBaseImpl
         while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
         return Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
         } //end of the getSeries fn
+*/
 
     }; //end of class SimulationStreamingReaderBaseImpl
 } //end of namespace SCIRun::Modules::ParticleInCell
@@ -352,15 +353,13 @@ void PIConGPUReaderAsynch::execute()
 
 
 
-    //  These variables need to be initially created somewhere that is not here and made accessible from here.  Thinking of expanding getSeries to do that
-    Series series;
-    SeriesIterator it, end;
-    bool setup_{ false };
+
 
     //  The lines below need to be accomplished in a way that makes 'it' and 'end' accessible from here.  Thinking of expanding getSeries to do that, possibly using impl_??
     if (!setup_)
         {
-        series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+        while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
+        series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
         end = series.readIterations().end();
         it = series.readIterations().begin();
         setup_ = true;
