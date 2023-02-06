@@ -39,10 +39,10 @@ namespace ParticleInCell {
 
 using namespace openPMD;
 
-    Series series;
-    SeriesIterator it, end;
-    bool setup_ = false;
-    int iteration_counter=0;
+Series series;
+SeriesIterator it, end;
+bool setup_ = false;
+int iteration_counter=0;
 
 SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 

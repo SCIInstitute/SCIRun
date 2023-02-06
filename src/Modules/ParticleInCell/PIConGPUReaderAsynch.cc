@@ -28,8 +28,8 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-#include <queue>
-#include <future>
+//#include <queue>
+//#include <future>
 
 #include <Modules/ParticleInCell/PIConGPUReaderAsynch.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUReaderAsynchAlgo.h>
@@ -350,14 +350,14 @@ void PIConGPUReaderAsynch::execute()
         }
 
     IndexedIteration iteration = *it;
-    if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
-    if(true)                       sendOutput(ScalarField, P.makeScalarOutput(iteration));
-    if(true)                       sendOutput(VectorField, P.makeVectorOutput(iteration));
+    sendOutput(Particles, P.makeParticleOutput(iteration));
+    sendOutput(ScalarField, P.makeScalarOutput(iteration));
+    sendOutput(VectorField, P.makeVectorOutput(iteration));
     BundleHandle TheData = bundleOutputs({"ScalarField", "VectorField"}, {P.makeScalarOutput(iteration), P.makeVectorOutput(iteration)});
     sendOutput(OutputData, TheData);
     iteration.close();
 
-    cout << "Loop status: iteration counter is " << iteration_counter <<"\n";
+    cout << "From the Reader: iteration counter is " << iteration_counter <<"\n";
     ++it;
     ++iteration_counter;
     if(it != end) enqueueExecuteAgain(false);
