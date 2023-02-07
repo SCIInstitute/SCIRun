@@ -16,10 +16,10 @@ namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
 
-//ALGORITHM_PARAMETER_DECL(particle_type);
-//ALGORITHM_PARAMETER_DECL(particle_sample_rate);
-//ALGORITHM_PARAMETER_DECL(vector_field_type);
-//ALGORITHM_PARAMETER_DECL(scalar_field_component);
+ALGORITHM_PARAMETER_DECL(ParticleType);
+ALGORITHM_PARAMETER_DECL(SampleRate);
+ALGORITHM_PARAMETER_DECL(VectorFieldType);
+ALGORITHM_PARAMETER_DECL(ScalarFieldComp);
 
 class SCISHARE PIConGPUReaderAsynchAlgo : public AlgorithmBase
     {

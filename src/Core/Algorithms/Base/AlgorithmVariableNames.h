@@ -61,9 +61,11 @@ public:
   static const AlgorithmParameterName ParticleType;
   static const AlgorithmParameterName ParticleAttribute;
   static const AlgorithmParameterName SampleRate;
+  static const AlgorithmParameterName ScalarFieldComp;
   static const AlgorithmParameterName ObjectInfo;
   static const AlgorithmParameterName ScriptEnvironmentVariable;
   static const AlgorithmParameterName ProgrammableInputPortEnabled;
+  static const AlgorithmParameterName VectorFieldType;
 
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;

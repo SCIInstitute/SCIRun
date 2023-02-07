@@ -28,9 +28,6 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-//#include <queue>
-//#include <future>
-
 #include <Modules/ParticleInCell/PIConGPUReaderAsynch.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUReaderAsynchAlgo.h>
 
@@ -58,6 +55,8 @@ using namespace SCIRun::Core::Thread;
 using std::cout;
 using namespace openPMD;
 
+ALGORITHM_PARAMETER_DEF(ParticleInCell, SampleRate);
+
 MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
 
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::Particles("Particles");
@@ -74,10 +73,10 @@ PIConGPUReaderAsynch::PIConGPUReaderAsynch() : Module(staticInfo_)
 
 void PIConGPUReaderAsynch::setStateDefaults()
     {
-//    setStateIntFromAlgo(Parameters::particle_sample_rate);
-//    setStateStringFromAlgo(Parameters::particle_type);
-//    setStateStringFromAlgo(Parameters::vector_field_type);
-//    setStateStringFromAlgo(Parameters::scalar_field_component);
+    setStateIntFromAlgo(Parameters::SampleRate);
+    setStateStringFromAlgo(Parameters::ParticleType);
+    setStateStringFromAlgo(Parameters::VectorFieldType);
+    setStateStringFromAlgo(Parameters::ScalarFieldComp);
     }
 
 /*
@@ -97,7 +96,7 @@ namespace SCIRun::Modules::ParticleInCell
                 //while (module_->hasData())
                     //{
                 //auto value = module_->nextData();
-                //auto value = module_->theData();        //Figure out how to replace this statement with one that works
+                //auto value = module_->theData();
                     //{
                     //Guard g(dataMutex_.get());
                     //stream_.push(value);
@@ -126,7 +125,7 @@ namespace SCIRun::Modules::ParticleInCell
                         stream().pop();
                         }
 
-                    //module_->sendOutput(module_->OutputData, data);   //this is the command to send the bundled data to the OutputData port
+                    //module_->sendOutput(module_->OutputData, data);
                     //module_->enqueueExecuteAgain(false);
                     //}
                 //else
@@ -162,7 +161,6 @@ namespace openPMDStub
 
   using IndexedIterationContainer = std::vector<IndexedIteration>;
   using IndexedIterationIterator = IndexedIterationContainer::const_iterator;
-
 
   class Series
   {
@@ -237,11 +235,10 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration)
+    FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration, int particle_sample_rate, std::string particle_type)
         {
-        std::string particle_type = "e";
-    //        int particle_sample_rate  = 100;
-        int particle_sample_rate  = 10;
+        //std::string particle_type = "e";
+
                                                                  //Read particle data
         Record particlePositions       = iteration.particles[particle_type]["position"];
         Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];
@@ -267,6 +264,7 @@ class SimulationStreamingReaderBaseImpl
         Extent const &extent_0 = extents[0];
         int num_particles      = extent_0[0];
 
+        //const int buffer_size  = 1+(num_particles/particle_sample_rate);
         const int buffer_size  = 1+(num_particles/particle_sample_rate);
         auto component_x       = new float[buffer_size];
         auto component_y       = new float[buffer_size];
@@ -286,9 +284,9 @@ class SimulationStreamingReaderBaseImpl
         return particleData(buffer_size, component_x, component_y, component_z);
         }
 
-    FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration)
+    FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
         {
-        std::string scalar_field_component = "e_all_chargeDensity";
+        //std::string scalar_field_component = "e_all_chargeDensity";
                                                                  //Read scalar field data
         auto scalarFieldData               = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
         auto scalarFieldData_buffer        = scalarFieldData.loadChunk<float>();
@@ -302,9 +300,9 @@ class SimulationStreamingReaderBaseImpl
         return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
         }
 
-    FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration)
+    FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
         {
-        std::string vector_field_type = "E";
+        //std::string vector_field_type = "E";
                                                                  //Read Vector field data
         auto vectorFieldData          = iteration.meshes[vector_field_type];
         auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
@@ -322,10 +320,9 @@ class SimulationStreamingReaderBaseImpl
 /*
     Series getSeries(const std::string& SST_dir)
         {
-        //Note: I have temporarily stopped using SST_dir, and am just use the literal "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst" for now
         //Wait for simulation output data to be generated and posted via SST
-        while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
-        return Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
+        return Series(SST_dir, Access::READ_ONLY);
         } //end of the getSeries fn
 */
 
@@ -336,24 +333,39 @@ class SimulationStreamingReaderBaseImpl
 void PIConGPUReaderAsynch::execute()
     {
     AlgorithmInput input;
-
     auto state = get_state();
+
+
+
+
+    //int particle_sample_rate = get(Parameters::SampleRate);   //Need to get the actual value of SampleRate, and the rest of them
+
+    int particle_sample_rate = SampleRate;
+    std::string particle_type = ParticleType;
+    std::string scalar_field_component = ScalarFieldComp;
+    std::string vector_field_type = VectorFieldType;
+
+
+
+
     auto output=algo().run(input);
     SimulationStreamingReaderBaseImpl P;
     if (!setup_)
         {
-        while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
-        series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
+        series = Series(SST_dir, Access::READ_ONLY);
         end    = series.readIterations().end();
         it     = series.readIterations().begin();
         setup_ = true;
         }
 
     IndexedIteration iteration = *it;
-    sendOutput(Particles, P.makeParticleOutput(iteration));
-    sendOutput(ScalarField, P.makeScalarOutput(iteration));
-    sendOutput(VectorField, P.makeVectorOutput(iteration));
-    BundleHandle TheData = bundleOutputs({"ScalarField", "VectorField"}, {P.makeScalarOutput(iteration), P.makeVectorOutput(iteration)});
+    //Need to handle having or not having particle and mesh data better for both individual ports and bundled output
+    //Possibly use the UI variables: particle_type, vector_field_type and vector_field_component when those are implemented
+    if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration, particle_sample_rate, particle_type));
+    if(iteration.meshes.size())    sendOutput(ScalarField, P.makeScalarOutput(iteration, scalar_field_component));
+    if(iteration.meshes.size())    sendOutput(VectorField, P.makeVectorOutput(iteration, vector_field_type));
+    BundleHandle TheData = bundleOutputs({"ScalarField", "VectorField"}, {P.makeScalarOutput(iteration, scalar_field_component), P.makeVectorOutput(iteration, vector_field_type)});
     sendOutput(OutputData, TheData);
     iteration.close();
 
@@ -368,13 +380,12 @@ void PIConGPUReaderAsynch::setupStream()
     {
     if (!impl_->setup_)
         {
-        impl_->series = impl_->getSeries("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst");
+        impl_->series = impl_->getSeries(SST_dir);
         impl_->it = impl_->series.readIterations().begin();
         impl_->end = impl_->series.readIterations().end();
         impl_->setup_ = true;
         }
     }
-
 
 void PIConGPUReaderAsynch::shutdownStream()
     {
@@ -383,7 +394,6 @@ void PIConGPUReaderAsynch::shutdownStream()
     //impl_->iterationIteratorEnd = {};
     impl_->setup_ = false;
     }
-
 
 bool PIConGPUReaderAsynch::hasData() const
     {

@@ -54,12 +54,12 @@
     </property>
     <item>
      <property name="text">
-      <string>Electron</string>
+      <string>e</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Proton</string>
+      <string>p</string>
      </property>
     </item>
     <item>
@@ -89,6 +89,9 @@
       <width>121</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="maximum">
+     <number>1000000</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -128,17 +131,12 @@
       <widget class="QComboBox" name="scalarFieldComponent_">
        <item>
         <property name="text">
-         <string>Charge Density</string>
+         <string>e_all_chargeDensity</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Energy Density</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Momentum</string>
+         <string>e_all_energyDensity</string>
         </property>
        </item>
        <item>
@@ -167,17 +165,12 @@
       <widget class="QComboBox" name="vectorFieldType_">
        <item>
         <property name="text">
-         <string>Electric Field</string>
+         <string>E</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Magnetic Field</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Gravity Field</string>
+         <string>B</string>
         </property>
        </item>
        <item>
