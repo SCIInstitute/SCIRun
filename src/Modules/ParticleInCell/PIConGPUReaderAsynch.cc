@@ -55,8 +55,6 @@ using namespace SCIRun::Core::Thread;
 using std::cout;
 using namespace openPMD;
 
-ALGORITHM_PARAMETER_DEF(ParticleInCell, SampleRate);
-
 MODULE_INFO_DEF(PIConGPUReaderAsynch,ParticleInCell,SCIRun);
 
 const AlgorithmOutputName PIConGPUReaderAsynchAlgo::Particles("Particles");
