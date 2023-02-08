@@ -54,12 +54,12 @@
     </property>
     <item>
      <property name="text">
-      <string>Electron</string>
+      <string>e</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Proton</string>
+      <string>p</string>
      </property>
     </item>
     <item>
@@ -90,6 +90,9 @@
       <height>25</height>
      </rect>
     </property>
+    <property name="maximum">
+     <number>1000000</number>
+    </property>
    </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
@@ -116,39 +119,44 @@
     <property name="title">
      <string>Scalar Field Output</string>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="1">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Scalar Data</string>
-       </property>
-      </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>52</y>
+       <width>66</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Scalar Data</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="scalarFieldComponent_">
+     <property name="geometry">
+      <rect>
+       <x>109</x>
+       <y>52</y>
+       <width>151</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>e_all_chargeDensity</string>
+      </property>
      </item>
-     <item row="0" column="2">
-      <widget class="QComboBox" name="scalarFieldComponent_">
-       <item>
-        <property name="text">
-         <string>Charge Density</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Energy Density</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Momentum</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>None</string>
-        </property>
-       </item>
-      </widget>
+     <item>
+      <property name="text">
+       <string>e_all_energyDensity</string>
+      </property>
      </item>
-    </layout>
+     <item>
+      <property name="text">
+       <string>None</string>
+      </property>
+     </item>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_4">
     <property name="geometry">
@@ -167,17 +175,12 @@
       <widget class="QComboBox" name="vectorFieldType_">
        <item>
         <property name="text">
-         <string>Electric Field</string>
+         <string>E</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Magnetic Field</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Gravity Field</string>
+         <string>B</string>
         </property>
        </item>
        <item>
