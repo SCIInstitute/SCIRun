@@ -28,9 +28,12 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
-#include <Modules/ParticleInCell/PIConGPUReaderSimple.h>
+#include <queue>
+#include <future>
 
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Modules/ParticleInCell/PIConGPUReaderSimple.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUReaderSimpleAlgo.h>
+
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -47,6 +50,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks; 
 using namespace SCIRun::Modules::ParticleInCell;
+using namespace SCIRun::Core::Algorithms::ParticleInCell;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 
@@ -55,12 +59,15 @@ using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPUReaderSimple,ParticleInCell,SCIRun);
 
+const AlgorithmOutputName PIConGPUReaderSimpleAlgo::Particles("Particles");
+const AlgorithmOutputName PIConGPUReaderSimpleAlgo::ScalarField("ScalarField");
+const AlgorithmOutputName PIConGPUReaderSimpleAlgo::VectorField("VectorField");
+
 PIConGPUReaderSimple::PIConGPUReaderSimple() : Module(staticInfo_)
     {
     INITIALIZE_PORT(Particles);
     INITIALIZE_PORT(ScalarField);
     INITIALIZE_PORT(VectorField);
-    INITIALIZE_PORT(OutputData);
     }
 
 void PIConGPUReaderSimple::setStateDefaults()
@@ -132,11 +139,11 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration, int particle_sample_rate, std::string particle_type)
+    FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration)
         {
-    //    std::string particle_type = "e";
+        std::string particle_type = "e";
     //        int particle_sample_rate  = 100;
-    //    int particle_sample_rate  = 10;
+        int particle_sample_rate  = 10;
                                                                  //Read particle data
         Record particlePositions       = iteration.particles[particle_type]["position"];
         Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];
@@ -182,9 +189,9 @@ class SimulationStreamingReaderBaseImpl
 
         }
 
-    FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
+    FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration)
         {
-        //std::string scalar_field_component = "e_all_chargeDensity";
+        std::string scalar_field_component = "e_all_chargeDensity";
                                                                  //Read scalar field data
         auto scalarFieldData               = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
         auto scalarFieldData_buffer        = scalarFieldData.loadChunk<float>();
@@ -198,9 +205,9 @@ class SimulationStreamingReaderBaseImpl
         return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
         }
 
-    FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
+    FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration)
         {
-        //std::string vector_field_type = "E";
+        std::string vector_field_type = "E";
                                                                  //Read Vector field data
         auto vectorFieldData          = iteration.meshes[vector_field_type];
         auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
@@ -221,42 +228,22 @@ class SimulationStreamingReaderBaseImpl
 void PIConGPUReaderSimple::execute()
     {
     AlgorithmInput input;
-    auto state = get_state();
-    SimulationStreamingReaderBaseImpl P;
-    if (!setupSimple)
-    //if (!setup_)
+    //if(needToExecute())
         {
-        while (!std::filesystem::exists(SST_dirSimple)) std::this_thread::sleep_for(std::chrono::seconds(1));
-        seriesSimple = Series(SST_dirSimple, Access::READ_ONLY);
-        endSimple    = seriesSimple.readIterations().end();
-        itSimple     = seriesSimple.readIterations().begin();
-        setupSimple = true;
-        //setup_ = true;
+        auto state = get_state();
+        auto output=algo().run(input);
+        SimulationStreamingReaderBaseImpl P;
+
+        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
+        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
+        for (IndexedIteration iteration : series.readIterations())
+            {
+            cout << "\nFrom PIConGPUReader: Current iteration is: " << iteration.iterationIndex << std::endl;
+            Iteration iter = series.iterations[iteration.iterationIndex];
+            if(iter.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration));
+            if(true)                  sendOutput(ScalarField, P.makeScalarOutput(iteration));
+            if(true)                  sendOutput(VectorField, P.makeVectorOutput(iteration));
+            iteration.close();
+            }
         }
-
-    IndexedIteration iteration = *itSimple;
-    //Need to handle having or not having particle and mesh data better for both individual ports and bundled output
-    //Possibly use the UI variables: particle_type, vector_field_type and vector_field_component when those are implemented
-    if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration, SampleRateSimple, ParticleTypeSimple));
-    if(iteration.meshes.size())    sendOutput(ScalarField, P.makeScalarOutput(iteration, ScalarFieldCompSimple));
-    if(iteration.meshes.size())    sendOutput(VectorField, P.makeVectorOutput(iteration, VectorFieldTypeSimple));
-    BundleHandle TheData = bundleOutputs({"ScalarField", "VectorField"}, {P.makeScalarOutput(iteration, ScalarFieldCompSimple), P.makeVectorOutput(iteration, VectorFieldTypeSimple)});
-    sendOutput(OutputData, TheData);
-    iteration.close();
-
-    cout << "From the Reader: iteration counter is " << iteration_counterSimple <<"\n";
-    ++itSimple;
-    ++iteration_counterSimple;
-    if(itSimple != endSimple) enqueueExecuteAgain(false);
     }
-
-/*
-Core::Datatypes::BundleHandle SCIRun::Modules::ParticleInCell::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
-    {
-    auto bundle = makeShared<Bundle>();
-    auto nIter = names.begin();
-    auto dIter = dataList.begin();
-    for (; nIter != names.end(); ++nIter, ++dIter) bundle->set(*nIter, *dIter);
-    return bundle;
-    }
-*/
