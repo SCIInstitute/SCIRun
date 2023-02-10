@@ -42,6 +42,8 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
+//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -65,10 +67,11 @@ PIConGPUReaderSimple::PIConGPUReaderSimple() : Module(staticInfo_)
 
 void PIConGPUReaderSimple::setStateDefaults()
     {
-//    setStateIntFromAlgo(Parameters::particle_sample_rate);
-//    setStateStringFromAlgo(Parameters::particle_type);
-//    setStateStringFromAlgo(Parameters::vector_field_type);
-//    setStateStringFromAlgo(Parameters::scalar_field_component);
+    auto state = get_state();
+    state->setValue(Variables::SampleRate, 100);
+    state->setValue(Variables::ParticleType, std::string("e"));
+    state->setValue(Variables::ScalarFieldComp, std::string("e_all_chargeDensity"));
+    state->setValue(Variables::VectorFieldType, std::string("E"));
     }
 
 namespace SCIRun::Modules::ParticleInCell
@@ -221,17 +224,21 @@ class SimulationStreamingReaderBaseImpl
 void PIConGPUReaderSimple::execute()
     {
     AlgorithmInput input;
+
     auto state = get_state();
+    int SampleRateSimple = state->getValue(Variables::SampleRate).toInt();
+    std::string ParticleTypeSimple = state->getValue(Variables::ParticleType).toString();
+    std::string ScalarFieldCompSimple = state->getValue(Variables::ScalarFieldComp).toString();
+    std::string VectorFieldTypeSimple = state->getValue(Variables::VectorFieldType).toString();
+
     SimulationStreamingReaderBaseImpl P;
     if (!setupSimple)
-    //if (!setup_)
         {
         while (!std::filesystem::exists(SST_dirSimple)) std::this_thread::sleep_for(std::chrono::seconds(1));
         seriesSimple = Series(SST_dirSimple, Access::READ_ONLY);
         endSimple    = seriesSimple.readIterations().end();
         itSimple     = seriesSimple.readIterations().begin();
-        setupSimple = true;
-        //setup_ = true;
+        setupSimple  = true;
         }
 
     IndexedIteration iteration = *itSimple;

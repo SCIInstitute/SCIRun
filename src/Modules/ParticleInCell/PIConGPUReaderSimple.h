@@ -33,6 +33,8 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Basic/share.h>
 
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
 namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
@@ -42,15 +44,8 @@ using namespace openPMD;
 Series seriesSimple;
 SeriesIterator itSimple, endSimple;
 bool setupSimple = false;
-//bool setup_ = false;
 int iteration_counterSimple = 0;
 const std::string& SST_dirSimple = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
-
-                               //Delete these 4 lines of code when the actual values are figured out in PIConGPUAsynch.cc
-int SampleRateSimple = 100;
-std::string ParticleTypeSimple = "e";
-std::string ScalarFieldCompSimple = "e_all_chargeDensity";
-std::string VectorFieldTypeSimple = "E";
 
 SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
