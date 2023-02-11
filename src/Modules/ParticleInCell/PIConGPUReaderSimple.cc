@@ -42,8 +42,6 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -62,7 +60,6 @@ PIConGPUReaderSimple::PIConGPUReaderSimple() : Module(staticInfo_)
     INITIALIZE_PORT(Particles);
     INITIALIZE_PORT(ScalarField);
     INITIALIZE_PORT(VectorField);
-    INITIALIZE_PORT(OutputData);
     }
 
 void PIConGPUReaderSimple::setStateDefaults()
@@ -137,9 +134,6 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration, int particle_sample_rate, std::string particle_type)
         {
-    //    std::string particle_type = "e";
-    //        int particle_sample_rate  = 100;
-    //    int particle_sample_rate  = 10;
                                                                  //Read particle data
         Record particlePositions       = iteration.particles[particle_type]["position"];
         Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];
@@ -187,7 +181,6 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
         {
-        //std::string scalar_field_component = "e_all_chargeDensity";
                                                                  //Read scalar field data
         auto scalarFieldData               = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
         auto scalarFieldData_buffer        = scalarFieldData.loadChunk<float>();
@@ -203,7 +196,6 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
         {
-        //std::string vector_field_type = "E";
                                                                  //Read Vector field data
         auto vectorFieldData          = iteration.meshes[vector_field_type];
         auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
@@ -242,13 +234,17 @@ void PIConGPUReaderSimple::execute()
         }
 
     IndexedIteration iteration = *itSimple;
-    //Need to handle having or not having particle and mesh data better for both individual ports and bundled output
-    //Possibly use the UI variables: particle_type, vector_field_type and vector_field_component when those are implemented
+
+    //Use the UI variables: SampleRateSimple, ParticleTypeSimple, ScalarFieldCompSimple, VectorFieldTypeSimple in the if statements
+
+
+
     if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration, SampleRateSimple, ParticleTypeSimple));
     if(iteration.meshes.size())    sendOutput(ScalarField, P.makeScalarOutput(iteration, ScalarFieldCompSimple));
     if(iteration.meshes.size())    sendOutput(VectorField, P.makeVectorOutput(iteration, VectorFieldTypeSimple));
-    BundleHandle TheData = bundleOutputs({"ScalarField", "VectorField"}, {P.makeScalarOutput(iteration, ScalarFieldCompSimple), P.makeVectorOutput(iteration, VectorFieldTypeSimple)});
-    sendOutput(OutputData, TheData);
+
+
+
     iteration.close();
 
     cout << "From the Reader: iteration counter is " << iteration_counterSimple <<"\n";
@@ -256,14 +252,3 @@ void PIConGPUReaderSimple::execute()
     ++iteration_counterSimple;
     if(itSimple != endSimple) enqueueExecuteAgain(false);
     }
-
-/*
-Core::Datatypes::BundleHandle SCIRun::Modules::ParticleInCell::bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<DatatypeHandle> dataList)
-    {
-    auto bundle = makeShared<Bundle>();
-    auto nIter = names.begin();
-    auto dIter = dataList.begin();
-    for (; nIter != names.end(); ++nIter, ++dIter) bundle->set(*nIter, *dIter);
-    return bundle;
-    }
-*/
