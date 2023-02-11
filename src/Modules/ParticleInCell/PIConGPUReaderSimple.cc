@@ -139,9 +139,9 @@ class SimulationStreamingReaderBaseImpl
         Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];
 
         std::array<std::shared_ptr<float>, 3> loadedChunks;
-        std::array<std::shared_ptr<int>,        3> loadedChunks1;
-        std::array<Extent,                      3> extents;
-        std::array<std::string,                 3> const dimensions{{"x", "y", "z"}};
+        std::array<std::shared_ptr<int>,   3> loadedChunks1;
+        std::array<Extent,                 3> extents;
+        std::array<std::string,            3> const dimensions{{"x", "y", "z"}};
 
         for (size_t i_dim = 0; i_dim < 3; ++i_dim)
             {
@@ -182,13 +182,13 @@ class SimulationStreamingReaderBaseImpl
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
         {
                                                                  //Read scalar field data
-        auto scalarFieldData               = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
-        auto scalarFieldData_buffer        = scalarFieldData.loadChunk<float>();
+        auto scalarFieldData        = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
+        auto scalarFieldData_buffer = scalarFieldData.loadChunk<float>();
 
         iteration.seriesFlush();                                 //Data is now available
 
-        auto extent_sFD                    = scalarFieldData.getExtent();
-        const int buffer_size_sFD          = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
+        auto extent_sFD             = scalarFieldData.getExtent();
+        const int buffer_size_sFD   = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
 
                                                                  //Send data to output
         return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
@@ -197,15 +197,15 @@ class SimulationStreamingReaderBaseImpl
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
         {
                                                                  //Read Vector field data
-        auto vectorFieldData          = iteration.meshes[vector_field_type];
-        auto vFD_component_x          = vectorFieldData["x"].loadChunk<float>();
-        auto vFD_component_y          = vectorFieldData["y"].loadChunk<float>();
-        auto vFD_component_z          = vectorFieldData["z"].loadChunk<float>();
+        auto vectorFieldData  = iteration.meshes[vector_field_type];
+        auto vFD_component_x  = vectorFieldData["x"].loadChunk<float>();
+        auto vFD_component_y  = vectorFieldData["y"].loadChunk<float>();
+        auto vFD_component_z  = vectorFieldData["z"].loadChunk<float>();
 
         iteration.seriesFlush();                                 //Data is now available
 
-        auto extent_vFD               = vectorFieldData["x"].getExtent();
-        const int buffer_size_vFD     = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
+        auto extent_vFD           = vectorFieldData["x"].getExtent();
+        const int buffer_size_vFD = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
                                                                  //Send data to output
         return vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
@@ -218,8 +218,8 @@ void PIConGPUReaderSimple::execute()
     AlgorithmInput input;
 
     auto state = get_state();
-    int SampleRateSimple = state->getValue(Variables::SampleRate).toInt();
-    std::string ParticleTypeSimple = state->getValue(Variables::ParticleType).toString();
+    int SampleRateSimple              = state->getValue(Variables::SampleRate).toInt();
+    std::string ParticleTypeSimple    = state->getValue(Variables::ParticleType).toString();
     std::string ScalarFieldCompSimple = state->getValue(Variables::ScalarFieldComp).toString();
     std::string VectorFieldTypeSimple = state->getValue(Variables::VectorFieldType).toString();
 
@@ -234,16 +234,9 @@ void PIConGPUReaderSimple::execute()
         }
 
     IndexedIteration iteration = *itSimple;
-
-    //Use the UI variables: SampleRateSimple, ParticleTypeSimple, ScalarFieldCompSimple, VectorFieldTypeSimple in the if statements
-
-
-
-    if(iteration.particles.size()) sendOutput(Particles, P.makeParticleOutput(iteration, SampleRateSimple, ParticleTypeSimple));
-    if(iteration.meshes.size())    sendOutput(ScalarField, P.makeScalarOutput(iteration, ScalarFieldCompSimple));
-    if(iteration.meshes.size())    sendOutput(VectorField, P.makeVectorOutput(iteration, VectorFieldTypeSimple));
-
-
+    if(SampleRateSimple != 0 && ParticleTypeSimple != "None") sendOutput(Particles, P.makeParticleOutput(iteration, SampleRateSimple, ParticleTypeSimple));
+    if(ScalarFieldCompSimple != "None")                       sendOutput(ScalarField, P.makeScalarOutput(iteration, ScalarFieldCompSimple));
+    if(VectorFieldTypeSimple != "None")                       sendOutput(VectorField, P.makeVectorOutput(iteration, VectorFieldTypeSimple));
 
     iteration.close();
 

@@ -189,9 +189,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>-1.65914
--1.10609
--0.553045
+										<value>-1.66107
+-1.10738
+-0.553691
 0
 </value>
 									</value>
@@ -477,7 +477,7 @@
 									<name>Method</name>
 									<value object_id="_33">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -541,7 +541,7 @@
 									<name>ParticleType</name>
 									<value object_id="_37">
 										<which>2</which>
-										<value>e</value>
+										<value>None</value>
 									</value>
 								</second>
 							</item>
@@ -565,7 +565,7 @@
 									<name>SampleRate</name>
 									<value object_id="_39">
 										<which>0</which>
-										<value>100</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -589,7 +589,7 @@
 									<name>VectorFieldType</name>
 									<value object_id="_41">
 										<which>2</which>
-										<value>E</value>
+										<value>None</value>
 									</value>
 								</second>
 							</item>
@@ -641,7 +641,7 @@
 									<name>FixedMin</name>
 									<value object_id="_44">
 										<which>1</which>
-										<value>-1.65913546085357666e+00</value>
+										<value>-1.66107273101806641e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2761,7 +2761,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_236">
 										<which>0</which>
-										<value>1193</value>
+										<value>1191</value>
 									</value>
 								</second>
 							</item>
@@ -2773,7 +2773,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_237">
 										<which>0</which>
-										<value>346</value>
+										<value>325</value>
 									</value>
 								</second>
 							</item>
