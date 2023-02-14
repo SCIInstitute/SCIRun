@@ -30,7 +30,7 @@
 
 #include <Modules/ParticleInCell/PIConGPUReaderSimple.h>
 
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+//#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -176,7 +176,6 @@ class SimulationStreamingReaderBaseImpl
             }
                                                                  //Send data to output
         return particleData(buffer_size, component_x, component_y, component_z);
-
         }
 
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
@@ -197,10 +196,10 @@ class SimulationStreamingReaderBaseImpl
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
         {
                                                                  //Read Vector field data
-        auto vectorFieldData  = iteration.meshes[vector_field_type];
-        auto vFD_component_x  = vectorFieldData["x"].loadChunk<float>();
-        auto vFD_component_y  = vectorFieldData["y"].loadChunk<float>();
-        auto vFD_component_z  = vectorFieldData["z"].loadChunk<float>();
+        auto vectorFieldData      = iteration.meshes[vector_field_type];
+        auto vFD_component_x      = vectorFieldData["x"].loadChunk<float>();
+        auto vFD_component_y      = vectorFieldData["y"].loadChunk<float>();
+        auto vFD_component_z      = vectorFieldData["z"].loadChunk<float>();
 
         iteration.seriesFlush();                                 //Data is now available
 
@@ -226,7 +225,7 @@ void PIConGPUReaderSimple::execute()
     SimulationStreamingReaderBaseImpl P;
     if (!setupSimple)
         {
-        while (!std::filesystem::exists(SST_dirSimple)) std::this_thread::sleep_for(std::chrono::seconds(1));
+        while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
         seriesSimple = Series(SST_dirSimple, Access::READ_ONLY);
         endSimple    = seriesSimple.readIterations().end();
         itSimple     = seriesSimple.readIterations().begin();
@@ -234,9 +233,10 @@ void PIConGPUReaderSimple::execute()
         }
 
     IndexedIteration iteration = *itSimple;
-    if(SampleRateSimple != 0 && ParticleTypeSimple != "None") sendOutput(Particles, P.makeParticleOutput(iteration, SampleRateSimple, ParticleTypeSimple));
-    if(ScalarFieldCompSimple != "None")                       sendOutput(ScalarField, P.makeScalarOutput(iteration, ScalarFieldCompSimple));
-    if(VectorFieldTypeSimple != "None")                       sendOutput(VectorField, P.makeVectorOutput(iteration, VectorFieldTypeSimple));
+
+    if(iteration.particles.size()) sendOutput(Particles,   P.makeParticleOutput(iteration, SampleRateSimple, ParticleTypeSimple));
+    if(iteration.meshes.size())    sendOutput(ScalarField, P.makeScalarOutput(iteration,   ScalarFieldCompSimple));
+    if(iteration.meshes.size())    sendOutput(VectorField, P.makeVectorOutput(iteration,   VectorFieldTypeSimple));
 
     iteration.close();
 

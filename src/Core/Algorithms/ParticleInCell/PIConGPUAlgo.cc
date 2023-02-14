@@ -31,17 +31,16 @@ Coding Sources:
    email from Franz Poschel, dated 17 May 2022
    email from Franz Poschel, dated 16 June 2022: PIConGPU Issue 4162; https://github.com/ComputationalRadiationPhysics/picongpu/issues/4162
 
-
 To Do:
-    Implement a process for particle sample rate, mesh (node) sample rate, and mesh slice through a specified x, y, or z axis point
-    Implement all of the above as config settings
     Figure out why including PSypy in the output (TBG Plugins option in the .cfg file) causes an execution crash
+    Migrate iteration content information output from the PIConGPU module to the PIConGPUReader module
+    Delete the unused PIConGPUReaderAlgo .cc and .h files
+    Migrate all PIConGPUReaderAsynch code to PIConGPUReader
+    Create a post sim visualization module that does not do real time visualization
+    Review the set of modules in the PIConGPU category and decide what should be kept 
 
-The current known to be functional implementation is the LaserWakefield simulation using any of the following config files 1.cfg, 2.cfg and sst.cfg
-I have successfully tested the following PIConGPU module UI entries for Simulation and Config file:
-    $PIC_EXAMPLES/LaserWakefield
-    $PIC_CFG/sst.cfg
-    $PIC_CFG/1.cfg
+The kimjohn1/picongpu Vis branch V-LaserWakefield simulation has been tested with the following config files:
+    1.cfg, 1-1.cfg, 2.cfg, null.cfg, null_2.cfg, sst.cfg, sst_1.cfg (sst.cfg and sst_1.cfg are functionally the same), sst_2.cfg, sst_2_1_Reader.sst
 */
 
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>

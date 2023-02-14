@@ -10,9 +10,9 @@
 
 "algorithm":
     {
-    "name": "PIConGPUReaderAsynchAlgo",
-    "namespace": "ParticleInCell",
-    "header": "Core/Algorithms/ParticleInCell/PIConGPUReaderAsynchAlgo.h"
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
     },
 
 "UI":

@@ -33,6 +33,8 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Basic/share.h>
 
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
 namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
@@ -45,17 +47,9 @@ bool setup_ = false;
 int iteration_counter=0;
 const std::string& SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
-                               //Delete these 4 lines of code when the actual values are figured out in PIConGPUAsynch.cc
-int SampleRate = 100;
-std::string ParticleType = "e";
-std::string ScalarFieldComp = "e_all_chargeDensity";
-std::string VectorFieldType = "E";
-
-SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
-
 class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
-    public Has4OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag, BundlePortTag>
+    public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
         {
         public:
             PIConGPUReaderAsynch();
@@ -65,9 +59,8 @@ class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
             OUTPUT_PORT(0, Particles, Field);
             OUTPUT_PORT(1, ScalarField, Field);
             OUTPUT_PORT(2, VectorField, Field);
-            OUTPUT_PORT(3, OutputData, Bundle);
 
-            MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+            MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUI);
 
         private:
             std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;

@@ -589,7 +589,7 @@
 									<name>VectorFieldType</name>
 									<value object_id="_41">
 										<which>2</which>
-										<value>None</value>
+										<value>E</value>
 									</value>
 								</second>
 							</item>
@@ -2761,7 +2761,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_236">
 										<which>0</which>
-										<value>1191</value>
+										<value>1189</value>
 									</value>
 								</second>
 							</item>
@@ -2773,7 +2773,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_237">
 										<which>0</which>
-										<value>325</value>
+										<value>304</value>
 									</value>
 								</second>
 							</item>
