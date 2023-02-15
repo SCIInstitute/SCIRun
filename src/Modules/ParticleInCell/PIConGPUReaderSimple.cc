@@ -246,3 +246,4 @@ void PIConGPUReaderSimple::setupStream()
     itSimple     = seriesSimple.readIterations().begin();
     setupSimple  = true;
     }
+

@@ -189,9 +189,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>-1.88861
--1.25907
--0.629537
+										<value>-1.66107
+-1.10738
+-0.553691
 0
 </value>
 									</value>
@@ -465,7 +465,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_32">
 										<which>2</which>
-										<value>$PIC_CFG/sst_2_1_Reader.cfg</value>
+										<value>$PIC_CFG/sst_1.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -541,7 +541,7 @@
 									<name>ParticleType</name>
 									<value object_id="_37">
 										<which>2</which>
-										<value>e</value>
+										<value>None</value>
 									</value>
 								</second>
 							</item>
@@ -565,7 +565,7 @@
 									<name>SampleRate</name>
 									<value object_id="_39">
 										<which>0</which>
-										<value>100</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -641,7 +641,7 @@
 									<name>FixedMin</name>
 									<value object_id="_44">
 										<which>1</which>
-										<value>-1.88861060142517090e+00</value>
+										<value>-1.66107273101806641e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2761,7 +2761,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_236">
 										<which>0</which>
-										<value>1191</value>
+										<value>1189</value>
 									</value>
 								</second>
 							</item>
@@ -2773,7 +2773,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_237">
 										<which>0</which>
-										<value>325</value>
+										<value>304</value>
 									</value>
 								</second>
 							</item>

@@ -253,9 +253,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>-1.88798
--1.25866
--0.629328
+										<value>-1.889
+-1.25934
+-0.629668
 0
 </value>
 									</value>
@@ -393,7 +393,7 @@
 									<name>GeometryIndex</name>
 									<value object_id="_26">
 										<which>0</which>
-										<value>20</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -669,7 +669,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_45">
 										<which>2</which>
-										<value>$PIC_CFG/sst_2_1_Reader.cfg</value>
+										<value>$PIC_CFG/sst_2.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -745,7 +745,7 @@
 									<name>ParticleType</name>
 									<value object_id="_50">
 										<which>2</which>
-										<value>e</value>
+										<value>None</value>
 									</value>
 								</second>
 							</item>
@@ -769,7 +769,7 @@
 									<name>SampleRate</name>
 									<value object_id="_52">
 										<which>0</which>
-										<value>100</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -845,7 +845,7 @@
 									<name>FixedMin</name>
 									<value object_id="_57">
 										<which>1</which>
-										<value>-1.88798463344573975e+00</value>
+										<value>-1.88900291919708252e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1937,7 +1937,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_144">
 										<which>1</which>
-										<value>5.98401550292968750e+02</value>
+										<value>5.30892028808593750e+02</value>
 									</value>
 								</second>
 							</item>
@@ -2965,7 +2965,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_249">
 										<which>0</which>
-										<value>1053</value>
+										<value>1047</value>
 									</value>
 								</second>
 							</item>
@@ -3077,7 +3077,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_257">
 										<which>1</which>
-										<value>5.70799621582031250e+02</value>
+										<value>5.25619873046875000e+02</value>
 									</value>
 								</second>
 							</item>
@@ -3108,7 +3108,7 @@
 												<name>listElement</name>
 												<value object_id="_260">
 													<which>1</which>
-													<value>6.00000000000000000e+00</value>
+													<value>6.54545450210571289e+00</value>
 												</value>
 											</item>
 											<item>
@@ -4081,7 +4081,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_360">
 										<which>0</which>
-										<value>772</value>
+										<value>785</value>
 									</value>
 								</second>
 							</item>
@@ -4093,7 +4093,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_361">
 										<which>0</which>
-										<value>242</value>
+										<value>321</value>
 									</value>
 								</second>
 							</item>
@@ -4105,7 +4105,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_362">
 										<which>0</which>
-										<value>1044</value>
+										<value>1038</value>
 									</value>
 								</second>
 							</item>
