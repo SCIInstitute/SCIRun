@@ -47,12 +47,18 @@ bool setupSimple = false;
 int iteration_counterSimple = 0;
 const std::string& SST_dirSimple = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
+int         SampleRateSimple;
+std::string ParticleTypeSimple;
+std::string ScalarFieldCompSimple;
+std::string VectorFieldTypeSimple;
+
 class SCISHARE PIConGPUReaderSimple : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
     public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
         {
         public:
             PIConGPUReaderSimple();
+            void setupStream();
             virtual void execute();
             virtual void setStateDefaults();
 

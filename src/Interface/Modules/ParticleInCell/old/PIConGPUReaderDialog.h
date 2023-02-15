@@ -25,23 +25,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ParticleInCell_PIConGPUReaderAsynchDialog_H
-#define INTERFACE_MODULES_ParticleInCell_PIConGPUReaderAsynchDialog_H
+#ifndef INTERFACE_MODULES_ParticleInCell_PIConGPUReaderDialog_H
+#define INTERFACE_MODULES_ParticleInCell_PIConGPUReaderDialog_H
 
-#include <Interface/Modules/ParticleInCell/ui_PIConGPUReaderAsynchDialog.h>
+#include <Interface/Modules/ParticleInCell/ui_PIConGPUReaderDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui    {
 
-class SCISHARE PIConGPUReaderAsynchDialog : public ModuleDialogGeneric,
-    public Ui::PIConGPUReaderAsynchDialog
+class SCISHARE PIConGPUReaderDialog : public ModuleDialogGeneric,
+    public Ui::PIConGPUReaderDialog
         {
         Q_OBJECT
 
         public:
-            PIConGPUReaderAsynchDialog(const std::string& name,
+            PIConGPUReaderDialog(const std::string& name,
             SCIRun::Dataflow::Networks::ModuleStateHandle state,
             QWidget* parent = nullptr);
         };

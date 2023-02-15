@@ -25,45 +25,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_PARTICLEINCELL_PIConGPUReaderAsynch_H
-#define MODULES_PARTICLEINCELL_PIConGPUReaderAsynch_H
+#ifndef MODULES_PARTICLEINCELL_PIConGPUReader_H
+#define MODULES_PARTICLEINCELL_PIConGPUReader_H
 
-#include <openPMD/openPMD.hpp>
 #include <Modules/Fields/share.h>
 #include <Dataflow/Network/Module.h>
-#include <Modules/Basic/share.h>
 
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+//using position_t = float;
 
 namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
-using namespace openPMD;
+    class SCISHARE PIConGPUReader : public SCIRun::Dataflow::Networks::Module,
+        public HasNoInputPorts,
+        public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
+            {
+            public:
+                PIConGPUReader();
+                virtual void execute();
+                virtual void setStateDefaults();
+                FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[]);
+                FieldHandle scalarField(const int buffer_size_sFD, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD);
+                FieldHandle vectorField(const int buffer_size_vFD, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z);
 
-Series series;
-SeriesIterator it, end;
-bool setup_ = false;
-int iteration_counter=0;
-const std::string& SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
+                OUTPUT_PORT(0, Particles, Field);
+                OUTPUT_PORT(1, ScalarField, Field);
+                OUTPUT_PORT(2, VectorField, Field);
 
-class SCISHARE PIConGPUReaderAsynch : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
-        {
-        public:
-            PIConGPUReaderAsynch();
-            virtual void execute();
-            virtual void setStateDefaults();
-
-            OUTPUT_PORT(0, Particles, Field);
-            OUTPUT_PORT(1, ScalarField, Field);
-            OUTPUT_PORT(2, VectorField, Field);
-
-            MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUI);
-
-        private:
-            std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
-        };
+                MODULE_TRAITS_AND_INFO(SCIRun::Modules::ModuleFlags::ModuleHasUIAndAlgorithm);
+            };
 }}}
 #endif

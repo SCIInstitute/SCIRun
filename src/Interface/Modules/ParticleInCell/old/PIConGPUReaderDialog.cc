@@ -25,14 +25,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/ParticleInCell/PIConGPUReaderAsynchDialog.h>
+#include <Interface/Modules/ParticleInCell/PIConGPUReaderDialog.h>
+#include <Core/Algorithms/ParticleInCell/PIConGPUReaderAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-PIConGPUReaderAsynchDialog::PIConGPUReaderAsynchDialog(const std::string& name, ModuleStateHandle state,
+PIConGPUReaderDialog::PIConGPUReaderDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = nullptr */)
   : ModuleDialogGeneric(state, parent)
     {
@@ -40,8 +41,8 @@ PIConGPUReaderAsynchDialog::PIConGPUReaderAsynchDialog(const std::string& name, 
     setWindowTitle(QString::fromStdString(name));
     fixSize();
 
-    addSpinBoxManager({sampleRate_},            Variables::SampleRate);
-    addComboBoxManager({particleType_},         Variables::ParticleType);
-    addComboBoxManager({vectorFieldType_},      Variables::VectorFieldType);
-    addComboBoxManager({scalarFieldComponent_}, Variables::ScalarFieldComp);
+//    addSpinBoxManager({sampleRate_},            Variables::particle_sample_rate);
+//    addComboBoxManager({particleType_},         Variables::particle_type);
+//    addComboBoxManager({vectorFieldType_},      Variables::vector_field_type);
+//    addComboBoxManager({scalarFieldComponent_}, Variables::scalar_field_component);
     }

@@ -31,7 +31,6 @@ SET(Interface_Modules_ParticleInCell_FORMS
   GravitySimulationDialog.ui
   PIConGPUDialog.ui
   PIConGPUReaderDialog.ui
-  PIConGPUReaderAsynchDialog.ui
   PIConGPUReaderSimpleDialog.ui
 )
 
@@ -40,7 +39,6 @@ SET(Interface_Modules_ParticleInCell_HEADERS
   GravitySimulationDialog.h
   PIConGPUDialog.h
   PIConGPUReaderDialog.h
-  PIConGPUReaderAsynchDialog.h
   PIConGPUReaderSimpleDialog.h
   share.h
 )
@@ -50,7 +48,6 @@ SET(Interface_Modules_ParticleInCell_SOURCES
   GravitySimulationDialog.cc
   PIConGPUDialog.cc
   PIConGPUReaderDialog.cc
-  PIConGPUReaderAsynchDialog.cc
   PIConGPUReaderSimpleDialog.cc
 )
 

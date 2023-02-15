@@ -54,12 +54,12 @@
     </property>
     <item>
      <property name="text">
-      <string>e</string>
+      <string>Electron</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>p</string>
+      <string>Proton</string>
      </property>
     </item>
     <item>
@@ -89,9 +89,6 @@
       <width>121</width>
       <height>25</height>
      </rect>
-    </property>
-    <property name="maximum">
-     <number>1000000</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -131,12 +128,17 @@
       <widget class="QComboBox" name="scalarFieldComponent_">
        <item>
         <property name="text">
-         <string>e_all_chargeDensity</string>
+         <string>Charge Density</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>e_all_energyDensity</string>
+         <string>Energy Density</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Momentum</string>
         </property>
        </item>
        <item>
@@ -165,12 +167,17 @@
       <widget class="QComboBox" name="vectorFieldType_">
        <item>
         <property name="text">
-         <string>E</string>
+         <string>Electric Field</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>B</string>
+         <string>Magnetic Field</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Gravity Field</string>
         </property>
        </item>
        <item>
@@ -184,28 +191,6 @@
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Field Type</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_8">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>370</y>
-      <width>411</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>List the data set content</string>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_6">
-     <item>
-      <widget class="QRadioButton" name="dataSet_">
-       <property name="text">
-        <string>Data Set Information</string>
        </property>
       </widget>
      </item>

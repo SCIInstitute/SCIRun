@@ -29,8 +29,6 @@
 #include <filesystem>
 
 #include <Modules/ParticleInCell/PIConGPUReaderSimple.h>
-
-//#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -215,33 +213,36 @@ class SimulationStreamingReaderBaseImpl
 void PIConGPUReaderSimple::execute()
     {
     AlgorithmInput input;
-
-    auto state = get_state();
-    int SampleRateSimple              = state->getValue(Variables::SampleRate).toInt();
-    std::string ParticleTypeSimple    = state->getValue(Variables::ParticleType).toString();
-    std::string ScalarFieldCompSimple = state->getValue(Variables::ScalarFieldComp).toString();
-    std::string VectorFieldTypeSimple = state->getValue(Variables::VectorFieldType).toString();
-
     SimulationStreamingReaderBaseImpl P;
-    if (!setupSimple)
-        {
-        while (!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) std::this_thread::sleep_for(std::chrono::seconds(1));
-        seriesSimple = Series(SST_dirSimple, Access::READ_ONLY);
-        endSimple    = seriesSimple.readIterations().end();
-        itSimple     = seriesSimple.readIterations().begin();
-        setupSimple  = true;
-        }
-
+    if (!setupSimple) setupStream();
     IndexedIteration iteration = *itSimple;
 
     if(iteration.particles.size()) sendOutput(Particles,   P.makeParticleOutput(iteration, SampleRateSimple, ParticleTypeSimple));
     if(iteration.meshes.size())    sendOutput(ScalarField, P.makeScalarOutput(iteration,   ScalarFieldCompSimple));
     if(iteration.meshes.size())    sendOutput(VectorField, P.makeVectorOutput(iteration,   VectorFieldTypeSimple));
-
     iteration.close();
 
-    cout << "From the Reader: iteration counter is " << iteration_counterSimple <<"\n";
     ++itSimple;
     ++iteration_counterSimple;
     if(itSimple != endSimple) enqueueExecuteAgain(false);
+    else
+        {
+        setupSimple = false;
+        iteration_counterSimple = 0;
+        }
+    }
+
+void PIConGPUReaderSimple::setupStream()
+    {
+    auto state = get_state();
+    SampleRateSimple      = state->getValue(Variables::SampleRate).toInt();
+    ParticleTypeSimple    = state->getValue(Variables::ParticleType).toString();
+    ScalarFieldCompSimple = state->getValue(Variables::ScalarFieldComp).toString();
+    VectorFieldTypeSimple = state->getValue(Variables::VectorFieldType).toString();
+
+    while (!std::filesystem::exists(SST_dirSimple)) std::this_thread::sleep_for(std::chrono::seconds(1));
+    seriesSimple = Series(SST_dirSimple, Access::READ_ONLY);
+    endSimple    = seriesSimple.readIterations().end();
+    itSimple     = seriesSimple.readIterations().begin();
+    setupSimple  = true;
     }

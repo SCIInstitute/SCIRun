@@ -189,9 +189,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>-1.66009
--1.10673
--0.553365
+										<value>-1.65922
+-1.10614
+-0.553072
 0
 </value>
 									</value>
@@ -477,7 +477,7 @@
 									<name>Method</name>
 									<value object_id="_33">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -641,7 +641,7 @@
 									<name>FixedMin</name>
 									<value object_id="_44">
 										<which>1</which>
-										<value>-1.66009449958801270e+00</value>
+										<value>-1.65921711921691895e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1733,7 +1733,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_131">
 										<which>1</which>
-										<value>4.53261871337890625e+02</value>
+										<value>5.01578216552734375e+02</value>
 									</value>
 								</second>
 							</item>
@@ -2737,7 +2737,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_234">
 										<which>0</which>
-										<value>804</value>
+										<value>774</value>
 									</value>
 								</second>
 							</item>
@@ -2749,7 +2749,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_235">
 										<which>0</which>
-										<value>448</value>
+										<value>467</value>
 									</value>
 								</second>
 							</item>
@@ -2761,7 +2761,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_236">
 										<which>0</which>
-										<value>1065</value>
+										<value>1140</value>
 									</value>
 								</second>
 							</item>
@@ -2773,7 +2773,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_237">
 										<which>0</which>
-										<value>300</value>
+										<value>334</value>
 									</value>
 								</second>
 							</item>

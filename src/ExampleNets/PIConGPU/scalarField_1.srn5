@@ -189,9 +189,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>-1.28452
--0.856345
--0.428172
+										<value>-1.65922
+-1.10614
+-0.553072
 0
 </value>
 									</value>
@@ -477,7 +477,7 @@
 									<name>Method</name>
 									<value object_id="_33">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -593,7 +593,7 @@
 									<name>FixedMin</name>
 									<value object_id="_40">
 										<which>1</which>
-										<value>-1.28451716899871826e+00</value>
+										<value>-1.65921711921691895e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1685,7 +1685,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_127">
 										<which>1</which>
-										<value>8.14674316406250000e+02</value>
+										<value>5.01578216552734375e+02</value>
 									</value>
 								</second>
 							</item>
@@ -2647,7 +2647,7 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:4)</name>
+															<name>slice (from ShowField:1)</name>
 															<value object_id="_226">
 																<which>3</which>
 																<value>1</value>
@@ -2701,7 +2701,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_231">
 										<which>0</which>
-										<value>448</value>
+										<value>469</value>
 									</value>
 								</second>
 							</item>
@@ -2713,7 +2713,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_232">
 										<which>0</which>
-										<value>1081</value>
+										<value>1071</value>
 									</value>
 								</second>
 							</item>
@@ -2725,7 +2725,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_233">
 										<which>0</which>
-										<value>465</value>
+										<value>351</value>
 									</value>
 								</second>
 							</item>
@@ -2806,7 +2806,7 @@
 				<moduleId2_>RescaleColorMap:2</moduleId2_>
 				<port2_>
 					<name>Field</name>
-					<id>1</id>
+					<id>3</id>
 				</port2_>
 			</item>
 			<item>
@@ -2893,8 +2893,8 @@
 		<item>
 			<first>PIConGPUReader:0</first>
 			<second>
-				<first>-1.06000000000000000e+03</first>
-				<second>-6.04000000000000000e+02</second>
+				<first>-1.06400000000000000e+03</first>
+				<second>-6.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>

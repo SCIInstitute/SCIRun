@@ -32,7 +32,6 @@ SET(Modules_ParticleInCell_SRCS
   GravitySimulation.cc
   PIConGPU.cc
   PIConGPUReader.cc
-  PIConGPUReaderAsynch.cc
   TestModuleSimple.cc
   PIConGPUReaderSimple.cc
 )
@@ -43,7 +42,6 @@ SET(Modules_ParticleInCell_HEADERS
   GravitySimulation.h
   PIConGPU.h
   PIConGPUReader.h
-  PIConGPUReaderAsynch.h
   TestModuleSimple.h
   PIConGPUReaderSimple.h
 )
