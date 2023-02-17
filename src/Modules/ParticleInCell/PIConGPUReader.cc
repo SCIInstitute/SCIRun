@@ -67,6 +67,7 @@ void PIConGPUReader::setStateDefaults()
     state->setValue(Variables::ParticleType, std::string("e"));
     state->setValue(Variables::ScalarFieldComp, std::string("e_all_chargeDensity"));
     state->setValue(Variables::VectorFieldType, std::string("E"));
+    state->setValue(Variables::Method, 1);
     }
 
 namespace SCIRun::Modules::ParticleInCell
@@ -239,11 +240,76 @@ void PIConGPUReader::setupStream()
     ParticleType    = state->getValue(Variables::ParticleType).toString();
     ScalarFieldComp = state->getValue(Variables::ScalarFieldComp).toString();
     VectorFieldType = state->getValue(Variables::VectorFieldType).toString();
+    DataSet         = state->getValue(Variables::Method).toInt();
 
     while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
     series = Series(SST_dir, Access::READ_ONLY);
     end    = series.readIterations().end();
     it     = series.readIterations().begin();
     setup_ = true;
+    if(!DataSet) showDataSet();
+    }
+
+void PIConGPUReader::showDataSet()
+    {
+    IndexedIteration iteration_00 = *it;
+    cout << "\nShowing the data set content for iteration " << iteration_00.iterationIndex << "\n";
+
+                                                //Output data about the Series
+
+    Iteration iter = series.iterations[iteration_00.iterationIndex];
+    cout << "Iteration " << iteration_00.iterationIndex << " contains "
+         << iter.meshes.size()    << " meshes " << "and "
+         << iter.particles.size() << " particle species\n";
+    //cout << "The Series contains " << series.iterations.size() << " iterations\n";
+
+                                                //Output data about particles
+    if(iter.particles.size())
+        {
+        cout << "\nParticle data \n";
+        for (auto const &ps : iter.particles)
+            {
+            cout << "\nSpecies\t" << ps.first;
+            //cout << "\n\t" << ps.first;
+            //cout << "\n";
+            for (auto const &r : ps.second) cout << "\n\t" << r.first;
+            }
+        cout << '\n';
+        }
+                                                //Output data about meshes
+    if(iter.meshes.size())
+        {
+        cout << "\nMesh data \n";
+        for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
+        cout << "\n";
+        }
+
+    MeshRecordComponent B_x = iter.meshes["B"]["x"];
+    Extent extent_B = B_x.getExtent();
+    //if(extent_B)
+        {
+        cout << "\nField B is vector valued and has shape (";
+        for (auto const &dim : extent_B) cout << dim << ',';
+        cout << ") and datatype " << B_x.getDatatype() << '\n';
+        }
+
+
+    MeshRecordComponent E_x = iter.meshes["E"]["x"];
+    Extent extent_E = E_x.getExtent();
+    //if(extent_E)
+        {
+        cout << "\nField E is vector valued and has shape (";
+        for (auto const &dim : extent_E) cout << dim << ',';
+        cout << ") and datatype " << E_x.getDatatype() << '\n';
+        }
+
+    MeshRecordComponent E_charge_density = iter.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
+    Extent extent_cd = E_charge_density.getExtent();
+    //if(extent_cd)
+        {
+        cout << "\nField e_all_chargeDensity is scalar valued and has shape (";
+        for (auto const &dim : extent_cd) cout << dim << ',';
+        cout  << ") and datatype " << E_charge_density.getDatatype() << '\n';
+        }
     }
 

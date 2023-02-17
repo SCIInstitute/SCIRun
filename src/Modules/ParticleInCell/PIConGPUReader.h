@@ -51,6 +51,7 @@ int         SampleRate;
 std::string ParticleType;
 std::string ScalarFieldComp;
 std::string VectorFieldType;
+int         DataSet;
 
 class SCISHARE PIConGPUReader : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
@@ -59,6 +60,7 @@ class SCISHARE PIConGPUReader : public SCIRun::Dataflow::Networks::Module,
         public:
             PIConGPUReader();
             void setupStream();
+            void showDataSet();
             virtual void execute();
             virtual void setStateDefaults();
 
