@@ -27,6 +27,7 @@
 
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
+#include <stdlib.h>
 
 #include <Modules/ParticleInCell/PIConGPUReader.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -49,6 +50,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 
 using std::cout;
+using namespace std;
 using namespace openPMD;
 
 MODULE_INFO_DEF(PIConGPUReader,ParticleInCell,SCIRun);
@@ -133,6 +135,7 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration, int particle_sample_rate, std::string particle_type)
         {
+        //cout << "Debug 01: particle data is being processed\n";
                                                                  //Read particle data
         Record particlePositions       = iteration.particles[particle_type]["position"];
         Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];
@@ -179,6 +182,7 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
         {
+        //cout << "Debug 02: scalar field data is being processed\n";
                                                                  //Read scalar field data
         auto scalarFieldData        = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
         auto scalarFieldData_buffer = scalarFieldData.loadChunk<float>();
@@ -194,6 +198,7 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
         {
+        //cout << "Debug 03: vector field data is being processed\n";
                                                                  //Read Vector field data
         auto vectorFieldData      = iteration.meshes[vector_field_type];
         auto vFD_component_x      = vectorFieldData["x"].loadChunk<float>();
@@ -218,19 +223,19 @@ void PIConGPUReader::execute()
     if (!setup_) setupStream();
     IndexedIteration iteration = *it;
 
-    if(iteration.particles.size()) sendOutput(Particles,   P.makeParticleOutput(iteration, SampleRate, ParticleType));
-    if(iteration.meshes.size())    sendOutput(ScalarField, P.makeScalarOutput(iteration,   ScalarFieldComp));
-    if(iteration.meshes.size())    sendOutput(VectorField, P.makeVectorOutput(iteration,   VectorFieldType));
+    if(iteration.particles.size() && (ParticleType    != "None")) sendOutput(Particles,   P.makeParticleOutput(iteration, SampleRate, ParticleType));
+    if(iteration.meshes.size()    && (ScalarFieldComp != "None")) sendOutput(ScalarField, P.makeScalarOutput(iteration,   ScalarFieldComp));
+    if(iteration.meshes.size()    && (VectorFieldType != "None")) sendOutput(VectorField, P.makeVectorOutput(iteration,   VectorFieldType));
     iteration.close();
 
     ++it;
     ++iteration_counter;
     if(it != end) enqueueExecuteAgain(false);
-    else
-        {
-        setup_ = false;
-        iteration_counter = 0;
-        }
+    else shutdownStream();
+        //{
+        //setup_ = false;
+        //iteration_counter = 0;
+        //}
     }
 
 void PIConGPUReader::setupStream()
@@ -248,6 +253,19 @@ void PIConGPUReader::setupStream()
     it     = series.readIterations().begin();
     setup_ = true;
     if(!DataSet) showDataSet();
+    }
+
+void PIConGPUReader::shutdownStream()
+    {
+    //#include <stdlib.h>
+    //using namespace std;
+    string text_file;
+    text_file = "rm ~/picongpu.profile ~/picongpu_reRun.profile ~/Sim.py ~/Sim_run";
+    const char *command_shutDown=text_file.c_str();
+    system(command_shutDown);
+
+    setup_ = false;
+    iteration_counter = 0;
     }
 
 void PIConGPUReader::showDataSet()
@@ -270,12 +288,12 @@ void PIConGPUReader::showDataSet()
         for (auto const &ps : iter.particles)
             {
             cout << "\nSpecies\t" << ps.first;
-            //cout << "\n\t" << ps.first;
             //cout << "\n";
             for (auto const &r : ps.second) cout << "\n\t" << r.first;
             }
         cout << '\n';
         }
+    else cout << "\nThere is no particle data in this data set\n";
                                                 //Output data about meshes
     if(iter.meshes.size())
         {
@@ -288,7 +306,7 @@ void PIConGPUReader::showDataSet()
     Extent extent_B = B_x.getExtent();
     //if(extent_B)
         {
-        cout << "\nField B is vector valued and has shape (";
+        cout << "\nField B is vector valued, has shape (";
         for (auto const &dim : extent_B) cout << dim << ',';
         cout << ") and datatype " << B_x.getDatatype() << '\n';
         }
@@ -298,7 +316,7 @@ void PIConGPUReader::showDataSet()
     Extent extent_E = E_x.getExtent();
     //if(extent_E)
         {
-        cout << "\nField E is vector valued and has shape (";
+        cout << "\nField E is vector valued, has shape (";
         for (auto const &dim : extent_E) cout << dim << ',';
         cout << ") and datatype " << E_x.getDatatype() << '\n';
         }
@@ -307,9 +325,10 @@ void PIConGPUReader::showDataSet()
     Extent extent_cd = E_charge_density.getExtent();
     //if(extent_cd)
         {
-        cout << "\nField e_all_chargeDensity is scalar valued and has shape (";
+        cout << "\nField e_all_chargeDensity is scalar valued, has shape (";
         for (auto const &dim : extent_cd) cout << dim << ',';
         cout  << ") and datatype " << E_charge_density.getDatatype() << '\n';
         }
+
     }
 

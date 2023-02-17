@@ -28,9 +28,11 @@
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
 
+#include <string>
+#include <sstream>
+
 #include <Modules/ParticleInCell/PIConGPU.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
-
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -65,7 +67,16 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::OutputDir);
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::SimulationFile);
+
+        #include <stdlib.h>
+        using namespace std;
+        string text_file;
+        text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-SCIRun-PC/*.profile ~/";
+        const char *command_prof=text_file.c_str();
+        system(command_prof);
+
         auto output=algo().run(input);
+
 /*                                                      // This block of code is the openPMG Reader
                                                         //Wait for simulation output data to be generated and posted via SST
                                                         // TODO: figure out how to use a general reference for the home directory in these two lines of code

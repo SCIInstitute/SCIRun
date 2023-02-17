@@ -46,12 +46,14 @@ SeriesIterator it, end;
 bool setup_ = false;
 int iteration_counter = 0;
 const std::string& SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
+//const char* home_ = getenv("HOME");
+//const std::string& SST_dir = "$HOME/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
+int         DataSet;
 int         SampleRate;
 std::string ParticleType;
 std::string ScalarFieldComp;
 std::string VectorFieldType;
-int         DataSet;
 
 class SCISHARE PIConGPUReader : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
@@ -61,10 +63,11 @@ class SCISHARE PIConGPUReader : public SCIRun::Dataflow::Networks::Module,
             PIConGPUReader();
             void setupStream();
             void showDataSet();
+            void shutdownStream();
             virtual void execute();
             virtual void setStateDefaults();
 
-            OUTPUT_PORT(0, Particles, Field);
+            OUTPUT_PORT(0, Particles,   Field);
             OUTPUT_PORT(1, ScalarField, Field);
             OUTPUT_PORT(2, VectorField, Field);
 

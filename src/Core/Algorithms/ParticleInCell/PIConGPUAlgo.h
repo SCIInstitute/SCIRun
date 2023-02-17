@@ -5,8 +5,6 @@
 #include <string>
 #include <sstream>
 
-
-
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/ParticleInCell/share.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
