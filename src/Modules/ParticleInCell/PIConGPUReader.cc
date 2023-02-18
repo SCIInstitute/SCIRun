@@ -232,21 +232,18 @@ void PIConGPUReader::execute()
     ++iteration_counter;
     if(it != end) enqueueExecuteAgain(false);
     else shutdownStream();
-        //{
-        //setup_ = false;
-        //iteration_counter = 0;
-        //}
     }
 
 void PIConGPUReader::setupStream()
     {
-    auto state = get_state();
+    auto state      = get_state();
     SampleRate      = state->getValue(Variables::SampleRate).toInt();
     ParticleType    = state->getValue(Variables::ParticleType).toString();
     ScalarFieldComp = state->getValue(Variables::ScalarFieldComp).toString();
     VectorFieldType = state->getValue(Variables::VectorFieldType).toString();
     DataSet         = state->getValue(Variables::Method).toInt();
 
+    //cout << "Debug 10: SST_dir is " << SST_dir << "\n";
     while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
     series = Series(SST_dir, Access::READ_ONLY);
     end    = series.readIterations().end();
@@ -257,11 +254,9 @@ void PIConGPUReader::setupStream()
 
 void PIConGPUReader::shutdownStream()
     {
-    //#include <stdlib.h>
-    //using namespace std;
     string text_file;
     text_file = "rm ~/picongpu.profile ~/picongpu_reRun.profile ~/Sim.py ~/Sim_run";
-    const char *command_shutDown=text_file.c_str();
+    const char *command_shutDown = text_file.c_str();
     system(command_shutDown);
 
     setup_ = false;

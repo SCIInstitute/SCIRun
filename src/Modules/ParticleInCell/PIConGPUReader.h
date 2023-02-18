@@ -45,9 +45,8 @@ Series series;
 SeriesIterator it, end;
 bool setup_ = false;
 int iteration_counter = 0;
-const std::string& SST_dir = "/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst";
-//const char* home_ = getenv("HOME");
-//const std::string& SST_dir = "$HOME/scratch/runs/SST/simOutput/openPMD/simData.sst";
+const std::string& home_ = std::getenv("HOME");
+const std::string& SST_dir = home_+"/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
 int         DataSet;
 int         SampleRate;

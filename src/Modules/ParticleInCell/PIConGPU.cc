@@ -30,6 +30,7 @@
 
 #include <string>
 #include <sstream>
+#include <stdlib.h>
 
 #include <Modules/ParticleInCell/PIConGPU.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
@@ -40,8 +41,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
-using std::cout;
+using namespace std;
 using namespace openPMD;
+using std::cout;
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
@@ -68,8 +70,6 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::SimulationFile);
 
-        #include <stdlib.h>
-        using namespace std;
         string text_file;
         text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-SCIRun-PC/*.profile ~/";
         const char *command_prof=text_file.c_str();
