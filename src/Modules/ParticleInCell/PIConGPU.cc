@@ -71,7 +71,7 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::SimulationFile);
 
         string text_file;
-        text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-SCIRun-PC/*.profile ~/";
+        text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
         const char *command_prof=text_file.c_str();
         system(command_prof);
 
