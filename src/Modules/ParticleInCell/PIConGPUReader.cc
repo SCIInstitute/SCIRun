@@ -243,8 +243,8 @@ void PIConGPUReader::setupStream()
     VectorFieldType = state->getValue(Variables::VectorFieldType).toString();
     DataSet         = state->getValue(Variables::Method).toInt();
 
-    //cout << "Debug 10: SST_dir is " << SST_dir << "\n";
     while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
+
     series = Series(SST_dir, Access::READ_ONLY);
     end    = series.readIterations().end();
     it     = series.readIterations().begin();
@@ -289,6 +289,7 @@ void PIConGPUReader::showDataSet()
         cout << '\n';
         }
     else cout << "\nThere is no particle data in this data set\n";
+
                                                 //Output data about meshes
     if(iter.meshes.size())
         {
@@ -305,7 +306,6 @@ void PIConGPUReader::showDataSet()
         for (auto const &dim : extent_B) cout << dim << ',';
         cout << ") and datatype " << B_x.getDatatype() << '\n';
         }
-
 
     MeshRecordComponent E_x = iter.meshes["E"]["x"];
     Extent extent_E = E_x.getExtent();
@@ -324,6 +324,5 @@ void PIConGPUReader::showDataSet()
         for (auto const &dim : extent_cd) cout << dim << ',';
         cout  << ") and datatype " << E_charge_density.getDatatype() << '\n';
         }
-
     }
 
