@@ -40,9 +40,13 @@ namespace Modules        {
 namespace ParticleInCell {
 
 using namespace openPMD;
+#define openPMDIsAvailable 1
 
+#if openPMDIsAvailable
 Series series;
 SeriesIterator it, end;
+#endif
+
 bool setup_ = false;
 int iteration_counter = 0;
 const std::string& home_ = std::getenv("HOME");

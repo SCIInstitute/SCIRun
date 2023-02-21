@@ -27,10 +27,10 @@
 
 #include <openPMD/openPMD.hpp>
 #include <filesystem>
+#include <stdlib.h>
 
 #include <string>
 #include <sstream>
-#include <stdlib.h>
 
 #include <Modules/ParticleInCell/PIConGPU.h>
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
@@ -41,9 +41,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::ParticleInCell;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
+using std::cout;
 using namespace std;
 using namespace openPMD;
-using std::cout;
+
+#define openPMDIsAvailable 1
 
 MODULE_INFO_DEF(PIConGPU,ParticleInCell,SCIRun);
 
@@ -69,86 +71,13 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::OutputDir);
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::SimulationFile);
-
+#if openPMDIsAvailable
         string text_file;
         text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
         const char *command_prof=text_file.c_str();
         system(command_prof);
-
+#endif
         auto output=algo().run(input);
-
-/*                                                      // This block of code is the openPMG Reader
-                                                        //Wait for simulation output data to be generated and posted via SST
-                                                        // TODO: figure out how to use a general reference for the home directory in these two lines of code
-
-        while(!std::filesystem::exists("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);
-//        while(!std::filesystem::exists("scratch/runs/SST/simOutput/openPMD/simData.sst")) sleep(1);;
-
-        Series series = Series("/home/kj/scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-//        Series series = Series("scratch/runs/SST/simOutput/openPMD/simData.sst", Access::READ_ONLY);
-
-        for (IndexedIteration iteration : series.readIterations())
-            {
-            cout << "\nFrom PIConGPU: Current iteration is: " << iteration.iterationIndex << std::endl;
-
-                                                        //From https://openpmd-api.readthedocs.io/en/latest/usage/serial.html#c
-                                                        //Output data about the Series
-
-            Iteration iter = series.iterations[iteration.iterationIndex];
-            cout << "Iteration " << iteration.iterationIndex << " contains "
-                 << iter.meshes.size()    << " meshes " << "and "
-                 << iter.particles.size() << " particle species\n";
-            cout << "The Series contains " << series.iterations.size() << " iterations\n";
-
-                                                        //Output data about particles
-            if(iter.particles.size())
-                {
-                cout << "\nParticle data \n";
-                for (auto const &ps : iter.particles)
-                    {
-                    cout << "\n\t" << ps.first;
-                    cout << "\n";
-                    for (auto const &r : ps.second) cout << "\n\t" << r.first;
-                    }
-                cout << '\n';
-                }
-                                                        //Output data about meshes
-            if(iter.meshes.size())
-                {
-                cout << "\nMesh data \n";
-                for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
-                cout << "\n";
-                }
-
-            //MeshRecordComponent B_x = iter.meshes["B"]["x"];
-            //Extent extent_B = B_x.getExtent();
-            //if(extent_B)
-                //{
-                //cout << "\nField B has shape (";
-                //for (auto const &dim : extent_B) cout << dim << ',';
-                //cout << ") and has datatype " << B_x.getDatatype() << '\n';
-                //}
-
-
-            MeshRecordComponent E_x = iter.meshes["E"]["x"];
-            Extent extent_E = E_x.getExtent();
-            //if(extent_E)
-                {
-                cout << "\nField E is vector valued, has shape (";
-                for (auto const &dim : extent_E) cout << dim << ',';
-                cout << ") and has datatype " << E_x.getDatatype() << '\n';
-                }
-
-            MeshRecordComponent E_charge_density = iter.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
-            Extent extent_cd = E_charge_density.getExtent();
-            //if(extent_cd)
-                {
-                cout << "\nField e_all_chargeDensity is scalar valued, has shape (";
-                for (auto const &dim : extent_cd) cout << dim << ',';
-                cout  << ") and has datatype " << E_charge_density.getDatatype() << '\n';
-                }
-            }
-*/
         }  //end if(needToExecute())
     }  //end PIConGPU::execute()
 

@@ -53,6 +53,8 @@ using std::cout;
 using namespace std;
 using namespace openPMD;
 
+#define openPMDIsAvailable 1
+
 MODULE_INFO_DEF(PIConGPUReader,ParticleInCell,SCIRun);
 
 PIConGPUReader::PIConGPUReader() : Module(staticInfo_)
@@ -78,7 +80,7 @@ namespace SCIRun::Modules::ParticleInCell
 class SimulationStreamingReaderBaseImpl
     {
     public:
-
+#if openPMDIsAvailable
     FieldHandle particleData(int buffer_size, float component_x[], float component_y[], float component_z[])
         {
         FieldInformation pcfi("PointCloudMesh",0,"int");
@@ -212,6 +214,7 @@ class SimulationStreamingReaderBaseImpl
 
                                                                  //Send data to output
         return vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
+#endif
         }
     }; //end of class SimulationStreamingReaderBaseImpl
 } //end of namespace SCIRun::Modules::ParticleInCell
@@ -221,17 +224,20 @@ void PIConGPUReader::execute()
     AlgorithmInput input;
     SimulationStreamingReaderBaseImpl P;
     if (!setup_) setupStream();
+#if openPMDIsAvailable
     IndexedIteration iteration = *it;
 
     if(iteration.particles.size() && (ParticleType    != "None")) sendOutput(Particles,   P.makeParticleOutput(iteration, SampleRate, ParticleType));
     if(iteration.meshes.size()    && (ScalarFieldComp != "None")) sendOutput(ScalarField, P.makeScalarOutput(iteration,   ScalarFieldComp));
     if(iteration.meshes.size()    && (VectorFieldType != "None")) sendOutput(VectorField, P.makeVectorOutput(iteration,   VectorFieldType));
     iteration.close();
-
+#endif
     ++it;
     ++iteration_counter;
+#if openPMDIsAvailable
     if(it != end) enqueueExecuteAgain(false);
     else shutdownStream();
+#endif
     }
 
 void PIConGPUReader::setupStream()
@@ -244,12 +250,13 @@ void PIConGPUReader::setupStream()
     DataSet         = state->getValue(Variables::Method).toInt();
 
     while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
-
+#if openPMDIsAvailable
     series = Series(SST_dir, Access::READ_ONLY);
     end    = series.readIterations().end();
     it     = series.readIterations().begin();
     setup_ = true;
     if(!DataSet) showDataSet();
+#endif
     }
 
 void PIConGPUReader::shutdownStream()
@@ -265,6 +272,7 @@ void PIConGPUReader::shutdownStream()
 
 void PIConGPUReader::showDataSet()
     {
+#if openPMDIsAvailable
     IndexedIteration iteration_00 = *it;
     cout << "\nShowing the data set content for iteration " << iteration_00.iterationIndex << "\n";
 
@@ -324,5 +332,6 @@ void PIConGPUReader::showDataSet()
         for (auto const &dim : extent_cd) cout << dim << ',';
         cout  << ") and datatype " << E_charge_density.getDatatype() << '\n';
         }
+#endif
     }
 
