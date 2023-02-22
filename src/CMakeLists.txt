@@ -341,6 +341,12 @@ IF(RENDERER_TRACE_ON)
 ENDIF()
 
 ########################################################################
+# Matlab i/o option--see issue #1727 and #1692
+
+OPTION(MATLAB_STRING_OUTPUT_SIGNED_TYPE_FIX_FOR_SCIPY "Toggle quasi-fix for Issue #1692." OFF)
+MARK_AS_ADVANCED(MATLAB_STRING_OUTPUT_SIGNED_TYPE_FIX_FOR_SCIPY)
+
+########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)

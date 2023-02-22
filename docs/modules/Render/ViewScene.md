@@ -18,6 +18,7 @@ To improve navigation in 3D data and help facilitate the placement of widgets, i
 
 A small plus sign (**+**) appears in the lower right corner of the ViewScene window. Clicking on the plus sign reveals the extended control panel.
 
+## Hotkeys
 The ViewScene module also supports a series of hotkeys:
 
   * **1-8:** Standard views that align with the cartesian axis.
@@ -53,3 +54,33 @@ The ViewScene module also supports a series of hotkeys:
   * **U:** Switch backculling ON/OFF.
 
   * **W:** Switch wireframe ON/OFF.
+
+## Tools
+
+:::{figure-md} fig-controls
+
+![ViewScene window controls](../module_images/viewscenecontrols.png)
+
+ViewScene window controls
+:::
+
+The ViewScene window contains three toolbars located to the top, right and left of the window (see {numref}`fig-controls`). The tools have the following functions:
+
+### Auto View
+restores the display back to a default condition. This is very useful when objects disappear from the view window due to a combination of settings
+### Object Selection
+### View Options
+### Camera Locks
+### Screenshot
+### Auto Rotate
+### Background Color
+### Orientation Axes
+### Plane Settings
+### Fog Controls
+### Material Properties
+### Headlight
+### Additional Lights
+### Scale Bar
+### Groups
+### Mouse Controls
+### Report Problems
