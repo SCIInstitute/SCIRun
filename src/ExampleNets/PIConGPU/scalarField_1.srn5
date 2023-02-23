@@ -477,7 +477,7 @@
 									<name>Method</name>
 									<value object_id="_33">
 										<which>0</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2773,7 +2773,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_237">
 										<which>0</which>
-										<value>1069</value>
+										<value>1067</value>
 									</value>
 								</second>
 							</item>
@@ -2785,7 +2785,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_238">
 										<which>0</which>
-										<value>330</value>
+										<value>309</value>
 									</value>
 								</second>
 							</item>
