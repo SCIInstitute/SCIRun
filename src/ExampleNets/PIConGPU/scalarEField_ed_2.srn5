@@ -253,9 +253,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>-1.65961
--1.1064
--0.553202
+										<value>-1.889
+-1.25934
+-0.629668
 0
 </value>
 									</value>
@@ -369,7 +369,7 @@
 									<name>BufferSize</name>
 									<value object_id="_24">
 										<which>0</which>
-										<value>21</value>
+										<value>42</value>
 									</value>
 								</second>
 							</item>
@@ -393,7 +393,7 @@
 									<name>GeometryIndex</name>
 									<value object_id="_26">
 										<which>0</which>
-										<value>20</value>
+										<value>41</value>
 									</value>
 								</second>
 							</item>
@@ -429,7 +429,7 @@
 									<name>PlayModeDelay</name>
 									<value object_id="_29">
 										<which>0</which>
-										<value>200</value>
+										<value>100</value>
 									</value>
 								</second>
 							</item>
@@ -669,7 +669,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_45">
 										<which>2</which>
-										<value>$PIC_CFG/sst_2.cfg</value>
+										<value>$PIC_CFG/sst_2_20-ipf_mesh_data.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -793,7 +793,7 @@
 									<name>ScalarFieldComp</name>
 									<value object_id="_54">
 										<which>2</which>
-										<value>e_all_chargeDensity</value>
+										<value>e_all_energyDensity</value>
 									</value>
 								</second>
 							</item>
@@ -857,7 +857,7 @@
 									<name>FixedMin</name>
 									<value object_id="_58">
 										<which>1</which>
-										<value>-1.65960693359375000e+00</value>
+										<value>-1.88900351524353027e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2911,7 +2911,7 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:4)</name>
+															<name>slice (from ShowField:1)</name>
 															<value object_id="_244">
 																<which>3</which>
 																<value>1</value>
@@ -2977,7 +2977,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_250">
 										<which>0</which>
-										<value>1047</value>
+										<value>1035</value>
 									</value>
 								</second>
 							</item>
@@ -3156,28 +3156,28 @@
 												<name>listElement</name>
 												<value object_id="_265">
 													<which>1</which>
-													<value>5.00000000000000000e-01</value>
+													<value>4.98356908559799194e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_266">
 													<which>1</which>
-													<value>-5.00000000000000000e-01</value>
+													<value>-4.98418748378753662e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_267">
 													<which>1</which>
-													<value>-5.00000000000000000e-01</value>
+													<value>-5.01911520957946777e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_268">
 													<which>1</which>
-													<value>-5.00000000000000000e-01</value>
+													<value>-5.01302242279052734e-01</value>
 												</value>
 											</item>
 										</value>
@@ -4051,7 +4051,7 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:4)</name>
+															<name>slice (from ShowField:1)</name>
 															<value object_id="_357">
 																<which>3</which>
 																<value>1</value>
@@ -4117,7 +4117,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_363">
 										<which>0</which>
-										<value>1038</value>
+										<value>1026</value>
 									</value>
 								</second>
 							</item>
@@ -4203,7 +4203,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>16</count>
+			<count>17</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CollectMatrices:0</moduleId1_>
@@ -4296,6 +4296,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ExtractIsosurface:1</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>PIConGPUReader:0</moduleId1_>
+				<port1_>
+					<name>ScalarField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetFieldData:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
