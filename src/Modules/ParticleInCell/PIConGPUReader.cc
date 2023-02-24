@@ -137,7 +137,7 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeParticleOutput(openPMD::IndexedIteration iteration, int particle_sample_rate, std::string particle_type)
         {
-        //cout << "Debug 01: particle data is being processed\n";
+
                                                                  //Read particle data
         Record particlePositions       = iteration.particles[particle_type]["position"];
         Record particlePositionOffsets = iteration.particles[particle_type]["positionOffset"];
@@ -184,7 +184,7 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
         {
-        //cout << "Debug 02: scalar field data is being processed\n";
+
                                                                  //Read scalar field data
         auto scalarFieldData        = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
         auto scalarFieldData_buffer = scalarFieldData.loadChunk<float>();
@@ -200,7 +200,7 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
         {
-        //cout << "Debug 03: vector field data is being processed\n";
+
                                                                  //Read Vector field data
         auto vectorFieldData      = iteration.meshes[vector_field_type];
         auto vFD_component_x      = vectorFieldData["x"].loadChunk<float>();
@@ -259,7 +259,8 @@ void PIConGPUReader::setupStream()
     IndexedIteration iter_ss = *it;
 
     if(iter_ss.particles.size())
-        for (auto const &ps : iter_ss.particles) if(ps.first == ParticleType) particlesPresent = true;
+        for (auto const &ps : iter_ss.particles)
+            if(ps.first == ParticleType)      particlesPresent = true;
 
     if(iter_ss.meshes.size())
         for (auto const &pm : iter_ss.meshes)
@@ -307,7 +308,6 @@ void PIConGPUReader::showDataSet()
         for (auto const &ps : iter.particles)
             {
             cout << "\nSpecies\t" << ps.first;
-            //cout << "\n";
             for (auto const &r : ps.second) cout << "\n\t" << r.first;
             }
         cout << '\n';
