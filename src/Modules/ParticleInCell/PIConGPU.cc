@@ -76,10 +76,11 @@ void PIConGPU::execute()
         text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
         const char *command_prof=text_file.c_str();
         system(command_prof);
-
-        text_file = "rm ~/scratch/runs/SST/simOutput/openPMD/*";
+/*
+        text_file = "rm -f ~/scratch/runs/SST/simOutput/openPMD/simData.sst";
         const char *command_remSST=text_file.c_str();
         system(command_remSST);
+*/
 #endif
         auto output=algo().run(input);
         }  //end if(needToExecute())

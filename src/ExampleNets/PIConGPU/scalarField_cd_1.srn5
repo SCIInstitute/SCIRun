@@ -189,10 +189,10 @@
 									<name>IsovalueListString</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>-1.65922
--1.10614
--0.553072
-0
+										<value>0
+2.92124
+5.84248
+8.76373
 </value>
 									</value>
 								</second>
@@ -601,7 +601,7 @@
 									<name>VectorFieldType</name>
 									<value object_id="_42">
 										<which>2</which>
-										<value>E</value>
+										<value>None</value>
 									</value>
 								</second>
 							</item>
@@ -641,7 +641,7 @@
 									<name>FixedMax</name>
 									<value object_id="_44">
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>8.76372528076171875e+00</value>
 									</value>
 								</second>
 							</item>
@@ -653,7 +653,7 @@
 									<name>FixedMin</name>
 									<value object_id="_45">
 										<which>1</which>
-										<value>-1.65921711921691895e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1745,7 +1745,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_132">
 										<which>1</which>
-										<value>5.01578216552734375e+02</value>
+										<value>5.36142150878906250e+02</value>
 									</value>
 								</second>
 							</item>
@@ -2773,7 +2773,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_237">
 										<which>0</which>
-										<value>1065</value>
+										<value>1063</value>
 									</value>
 								</second>
 							</item>

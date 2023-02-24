@@ -33,14 +33,8 @@ Coding Sources:
 
 To Do:
     Figure out why including PSypy in the output (TBG Plugins option in the .cfg file) causes an execution crash
-    Migrate iteration content information output from the PIConGPU module to the PIConGPUReader module
-    Delete the unused PIConGPUReaderAlgo .cc and .h files
-    Migrate all PIConGPUReaderAsynch code to PIConGPUReader
     Create a post sim visualization module that does not do real time visualization
     Review the set of modules in the PIConGPU category and decide what should be kept 
-
-The kimjohn1/picongpu Vis branch V-LaserWakefield simulation has been tested with the following config files:
-    1.cfg, 1-1.cfg, 2.cfg, null.cfg, null_2.cfg, sst.cfg, sst_1.cfg (sst.cfg and sst_1.cfg are functionally the same), sst_2.cfg, sst_2_1_Reader.sst
 */
 
 #include <Core/Algorithms/ParticleInCell/PIConGPUAlgo.h>
