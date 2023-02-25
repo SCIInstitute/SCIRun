@@ -51,7 +51,7 @@ bool setup_                = false;
 bool particlesPresent      = false;
 bool vectorFieldPresent    = false;
 bool scalarFieldPresent    = false;
-int iteration_counter      = 0;
+//int iteration_counter      = 0;
 const std::string& home_   = std::getenv("HOME");
 const std::string& SST_dir = home_+"/scratch/runs/SST/simOutput/openPMD/simData.sst";
 

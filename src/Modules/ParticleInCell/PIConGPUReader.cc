@@ -233,7 +233,7 @@ void PIConGPUReader::execute()
     iteration.close();
 #endif
     ++it;
-    ++iteration_counter;
+    //++iteration_counter;
 #if openPMDIsAvailable
     if(it != end) enqueueExecuteAgain(false);
     else shutdownStream();
@@ -269,7 +269,9 @@ void PIConGPUReader::setupStream()
             if(pm.first == VectorFieldType) vectorFieldPresent = true;
             }
 
-    if(!DataSet) showDataSet();
+    iter_ss.close();
+    //if(!DataSet) showDataSet();
+    if(DataSet==0) showDataSet();
 #endif
     }
 
@@ -284,7 +286,7 @@ void PIConGPUReader::shutdownStream()
     particlesPresent   = false;
     vectorFieldPresent = false;
     scalarFieldPresent = false;
-    iteration_counter  = 0;
+    //iteration_counter  = 0;
     }
 
 void PIConGPUReader::showDataSet()
@@ -358,6 +360,9 @@ void PIConGPUReader::showDataSet()
             }
         }
     else cout << "\nThere is no mesh data in this data set\n";
+
+    iteration_00.close();
+    iter.close();
 #endif
     }
 
