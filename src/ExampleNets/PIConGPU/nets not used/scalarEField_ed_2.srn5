@@ -253,10 +253,10 @@
 									<name>IsovalueListString</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>-1.889
--1.25934
--0.629668
-0
+										<value>0
+3.81728
+7.63456
+11.4518
 </value>
 									</value>
 								</second>
@@ -369,7 +369,7 @@
 									<name>BufferSize</name>
 									<value object_id="_24">
 										<which>0</which>
-										<value>42</value>
+										<value>21</value>
 									</value>
 								</second>
 							</item>
@@ -669,7 +669,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_45">
 										<which>2</which>
-										<value>$PIC_CFG/sst_2_20-ipf_mesh_data.cfg</value>
+										<value>$PIC_CFG/sst_2_mesh_data.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -845,7 +845,7 @@
 									<name>FixedMax</name>
 									<value object_id="_57">
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>1.14518337249755859e+01</value>
 									</value>
 								</second>
 							</item>
@@ -857,7 +857,7 @@
 									<name>FixedMin</name>
 									<value object_id="_58">
 										<which>1</which>
-										<value>-1.88900351524353027e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2977,7 +2977,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_250">
 										<which>0</which>
-										<value>1035</value>
+										<value>1027</value>
 									</value>
 								</second>
 							</item>
@@ -4117,7 +4117,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_363">
 										<which>0</which>
-										<value>1026</value>
+										<value>1018</value>
 									</value>
 								</second>
 							</item>

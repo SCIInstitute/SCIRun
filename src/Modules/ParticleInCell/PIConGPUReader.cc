@@ -233,7 +233,6 @@ void PIConGPUReader::execute()
     iteration.close();
 #endif
     ++it;
-    //++iteration_counter;
 #if openPMDIsAvailable
     if(it != end) enqueueExecuteAgain(false);
     else shutdownStream();
@@ -249,29 +248,31 @@ void PIConGPUReader::setupStream()
     ScalarFieldComp = state->getValue(Variables::ScalarFieldComp).toString();
     VectorFieldType = state->getValue(Variables::VectorFieldType).toString();
 
-    while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
+    //if(ParticleType != "None" || ScalarFieldComp != "None" || VectorFieldType != "None")
+        //{
+        while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
 #if openPMDIsAvailable
-    series = Series(SST_dir, Access::READ_ONLY);
-    end    = series.readIterations().end();
-    it     = series.readIterations().begin();
-    setup_ = true;
+        series = Series(SST_dir, Access::READ_ONLY);
+        end    = series.readIterations().end();
+        it     = series.readIterations().begin();
+        setup_ = true;
 
-    IndexedIteration iter_ss = *it;
+        IndexedIteration iter_ss = *it;
 
-    if(iter_ss.particles.size())
-        for (auto const &ps : iter_ss.particles)
-            if(ps.first == ParticleType)      particlesPresent = true;
+        if(iter_ss.particles.size())
+            for (auto const &ps : iter_ss.particles)
+                if(ps.first == ParticleType)      particlesPresent = true;
 
-    if(iter_ss.meshes.size())
-        for (auto const &pm : iter_ss.meshes)
-            {
-            if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
-            if(pm.first == VectorFieldType) vectorFieldPresent = true;
-            }
+        if(iter_ss.meshes.size())
+            for (auto const &pm : iter_ss.meshes)
+                {
+                if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
+                if(pm.first == VectorFieldType) vectorFieldPresent = true;
+                }
 
-    iter_ss.close();
-    //if(!DataSet) showDataSet();
-    if(DataSet==0) showDataSet();
+        //iter_ss.close();
+        if(DataSet==0) showDataSet();
+        //}
 #endif
     }
 
@@ -361,8 +362,8 @@ void PIConGPUReader::showDataSet()
         }
     else cout << "\nThere is no mesh data in this data set\n";
 
-    iteration_00.close();
-    iter.close();
+    //iteration_00.close();
+    //iter.close();
 #endif
     }
 
