@@ -253,9 +253,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>-1.88828
--1.25886
--0.629428
+										<value>-1.88938
+-1.25958
+-0.629792
 0
 </value>
 									</value>
@@ -369,7 +369,7 @@
 									<name>BufferSize</name>
 									<value object_id="_24">
 										<which>0</which>
-										<value>101</value>
+										<value>21</value>
 									</value>
 								</second>
 							</item>
@@ -669,7 +669,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_45">
 										<which>2</which>
-										<value>$PIC_CFG/sst_2_20-ipf_mesh_data.cfg</value>
+										<value>$PIC_CFG/sst_2_mesh_data.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -681,7 +681,7 @@
 									<name>Method</name>
 									<value object_id="_46">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -857,7 +857,7 @@
 									<name>FixedMin</name>
 									<value object_id="_58">
 										<which>1</which>
-										<value>-1.88828408718109131e+00</value>
+										<value>-1.88937675952911377e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2911,7 +2911,7 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:4)</name>
+															<name>slice (from ShowField:1)</name>
 															<value object_id="_244">
 																<which>3</which>
 																<value>1</value>
@@ -2953,7 +2953,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_248">
 										<which>0</which>
-										<value>772</value>
+										<value>895</value>
 									</value>
 								</second>
 							</item>
@@ -2965,7 +2965,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_249">
 										<which>0</which>
-										<value>581</value>
+										<value>578</value>
 									</value>
 								</second>
 							</item>
@@ -2977,7 +2977,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_250">
 										<which>0</which>
-										<value>1029</value>
+										<value>1016</value>
 									</value>
 								</second>
 							</item>
@@ -4093,7 +4093,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_361">
 										<which>0</which>
-										<value>772</value>
+										<value>895</value>
 									</value>
 								</second>
 							</item>
@@ -4105,7 +4105,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_362">
 										<which>0</which>
-										<value>242</value>
+										<value>243</value>
 									</value>
 								</second>
 							</item>
@@ -4117,7 +4117,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_363">
 										<which>0</which>
-										<value>1020</value>
+										<value>1016</value>
 									</value>
 								</second>
 							</item>

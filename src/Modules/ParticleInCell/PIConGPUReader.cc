@@ -287,7 +287,6 @@ void PIConGPUReader::shutdownStream()
     particlesPresent   = false;
     vectorFieldPresent = false;
     scalarFieldPresent = false;
-    //iteration_counter  = 0;
     }
 
 void PIConGPUReader::showDataSet()
@@ -313,54 +312,37 @@ void PIConGPUReader::showDataSet()
             cout << "\nSpecies\t" << ps.first;
             for (auto const &r : ps.second) cout << "\n\t" << r.first;
             }
-        cout << '\n';
+        cout << "\nParticle visualization will use a sampled subset of particles using a sampling rate of: " << SampleRate << "\n";
         }
     else cout << "\nThere is no particle data in this data set\n";
 
                                                 //Output data about meshes
     if(iter.meshes.size())
         {
-        cout << "\nMesh data \n";
+        cout << "Mesh data \n";
         for (auto const &pm : iter.meshes) cout << "\n\t" << pm.first;
         cout << "\n";
 
-        if((VectorFieldType == "B") && (vectorFieldPresent))
+        if(vectorFieldPresent)
             {
-            MeshRecordComponent B_x = iter.meshes["B"]["x"];
-            Extent extent_B = B_x.getExtent();
-            cout << "\nField B is vector valued, has shape (";
-            for (auto const &dim : extent_B) cout << dim << ',';
-            cout << ") and datatype " << B_x.getDatatype() << '\n';
+            MeshRecordComponent FieldType_x = iter.meshes[VectorFieldType]["x"];
+            Extent extent_FieldType = FieldType_x.getExtent();
+            cout << "\nField " << VectorFieldType << " is vector valued, has shape (";
+            for (auto const &dim : extent_FieldType) cout << dim << ',';
+            cout << ") and datatype " << FieldType_x.getDatatype() << '\n';
             }
 
-        if((VectorFieldType == "E") && (vectorFieldPresent))
+        if(scalarFieldPresent)
             {
-            MeshRecordComponent E_x = iter.meshes["E"]["x"];
-            Extent extent_E = E_x.getExtent();
-            cout << "\nField E is vector valued, has shape (";
-            for (auto const &dim : extent_E) cout << dim << ',';
-            cout << ") and datatype " << E_x.getDatatype() << '\n';
-            }
-
-        if((ScalarFieldComp == "e_all_chargeDensity") && (scalarFieldPresent))
-            {
-            MeshRecordComponent E_charge_density = iter.meshes["e_all_chargeDensity"][MeshRecordComponent::SCALAR];
-            Extent extent_cd = E_charge_density.getExtent();
-            cout << "\nField e_all_chargeDensity is scalar valued, has shape (";
-            for (auto const &dim : extent_cd) cout << dim << ',';
-            cout  << ") and datatype " << E_charge_density.getDatatype() << '\n';
-            }
-
-        if((ScalarFieldComp == "e_all_energyDensity") && (scalarFieldPresent))
-            {
-            MeshRecordComponent E_energy_density = iter.meshes["e_all_energyDensity"][MeshRecordComponent::SCALAR];
-            Extent extent_ed = E_energy_density.getExtent();
-            cout << "\nField e_all_energyDensity is scalar valued, has shape (";
-            for (auto const &dim : extent_ed) cout << dim << ',';
-            cout  << ") and datatype " << E_energy_density.getDatatype() << '\n';
+            MeshRecordComponent E_density = iter.meshes[ScalarFieldComp][MeshRecordComponent::SCALAR];
+            Extent extent_d = E_density.getExtent();
+            cout << "\nField " << ScalarFieldComp << " is scalar valued, has shape (";
+            for (auto const &dim : extent_d) cout << dim << ',';
+            cout  << ") and datatype " << E_density.getDatatype() << '\n';
             }
         }
     else cout << "\nThere is no mesh data in this data set\n";
+    cout << "\n";
 
     //iteration_00.close();
     //iter.close();
