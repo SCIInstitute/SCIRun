@@ -60,10 +60,16 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
     return (false);
   }
 
-  if (!object)
+  if (!object || !object->vmesh())
   {
     error("No mesh to project points onto.");
     return (false);
+  }
+
+  if (object->vmesh()->is_empty())
+  {
+    error("Object mesh is empty--nothing to project points onto.");
+    return false;
   }
 
   FieldInformation fi(input), fo(input), fobj(object);
