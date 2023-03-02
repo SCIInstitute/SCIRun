@@ -189,9 +189,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>-1.65977
--1.10651
--0.553257
+										<value>-1.66022
+-1.10681
+-0.553405
 0
 </value>
 									</value>
@@ -477,7 +477,7 @@
 									<name>Method</name>
 									<value object_id="_33">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -653,7 +653,7 @@
 									<name>FixedMin</name>
 									<value object_id="_45">
 										<which>1</which>
-										<value>-1.65977025032043457e+00</value>
+										<value>-1.66021633148193359e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2707,7 +2707,7 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:8)</name>
+															<name>slice (from ShowField:1)</name>
 															<value object_id="_231">
 																<which>3</which>
 																<value>1</value>
@@ -2749,7 +2749,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_235">
 										<which>0</which>
-										<value>804</value>
+										<value>781</value>
 									</value>
 								</second>
 							</item>
@@ -2761,7 +2761,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_236">
 										<which>0</which>
-										<value>469</value>
+										<value>520</value>
 									</value>
 								</second>
 							</item>
@@ -2773,7 +2773,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_237">
 										<which>0</which>
-										<value>1059</value>
+										<value>1055</value>
 									</value>
 								</second>
 							</item>

@@ -223,7 +223,13 @@ void PIConGPUReader::execute()
     {
     AlgorithmInput input;
     SimulationStreamingReaderBaseImpl P;
+
+    //cout << "\nDebug Reader 01\n";
+
     if (!setup_) setupStream();
+
+    //cout << "\nDebug Reader 03\n";
+
 #if openPMDIsAvailable
     IndexedIteration iteration = *it;
 
@@ -257,6 +263,9 @@ void PIConGPUReader::setupStream()
         it     = series.readIterations().begin();
         setup_ = true;
 
+        //cout << "\nDebug Reader 02\n";
+
+/**/
         IndexedIteration iter_ss = *it;
 
         if(iter_ss.particles.size())
@@ -273,6 +282,7 @@ void PIConGPUReader::setupStream()
         //iter_ss.close();
         if(DataSet==0) showDataSet();
         //}
+
 #endif
     }
 
@@ -287,6 +297,8 @@ void PIConGPUReader::shutdownStream()
     particlesPresent   = false;
     vectorFieldPresent = false;
     scalarFieldPresent = false;
+
+    //cout << "\nDebug Reader 04\n";
     }
 
 void PIConGPUReader::showDataSet()
