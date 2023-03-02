@@ -224,6 +224,38 @@ void PIConGPUReader::execute()
     AlgorithmInput input;
     SimulationStreamingReaderBaseImpl P;
 
+//new code starts here
+    auto state      = get_state();
+    DataSet         = state->getValue(Variables::Method).toInt();
+    SampleRate      = state->getValue(Variables::SampleRate).toInt();
+    ParticleType    = state->getValue(Variables::ParticleType).toString();
+    ScalarFieldComp = state->getValue(Variables::ScalarFieldComp).toString();
+    VectorFieldType = state->getValue(Variables::VectorFieldType).toString();
+
+    while(!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
+    series = Series(SST_dir, Access::READ_ONLY);
+    for (IndexedIteration iteration : series.readIterations())
+        {
+        if(iteration.particles.size())
+            for (auto const &ps : iteration.particles)
+                if(ps.first == ParticleType)      particlesPresent = true;
+
+        if(iteration.meshes.size())
+            for (auto const &pm : iteration.meshes)
+                {
+                if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
+                if(pm.first == VectorFieldType) vectorFieldPresent = true;
+                }
+
+        if(particlesPresent  ) sendOutput(Particles,   P.makeParticleOutput(iteration, SampleRate, ParticleType));
+        if(scalarFieldPresent) sendOutput(ScalarField, P.makeScalarOutput(iteration,   ScalarFieldComp));
+        if(vectorFieldPresent) sendOutput(VectorField, P.makeVectorOutput(iteration,   VectorFieldType));
+        iteration.close();
+        }
+//new code ends here
+
+/*
+
     //cout << "\nDebug Reader 01\n";
 
     if (!setup_) setupStream();
@@ -243,6 +275,9 @@ void PIConGPUReader::execute()
     if(it != end) enqueueExecuteAgain(false);
     else shutdownStream();
 #endif
+
+*/
+
     }
 
 void PIConGPUReader::setupStream()
