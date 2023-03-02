@@ -224,6 +224,7 @@ void PIConGPUReader::execute()
     AlgorithmInput input;
     SimulationStreamingReaderBaseImpl P;
 
+/*
 //new code starts here
     auto state      = get_state();
     DataSet         = state->getValue(Variables::Method).toInt();
@@ -253,14 +254,10 @@ void PIConGPUReader::execute()
         iteration.close();
         }
 //new code ends here
+*/
 
-/*
-
-    //cout << "\nDebug Reader 01\n";
 
     if (!setup_) setupStream();
-
-    //cout << "\nDebug Reader 03\n";
 
 #if openPMDIsAvailable
     IndexedIteration iteration = *it;
@@ -276,7 +273,7 @@ void PIConGPUReader::execute()
     else shutdownStream();
 #endif
 
-*/
+
 
     }
 

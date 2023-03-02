@@ -253,9 +253,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>-1.88938
--1.25958
--0.629792
+										<value>-9.95393
+-6.63595
+-3.31798
 0
 </value>
 									</value>
@@ -369,7 +369,7 @@
 									<name>BufferSize</name>
 									<value object_id="_24">
 										<which>0</which>
-										<value>21</value>
+										<value>14</value>
 									</value>
 								</second>
 							</item>
@@ -393,7 +393,7 @@
 									<name>GeometryIndex</name>
 									<value object_id="_26">
 										<which>0</which>
-										<value>41</value>
+										<value>20</value>
 									</value>
 								</second>
 							</item>
@@ -429,7 +429,7 @@
 									<name>PlayModeDelay</name>
 									<value object_id="_29">
 										<which>0</which>
-										<value>100</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -533,7 +533,7 @@
 									<name>Dim_i</name>
 									<value object_id="_35">
 										<which>0</which>
-										<value>12</value>
+										<value>192</value>
 									</value>
 								</second>
 							</item>
@@ -569,7 +569,7 @@
 									<name>Index_i</name>
 									<value object_id="_38">
 										<which>0</which>
-										<value>6</value>
+										<value>96</value>
 									</value>
 								</second>
 							</item>
@@ -717,7 +717,7 @@
 									<name>SimulationFile</name>
 									<value object_id="_49">
 										<which>2</which>
-										<value>$PIC_EXAMPLES/V-LaserWakefield</value>
+										<value>$PIC_EXAMPLES/LaserWakefield</value>
 									</value>
 								</second>
 							</item>
@@ -833,7 +833,7 @@
 									<name>AutoScale</name>
 									<value object_id="_56">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -857,7 +857,7 @@
 									<name>FixedMin</name>
 									<value object_id="_58">
 										<which>1</which>
-										<value>-1.88937675952911377e+00</value>
+										<value>-1.92999999999999994e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1949,7 +1949,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_145">
 										<which>1</which>
-										<value>4.54326507568359375e+02</value>
+										<value>5.63762817382812500e+02</value>
 									</value>
 								</second>
 							</item>
@@ -2953,7 +2953,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_248">
 										<which>0</which>
-										<value>895</value>
+										<value>890</value>
 									</value>
 								</second>
 							</item>
@@ -2965,7 +2965,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_249">
 										<which>0</which>
-										<value>578</value>
+										<value>567</value>
 									</value>
 								</second>
 							</item>
@@ -2977,7 +2977,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_250">
 										<which>0</which>
-										<value>1016</value>
+										<value>1008</value>
 									</value>
 								</second>
 							</item>
@@ -4093,7 +4093,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_361">
 										<which>0</which>
-										<value>895</value>
+										<value>888</value>
 									</value>
 								</second>
 							</item>
@@ -4105,7 +4105,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_362">
 										<which>0</which>
-										<value>243</value>
+										<value>233</value>
 									</value>
 								</second>
 							</item>
@@ -4117,7 +4117,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_363">
 										<which>0</which>
-										<value>1016</value>
+										<value>1008</value>
 									</value>
 								</second>
 							</item>
@@ -4487,7 +4487,7 @@
 		<item>
 			<first>ShowField:2</first>
 			<second>
-				<first>-1.14000000000000000e+03</first>
+				<first>-9.88000000000000000e+02</first>
 				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
