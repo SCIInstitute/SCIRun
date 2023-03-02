@@ -80,6 +80,11 @@ void NetworkEditorPythonAPI::setImpl(SharedPointer<NetworkEditorPythonInterface>
   }
 }
 
+SharedPointer<NetworkEditorPythonInterface> NetworkEditorPythonAPI::getImpl()
+{
+  return impl_;
+}
+
 void NetworkEditorPythonAPI::clearImpl()
 {
   impl_.reset();

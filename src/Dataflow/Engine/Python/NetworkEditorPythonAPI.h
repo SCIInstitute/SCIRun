@@ -85,6 +85,7 @@ namespace SCIRun {
     static std::string quit(bool force);
 
     static void setImpl(SharedPointer<NetworkEditorPythonInterface> impl);
+    static SharedPointer<NetworkEditorPythonInterface> getImpl();
     static void clearImpl();
     /// @todo: smelly!
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);

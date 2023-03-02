@@ -31,6 +31,7 @@
 #include <string>
 #include <sstream>
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
+#include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Core/Logging/Log.h>
 #include <spdlog/fmt/fmt.h>
 
@@ -38,7 +39,7 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-ProvenanceItemBase::ProvenanceItemBase(NetworkFileHandle state) : state_(state)
+ProvenanceItemBase::ProvenanceItemBase(NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy) : state_(state), nedPy_(nedPy)
 {
 }
 
@@ -47,8 +48,8 @@ NetworkFileHandle ProvenanceItemBase::memento() const
   return state_;
 }
 
-ModuleAddedProvenanceItem::ModuleAddedProvenanceItem(const std::string& moduleName, const std::string& modId, NetworkFileHandle state)
-  : ProvenanceItemBase(state), moduleName_(moduleName), moduleId_(modId)
+ModuleAddedProvenanceItem::ModuleAddedProvenanceItem(const std::string& moduleName, const std::string& modId, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), moduleName_(moduleName), moduleId_(modId)
 {
 }
 
@@ -62,7 +63,7 @@ std::string ModuleAddedProvenanceItem::undoCode() const
   if (redone_)
   {
     logCritical("here is where i need to pull the most recently added id");
-    moduleId_ = "TODO";
+    moduleId_ = nedPy_->mostRecentAddModuleId();
   }
   return fmt::format("scirun_remove_module(\"{}\")", moduleId_);
 }
@@ -73,8 +74,8 @@ std::string ModuleAddedProvenanceItem::redoCode() const
   return fmt::format("scirun_add_module(\"{}\")", moduleName_);
 }
 
-ModuleRemovedProvenanceItem::ModuleRemovedProvenanceItem(const ModuleId& moduleId, NetworkFileHandle state)
-  : ProvenanceItemBase(state), moduleId_(moduleId)
+ModuleRemovedProvenanceItem::ModuleRemovedProvenanceItem(const ModuleId& moduleId, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), moduleId_(moduleId)
 {
 }
 
@@ -83,8 +84,24 @@ std::string ModuleRemovedProvenanceItem::name() const
   return "Module Removed: " + moduleId_.id_;
 }
 
-ConnectionAddedProvenanceItem::ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state)
-  : ProvenanceItemBase(state), desc_(cd)
+std::string ModuleRemovedProvenanceItem::undoCode() const
+{
+  redone_ = true;
+  return fmt::format("scirun_add_module(\"{}\")", moduleId_.name_);
+}
+
+std::string ModuleRemovedProvenanceItem::redoCode() const
+{
+  if (redone_)
+  {
+    //logCritical("here is where i need to pull the most recently added id");
+    //moduleId_ = nedPy_->mostRecentAddModuleId();
+  }
+  return fmt::format("scirun_remove_module(\"{}\")", moduleId_.id_);
+}
+
+ConnectionAddedProvenanceItem::ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), desc_(cd)
 {
 }
 
@@ -93,8 +110,8 @@ std::string ConnectionAddedProvenanceItem::name() const
   return "Connection added: " + ConnectionId::create(desc_).id_;
 }
 
-ConnectionRemovedProvenanceItem::ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, NetworkFileHandle state)
-  : ProvenanceItemBase(state), id_(id)
+ConnectionRemovedProvenanceItem::ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), id_(id)
 {
 }
 
@@ -103,8 +120,8 @@ std::string ConnectionRemovedProvenanceItem::name() const
   return "Connection Removed: " + id_.id_;
 }
 
-ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, NetworkFileHandle state)
-  : ProvenanceItemBase(state), moduleId_(moduleId), newX_(newX), newY_(newY)
+ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), moduleId_(moduleId), newX_(newX), newY_(newY)
 {
 }
 

@@ -533,10 +533,10 @@ SharedPointer<PyModule> PythonImpl::addModule(const std::string& name)
   else
     logWarning("Module add failed, no such module type ({})", name);
 
-logCritical("here i have the most recent added id: {}", m->id().id_);
-mostRecentAddModuleId_ = m->id().id_;
+  mostRecentAddModuleId_ = m->id().id_;
+  logCritical("here i have the most recent added id: {}", mostRecentAddModuleId_);
 
-  return modules_[m->id().id_];
+  return modules_[mostRecentAddModuleId_];
 }
 
 void PythonImpl::pythonModuleAddedSlot(const std::string&, ModuleHandle m, ModuleCounter)
