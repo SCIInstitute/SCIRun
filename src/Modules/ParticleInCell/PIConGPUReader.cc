@@ -92,48 +92,40 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    //FieldHandle scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)  //I eliminated numvals from the arguement list
     FieldHandle scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
         {
-
-        //new code starts here
         int sFD_0 = extent_sFD[0];
-        int iteration_inc = 1;
+        int sFD_1 = extent_sFD[1];
+        int sFD_2 = extent_sFD[2];
+        int iteration_filter_i = 1;
+        int Dim_i_max = 48;
 
-        if(extent_sFD[0] > 12)
+        if(extent_sFD[0] > Dim_i_max)
             {
-            sFD_0 = 12;
-            iteration_inc = (extent_sFD[0]) / sFD_0;
-            cout << "\nDebug Reader 01: iteration_inc is " << iteration_inc << "\n";
+            sFD_0 = Dim_i_max;
+            iteration_filter_i = (extent_sFD[0]) / sFD_0;
             }
 
-        const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2]+1;                    //added a plus 1 here
-        cout << "\nDebug Reader 02: buffer_size_sFD is " << buffer_size_sFD << "\n";
-
+        const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2]+1;                    //added a plus 1 here that might not be needed
         FieldInformation lfi("LatVolMesh",1,"float");
         std::vector<float> values(buffer_size_sFD);
-        MeshHandle mesh = CreateMesh(lfi, sFD_0, extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(sFD_0,extent_sFD[1],extent_sFD[2]));
+
+        MeshHandle mesh = CreateMesh(lfi, sFD_0, sFD_1, sFD_2, Point(0.0,0.0,0.0), Point(sFD_0,sFD_1,sFD_2));
         FieldHandle ofh = CreateField(lfi,mesh);
 
-
-
-        cout << "\nDebug Reader 03\n";
-        for(int i=0; i < sFD_0; i++) for(int j=0; j < extent_sFD[1]; j++) for(int k=0; k < extent_sFD[2]; k++)
+        for(int i=0; i < sFD_0; i++) for(int j=0; j < sFD_1; j++) for(int k=0; k < sFD_2; k++)
             {
-            int flat_index    = (i * iteration_inc)*extent_sFD[1]*extent_sFD[2]+j*extent_sFD[2]+k;
-            int c_m_index     = k*sFD_0*extent_sFD[1]+j*sFD_0+i;
+            int flat_index    = (i * iteration_filter_i)*sFD_1*sFD_2+j*sFD_2+k;
+            int c_m_index     = k*sFD_0*sFD_1+j*sFD_0+i;
             values[c_m_index] = scalarFieldData_buffer.get()[flat_index];
             }
-        cout << "\nDebug Reader 04\n";
 
         VField* ofield = ofh->vfield();
         ofield->set_values(values);
 
-        cout << "\nDebug Reader 05\n";
-
-        //new code ends here
-
 /*
+        //old code preserved for reference, 4 March 2023
+
         FieldInformation lfi("LatVolMesh",1,"float");
         std::vector<float> values(numvals);
         MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(extent_sFD[0],extent_sFD[1],extent_sFD[2]));
@@ -224,7 +216,6 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle makeScalarOutput(openPMD::IndexedIteration iteration, std::string scalar_field_component)
         {
-
                                                                  //Read scalar field data
         auto scalarFieldData        = iteration.meshes[scalar_field_component][MeshRecordComponent::SCALAR];
         auto scalarFieldData_buffer = scalarFieldData.loadChunk<float>();
@@ -232,10 +223,8 @@ class SimulationStreamingReaderBaseImpl
         iteration.seriesFlush();                                 //Data is now available
 
         auto extent_sFD             = scalarFieldData.getExtent();
-        //const int buffer_size_sFD   = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
 
                                                                  //Send data to output
-        //return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
         return scalarField(scalarFieldData_buffer, extent_sFD);
         }
 
@@ -264,40 +253,6 @@ void PIConGPUReader::execute()
     {
     AlgorithmInput input;
     SimulationStreamingReaderBaseImpl P;
-
-/*
-//new code starts here
-    auto state      = get_state();
-    DataSet         = state->getValue(Variables::Method).toInt();
-    SampleRate      = state->getValue(Variables::SampleRate).toInt();
-    ParticleType    = state->getValue(Variables::ParticleType).toString();
-    ScalarFieldComp = state->getValue(Variables::ScalarFieldComp).toString();
-    VectorFieldType = state->getValue(Variables::VectorFieldType).toString();
-
-    while(!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
-    series = Series(SST_dir, Access::READ_ONLY);
-    for (IndexedIteration iteration : series.readIterations())
-        {
-        if(iteration.particles.size())
-            for (auto const &ps : iteration.particles)
-                if(ps.first == ParticleType)      particlesPresent = true;
-
-        if(iteration.meshes.size())
-            for (auto const &pm : iteration.meshes)
-                {
-                if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
-                if(pm.first == VectorFieldType) vectorFieldPresent = true;
-                }
-
-        if(particlesPresent  ) sendOutput(Particles,   P.makeParticleOutput(iteration, SampleRate, ParticleType));
-        if(scalarFieldPresent) sendOutput(ScalarField, P.makeScalarOutput(iteration,   ScalarFieldComp));
-        if(vectorFieldPresent) sendOutput(VectorField, P.makeVectorOutput(iteration,   VectorFieldType));
-        iteration.close();
-        }
-//new code ends here
-*/
-
-
     if (!setup_) setupStream();
 
 #if openPMDIsAvailable
@@ -327,35 +282,26 @@ void PIConGPUReader::setupStream()
     ScalarFieldComp = state->getValue(Variables::ScalarFieldComp).toString();
     VectorFieldType = state->getValue(Variables::VectorFieldType).toString();
 
-    //if(ParticleType != "None" || ScalarFieldComp != "None" || VectorFieldType != "None")
-        //{
-        while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
+    while (!std::filesystem::exists(SST_dir)) std::this_thread::sleep_for(std::chrono::seconds(1));
 #if openPMDIsAvailable
-        series = Series(SST_dir, Access::READ_ONLY);
-        end    = series.readIterations().end();
-        it     = series.readIterations().begin();
-        setup_ = true;
+    series = Series(SST_dir, Access::READ_ONLY);
+    end    = series.readIterations().end();
+    it     = series.readIterations().begin();
+    setup_ = true;
+    IndexedIteration iter_ss = *it;
 
-        //cout << "\nDebug Reader 02\n";
+    if(iter_ss.particles.size())
+        for (auto const &ps : iter_ss.particles)
+            if(ps.first == ParticleType)      particlesPresent = true;
 
-/**/
-        IndexedIteration iter_ss = *it;
+    if(iter_ss.meshes.size())
+        for (auto const &pm : iter_ss.meshes)
+            {
+            if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
+            if(pm.first == VectorFieldType) vectorFieldPresent = true;
+            }
 
-        if(iter_ss.particles.size())
-            for (auto const &ps : iter_ss.particles)
-                if(ps.first == ParticleType)      particlesPresent = true;
-
-        if(iter_ss.meshes.size())
-            for (auto const &pm : iter_ss.meshes)
-                {
-                if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
-                if(pm.first == VectorFieldType) vectorFieldPresent = true;
-                }
-
-        //iter_ss.close();
-        if(DataSet==0) showDataSet();
-        //}
-
+    if(DataSet==0) showDataSet();
 #endif
     }
 
@@ -370,8 +316,6 @@ void PIConGPUReader::shutdownStream()
     particlesPresent   = false;
     vectorFieldPresent = false;
     scalarFieldPresent = false;
-
-    //cout << "\nDebug Reader 04\n";
     }
 
 void PIConGPUReader::showDataSet()
@@ -428,9 +372,6 @@ void PIConGPUReader::showDataSet()
         }
     else cout << "\nThere is no mesh data in this data set\n";
     cout << "\n";
-
-    //iteration_00.close();
-    //iter.close();
 #endif
     }
 
