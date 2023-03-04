@@ -107,7 +107,7 @@ class SimulationStreamingReaderBaseImpl
             cout << "\nDebug Reader 01: iteration_inc is " << iteration_inc << "\n";
             }
 
-        const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2];
+        const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2]+1;                    //added a plus 1 here
         cout << "\nDebug Reader 02: buffer_size_sFD is " << buffer_size_sFD << "\n";
 
         FieldInformation lfi("LatVolMesh",1,"float");
@@ -128,6 +128,9 @@ class SimulationStreamingReaderBaseImpl
 
         VField* ofield = ofh->vfield();
         ofield->set_values(values);
+
+        cout << "\nDebug Reader 05\n";
+
         //new code ends here
 
 /*
