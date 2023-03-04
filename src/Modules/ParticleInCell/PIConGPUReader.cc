@@ -108,6 +108,8 @@ class SimulationStreamingReaderBaseImpl
             }
 
         const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2];
+        cout << "\nDebug Reader 02: buffer_size_sFD is " << buffer_size_sFD << "\n";
+
         FieldInformation lfi("LatVolMesh",1,"float");
         std::vector<float> values(buffer_size_sFD);
         MeshHandle mesh = CreateMesh(lfi, sFD_0, extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(sFD_0,extent_sFD[1],extent_sFD[2]));
@@ -115,13 +117,14 @@ class SimulationStreamingReaderBaseImpl
 
 
 
-
+        cout << "\nDebug Reader 03\n";
         for(int i=0; i < sFD_0; i++) for(int j=0; j < extent_sFD[1]; j++) for(int k=0; k < extent_sFD[2]; k++)
             {
             int flat_index    = (i * iteration_inc)*extent_sFD[1]*extent_sFD[2]+j*extent_sFD[2]+k;
             int c_m_index     = k*sFD_0*extent_sFD[1]+j*sFD_0+(i * iteration_inc);
             values[c_m_index] = scalarFieldData_buffer.get()[flat_index];
             }
+        cout << "\nDebug Reader 04\n";
 
         VField* ofield = ofh->vfield();
         ofield->set_values(values);
