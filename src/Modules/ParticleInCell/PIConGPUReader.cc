@@ -100,10 +100,11 @@ class SimulationStreamingReaderBaseImpl
         int sFD_0 = extent_sFD[0];
         int iteration_inc = 1;
 
-        if(extent_sFD[0] > 48)
+        if(extent_sFD[0] > 12)
             {
-            sFD_0 = 48;
+            sFD_0 = 12;
             iteration_inc = (extent_sFD[0]) / sFD_0;
+            cout << "\nDebug Reader 01: iteration_inc is " << iteration_inc << "\n";
             }
 
         const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2];
