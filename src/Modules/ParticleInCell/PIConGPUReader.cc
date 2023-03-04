@@ -121,7 +121,7 @@ class SimulationStreamingReaderBaseImpl
         for(int i=0; i < sFD_0; i++) for(int j=0; j < extent_sFD[1]; j++) for(int k=0; k < extent_sFD[2]; k++)
             {
             int flat_index    = (i * iteration_inc)*extent_sFD[1]*extent_sFD[2]+j*extent_sFD[2]+k;
-            int c_m_index     = k*sFD_0*extent_sFD[1]+j*sFD_0+(i * iteration_inc);
+            int c_m_index     = k*sFD_0*extent_sFD[1]+j*sFD_0+i;
             values[c_m_index] = scalarFieldData_buffer.get()[flat_index];
             }
         cout << "\nDebug Reader 04\n";
