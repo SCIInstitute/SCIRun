@@ -98,7 +98,7 @@ class SimulationStreamingReaderBaseImpl
         int sFD_1 = extent_sFD[1];
         int sFD_2 = extent_sFD[2];
         int iteration_filter_i = 1;
-        int Dim_i_max = 48;
+        int Dim_i_max = 12;
 
         if(extent_sFD[0] > Dim_i_max)
             {
