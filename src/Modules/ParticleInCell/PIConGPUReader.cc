@@ -92,8 +92,41 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    FieldHandle scalarField(const int numvals, std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
+    //FieldHandle scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)  //I eliminated numvals from the arguement list
+    FieldHandle scalarField(std::shared_ptr<float> scalarFieldData_buffer, std::vector<long unsigned int> extent_sFD)
         {
+
+        //new code starts here
+        int sFD_0 = extent_sFD[0];
+        int iteration_inc = 1;
+
+        if(extent_sFD[0] > 48)
+            {
+            sFD_0 = 48;
+            iteration_inc = (extent_sFD[0]) / sFD_0;
+            }
+
+        const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2];
+        FieldInformation lfi("LatVolMesh",1,"float");
+        std::vector<float> values(buffer_size_sFD);
+        MeshHandle mesh = CreateMesh(lfi, sFD_0, extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(sFD_0,extent_sFD[1],extent_sFD[2]));
+        FieldHandle ofh = CreateField(lfi,mesh);
+
+
+
+
+        for(int i=0; i < sFD_0; i++) for(int j=0; j < extent_sFD[1]; j++) for(int k=0; k < extent_sFD[2]; k++)
+            {
+            int flat_index    = (i * iteration_inc)*extent_sFD[1]*extent_sFD[2]+j*extent_sFD[2]+k;
+            int c_m_index     = k*sFD_0*extent_sFD[1]+j*sFD_0+(i * iteration_inc);
+            values[c_m_index] = scalarFieldData_buffer.get()[flat_index];
+            }
+
+        VField* ofield = ofh->vfield();
+        ofield->set_values(values);
+        //new code ends here
+
+/*
         FieldInformation lfi("LatVolMesh",1,"float");
         std::vector<float> values(numvals);
         MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(extent_sFD[0],extent_sFD[1],extent_sFD[2]));
@@ -108,7 +141,7 @@ class SimulationStreamingReaderBaseImpl
 
         VField* ofield = ofh->vfield();
         ofield->set_values(values);
-
+*/
         return ofh;
         }
 
@@ -192,10 +225,11 @@ class SimulationStreamingReaderBaseImpl
         iteration.seriesFlush();                                 //Data is now available
 
         auto extent_sFD             = scalarFieldData.getExtent();
-        const int buffer_size_sFD   = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
+        //const int buffer_size_sFD   = extent_sFD[0] * extent_sFD[1] * extent_sFD[2];
 
                                                                  //Send data to output
-        return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
+        //return scalarField(buffer_size_sFD, scalarFieldData_buffer, extent_sFD);
+        return scalarField(scalarFieldData_buffer, extent_sFD);
         }
 
     FieldHandle makeVectorOutput(openPMD::IndexedIteration iteration, std::string vector_field_type)
