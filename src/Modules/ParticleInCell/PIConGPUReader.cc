@@ -144,7 +144,7 @@ class SimulationStreamingReaderBaseImpl
         return ofh;
         }
 
-    FieldHandle vectorField(const int numvals, std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
+    FieldHandle vectorField(std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
         {
         FieldInformation lfi("LatVolMesh",1,"float");
         lfi.make_vector();
@@ -240,10 +240,10 @@ class SimulationStreamingReaderBaseImpl
         iteration.seriesFlush();                                 //Data is now available
 
         auto extent_vFD           = vectorFieldData["x"].getExtent();
-        const int buffer_size_vFD = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
+        //const int buffer_size_vFD = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
                                                                  //Send data to output
-        return vectorField(buffer_size_vFD, extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
+        return vectorField(extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
 #endif
         }
     }; //end of class SimulationStreamingReaderBaseImpl
@@ -311,6 +311,7 @@ void PIConGPUReader::shutdownStream()
     text_file = "rm ~/picongpu.profile ~/picongpu_reRun.profile ~/Sim.py ~/Sim_run";
     const char *command_shutDown = text_file.c_str();
     system(command_shutDown);
+    delete[] command_shutDown;
 
     setup_             = false;
     particlesPresent   = false;
