@@ -47,6 +47,7 @@ Series series;
 SeriesIterator it, end;
 #endif
 
+int Dim_i_max              = 12;
 bool setup_                = false;
 bool particlesPresent      = false;
 bool vectorFieldPresent    = false;

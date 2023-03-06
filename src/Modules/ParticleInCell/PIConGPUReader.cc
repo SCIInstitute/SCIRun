@@ -102,7 +102,7 @@ class SimulationStreamingReaderBaseImpl
         int sFD_1 = extent_sFD[1];
         int sFD_2 = extent_sFD[2];
         int iteration_filter_i = 1;
-        int Dim_i_max = 12;
+        //int Dim_i_max = 12;
 
         if(extent_sFD[0] > Dim_i_max)
             {
@@ -110,18 +110,18 @@ class SimulationStreamingReaderBaseImpl
             iteration_filter_i = (extent_sFD[0]) / sFD_0;
             }
 
-        const int buffer_size_sFD = sFD_0 * extent_sFD[1] * extent_sFD[2]+1;                    //added a plus 1 here that might not be needed
+        const int buffer_size_sFD = (sFD_0 * extent_sFD[1] * extent_sFD[2])+1;                    //added a plus 1 here that might not be needed: 6 March - kj
         FieldInformation lfi("LatVolMesh",1,"float");
-        std::vector<float> values(buffer_size_sFD);
+        std::vector<float> values(buffer_size_sFD);                                               //look at values created here, and maybe in mesh created in the statment below, for the data leak: 6 March - kj
 
         MeshHandle mesh = CreateMesh(lfi, sFD_0, sFD_1, sFD_2, Point(0.0,0.0,0.0), Point(sFD_0,sFD_1,sFD_2));
-        FieldHandle ofh = CreateField(lfi,mesh);
+        FieldHandle ofh = CreateField(lfi,mesh);                                                  //mesh is used here: 6 March - kj
 
         for(int i=0; i < sFD_0; i++) for(int j=0; j < sFD_1; j++) for(int k=0; k < sFD_2; k++)
             {
             int flat_index    = (i * iteration_filter_i)*sFD_1*sFD_2+j*sFD_2+k;
             int c_m_index     = k*sFD_0*sFD_1+j*sFD_0+i;
-            values[c_m_index] = scalarFieldData_buffer.get()[flat_index];
+            values[c_m_index] = scalarFieldData_buffer.get()[flat_index];                         //values is used here: 6 March - kj
             }
 
         VField* ofield = ofh->vfield();
@@ -370,6 +370,10 @@ void PIConGPUReader::showDataSet()
             cout << "\nField " << ScalarFieldComp << " is scalar valued, has shape (";
             for (auto const &dim : extent_d) cout << dim << ',';
             cout  << ") and datatype " << E_density.getDatatype() << '\n';
+
+            cout << "Scalar field data output to the scalarField output port has shape ";
+            if(extent_d[0] > Dim_i_max) cout << "(" << Dim_i_max << ", " << extent_d[1] << ", " << extent_d[2] << ")\n";
+            else cout << "Same as listed above\n";
             }
         }
     else cout << "\nThere is no mesh data in this data set\n";
