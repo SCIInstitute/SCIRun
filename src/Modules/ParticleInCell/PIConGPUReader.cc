@@ -89,6 +89,10 @@ class SimulationStreamingReaderBaseImpl
         
         for(VMesh::Node::index_type p=0; p < buffer_size; p++) omesh->add_point(Point(component_z[p],component_y[p],component_x[p]));
 
+        delete [] component_x;
+        delete [] component_y;
+        delete [] component_z;
+
         return ofh;
         }
 
