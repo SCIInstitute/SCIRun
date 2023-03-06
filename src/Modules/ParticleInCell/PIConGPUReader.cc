@@ -269,8 +269,6 @@ void PIConGPUReader::execute()
     else shutdownStream();
 #endif
 
-
-
     }
 
 void PIConGPUReader::setupStream()
@@ -311,7 +309,6 @@ void PIConGPUReader::shutdownStream()
     text_file = "rm ~/picongpu.profile ~/picongpu_reRun.profile ~/Sim.py ~/Sim_run";
     const char *command_shutDown = text_file.c_str();
     system(command_shutDown);
-    delete[] command_shutDown;
 
     setup_             = false;
     particlesPresent   = false;

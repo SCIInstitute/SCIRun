@@ -83,13 +83,11 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
                                   //Run the script that creates the Sim_run script
     const char *command=text_file.c_str();
     system(command);
-    delete[] command;
 
                                   //Run the Sim.py program that runs the Sim_run script
     string str_py="cd $HOME && python3 Sim.py";
     const char *command_py=str_py.c_str();
     system(command_py);
-    delete[] command_py;
 
     return true;
     }
