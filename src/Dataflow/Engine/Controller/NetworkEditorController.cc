@@ -935,6 +935,15 @@ void NetworkEditorController::updateModulePositions(const ModulePositions& modul
   }
 }
 
+bool NetworkEditorController::moveModule(const std::string& id, double x, double y)
+{
+  if (collabs_.serializationManager_)
+  {
+    return collabs_.serializationManager_->updateModulePosition(id, x, y);
+  }
+  return false;
+}
+
 void NetworkEditorController::cleanUpNetwork()
 {
   auto all = [](ModuleHandle) { return true; };

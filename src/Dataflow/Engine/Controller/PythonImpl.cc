@@ -662,4 +662,9 @@ std::string PythonImpl::quit(bool force)
   return "Quit after execute enabled.";
 }
 
+std::string PythonImpl::moveModule(const std::string& id, double x, double y)
+{
+  return nec_.moveModule(id, x, y) ? "Module moved." : "Module not found.";
+}
+
 #endif

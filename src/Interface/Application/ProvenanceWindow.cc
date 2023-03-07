@@ -349,9 +349,7 @@ void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks:
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
-    logCritical("REDO CODE: scirun_move_module(\"{}\", {}, {})", id.id_, newX, newY);
-    logCritical("UNDO CODE: scirun_move_module(\"{}\", {}, {})", id.id_, oldPos.x(), oldPos.y());
+    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, oldPos.x(), oldPos.y(), editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
     Q_EMIT provenanceItemCreated(item);
   }
 }

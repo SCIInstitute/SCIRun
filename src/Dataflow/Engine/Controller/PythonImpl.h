@@ -69,6 +69,7 @@ namespace Engine {
     void setModuleContext(bool inModule) override { inModule_ = inModule; }
     bool isModuleContext() const override { return inModule_; }
     std::string mostRecentAddModuleId() const override { return mostRecentAddModuleId_; }
+    std::string moveModule(const std::string& id, double x, double y) override;
   private:
     void pythonModuleAddedSlot(const std::string&, Networks::ModuleHandle, ModuleCounter);
     void pythonModuleRemovedSlot(const Networks::ModuleId&);

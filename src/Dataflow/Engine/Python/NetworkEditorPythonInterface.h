@@ -143,6 +143,7 @@ namespace SCIRun
     virtual void setModuleContext(bool inModule) = 0;
     virtual bool isModuleContext() const = 0;
     virtual std::string mostRecentAddModuleId() const = 0;
+    virtual std::string moveModule(const std::string& id, double x, double y) = 0;
   };
 }
 

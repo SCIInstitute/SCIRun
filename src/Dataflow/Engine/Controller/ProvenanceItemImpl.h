@@ -101,13 +101,15 @@ namespace Engine {
   class SCISHARE ModuleMovedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, Networks::NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy);
+    ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, 
+      double oldX, double oldY,
+      Networks::NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy);
     std::string name() const override;
-    std::string undoCode() const override { throw "not implemented"; }
-    std::string redoCode() const override { throw "not implemented"; }
+    std::string undoCode() const override;
+    std::string redoCode() const override;
   private:
     SCIRun::Dataflow::Networks::ModuleId moduleId_;
-    double newX_, newY_;
+    double newX_, newY_, oldX_, oldY_;
   };
 }
 }

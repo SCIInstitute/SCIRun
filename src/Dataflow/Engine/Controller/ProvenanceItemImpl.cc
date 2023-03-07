@@ -120,8 +120,9 @@ std::string ConnectionRemovedProvenanceItem::name() const
   return "Connection Removed: " + id_.id_;
 }
 
-ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
-  : ProvenanceItemBase(state, nedPy), moduleId_(moduleId), newX_(newX), newY_(newY)
+ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, double oldX, double oldY, 
+  NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), moduleId_(moduleId), newX_(newX), newY_(newY), oldX_(oldX), oldY_(oldY)
 {
 }
 
@@ -130,4 +131,14 @@ std::string ModuleMovedProvenanceItem::name() const
   std::ostringstream ostr;
   ostr << "Module " << moduleId_.id_ << " moved to (" << newX_ << "," << newY_ << ")";
   return ostr.str();
+}
+
+std::string ModuleMovedProvenanceItem::undoCode() const
+{
+  return fmt::format("scirun_move_module(\"{}\", {}, {})", moduleId_.id_, oldX_, oldY_);
+}
+
+std::string ModuleMovedProvenanceItem::redoCode() const
+{
+  return fmt::format("scirun_move_module(\"{}\", {}, {})", moduleId_.id_, newX_, newY_);
 }

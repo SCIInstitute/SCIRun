@@ -51,6 +51,7 @@ namespace SCIRun {
     static PyModulePtr addModule(const std::string& name);
     static std::vector<PyModulePtr> modules();
     static std::string removeModule(const std::string& id);
+    static std::string moveModule(const std::string& id, double x, double y);
     static std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
     static std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
