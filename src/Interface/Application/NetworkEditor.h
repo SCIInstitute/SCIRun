@@ -221,6 +221,7 @@ namespace Gui {
 
     Dataflow::Networks::ModulePositionsHandle dumpModulePositions(Dataflow::Networks::ModuleFilter filter) const override;
     void updateModulePositions(const Dataflow::Networks::ModulePositions& modulePositions, bool selectAll) override;
+    bool updateModulePosition(const std::string& id, double x, double y) override;
 
     Dataflow::Networks::ModuleNotesHandle dumpModuleNotes(Dataflow::Networks::ModuleFilter filter) const override;
     void updateModuleNotes(const Dataflow::Networks::ModuleNotes& moduleNotes) override;

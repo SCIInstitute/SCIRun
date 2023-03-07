@@ -132,8 +132,7 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 
 std::string NetworkEditorPythonAPI::moveModule(const std::string& id, double x, double y)
 {
-  std::cout << "TODO: move module " << id << " " << x << " " << y << std::endl;
-  return "move";
+  return impl_->moveModule(id, x, y);
 }
 
 std::vector<SharedPointer<PyModule>> NetworkEditorPythonAPI::modules()

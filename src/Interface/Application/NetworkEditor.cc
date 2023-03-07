@@ -1467,7 +1467,7 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
   logCritical("updateModulePositions {},{}", __FILE__, __LINE__);
 #endif
 
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  for (auto item : scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
@@ -1488,6 +1488,22 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
     child.second->get()->updateModulePositions(modulePositions, selectAll);
   }
 #endif
+}
+
+bool NetworkEditor::updateModulePosition(const std::string& id, double x, double y)
+{
+  for (auto item : scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (w->getModuleWidget()->getModuleId() == id)
+      {
+        w->setPos({ x,y });
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
