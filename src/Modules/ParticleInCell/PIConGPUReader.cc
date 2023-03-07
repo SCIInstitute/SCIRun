@@ -290,19 +290,23 @@ void PIConGPUReader::setupStream()
     end    = series.readIterations().end();
     it     = series.readIterations().begin();
     setup_ = true;
-    IndexedIteration iter_ss = *it;
+    //IndexedIteration iter_ss = *it;
+    IndexedIteration iteration = *it;
 
-    if(iter_ss.particles.size())
-        for (auto const &ps : iter_ss.particles)
+    //if(iter_ss.particles.size())
+    if(iteration.particles.size())
+        //for (auto const &ps : iter_ss.particles)
+        for (auto const &ps : iteration.particles)
             if(ps.first == ParticleType)      particlesPresent = true;
 
-    if(iter_ss.meshes.size())
-        for (auto const &pm : iter_ss.meshes)
+    //if(iter_ss.meshes.size())
+    if(iteration.meshes.size())
+        //for (auto const &pm : iter_ss.meshes)
+        for (auto const &pm : iteration.meshes)
             {
             if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
             if(pm.first == VectorFieldType) vectorFieldPresent = true;
             }
-
     if(DataSet==0) showDataSet();
 #endif
     }
@@ -332,7 +336,6 @@ void PIConGPUReader::showDataSet()
     cout << "Iteration " << iteration_00.iterationIndex << " contains "
          << iter.meshes.size()    << " meshes " << "and "
          << iter.particles.size() << " particle species\n";
-    //cout << "The Series contains " << series.iterations.size() << " iterations\n";
 
                                                 //Output data about particles
     if(iter.particles.size())
@@ -378,7 +381,6 @@ void PIConGPUReader::showDataSet()
         }
     else cout << "\nThere is no mesh data in this data set\n";
     cout << "\n";
-    iter.close();
 #endif
     }
 
