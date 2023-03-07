@@ -378,6 +378,7 @@ void PIConGPUReader::showDataSet()
         }
     else cout << "\nThere is no mesh data in this data set\n";
     cout << "\n";
+    iter.close();
 #endif
     }
 
