@@ -166,6 +166,7 @@ class SimulationStreamingReaderBaseImpl
             v[1] = vFD_component_y.get()[flat_index];
             v[2] = vFD_component_z.get()[flat_index];
             ofield->set_value(v, c_m_index);
+            delete[] &v; 
             }
 
         return ofh;
