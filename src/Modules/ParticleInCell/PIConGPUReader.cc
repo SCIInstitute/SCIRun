@@ -148,6 +148,7 @@ class SimulationStreamingReaderBaseImpl
 
     FieldHandle vectorField(std::vector<long unsigned int> extent_vFD, std::shared_ptr<float> vFD_component_x, std::shared_ptr<float> vFD_component_y, std::shared_ptr<float> vFD_component_z)
         {
+
         int vFD_0 = extent_vFD[0];
         int vFD_1 = extent_vFD[1];
         int vFD_2 = extent_vFD[2];
@@ -160,15 +161,12 @@ class SimulationStreamingReaderBaseImpl
 
         FieldInformation lfi("LatVolMesh",1,"float");
         lfi.make_vector();
-        //MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(extent_vFD[0],extent_vFD[1],extent_vFD[2]));
         MeshHandle mesh = CreateMesh(lfi, vFD_0, vFD_1, vFD_2, Point(0.0,0.0,0.0), Point(vFD_0,vFD_1,vFD_2));
         FieldHandle ofh = CreateField(lfi,mesh);
         VField* ofield  = ofh->vfield();
 
-        //for(int i=0; i<extent_vFD[0]; i++) for(int j=0; j<extent_vFD[1]; j++) for(int k=0; k<extent_vFD[2]; k++)
         for(int i=0; i<vFD_0; i++) for(int j=0; j<vFD_1; j++) for(int k=0; k<vFD_2; k++)
             {
-            //int flat_index = i*vFD_1*vFD_2+j*vFD_2+k;
             int flat_index = (i * iteration_filter_i)*vFD_1*vFD_2+j*vFD_2+k;
             int c_m_index  = k*vFD_0*vFD_1+j*vFD_0+i;
 
@@ -179,6 +177,27 @@ class SimulationStreamingReaderBaseImpl
             ofield->set_value(v, c_m_index);
             }
 
+/*
+        //old code preserved for reference  8 March 2023
+
+        FieldInformation lfi("LatVolMesh",1,"float");
+        lfi.make_vector();
+        MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(extent_vFD[0],extent_vFD[1],extent_vFD[2]));
+        FieldHandle ofh = CreateField(lfi,mesh);
+        VField* ofield  = ofh->vfield();
+
+        for(int i=0; i<extent_vFD[0]; i++) for(int j=0; j<extent_vFD[1]; j++) for(int k=0; k<extent_vFD[2]; k++)
+            {
+            int flat_index = i*extent_vFD[1]*extent_vFD[2]+j*extent_vFD[2]+k;
+            int c_m_index  = k*extent_vFD[0]*extent_vFD[1]+j*extent_vFD[0]+i;
+
+            Vector v;
+            v[0] = vFD_component_x.get()[flat_index];
+            v[1] = vFD_component_y.get()[flat_index];
+            v[2] = vFD_component_z.get()[flat_index];
+            ofield->set_value(v, c_m_index);
+            }
+*/
         return ofh;
         }
 
