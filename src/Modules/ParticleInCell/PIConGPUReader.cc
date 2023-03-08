@@ -101,8 +101,6 @@ class SimulationStreamingReaderBaseImpl
         int sFD_0 = extent_sFD[0];
         int sFD_1 = extent_sFD[1];
         int sFD_2 = extent_sFD[2];
-        int iteration_filter_i = 1;
-        //int Dim_i_max = 12;
 
         if(extent_sFD[0] > Dim_i_max)
             {
@@ -110,7 +108,7 @@ class SimulationStreamingReaderBaseImpl
             iteration_filter_i = (extent_sFD[0]) / sFD_0;
             }
 
-        const int buffer_size_sFD = (sFD_0 * extent_sFD[1] * extent_sFD[2])+1;                    //added a plus 1 here that might not be needed: 6 March - kj
+        const int buffer_size_sFD = (sFD_0 * sFD_1 * sFD_2)+1;                    //added a plus 1 here that might not be needed: 6 March - kj
         FieldInformation lfi("LatVolMesh",1,"float");
         std::vector<float> values(buffer_size_sFD);                                               //look at values created here, and maybe in mesh created in the statment below, for the data leak: 6 March - kj
 
@@ -166,7 +164,6 @@ class SimulationStreamingReaderBaseImpl
             v[1] = vFD_component_y.get()[flat_index];
             v[2] = vFD_component_z.get()[flat_index];
             ofield->set_value(v, c_m_index);
-            delete[] &v; 
             }
 
         return ofh;
@@ -245,7 +242,6 @@ class SimulationStreamingReaderBaseImpl
         iteration.seriesFlush();                                 //Data is now available
 
         auto extent_vFD           = vectorFieldData["x"].getExtent();
-        //const int buffer_size_vFD = extent_vFD[0] * extent_vFD[1] * extent_vFD[2];
 
                                                                  //Send data to output
         return vectorField(extent_vFD, vFD_component_x, vFD_component_y, vFD_component_z);
@@ -291,19 +287,19 @@ void PIConGPUReader::setupStream()
     end    = series.readIterations().end();
     it     = series.readIterations().begin();
     setup_ = true;
-    //IndexedIteration iter_ss = *it;
-    IndexedIteration iteration = *it;
+    IndexedIteration iter_ss = *it;
+    //IndexedIteration iteration = *it;
 
-    //if(iter_ss.particles.size())
-    if(iteration.particles.size())
-        //for (auto const &ps : iter_ss.particles)
-        for (auto const &ps : iteration.particles)
+    if(iter_ss.particles.size())
+    //if(iteration.particles.size())
+        for (auto const &ps : iter_ss.particles)
+        //for (auto const &ps : iteration.particles)
             if(ps.first == ParticleType)      particlesPresent = true;
 
-    //if(iter_ss.meshes.size())
-    if(iteration.meshes.size())
-        //for (auto const &pm : iter_ss.meshes)
-        for (auto const &pm : iteration.meshes)
+    if(iter_ss.meshes.size())
+    //if(iteration.meshes.size())
+        for (auto const &pm : iter_ss.meshes)
+        //for (auto const &pm : iteration.meshes)
             {
             if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
             if(pm.first == VectorFieldType) vectorFieldPresent = true;
