@@ -320,18 +320,14 @@ void PIConGPUReader::setupStream()
     it     = series.readIterations().begin();
     setup_ = true;
     IndexedIteration iter_ss = *it;
-    //IndexedIteration iteration = *it;
 
     if(iter_ss.particles.size())
-    //if(iteration.particles.size())
         for (auto const &ps : iter_ss.particles)
-        //for (auto const &ps : iteration.particles)
             if(ps.first == ParticleType)      particlesPresent = true;
 
     if(iter_ss.meshes.size())
-    //if(iteration.meshes.size())
         for (auto const &pm : iter_ss.meshes)
-        //for (auto const &pm : iteration.meshes)
+
             {
             if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
             if(pm.first == VectorFieldType) vectorFieldPresent = true;
@@ -393,6 +389,10 @@ void PIConGPUReader::showDataSet()
             cout << "\nField " << VectorFieldType << " is vector valued, has shape (";
             for (auto const &dim : extent_FieldType) cout << dim << ',';
             cout << ") and datatype " << FieldType_x.getDatatype() << '\n';
+
+            cout << "Vector field data output to the vectorField output port has shape ";
+            if(extent_FieldType[0] > Dim_i_max) cout << "(" << Dim_i_max << ", " << extent_FieldType[1] << ", " << extent_FieldType[2] << ")\n";
+            else cout << "Same as listed above\n";
             }
 
         if(scalarFieldPresent)
