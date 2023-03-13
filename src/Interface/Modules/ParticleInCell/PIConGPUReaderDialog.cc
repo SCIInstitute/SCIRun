@@ -40,6 +40,9 @@ PIConGPUReaderDialog::PIConGPUReaderDialog(const std::string& name, ModuleStateH
     setWindowTitle(QString::fromStdString(name));
     fixSize();
 
+    addSpinBoxManager({Dim_k_max_},             Variables::Dim_k_max);
+    addSpinBoxManager({Dim_j_max_},             Variables::Dim_j_max);
+    addSpinBoxManager({Dim_i_max_},             Variables::Dim_i_max);
     addSpinBoxManager({sampleRate_},            Variables::SampleRate);
     addComboBoxManager({particleType_},         Variables::ParticleType);
     addComboBoxManager({vectorFieldType_},      Variables::VectorFieldType);

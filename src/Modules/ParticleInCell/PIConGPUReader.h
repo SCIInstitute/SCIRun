@@ -48,7 +48,7 @@ SeriesIterator it, end;
 #endif
 
 int iteration_filter_i     = 1;
-int Dim_i_max              = 12;
+//int Dim_i_max              = 12;
 bool setup_                = false;
 bool particlesPresent      = false;
 bool vectorFieldPresent    = false;
@@ -57,6 +57,9 @@ const std::string& home_   = std::getenv("HOME");
 const std::string& SST_dir = home_+"/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
 int         DataSet;
+int         Dim_i_max;
+int         Dim_j_max;
+int         Dim_k_max;
 int         SampleRate;
 std::string ParticleType;
 std::string ScalarFieldComp;

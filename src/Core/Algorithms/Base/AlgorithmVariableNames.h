@@ -61,6 +61,9 @@ public:
   static const AlgorithmParameterName ParticleType;
   static const AlgorithmParameterName ParticleAttribute;
   static const AlgorithmParameterName SampleRate;
+  static const AlgorithmParameterName Dim_i_max;
+  static const AlgorithmParameterName Dim_j_max;
+  static const AlgorithmParameterName Dim_k_max;
   static const AlgorithmParameterName ScalarFieldComp;
   static const AlgorithmParameterName ObjectInfo;
   static const AlgorithmParameterName ScriptEnvironmentVariable;

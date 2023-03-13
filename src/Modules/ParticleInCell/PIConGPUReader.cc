@@ -68,6 +68,9 @@ void PIConGPUReader::setStateDefaults()
     {
     auto state = get_state();
     state->setValue(Variables::Method, 1);
+    state->setValue(Variables::Dim_i_max, 0);
+    state->setValue(Variables::Dim_j_max, 0);
+    state->setValue(Variables::Dim_k_max, 0);
     state->setValue(Variables::SampleRate, 100);
     state->setValue(Variables::ParticleType, std::string("e"));
     state->setValue(Variables::VectorFieldType, std::string("E"));
@@ -308,6 +311,9 @@ void PIConGPUReader::setupStream()
     {
     auto state      = get_state();
     DataSet         = state->getValue(Variables::Method).toInt();
+    Dim_i_max       = state->getValue(Variables::Dim_i_max).toInt();
+    Dim_j_max       = state->getValue(Variables::Dim_j_max).toInt();
+    Dim_k_max       = state->getValue(Variables::Dim_k_max).toInt();
     SampleRate      = state->getValue(Variables::SampleRate).toInt();
     ParticleType    = state->getValue(Variables::ParticleType).toString();
     ScalarFieldComp = state->getValue(Variables::ScalarFieldComp).toString();
