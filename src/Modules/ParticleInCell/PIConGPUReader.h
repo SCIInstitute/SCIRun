@@ -48,7 +48,8 @@ SeriesIterator it, end;
 #endif
 
 int iteration_filter_i     = 1;
-//int Dim_i_max              = 12;
+int iteration_filter_j     = 1;
+int iteration_filter_k     = 1;
 bool setup_                = false;
 bool particlesPresent      = false;
 bool vectorFieldPresent    = false;

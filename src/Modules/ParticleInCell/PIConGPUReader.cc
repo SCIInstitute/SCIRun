@@ -105,11 +105,31 @@ class SimulationStreamingReaderBaseImpl
         int sFD_1 = extent_sFD[1];
         int sFD_2 = extent_sFD[2];
 
-        if(extent_sFD[0] > Dim_i_max)
+        if(extent_sFD[0] > Dim_i_max && Dim_i_max > 0)
             {
             sFD_0 = Dim_i_max;
             iteration_filter_i = (extent_sFD[0]) / sFD_0;
             }
+
+        if(extent_sFD[1] > Dim_j_max && Dim_j_max > 0)
+            {
+            sFD_1 = Dim_j_max;
+            iteration_filter_j = (extent_sFD[1]) / sFD_1;
+            }
+
+        if(extent_sFD[2] > Dim_k_max && Dim_k_max > 0)
+            {
+            sFD_2 = Dim_k_max;
+            iteration_filter_k = (extent_sFD[2]) / sFD_2;
+            }
+/*
+        if(extent_sFD[0] > Dim_i_max && Dim_i_max > 0) sFD_0 = Dim_i_max;
+        if(extent_sFD[1] > Dim_j_max && Dim_j_max > 0) sFD_1 = Dim_j_max;
+        if(extent_sFD[2] > Dim_k_max && Dim_k_max > 0) sFD_2 = Dim_k_max;
+        iteration_filter_i = (extent_sFD[0]) / sFD_0;
+        iteration_filter_j = (extent_sFD[1]) / sFD_1;
+        iteration_filter_k = (extent_sFD[2]) / sFD_2;
+*/
 
         const int buffer_size_sFD = (sFD_0 * sFD_1 * sFD_2)+1;                    //added a plus 1 here that might not be needed: 6 March - kj
         FieldInformation lfi("LatVolMesh",1,"float");
@@ -156,10 +176,22 @@ class SimulationStreamingReaderBaseImpl
         int vFD_1 = extent_vFD[1];
         int vFD_2 = extent_vFD[2];
 
-        if(extent_vFD[0] > Dim_i_max)
+        if(extent_vFD[0] > Dim_i_max && Dim_i_max > 0)
             {
             vFD_0 = Dim_i_max;
             iteration_filter_i = (extent_vFD[0]) / vFD_0;
+            }
+
+        if(extent_vFD[1] > Dim_j_max && Dim_j_max > 0)
+            {
+            vFD_1 = Dim_j_max;
+            iteration_filter_j = (extent_vFD[1]) / vFD_1;
+            }
+
+        if(extent_vFD[2] > Dim_k_max && Dim_k_max > 0)
+            {
+            vFD_2 = Dim_k_max;
+            iteration_filter_k = (extent_vFD[2]) / vFD_2;
             }
 
         FieldInformation lfi("LatVolMesh",1,"float");
