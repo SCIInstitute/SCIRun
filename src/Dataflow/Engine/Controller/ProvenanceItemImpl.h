@@ -81,8 +81,8 @@ namespace Engine {
   public:
     ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, Networks::NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy);
     std::string name() const override;
-    std::string undoCode() const override { throw "not implemented"; }
-    std::string redoCode() const override { throw "not implemented"; }
+    std::string undoCode() const override;
+    std::string redoCode() const override;
   private:
     SCIRun::Dataflow::Networks::ConnectionDescription desc_;
   };
@@ -92,8 +92,8 @@ namespace Engine {
   public:
     ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, Networks::NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy);
     std::string name() const override;
-    std::string undoCode() const override { throw "not implemented"; }
-    std::string redoCode() const override { throw "not implemented"; }
+    std::string undoCode() const override;
+    std::string redoCode() const override;
   private:
     SCIRun::Dataflow::Networks::ConnectionId id_;
   };
@@ -101,7 +101,7 @@ namespace Engine {
   class SCISHARE ModuleMovedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, 
+    ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY,
       double oldX, double oldY,
       Networks::NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy);
     std::string name() const override;

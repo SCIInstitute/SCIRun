@@ -328,8 +328,6 @@ void GuiActionProvenanceConverter::connectionAdded(const SCIRun::Dataflow::Netwo
   if (!provenanceManagerModifyingNetwork_)
   {
     ProvenanceItemHandle item(makeShared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
-    LOG_TRACE("REDO CODE: scirun_add_connection(\"{}\")", ConnectionId::create(cd).id_);
-    LOG_TRACE("UNDO CODE: scirun_remove_connection(\"{}\")", ConnectionId::create(cd).id_);
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -339,8 +337,6 @@ void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Net
   if (!provenanceManagerModifyingNetwork_)
   {
     ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
-    logCritical("REDO CODE: scirun_remove_connection(\"{}\")", id.id_);
-    logCritical("UNDO CODE: scirun_add_connection(\"{}\")", id.id_);
     Q_EMIT provenanceItemCreated(item);
   }
 }

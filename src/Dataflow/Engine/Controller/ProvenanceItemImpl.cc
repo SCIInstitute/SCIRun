@@ -103,6 +103,9 @@ std::string ModuleRemovedProvenanceItem::redoCode() const
 ConnectionAddedProvenanceItem::ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
   : ProvenanceItemBase(state, nedPy), desc_(cd)
 {
+  auto outIndex = module_->getOutputPort(desc_.out_.portId_)->getIndex();
+  logCritical("REDO CODE: scirun_connect_modules(\"{}\", {}, \"{}\", {})", desc_.out_.moduleId_.id_, outIndex, desc_.in_.moduleId_.id_, "INDEX_NEEDED");
+  logCritical("REDO CODE: scirun_disconnect_modules(\"{}\", {}, \"{}\", {})", desc_.out_.moduleId_.id_, "INDEX_NEEDED", desc_.in_.moduleId_.id_, "INDEX_NEEDED");
 }
 
 std::string ConnectionAddedProvenanceItem::name() const
@@ -110,9 +113,21 @@ std::string ConnectionAddedProvenanceItem::name() const
   return "Connection added: " + ConnectionId::create(desc_).id_;
 }
 
+std::string ConnectionAddedProvenanceItem::undoCode() const
+{
+  return fmt::format("scirun_remove_connection(\"{}\")", ConnectionId::create(desc_).id_);
+}
+
+std::string ConnectionAddedProvenanceItem::redoCode() const
+{
+  return fmt::format("scirun_connect_modules(\"{}\")", ConnectionId::create(desc_).id_);
+}
+
 ConnectionRemovedProvenanceItem::ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
   : ProvenanceItemBase(state, nedPy), id_(id)
 {
+  //logCritical("REDO CODE: scirun_remove_connection(\"{}\")", id.id_);
+  //logCritical("UNDO CODE: scirun_add_connection(\"{}\")", id.id_);
 }
 
 std::string ConnectionRemovedProvenanceItem::name() const
@@ -120,7 +135,17 @@ std::string ConnectionRemovedProvenanceItem::name() const
   return "Connection Removed: " + id_.id_;
 }
 
-ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, double oldX, double oldY, 
+std::string ConnectionRemovedProvenanceItem::undoCode() const
+{
+  return fmt::format("scirun_connect_modules(\"{}\")", id_.id_);
+}
+
+std::string ConnectionRemovedProvenanceItem::redoCode() const
+{
+  return fmt::format("scirun_remove_connection(\"{}\")", id_.id_);
+}
+
+ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, double oldX, double oldY,
   NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
   : ProvenanceItemBase(state, nedPy), moduleId_(moduleId), newX_(newX), newY_(newY), oldX_(oldX), oldY_(oldY)
 {
