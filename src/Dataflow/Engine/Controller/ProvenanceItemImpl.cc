@@ -103,9 +103,12 @@ std::string ModuleRemovedProvenanceItem::redoCode() const
 ConnectionAddedProvenanceItem::ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
   : ProvenanceItemBase(state, nedPy), desc_(cd)
 {
+#if 0
+  //TODO
   auto outIndex = module_->getOutputPort(desc_.out_.portId_)->getIndex();
   logCritical("REDO CODE: scirun_connect_modules(\"{}\", {}, \"{}\", {})", desc_.out_.moduleId_.id_, outIndex, desc_.in_.moduleId_.id_, "INDEX_NEEDED");
   logCritical("REDO CODE: scirun_disconnect_modules(\"{}\", {}, \"{}\", {})", desc_.out_.moduleId_.id_, "INDEX_NEEDED", desc_.in_.moduleId_.id_, "INDEX_NEEDED");
+#endif
 }
 
 std::string ConnectionAddedProvenanceItem::name() const

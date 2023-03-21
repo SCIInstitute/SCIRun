@@ -371,12 +371,13 @@ void SCIRunMainWindow::setupProvenanceWindow()
   ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_, py));
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, networkEditor_, this);
 
-  connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
-  connect(actionRedo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::redo);
+  //TODO: work in progress with new undo stack
+  //connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
+  //connect(actionRedo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::redo);
   actionUndo_->setEnabled(false);
   actionRedo_->setEnabled(false);
-  connect(provenanceWindow_, &ProvenanceWindow::undoStateChanged, actionUndo_, &QAction::setEnabled);
-  connect(provenanceWindow_, &ProvenanceWindow::redoStateChanged, actionRedo_, &QAction::setEnabled);
+  //connect(provenanceWindow_, &ProvenanceWindow::undoStateChanged, actionUndo_, &QAction::setEnabled);
+  //connect(provenanceWindow_, &ProvenanceWindow::redoStateChanged, actionRedo_, &QAction::setEnabled);
   connect(provenanceWindow_, &ProvenanceWindow::networkModified, networkEditor_, &NetworkEditor::updateViewport);
 
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
