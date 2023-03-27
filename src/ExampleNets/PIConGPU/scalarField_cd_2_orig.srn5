@@ -141,7 +141,7 @@
 									<name>ColorMapResolution</name>
 									<value object_id="_8">
 										<which>0</which>
-										<value>40</value>
+										<value>48</value>
 									</value>
 								</second>
 							</item>
@@ -153,7 +153,7 @@
 									<name>ColorMapShift</name>
 									<value object_id="_9">
 										<which>1</which>
-										<value>7.50000000000000000e-01</value>
+										<value>5.99999999999999978e-01</value>
 									</value>
 								</second>
 							</item>
@@ -253,9 +253,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>-1.88902
--1.25935
--0.629674
+										<value>-9.95436
+-6.63624
+-3.31812
 0
 </value>
 									</value>
@@ -369,7 +369,7 @@
 									<name>BufferSize</name>
 									<value object_id="_24">
 										<which>0</which>
-										<value>21</value>
+										<value>63</value>
 									</value>
 								</second>
 							</item>
@@ -893,7 +893,7 @@
 									<name>FixedMin</name>
 									<value object_id="_61">
 										<which>1</which>
-										<value>-1.48089300000000001e+00</value>
+										<value>-1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1985,7 +1985,7 @@
 									<name>CameraDistance</name>
 									<value object_id="_148">
 										<which>1</which>
-										<value>5.63762817382812500e+02</value>
+										<value>5.33111938476562500e+02</value>
 									</value>
 								</second>
 							</item>
@@ -2947,7 +2947,7 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:1)</name>
+															<name>slice (from ShowField:4)</name>
 															<value object_id="_247">
 																<which>3</which>
 																<value>1</value>
@@ -2989,7 +2989,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_251">
 										<which>0</which>
-										<value>924</value>
+										<value>844</value>
 									</value>
 								</second>
 							</item>
@@ -3001,7 +3001,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_252">
 										<which>0</which>
-										<value>625</value>
+										<value>577</value>
 									</value>
 								</second>
 							</item>
@@ -3013,7 +3013,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_253">
 										<which>0</which>
-										<value>990</value>
+										<value>1064</value>
 									</value>
 								</second>
 							</item>
@@ -3025,7 +3025,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_254">
 										<which>0</which>
-										<value>300</value>
+										<value>327</value>
 									</value>
 								</second>
 							</item>
