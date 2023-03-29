@@ -71,15 +71,25 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::OutputDir);
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::SimulationFile);
+
+        //SimVis = state->getValue(Parameters::SimulationFile).toString();
+        //SimVis = "cp -p ~/src/picongpu/share/picongpu/examples/"+SimVis+"/*.profile ~/";
+        //cout << "\nDebug1:the execution statement is " << SimVis << "\n";
+        //const char *command_Sim=SimVis.c_str();
+        //system(command_Sim);
 #if openPMDIsAvailable
         string text_file;
-        text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
-        const char *command_prof=text_file.c_str();
-        system(command_prof);
+        //text_file = "cp -p ~/src/picongpu/share/picongpu/examples/"+SimVis+"/*.profile ~/";
+        //const char *command_prof=text_file.c_str();
+        //system(command_prof);
 
         text_file = "rm -f ~/scratch/runs/SST/simOutput/openPMD/simData.sst";
         const char *command_remSST=text_file.c_str();
         system(command_remSST);
+
+        text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
+        const char *command_prof=text_file.c_str();
+        system(command_prof);
 
 #endif
         auto output=algo().run(input);

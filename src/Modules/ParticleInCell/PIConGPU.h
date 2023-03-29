@@ -35,6 +35,8 @@ namespace SCIRun         {
 namespace Modules        {
 namespace ParticleInCell {
 
+//std::string SimVis;
+
 class SCISHARE PIConGPU : public SCIRun::Dataflow::Networks::Module,
     public HasNoInputPorts,
     public HasNoOutputPorts
