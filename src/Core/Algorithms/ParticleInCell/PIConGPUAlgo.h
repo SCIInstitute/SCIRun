@@ -26,7 +26,8 @@ class SCISHARE PIConGPUAlgo : public AlgorithmBase
         AlgorithmOutput run(const AlgorithmInput& input) const;
 
     private:
-        bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int) const;
+        bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int, const int) const;
+        //bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int) const;
     };
 
 }}}}

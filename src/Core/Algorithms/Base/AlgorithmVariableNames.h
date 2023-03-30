@@ -45,6 +45,7 @@ public:
   static const AlgorithmParameterName TargetError;
   static const AlgorithmParameterName MaxIterations;
   static const AlgorithmParameterName Method;
+  static const AlgorithmParameterName CPUMethod;
   static const AlgorithmParameterName Preconditioner;
   static const AlgorithmParameterName Filename;
   static const AlgorithmParameterName BuildConvergence;

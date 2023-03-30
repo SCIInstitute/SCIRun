@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>446</width>
-    <height>548</height>
+    <height>647</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>446</width>
-    <height>548</height>
+    <height>647</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -47,7 +47,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
+     <y>210</y>
      <width>411</width>
      <height>101</height>
     </rect>
@@ -65,7 +65,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>240</y>
+     <y>320</y>
      <width>411</width>
      <height>101</height>
     </rect>
@@ -83,7 +83,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>350</y>
+     <y>430</y>
      <width>411</width>
      <height>101</height>
     </rect>
@@ -101,7 +101,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>460</y>
+     <y>540</y>
      <width>411</width>
      <height>71</height>
     </rect>
@@ -114,6 +114,28 @@
      <widget class="QRadioButton" name="reRunButton_">
       <property name="text">
        <string>Re-run</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_9">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>411</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Run on CPU only</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_7">
+    <item>
+     <widget class="QRadioButton" name="CPUonly_">
+      <property name="text">
+       <string>CPU-only</string>
       </property>
      </widget>
     </item>

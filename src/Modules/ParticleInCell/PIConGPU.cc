@@ -54,6 +54,7 @@ PIConGPU::PIConGPU() : Module(staticInfo_) {}
 void PIConGPU::setStateDefaults()
     {
     setStateIntFromAlgo(Variables::Method);
+    setStateIntFromAlgo(Variables::CPUMethod);
     setStateStringFromAlgo(Parameters::CloneDir);
     setStateStringFromAlgo(Parameters::OutputDir);
     setStateStringFromAlgo(Parameters::ConfigFile);
@@ -67,16 +68,14 @@ void PIConGPU::execute()
         {
         auto state = get_state();
         setAlgoIntFromState(Variables::Method);
+        setAlgoIntFromState(Variables::CPUMethod);
         setAlgoStringFromState(Parameters::CloneDir);
         setAlgoStringFromState(Parameters::OutputDir);
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::SimulationFile);
 
-        //SimVis = state->getValue(Parameters::SimulationFile).toString();
-        //SimVis = "cp -p ~/src/picongpu/share/picongpu/examples/"+SimVis+"/*.profile ~/";
-        //cout << "\nDebug1:the execution statement is " << SimVis << "\n";
-        //const char *command_Sim=SimVis.c_str();
-        //system(command_Sim);
+        CPU_Method1 = state->getValue(Variables::CPUMethod).toInt();
+        cout << "\nDebug1: CPU_Method1 is " << CPU_Method1 << "\n";
 #if openPMDIsAvailable
         string text_file;
         //text_file = "cp -p ~/src/picongpu/share/picongpu/examples/"+SimVis+"/*.profile ~/";
