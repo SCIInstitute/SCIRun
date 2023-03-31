@@ -75,20 +75,27 @@ void PIConGPU::execute()
         setAlgoStringFromState(Parameters::SimulationFile);
 
         CPU_Method1 = state->getValue(Variables::CPUMethod).toInt();
-        cout << "\nDebug1: CPU_Method1 is " << CPU_Method1 << "\n";
+        //cout << "\nDebug1: CPU_Method1 is " << CPU_Method1 << "\n";
 #if openPMDIsAvailable
         string text_file;
-        //text_file = "cp -p ~/src/picongpu/share/picongpu/examples/"+SimVis+"/*.profile ~/";
-        //const char *command_prof=text_file.c_str();
-        //system(command_prof);
 
         text_file = "rm -f ~/scratch/runs/SST/simOutput/openPMD/simData.sst";
         const char *command_remSST=text_file.c_str();
         system(command_remSST);
 
-        text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
-        const char *command_prof=text_file.c_str();
-        system(command_prof);
+        if(CPU_Method1)
+            {
+            text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
+            const char *command_prof=text_file.c_str();
+            system(command_prof);
+            }
+        else
+            {
+
+            text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/CPUonly/*.profile ~/";
+            const char *command_prof=text_file.c_str();
+            system(command_prof);
+            }
 
 #endif
         auto output=algo().run(input);

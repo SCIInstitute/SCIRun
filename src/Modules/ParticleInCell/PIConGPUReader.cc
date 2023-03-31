@@ -122,14 +122,6 @@ class SimulationStreamingReaderBaseImpl
             sFD_2 = Dim_k_max;
             iteration_filter_k = (extent_sFD[2]) / sFD_2;
             }
-/*
-        if(extent_sFD[0] > Dim_i_max && Dim_i_max > 0) sFD_0 = Dim_i_max;
-        if(extent_sFD[1] > Dim_j_max && Dim_j_max > 0) sFD_1 = Dim_j_max;
-        if(extent_sFD[2] > Dim_k_max && Dim_k_max > 0) sFD_2 = Dim_k_max;
-        iteration_filter_i = (extent_sFD[0]) / sFD_0;
-        iteration_filter_j = (extent_sFD[1]) / sFD_1;
-        iteration_filter_k = (extent_sFD[2]) / sFD_2;
-*/
 
         const int buffer_size_sFD = (sFD_0 * sFD_1 * sFD_2)+1;                    //added a plus 1 here that might not be needed: 6 March - kj
         FieldInformation lfi("LatVolMesh",1,"float");
@@ -148,24 +140,6 @@ class SimulationStreamingReaderBaseImpl
         VField* ofield = ofh->vfield();
         ofield->set_values(values);
 
-/*
-        //old code preserved for reference, 4 March 2023
-
-        FieldInformation lfi("LatVolMesh",1,"float");
-        std::vector<float> values(numvals);
-        MeshHandle mesh = CreateMesh(lfi,extent_sFD[0], extent_sFD[1], extent_sFD[2], Point(0.0,0.0,0.0), Point(extent_sFD[0],extent_sFD[1],extent_sFD[2]));
-        FieldHandle ofh = CreateField(lfi,mesh);
-
-        for(int i=0; i<extent_sFD[0]; i++) for(int j=0; j<extent_sFD[1]; j++) for(int k=0; k<extent_sFD[2]; k++)
-            {
-            int flat_index    = i*extent_sFD[1]*extent_sFD[2]+j*extent_sFD[2]+k;
-            int c_m_index     = k*extent_sFD[0]*extent_sFD[1]+j*extent_sFD[0]+i;
-            values[c_m_index] = scalarFieldData_buffer.get()[flat_index];
-            }
-
-        VField* ofield = ofh->vfield();
-        ofield->set_values(values);
-*/
         return ofh;
         }
 
@@ -212,27 +186,6 @@ class SimulationStreamingReaderBaseImpl
             ofield->set_value(v, c_m_index);
             }
 
-/*
-        //old code preserved for reference  8 March 2023
-
-        FieldInformation lfi("LatVolMesh",1,"float");
-        lfi.make_vector();
-        MeshHandle mesh = CreateMesh(lfi, extent_vFD[0], extent_vFD[1], extent_vFD[2], Point(0.0,0.0,0.0), Point(extent_vFD[0],extent_vFD[1],extent_vFD[2]));
-        FieldHandle ofh = CreateField(lfi,mesh);
-        VField* ofield  = ofh->vfield();
-
-        for(int i=0; i<extent_vFD[0]; i++) for(int j=0; j<extent_vFD[1]; j++) for(int k=0; k<extent_vFD[2]; k++)
-            {
-            int flat_index = i*extent_vFD[1]*extent_vFD[2]+j*extent_vFD[2]+k;
-            int c_m_index  = k*extent_vFD[0]*extent_vFD[1]+j*extent_vFD[0]+i;
-
-            Vector v;
-            v[0] = vFD_component_x.get()[flat_index];
-            v[1] = vFD_component_y.get()[flat_index];
-            v[2] = vFD_component_z.get()[flat_index];
-            ofield->set_value(v, c_m_index);
-            }
-*/
         return ofh;
         }
 
