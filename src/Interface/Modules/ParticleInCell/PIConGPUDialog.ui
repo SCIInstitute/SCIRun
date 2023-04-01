@@ -123,19 +123,84 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
-     <width>411</width>
+     <y>120</y>
+     <width>321</width>
      <height>71</height>
     </rect>
    </property>
    <property name="title">
-    <string>Run on CPU only</string>
+    <string>Backend architecture</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_7">
-    <item>
-     <widget class="QRadioButton" name="CPUonly_">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="1">
+     <widget class="QComboBox" name="backEnd_">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>151</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <item>
+       <property name="text">
+        <string>CPUonly</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GTX1070</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GTX2060</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RTX3060</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RTX4090</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_6">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>1</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>90</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="text">
-       <string>CPU-only</string>
+       <string>PIC_BACKEND</string>
       </property>
      </widget>
     </item>

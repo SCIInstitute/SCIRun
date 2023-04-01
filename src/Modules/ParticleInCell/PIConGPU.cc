@@ -54,7 +54,8 @@ PIConGPU::PIConGPU() : Module(staticInfo_) {}
 void PIConGPU::setStateDefaults()
     {
     setStateIntFromAlgo(Variables::Method);
-    setStateIntFromAlgo(Variables::CPUMethod);
+    //setStateIntFromAlgo(Variables::CPUMethod);
+    setStateStringFromAlgo(Parameters::BackEnd);
     setStateStringFromAlgo(Parameters::CloneDir);
     setStateStringFromAlgo(Parameters::OutputDir);
     setStateStringFromAlgo(Parameters::ConfigFile);
@@ -68,21 +69,25 @@ void PIConGPU::execute()
         {
         auto state = get_state();
         setAlgoIntFromState(Variables::Method);
-        setAlgoIntFromState(Variables::CPUMethod);
+        //setAlgoIntFromState(Variables::CPUMethod);
+        setAlgoStringFromState(Parameters::BackEnd);
         setAlgoStringFromState(Parameters::CloneDir);
         setAlgoStringFromState(Parameters::OutputDir);
         setAlgoStringFromState(Parameters::ConfigFile);
         setAlgoStringFromState(Parameters::SimulationFile);
 
-        CPU_Method1 = state->getValue(Variables::CPUMethod).toInt();
-        //cout << "\nDebug1: CPU_Method1 is " << CPU_Method1 << "\n";
+        //CPU_Method1 = state->getValue(Variables::CPUMethod).toInt();
+
+        Back_End1 = state->getValue(Parameters::BackEnd).toString();
+
+        //cout << "\nDebug1: Back_End1 is " << Back_End1 << "\n";
 #if openPMDIsAvailable
         string text_file;
 
         text_file = "rm -f ~/scratch/runs/SST/simOutput/openPMD/simData.sst";
         const char *command_remSST=text_file.c_str();
         system(command_remSST);
-
+/*
         if(CPU_Method1)
             {
             text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
@@ -91,11 +96,17 @@ void PIConGPU::execute()
             }
         else
             {
-
             text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/CPUonly/*.profile ~/";
             const char *command_prof=text_file.c_str();
             system(command_prof);
             }
+*/
+
+            text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/"+Back_End1+"/*.profile ~/";
+            const char *command_prof=text_file.c_str();
+            system(command_prof);
+
+
 
 #endif
         auto output=algo().run(input);

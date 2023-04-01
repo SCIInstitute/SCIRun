@@ -44,6 +44,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::ParticleInCell;
 
+ALGORITHM_PARAMETER_DEF(ParticleInCell, BackEnd);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, CloneDir);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, OutputDir);
 ALGORITHM_PARAMETER_DEF(ParticleInCell, ConfigFile);
@@ -55,11 +56,14 @@ PIConGPUAlgo::PIConGPUAlgo()
     addParameter(Parameters::ConfigFile, std::string("$PIC_CFG/sst.cfg"));
     addParameter(Parameters::CloneDir, std::string("$PIC_CLONE/myLWFA"));
     addParameter(Parameters::OutputDir, std::string("$PIC_OUTPUT/SST"));
+
+    addParameter(Parameters::BackEnd, std::string("CPUonly"));
+
     addParameter(Variables::Method,1);
-    addParameter(Variables::CPUMethod,1);
+    //addParameter(Variables::CPUMethod,1);
     }
 
-bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string cfg_input, const std::string sim_clone, const std::string sim_output, const int reRun, const int CPU_Method) const
+bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string cfg_input, const std::string sim_clone, const std::string sim_output, const int reRun) const
     {
     #include <stdlib.h>
     using namespace std;
@@ -97,12 +101,12 @@ AlgorithmOutput PIConGPUAlgo::run(const AlgorithmInput&) const
     {
     AlgorithmOutput output;
     auto reRun       = get(Variables::Method).toInt();
-    auto CPU_Method  = get(Variables::CPUMethod).toInt();
+    //auto CPU_Method  = get(Variables::CPUMethod).toInt();
     auto sim_clone   = get(Parameters::CloneDir).toString();
     auto sim_output  = get(Parameters::OutputDir).toString();
     auto cfg_input   = get(Parameters::ConfigFile).toString();
     auto sim_input   = get(Parameters::SimulationFile).toString();
 
-    StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output, reRun, CPU_Method);
+    StartPIConGPU(sim_input, cfg_input, sim_clone, sim_output, reRun);
     return output;
     }

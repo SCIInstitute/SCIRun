@@ -14,6 +14,7 @@ namespace Core           {
 namespace Algorithms     {
 namespace ParticleInCell {
 
+ALGORITHM_PARAMETER_DECL(BackEnd);
 ALGORITHM_PARAMETER_DECL(CloneDir);
 ALGORITHM_PARAMETER_DECL(OutputDir);
 ALGORITHM_PARAMETER_DECL(ConfigFile);
@@ -26,8 +27,8 @@ class SCISHARE PIConGPUAlgo : public AlgorithmBase
         AlgorithmOutput run(const AlgorithmInput& input) const;
 
     private:
-        bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int, const int) const;
-        //bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int) const;
+        //bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int, const int) const;
+        bool StartPIConGPU(const std::string, const std::string, const std::string, const std::string, const int) const;
     };
 
 }}}}
