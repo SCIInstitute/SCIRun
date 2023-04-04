@@ -16,15 +16,27 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>7</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>CPUMethod</name>
+									<name>BackEnd</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>CPUMethod</name>
+									<name>BackEnd</name>
 									<value class_id="11" tracking_level="1" version="0" object_id="_0">
+										<which>2</which>
+										<value>RTX3060</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CPUMethod</name>
+								</first>
+								<second>
+									<name>CPUMethod</name>
+									<value object_id="_1">
 										<which>0</which>
 										<value>0</value>
 									</value>
@@ -36,7 +48,7 @@
 								</first>
 								<second>
 									<name>CloneDir</name>
-									<value object_id="_1">
+									<value object_id="_2">
 										<which>2</which>
 										<value>$PIC_CLONE/myLWFA</value>
 									</value>
@@ -48,9 +60,9 @@
 								</first>
 								<second>
 									<name>ConfigFile</name>
-									<value object_id="_2">
+									<value object_id="_3">
 										<which>2</which>
-										<value>$PIC_CFG/hdf5_1_all_data.cfg</value>
+										<value>$PIC_CFG/2-1.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -60,7 +72,7 @@
 								</first>
 								<second>
 									<name>Method</name>
-									<value object_id="_3">
+									<value object_id="_4">
 										<which>0</which>
 										<value>0</value>
 									</value>
@@ -72,7 +84,7 @@
 								</first>
 								<second>
 									<name>OutputDir</name>
-									<value object_id="_4">
+									<value object_id="_5">
 										<which>2</which>
 										<value>$PIC_OUTPUT/SST</value>
 									</value>
@@ -84,7 +96,7 @@
 								</first>
 								<second>
 									<name>ProgrammableInputPortEnabled</name>
-									<value object_id="_5">
+									<value object_id="_6">
 										<which>3</which>
 										<value>0</value>
 									</value>
@@ -96,7 +108,7 @@
 								</first>
 								<second>
 									<name>SimulationFile</name>
-									<value object_id="_6">
+									<value object_id="_7">
 										<which>2</which>
 										<value>$PIC_EXAMPLES/V-LaserWakefield</value>
 									</value>
