@@ -84,25 +84,25 @@ void PIConGPU::execute()
 #if openPMDIsAvailable
         string text_file;
 
-        text_file = "rm -f ~/scratch/runs/SST/simOutput/openPMD/simData.sst";
+        text_file = "rm -f /Project/scratch/runs/SST/simOutput/openPMD/simData.sst";
         const char *command_remSST=text_file.c_str();
         system(command_remSST);
 /*
         if(CPU_Method1)
             {
-            text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/*.profile ~/";
+            text_file = "cp -p /Project/src/picongpu/etc/picongpu/bash-pc-scii/*.profile /Project/";
             const char *command_prof=text_file.c_str();
             system(command_prof);
             }
         else
             {
-            text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/CPUonly/*.profile ~/";
+            text_file = "cp -p /Project/src/picongpu/etc/picongpu/bash-pc-scii/CPUonly/*.profile /Project/";
             const char *command_prof=text_file.c_str();
             system(command_prof);
             }
 */
 
-            text_file = "cp -p ~/src/picongpu/etc/picongpu/bash-pc-scii/"+Back_End1+"/*.profile ~/";
+            text_file = "cp -p /Project/src/picongpu/etc/picongpu/bash-pc-scii/"+Back_End1+"/*.profile /Project/";
             const char *command_prof=text_file.c_str();
             system(command_prof);
 

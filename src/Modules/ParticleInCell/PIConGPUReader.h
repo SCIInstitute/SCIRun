@@ -54,8 +54,9 @@ bool setup_                = false;
 bool particlesPresent      = false;
 bool vectorFieldPresent    = false;
 bool scalarFieldPresent    = false;
-const std::string& home_   = std::getenv("HOME");
-const std::string& SST_dir = home_+"/scratch/runs/SST/simOutput/openPMD/simData.sst";
+//const std::string& home_   = std::getenv("HOME");
+//const std::string& SST_dir = home_+"/scratch/runs/SST/simOutput/openPMD/simData.sst";
+const std::string& SST_dir = "/Project/scratch/runs/SST/simOutput/openPMD/simData.sst";
 
 int         DataSet;
 int         Dim_i_max;

@@ -75,14 +75,14 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
     system(command_Sim);
 
                                   //Assemble the script that creates the Sim_run script
-    text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu.profile && pic-create "
+    text_file = "printf '#!/usr/bin bash\n\nsource /Project/picongpu.profile && pic-create "
                         +sim_input+" "+sim_clone+"\ncd "+sim_clone+" && pic-build && tbg -s bash -c "
-                        +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > $HOME/Sim_run";
+                        +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > /Project/Sim_run";
 
     if(reRun==0)
         {
-        text_file = "printf '#!/usr/bin bash\n\nsource $HOME/picongpu_reRun.profile && rm -rf "+sim_output+" && cd "+sim_clone+" && tbg -s bash -c "
-                  +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > $HOME/Sim_run";
+        text_file = "printf '#!/usr/bin bash\n\nsource /Project/picongpu_reRun.profile && rm -rf "+sim_output+" && cd "+sim_clone+" && tbg -s bash -c "
+                  +cfg_input+" -t etc/picongpu/bash/mpiexec.tpl "+sim_output+" &' > /Project/Sim_run";
         }
 
                                   //Run the script that creates the Sim_run script
@@ -90,7 +90,7 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
     system(command);
 
                                   //Run the Sim.py program that runs the Sim_run script
-    string str_py="cd $HOME && python3 Sim.py";
+    string str_py="cd /Project && python3 Sim.py";
     const char *command_py=str_py.c_str();
     system(command_py);
 

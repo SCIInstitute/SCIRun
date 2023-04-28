@@ -318,11 +318,11 @@ void PIConGPUReader::setupStream()
 
     if(iter_ss.meshes.size())
         for (auto const &pm : iter_ss.meshes)
-
             {
             if(pm.first == ScalarFieldComp) scalarFieldPresent = true;
             if(pm.first == VectorFieldType) vectorFieldPresent = true;
             }
+
     if(DataSet==0) showDataSet();
 #endif
     }
@@ -330,7 +330,7 @@ void PIConGPUReader::setupStream()
 void PIConGPUReader::shutdownStream()
     {
     string text_file;
-    text_file = "rm ~/picongpu.profile ~/picongpu_reRun.profile ~/Sim.py ~/Sim_run";
+    text_file = "rm /Project/picongpu.profile /Project/picongpu_reRun.profile /Project/Sim.py /Project/Sim_run";
     const char *command_shutDown = text_file.c_str();
     system(command_shutDown);
 
