@@ -177,6 +177,16 @@
         <string>RTX4090</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>UofU-HPC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Hemera</string>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="0" column="0">
