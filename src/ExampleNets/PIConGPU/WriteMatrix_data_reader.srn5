@@ -77,7 +77,7 @@
 									<name>ColorMapResolution</name>
 									<value object_id="_4">
 										<which>0</which>
-										<value>48</value>
+										<value>50</value>
 									</value>
 								</second>
 							</item>
@@ -89,7 +89,7 @@
 									<name>ColorMapShift</name>
 									<value object_id="_5">
 										<which>1</which>
-										<value>5.99999999999999978e-01</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -189,9 +189,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_12">
 										<which>2</which>
-										<value>-5
--3.33333
--1.66667
+										<value>-0.953837
+-0.635891
+-0.317946
 0
 </value>
 									</value>
@@ -205,7 +205,7 @@
 									<name>IsovalueQuantityFromField</name>
 									<value object_id="_13">
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -241,7 +241,7 @@
 									<name>ManualMinimumIsovalue</name>
 									<value object_id="_16">
 										<which>1</which>
-										<value>-5.00000000000000000e+00</value>
+										<value>-3.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -305,7 +305,7 @@
 									<name>BufferSize</name>
 									<value object_id="_20">
 										<which>0</which>
-										<value>48</value>
+										<value>39</value>
 									</value>
 								</second>
 							</item>
@@ -329,7 +329,7 @@
 									<name>GeometryIndex</name>
 									<value object_id="_22">
 										<which>0</which>
-										<value>18</value>
+										<value>184</value>
 									</value>
 								</second>
 							</item>
@@ -429,7 +429,7 @@
 									<name>MaxIndex</name>
 									<value object_id="_29">
 										<which>0</which>
-										<value>41</value>
+										<value>100</value>
 									</value>
 								</second>
 							</item>
@@ -489,7 +489,7 @@
 									<name>SliceIndex</name>
 									<value object_id="_34">
 										<which>0</which>
-										<value>20</value>
+										<value>27</value>
 									</value>
 								</second>
 							</item>
@@ -753,7 +753,7 @@
 									<name>Filename</name>
 									<value object_id="_52">
 										<which>2</which>
-										<value>/home/kj/Documents/sim_out/sim_output_2_runs.mat</value>
+										<value>/home/kj/Documents/sim_out/sim_output.mat</value>
 									</value>
 								</second>
 							</item>
@@ -817,7 +817,7 @@
 									<name>AutoScale</name>
 									<value object_id="_56">
 										<which>0</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -841,7 +841,7 @@
 									<name>FixedMin</name>
 									<value object_id="_58">
 										<which>1</which>
-										<value>-5.00000000000000000e+00</value>
+										<value>-9.53837156295776367e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2897,14 +2897,14 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:6)</name>
+															<name>ShowField:0</name>
 															<value object_id="_241">
 																<which>3</which>
-																<value>1</value>
+																<value>0</value>
 															</value>
 														</item>
 														<item>
-															<name>Nodes</name>
+															<name>Edges</name>
 															<value object_id="_242">
 																<which>3</which>
 																<value>0</value>
@@ -2914,11 +2914,11 @@
 															<name>Faces</name>
 															<value object_id="_243">
 																<which>3</which>
-																<value>0</value>
+																<value>1</value>
 															</value>
 														</item>
 														<item>
-															<name>Edges</name>
+															<name>Nodes</name>
 															<value object_id="_244">
 																<which>3</which>
 																<value>0</value>
@@ -2935,14 +2935,14 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>ShowField:0</name>
+															<name>slice (from ShowField:1)</name>
 															<value object_id="_246">
 																<which>3</which>
-																<value>0</value>
+																<value>1</value>
 															</value>
 														</item>
 														<item>
-															<name>Nodes</name>
+															<name>Edges</name>
 															<value object_id="_247">
 																<which>3</which>
 																<value>0</value>
@@ -2952,11 +2952,11 @@
 															<name>Faces</name>
 															<value object_id="_248">
 																<which>3</which>
-																<value>1</value>
+																<value>0</value>
 															</value>
 														</item>
 														<item>
-															<name>Edges</name>
+															<name>Nodes</name>
 															<value object_id="_249">
 																<which>3</which>
 																<value>0</value>
@@ -3001,7 +3001,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_252">
 										<which>0</which>
-										<value>974</value>
+										<value>966</value>
 									</value>
 								</second>
 							</item>
@@ -4075,7 +4075,7 @@
 														<count>4</count>
 														<item_version>0</item_version>
 														<item>
-															<name>slice (from ShowField:6)</name>
+															<name>slice (from ShowField:4)</name>
 															<value object_id="_359">
 																<which>3</which>
 																<value>1</value>
@@ -4117,7 +4117,7 @@
 									<name>WindowPositionX</name>
 									<value object_id="_363">
 										<which>0</which>
-										<value>926</value>
+										<value>701</value>
 									</value>
 								</second>
 							</item>
@@ -4129,7 +4129,7 @@
 									<name>WindowPositionY</name>
 									<value object_id="_364">
 										<which>0</which>
-										<value>339</value>
+										<value>168</value>
 									</value>
 								</second>
 							</item>
@@ -4141,7 +4141,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_365">
 										<which>0</which>
-										<value>967</value>
+										<value>1160</value>
 									</value>
 								</second>
 							</item>
@@ -4153,7 +4153,7 @@
 									<name>WindowSizeY</name>
 									<value object_id="_366">
 										<which>0</which>
-										<value>300</value>
+										<value>369</value>
 									</value>
 								</second>
 							</item>

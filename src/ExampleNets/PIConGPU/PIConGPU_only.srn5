@@ -26,7 +26,7 @@
 									<name>BackEnd</name>
 									<value class_id="11" tracking_level="1" version="0" object_id="_0">
 										<which>2</which>
-										<value>RTX3060</value>
+										<value>RTX4090</value>
 									</value>
 								</second>
 							</item>
@@ -62,7 +62,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_3">
 										<which>2</which>
-										<value>$PIC_CFG/2-1.cfg</value>
+										<value>$PIC_CFG/1.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -110,7 +110,7 @@
 									<name>SimulationFile</name>
 									<value object_id="_7">
 										<which>2</which>
-										<value>$PIC_EXAMPLES/V-LaserWakefield</value>
+										<value>$PIC_EXAMPLES/LaserWakefield</value>
 									</value>
 								</second>
 							</item>
