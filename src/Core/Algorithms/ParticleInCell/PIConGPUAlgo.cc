@@ -70,7 +70,7 @@ bool PIConGPUAlgo::StartPIConGPU(const std::string sim_input, const std::string 
     string text_file;
 
                                   //Set up the program that runs the Sim_run script
-    text_file = "printf 'import os\nimport sys\nos.system(\"bash Sim_run\")' > ~/Sim.py";
+    text_file = "printf 'import os\nimport sys\nos.system(\"bash Sim_run\")' > /Project/Sim.py";
     const char *command_Sim=text_file.c_str();
     system(command_Sim);
 
