@@ -62,7 +62,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_3">
 										<which>2</which>
-										<value>$PIC_CFG/1-.cfg</value>
+										<value>$PIC_CFG/1.cfg</value>
 									</value>
 								</second>
 							</item>

@@ -253,9 +253,9 @@
 									<name>IsovalueListString</name>
 									<value object_id="_16">
 										<which>2</which>
-										<value>-10.002
--6.66798
--3.33399
+										<value>-1.65942
+-1.10628
+-0.55314
 0
 </value>
 									</value>
@@ -369,7 +369,7 @@
 									<name>BufferSize</name>
 									<value object_id="_24">
 										<which>0</which>
-										<value>0</value>
+										<value>21</value>
 									</value>
 								</second>
 							</item>
@@ -681,7 +681,7 @@
 									<name>ConfigFile</name>
 									<value object_id="_46">
 										<which>2</which>
-										<value>$PIC_CFG/sst_1_10-ipf_mesh_data.cfg</value>
+										<value>$PIC_CFG/sst_1_mesh_data.cfg</value>
 									</value>
 								</second>
 							</item>
@@ -3025,7 +3025,7 @@
 									<name>WindowSizeX</name>
 									<value object_id="_254">
 										<which>0</which>
-										<value>913</value>
+										<value>911</value>
 									</value>
 								</second>
 							</item>
@@ -4217,7 +4217,7 @@
 									<name>Filename</name>
 									<value object_id="_370">
 										<which>2</which>
-										<value>/home/kj/Documents/sim_out/sim_output.mat</value>
+										<value>/root/Documents/sim_out/sim_output.mat</value>
 									</value>
 								</second>
 							</item>
