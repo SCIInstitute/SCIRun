@@ -285,7 +285,7 @@ MARK_AS_ADVANCED(BUILD_BUNDLE)
 # should be installed by default, searching system paths only
 IF(APPLE)
   FIND_PROGRAM(MACDEPLOYQT
-    HINTS ${Qt5_PATH} ${Qt5_PATH}/bin
+    HINTS ${Qt_PATH} ${Qt_PATH}/bin
     NAMES macdeployqt
     NO_DEFAULT_PATH
   )
@@ -323,18 +323,6 @@ IF(BUILD_DOXYGEN_DOCUMENTATION)
   ENDIF()
 ENDIF()
 
-# TODO: uncomment when LaTeX files are available
-# OPTION(BUILD_LATEX_DOCUMENTATION "Compile SCIRun LaTeX manuals and tutorials to PDF." OFF)
-# MARK_AS_ADVANCED(BUILD_LATEX_DOCUMENTATION)
-#
-# IF(BUILD_LATEX_DOCUMENTATION)
-#   FIND_PACKAGE(LATEX)
-#   IF(PDFLATEX_COMPILER)
-#     IF(BUILD_DOCUMENTATION)
-#     ADD_SUBDIRECTORY(Documentation/Manuals)
-#   ENDIF()
-# ENDIF()
-
 ########################################################################
 # Configure ospray module build
 
@@ -351,6 +339,12 @@ MARK_AS_ADVANCED(RENDERER_TRACE_ON)
 IF(RENDERER_TRACE_ON)
   ADD_DEFINITIONS(-DRENDERER_TRACE_ON)
 ENDIF()
+
+########################################################################
+# Matlab i/o option--see issue #1727 and #1692
+
+OPTION(MATLAB_STRING_OUTPUT_SIGNED_TYPE_FIX_FOR_SCIPY "Toggle quasi-fix for Issue #1692." OFF)
+MARK_AS_ADVANCED(MATLAB_STRING_OUTPUT_SIGNED_TYPE_FIX_FOR_SCIPY)
 
 ########################################################################
 # Copy Spire-SCIRun specific assets and shaders
@@ -416,56 +410,65 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # Find and configure Qt
 
 IF(NOT BUILD_HEADLESS)
-  FIND_PACKAGE(Qt5 COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt5_PATH})
+  if (${QT_VERSION_MAJOR} STREQUAL "6")
+    FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
+  else()
+    FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt_PATH})
+  endif()
 
-  IF(Qt5Core_FOUND)
-    MESSAGE(STATUS "Found Qt version: ${Qt5Core_VERSION_STRING}")
-    ADD_DEFINITIONS(-DQT5_VERSION=${Qt5Core_VERSION_STRING})
-    INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
-	  INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt5Gui_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt5Network_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt5OpenGL_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt5Concurrent_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt5PrintSupport_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt5Svg_INCLUDE_DIRS})
-    ADD_DEFINITIONS(${Qt5Core_DEFINITIONS})
-    ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
-    ADD_DEFINITIONS(${Qt5Gui_DEFINITIONS})
-    ADD_DEFINITIONS(${Qt5Network_DEFINITIONS})
-    ADD_DEFINITIONS(${Qt5OpenGL_DEFINITIONS})
-    ADD_DEFINITIONS(${Qt5Concurrent_DEFINITIONS})
-    ADD_DEFINITIONS(${Qt5PrintSupport_DEFINITIONS})
-    ADD_DEFINITIONS(${Qt5Svg_DEFINITIONS})
-    SET(QT_LIBRARIES Qt5::Widgets)
+  IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
+    MESSAGE(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}")
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Core_INCLUDE_DIRS})
+	  INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Widgets_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Gui_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Network_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}OpenGL_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Concurrent_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}PrintSupport_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Svg_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}DBus_INCLUDE_DIRS})
   ELSE()
-    MESSAGE(FATAL_ERROR "Qt5 is required for building the SCIRun GUI")
+    MESSAGE(FATAL_ERROR "Qt is required for building the SCIRun GUI")
   ENDIF()
 
-  IF(Qt5Core_FOUND)
+  IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
     INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
     ADD_DEFINITIONS(${QT_DEFINITIONS})
   ELSE()
-    MESSAGE(FATAL_ERROR "QT 5.13 or greater is required to build SCIRun")
+    MESSAGE(FATAL_ERROR "Qt 5.13 or greater is required to build SCIRun")
   ENDIF()
 
   ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
-  MACRO(QT_WRAP_UI arg1 arg2)
-    QT5_WRAP_UI(${arg1} ${arg2})
-  ENDMACRO(QT_WRAP_UI)
+  if (${QT_VERSION_MAJOR} STREQUAL "6")
+    ADD_DEFINITIONS(-DSCIRUN_QT6_ENABLED)
+  endif()
 
-  MACRO(QT_WRAP_CPP arg1 arg2)
-    QT5_WRAP_CPP(${arg1} ${arg2})
-  ENDMACRO(QT_WRAP_CPP)
+  if (${QT_VERSION_MAJOR} STREQUAL "5")
+    MACRO(QT_WRAP_UI arg1 arg2)
+      QT5_WRAP_UI(${arg1} ${arg2})
+    ENDMACRO(QT_WRAP_UI)
 
-  MACRO(QT_ADD_RESOURCES arg1 arg2)
-    QT5_ADD_RESOURCES(${arg1} ${arg2})
-  ENDMACRO(QT_ADD_RESOURCES)
+    MACRO(QT_WRAP_CPP arg1 arg2)
+      QT5_WRAP_CPP(${arg1} ${arg2})
+    ENDMACRO(QT_WRAP_CPP)
+
+    MACRO(QT_ADD_RESOURCES arg1 arg2)
+      QT5_ADD_RESOURCES(${arg1} ${arg2})
+    ENDMACRO(QT_ADD_RESOURCES)
+
+    SET(QT_GRAPHICS_LIBRARIES Qt5::OpenGL)
+    SET(QT_NETWORK_LIBRARIES Qt5::Network)
+    SET(QT_LIBRARIES Qt5::Widgets)
+  else()
+    SET(QT_GRAPHICS_LIBRARIES Qt::OpenGL Qt::OpenGLWidgets)
+    SET(QT_NETWORK_LIBRARIES Qt::Network)
+    SET(QT_LIBRARIES Qt::Widgets)
+  endif()
 
 ENDIF()
 
-IF(Qt5Widgets_VERSION VERSION_LESS 5.13.0)
+IF(Qt${QT_VERSION_MAJOR}Widgets_VERSION VERSION_LESS 5.13.0)
   ADD_DEFINITIONS(-DOLDER_QT_SUPPORT_NEEDED)
 ENDIF()
 
@@ -748,12 +751,16 @@ SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO
 SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Legacy_Teem_DataIO   PROPERTY FOLDER "Modules/Teem")
 SET_PROPERTY(TARGET Modules_Legacy_Teem_Misc   PROPERTY FOLDER "Modules/Teem")
+SET_PROPERTY(TARGET Modules_Legacy_Teem_Tend   PROPERTY FOLDER "Modules/Teem")
 SET_PROPERTY(TARGET Modules_Legacy_Teem_Converters   PROPERTY FOLDER "Modules/Teem")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET spire   PROPERTY FOLDER "Graphics")
+
+SET_PROPERTY(TARGET pugixml   PROPERTY FOLDER "Externals")
 
 IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
@@ -798,6 +805,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_IEPlugin_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Graphics_Widgets_Tests         PROPERTY FOLDER "Graphics/Tests")
+  SET_PROPERTY(TARGET Graphics_Datatypes_Tests PROPERTY FOLDER "Graphics/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")

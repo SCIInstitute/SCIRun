@@ -59,25 +59,32 @@ void TextEditAppender::log4(const std::string& message) const
   log(QString::fromStdString(message));
 }
 
-QString TreeViewModuleGetter::text() const
+QString TreeViewActiveModuleItem::text() const
 {
-  return tree_.currentItem()->text(0);
+  auto clip = activeTree_->currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
+  if (!clip.isEmpty())
+    return clip;
+  return activeTree_->currentItem()->text(0);
 }
 
-bool TreeViewModuleGetter::isModule() const
+bool TreeViewActiveModuleItem::isModule() const
 {
-  auto current = tree_.currentItem();
-  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->foreground(0) != CLIPBOARD_COLOR;
+  auto current = activeTree_->currentItem();
+  return current
+    && current->childCount() == 0
+    && current->parent()
+    && !current->text(0).startsWith("clipboard")
+    && current->foreground(0) != CLIPBOARD_COLOR;
 }
 
-QString TreeViewModuleGetter::clipboardXML() const
+QString TreeViewActiveModuleItem::clipboardXML() const
 {
-  return tree_.currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
+  return activeTree_->currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
 }
 
-bool TreeViewModuleGetter::isClipboardXML() const
+bool TreeViewActiveModuleItem::isClipboardXML() const
 {
-  auto current = tree_.currentItem();
+  auto current = activeTree_->currentItem();
   return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->foreground(0) == CLIPBOARD_COLOR);
 }
 
@@ -218,8 +225,8 @@ QWizardPage* NewUserWizard::createPathSettingPage()
   layout->addWidget(pathWidget_);
   auto button = new QPushButton("Set Path...");
   layout->addWidget(button);
-  connect(button, SIGNAL(clicked()), SCIRunMainWindow::Instance(), SLOT(setDataDirectoryFromGUI()));
-  connect(SCIRunMainWindow::Instance(), SIGNAL(dataDirectorySet(const QString&)), this, SLOT(updatePathLabel(const QString&)));
+  connect(button, &QPushButton::clicked, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setDataDirectoryFromGUI);
+  connect(SCIRunMainWindow::Instance(), &SCIRunMainWindow::dataDirectorySet, this, &NewUserWizard::updatePathLabel);
 
   page->setLayout(layout);
 
@@ -285,7 +292,7 @@ public:
     cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubicPipe.png"));
     registerField("connectionChoice", connectionComboBox_);
     SCIRunMainWindow::Instance()->setConnectionPipelineType(0);
-    connect(connectionComboBox_, SIGNAL(currentIndexChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
+    connect(connectionComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), SCIRunMainWindow::Instance(), &SCIRunMainWindow::setConnectionPipelineType);
   }
 };
 
@@ -300,8 +307,8 @@ public:
   explicit OtherSettingsWizardPage(NewUserWizard* wiz)
   {
     setupUi(this);
-    connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setSaveBeforeExecute(int)));
-    connect(loadPreferencesCheckBox_, SIGNAL(stateChanged(int)), wiz, SLOT(setShowPrefs(int)));
+    connect(saveBeforeExecuteCheckBox_, &QCheckBox::stateChanged, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setSaveBeforeExecute);
+    connect(loadPreferencesCheckBox_, &QCheckBox::stateChanged, wiz, &NewUserWizard::setShowPrefs);
   }
 };
 
@@ -347,7 +354,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
 
   setStartId(Page_Home);
 
-  connect(this, SIGNAL(customButtonClicked(int)), this, SLOT(customClicked(int)));
+  connect(this, &PythonWizard::customButtonClicked, this, &PythonWizard::customClicked);
 }
 
 void PythonWizard::customClicked(int which) {
@@ -422,7 +429,7 @@ QWizardPage* PythonWizard::createIntroPage()
   auto pic = new QLabel;
   pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
   page->textLayout->addWidget(pic);
-  connect(page->tableOfContents, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(switchPage(QAbstractButton*)) );
+  connect(page->tableOfContents, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked), this, &PythonWizard::switchPage);
   return page;
 }
 
@@ -823,9 +830,9 @@ void PythonWizard::setShowPrefs(int state)
 }
 
 
-void ToolkitInfo::setupAction(QAction* action, QObject* window) const
+void ToolkitInfo::setupAction(QAction* action, SCIRunMainWindow* window) const
 {
-  QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
+  QObject::connect(action, &QAction::triggered, window, &SCIRunMainWindow::toolkitDownload);
   action->setProperty(ToolkitIconURL, iconUrl);
   action->setProperty(ToolkitURL, zipUrl);
   action->setProperty(ToolkitFilename, filename);
@@ -882,27 +889,27 @@ size_t NetworkStatusImpl::countState(ModuleExecutionState::Value val) const
 void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
 {
   // for any network editor
-  QObject::connect(editor, SIGNAL(modified()), mainWindow_, SLOT(networkModified()));
-  QObject::connect(mainWindow_, SIGNAL(defaultNotePositionChanged(NotePosition)), editor, SIGNAL(defaultNotePositionChanged(NotePosition)));
-  QObject::connect(mainWindow_, SIGNAL(defaultNoteSizeChanged(int)), editor, SIGNAL(defaultNoteSizeChanged(int)));
+  QObject::connect(editor, &NetworkEditor::modified, mainWindow_, &SCIRunMainWindow::networkModified);
+  QObject::connect(mainWindow_, &SCIRunMainWindow::defaultNotePositionChanged, editor, &NetworkEditor::defaultNotePositionChanged);
+  QObject::connect(mainWindow_, &SCIRunMainWindow::defaultNoteSizeChanged, editor, &NetworkEditor::defaultNoteSizeChanged);
 
   // for active network editor
-  QObject::connect(mainWindow_->actionSelectAll_, SIGNAL(triggered()), editor, SLOT(selectAll()));
-  QObject::connect(mainWindow_->actionDelete_, SIGNAL(triggered()), editor, SLOT(del()));
-  QObject::connect(mainWindow_->actionCleanUpNetwork_, SIGNAL(triggered()), editor, SLOT(cleanUpNetwork()));
-  QObject::connect(editor, SIGNAL(zoomLevelChanged(int)), mainWindow_, SLOT(showZoomStatusMessage(int)));
-  QObject::connect(mainWindow_->actionCut_, SIGNAL(triggered()), editor, SLOT(cut()));
-  QObject::connect(mainWindow_->actionCopy_, SIGNAL(triggered()), editor, SLOT(copy()));
-  QObject::connect(mainWindow_->actionPaste_, SIGNAL(triggered()), editor, SLOT(paste()));
+  QObject::connect(mainWindow_->actionSelectAll_, &QAction::triggered, editor, &NetworkEditor::selectAll);
+  QObject::connect(mainWindow_->actionDelete_, &QAction::triggered, editor, &NetworkEditor::del);
+  QObject::connect(mainWindow_->actionCleanUpNetwork_, &QAction::triggered, editor, &NetworkEditor::cleanUpNetwork);
+  QObject::connect(editor, &NetworkEditor::zoomLevelChanged, mainWindow_, &SCIRunMainWindow::showZoomStatusMessage);
+  QObject::connect(mainWindow_->actionCut_, &QAction::triggered, editor, &NetworkEditor::cut);
+  QObject::connect(mainWindow_->actionCopy_, &QAction::triggered, editor, &NetworkEditor::copy);
+  QObject::connect(mainWindow_->actionPaste_, &QAction::triggered, editor, &NetworkEditor::paste);
 
   if (!editor->parentNetwork())
   {
     // root NetworkEditor only.
-    QObject::connect(mainWindow_, SIGNAL(moduleItemDoubleClicked()), editor, SLOT(addModuleViaDoubleClickedTreeItem()));
-    QObject::connect(mainWindow_->actionCenterNetworkViewer_, SIGNAL(triggered()), editor, SLOT(centerView()));
-    QObject::connect(mainWindow_->actionPinAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(pinAllModuleUIs()));
-    QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(restoreAllModuleUIs()));
-    QObject::connect(mainWindow_->actionHideAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(hideAllModuleUIs()));
+    QObject::connect(mainWindow_, &SCIRunMainWindow::moduleItemDoubleClicked, editor, &NetworkEditor::addModuleViaDoubleClickedTreeItem);
+    QObject::connect(mainWindow_->actionCenterNetworkViewer_, &QAction::triggered, editor, &NetworkEditor::centerView);
+    QObject::connect(mainWindow_->actionPinAllModuleUIs_, &QAction::triggered, editor, &NetworkEditor::pinAllModuleUIs);
+    QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, &QAction::triggered, editor, &NetworkEditor::restoreAllModuleUIs);
+    QObject::connect(mainWindow_->actionHideAllModuleUIs_, &QAction::triggered, editor, &NetworkEditor::hideAllModuleUIs);
     QObject::connect(mainWindow_->actionPeakBehindModuleUIs_, &QAction::triggered,
       [this, editor]() {
         if (mainWindow_->actionPeakBehindModuleUIs_->isChecked())
@@ -910,7 +917,7 @@ void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
         else
           editor->normalOpacityAllModuleUIs();
         });
-    //QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
+    //QObject::connect(mainWindow_->actionMakeSubnetwork_, &QAction::triggered, editor, &NetworkEditor::makeSubnetwork()));
   }
   // children only
   // addDockWidget(Qt::RightDockWidgetArea, subnet);
@@ -993,7 +1000,7 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
                     "selection-background-color:blue;" // 336699 lighter blue
                     "background-color:rgb(66,66,69);"
                     "selection-color:yellow;}"
-#ifndef __linux__ 
+#ifndef __linux__
                     "QCheckBox,QLabel,QRadioButton{background-color:transparent}"
 #endif
                     "QLineEdit{border:1px solid white}"
@@ -1018,11 +1025,11 @@ void SCIRunGuiRunner::reportIssue()
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
 {
-  connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
+  connect(&webCtrl_, &QNetworkAccessManager::finished, this, &FileDownloader::fileDownloaded);
 
   QNetworkRequest request(imageUrl);
   reply_ = webCtrl_.get(request);
-  connect(reply_, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
+  connect(reply_, &QNetworkReply::downloadProgress, this, &FileDownloader::downloadProgress);
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* reply)
@@ -1063,7 +1070,7 @@ void ToolkitDownloader::downloadIcon()
   if (!settings.contains(iconKey_))
   {
     iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
-    connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+    connect(iconDownloader_, &FileDownloader::downloaded, this, &ToolkitDownloader::showMessageBox);
   }
   else
     showMessageBox();
@@ -1108,7 +1115,7 @@ void ToolkitDownloader::showMessageBox()
     {
       toolkitDir_.setPath(dir);
       zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
-      connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
+      connect(zipDownloader_, &FileDownloader::downloaded, this, &ToolkitDownloader::saveToolkit);
     }
   }
 }

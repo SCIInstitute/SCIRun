@@ -127,7 +127,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     LocalFree(szArglist);
   }
   {
-    const char* a = GetEnvironmentStrings();
+    auto a = GetEnvironmentStrings();
     int prev = 0;
     for (int i = 0;; i++) {
       if (a[i] == '\0') {

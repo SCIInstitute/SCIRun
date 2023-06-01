@@ -55,7 +55,7 @@ ShowAndEditDipolesDialog::ShowAndEditDipolesDialog(const std::string& name, Modu
   addCheckBoxManager(showLinesCheckBox, Parameters::ShowLines);
   connectButtonToExecuteSignal(showLinesCheckBox);
   addCheckBoxManager(moveDipolesTogetherCheckBox, Parameters::MoveDipolesTogether);
-  connect(resetButton, SIGNAL(clicked()), this, SLOT(clickResetButton()));
+  connect(resetButton, &QPushButton::clicked, this, &ShowAndEditDipolesDialog::clickResetButton);
   connectButtonToExecuteSignal(resetButton);
 }
 

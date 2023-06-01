@@ -72,7 +72,7 @@ namespace SCIRun
     {
     public:
       SRObject(const std::string& name,
-        const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
+        const Core::Geometry::BBox& bbox, std::optional<std::string> colorMap, int port) :
         mName(name),
         mBBox(bbox),
         mColorMap(colorMap),
@@ -105,7 +105,7 @@ namespace SCIRun
       std::list<SRPass> mPasses;
       Core::Geometry::BBox mBBox;          // Objects bounding box (calculated from VBO).
 
-      boost::optional<std::string> mColorMap;
+      std::optional<std::string> mColorMap;
 
       int	mPort;
     };

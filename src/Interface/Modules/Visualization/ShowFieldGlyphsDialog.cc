@@ -53,7 +53,7 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
 
   createExecuteInteractivelyToggleAction();
 
-  connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connect(defaultMeshColorButton_, &QPushButton::clicked, this, &ShowFieldGlyphsDialog::assignDefaultMeshColor);
   connectButtonToExecuteSignal(defaultMeshColorButton_);
 }
 
@@ -235,8 +235,8 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderTensorsBelowThreshold);
   addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
   addDoubleSpinBoxManager(this->superquadricEmphasisDoubleSpinBox_, ShowFieldGlyphs::SuperquadricEmphasis);
-  connect(this->superquadricEmphasisSlider_, SIGNAL(valueChanged(int)), this, SLOT(emphasisSliderChanged(int)));
-  connect(this->superquadricEmphasisDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(emphasisSpinBoxChanged(double)));
+  connect(this->superquadricEmphasisSlider_, &QSlider::valueChanged, this, &ShowFieldGlyphsDialog::emphasisSliderChanged);
+  connect(this->superquadricEmphasisDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ShowFieldGlyphsDialog::emphasisSpinBoxChanged);
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);
   connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);

@@ -80,6 +80,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ScaleBarNumTicks);
         ALGORITHM_PARAMETER_DECL(ScaleBarLineWidth);
         ALGORITHM_PARAMETER_DECL(ScaleBarFontSize);
+        ALGORITHM_PARAMETER_DECL(ScaleBarLineColor);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneEnabled);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneNormalReversed);
         ALGORITHM_PARAMETER_DECL(ClippingPlaneX);
@@ -105,6 +106,9 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(CameraDistanceMinimum);
         ALGORITHM_PARAMETER_DECL(CameraLookAt);
         ALGORITHM_PARAMETER_DECL(CameraRotation);
+        ALGORITHM_PARAMETER_DECL(ToolBarMainPosition);
+        ALGORITHM_PARAMETER_DECL(ToolBarRenderPosition);
+        ALGORITHM_PARAMETER_DECL(ToolBarAdvancedPosition);
 
         // save/load has issues.
         ALGORITHM_PARAMETER_DECL(HeadLightOn);
@@ -123,6 +127,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(Light1Inclination);
         ALGORITHM_PARAMETER_DECL(Light2Inclination);
         ALGORITHM_PARAMETER_DECL(Light3Inclination);
+
+        ALGORITHM_PARAMETER_DECL(ScreenshotDirectory);
 
         // not used--GUI hidden/never implemented
         //ALGORITHM_PARAMETER_DECL(Lighting);

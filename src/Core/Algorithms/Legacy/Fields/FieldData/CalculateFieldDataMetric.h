@@ -29,37 +29,23 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CALCULATEFIELDDATAMETRIC_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_CALCULATEFIELDDATAMETRIC_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/NrrdData.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun::Core::Algorithms::Fields
+{
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE CalculateFieldDataMetricAlgo : public AlgoBase
+class SCISHARE CalculateFieldDataMetricAlgo : public AlgorithmBase
 {
   public:
-    /// Set defaults
-    CalculateFieldDataMetricAlgo()
-    {
-      /// keep scalar type defines whether we convert to double or not
-      add_option("method","value-mean","min|max|median|value-mean|geom-mean|sum|integral|volthreshold");
-      add_scalar("threshold",0.5);
-    }
-
-    bool run(std::vector<FieldHandle>& input, MatrixHandle& output);
-    bool run(FieldHandle input, MatrixHandle& output);
+    CalculateFieldDataMetricAlgo();
+    bool runImpl(const std::vector<FieldHandle>& input, Datatypes::MatrixHandle& output) const;
+    bool runImpl(FieldHandle input, Datatypes::MatrixHandle& output) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
+    static const AlgorithmParameterName Threshold;
 };
 
-} // end namespace SCIRunAlgo
+}
 
 #endif

@@ -44,21 +44,6 @@ using namespace SCIRun::Core::Logging;
 
 const static std::vector<ColorRGB> grayscaleData = {{0.0, 0.0, 0.0}, {1.0, 1.0, 1.0}};
 
-/*
-const static std::vector<ColorRGB> orangeTintData = {{0.0784314, 0.0392157, 0}, {1, 0.960784, 0.921569}};
-
-const static std::vector<ColorRGB> redTintData = {{0.0784314, 0, 0}, {1, 0.921569, 0.921569}};
-
-const static std::vector<ColorRGB> yellowTintData = {{0.0784314, 0.0784314, 0}, {1, 1, 0.921569}};
-
-const static std::vector<ColorRGB> greenTintData = {{0, 0.0784314, 0}, {0.921569, 1, 0.921569}};
-
-const static std::vector<ColorRGB> cyanTintData = {{0, 0.0784314, 0.0784314}, {0.921569, 1, 1}};
-
-const static std::vector<ColorRGB> blueTintData = {{0, 0, 0.0784314}, {0.921569, 0.921569, 1}};
-
-const static std::vector<ColorRGB> purpleTintData = {{0.0392157, 0, 0.0784314}, {0.960784, 0.921569, 1}};
-*/
 const static std::vector<ColorRGB> bpSeismicData = {{0.000000, 0.000000, 1.000000}, {1.000000, 1.000000, 1.000000}, {1.000000, 0.000000, 0.000000}};
 
 const static std::vector<ColorRGB> donData = {{0, 0.352941, 1}, {0.2, 0.407843, 1}, {0.403922, 0.458824, 1}, {0.65098, 0.513725, 0.960784}, {0.709804, 0.509804, 0.847059}, {0.752941, 0.505882, 0.729412}, {0.772549, 0.501961, 0.67451}, {0.901961, 0.494118, 0.384314}, {0.941176, 0.494118, 0.192157}, {1, 0.521569, 0}};
@@ -129,9 +114,9 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
   auto colorData = &rainbowData;
 
   const auto entry = standardColorMaps.find(name);
-  if (entry != standardColorMaps.end()) 
+  if (entry != standardColorMaps.end())
     colorData = entry->second;
-  else 
+  else
     logError("Color map name not implemented/recognized. Returning Rainbow.");
 
   return makeShared<ColorMap>(*colorData, name, resolution, shift, invert, rescale_scale, rescale_shift, alphaPoints);
@@ -150,8 +135,6 @@ std::vector<std::string> StandardColorMapFactory::getList()
   boost::copy(standardColorMaps | boost::adaptors::map_keys, std::back_inserter(names));
   return names;
 }
-
-
 
 ColorMap::ColorMap(const std::vector<ColorRGB>& colorData, const std::string& name, const size_t resolution, const double shift,
   const bool invert, const double rescale_scale, const double rescale_shift, const std::vector<double>& alphaPoints)
@@ -193,17 +176,6 @@ inline static double mix(double a, double b, double c)
 {
   return a * ( 1.0 - c) + b * c;
 }
-
-//const static double cmap_gamma = 2.2;
-//inline static ColorRGB gammaCorrect(const ColorRGB& in)
-//{
-//    return ColorRGB(pow(in.r(), 1.0/cmap_gamma), pow(in.g(), 1.0/cmap_gamma), pow(in.b(), 1.0/cmap_gamma));
-//}
-//
-//inline static ColorRGB reverseGammaCorrect(const ColorRGB& in)
-//{
-//    return ColorRGB(pow(in.r(), cmap_gamma), pow(in.g(), cmap_gamma), pow(in.b(), cmap_gamma));
-//}
 
 inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double f)
 {
@@ -299,6 +271,38 @@ double ColorMap::valueToIndex(Tensor &tensor) const
   return getTransformedValue(magnitude);
 }
 
+std::string ColorMap::styleSheet() const
+{
+  if (styleSheet_.empty())
+  {  //TODO: cache these values, GUI is slow to update.
+    std::stringstream ss;
+    ss << "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,";
+    for (double i = 0.001; i < 1.0; i += 0.001)
+    { //styling values need to be in the range [0,1]
+      ss << " stop:" << i;
+      ss << " rgba(";
+      auto c = valueToColor(i * 2. - 1.); //need to match default ColorMap data range [-1,1]
+      ss << int(255.*c.r()) << ", " << int(255.*c.g()) << ", " << int(255.*c.b()) << ", 255),";
+    }
+    ss << ");";
+    styleSheet_ = ss.str();
+  }
+  return styleSheet_;
+}
+
+std::string ColorMap::info() const
+{
+  std::ostringstream ostr;
+  ostr <<
+    "Name: " << getColorMapName() <<
+    "\nResolution: " << getColorMapResolution() <<
+    "\nInvert: " << std::boolalpha << getColorMapInvert() <<
+    "\nShift: " << getColorMapShift() <<
+    "\nScale: " << getColorMapRescaleScale() <<
+    "\nRescale Shift: " << getColorMapRescaleShift();
+  return ostr.str();
+}
+
 ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
 {
   const std::vector<ColorRGB>* colorData;
@@ -306,17 +310,18 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(ColorMapHandle cmap)
   if (entry != standardColorMaps.end()) colorData = entry->second;
   else                                  colorData = &rainbowData;
 
-  auto min = -cmap->getColorMapRescaleShift();
+  min_ = -cmap->getColorMapRescaleShift();
   auto range = (1.0/cmap->getColorMapRescaleScale());
-  auto v = min;
+  max_ = min_ + range;
+  auto v = min_;
   auto inc = range/colorData->size();
   for (int i = 0; i <= colorData->size(); ++i)
   {
     auto color = cmap->valueToColor(v);
-    colorList.push_back(color.r());
-    colorList.push_back(color.g());
-    colorList.push_back(color.b());
-    opacityList.push_back(color.a());
+    colorList_.push_back(color.r());
+    colorList_.push_back(color.g());
+    colorList_.push_back(color.b());
+    opacityList_.push_back(color.a());
     v += inc;
   }
 }

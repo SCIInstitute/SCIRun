@@ -47,6 +47,8 @@ public:
   void setColor2(const Core::Datatypes::ColorRGB& color);
   void setP1(const Core::Geometry::Point& p);
   void setP2(const Core::Geometry::Point& p);
+  void setShowNormals(bool showNormals);
+  void setShowNormalsScale(double showNormalsScale);
   void generateCylinder(GlyphConstructor& constructor, double radius1, double radius2, bool renderBase1, bool renderBase2);
   void generateComet(GlyphConstructor& constructor, double radius, double sphere_extrusion);
   void generateCone(GlyphConstructor& constructor, double radius, bool renderBase);
@@ -59,6 +61,8 @@ private:
   int resolution_ = 3;
   Core::Datatypes::ColorRGB color1_ = {1.0, 1.0, 1.0};
   Core::Datatypes::ColorRGB color2_ = {1.0, 1.0, 1.0};
+  bool showNormals_ = false;
+  double showNormalsScale_ = 0.1;
 };
 }}
 

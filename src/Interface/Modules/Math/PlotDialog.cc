@@ -60,14 +60,14 @@ PlotDialog::PlotDialog(QWidget* parent)
   layout->addWidget(zoomBox);
 
   plot_ = new Plot(parent);
-  connect(plot_, SIGNAL(hasMessage(const QString&)), this, SLOT(message(const QString&)));
+  connect(plot_, &Plot::hasMessage, this, &PlotDialog::message);
   layout->addWidget(plot_);
 
   statusBar_ = new QStatusBar(this);
   statusBar_->setMaximumHeight(20);
   layout->addWidget(statusBar_);
 
-  connect(zoomBox, SIGNAL(activated(const QString&)), plot_, SLOT(adjustZoom(const QString&)));
+  connect(zoomBox, COMBO_BOX_ACTIVATED_STRING, plot_, &Plot::adjustZoom);
 
   setLayout(layout);
   resize( 600, 400 );
@@ -80,8 +80,8 @@ PlotDialog::~PlotDialog()
 }
 
 void PlotDialog::updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
-  const boost::optional<double>& horizAxisOpt,
-  const boost::optional<double>& vertAxisOpt)
+  const std::optional<double>& horizAxisOpt,
+  const std::optional<double>& vertAxisOpt)
 {
   plot_->setTitle(title);
   plot_->setAxisTitle(QwtPlot::xBottom, xAxis);
@@ -125,7 +125,7 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
   setAutoFillBackground( true );
 
   auto canvas = new SpecialMapPlotCanvas(pointCurveMap_, this);
-  connect(canvas, SIGNAL(curveSelected(int, const QString&)), this, SLOT(highlightCurve(int, const QString&)));
+  connect(canvas, &SpecialMapPlotCanvas::curveSelected, this, &Plot::highlightCurve);
   canvas->setLineWidth( 1 );
   canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
   //canvas->setBorderRadius( 3 ); //TODO: this line is buggy in Qt5. Plus, the background color doesn't work.
@@ -170,7 +170,7 @@ void Plot::addLegend()
 	auto legend = new QwtLegend();
 	legend->setDefaultItemMode(QwtLegendData::Checkable);
   insertLegend(legend, QwtPlot::RightLegend);
-	connect(legend, SIGNAL(checked(const QVariant&, bool, int)), SLOT(showItem(const QVariant&, bool)));
+	connect(legend, &QwtLegend::checked, this, &Plot::showItem);
 
 	auto items = itemList( QwtPlotItem::Rtti_PlotCurve );
 	for ( int i = 0; i < items.size(); i++ )

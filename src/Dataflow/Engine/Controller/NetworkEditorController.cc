@@ -71,7 +71,11 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   collabs_.algoFactory_ = af;
   collabs_.reexFactory_ = reex;
   collabs_.executorFactory_ = executorFactory;
+  #ifndef BUILD_HEADLESS
   collabs_.executionManager_.reset(new ExecutionQueueManager);
+  #else
+  collabs_.executionManager_.reset(new SimpleExecutionManager);
+  #endif
   collabs_.cmdFactory_ = cmdFactory;
   collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
   collabs_.serializationManager_ = nesm;
@@ -436,7 +440,7 @@ void NetworkEditorController::printNetwork() const
   }
 }
 
-boost::optional<ConnectionId> NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+std::optional<ConnectionId> NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
@@ -462,7 +466,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
 
   logWarning("Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module.");
   signals_.invalidConnection_(desc);
-  return boost::none;
+  return {};
 }
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
@@ -522,6 +526,26 @@ boost::signals2::connection NetworkEditorController::connectPortRemoved(const Po
 boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber)
 {
   return signals_.networkDoneLoading_.connect(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectConnectionStatusChanged(const ConnectionStatusChangedSignalType::slot_type& subscriber)
+{
+  return signals_.connectionStatusChanged_.connect(subscriber);
+}
+
+std::string NetworkEditorController::setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable)
+{
+  auto conn = getNetwork()->lookupConnection(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  if (conn)
+  {
+    conn->setDisable(!enable);
+    signals_.connectionStatusChanged_(conn->id_, enable);
+    return std::string("Connection status ") + (enable ? "enabled" : "disabled") + ": " + moduleIdFrom + "(" + std::to_string(fromIndex) + ")->" + moduleIdTo + "(" + std::to_string(toIndex) + ")";
+  }
+  else
+  {
+    return "Connection not found: " + moduleIdFrom + "(" + std::to_string(fromIndex) + ")->" + moduleIdTo + "(" + std::to_string(toIndex) + ")";
+  }
 }
 
 NetworkFileHandle NetworkEditorController::serializeNetworkFragment(ModuleFilter modFilter, ConnectionFilter connFilter) const

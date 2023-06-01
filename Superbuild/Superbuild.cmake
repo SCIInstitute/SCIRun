@@ -69,7 +69,7 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ###########################################
 # Configure tetgen
-OPTION(WITH_TETGEN "Build Tetgen." OFF)
+OPTION(WITH_TETGEN "Build Tetgen." ON)
 
 ###########################################
 # Configure ospray
@@ -94,19 +94,28 @@ OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
 # Configure Qt
+
+SET(DEFAULT_QT_MIN_VERSION "5.15.2")
+
+set(SCIRUN_QT_MIN_VERSION ${DEFAULT_QT_MIN_VERSION} CACHE STRING "Qt version")
+set_property(CACHE SCIRUN_QT_MIN_VERSION PROPERTY STRINGS 5.12.8 5.15.2 6.3.1)
+string(REPLACE "." ";" SCIRUN_QT_MIN_VERSION_LIST ${SCIRUN_QT_MIN_VERSION})
+list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
+list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
+list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
+
 IF(NOT BUILD_HEADLESS)
-  IF(UNIX)
-    SET(QT_MIN_VERSION "5.4")
-  ELSE()
-    SET(QT_MIN_VERSION "5.15.2")
-  ENDIF()
 
-  SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
+  SET(Qt_PATH "" CACHE PATH "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
 
-  IF(IS_DIRECTORY ${Qt5_PATH})
-    FIND_PACKAGE(Qt5 ${QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent REQUIRED HINTS ${Qt5_PATH})
+  IF(IS_DIRECTORY ${Qt_PATH})
+    if (${QT_VERSION_MAJOR} STREQUAL "6")
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
+    else()
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt_PATH})
+    endif()
   ELSE()
-    MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+    MESSAGE(SEND_ERROR "Set Qt_PATH to directory where Qt is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
   ENDIF()
 
   IF(APPLE)
@@ -211,6 +220,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
+    "-DQT_VERSION_MAJOR:STRING=${QT_VERSION_MAJOR}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
     "-DUSER_PYTHON_VERSION:STRING=${USER_PYTHON_VERSION}"
@@ -263,16 +273,17 @@ ENDIF()
 
 IF(NOT BUILD_HEADLESS)
   LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DQt5_PATH:PATH=${Qt5_PATH}"
-    "-DQt5Core_DIR:PATH=${Qt5Core_DIR}"
-    "-DQt5Gui_DIR:PATH=${Qt5Gui_DIR}"
-    "-DQt5OpenGL_DIR:PATH=${Qt5OpenGL_DIR}"
-	  "-DQt5Network_DIR:PATH=${Qt5Network_DIR}"
- 	  "-DQt5Widgets_DIR:PATH=${Qt5Widgets_DIR}"
-	  "-DQt5Concurrent_DIR:PATH=${Qt5Concurrent_DIR}"
+    "-DQt_PATH:PATH=${Qt_PATH}"
+    "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
+    "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
+    "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"
+    "-DQt${QT_VERSION_MAJOR}GuiTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}GuiTools_DIR}"
+    "-DQt${QT_VERSION_MAJOR}OpenGL_DIR:PATH=${Qt${QT_VERSION_MAJOR}OpenGL_DIR}"
+	  "-DQt${QT_VERSION_MAJOR}Network_DIR:PATH=${Qt${QT_VERSION_MAJOR}Network_DIR}"
+ 	  "-DQt${QT_VERSION_MAJOR}Widgets_DIR:PATH=${Qt${QT_VERSION_MAJOR}Widgets_DIR}"
+	  "-DQt${QT_VERSION_MAJOR}Concurrent_DIR:PATH=${Qt${QT_VERSION_MAJOR}Concurrent_DIR}"
     "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
     "-DQWT_DIR:PATH=${QWT_DIR}"
-    #"-DCTK_DIR:PATH=${CTK_DIR}"
   )
 ENDIF()
 

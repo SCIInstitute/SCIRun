@@ -88,7 +88,7 @@ namespace Networks {
     virtual ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&) = 0;
     virtual bool disconnect(const ConnectionId&) = 0;
     virtual size_t nconnections() const = 0;
-    virtual void disable_connection(const ConnectionId&) = 0;
+    virtual ConnectionHandle lookupConnection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) const = 0;
     virtual ConnectionDescriptionList connections(bool includeVirtual) const = 0;
     virtual void incrementErrorCode(const ModuleId& moduleId) = 0;
     virtual NetworkGlobalSettings& settings() = 0;
@@ -112,7 +112,7 @@ namespace Networks {
   {
   public:
     virtual ~ConnectionMakerService() {}
-    virtual boost::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
+    virtual std::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
   };
 
   struct SCISHARE NetworkAppendInfo

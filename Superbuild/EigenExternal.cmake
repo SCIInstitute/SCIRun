@@ -26,9 +26,8 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# TODO: test on Windows
 ExternalProject_Add(Eigen_external
-  URL "https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz"
+  URL "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_IN_SOURCE ON

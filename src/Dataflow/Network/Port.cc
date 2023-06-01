@@ -83,9 +83,9 @@ Connection* Port::connection(size_t i) const
   return connections_[i];
 }
 
-boost::optional<ConnectionId> Port::firstConnectionId() const
+std::optional<ConnectionId> Port::firstConnectionId() const
 {
-  return !connections_.empty() ? connections_[0]->id_ : boost::optional<ConnectionId>();
+  return !connections_.empty() ? connections_[0]->id_ : std::optional<ConnectionId>();
 }
 
 void Port::setIndex(size_t index)
@@ -188,10 +188,10 @@ void InputPort::resendNewDataSignal()
   sink()->forceFireDataHasChanged();
 }
 
-boost::optional<std::string> InputPort::connectedModuleId() const
+std::optional<std::string> InputPort::connectedModuleId() const
 {
   if (connections_.empty())
-    return boost::none;
+    return std::nullopt;
   return connections_[0]->oport_->getUnderlyingModuleId().id_;
 }
 
@@ -249,7 +249,7 @@ void OutputPort::attach(Connection* conn)
   Port::attach(conn);
 }
 
-DatatypeHandle OutputPort::peekData() const 
+DatatypeHandle OutputPort::peekData() const
 {
   return source_->peekData();
 }

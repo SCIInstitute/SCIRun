@@ -44,15 +44,15 @@ void ModuleDialogWithParserHelp::popUpParserHelp()
 
 void ModuleDialogWithParserHelp::connectParserHelpButton(QPushButton* button)
 {
-  connect(button, SIGNAL(clicked()), this, SLOT(popUpParserHelp()));
+  connect(button, &QPushButton::clicked, this, &ModuleDialogWithParserHelp::popUpParserHelp);
 }
 
 ParserHelpDialog::ParserHelpDialog(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
-  connect(searchLineEdit_, SIGNAL(returnPressed()), this, SLOT(searchText()));
-  connect(searchButton_, SIGNAL(clicked()), this, SLOT(searchText()));
-  connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(resetFormatting(const QString&)));
+  connect(searchLineEdit_, &QLineEdit::returnPressed, this, &ParserHelpDialog::searchText);
+  connect(searchButton_, &QPushButton::clicked, this, &ParserHelpDialog::searchText);
+  connect(searchLineEdit_, &QLineEdit::textChanged, this, &ParserHelpDialog::resetFormatting);
 }
 
 void ParserHelpDialog::searchText()

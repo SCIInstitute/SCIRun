@@ -45,7 +45,7 @@ namespace Datatypes {
   class SCISHARE ColorMap : public Datatype
   {
   public:
-    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
+    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for its
     // default input range, we need to transform by default the data into [0,1] range.
     explicit ColorMap(const std::vector<ColorRGB>& color,
       const std::string& name = "Rainbow", const size_t resolution = 256, const double shift = 0.0,
@@ -74,6 +74,9 @@ namespace Datatypes {
     std::string dynamic_type_name() const override { return "ColorMap"; }
     double alpha(double transformedValue) const;
     double getTransformedValue(double v) const;
+    std::string styleSheet() const;
+    std::string describe() const { return info() + " & " + styleSheet(); }
+    std::string info() const;
 
   private:
     ///<< Internal functions.
@@ -88,6 +91,7 @@ namespace Datatypes {
     double rescale_scale_; //Rescaling scale (usually 1. / (data_max - data_min) ).
     double rescale_shift_; //Rescaling shift (usually -data_min). Shift happens before scale.
     std::vector<double> alphaLookup_;
+    mutable std::string styleSheet_;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable
@@ -113,8 +117,10 @@ namespace Datatypes {
   class SCISHARE ColorMap_OSP_helper
   {
   public:
-    std::vector<float> colorList;
-    std::vector<float> opacityList;
+    std::vector<float> colorList_;
+    std::vector<float> opacityList_;
+    float min_ = 0.0;
+    float max_ = 1.0;
     explicit ColorMap_OSP_helper(ColorMapHandle cmap);
   };
 

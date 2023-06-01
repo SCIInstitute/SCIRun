@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_MODULEWIDGET_H
 
 #include <QStackedWidget>
+#include <Interface/qt_include.h>
 #ifndef Q_MOC_RUN
 #include <Core/Utils/SmartPointers.h>
 #include <boost/bimap.hpp>
@@ -104,7 +105,8 @@ typedef SharedPointer<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 
 class ModuleWidget : public QStackedWidget,
-  public Dataflow::Networks::ExecutableObject, public HasNotes
+  public Dataflow::Networks::ExecutableObject,
+  public HasNotes<ModuleWidget>
 {
 	Q_OBJECT
 
@@ -130,7 +132,7 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
-  bool executionDisabled() const { return disabled_; }
+  bool isExecutionDisabled() const { return disabled_; }
   void setExecutionDisabled(bool disabled);
 
   void saveImagesFromViewScene();
@@ -190,8 +192,8 @@ public Q_SLOTS:
   void setStartupNote(const QString& text);
   void updateNote(const Note& note);
   void duplicate();
-  void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
+  void connectNewModuleTo(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+  void insertNewModuleTo(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const QMap<QString, std::string>& info);
   void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void pinUI();
@@ -202,6 +204,7 @@ public Q_SLOTS:
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
+  void changeExecuteButtonToPlay();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -220,6 +223,7 @@ Q_SIGNALS:
   void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged(const std::string& portID, bool adding);
+  void connectionStatusChanged(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
   void noteChanged();
   void moduleStateUpdated(int state);
   void moduleSelected(bool selected);
@@ -244,17 +248,16 @@ private Q_SLOTS:
   void executeTriggeredProgrammatically(bool upstream);
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
-  void replaceModuleWith();
+  void replaceModule();
   void updateDialogForDynamicPortChange(const std::string& portName, bool adding);
   void handleDialogFatalError(const QString& message);
-  void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
   void incomingConnectionStateChanged(bool disabled, int index);
   void showReplaceWithWidget();
   void toggleProgrammableInputPort();
 protected:
-  void enterEvent(QEvent* event) override;
+  void enterEvent(Q_ENTER_EVENT_CLASS* event) override;
   void leaveEvent(QEvent* event) override;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
 private:

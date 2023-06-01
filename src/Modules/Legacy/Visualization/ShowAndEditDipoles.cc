@@ -36,7 +36,7 @@
  *
  */
 
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Geometry.h>
@@ -572,7 +572,6 @@ GeometryHandle ShowAndEditDipolesImpl::addLines()
 {
   auto bbox = fieldInput_->vmesh()->get_bounding_box();
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
   std::string idName = std::string("SAEDField") +
     GeometryObject::delimiter +
     state_()->getValue(Parameters::FieldName).toString()
@@ -599,7 +598,7 @@ GeometryHandle ShowAndEditDipolesImpl::addLines()
     }
   }
 
-  glyphs.buildObject(*geom, idName, false, 0.5, ColorScheme::COLOR_UNIFORM, renState, primIn, bbox);
+  glyphs.buildObject(*geom, idName, false, 0.5, ColorScheme::COLOR_UNIFORM, renState, bbox);
   return geom;
 }
 

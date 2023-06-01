@@ -32,6 +32,7 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsPathItem>
 #include <QPen>
+#include <QMessageBox>
 #include <boost/function.hpp>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Interface/Application/Port.h>
@@ -67,7 +68,11 @@ enum
   EXTERNAL_SUBNET_CONNECTION = 200
 };
 
-class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes, public NoteDisplayHelper, public NeedsScenePositionProvider
+class ConnectionLine : public QObject,
+  public QGraphicsPathItem,
+  public HasNotes<ConnectionLine>,
+  public NoteDisplayHelper,
+  public NeedsScenePositionProvider
 {
   Q_OBJECT
 
@@ -94,11 +99,12 @@ public Q_SLOTS:
   void updateNote(const Note& note);
   void toggleDisabled();
   void insertNewModule();
+  void changeConnectionStatus(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
-  void insertNewModule(const QMap<QString, std::string>& info);
+  void requestInsertNewModule(const QMap<QString, std::string>& info);
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -266,6 +272,14 @@ private:
   QGraphicsProxyWidget* module_ {nullptr};
   SceneFunc func_;
   QGraphicsScene* getScene() const;
+};
+
+class DatatypeInfoBox : public QMessageBox
+{
+  Q_OBJECT
+public:
+  using QMessageBox::QMessageBox;
+  void addColorLabel(const QString& colorStyle);
 };
 
 }

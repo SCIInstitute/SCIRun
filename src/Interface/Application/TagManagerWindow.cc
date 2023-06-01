@@ -55,15 +55,15 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
   for (int i = 0; i < TagValues::NumberOfTags; ++i)
   {
     tagButtons_[i]->setProperty(tagIndexProperty, i);
-    connect(tagButtons_[i], SIGNAL(clicked()), this, SLOT(editTagColor()));
+    connect(tagButtons_[i], &QPushButton::clicked, this, &TagManagerWindow::editTagColor);
     tagLineEdits_[i]->setProperty(tagIndexProperty, i);
-    connect(tagLineEdits_[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
+    connect(tagLineEdits_[i], &QLineEdit::textChanged, this, &TagManagerWindow::updateTagName);
   }
 
   tagNames_.resize(TagValues::NumberOfTags);
   tagColors_.resize(TagValues::NumberOfTags);
 
-  connect(helpPushButton_, SIGNAL(clicked()), this, SLOT(helpButtonClicked()));
+  connect(helpPushButton_, &QPushButton::clicked, this, &TagManagerWindow::helpButtonClicked);
   hide();
 }
 

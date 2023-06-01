@@ -36,6 +36,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortInterface.h>
+#include <Dataflow/Network/Connection.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
@@ -257,7 +258,7 @@ namespace
       {
         return output->peekData();
       }
-      return boost::none;
+      return {};
     }
     SharedPointer<PortDescriptionInterface> port_;
     NetworkEditorController& nec_;
@@ -479,6 +480,11 @@ namespace
       return creationTime_;
     }
 
+    void setEnabled(bool enable) override
+    {
+      module_->setExecutionDisabled(!enable);
+    }
+
   private:
     ModuleHandle module_;
     NetworkEditorController& nec_;
@@ -487,19 +493,8 @@ namespace
   };
 }
 
-namespace SCIRun {
-  namespace Dataflow {
-    namespace Engine {
-      class PythonImplImpl
-      {
-      public:
-        std::map<std::string, std::map<int, std::map<std::string, std::map<int, std::string>>>> connectionIdLookup_;
-      };
-    }
-  }
-}
-
-PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory)
+PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) :
+  nec_(nec), cmdFactory_(cmdFactory)
 {
   connections_.push_back(nec_.connectStaticNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); }));
   connections_.push_back(nec_.connectModuleAdded([this](const std::string& id, ModuleHandle m, ModuleCounter mc) { pythonModuleAddedSlot(id, m, mc); }));
@@ -595,27 +590,27 @@ std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, 
   auto modTo = network->lookupModule(ModuleId(moduleIdTo));
   auto inputPort = modTo->inputPorts().at(toIndex);
   auto id = nec_.requestConnection(outputPort.get(), inputPort.get());
-  if (id)
-  {
-    impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex] = id->id_;
-  }
-
-  return "PythonImpl::connect success";
+  return "PythonImpl::connect success: " + id->id_;
 }
 
 std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
   //TODO: doesn't work at all since there is no GUI connection to this network change event. Issue is #...
-  auto id = impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex];
-  if (!id.empty())
+  auto conn = nec_.getNetwork()->lookupConnection(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  if (conn)
   {
-    nec_.removeConnection(id);
-    return "PythonImpl::disconnect IS NOT IMPLEMENTED";
+    nec_.removeConnection(conn->id());
+    return "PythonImpl::disconnect is not connected to GUI";
   }
   else
   {
     return "PythonImpl::disconnect: connection not found";
   }
+}
+
+std::string PythonImpl::setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable)
+{
+  return nec_.setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, enable);
 }
 
 std::string PythonImpl::saveNetwork(const std::string& filename)

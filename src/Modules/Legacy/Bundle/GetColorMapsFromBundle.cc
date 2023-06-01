@@ -26,6 +26,96 @@
 */
 
 
+#include <Modules/Legacy/Bundle/GetColorMapsFromBundle.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/ColorMap.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+
+MODULE_INFO_DEF(GetColorMapsFromBundle, Bundle, SCIRun)
+
+const AlgorithmParameterName GetColorMapsFromBundle::ColorMapNameList("ColorMapNameList");
+const AlgorithmParameterName GetColorMapsFromBundle::ColorMapNames[] = {
+  AlgorithmParameterName("colorMap1-name"),
+  AlgorithmParameterName("colorMap2-name"),
+  AlgorithmParameterName("colorMap3-name"),
+  AlgorithmParameterName("colorMap4-name"),
+  AlgorithmParameterName("colorMap5-name"),
+  AlgorithmParameterName("colorMap6-name")
+};
+
+GetColorMapsFromBundle::GetColorMapsFromBundle() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputBundle);
+  INITIALIZE_PORT(OutputBundle);
+  INITIALIZE_PORT(colorMap1);
+  INITIALIZE_PORT(colorMap2);
+  INITIALIZE_PORT(colorMap3);
+  INITIALIZE_PORT(colorMap4);
+  INITIALIZE_PORT(colorMap5);
+  INITIALIZE_PORT(colorMap6);
+}
+
+void GetColorMapsFromBundle::setStateDefaults()
+{
+  auto state = get_state();
+
+  for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
+  {
+    state->setValue(ColorMapNames[i], "colorMap" + std::to_string(i));
+  }
+}
+
+void GetColorMapsFromBundle::execute()
+{
+  auto bundle = getRequiredInput(InputBundle);
+
+  if (needToExecute())
+  {
+    auto state = get_state();
+    state->setTransientValue(ColorMapNameList.name(), bundle->getColorMapNames());
+
+    ColorMapHandle outputs[NUM_BUNDLE_OUT];
+    for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
+    {
+      auto colorMapName = state->getValue(ColorMapNames[i]).toString();
+      if (bundle->isColorMap(colorMapName))
+      {
+        outputs[i] = bundle->getColorMap(colorMapName);;
+      }
+    }
+
+    sendOutput(OutputBundle, bundle);
+
+    //TODO: fix duplication
+    if (outputs[0])
+      sendOutput(colorMap1, outputs[0]);
+    if (outputs[1])
+      sendOutput(colorMap2, outputs[1]);
+    if (outputs[2])
+      sendOutput(colorMap3, outputs[2]);
+    if (outputs[3])
+      sendOutput(colorMap4, outputs[3]);
+    if (outputs[4])
+      sendOutput(colorMap5, outputs[4]);
+    if (outputs[5])
+      sendOutput(colorMap6, outputs[5]);
+  }
+}
+
+std::string GetColorMapsFromBundle::makeColorMapNameList(const Bundle& bundle) const
+{
+  auto colorMapNames = bundle.getColorMapNames();
+  std::ostringstream vars;
+  std::copy(colorMapNames.begin(), colorMapNames.end(), std::ostream_iterator<std::string>(vars, "\n"));
+  return vars.str();
+}
+
+#if 0
 #include <Core/Datatypes/Bundle.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/MatrixTypeConverter.h>
@@ -149,3 +239,4 @@ void GetColorMapsFromBundle::execute()
     send_output_handle("bundle",handle);
   }
 }
+#endif

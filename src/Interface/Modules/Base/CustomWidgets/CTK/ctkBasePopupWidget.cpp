@@ -21,7 +21,6 @@
 // Qt includes
 #include <QApplication>
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QEvent>
 #include <QLabel>
@@ -90,7 +89,7 @@ ctkBasePopupWidgetPrivate::ctkBasePopupWidgetPrivate(ctkBasePopupWidget& object)
   // Geometry attributes
   this->Alignment = Qt::AlignJustify | Qt::AlignBottom;
   this->Orientations = Qt::Vertical;
-  this->VerticalDirection = ctkBasePopupWidget::TopToBottom;
+  this->VerticalDirection = ctkBasePopupWidget::VerticalDirection::TopToBottom;
   this->HorizontalDirection = Qt::LeftToRight;
 }
 
@@ -113,17 +112,14 @@ void ctkBasePopupWidgetPrivate::init()
   this->AlphaAnimation->setDuration(this->EffectDuration);
   this->AlphaAnimation->setStartValue(0.);
   this->AlphaAnimation->setEndValue(1.);
-  QObject::connect(this->AlphaAnimation, SIGNAL(finished()),
-                   q, SLOT(onEffectFinished()));
+  QObject::connect(this->AlphaAnimation, &QPropertyAnimation::finished, q, &ctkBasePopupWidget::onEffectFinished);
 
   this->PopupPixmapWidget = new QLabel(q, Qt::ToolTip | Qt::FramelessWindowHint);
 
   this->ScrollAnimation = new QPropertyAnimation(q, "effectGeometry", q);
   this->ScrollAnimation->setDuration(this->EffectDuration);
-  QObject::connect(this->ScrollAnimation, SIGNAL(finished()),
-                   q, SLOT(onEffectFinished()));
-  QObject::connect(this->ScrollAnimation, SIGNAL(finished()),
-                   this->PopupPixmapWidget, SLOT(hide()));
+  QObject::connect(this->ScrollAnimation, &QPropertyAnimation::finished, q, &ctkBasePopupWidget::onEffectFinished);
+  QObject::connect(this->ScrollAnimation, &QPropertyAnimation::finished, this->PopupPixmapWidget, &QLabel::hide);
 
   q->setAnimationEffect(this->Effect);
   q->setEasingCurve(QEasingCurve::OutCubic);
@@ -183,6 +179,8 @@ QWidgetList ctkBasePopupWidgetPrivate::focusWidgets(bool onlyVisible)const
 QWidget* ctkBasePopupWidgetPrivate::mouseOver()
 {
   QList<QWidget*> widgets = this->focusWidgets(true);
+    #if 0
+    //TODO DAN: this part is the buggy part!
   Q_FOREACH(QWidget* widget, widgets)
     {
     if (widget->underMouse())
@@ -190,7 +188,10 @@ QWidget* ctkBasePopupWidgetPrivate::mouseOver()
       return widget;
       }
     }
+    #endif
   // Warning QApplication::widgetAt(QCursor::pos()) can be a bit slow...
+
+
   const QPoint pos = QCursor::pos();
   QWidget* widgetUnderCursor = qApp->widgetAt(pos);
   Q_FOREACH(const QWidget* focusWidget, widgets)
@@ -206,7 +207,8 @@ QWidget* ctkBasePopupWidgetPrivate::mouseOver()
       return widgetUnderCursor;
       }
     }
-  return 0;
+
+  return nullptr;
 }
 
 // -------------------------------------------------------------------------
@@ -253,7 +255,7 @@ void ctkBasePopupWidgetPrivate::setupPopupPixmapWidget()
 Qt::Alignment ctkBasePopupWidgetPrivate::pixmapAlignment()const
 {
   Qt::Alignment alignment;
-  if (this->VerticalDirection == ctkBasePopupWidget::TopToBottom)
+  if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::TopToBottom)
     {
     alignment |= Qt::AlignBottom;
     }
@@ -285,7 +287,7 @@ QRect ctkBasePopupWidgetPrivate::closedGeometry(QRect openGeom)const
 {
   if (this->Orientations & Qt::Vertical)
     {
-    if (this->VerticalDirection == ctkBasePopupWidget::BottomToTop)
+    if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::BottomToTop)
       {
       openGeom.moveTop(openGeom.bottom());
       }
@@ -397,7 +399,7 @@ QRect ctkBasePopupWidgetPrivate::desiredOpenGeometry(QRect baseGeometry)const
 
   if (this->Alignment & Qt::AlignTop)
     {
-    if (this->VerticalDirection == ctkBasePopupWidget::TopToBottom)
+    if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::TopToBottom)
       {
       geometry.moveTop(topLeft.y());
       }
@@ -408,7 +410,7 @@ QRect ctkBasePopupWidgetPrivate::desiredOpenGeometry(QRect baseGeometry)const
     }
   else if (this->Alignment & Qt::AlignBottom)
     {
-    if (this->VerticalDirection == ctkBasePopupWidget::TopToBottom)
+    if (this->VerticalDirection == ctkBasePopupWidget::VerticalDirection::TopToBottom)
       {
       geometry.moveTop(bottomRight.y() + 1);
       }
@@ -498,17 +500,7 @@ QWidget* ctkBasePopupWidget::baseWidget()const
 void ctkBasePopupWidget::setBaseWidget(QWidget* widget)
 {
   Q_D(ctkBasePopupWidget);
-  if (!d->BaseWidget.isNull())
-    {
-    //disconnect(d->BaseWidget, SIGNAL(destroyed(QObject*)),
-    //           this, SLOT(onBaseWidgetDestroyed()));
-    }
   d->BaseWidget = widget;
-  if (!d->BaseWidget.isNull())
-    {
-    //connect(d->BaseWidget, SIGNAL(destroyed(QObject*)),
-    //        this, SLOT(onBaseWidgetDestroyed()));
-    }
 }
 
 // -------------------------------------------------------------------------

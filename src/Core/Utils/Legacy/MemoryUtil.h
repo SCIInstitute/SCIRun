@@ -31,8 +31,6 @@
 #ifndef CORE_UTIL_MEMORYUTIL_H
 #define CORE_UTIL_MEMORYUTIL_H
 
-#include <vector>
-#include <boost/shared_array.hpp>
 #include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
@@ -49,22 +47,6 @@ void delete_all_values(MapType& cont)
 {
   for (const auto& t : cont)
     delete t.second;
-}
-
-template <typename T>
-boost::shared_array<T> make_deep_copy(const boost::shared_array<T>& arr, size_t length)
-{
-  boost::shared_array<T> copy(new T[length]);
-  std::copy(arr.get(), arr.get() + length, copy.get());
-  return copy;
-}
-
-template <typename T>
-boost::shared_array<T> make_deep_copy(const std::vector<T>& v)
-{
-  boost::shared_array<T> copy(new T[v.size()]);
-  std::copy(v.begin(), v.end(), copy.get());
-  return copy;
 }
 
 }

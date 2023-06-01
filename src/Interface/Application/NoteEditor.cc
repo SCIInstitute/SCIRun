@@ -39,22 +39,22 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
   setWindowTitle("Note for " + moduleName);
   setVisible(false);
 
-  connect(chooseColorButton_, SIGNAL(clicked()), this, SLOT(changeTextColor()));
-  connect(resetColorButton_, SIGNAL(clicked()), this, SLOT(resetTextColor()));
+  connect(chooseColorButton_, &QPushButton::clicked, this, &NoteEditor::changeTextColor);
+  connect(resetColorButton_, &QPushButton::clicked, this, &NoteEditor::resetTextColor);
   if (positionAdjustable)
-    connect(positionComboBox_, SIGNAL(activated(int)), this, SLOT(changeNotePosition(int)));
+    connect(positionComboBox_, qOverload<int>(&QComboBox::activated), this, &NoteEditor::changeNotePosition);
   else
   {
     positionComboBox_->setVisible(false);
     positionLabel_->setVisible(false);
   }
-  connect(fontSizeComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeFontSize(const QString&)));
+  connect(fontSizeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &NoteEditor::changeFontSize);
 
-  connect(textEdit_, SIGNAL(textChanged()), this, SLOT(updateNote()));
+  connect(textEdit_, &QTextEdit::textChanged, this, &NoteEditor::updateNote);
 
-  connect(buttonBox_->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(resetText()));
-  connect(buttonBox_->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(ok()));
-  connect(buttonBox_->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(cancel()));
+  connect(buttonBox_->button(QDialogButtonBox::Reset), &QPushButton::clicked, this, &NoteEditor::resetText);
+  connect(buttonBox_->button(QDialogButtonBox::Ok), &QPushButton::clicked, this, &NoteEditor::ok);
+  connect(buttonBox_->button(QDialogButtonBox::Cancel), &QPushButton::clicked, this, &NoteEditor::cancel);
 
   //TODO: settable notes
   previousColor_ = Qt::white;

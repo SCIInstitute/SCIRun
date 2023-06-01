@@ -40,20 +40,34 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor), writeSettings_(writeSettings)
 {
   setupUi(this);
-  connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
-  connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
-  connect(autoModuleNoteCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoNotesState(int)));
-  connect(errorGraphicItemsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorInlineMessagesOption(int)));
-  connect(highDPIAdjustCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateHighDPIAdjust(int)));
-  connect(forceGridBackgroundCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateForceGridBackground(int)));
-  connect(viewerWidgetSelectionCorrectionCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateWidgetSelectionCorrection(int)));
-  connect(autoRotateViewerOnMouseReleaseCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoRotateViewer(int)));
-  connect(moduleExecuteDownstreamOnlyCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleExecuteDownstream(int)));
+  connect(saveBeforeExecuteCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateSaveBeforeExecuteOption);
+  connect(moduleErrorDialogDisableCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleErrorDialogOption);
+  connect(autoModuleNoteCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateAutoNotesState);
+  connect(errorGraphicItemsCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleErrorInlineMessagesOption);
+  connect(highDPIAdjustCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateHighDPIAdjust);
+  connect(forceGridBackgroundCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateForceGridBackground);
+  connect(viewerWidgetSelectionCorrectionCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateWidgetSelectionCorrection);
+  connect(autoRotateViewerOnMouseReleaseCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateAutoRotateViewer);
+  connect(moduleExecuteDownstreamOnlyCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleExecuteDownstream);
+  connect(toolBarPopupShowDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupShowDelay);
+  connect(toolBarPopupHideDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupHideDelay);
 }
 
 void PreferencesWindow::updateWidgetSelectionCorrection(int state)
 {
   SCIRun::Core::Preferences::Instance().widgetSelectionCorrection.setValue(state != 0);
+}
+
+void PreferencesWindow::updateToolBarPopupShowDelay(int delay)
+{
+  SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay.setValueWithSignal(delay);
+  toolBarPopupShowDelaySpinBox_->setValue(delay);
+}
+
+void PreferencesWindow::updateToolBarPopupHideDelay(int delay)
+{
+  SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay.setValueWithSignal(delay);
+  toolBarPopupHideDelaySpinBox_->setValue(delay);
 }
 
 void PreferencesWindow::updateAutoRotateViewer(int state)
@@ -107,6 +121,16 @@ void PreferencesWindow::setAutoRotateViewerOnMouseRelease(bool mode)
 {
   updateAutoRotateViewer(mode ? 1 : 0);
   autoRotateViewerOnMouseReleaseCheckbox_->setChecked(mode);
+}
+
+void PreferencesWindow::setToolBarPopupShowDelay(int delay)
+{
+  updateToolBarPopupShowDelay(delay);
+}
+
+void PreferencesWindow::setToolBarPopupHideDelay(int delay)
+{
+  updateToolBarPopupHideDelay(delay);
 }
 
 void PreferencesWindow::setWidgetSelectionCorrection(bool mode)

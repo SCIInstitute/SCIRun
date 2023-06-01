@@ -194,7 +194,7 @@ namespace SCIRun
         [portTypeToMatch](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, true, m) && portTypeMatches(portTypeToMatch, false, m); },
         [conn](QAction* action)
         {
-          QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule()));
+          QObject::connect(action, &QAction::triggered, conn, &ConnectionLine::insertNewModule);
           action->setProperty("insert", true);
         },
         menu);
@@ -291,14 +291,19 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
   NeedsScenePositionProvider::setPositionObject(makeShared<MidpointPositionerFromPorts>(fromPort_, toPort_));
-  connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-  connect(this, SIGNAL(insertNewModule(const QMap<QString, std::string>&)),
-    fromPort_, SLOT(insertNewModule(const QMap<QString, std::string>&)));
+  connect(menu_->disableAction_, &QAction::triggered, this, &ConnectionLine::toggleDisabled);
+  connect(this, &ConnectionLine::requestInsertNewModule, [this](const QMap<QString, std::string>& m) { fromPort_->insertNewModule(m); });
   menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
 
   guiLogDebug("Connection made: {}", id_.id_);
+}
+
+void ConnectionLine::changeConnectionStatus(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status)
+{
+  if (id.id_ == id_.id_)
+    setDisabled(!status);
 }
 
 ConnectionLine::~ConnectionLine()
@@ -384,7 +389,7 @@ void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
   ConnectionDescription cd{ { out->description()->getUnderlyingModuleId(), out->description()->id() }, { in->description()->getUnderlyingModuleId(), in->description()->id() } };
   subnetCompanion_ = f.makeFinishedConnection(out, in, ConnectionId::create(cd));
 
-  connect(subnetPort, SIGNAL(portMoved()), subnetCompanion_, SLOT(trackNodes()));
+  connect(subnetPort, &PortWidget::portMoved, subnetCompanion_, sl(trackNodes()));
 
   subnetCompanion_->isCompanion_ = true;
   subnetCompanion_->trackNodes();
@@ -420,10 +425,6 @@ double ConnectionLine::defaultZValue() const
 
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-  //TODO: this is a bit inconsistent, disabling for now
-//  if (event->button() == Qt::MiddleButton)
-//    DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
-
 	setColorAndWidth(placeHoldingColor_, placeHoldingWidth_);
 	menuOpen_ = false;
 	setZValue(defaultZValue());
@@ -491,7 +492,7 @@ void ConnectionLine::insertNewModule()
   auto toPortLocal = toPort_;
   toPort_ = nullptr;
 
-  Q_EMIT insertNewModule({
+  Q_EMIT requestInsertNewModule({
     { "moduleToAdd", moduleToAddName.toStdString() },
     { "endModuleId", toPortLocal->description()->getUnderlyingModuleId().id_ },
     { "inputPortName", toPortLocal->description()->get_portname() },
@@ -539,25 +540,36 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
 {
   auto info = eval(portDataDescriber);
 
-  auto msgBox = new QMessageBox(mainWindowWidget());
+  auto msgBox = new DatatypeInfoBox(mainWindowWidget());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setEscapeButton(QMessageBox::Ok);
-
-#if 0
-  auto viewButton = new QPushButton("View...");
-  auto pixmap = QPixmap::grabWidget(SCIRunMainWindow::Instance()); //TODO: pass in screenshot of visualized data
-  viewButton->setIcon(pixmap);
-  viewButton->setIconSize(pixmap.rect().size() / 10);
-  msgBox->addButton(viewButton, QMessageBox::HelpRole);
-#endif
-
   msgBox->setDetailedText("The above datatype info is displayed for the current run only. Hit i again after executing to display updated info. Keep this window open to compare info between runs.");
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
-  msgBox->setText(info);
   msgBox->setModal(false);
   msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
+  if (id.find("ColorMapObject") != std::string::npos)
+  {
+    auto infos = info.split("&");
+    msgBox->setText(infos[0]);
+    if (infos.size() > 1)
+      msgBox->addColorLabel(infos[1]);
+  }
+  else
+  {
+    msgBox->setText(info);
+  }
   msgBox->show();
+}
+
+void DatatypeInfoBox::addColorLabel(const QString& style)
+{
+  auto label = new QLabel;
+  label->setMinimumSize(QSize(230, 30));
+  label->setStyleSheet(style);
+  label->setMargin(10);
+  auto grid = qobject_cast<QGridLayout*>(layout());
+  grid->addWidget(label, 5, 1);
 }
 
 void ConnectionLine::keyPressEvent(QKeyEvent* event)

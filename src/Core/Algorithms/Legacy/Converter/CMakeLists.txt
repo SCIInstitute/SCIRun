@@ -35,7 +35,7 @@ SET(Core_Algorithms_Legacy_Converter_SRCS
   FieldToNrrd.cc
   ConvertToNrrd.cc
   #MatricesToDipoleField.cc
-  #ConvertBundleToField.cc
+  ConvertBundleToField.cc
   ConvertMatrixToString.cc
 )
 
@@ -45,6 +45,7 @@ SET(Core_Algorithms_Legacy_Converter_HEADERS
   FieldToNrrd.h
   ConvertToNrrd.h
   ConvertMatrixToString.h
+  ConvertBundleToField.h
   share.h
 )
 
@@ -57,6 +58,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Converter
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
+  Core_Datatypes_Legacy_Bundle
 )
 
 IF(BUILD_SHARED_LIBS)

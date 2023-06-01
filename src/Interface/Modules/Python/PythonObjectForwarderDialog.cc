@@ -44,7 +44,7 @@ PythonObjectForwarderDialog::PythonObjectForwarderDialog(const std::string& name
   addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
-  connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
+  connect(clearObjectPushButton_, &QPushButton::clicked, this, &PythonObjectForwarderDialog::resetObject);
 }
 
 void PythonObjectForwarderDialog::resetObject()

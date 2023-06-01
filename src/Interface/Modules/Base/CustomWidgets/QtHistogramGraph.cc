@@ -62,30 +62,39 @@ void QtHistogramGraph::reset_histogram( )
 void QtHistogramGraph::paintEvent(QPaintEvent*)
 {
   QStyleOption opt;
-  opt.init(this);
+  opt.initFrom(this);
   QPainter painter( this );
   painter.setRenderHint( QPainter::Antialiasing, true );
   style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
-  if ( ! this->histogram_.is_valid() ) return;
+  if ( ! this->histogram_.is_valid() )
+    return;
 
-    double histogram_width = this->width();
-    double bins_size = this->histogram_.get_size();
-    const std::vector<size_t>& bins = this->histogram_.get_bins();
+  const double histogram_width = this->width();
+
+  const std::vector<size_t>& allBins = this->histogram_.get_bins();
+  std::vector<size_t> nonZeroBins;
+  std::copy_if(allBins.begin(), allBins.end(), std::back_inserter(nonZeroBins), [](auto b) { return b != 0; });
+
+  if (nonZeroBins.empty())
+    return;
+
+  const size_t bins_size = nonZeroBins.size() - 1;
+  const int rect_width = histogram_width / bins_size;
 
   if( !logarithmic_ )
   {
-    double percent_of_max = this->height() /
+    const double percent_of_max = this->height() /
       static_cast< double >( this->histogram_.get_max_bin() );
 
     for( int i = 0; i < bins_size; ++i )
     {
       // Break it down so it's easier to understand
-      int adjusted_bin_size = static_cast< double >( bins[ i ] ) * percent_of_max;
-      int rect_left =  i * ( histogram_width / bins_size );
-      int rect_top = this->height() - adjusted_bin_size;
-      int rect_width = histogram_width / bins_size;
-      int rect_height = adjusted_bin_size;
+      const int adjusted_bin_size = static_cast< double >( nonZeroBins[ i ] ) * percent_of_max;
+      const int rect_left =  i * ( histogram_width / bins_size );
+      const int rect_top = this->height() - adjusted_bin_size;
+
+      const int rect_height = adjusted_bin_size;
 
       QLinearGradient linearGradient( QPointF( rect_left, rect_top ),
         QPointF( rect_left+rect_width, this->height() ) );
@@ -104,10 +113,9 @@ void QtHistogramGraph::paintEvent(QPaintEvent*)
     for( int i = 0; i < bins_size; ++i )
     {
       // Break it down so it's easier to understand
-      int adjusted_bin_size = std::log( static_cast< double >( bins[ i ] ) + 1 ) * percent_of_max;
+      int adjusted_bin_size = std::log( static_cast< double >( nonZeroBins[ i ] ) + 1 ) * percent_of_max;
       int rect_left =  i * ( histogram_width / bins_size );
       int rect_top = this->height() - adjusted_bin_size;
-      int rect_width = histogram_width / bins_size;
       int rect_height = adjusted_bin_size;
 
       QLinearGradient linearGradient( QPointF( rect_left, rect_top ),
@@ -118,9 +126,7 @@ void QtHistogramGraph::paintEvent(QPaintEvent*)
       painter.setBrush( linearGradient );
       painter.drawRect( rect_left, rect_top, rect_width, rect_height );
     }
-
   }
-
 }
 
 void QtHistogramGraph::mousePressEvent( QMouseEvent* e )

@@ -49,9 +49,9 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
     matrixTextEdit_->setEnabled(false);
   }
 
-  connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
-  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
-  connect(editCheckBox_, SIGNAL(toggled(bool)), matrixTextEdit_, SLOT(setEnabled(bool)));
+  connect(editCheckBox_, &QCheckBox::stateChanged, this, &CreateMatrixDialog::pushMatrixToState);
+  connect(matrixTextEdit_, &CodeEditor::textChanged, this, &CreateMatrixDialog::editBoxUnsaved);
+  connect(editCheckBox_, &QCheckBox::toggled, matrixTextEdit_, &QTextEdit::setEnabled);
 }
 
 void CreateMatrixDialog::hideEvent(QHideEvent*)

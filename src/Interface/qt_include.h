@@ -30,6 +30,16 @@
 
 #ifdef OLDER_QT_SUPPORT_NEEDED // remove when Travis linux build has newer Qt 5 version
 #define WIDTH_FUNC width
+#define COMBO_BOX_ACTIVATED_STRING qOverload<const QString&>(&QComboBox::activated)
+#define BUTTON_GROUP_SIGNAL qOverload<int>(&QButtonGroup::buttonPressed)
 #else
 #define WIDTH_FUNC horizontalAdvance
+#define COMBO_BOX_ACTIVATED_STRING &QComboBox::textActivated
+#define BUTTON_GROUP_SIGNAL &QButtonGroup::idClicked
+#endif
+
+#ifdef SCIRUN_QT6_ENABLED
+#define Q_ENTER_EVENT_CLASS QEnterEvent
+#else
+#define Q_ENTER_EVENT_CLASS QEvent
 #endif

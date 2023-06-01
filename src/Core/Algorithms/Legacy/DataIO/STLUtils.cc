@@ -28,19 +28,30 @@
 
 #include <Core/Algorithms/Legacy/DataIO/STLUtils.h>
 #include <Core/GeometryPrimitives/Vector.h>
+#include <boost/unordered_map.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
-boost::shared_array<float> SCIRun::Core::Algorithms::computeFaceNormal(const Point& p1, const Point& p2, const Point& p3)
+std::vector<float> SCIRun::Core::Algorithms::computeFaceNormal(const Point& p1, const Point& p2, const Point& p3)
 {
   Vector U = p2 - p1;
   Vector V = p3 - p1;
 
-  boost::shared_array<float> normal(new float[3]);
+  std::vector<float> normal(3);
   normal[0] = U.y() * V.z() - U.z() * V.y();
   normal[1] = U.z() * V.x() - U.x() * V.z();
   normal[2] = U.x() * V.y() - U.y() * V.x();
   return normal;
+}
+
+
+std::size_t PointHash::operator()(Geometry::Point const& point) const
+{
+  std::size_t seed = 0;
+  boost::hash_combine( seed, point.x() );
+  boost::hash_combine( seed, point.y() );
+  boost::hash_combine( seed, point.z() );
+  return seed;
 }

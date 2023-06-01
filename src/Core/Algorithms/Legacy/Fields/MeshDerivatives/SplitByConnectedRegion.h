@@ -57,14 +57,15 @@ class SCISHARE SplitFieldByConnectedRegionAlgo : public AlgorithmBase
 public:
   SplitFieldByConnectedRegionAlgo();
 
-  static AlgorithmOutputName OutputField1;
-  static AlgorithmOutputName OutputField2;
-  static AlgorithmOutputName OutputField3;
-  static AlgorithmOutputName OutputField4;
-  static AlgorithmOutputName OutputField5;
-  static AlgorithmOutputName OutputField6;
-  static AlgorithmOutputName OutputField7;
-  static AlgorithmOutputName OutputField8;
+  static const AlgorithmOutputName OutputField1;
+  static const AlgorithmOutputName OutputField2;
+  static const AlgorithmOutputName OutputField3;
+  static const AlgorithmOutputName OutputField4;
+  static const AlgorithmOutputName OutputField5;
+  static const AlgorithmOutputName OutputField6;
+  static const AlgorithmOutputName OutputField7;
+  static const AlgorithmOutputName OutputField8;
+  static const AlgorithmOutputName OutputBundle;
 
   std::vector<FieldHandle> run(FieldHandle input) const;
 

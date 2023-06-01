@@ -17,13 +17,14 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.14.0
+      uses: jurplel/install-qt-action@v3
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         version: 5.15.2
         target: desktop
         host: mac
+        setup-python: 'false'
         install-deps: true
 
     - name: Print out Qt directory
@@ -34,7 +35,7 @@ jobs:
         ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
-      run: ./build.sh -DQt5_PATH="${Qt5_Dir}"
+      run: ./build.sh -DQt_PATH="${Qt5_Dir}"
 
     - name: Package
       working-directory: bin/SCIRun
@@ -74,13 +75,14 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.14.0
+      uses: jurplel/install-qt-action@v3
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         version: 5.15.2
         target: desktop
         host: mac
+        setup-python: 'false'
         install-deps: true
 
     - name: Prepare
@@ -88,7 +90,7 @@ jobs:
         ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
-      run: ./build.sh -DBUILD_WITH_PYTHON=OFF -DQt5_PATH="${Qt5_Dir}"
+      run: ./build.sh -DBUILD_WITH_PYTHON=OFF -DQt_PATH="${Qt5_Dir}"
 
     - name: Package
       working-directory: bin/SCIRun
@@ -116,13 +118,14 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.14.0
+      uses: jurplel/install-qt-action@v3
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         version: 5.15.2
         target: desktop
         host: mac
+        setup-python: 'false'
         install-deps: true
 
     - name: Print out Qt directory
@@ -133,7 +136,7 @@ jobs:
         ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
-      run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt5_PATH="${Qt5_Dir}"
+      run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt_PATH="${Qt5_Dir}"
 
     - name: Package
       working-directory: bin/SCIRun

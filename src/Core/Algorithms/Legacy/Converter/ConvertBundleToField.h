@@ -32,30 +32,26 @@
 #ifndef CORE_ALGORITHMS_CONVERTER_CONVERTBUNDLETOFIELD_H
 #define CORE_ALGORITHMS_CONVERTER_CONVERTBUNDLETOFIELD_H 1
 
-//! Datatypes used
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
-//! Base for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Converter/share.h>
-
-namespace SCIRunAlgo {
-
-class SCISHARE ConvertBundleToFieldAlgo : public AlgoBase
+namespace SCIRun::Core::Algorithms::Converters
 {
-  public:
-    // Algorithm defaults
-    ConvertBundleToFieldAlgo();
-    ~ConvertBundleToFieldAlgo();
+  ALGORITHM_PARAMETER_DECL(MergeNodes);
+  ALGORITHM_PARAMETER_DECL(Tolerance);
+  ALGORITHM_PARAMETER_DECL(MatchNodeValues);
+  ALGORITHM_PARAMETER_DECL(MakeNoData);
 
-  public:
-    // Algorithm Functions
-    bool run(SCIRun::BundleHandle& input, SCIRun::FieldHandle& output);
+class SCISHARE ConvertBundleToFieldAlgo : public AlgorithmBase
+{
+public:
+  ConvertBundleToFieldAlgo();
+  static const AlgorithmInputName InputBundle;
+  bool runImpl(const SCIRun::Core::Datatypes::BundleHandle& input, SCIRun::FieldHandle& output) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
-} // namespace SCIRunAlgo
+}
 
 #endif

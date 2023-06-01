@@ -142,7 +142,7 @@ void ShowSplashScreenGui::initSplashScreen()
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
-  QObject::connect( splashTimer_, SIGNAL( timeout() ), splash_, SLOT( close() ));
+  QObject::connect(splashTimer_, &QTimer::timeout, splash_, &QSplashScreen::close);
 }
 
 QSplashScreen* ShowSplashScreenGui::splash_ = nullptr;
@@ -200,7 +200,7 @@ bool NetworkFileProcessCommand::execute()
       {
         const int numModules = static_cast<int>(file->network.modules.size());
         QProgressDialog progress("Loading network " + (tempFile ? "" : QString::fromStdString(filename)), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
-        progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
+        QObject::connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::networkDoneLoading, &progress, &QProgressDialog::setValue);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
         progress.setValue(0);
@@ -299,14 +299,14 @@ bool RunPythonScriptCommandGui::execute()
     app.controller()->stopExecutionContextLoopWhenExecutionFinishes();
   }
 
-  auto script = app.parameters()->pythonScriptFile().get();
+  auto script = *app.parameters()->pythonScriptFile();
   SCIRunMainWindow::Instance()->runPythonScript(QString::fromStdString(script.string()));
   return true;
 }
 
 bool SetupDataDirectoryCommandGui::execute()
 {
-  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  auto dir = *Application::Instance().parameters()->dataDirectory();
   LOG_DEBUG("Data dir set to: {}", dir.string());
 
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));

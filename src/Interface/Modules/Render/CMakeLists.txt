@@ -43,6 +43,7 @@ SET(Interface_Modules_Render_FORMS
   Materials.ui
   ObjectSelection.ui
   OrientationAxes.ui
+  Screenshot.ui
   ScaleBar.ui
   ClippingPlanes.ui
   InputControls.ui
@@ -141,7 +142,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_QWT_LIBRARY}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt5::OpenGL)
+TARGET_LINK_LIBRARIES(Interface_Modules_Render ${QT_GRAPHICS_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)

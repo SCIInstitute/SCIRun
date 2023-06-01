@@ -27,6 +27,7 @@
 
 
 #include <QtGui>
+#include <QPushButton>
 #include <iostream>
 #include <Interface/Application/DeveloperConsole.h>
 
@@ -35,10 +36,10 @@ using namespace SCIRun::Gui;
 DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
   setupUi(this);
-  connect(serialExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
-  connect(parallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
-  connect(improvedParallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
-  connect(globalPortCacheButton_, SIGNAL(stateChanged(int)), this, SLOT(globalPortCacheButtonClicked()));
+  connect(serialExecutionRadioButton_, &QPushButton::clicked, this, &DeveloperConsole::executorButtonClicked);
+  connect(parallelExecutionRadioButton_, &QPushButton::clicked, this, &DeveloperConsole::executorButtonClicked);
+  connect(improvedParallelExecutionRadioButton_, &QPushButton::clicked, this, &DeveloperConsole::executorButtonClicked);
+  connect(globalPortCacheButton_, &QCheckBox::stateChanged, this, &DeveloperConsole::globalPortCacheButtonClicked);
 }
 
 void DeveloperConsole::updateNetworkViewLog(const QString& s)

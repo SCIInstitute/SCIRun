@@ -36,7 +36,6 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
-#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Interface/Modules/Render/ViewSceneManager.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/TextBuilder.h>
@@ -56,6 +55,7 @@ namespace SCIRun {
     class GLWidget;
     class ScopedWidgetColorChanger;
     class ViewSceneDialogImpl;
+    class ViewSceneControlPopupWidget;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
@@ -67,7 +67,7 @@ namespace SCIRun {
       ~ViewSceneDialog() override;
 
       std::string toString(std::string prefix) const;
-      void adjustToolbar() override;
+      void adjustToolbar(double factor) override;
 
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(float x, float y);
@@ -79,6 +79,8 @@ namespace SCIRun {
       void autoSaveScreenshot();
       void setFloatingState(bool isFloating);
       void vsLog(const QString& msg) const;
+      Qt::ToolBarArea whereIs(QToolBar* toolbar) const;
+      bool isFullScreen() const;
 
       void postMoveEventCallback(const QPoint& p) override;
 
@@ -89,11 +91,18 @@ namespace SCIRun {
       void cameraDistanceChangeForwarder();
       void lockMutexForwarder();
       void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
+      void closeAllNonPinnedPopups();
+      void fullScreenChanged();
 
-    protected Q_SLOTS:
+    public Q_SLOTS:
       void printToString() const {std::cout << toString("");}
       void sendBugReport();
-
+      void adjustZoomSpeed(int value);
+      void saveNewGeometryChanged(int state);
+      void invertZoomClicked(bool value);
+      void menuMouseControlChanged(int index);
+      void adaptToFullScreenView(bool fullScreen) override;
+    protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometriesAndSendScreenShot();
 
@@ -108,9 +117,6 @@ namespace SCIRun {
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
-      void menuMouseControlChanged(int index);
-      void invertZoomClicked(bool value);
-      void adjustZoomSpeed(int value);
       void lockRotationToggled();
       void lockPanningToggled();
       void lockZoomToggled();
@@ -158,6 +164,7 @@ namespace SCIRun {
       void setScaleBarMultiplier(double value);
       void setScaleBarNumTicks(int value);
       void setScaleBarLineWidth(double value);
+      void setScaleBarLineColor(double value);
       void setScaleBar();
 
       //---------------- Lights --------------------------------------------------------------------
@@ -184,11 +191,12 @@ namespace SCIRun {
       void setTransparencySortTypeContinuous(bool index);
       void setTransparencySortTypeUpdate(bool index);
       void setTransparencySortTypeLists(bool index);
-      void screenshotClicked();
-      void quickScreenshot(bool prompt);
-      void quickScreenshotClicked() { quickScreenshot(true); }
-      void saveNewGeometryChanged(int state);
-
+      void screenshotSaveAs();
+      void screenshotSaveAsClicked() { screenshotSaveAs(); };
+      void quickScreenshot();
+      void quickScreenshotClicked() { quickScreenshot(); }
+      void setScreenshotDirectory();
+      void setToolBarPositions();
 
     protected:
       //---------------- Initialization ------------------------------------------------------------
@@ -211,11 +219,8 @@ namespace SCIRun {
       void keyReleaseEvent(QKeyEvent*event) override;
       void focusOutEvent(QFocusEvent* event) override;
       void focusInEvent(QFocusEvent* event) override;
-      void enterEvent(QEvent* event) override;
-      void leaveEvent(QEvent* event) override;
       void closeEvent(QCloseEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent*) override {}
-
 
     private:
       //---------------- Initialization ------------------------------------------------------------
@@ -225,7 +230,6 @@ namespace SCIRun {
       void setupMaterials();
       void addAutoViewButton();
       void addScreenshotButton();
-      void addQuickScreenshotButton();
       void addViewBarButton();
       void addControlLockButton();
       void addAutoRotateButton();
@@ -239,8 +243,7 @@ namespace SCIRun {
       void addInputControlButton();
       void addCameraLocksButton();
       void addDeveloperControlButton();
-      void addToolbarButton(QWidget* w, int which, QWidget* widgetToPopup = nullptr);
-      void addConfigurationButton();
+      void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addObjectSelectionButton();
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
@@ -252,6 +255,7 @@ namespace SCIRun {
       bool clickedInViewer(QMouseEvent* e) const;
       void initializeAxes();
       void initializeVisibleObjects();
+      void setupPopupWidget(QPushButton* button, ViewSceneControlPopupWidget* underlyingWidget, QToolBar* toolbar);
 
       //---------------- Widgets -------------------------------------------------------------------
       bool needToWaitForWidgetSelection();
@@ -285,6 +289,7 @@ namespace SCIRun {
       //---------------- Misc. ---------------------------------------------------------------------
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
+      void saveScreenshot(QString directory, bool notify);
 
       std::unique_ptr<ViewSceneDialogImpl> impl_;
 
@@ -295,6 +300,7 @@ namespace SCIRun {
       friend class MaterialsControls;
       friend class ObjectSelectionControls;
       friend class OrientationAxesControls;
+      friend class ScreenshotControls;
       friend class ScaleBarControls;
       friend class LightControls;
       friend class ClippingPlaneControls;

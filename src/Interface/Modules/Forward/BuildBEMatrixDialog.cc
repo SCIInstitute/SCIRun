@@ -58,7 +58,7 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   WidgetStyleMixin::tableHeaderStyle(this->tableWidget);
   tableWidget->resizeColumnsToContents();
 
-  connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));
+  connect(tableWidget, &QTableWidget::cellChanged, this, &BuildBEMatrixDialog::pushTable);
 }
 
 void BuildBEMatrixDialog::updateFromPortChange(int numPorts, const std::string&, DynamicPortChange)
@@ -89,10 +89,10 @@ QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
 {
   QStringList bcList;
   bcList << "Measurement (Neumann)" << "Source (Dirichlet)";
-  QComboBox* bcBox = new QComboBox();
+  auto* bcBox = new QComboBox();
   bcBox->addItems(bcList);
   bcBox->setCurrentIndex(i == 0 ? 1 : 0);
-  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushBoundaryConditions()));
+  connect(bcBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &BuildBEMatrixDialog::pushBoundaryConditions);
   return bcBox;
 }
 
@@ -100,8 +100,8 @@ QDoubleSpinBox* BuildBEMatrixDialog::makeDoubleEntryItem(int row, int col) const
 {
   auto spin = new QDoubleSpinBox();
   spin->setValue((row + col + 1) % 2);
-  const char* slot = col == TableColumns::InsideConductivity ? SLOT(pushInsides()) : SLOT(pushOutsides());
-  connect(spin, SIGNAL(valueChanged(double)), this, slot);
+  auto slot = col == TableColumns::InsideConductivity ? &BuildBEMatrixDialog::pushInsides : &BuildBEMatrixDialog::pushOutsides;
+  connect(spin, qOverload<double>(&QDoubleSpinBox::valueChanged), this, slot);
   return spin;
 }
 

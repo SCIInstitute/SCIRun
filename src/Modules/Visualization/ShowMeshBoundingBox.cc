@@ -26,7 +26,7 @@
 */
 
 
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Modules/Visualization/ShowMeshBoundingBox.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -154,7 +154,7 @@ GeometryHandle ShowMeshBoundingBoxImpl::makeGeometry(const GeometryIDGenerator& 
 
   auto geom(makeShared<GeometryObjectSpire>(idGen, "ShowMeshBoundingBox", true));
   glyphs.buildObject(*geom, geom->uniqueID(), false, 1.0, ColorScheme::COLOR_IN_SITU,
-                     getRenderState(), SpireIBO::PRIMITIVE::LINES, bbox_, true, nullptr);
+                     getRenderState(), bbox_, true, nullptr);
   return geom;
 }
 

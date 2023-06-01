@@ -77,7 +77,7 @@ public:
   void getPoints(const FieldList& fields);
   void getPointsForFields(FieldHandle field, std::vector<int>& indices, std::vector<Point>& points);
   FieldHandle getMeanTensors() const;
-  MatrixHandle getCovarianceMatrices() const;
+  DenseMatrixHandle getCovarianceMatrices() const;
 private:
   size_t fieldCount_ = 0;
   size_t fieldSize_ = 0;
@@ -400,7 +400,7 @@ void ComputeTensorUncertaintyAlgorithmImpl::getTensors(const FieldList& fields)
   }
 }
 
-MatrixHandle ComputeTensorUncertaintyAlgorithmImpl::getCovarianceMatrices() const
+DenseMatrixHandle ComputeTensorUncertaintyAlgorithmImpl::getCovarianceMatrices() const
 {
   auto m = std::make_shared<DenseMatrix>(21, fieldSize_);
   for (size_t i = 0; i < fieldSize_; ++i)

@@ -33,7 +33,7 @@
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -52,6 +52,8 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FieldName;
         // Mesh Color
         static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+        static const Core::Algorithms::AlgorithmParameterName ShowNormals;
+        static const Core::Algorithms::AlgorithmParameterName ShowNormalsScale;
         // Vector Controls
         static const Core::Algorithms::AlgorithmParameterName ShowVectorTab;
         static const Core::Algorithms::AlgorithmParameterName ShowVectors;
@@ -115,8 +117,8 @@ namespace SCIRun {
       private:
         void configureInputs(
             FieldHandle pfield,
-            boost::optional<FieldHandle> sfield,
-            boost::optional<FieldHandle> tfield);
+            std::optional<FieldHandle> sfield,
+            std::optional<FieldHandle> tfield);
         RenderState::GlyphInputPort getInput(const std::string& port_name);
         void setSuperquadricEmphasis(int emphasis);
 

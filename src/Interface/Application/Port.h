@@ -65,7 +65,7 @@ public:
   //bool isDynamic() const override = 0;
   //SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
   //size_t getIndex() const override = 0;
-  //boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
+  //std::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
   virtual const SCIRun::Dataflow::Networks::PortDescriptionInterface* description() const = 0;
 
   virtual QColor color() const = 0;
@@ -160,7 +160,7 @@ public:
 
   const ConnectionLine* firstConnection() const { return !connections_.empty() ? *connections_.cbegin() : nullptr; }
 
-  //boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
+  //std::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
   QGraphicsTextItem* makeNameLabel() const;
 
@@ -186,6 +186,7 @@ Q_SIGNALS:
   void connectionNoteChanged();
   void highlighted(bool highlighted);
   void incomingConnectionStateChange(bool disabled, int index);
+  void connectionStatusChanged(const SCIRun::Dataflow::Networks::ConnectionId& id, bool status);
 protected:
   void mousePressEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;
@@ -196,7 +197,7 @@ private:
   static void forEachPort(Func func, Pred pred);
 
   QGraphicsItem* dragImpl(const QPointF& endPos);
-  void makeConnection(const QPointF& pos);
+  void makeConnectionAtPoint(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port, double threshold);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 

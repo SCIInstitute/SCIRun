@@ -483,6 +483,16 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(cons
   return {};
 }
 
+std::string NetworkEditorPythonAPI::scirun_enable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  return impl_->setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, true);
+}
+
+std::string NetworkEditorPythonAPI::scirun_disable_connection(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  return impl_->setConnectionStatus(moduleIdFrom, fromIndex, moduleIdTo, toIndex, false);
+}
+
 boost::python::object SimplePythonAPI::scirun_module_ids()
 {
   auto mods = NetworkEditorPythonAPI::modules();

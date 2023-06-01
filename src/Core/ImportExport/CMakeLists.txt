@@ -30,6 +30,7 @@
 
 SET(Core_ImportExport_SRCS
   Nrrd/NrrdIEPlugin.cc
+  ColorMap/ColorMapIEPlugin.cc
 )
 
 SET(Core_ImportExport_HEADERS
@@ -50,6 +51,7 @@ TARGET_LINK_LIBRARIES(Core_ImportExport
   Core_Thread
   Core_Logging
   Core_Datatypes
+  pugixml
 )
 
 IF(BUILD_SHARED_LIBS)

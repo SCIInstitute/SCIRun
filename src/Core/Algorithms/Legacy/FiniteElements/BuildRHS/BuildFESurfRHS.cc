@@ -246,7 +246,7 @@ bool BuildFESurfRHSAlgo::run(FieldHandle input, FieldHandle& output,  MatrixHand
             l_val += Dot(V, normal) * Wip * detJ;
           }
 
-	  (*rhsmatrix_)(inodes[q],0)+=l_val;  // in SCIRun4 it used to be: rhsmatrix_->add(inodes[q], 0, l_val);
+	  (*rhsmatrix_)(static_cast<int>(inodes[q]),0)+=l_val;  // in SCIRun4 it used to be: rhsmatrix_->add(inodes[q], 0, l_val);
         }
       }
     }

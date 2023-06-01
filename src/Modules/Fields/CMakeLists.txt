@@ -32,6 +32,7 @@ SET(Modules_Fields_SRCS
   EditMeshBoundingBox.cc
   CalculateNodeLocationFrequency.cc
   RefineTetMeshLocally.cc
+  CalculateBundleDifference.cc
 )
 
 SET(Modules_Fields_HEADERS
@@ -40,6 +41,7 @@ SET(Modules_Fields_HEADERS
   EditMeshBoundingBox.h
   CalculateNodeLocationFrequency.h
   RefineTetMeshLocally.h
+  CalculateBundleDifference.h
   share.h
 )
 

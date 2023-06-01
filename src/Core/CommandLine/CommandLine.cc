@@ -114,44 +114,44 @@ class DeveloperParametersImpl : public DeveloperParameters
 {
 public:
   DeveloperParametersImpl(
-    const boost::optional<std::string>& threadMode,
-    const boost::optional<std::string>& reexecuteMode,
-    const boost::optional<int>& frameInitLimit,
-    const boost::optional<int>& regressionTimeout,
-    const boost::optional<unsigned int>& maxCores,
-    const boost::optional<double>& guiExpandFactor
+    const std::optional<std::string>& threadMode,
+    const std::optional<std::string>& reexecuteMode,
+    const std::optional<int>& frameInitLimit,
+    const std::optional<int>& regressionTimeout,
+    const std::optional<unsigned int>& maxCores,
+    const std::optional<double>& guiExpandFactor
     ) : threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit),
     regressionTimeout_(regressionTimeout), maxCores_(maxCores), guiExpandFactor_(guiExpandFactor)
   {}
-  boost::optional<int> regressionTimeoutSeconds() const override
+  std::optional<int> regressionTimeoutSeconds() const override
   {
     return regressionTimeout_;
   }
-  boost::optional<std::string> threadMode() const  override
+  std::optional<std::string> threadMode() const  override
   {
     return threadMode_;
   }
-  boost::optional<std::string> reexecuteMode() const override
+  std::optional<std::string> reexecuteMode() const override
   {
     return reexecuteMode_;
   }
-  boost::optional<int> frameInitLimit() const override
+  std::optional<int> frameInitLimit() const override
   {
     return frameInitLimit_;
   }
-  boost::optional<unsigned int> maxCores() const override
+  std::optional<unsigned int> maxCores() const override
   {
     return maxCores_;
   }
-  boost::optional<double> guiExpandFactor() const override
+  std::optional<double> guiExpandFactor() const override
   {
     return guiExpandFactor_;
   }
 private:
-  boost::optional<std::string> threadMode_, reexecuteMode_;
-  boost::optional<int> frameInitLimit_, regressionTimeout_;
-  boost::optional<unsigned int> maxCores_;
-  boost::optional<double> guiExpandFactor_;
+  std::optional<std::string> threadMode_, reexecuteMode_;
+  std::optional<int> frameInitLimit_, regressionTimeout_;
+  std::optional<unsigned int> maxCores_;
+  std::optional<double> guiExpandFactor_;
 };
 
 class ApplicationParametersImpl : public ApplicationParameters
@@ -189,9 +189,9 @@ public:
   ApplicationParametersImpl(
     const std::string& entireCommandLine,
     std::vector<std::string>&& inputFiles,
-    const boost::optional<boost::filesystem::path>& pythonScriptFile,
-    const boost::optional<boost::filesystem::path>& dataDirectory,
-    const boost::optional<std::string>& networkToImport,
+    const std::optional<boost::filesystem::path>& pythonScriptFile,
+    const std::optional<boost::filesystem::path>& dataDirectory,
+    const std::optional<std::string>& networkToImport,
     DeveloperParametersPtr devParams,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
@@ -206,17 +206,17 @@ public:
     return inputFiles_;
   }
 
-  boost::optional<boost::filesystem::path> pythonScriptFile() const override
+  std::optional<boost::filesystem::path> pythonScriptFile() const override
   {
     return pythonScriptFile_;
   }
 
-  boost::optional<boost::filesystem::path> dataDirectory() const override
+  std::optional<boost::filesystem::path> dataDirectory() const override
   {
     return dataDirectory_;
   }
 
-  boost::optional<std::string> importNetworkFile() const override
+  std::optional<std::string> importNetworkFile() const override
   {
     return networkToImport_;
   }
@@ -299,9 +299,9 @@ public:
 private:
   std::string entireCommandLine_;
   std::vector<std::string> inputFiles_;
-  boost::optional<boost::filesystem::path> pythonScriptFile_;
-  boost::optional<boost::filesystem::path> dataDirectory_;
-  boost::optional<std::string> networkToImport_;
+  std::optional<boost::filesystem::path> pythonScriptFile_;
+  std::optional<boost::filesystem::path> dataDirectory_;
+  std::optional<std::string> networkToImport_;
   DeveloperParametersPtr devParams_;
   Flags flags_;
 };
@@ -320,9 +320,9 @@ std::string CommandLineParser::describe() const
 namespace
 {
   template <typename T>
-  boost::optional<T> parseOptionalArg(const po::variables_map& parsed, const std::string& label)
+  std::optional<T> parseOptionalArg(const po::variables_map& parsed, const std::string& label)
   {
-    return parsed.count(label) != 0 ? parsed[label].as<T>() : boost::optional<T>();
+    return parsed.count(label) != 0 ? parsed[label].as<T>() : std::optional<T>();
   }
 }
 
@@ -333,7 +333,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     auto parsed = impl_->parse(argc, argv);
     std::vector<std::string> cmdline(argv, argv + argc);
     auto inputFiles = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::vector<std::string>>() : std::vector<std::string>();
-    auto pythonScriptFile = boost::optional<boost::filesystem::path>();
+    auto pythonScriptFile = std::optional<boost::filesystem::path>();
     if (parsed.count("script") != 0 && !parsed["script"].empty() && !parsed["script"].defaulted())
     {
       pythonScriptFile = boost::filesystem::path(parsed["script"].as<std::string>());
@@ -342,12 +342,12 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     {
       pythonScriptFile = boost::filesystem::path(parsed["Script"].as<std::string>());
     }
-    auto dataDirectory = boost::optional<boost::filesystem::path>();
+    auto dataDirectory = std::optional<boost::filesystem::path>();
     if (parsed.count("datadir") != 0 && !parsed["datadir"].empty() && !parsed["datadir"].defaulted())
     {
       dataDirectory = boost::filesystem::path(parsed["datadir"].as<std::string>());
     }
-    auto importNetworkFile = boost::optional<std::string>();
+    auto importNetworkFile = std::optional<std::string>();
     if (parsed.count("import") != 0 && !parsed["import"].empty() && !parsed["import"].defaulted())
     {
       importNetworkFile = parsed["import"].as<std::string>();

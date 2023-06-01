@@ -51,8 +51,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(lookupExecutable, ExecutableObject*(const ModuleId&));
           MOCK_METHOD2(connect, ConnectionId(const ConnectionOutputPort&, const ConnectionInputPort&));
           MOCK_METHOD1(disconnect, bool(const ConnectionId&));
+          MOCK_CONST_METHOD4(lookupConnection, ConnectionHandle(const std::string&, int, const std::string&, int));
           MOCK_CONST_METHOD0(nconnections, size_t());
-          MOCK_METHOD1(disable_connection, void(const ConnectionId&));
           MOCK_CONST_METHOD0(toString, std::string());
           MOCK_CONST_METHOD1(connections, ConnectionDescriptionList(bool));
           MOCK_CONST_METHOD0(errorCode, int());

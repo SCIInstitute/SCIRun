@@ -42,7 +42,7 @@ NamedMutex::NamedMutex(const std::string& name) : name_(name)
 std::string NamedMutex::name() const { return name_; }
 NamedMutex& NamedMutex::get() { return *this; }
 
-LoggedGuard::LoggedGuard(NamedMutex& mutex, const std::string& log) : std::lock_guard<std::mutex>(mutex.get()),
+LoggedGuard::LoggedGuard(NamedMutex& mutex, const std::string& log) : std::scoped_lock<std::mutex>(mutex.get()),
   log_("[" + mutex.name() + "] :: " + log)
 {
 #if LOG_GUARD

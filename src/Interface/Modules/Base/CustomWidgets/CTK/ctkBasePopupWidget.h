@@ -147,7 +147,7 @@ public:
   /// \sa orientation
   void setOrientation(Qt::Orientations orientation);
   
-  enum VerticalDirection{
+  enum class VerticalDirection{
     TopToBottom = 1,
     BottomToTop = 2
   };

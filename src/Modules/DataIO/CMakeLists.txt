@@ -30,10 +30,12 @@ SET(Modules_DataIO_SRCS
   ReadField.cc
   ReadBundle.cc
   ReadMatrixClassic.cc
+  WriteBundle.cc
   WriteField.cc
   WriteG3D.cc
   WriteMatrix.cc
   AutoReadFile.cc
+  ReadColorMapXml.cc
 )
 
 SET(Modules_DataIO_HEADERS
@@ -42,10 +44,12 @@ SET(Modules_DataIO_HEADERS
   ReadField.h
   ReadBundle.h
   ReadMatrixClassic.h
+  WriteBundle.h
   WriteField.h
   WriteG3D.h
   WriteMatrix.h
   AutoReadFile.h
+  ReadColorMapXml.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_DataIO
