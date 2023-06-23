@@ -25,7 +25,8 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(ospray_GIT_TAG "origin/scirun-build-2.4")
+# SET(ospray_GIT_TAG "origin/scirun-build-2.4")
+SET(ospray_GIT_TAG "origin/cibc-2.10")
 
 set(ospray_DEPENDENCIES)
 LIST(APPEND ospray_DEPENDENCIES GLM_external)
@@ -34,7 +35,8 @@ LIST(APPEND ospray_DEPENDENCIES GLM_external)
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Ospray_external
   DEPENDS ${ospray_DEPENDENCIES}
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
+  # GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
+  GIT_REPOSITORY "https://github.com/tarkpate/ospray.git"
   GIT_TAG ${ospray_GIT_TAG}
   PATCH_COMMAND ""
   INSTALL_DIR ""
