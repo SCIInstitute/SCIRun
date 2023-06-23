@@ -25,7 +25,6 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-# SET(ospray_GIT_TAG "origin/scirun-build-2.4")
 SET(ospray_GIT_TAG "origin/cibc-2.10")
 
 set(ospray_DEPENDENCIES)
