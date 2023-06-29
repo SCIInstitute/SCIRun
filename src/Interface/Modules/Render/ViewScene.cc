@@ -438,11 +438,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
-  state_->connectSpecificStateChanged(Parameters::WindowSizeX, [this]() { adjustSizeFromState(); });
-  state_->connectSpecificStateChanged(Parameters::WindowSizeY, [this]() { adjustSizeFromState(); });
-  state_->connectSpecificStateChanged(Parameters::WindowPositionX, [this]() { adjustPositionFromState(); });
-  state_->connectSpecificStateChanged(Parameters::WindowPositionY, [this]() { adjustPositionFromState(); });
-
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
