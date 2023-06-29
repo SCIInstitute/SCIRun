@@ -31,7 +31,9 @@
 #include <string>
 #include <sstream>
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
+#ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
+#endif
 #include <Core/Logging/Log.h>
 #include <spdlog/fmt/fmt.h>
 
@@ -60,11 +62,13 @@ std::string ModuleAddedProvenanceItem::name() const
 
 std::string ModuleAddedProvenanceItem::undoCode() const
 {
+#ifdef BUILD_WITH_PYTHON
   if (redone_)
   {
-    logCritical("here is where i need to pull the most recently added id");
+    // logCritical("here is where i need to pull the most recently added id");
     moduleId_ = nedPy_->mostRecentAddModuleId();
   }
+#endif
   return fmt::format("scirun_remove_module(\"{}\")", moduleId_);
 }
 
