@@ -305,11 +305,17 @@ GuiActionProvenanceConverter::GuiActionProvenanceConverter(NetworkEditor* editor
   provenanceManagerModifyingNetwork_(false)
 {}
 
+#ifdef BUILD_WITH_PYTHON
+#define pythonAPIPtr NetworkEditorPythonAPI::getImpl()
+#else
+#define pythonAPIPtr nullptr
+#endif
+
 void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle mod)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, mod->id().id_, editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
+    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, mod->id().id_, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -318,7 +324,7 @@ void GuiActionProvenanceConverter::moduleRemoved(const ModuleId& id)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
+    ProvenanceItemHandle item(makeShared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -327,7 +333,7 @@ void GuiActionProvenanceConverter::connectionAdded(const SCIRun::Dataflow::Netwo
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
+    ProvenanceItemHandle item(makeShared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -336,7 +342,7 @@ void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Net
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
+    ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -345,7 +351,7 @@ void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks:
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, oldPos.x(), oldPos.y(), editor_->saveNetwork(), NetworkEditorPythonAPI::getImpl()));
+    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, oldPos.x(), oldPos.y(), editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
