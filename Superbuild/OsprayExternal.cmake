@@ -45,6 +45,7 @@ ExternalProject_Add(Ospray_external
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
     -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
+    -DBUILD_ISA_AVX512:BOOL=OFF
 )
 
 ExternalProject_Get_Property(Ospray_external BINARY_DIR)
