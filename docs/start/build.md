@@ -12,6 +12,7 @@
   - Qt 5.13 or later
     + [Download](https://download.qt.io/archive/qt/) and run the desired Qt 5.x or 6.x installer.  Make sure to turn off other versions and system configurations to save space and build time.  Configure CMake for Qt 5.
       Optionally, install Qt through the package manager, [brew](https://brew.sh/).
+
       To install Qt 5, the command is:
       ```
       brew install qt@5
@@ -36,6 +37,7 @@
   - Qt 5.13 or later
     + [Download](https://download.qt.io/archive/qt/) and run the desired Qt 5.x or 6.x installer.  Make sure to turn off other versions and system configurations to save space and build time. 
       Optionally, install Qt through your distro's package manager instead(apt on Ubuntu/Debian, pacman on Arch). 
+
       To install Qt 5, the command on Ubuntu/Debian is:
       ```
       sudo apt-get install qt5-default
@@ -45,6 +47,7 @@
       sudo apt-get install qt6-base-dev libqt6svg6-dev
       ```
       The installation directory for the CMake variable `Qt5_DIR`(for Qt5) or `Qt_PATH`(for Qt6) will then be `/usr/lib/x86_64-linux-gnu/cmake/`.
+
       To install Qt 5, the command on Arch is:
       ```
       sudo pacman -S qt5-base
