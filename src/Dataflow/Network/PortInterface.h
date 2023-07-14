@@ -57,7 +57,7 @@ namespace Networks {
     virtual bool isDynamic() const = 0;
     virtual ModuleId getUnderlyingModuleId() const = 0;
     virtual size_t getIndex() const = 0;
-    virtual boost::optional<ConnectionId> firstConnectionId() const = 0;
+    virtual std::optional<ConnectionId> firstConnectionId() const = 0;
   };
 
   class SCISHARE PortInterface : public PortDescriptionInterface
@@ -90,7 +90,7 @@ namespace Networks {
     virtual bool hasChanged() const = 0;
     virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) = 0;
     virtual void resendNewDataSignal() = 0;
-    virtual boost::optional<std::string> connectedModuleId() const = 0;
+    virtual std::optional<std::string> connectedModuleId() const = 0;
     virtual ModuleStateHandle stateFromConnectedModule() const = 0;
   };
 

@@ -232,7 +232,7 @@ public:
     settings.setValue(name_, retriever_());
   }
 private:
-  boost::optional<T> value_;
+  std::optional<T> value_;
   const QString name_;
   ReadConverter<T> readConverter_;
   std::function<void(const T&)> postRead_;
@@ -307,6 +307,12 @@ void SCIRunMainWindow::readSettings()
     makeSetting("autoRotateViewerOnMouseRelease", toBool,
       [this](bool b) { prefsWindow_->setAutoRotateViewerOnMouseRelease(b); },
       []() { return prefs.autoRotateViewerOnMouseRelease.val(); }),
+    makeSetting("toolBarPopupShowDelay", toInt,
+      [this](int d) { prefsWindow_->setToolBarPopupShowDelay(d); },
+      []() { return prefs.toolBarPopupShowDelay.val(); }),
+    makeSetting("toolBarPopupHideDelay", toInt,
+      [this](int d) { prefsWindow_->setToolBarPopupHideDelay(d); },
+      []() { return prefs.toolBarPopupHideDelay.val(); }),
     makeSetting("moduleExecuteDownstreamOnly", toBool,
       [this](bool b) { prefsWindow_->setModuleExecuteDownstreamOnly(b); },
       []() { return prefs.moduleExecuteDownstreamOnly.val(); }),
@@ -346,6 +352,12 @@ void SCIRunMainWindow::readSettings()
     makeSetting("toolkitFiles", toStringList,
       [this](const QStringList& qsl) { toolkitFiles_ = qsl; },
       [this]() { return toolkitFiles_; }),
+    makeSetting("recentModules", toStringList,
+      [this](const QStringList& qsl) { recentModules_ = qsl; },
+      [this]() { return recentModules_; }),
+    makeSetting("frequentModules", toMap,
+      [this](const QMap<QString, QVariant>& qmap) { frequentModulesSettings_ = qmap; },
+      [this]() { return frequentModulesSettings_; }),
     makeSetting("triggeredScripts", toMap,
       [this](const QMap<QString, QVariant>& qmap) { triggeredEventsWindow_->setScripts(toStrMap(qmap)); },
       [this]() { return fromStrMap(triggeredEventsWindow_->scripts()); }),

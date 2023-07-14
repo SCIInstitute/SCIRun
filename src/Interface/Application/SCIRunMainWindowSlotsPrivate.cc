@@ -150,24 +150,27 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
 {
-  ShowAll show;
-  visitTree(moduleSelectorTreeWidget_, show);
+  for (auto& tree : {moduleSelectorTreeWidget_, userModuleSelectorTreeWidget_})
+  {
+    ShowAll show;
+    visitTree(tree, show);
 
-  HideItemsNotMatchingString::SearchType searchType;
-  if(filterActionGroup_->checkedAction()->text().contains("Starts with"))
-    searchType = HideItemsNotMatchingString::SearchType::STARTS_WITH;
-  if(filterActionGroup_->checkedAction()->text().contains("wildcards"))
-    searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
-  else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
-    searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
-  else if(filterActionGroup_->checkedAction()->text().contains("Filter UI only"))
-    searchType = HideItemsNotMatchingString::SearchType::HIDE_NON_UI;
+    HideItemsNotMatchingString::SearchType searchType;
+    if(filterActionGroup_->checkedAction()->text().contains("Starts with"))
+      searchType = HideItemsNotMatchingString::SearchType::STARTS_WITH;
+    if(filterActionGroup_->checkedAction()->text().contains("wildcards"))
+      searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
+    else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
+      searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
+    else if(filterActionGroup_->checkedAction()->text().contains("Filter UI only"))
+      searchType = HideItemsNotMatchingString::SearchType::HIDE_NON_UI;
 
-  HideItemsNotMatchingString func(searchType, start);
+    HideItemsNotMatchingString func(searchType, start);
 
-  //note: goofy double call, first to hide the leaves, then hide the categories.
-  visitTree(moduleSelectorTreeWidget_, func);
-  visitTree(moduleSelectorTreeWidget_, func);
+    //note: goofy double call, first to hide the leaves, then hide the categories.
+    visitTree(tree, func);
+    visitTree(tree, func);
+  }
 }
 
 void SCIRunMainWindow::makePipesCubicBezier()
@@ -250,6 +253,7 @@ void SCIRunMainWindow::zoomNetwork()
 
 void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)
 {
+  moduleSelection_->setActiveTree(qobject_cast<QTreeWidget*>(sender()));
   if (item && item->childCount() == 0)
     Q_EMIT moduleItemDoubleClicked();
 }
@@ -311,22 +315,26 @@ void SCIRunMainWindow::updateMacroButton(int index, const QString& name)
 
 void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
 {
-  auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);
-	auto item = moduleSelectorTreeWidget_->selectedItems()[0];
+  auto tree = qobject_cast<QTreeWidget*>(sender());
+  if (!tree)
+    return;
+
+  auto globalPos = tree->mapToGlobal(pos);
+	auto item = tree->selectedItems()[0];
 	auto subnetData = item->data(0, Qt::UserRole).toString();
   if (saveFragmentData_ == subnetData)
   {
     QMenu menu;
-		menu.addAction("Export fragment list...", this, SLOT(exportFragmentList()));
-    menu.addAction("Import fragment list...", this, SLOT(importFragmentList()));
-    menu.addAction("Clear", this, SLOT(clearFragmentList()));
+		menu.addAction("Export fragment list...", this, &SCIRunMainWindow::exportFragmentList);
+    menu.addAction("Import fragment list...", this, &SCIRunMainWindow::importFragmentList);
+    menu.addAction("Clear", this, &SCIRunMainWindow::clearFragmentList);
   	menu.exec(globalPos);
   }
 	else if (!subnetData.isEmpty())
 	{
   	QMenu menu;
-		menu.addAction("Rename", this, SLOT(renameSavedSubnetwork()))->setProperty("ID", subnetData);
-		menu.addAction("Delete", this, SLOT(removeSavedSubnetwork()))->setProperty("ID", subnetData);
+		menu.addAction("Rename", this, &SCIRunMainWindow::renameSavedSubnetwork)->setProperty("ID", subnetData);
+		menu.addAction("Delete", this, &SCIRunMainWindow::removeSavedSubnetwork)->setProperty("ID", subnetData);
   	menu.exec(globalPos);
 	}
 }
@@ -335,7 +343,7 @@ void SCIRunMainWindow::clearFragmentList()
 {
   savedSubnetworksNames_.clear();
   savedSubnetworksXml_.clear();
-  auto menu = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+  auto menu = getSavedSubnetworksMenu();
   auto count = menu->childCount();
   for (int i = 0; i < count; ++i)
   {
@@ -358,8 +366,12 @@ private:
   }
 };
 
-//TODO!!!
+#ifdef SCIRUN_QT6_ENABLED
+#define MULTIMAP_FUNC insert
+#else
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#define MULTIMAP_FUNC unite
+#endif
 
 void SCIRunMainWindow::importFragmentList()
 {
@@ -375,8 +387,8 @@ void SCIRunMainWindow::importFragmentList()
       xmls.insert(key, QString::fromStdString(frag.second.second));
     }
     addFragmentsToMenu(names, xmls);
-    savedSubnetworksNames_.unite(names);
-    savedSubnetworksXml_.unite(xmls);
+    savedSubnetworksNames_.MULTIMAP_FUNC(names);
+    savedSubnetworksXml_.MULTIMAP_FUNC(xmls);
     showStatusMessage("Fragment list imported: " + filename, 2000);
   }
 }
@@ -406,7 +418,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    auto faves = item->foreground(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
+    auto faves = item->foreground(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu() : getFavoriteMenu();
 
     if (item->checkState(0) == Qt::Checked)
     {
@@ -443,7 +455,7 @@ void SCIRunMainWindow::removeSavedSubnetwork()
 	auto toDelete = sender()->property("ID").toString();
   savedSubnetworksNames_.remove(toDelete);
   savedSubnetworksXml_.remove(toDelete);
-	auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+	auto tree = getSavedSubnetworksMenu();
 	for (int i = 0; i < tree->childCount(); ++i)
 	{
 		auto subnet = tree->child(i);
@@ -463,7 +475,7 @@ void SCIRunMainWindow::renameSavedSubnetwork()
   if (ok && !text.isEmpty())
   {
     savedSubnetworksNames_[toRename] = text;
-    auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+    auto tree = getSavedSubnetworksMenu();
     for (int i = 0; i < tree->childCount(); ++i)
     {
       auto subnet = tree->child(i);
@@ -546,7 +558,7 @@ void SCIRunMainWindow::highlightPortsChanged()
 
 void SCIRunMainWindow::resetWindowLayout()
 {
-  configurationDockWidget_->hide();
+  logDockWidget_->hide();
   provenanceWindow_->hide();
   moduleSelectorDockWidget_->show();
   moduleSelectorDockWidget_->setFloating(false);
@@ -637,10 +649,14 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
   auto modAction = new QAction(this);
   modAction->setText(modId);
   modAction->setEnabled(hasUI);
-  connect(modAction, SIGNAL(triggered()), networkEditor_, SLOT(moduleWindowAction()));
+  connect(modAction, &QAction::triggered, networkEditor_, &NetworkEditor::moduleWindowAction);
   currentModuleActions_.insert(modId, modAction);
   menuCurrent_->addAction(modAction);
 
+  updateRecentModules(modId);
+  updateFrequentModules(modId);
+
+#if 0
   if (modId.contains("Subnet"))
   {
     if (menuCurrentSubnets_->actions().isEmpty())
@@ -654,11 +670,12 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
     renameAction->setText("Rename...");
     subnetMenu->addAction(renameAction);
 
-    connect(showAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
-    connect(renameAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
+    connect(showAction, &QAction::triggered, networkEditor_, &NetworkEditor::subnetMenuActionTriggered);
+    connect(renameAction, &QAction::triggered, networkEditor_, &NetworkEditor::subnetMenuActionTriggered);
     currentSubnetActions_.insert(modId, subnetMenu);
     menuCurrentSubnets_->addMenu(subnetMenu);
   }
+#endif
 }
 
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
@@ -670,6 +687,7 @@ void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
   if (menuCurrent_->actions().isEmpty())
     menuCurrent_->setEnabled(false);
 
+#if 0
   if (modId.id_.find("Subnet") != std::string::npos)
   {
     auto subnet = currentSubnetActions_[name];
@@ -679,6 +697,7 @@ void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
     if (menuCurrentSubnets_->actions().isEmpty())
       menuCurrentSubnets_->setEnabled(false);
   }
+#endif
 
 }
 
@@ -723,13 +742,13 @@ void SCIRunMainWindow::runNewModuleWizard()
 
 void SCIRunMainWindow::copyVersionToClipboard()
 {
-  QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
+  QApplication::clipboard()->setText(versionButton_->text());
   statusBar()->showMessage("Version string copied to clipboard.", 2000);
 }
 
 void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 {
-  auto clips = getClipboardHistoryMenu(moduleSelectorTreeWidget_);
+  auto clips = getClipboardHistoryMenu();
 
   auto clip = new QTreeWidgetItem();
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
@@ -737,12 +756,91 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   clip->setData(0, clipboardKey, xml);
   clip->setForeground(0, CLIPBOARD_COLOR);
 
-  const int clipMax = 5;
+  static constexpr int clipMax = 20;
   if (clips->childCount() == clipMax)
     clips->removeChild(clips->child(0));
 
   clip->setCheckState(0, Qt::Unchecked);
   clips->addChild(clip);
+}
+
+std::set<QString> SCIRunMainWindow::topNMostFrequentModules() const
+{
+  static constexpr size_t frequentMax = 5;
+  std::vector<std::pair<int, QString>> modUsage;
+  std::for_each(frequentModules_.begin(), frequentModules_.end(),
+    [&modUsage](const auto& p) { modUsage.emplace_back(p.second, p.first); });
+  std::sort(modUsage.begin(), modUsage.end(), [](auto&& p1, auto&& p2) { return p1.first > p2.first; });
+
+  std::set<QString> top5;
+  std::transform(modUsage.begin(), modUsage.begin() + std::min(modUsage.size(), frequentMax),
+    std::inserter(top5, top5.begin()), [](auto&& p) { return p.second; });
+
+  return top5;
+}
+
+void SCIRunMainWindow::updateFrequentModules(const QString& moduleId)
+{
+  const auto name = moduleId.split(':')[0];
+  frequentModules_[name]++;
+
+  auto freqs = getFrequentModulesMenu();
+  qDeleteAll(freqs->takeChildren());
+
+  for (const auto& m : topNMostFrequentModules())
+  {
+    auto mod = new QTreeWidgetItem();
+    mod->setText(0, m);
+    freqs->addChild(mod);
+  }
+
+  frequentModulesSettings_.clear();
+  std::for_each(frequentModules_.begin(), frequentModules_.end(), [&](auto&& p) { frequentModulesSettings_.insert(p.first, p.second); });
+  writeSettings();
+}
+
+void SCIRunMainWindow::updateRecentModules(const QString& moduleId)
+{
+  auto recent = getRecentModulesMenu();
+
+  const auto name = moduleId.split(':')[0];
+  const auto label = "0 - " + name;
+
+  for (int i = 0; i < recent->childCount(); ++i)
+  {
+    if (recent->child(i)->text(0).endsWith(name))
+    {
+      delete recent->takeChild(i);
+    }
+  }
+
+  static constexpr int recentMax = 10;
+  if (recent->childCount() == recentMax)
+  {
+    recent->removeChild(recent->child(recentMax - 1));
+  }
+
+  for (int i = recent->childCount() - 1; i >=0 ; --i)
+  {
+    auto oldName = recent->child(i)->text(0);
+    const auto split = oldName.split(' ');
+    const auto mod = split[2];
+    const auto newName = QString::number(i+1) + " - " + mod;
+    recent->child(i)->setText(0, newName);
+  }
+
+  auto mod = new QTreeWidgetItem();
+  mod->setText(0, label);
+  mod->setData(0, clipboardKey, name);
+
+  recent->insertChild(0, mod);
+
+  recentModules_.clear();
+  for (int i = 0; i < recent->childCount(); ++i)
+  {
+    recentModules_ << recent->child(i)->text(0);
+  }
+  writeSettings();
 }
 
 void SCIRunMainWindow::showSnippetHelp()
@@ -923,4 +1021,21 @@ void SCIRunMainWindow::toggleFullScreen()
     showNormal();
   else
     showFullScreen();
+}
+
+void SCIRunMainWindow::clearRecentModules()
+{
+  auto recent = getRecentModulesMenu();
+  qDeleteAll(recent->takeChildren());
+  recentModules_.clear();
+  writeSettings();
+}
+
+void SCIRunMainWindow::clearFrequentModules()
+{
+  auto freqs = getFrequentModulesMenu();
+  qDeleteAll(freqs->takeChildren());
+  frequentModules_.clear();
+  frequentModulesSettings_.clear();
+  writeSettings();
 }

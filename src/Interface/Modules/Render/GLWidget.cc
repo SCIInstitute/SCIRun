@@ -50,7 +50,7 @@ GLWidget::GLWidget(QWidget* parent) :
   graphics_.reset(new Render::SRInterface());
 
   timer_ = new QTimer(this);
-  connect(timer_, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  connect(timer_, &QTimer::timeout, this, &GLWidget::updateRenderer);
   timer_->start(RendererUpdateInMS);}
 
 GLWidget::~GLWidget()

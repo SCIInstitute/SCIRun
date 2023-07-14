@@ -45,12 +45,12 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
 {
   setupUi(this);
   gridLayout_4->addWidget(scriptPlainTextEdit_, 0, 1);
-  connect(macroListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
-  connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
-  connect(addPushButton_, SIGNAL(clicked()), this, SLOT(addMacro()));
-  connect(removePushButton_, SIGNAL(clicked()), this, SLOT(removeMacro()));
-  connect(renamePushButton_, SIGNAL(clicked()), this, SLOT(renameMacro()));
-  connect(runNowPushButton_, SIGNAL(clicked()), this, SLOT(runSelectedMacro()));
+  connect(macroListWidget_, &QListWidget::itemSelectionChanged, this, &MacroEditor::updateScriptEditor);
+  connect(scriptPlainTextEdit_, &QPlainTextEdit::textChanged, this, &MacroEditor::updateScripts);
+  connect(addPushButton_, &QPushButton::clicked, this, &MacroEditor::addMacro);
+  connect(removePushButton_, &QPushButton::clicked, this, &MacroEditor::removeMacro);
+  connect(renamePushButton_, &QPushButton::clicked, this, &MacroEditor::renameMacro);
+  connect(runNowPushButton_, &QPushButton::clicked, this, &MacroEditor::runSelectedMacro);
 
   buttons_ = {pushButton1_, pushButton2_, pushButton3_, pushButton4_, pushButton5_ };
   for (int i = 1; i <= 5; ++i)
@@ -59,7 +59,7 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
     button->setProperty(Index, i);
     dehighlightButton(button);
 
-    connect(button, SIGNAL(clicked()), this, SLOT(assignToButton()));
+    connect(button, &QPushButton::clicked, this, &MacroEditor::assignToButton);
   }
 }
 

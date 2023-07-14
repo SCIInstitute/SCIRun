@@ -32,6 +32,7 @@ SET(Interface_Modules_Teem_FORMS
   ConvertNrrdToMatrix.ui
   BuildDerivedNrrdWithGage.ui
   SplitFieldIntoNrrdData.ui
+  TendFiber.ui
 )
 
 SET(Interface_Modules_Teem_HEADERS
@@ -40,6 +41,7 @@ SET(Interface_Modules_Teem_HEADERS
   ConvertNrrdToMatrixDialog.h
   BuildDerivedNrrdWithGageDialog.h
   SplitFieldIntoNrrdDataDialog.h
+  TendFiberDialog.h
   share.h
 )
 
@@ -49,6 +51,7 @@ SET(Interface_Modules_Teem_SOURCES
   ConvertNrrdToMatrixDialog.cc
   BuildDerivedNrrdWithGageDialog.cc
   SplitFieldIntoNrrdDataDialog.cc
+  TendFiberDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Teem_FORMS_HEADERS "${Interface_Modules_Teem_FORMS}")
@@ -63,6 +66,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Teem
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Teem
   Modules_Legacy_Teem_Misc
+  Modules_Legacy_Teem_Tend
   Modules_Legacy_Teem_Converters
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>1222</height>
+    <height>1018</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,7 +45,7 @@
          <x>0</x>
          <y>0</y>
          <width>1100</width>
-         <height>835</height>
+         <height>631</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -115,31 +115,11 @@
     </widget>
     <addaction name="menuActions"/>
     <addaction name="actionTagManager_"/>
+    <addaction name="actionClearRecentModules_"/>
+    <addaction name="actionClearFrequentModules_"/>
     <addaction name="separator"/>
     <addaction name="menuCurrent_"/>
-   </widget>
-   <widget class="QMenu" name="menuSubnets_">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="title">
-     <string>&amp;Subnets</string>
-    </property>
-    <widget class="QMenu" name="menuCurrentSubnets_">
-     <property name="title">
-      <string>Current</string>
-     </property>
-    </widget>
-    <widget class="QMenu" name="menuSavedSubnets_">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="title">
-      <string>Saved</string>
-     </property>
-    </widget>
-    <addaction name="menuCurrentSubnets_"/>
-    <addaction name="menuSavedSubnets_"/>
+    <addaction name="actionAutoRotateViewScene_"/>
    </widget>
    <widget class="QMenu" name="menuToolkits_">
     <property name="enabled">
@@ -220,21 +200,14 @@
      <addaction name="actionAdvancedBar_"/>
      <addaction name="actionMacroBar_"/>
     </widget>
-    <addaction name="actionConfiguration_"/>
-    <addaction name="actionModule_Selector"/>
-    <addaction name="actionProvenance_"/>
-    <addaction name="actionMiniview_"/>
     <addaction name="separator"/>
-    <addaction name="actionPythonConsole_"/>
-    <addaction name="actionDevConsole_"/>
-    <addaction name="actionTriggeredEvents_"/>
-    <addaction name="actionMacroEditor_"/>
     <addaction name="actionStateViewer_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
     <addaction name="actionToggleFullScreenMode_"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -304,7 +277,6 @@
    <addaction name="menuEdit"/>
    <addaction name="menuNetwork"/>
    <addaction name="menuModules_"/>
-   <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>
    <addaction name="menuHelp_"/>
@@ -319,8 +291,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>299</width>
-     <height>554</height>
+     <width>224</width>
+     <height>203</height>
     </size>
    </property>
    <property name="features">
@@ -471,7 +443,6 @@
         </property>
         <property name="font">
          <font>
-          <weight>75</weight>
           <italic>true</italic>
           <bold>true</bold>
          </font>
@@ -487,7 +458,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="configurationDockWidget_">
+  <widget class="QDockWidget" name="logDockWidget_">
    <property name="whatsThis">
     <string/>
    </property>
@@ -574,6 +545,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="networkMiniViewDockWidget_">
+   <property name="minimumSize">
+    <size>
+     <width>224</width>
+     <height>306</height>
+    </size>
+   </property>
    <property name="maximumSize">
     <size>
      <width>400</width>
@@ -619,6 +596,72 @@
         </size>
        </property>
       </spacer>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="userModuleSelectorDockWidget_">
+   <property name="minimumSize">
+    <size>
+     <width>224</width>
+     <height>146</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Module Quick Access </string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QGridLayout" name="gridLayout_7">
+     <item row="0" column="0">
+      <widget class="QTreeWidget" name="userModuleSelectorTreeWidget_">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Drag or double-click to add a module. Star icon adds/removes from favorites.</string>
+       </property>
+       <property name="whatsThis">
+        <string>List of available modules. Drag an item from here and drop onto the network editor, or double-click an item, to instantiate a new instance of that module. Click the checkbox to add/remove from the favorites list.</string>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::IgnoreAction</enum>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="animated">
+        <bool>true</bool>
+       </property>
+       <attribute name="headerMinimumSectionSize">
+        <number>50</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -714,45 +757,9 @@
     <string>License...</string>
    </property>
   </action>
-  <action name="actionConfiguration_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Log</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+L</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionModule_Selector">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Module Selector</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+M</string>
-   </property>
-  </action>
   <action name="actionDump_positions">
    <property name="text">
     <string>Dump positions</string>
-   </property>
-  </action>
-  <action name="actionRenderer">
-   <property name="text">
-    <string>Renderer</string>
    </property>
   </action>
   <action name="actionClear_Recent">
@@ -769,17 +776,6 @@
    </property>
    <property name="text">
     <string>Enter &quot;What's This?&quot; Mode</string>
-   </property>
-  </action>
-  <action name="actionProvenance_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Provenance</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+P</string>
    </property>
   </action>
   <action name="actionUndo_">
@@ -873,17 +869,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+,</string>
-   </property>
-  </action>
-  <action name="actionPythonConsole_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Python Console</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+Y</string>
    </property>
   </action>
   <action name="actionNew_">
@@ -1049,14 +1034,6 @@
     <string>Ctrl+Alt+Shift+K</string>
    </property>
   </action>
-  <action name="actionDummy">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </action>
   <action name="actionCleanUpNetwork_">
    <property name="text">
     <string>Clean Up Network</string>
@@ -1141,14 +1118,6 @@
     <string>Network Editor GUI*</string>
    </property>
   </action>
-  <action name="actionTriggeredEvents_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Triggered Events</string>
-   </property>
-  </action>
   <action name="helpActionClipboard_">
    <property name="enabled">
     <bool>true</bool>
@@ -1222,11 +1191,6 @@
     <string>Import toolkit...</string>
    </property>
   </action>
-  <action name="actionAsd">
-   <property name="text">
-    <string>asd</string>
-   </property>
-  </action>
   <action name="actionNetworkBar_">
    <property name="checkable">
     <bool>true</bool>
@@ -1244,16 +1208,6 @@
    </property>
    <property name="text">
     <string>Advanced</string>
-   </property>
-  </action>
-  <action name="actionX">
-   <property name="text">
-    <string>x</string>
-   </property>
-  </action>
-  <action name="actionA">
-   <property name="text">
-    <string>a</string>
    </property>
   </action>
   <action name="actionExecuteAll_">
@@ -1292,14 +1246,6 @@
   <action name="actionCreateToolkitFromDirectory_">
    <property name="text">
     <string>Create toolkit from directory...</string>
-   </property>
-  </action>
-  <action name="actionMiniview_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Miniview</string>
    </property>
   </action>
   <action name="actionToggleFullScreenMode_">
@@ -1341,17 +1287,6 @@
   <action name="actionRunMacro5_">
    <property name="text">
     <string>Run Macro 5</string>
-   </property>
-  </action>
-  <action name="actionMacroEditor_">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Macro Editor</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+X</string>
    </property>
   </action>
   <action name="actionPython_Wizard">
@@ -1402,41 +1337,30 @@
     <string>State Viewer</string>
    </property>
   </action>
+  <action name="actionClearRecentModules_">
+   <property name="text">
+    <string>Clear recent modules</string>
+   </property>
+  </action>
+  <action name="actionClearFrequentModules_">
+   <property name="text">
+    <string>Clear frequent modules</string>
+   </property>
+  </action>
+  <action name="actionAutoRotateViewScene_">
+   <property name="text">
+    <string>Toggle Auto-rotate ViewScene</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle auto-rotate ViewScene</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+Ctrl+Alt+R</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>actionModule_Selector</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>moduleSelectorDockWidget_</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>97</x>
-     <y>367</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionConfiguration_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>configurationDockWidget_</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>518</x>
-     <y>847</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>clearFilterButton_</sender>
    <signal>clicked()</signal>
@@ -1450,70 +1374,6 @@
     <hint type="destinationlabel">
      <x>141</x>
      <y>63</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>moduleSelectorDockWidget_</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionModule_Selector</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>288</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>configurationDockWidget_</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionConfiguration_</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>559</x>
-     <y>696</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionMiniview_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>networkMiniViewDockWidget_</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1283</x>
-     <y>220</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>networkMiniViewDockWidget_</sender>
-   <signal>visibilityChanged(bool)</signal>
-   <receiver>actionMiniview_</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1283</x>
-     <y>220</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
     </hint>
    </hints>
   </connection>

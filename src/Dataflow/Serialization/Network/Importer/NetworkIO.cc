@@ -97,14 +97,15 @@ LegacyNetworkIO::get_mod_id(const std::string& id)
 
 namespace
 {
+  static const char* placeholder = "PlaceholderModule";
   bool isPlaceholderModule(const std::string& name)
   {
-    return name == "PlaceholderModule";
+    return name == placeholder;
   }
 
   std::pair<std::string, std::string> unconvertedModule(const std::string& m)
   {
-    return { m, "PlaceholderModule" };
+    return { m, placeholder };
   }
 }
 void
@@ -183,6 +184,8 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     unconvertedModule("OptimizeDipole"),
     unconvertedModule("OptimizeConductivities"),
     { "CalculateNodeNormals", "GenerateNodeNormals" },
+    { "ChooseField", "ChooseInput" },
+    { "ChooseColorMap", "ChooseInput" },
     unconvertedModule("SynchronizeGeometry"),
     unconvertedModule("TransformData"),
     unconvertedModule("SetFieldOrMeshStringProperty"),
@@ -675,7 +678,7 @@ void LegacyNetworkStateConversion::readImporterMap(std::istream& file)
   }
 }
 
-boost::optional<NewNameAndValueConverter> LegacyNetworkStateConversion::getStateConverter(const std::string& moduleName, const std::string& oldStateName) const
+std::optional<NewNameAndValueConverter> LegacyNetworkStateConversion::getStateConverter(const std::string& moduleName, const std::string& oldStateName) const
 {
   auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
   if (moduleNameMapIter == nameAndValLookup_.end())
@@ -800,7 +803,7 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
       std::string(to_char_ptr(node->name)) == std::string("subnet"))
     {
       bool do_subnet = std::string(to_char_ptr(node->name)) == std::string("subnet");
-      xmlNodePtr network_node = nullptr;
+      //xmlNodePtr network_node = nullptr;
 
       std::string x,y;
       xmlAttrPtr id_att = get_attribute_by_name(node, "id");
@@ -834,7 +837,7 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
         }
         else if (std::string(to_char_ptr(pnode->name)) == std::string("network"))
         {
-          network_node = pnode;
+          //network_node = pnode;
         }
         else if (std::string(to_char_ptr(pnode->name)) == std::string("note"))
         {

@@ -65,6 +65,7 @@ namespace SCIRun
     //ports
     virtual SharedPointer<class PyPorts> output() = 0;
     virtual SharedPointer<class PyPorts> input() = 0;
+    virtual void setEnabled(bool enable) = 0;
 
     //time added to network, for id sorting
     virtual boost::posix_time::ptime creationTime() const = 0;
@@ -130,6 +131,7 @@ namespace SCIRun
     virtual SharedPointer<PyModule> findModule(const std::string& id) const = 0;
     virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
+    virtual std::string setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable) = 0;
     virtual std::string executeAll() = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;

@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun;
@@ -53,6 +54,7 @@ SplitFieldByConnectedRegion::SplitFieldByConnectedRegion()
   INITIALIZE_PORT(OutputField6);
   INITIALIZE_PORT(OutputField7);
   INITIALIZE_PORT(OutputField8);
+  INITIALIZE_PORT(OutputBundle);
 }
 
 void SplitFieldByConnectedRegion::setStateDefaults()
@@ -81,14 +83,7 @@ void SplitFieldByConnectedRegion::execute()
     sendOutputFromAlgorithm(OutputField7, output);
     sendOutputFromAlgorithm(OutputField8, output);
 
-    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    boutput = new Bundle;
-    for (size_t j=0; j< output.size(); j++)
-    {
-      std::ostringstream oss;
-      oss << "Field" << j;
-      boutput->setField(oss.str(),output[j]);
-    }
-    #endif
+    
+    sendOutputFromAlgorithm(OutputBundle, output);
   }
 }

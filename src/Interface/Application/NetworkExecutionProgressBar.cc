@@ -53,7 +53,7 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(NetworkStatusPtr status
   timingAction_->setToolTip("Click to copy execution times to clipboard");
   timingAction_->setVisible(true);
   timingAction_->setIcon(QPixmap(":/general/Resources/timepiece-512.png"));
-  connect(timingAction_, SIGNAL(triggered()), this, SLOT(displayTimingInfo()));
+  connect(timingAction_, &QAction::triggered, this, &NetworkExecutionProgressBar::displayTimingInfo);
   timingStream_.setRealNumberPrecision(4);
 
   progressBar_->setStyleSheet(parent->styleSheet());

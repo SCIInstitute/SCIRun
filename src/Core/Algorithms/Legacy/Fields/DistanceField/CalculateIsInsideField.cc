@@ -101,8 +101,6 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
   if (fo.is_tensor()) fo.make_double();
   fo.make_constantdata();
 
-  bool clean_field = false;
-
   if (!output)
   {
     output = CreateField(fo,input->mesh());
@@ -112,7 +110,6 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
       error("Could not create output field");
       return(false);
     }
-    clean_field = true;
   }
 
   // For the moment we calculate everything in doubles

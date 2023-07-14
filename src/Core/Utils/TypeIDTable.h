@@ -33,8 +33,8 @@
 
 #include <Core/Thread/Mutex.h>
 #include <map>
+#include <optional>
 #include <boost/noncopyable.hpp>
-#include <boost/optional.hpp>
 #include <Core/Utils/share.h>
 
 namespace SCIRun
@@ -49,7 +49,7 @@ namespace Utility
   class TypeIDTable : boost::noncopyable
   {
   public:
-    typedef boost::optional<const CtorInfo&> CtorInfoOption;
+    typedef std::optional<CtorInfo> CtorInfoOption;
 
     //do locking internally
     CtorInfoOption findConstructorInfo(const std::string& key) const

@@ -77,6 +77,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataFromSourceToDestination.h
   MapFieldDataOntoNodesRadialbasis.h
   ReportFieldGeometryMeasures.h
+  ReportScalarFieldStats.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
@@ -100,7 +101,9 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateElectrode.h
   InterfaceWithTetGen.h
   GenerateNodeNormals.h
-  #CompositeModuleTestGFB_FM.h
+  CalculateFieldDataMetric.h
+  BuildElemLeadField.h
+  MergeTriSurfs.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -159,7 +162,7 @@ SET(Modules_Legacy_Fields_SRCS
   ConvertHexVolToTetVol.cc
   #MergeFields.cc
   #InsertHexVolSheetAlongSurface.cc
-  #MergeTriSurfs.cc
+  MergeTriSurfs.cc
   #ClipVolumeByIsovalue.cc
   RefineMesh.cc
   SwapFieldDataWithMatrixEntries.cc
@@ -175,7 +178,7 @@ SET(Modules_Legacy_Fields_SRCS
   CreateLatVol.cc
   CreateImage.cc
   #CreateStructHex.cc
-  #ReportScalarFieldStats.cc
+  ReportScalarFieldStats.cc
   GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc
@@ -183,7 +186,7 @@ SET(Modules_Legacy_Fields_SRCS
   #ConvertMeshToIrregularMesh.cc
   ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc
-  #CalculateFieldDataMetric.cc
+  CalculateFieldDataMetric.cc
   CalculateMeshNodes.cc
   #QueryFieldData.cc
   TransformMeshWithTransform.cc
@@ -216,6 +219,7 @@ SET(Modules_Legacy_Fields_SRCS
   InterfaceWithTetGen.cc
   GenerateNodeNormals.cc
   #CompositeModuleTestGFB_FM.cc
+  BuildElemLeadField.cc
 )
 
 IF(WITH_TETGEN)

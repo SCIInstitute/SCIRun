@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateBundleDifference",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Fields/CalculateBundleDifference.h"
+  },
+  "algorithm": {
+    "name": "CalculateBundleDifferenceAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateBundleDifference.h"
+  },
+  "UI": {
+    "name": "CalculateBundleDifferenceDialog",
+    "header": "Interface/Modules/Fields/CalculateBundleDifferenceDialog.h"
+  }
+}

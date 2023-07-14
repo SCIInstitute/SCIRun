@@ -264,7 +264,6 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   omesh->node_reserve(tot_num_nodes);
   omesh->elem_reserve(tot_num_elems);
 
-  size_type nodes_offset = 0;
   size_type elems_offset = 0;
   size_type nodes_count = 0;
   size_type elems_count = 0;
@@ -538,7 +537,6 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     }
 
     elems_offset += elems_count;
-    nodes_offset += nodes_count;
 
     update_progress_max(p+1, inputs.size());
   }

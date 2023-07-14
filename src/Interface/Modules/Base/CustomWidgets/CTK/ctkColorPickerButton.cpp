@@ -30,7 +30,7 @@
 #include <QStylePainter>
 
 // CTK includes
-#include "ctkColorDialog.h"
+#include "Core/ctkUtils.h"
 #include "ctkColorPickerButton.h"
 
 class ctkColorPickerButtonPrivate
@@ -67,8 +67,8 @@ void ctkColorPickerButtonPrivate::init()
 {
   Q_Q(ctkColorPickerButton);
   q->setCheckable(true);
-  QObject::connect(q, SIGNAL(toggled(bool)),
-                   q, SLOT(onToggled(bool)));
+  QObject::connect(q, &ctkColorPickerButton::toggled,
+                   q, &ctkColorPickerButton::onToggled);
   this->computeIcon();
 }
 
@@ -155,14 +155,9 @@ void ctkColorPickerButton::changeColor()
     static_cast<int>(d->DialogOptions & NoButtons));
   options |= QColorDialog::ColorDialogOption(
     static_cast<int>(d->DialogOptions & DontUseNativeDialog));
-  if (d->DialogOptions & UseCTKColorDialog)
+
     {
-    newColor = ctkColorDialog::getColor(d->Color, this, QString(""),options);
-    newColorName = ctkColorDialog::getColorName();
-    }
-  else
-    {
-    newColor = QColorDialog::getColor(d->Color, this, QString(""), options);
+      newColor = QColorDialog::getColor(d->Color, this, QString(""), options);
     }
   if (newColor.isValid())
     {
@@ -298,7 +293,7 @@ QSize ctkColorPickerButton::sizeHint()const
     opt.rect.setSize(opt.iconSize); // PM_MenuButtonIndicator depends on the height
     d->CachedSizeHint = this->style()->sizeFromContents(
       QStyle::CT_ToolButton, &opt, opt.iconSize, this).
-      expandedTo(QApplication::globalStrut());
+      expandedTo(ctk::globalStrutReplacement());
     }
   else
     {
@@ -307,7 +302,7 @@ QSize ctkColorPickerButton::sizeHint()const
     pushButtonOpt.rect.setSize(pushButtonOpt.iconSize); // PM_MenuButtonIndicator depends on the height
     d->CachedSizeHint = (style()->sizeFromContents(
                            QStyle::CT_PushButton, &pushButtonOpt, pushButtonOpt.iconSize, this).
-                         expandedTo(QApplication::globalStrut()));
+                         expandedTo(ctk::globalStrutReplacement()));
     }
   return d->CachedSizeHint;
 }

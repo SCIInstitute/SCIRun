@@ -31,6 +31,7 @@
 SET(Modules_Legacy_Bundle_HEADERS
   GetFieldsFromBundle.h
   GetMatricesFromBundle.h
+  GetColorMapsFromBundle.h
   InsertEnvironmentIntoBundle.h
   InsertFieldsIntoBundle.h
   InsertMatricesIntoBundle.h
@@ -52,7 +53,7 @@ SET(Modules_Legacy_Bundle_SRCS
   GetFieldsFromBundle.cc
   GetMatricesFromBundle.cc
   #GetNrrdsFromBundle.cc
-  #GetColorMapsFromBundle.cc
+  GetColorMapsFromBundle.cc
   GetStringsFromBundle.cc
   #JoinBundles.cc
 )

@@ -41,7 +41,7 @@ void GrabNameAndSetFlags::operator()(QTreeWidgetItem* item)
 }
 
 HideItemsNotMatchingString::HideItemsNotMatchingString(SearchType searchType, const QString& pattern) :
-  match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard),
+  match_(".*" + pattern + ".*", QRegularExpression::CaseInsensitiveOption),
   start_(pattern), searchType_(searchType) {}
 
 void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
@@ -84,12 +84,12 @@ bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
 {
   auto text = item->text(0);
   if (searchType_ == SearchType::HIDE_NON_UI)
-    return !item->data(0, Qt::UserRole).toBool();
+    return !item->data(0, hasUIDataFlag).toBool();
   else if (searchType_ == SearchType::STARTS_WITH)
     return !text.startsWith(start_, Qt::CaseInsensitive);
   else if(searchType_ == SearchType::WILDCARDS
           || boost::contains(start_, "*"))
-    return !match_.exactMatch(text);
+    return !match_.match(text).hasMatch();
   else
     return !fuzzySearchAllPatterns(text, start_);
 }

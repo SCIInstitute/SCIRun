@@ -66,19 +66,19 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
   colorMapNameComboBox_->addItem(QString::fromStdString("Custom"));
 
-  connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
-  connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
-  connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(updateColorMapPreview()));
-  connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(updateColorMapPreview()));
+  connect(shiftSpin_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &CreateStandardColorMapDialog::setShiftSlider);
+  connect(resolutionSpin_, qOverload<int>(&QSpinBox::valueChanged), this, &CreateStandardColorMapDialog::setResolutionSlider);
+  connect(shiftSpin_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &CreateStandardColorMapDialog::updateColorMapPreview);
+  connect(resolutionSpin_, qOverload<int>(&QSpinBox::valueChanged), this, &CreateStandardColorMapDialog::updateColorMapPreview);
 
-  connect(shiftSlider_, SIGNAL(valueChanged(int)), this, SLOT(setShiftSpinner(int)));
-  connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
-  connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
+  connect(shiftSlider_, &QSlider::valueChanged, this, &CreateStandardColorMapDialog::setShiftSpinner);
+  connect(resolutionSlider_, &QSlider::valueChanged, resolutionSpin_, &QSpinBox::setValue);
+  connect(invertCheck_, &QCheckBox::toggled, this, &CreateStandardColorMapDialog::onInvertCheck);
 
   addRadioButtonGroupManager({predefinedColorMapRadioButton_, customColorMapRadioButton_}, Parameters::ColorMapOption);
 
-  connect(customColorButton0_, SIGNAL(clicked()), this, SLOT(selectCustomColorMin()));
-  connect(customColorButton1_, SIGNAL(clicked()), this, SLOT(selectCustomColorMax()));
+  connect(customColorButton0_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::selectCustomColorMin);
+  connect(customColorButton1_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::selectCustomColorMax);
 
   customColors_[0] = colorFromState(Parameters::CustomColor0);
   customColors_[1] = colorFromState(Parameters::CustomColor1);
@@ -93,9 +93,9 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
     qDebug() << "NO RAINBOW!";
 
   addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
-  connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview()));
-  connect(predefinedColorMapRadioButton_, SIGNAL(clicked()), this, SLOT(updateColorMapPreview()));
-  connect(customColorMapRadioButton_, SIGNAL(clicked()), this, SLOT(updateColorMapPreview()));
+  connect(colorMapNameComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), this, &CreateStandardColorMapDialog::updateColorMapPreview);
+  connect(predefinedColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
+  connect(customColorMapRadioButton_, &QPushButton::clicked, this, &CreateStandardColorMapDialog::updateColorMapPreview);
 
   // Create preview window
   scene_ = new QGraphicsScene(this);
@@ -105,7 +105,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   previewColorMap_->setStyleSheet(buildGradientString(*defaultMap));
   previewColorMap_->updateSize();
   previewColorMap_->show();
-  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
+  connect(clearAlphaPointsToolButton_, &QPushButton::clicked, previewColorMap_, &ColormapPreview::clearAlphaPointGraphics);
 }
 
 void CreateStandardColorMapDialog::selectCustomColorMin()
@@ -195,17 +195,7 @@ void CreateStandardColorMapDialog::updateColorMapPreview()
 QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& cm) const
 {
   //TODO: cache these values, GUI is slow to update.
-  std::stringstream ss;
-  ss << "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,";
-  for (double i = 0.001; i < 1.0; i += 0.001) { //styling values need to be in the range [0,1]
-    ss << " stop:" << i;
-    ss << " rgba(";
-    ColorRGB c = cm.valueToColor(i * 2. - 1.); //need to match default ColorMap data range [-1,1]
-    ss << int(255.*c.r()) << ", " << int(255.*c.g()) << ", " << int(255.*c.b()) << ", 255),";
-  }
-  ss << ");";
-  std::string str = ss.str();
-  return QString::fromStdString(ss.str());
+  return QString::fromStdString(cm.styleSheet());
 }
 
 void CreateStandardColorMapDialog::setShiftSlider(double d)

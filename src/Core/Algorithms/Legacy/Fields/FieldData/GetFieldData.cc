@@ -170,14 +170,14 @@ namespace SCIRun {
 
           for (VMesh::Elem::index_type idx = 0; idx < size; ++idx)
           {
-            vfield->get_value((*output)(idx, 0), idx);
+            vfield->get_value((*output)(static_cast<int>(idx), 0), idx);
           }
           if (vfield->basis_order() == 2)
           {
             vfield->vmesh()->synchronize(Mesh::EDGES_E);
             for (VMesh::Elem::index_type idx = size; idx < size + esize; ++idx)
             {
-              vfield->get_evalue((*output)(idx, 0), idx);
+              vfield->get_evalue((*output)(static_cast<int>(idx), 0), idx);
             }
           }
 

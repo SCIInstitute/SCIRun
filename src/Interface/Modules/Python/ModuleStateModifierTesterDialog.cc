@@ -47,8 +47,4 @@ ModuleStateModifierTesterDialog::ModuleStateModifierTesterDialog(const std::stri
   }
 
   addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::StateModifyingCode);
-  //addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
-  //addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
-
-  //connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
 }

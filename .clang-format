@@ -2,11 +2,10 @@
 BasedOnStyle: Google
 AlignAfterOpenBracket: DontAlign
 AllowAllConstructorInitializersOnNextLine: 'true'
-AllowShortBlocksOnASingleLine: 'true'
+AllowShortBlocksOnASingleLine: 'false'
 AllowShortCaseLabelsOnASingleLine: 'true'
 AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: WithoutElse
-AllowShortLoopsOnASingleLine: 'true'
+AllowShortLoopsOnASingleLine: 'false'
 AlwaysBreakTemplateDeclarations: 'Yes'
 BinPackArguments: 'true'
 BinPackParameters: 'true'
@@ -28,7 +27,7 @@ BraceWrapping:
   SplitEmptyNamespace: false
 BreakBeforeBraces: Custom
 BreakConstructorInitializers: BeforeColon
-ColumnLimit: '100'
+ColumnLimit: '200'
 ConstructorInitializerAllOnOneLineOrOnePerLine: 'false'
 Cpp11BracedListStyle: 'true'
 DerivePointerAlignment: 'true'

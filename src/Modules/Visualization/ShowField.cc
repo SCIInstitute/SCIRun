@@ -28,7 +28,7 @@
 
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -70,26 +70,26 @@ public:
   /// field data.
   GeometryHandle buildGeometryObject(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     const GeometryIDGenerator& gid);
 
   /// Mesh construction. Any of the functions below can modify the renderState.
   /// This modified render state will be passed onto the renderer.
   void renderNodes(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
   void renderFaces(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
   void renderFacesLinear(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state, GeometryHandle geom,
     const std::string& id);
 
@@ -106,14 +106,14 @@ public:
 
   void renderEdges(
     FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
+    std::optional<ColorMapHandle> colorMap,
     RenderState state,
     GeometryHandle geom,
     const std::string& id);
 
-  RenderState getNodeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getEdgeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getFaceRenderState(boost::optional<ColorMapHandle> colorMap);
+  RenderState getNodeRenderState(std::optional<ColorMapHandle> colorMap);
+  RenderState getEdgeRenderState(std::optional<ColorMapHandle> colorMap);
+  RenderState getFaceRenderState(std::optional<ColorMapHandle> colorMap);
 private:
   float faceTransparencyValue_ = 0.65f;
   float edgeTransparencyValue_ = 0.65f;
@@ -223,7 +223,7 @@ void ShowField::execute()
 }
 
 RenderState GeometryBuilder::getNodeRenderState(
-  boost::optional<SharedPointer<ColorMap>> colorMap)
+  std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -261,7 +261,7 @@ RenderState GeometryBuilder::getNodeRenderState(
   return renState;
 }
 
-RenderState GeometryBuilder::getEdgeRenderState(boost::optional<SharedPointer<ColorMap>> colorMap)
+RenderState GeometryBuilder::getEdgeRenderState(std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -300,7 +300,7 @@ RenderState GeometryBuilder::getEdgeRenderState(boost::optional<SharedPointer<Co
   return renState;
 }
 
-RenderState GeometryBuilder::getFaceRenderState(boost::optional<SharedPointer<ColorMap>> colorMap)
+RenderState GeometryBuilder::getFaceRenderState(std::optional<SharedPointer<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -341,7 +341,7 @@ RenderState GeometryBuilder::getFaceRenderState(boost::optional<SharedPointer<Co
 
 GeometryHandle GeometryBuilder::buildGeometryObject(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   const GeometryIDGenerator& gid)
 {
   // Function for reporting progress. TODO: use this variable somewhere!
@@ -391,7 +391,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 
 void GeometryBuilder::renderFaces(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state, GeometryHandle geom,
   const std::string& id)
 {
@@ -469,13 +469,15 @@ namespace
   }
 
   void spiltColorMapToTextureAndCoordinates(
-    const boost::optional<SharedPointer<ColorMap>>& colorMap,
+    const std::optional<SharedPointer<ColorMap>>& colorMap,
     ColorMapHandle& textureMap, ColorMapHandle& coordinateMap)
   {
-    ColorMapHandle realColorMap = nullptr;
+    ColorMapHandle realColorMap;
 
-    if(colorMap) realColorMap = colorMap.get();
-    else realColorMap = StandardColorMapFactory::create();
+    if (colorMap)
+      realColorMap = *colorMap;
+    else
+      realColorMap = StandardColorMapFactory::create();
 
     textureMap = StandardColorMapFactory::create(
       realColorMap->getColorData(), realColorMap->getColorMapName(),
@@ -491,7 +493,7 @@ namespace
 
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -532,8 +534,8 @@ void GeometryBuilder::renderFacesLinear(
   bool isScalar = fld->is_scalar();
   bool isVector = fld->is_vector();
   bool isTensor = fld->is_tensor();
-  int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
-  colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
+  //int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
+  //colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
 
@@ -825,7 +827,7 @@ void GeometryBuilder::renderFacesLinear(
 
 void GeometryBuilder::renderNodes(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -875,7 +877,6 @@ void GeometryBuilder::renderNodes(
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
@@ -913,7 +914,7 @@ void GeometryBuilder::renderNodes(
 
 void GeometryBuilder::renderEdges(
   FieldHandle field,
-  boost::optional<SharedPointer<ColorMap>> colorMap,
+  std::optional<SharedPointer<ColorMap>> colorMap,
   RenderState state,
   GeometryHandle geom,
   const std::string& id)
@@ -968,7 +969,6 @@ void GeometryBuilder::renderEdges(
     //coloring options
     if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
-      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         if (fld->basis_order() == 1)

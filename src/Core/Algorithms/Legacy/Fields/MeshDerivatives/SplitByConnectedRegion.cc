@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -42,14 +43,15 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 ALGORITHM_PARAMETER_DEF(Fields, SortDomainBySize);
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField1("OutputField1");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField2("OutputField2");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField3("OutputField3");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField4("OutputField4");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField5("OutputField5");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField6("OutputField6");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField7("OutputField7");
-AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField8("OutputField8");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField1("OutputField1");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField2("OutputField2");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField3("OutputField3");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField4("OutputField4");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField5("OutputField5");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField6("OutputField6");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField7("OutputField7");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField8("OutputField8");
+const AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputBundle("OutputBundle");
 
 class SortSizes
 {
@@ -352,6 +354,14 @@ AlgorithmOutput SplitFieldByConnectedRegionAlgo::run(const AlgorithmInput& input
     output[OutputField8]=output_fields[7];
 
  /// TODO: enable dynamic output ports
-
+ 
+    auto boutput = std::make_shared<Bundle>();
+    for (size_t j = 0; j < output_fields.size() ; ++j)
+    {
+      boutput->set("Field" + std::to_string(j), output_fields.at(j));
+    }
+    
+    output[OutputBundle]=boutput;
+    
  return output;
 }

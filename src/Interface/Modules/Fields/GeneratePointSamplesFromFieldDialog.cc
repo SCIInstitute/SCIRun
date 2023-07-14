@@ -47,7 +47,7 @@ GeneratePointSamplesFromFieldDialog::GeneratePointSamplesFromFieldDialog(const s
   addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxScale);
   addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxScale);
 
-  connect(bboxScaleCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleSpinBoxes()));
+  connect(bboxScaleCheckBox_, &QCheckBox::stateChanged, this, &GeneratePointSamplesFromFieldDialog::toggleSpinBoxes);
 }
 
 void GeneratePointSamplesFromFieldDialog::toggleSpinBoxes()

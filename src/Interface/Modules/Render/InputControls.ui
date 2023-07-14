@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>301</width>
-    <height>210</height>
+    <width>300</width>
+    <height>180</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>300</width>
-    <height>210</height>
+    <height>180</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -118,22 +118,6 @@
        </widget>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="saveScreenShotOnUpdateCheckBox_">
-     <property name="font">
-      <font>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Save screenshot on geometry update</string>
-     </property>
-     <property name="text">
-      <string>Save screenshot on update</string>
-     </property>
     </widget>
    </item>
   </layout>

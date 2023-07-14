@@ -124,12 +124,12 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestInterpolateWithFile)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = 0;
    expected_result->vfield()->get_value(tmp,idx);
@@ -151,14 +151,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMin)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_min = test_mapfielddatafromelemtonodeFLD_Min();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_min)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);
@@ -179,14 +179,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMax)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_max = test_mapfielddatafromelemtonodeFLD_Max();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_max)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);
@@ -207,14 +207,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestSum)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_sum = test_mapfielddatafromelemtonodeFLD_Sum();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_sum)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);
@@ -236,14 +236,14 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMed)
 
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    result->vfield()->get_value((*output)(idx, 0),idx);
  }
 
  DenseMatrixHandle expected_result_med = test_mapfielddatafromelemtonodeFLD_Med();
 
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ for (auto idx = 0; idx < result->vfield()->num_values(); idx++)
  {
    double tmp = (*expected_result_med)(idx,0);
    EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-16);

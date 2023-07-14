@@ -197,18 +197,18 @@ void ctkDoubleSpinBoxPrivate::init()
   this->SpinBox->setInvertedControls(this->InvertedControls);
   // ctkQDoubleSpinBox needs to be first to receive textChanged() signals.
   QLineEdit* lineEdit = new QLineEdit(q);
-  QObject::connect(lineEdit, SIGNAL(textChanged(QString)),
-                   this, SLOT(editorTextChanged(QString)));
+  QObject::connect(lineEdit, &QLineEdit::textChanged,
+                   this, &ctkDoubleSpinBoxPrivate::editorTextChanged);
   this->SpinBox->setLineEdit(lineEdit);
   lineEdit->setObjectName(QLatin1String("qt_spinbox_lineedit"));
   this->InputValue = this->SpinBox->value();
   this->InputRange[0] = this->SpinBox->minimum();
   this->InputRange[1] = this->SpinBox->maximum();
 
-  QObject::connect(this->SpinBox, SIGNAL(valueChanged(double)),
-    this, SLOT(onValueChanged()));
-  QObject::connect(this->SpinBox, SIGNAL(editingFinished()),
-    q, SIGNAL(editingFinished()));
+  QObject::connect(this->SpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged),
+    this, &ctkDoubleSpinBoxPrivate::onValueChanged);
+  QObject::connect(this->SpinBox, &QDoubleSpinBox::editingFinished,
+    q, &ctkDoubleSpinBox::editingFinished);
 
   QHBoxLayout* l = new QHBoxLayout(q);
   l->addWidget(this->SpinBox);
@@ -354,6 +354,22 @@ void ctkDoubleSpinBoxPrivate::editorTextChanged(const QString& text)
     }
 }
 
+namespace
+{
+  #pragma GCC diagnostic ignored "-Wunused-function"
+  bool isPrint(const QChar& sep)
+  {
+    return sep.isPrint();
+  }
+
+  //for Qt 6
+  #pragma GCC diagnostic ignored "-Wunused-function"
+  bool isPrint(const QString& sep)
+  {
+    return sep[0].isPrint();
+  }
+}
+
 //-----------------------------------------------------------------------------
 double ctkDoubleSpinBoxPrivate
 ::validateAndInterpret(QString &input, int &pos,
@@ -398,13 +414,14 @@ double ctkDoubleSpinBoxPrivate
   // could be because of group separators:
   if (!ok && state == QValidator::Acceptable)
     {
-    if (q->locale().groupSeparator().isPrint())
+      const auto sep = q->locale().groupSeparator();
+    if (isPrint(sep))
       {
       int start = (dec == -1 ? text.size() : dec)- 1;
       int lastGroupSeparator = start;
       for (int digit = start; digit >= 0; --digit)
         {
-        if (text.at(digit) == q->locale().groupSeparator())
+        if (text.at(digit) == sep)
           {
           if (digit != lastGroupSeparator - 3)
             {
@@ -1026,20 +1043,20 @@ void ctkDoubleSpinBox::setValueProxy(ctkValueProxy* proxy)
 
   if (d->Proxy)
     {
-    disconnect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
-               d, SLOT(onValueProxyAboutToBeModified()));
-    disconnect(d->Proxy.data(), SIGNAL(proxyModified()),
-               d, SLOT(onValueProxyModified()));
+    disconnect(d->Proxy.data(), &ctkValueProxy::proxyAboutToBeModified,
+               d, &ctkDoubleSpinBoxPrivate::onValueProxyAboutToBeModified);
+    disconnect(d->Proxy.data(), &ctkValueProxy::proxyModified,
+               d, &ctkDoubleSpinBoxPrivate::onValueProxyModified);
     }
 
   d->Proxy = proxy;
 
   if (d->Proxy)
     {
-    connect(d->Proxy.data(), SIGNAL(proxyAboutToBeModified()),
-            d, SLOT(onValueProxyAboutToBeModified()));
-    connect(d->Proxy.data(), SIGNAL(proxyModified()),
-            d, SLOT(onValueProxyModified()));
+    connect(d->Proxy.data(), &ctkValueProxy::proxyAboutToBeModified,
+            d, &ctkDoubleSpinBoxPrivate::onValueProxyAboutToBeModified);
+    connect(d->Proxy.data(), &ctkValueProxy::proxyModified,
+            d, &ctkDoubleSpinBoxPrivate::onValueProxyModified);
     }
 
   d->onValueProxyModified();
@@ -1102,7 +1119,7 @@ QSize ctkDoubleSpinBox::sizeHint() const
   opt.rect = this->rect();
   d->CachedSizeHint = this->style()->sizeFromContents(
     QStyle::CT_SpinBox, &opt, newSizeHint, this)
-    .expandedTo(QApplication::globalStrut());
+    .expandedTo(ctk::globalStrutReplacement());
   return d->CachedSizeHint;
 }
 
@@ -1158,7 +1175,7 @@ QSize ctkDoubleSpinBox::minimumSizeHint() const
   opt.rect = this->rect();
   d->CachedMinimumSizeHint = this->style()->sizeFromContents(
     QStyle::CT_SpinBox, &opt, newSizeHint, this)
-    .expandedTo(QApplication::globalStrut());
+    .expandedTo(ctk::globalStrutReplacement());
   return d->CachedMinimumSizeHint;
 }
 

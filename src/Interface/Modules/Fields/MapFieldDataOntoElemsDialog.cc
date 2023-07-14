@@ -49,7 +49,7 @@ MapFieldDataOntoElemsDialog::MapFieldDataOntoElemsDialog(const std::string& name
   addComboBoxManager(samplePointsComboBox_, Parameters::SamplePoints);
   addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
   addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
-  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
+  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataOntoElemsDialog::setUseNanForUnassignedValues);
 }
 
 void MapFieldDataOntoElemsDialog::pullSpecial()

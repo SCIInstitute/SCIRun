@@ -44,8 +44,8 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(appendRowsButton_, SIGNAL(clicked()), this, SLOT(isRows()));
-  connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
+  connect(appendRowsButton_, &QPushButton::clicked, this, &AppendMatrixDialog::isRows);
+  connect(appendColumnsButton_, &QPushButton::clicked, this, &AppendMatrixDialog::isCols);
 }
 
 void AppendMatrixDialog::isRows() const

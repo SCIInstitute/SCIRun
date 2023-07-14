@@ -78,10 +78,9 @@ namespace Engine {
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
     NetworkDoneLoadingSignalType networkDoneLoading_;
-
+    ConnectionStatusChangedSignalType connectionStatusChanged_;
 
     bool signalSwitch_, loadingContext_;
-
 
     struct LoadingContext
     {
@@ -119,8 +118,9 @@ namespace Engine {
     struct InsertInfo { std::string newModuleName, endModuleId, inputPortName, inputPortId; };
     Networks::ModuleHandle insertNewModule(const Networks::PortDescriptionInterface* portToConnect, const InsertInfo& info);
 
-    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
+    std::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
+    std::string setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable);
 
     std::future<int> executeAll() override;
     void executeModule(const Networks::ModuleHandle& module, bool executeUpstream);
@@ -146,6 +146,7 @@ namespace Engine {
     boost::signals2::connection connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber);
     boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
+    boost::signals2::connection connectConnectionStatusChanged(const ConnectionStatusChangedSignalType::slot_type& subscriber);
 
     boost::signals2::connection connectStaticNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectStaticNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);

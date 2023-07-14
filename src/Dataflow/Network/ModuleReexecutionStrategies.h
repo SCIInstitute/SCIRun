@@ -118,10 +118,10 @@ namespace Networks {
   class SCISHARE DynamicReexecutionStrategyFactory : public ReexecuteStrategyFactory
   {
   public:
-    explicit DynamicReexecutionStrategyFactory(const boost::optional<std::string>& reexMode);
+    explicit DynamicReexecutionStrategyFactory(const std::optional<std::string>& reexMode);
     ModuleReexecutionStrategyHandle create(const Module& module) const override;
   private:
-    boost::optional<std::string> reexecuteMode_;
+    std::optional<std::string> reexecuteMode_;
   };
 
 }}}

@@ -33,7 +33,7 @@
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -117,8 +117,8 @@ namespace SCIRun {
       private:
         void configureInputs(
             FieldHandle pfield,
-            boost::optional<FieldHandle> sfield,
-            boost::optional<FieldHandle> tfield);
+            std::optional<FieldHandle> sfield,
+            std::optional<FieldHandle> tfield);
         RenderState::GlyphInputPort getInput(const std::string& port_name);
         void setSuperquadricEmphasis(int emphasis);
 

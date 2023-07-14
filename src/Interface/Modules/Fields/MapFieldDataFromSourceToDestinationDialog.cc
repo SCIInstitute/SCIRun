@@ -51,8 +51,8 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
   );
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
   addDoubleSpinBoxManager(defaultValueDoubleSpinBox_, Parameters::DefaultValue);
-  connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));
-  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
+  connect(noMaxCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue);
+  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues);
 }
 
 void MapFieldDataFromSourceToDestinationDialog::pullSpecial()

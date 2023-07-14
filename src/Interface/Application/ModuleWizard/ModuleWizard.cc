@@ -266,8 +266,8 @@ ClassInfoPage::ClassInfoPage(QWidget *parent)
 
     defaultCtorRadioButton->setChecked(true);
 
-    connect(defaultCtorRadioButton, SIGNAL(toggled(bool)),
-            copyCtorCheckBox, SLOT(setEnabled(bool)));
+    connect(defaultCtorRadioButton, &QRadioButton::toggled,
+            copyCtorCheckBox, &QCheckBox::setEnabled);
 
     registerField("className*", classNameLineEdit);
     registerField("baseClass", baseClassLineEdit);
@@ -318,14 +318,14 @@ CodeStylePage::CodeStylePage(QWidget *parent)
     baseIncludeLineEdit = new QLineEdit;
     baseIncludeLabel->setBuddy(baseIncludeLineEdit);
 
-    connect(protectCheckBox, SIGNAL(toggled(bool)),
-            macroNameLabel, SLOT(setEnabled(bool)));
-    connect(protectCheckBox, SIGNAL(toggled(bool)),
-            macroNameLineEdit, SLOT(setEnabled(bool)));
-    connect(includeBaseCheckBox, SIGNAL(toggled(bool)),
-            baseIncludeLabel, SLOT(setEnabled(bool)));
-    connect(includeBaseCheckBox, SIGNAL(toggled(bool)),
-            baseIncludeLineEdit, SLOT(setEnabled(bool)));
+    connect(protectCheckBox, &QCheckBox::toggled,
+            macroNameLabel, &QWidget::setEnabled);
+    connect(protectCheckBox, &QCheckBox::toggled,
+            macroNameLineEdit, &QWidget::setEnabled);
+    connect(includeBaseCheckBox, &QCheckBox::toggled,
+            baseIncludeLabel, &QWidget::setEnabled);
+    connect(includeBaseCheckBox, &QCheckBox::toggled,
+            baseIncludeLineEdit, &QWidget::setEnabled);
 
     registerField("comment", commentCheckBox);
     registerField("protect", protectCheckBox);
@@ -357,12 +357,17 @@ void CodeStylePage::initializePage()
     baseIncludeLabel->setEnabled(!baseClass.isEmpty());
     baseIncludeLineEdit->setEnabled(!baseClass.isEmpty());
 
-    if (baseClass.isEmpty()) {
-        baseIncludeLineEdit->clear();
-    } else if (QRegExp("Q[A-Z].*").exactMatch(baseClass)) {
-        baseIncludeLineEdit->setText("<" + baseClass + ">");
-    } else {
-        baseIncludeLineEdit->setText("\"" + baseClass.toLower() + ".h\"");
+    if (baseClass.isEmpty())
+    {
+      baseIncludeLineEdit->clear();
+    }
+    else if (QRegularExpression(QRegularExpression::anchoredPattern("Q[A-Z].*")).match(baseClass).hasMatch())
+    {
+      baseIncludeLineEdit->setText("<" + baseClass + ">");
+    }
+    else
+    {
+      baseIncludeLineEdit->setText("\"" + baseClass.toLower() + ".h\"");
     }
 }
 

@@ -61,6 +61,7 @@ namespace Matlab {
     void executeImpl(const StringPortName<0>& filenameIn, const StringPortName<6>& filenameOut);
     virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const MatlabIO::matlabarray&) const = 0;
     virtual int indexMatlabFile(MatlabIO::matlabconverter& converter, const MatlabIO::matlabarray& mlarray, std::string& infostring) const = 0;
+    time_t old_filemodification_{0};
   };
 
   class SCISHARE ImportFieldsFromMatlab : public MatlabFileIndexModule,

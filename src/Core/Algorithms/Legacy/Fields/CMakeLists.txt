@@ -36,7 +36,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/ApplyMappingMatrix.h
   FieldData/BuildMatrixOfSurfaceNormalsAlgo.h
   #Mapping/ApplyMappingMatrix.h
-  #FieldData/CalculateFieldDataMetric.h
+  FieldData/CalculateFieldDataMetric.h
   FieldData/ConvertIndicesToFieldDataAlgo.h
   FieldData/CalculateGradientsAlgo.h
   FieldData/CalculateVectorMagnitudesAlgo.h
@@ -108,6 +108,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Cleanup/ReorderNormalCoherentlyAlgo.h
   MeshDerivatives/CalculateMeshCenterAlgo.h
   MeshDerivatives/GetCentroids.h
+  MeshDerivatives/CalculateBundleDifference.h
   )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -142,7 +143,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   FieldData/CalculateGradientsAlgo.cc
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc
-  #FieldData/CalculateFieldDataMetric.cc
+  FieldData/CalculateFieldDataMetric.cc
   FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
   FieldData/SwapFieldDataWithMatrixEntriesAlgo.cc
@@ -197,6 +198,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshDerivatives/GetBoundingBox.cc
   MeshDerivatives/SplitByConnectedRegion.cc
   MeshDerivatives/ExtractSimpleIsosurfaceAlgo.cc
+  MeshDerivatives/CalculateBundleDifference.cc
   RefineMesh/RefineMesh.cc
   RefineMesh/RefineMeshCurveAlgoV.cc
   RefineMesh/RefineMeshHexVolAlgoV.cc
@@ -231,6 +233,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
+  Core_Datatypes_Legacy_Bundle
   Algorithms_Base
   Core_Exceptions_Legacy
   Core_Thread

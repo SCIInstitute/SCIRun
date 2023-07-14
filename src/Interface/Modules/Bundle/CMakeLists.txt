@@ -30,20 +30,24 @@ SET(Interface_Modules_Bundle_FORMS
   GetFieldsFromBundleDialog.ui
   GetMatricesFromBundleDialog.ui
   GetStringsFromBundleDialog.ui
+  GetColorMapsFromBundleDialog.ui
   InsertFieldsIntoBundleDialog.ui
   InsertMatricesIntoBundleDialog.ui
   InsertStringsIntoBundleDialog.ui
   ReportBundleInfoDialog.ui
+  ConvertBundleToField.ui
 )
 
 SET(Interface_Modules_Bundle_HEADERS
   GetFieldsFromBundleDialog.h
   GetMatricesFromBundleDialog.h
   GetStringsFromBundleDialog.h
+  GetColorMapsFromBundleDialog.h
   InsertFieldsIntoBundleDialog.h
   InsertMatricesIntoBundleDialog.h
   InsertStringsIntoBundleDialog.h
   ReportBundleInfoDialog.h
+  ConvertBundleToFieldDialog.h
   share.h
 )
 
@@ -51,10 +55,12 @@ SET(Interface_Modules_Bundle_SOURCES
   GetFieldsFromBundleDialog.cc
   GetMatricesFromBundleDialog.cc
   GetStringsFromBundleDialog.cc
+  GetColorMapsFromBundleDialog.cc
   InsertFieldsIntoBundleDialog.cc
   InsertMatricesIntoBundleDialog.cc
   InsertStringsIntoBundleDialog.cc
   ReportBundleInfoDialog.cc
+  ConvertBundleToFieldDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Bundle_FORMS_HEADERS "${Interface_Modules_Bundle_FORMS}")
@@ -69,6 +75,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Bundle
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Bundle
   Modules_Legacy_Bundle
+  Core_Algorithms_Legacy_Converter
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES})

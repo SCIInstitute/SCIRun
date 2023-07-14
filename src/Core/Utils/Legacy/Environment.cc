@@ -792,7 +792,6 @@ SCIRun::replace_environment_variables(std::string& str)
   // scan for variable names
 
   std::string::size_type size = str.size();
-  std::string::size_type old_size = str.size();
   std::string::size_type start_loc = 0;
   std::string::size_type dollar_loc = str.find('$',start_loc);
 
@@ -808,7 +807,6 @@ SCIRun::replace_environment_variables(std::string& str)
         if (sci_getenv(key))
         {
           std::string value = sci_getenv(key);
-          old_size = size;
           str = str.substr(0,dollar_loc)+value+str.substr(end_brac+1);
           size = str.size();
           start_loc = size - end_brac;
@@ -830,7 +828,6 @@ SCIRun::replace_environment_variables(std::string& str)
         if (sci_getenv(key))
         {
           std::string value = sci_getenv(key);
-          old_size = size;
           str = str.substr(0,dollar_loc)+value+str.substr(end_loc);
           size = str.size();
           start_loc = size - end_loc - 1;

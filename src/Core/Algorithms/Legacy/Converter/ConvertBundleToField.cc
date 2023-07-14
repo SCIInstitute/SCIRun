@@ -29,71 +29,60 @@
 */
 
 
-#include <Core/Algorithms/Converter/ConvertBundleToField.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Algorithms/Fields/MergeFields/JoinFields.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Containers/SearchGridT.h>
-#include <vector>
+#include <Core/Algorithms/Legacy/Converter/ConvertBundleToField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Converters;
 
-namespace SCIRunAlgo {
+ALGORITHM_PARAMETER_DEF(Converters, MergeNodes);
+ALGORITHM_PARAMETER_DEF(Converters, Tolerance);
+ALGORITHM_PARAMETER_DEF(Converters, MatchNodeValues);
+ALGORITHM_PARAMETER_DEF(Converters, MakeNoData);
 
 ConvertBundleToFieldAlgo::ConvertBundleToFieldAlgo()
 {
+  using namespace Parameters;
   //! Merge duplicate nodes?
-  add_bool("merge_nodes", true);
+  addParameter(Parameters::MergeNodes, true);
 
   //! Tolerance for merging duplicate nodes?
-  add_scalar("tolerance", 1e-6);
+  addParameter(Parameters::Tolerance, 1e-6);
 
   //! Only merge nodes whose value is the same
   //! in this module, this option always set false
-  add_bool("match_node_values", false);
+  addParameter(Parameters::MatchNodeValues, false);
 
   //! Create a field with no data
-  add_bool("make_no_data", false);
+  addParameter(Parameters::MakeNoData, false);
 }
 
-ConvertBundleToFieldAlgo::~ConvertBundleToFieldAlgo() {}
-
-bool
-ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
+bool ConvertBundleToFieldAlgo::runImpl(const BundleHandle& input, FieldHandle& output) const
 {
-  // Mark that we are starting the algorithm
-  algo_start("ConvertBundleToField");
+  ScopedAlgorithmStatusReporter asr(this, "ConvertBundleToField");
 
-  std::vector<FieldHandle> inputs;
-  FieldHandle fhandle;
-  std::string fieldname;
-
-  int numFields = input->numFields();
-
-  //! deal with the empty field, if the field is empty, just return and do nothing
-  //if (numFields==0) return true;
-
-  for (int p = 0; p < numFields; p++)
-  {
-    fieldname=input->getFieldName(p);
-    fhandle = input->getField(fieldname);
-    inputs.push_back(fhandle);
-  }
-
+  const auto inputs = input->getFields();
   if (inputs.empty())
   {
     error("Input bundle is empty");
-    algo_end();
     return false;
   }
 
-  bool match_node_values = get_bool("match_node_values");
-  bool make_no_data = get_bool("make_no_data");
-  bool merge_nodes = get_bool("merge_nodes");
-  double tol = get_scalar("tolerance");
+  const bool match_node_values = get(Parameters::MatchNodeValues).toBool();
+  const bool make_no_data = get(Parameters::MakeNoData).toBool();
+  const bool merge_nodes = get(Parameters::MergeNodes).toBool();
+  const double tol = get(Parameters::Tolerance).toDouble();
   const double tol2 = tol*tol;
 
   // Check whether mesh types are the same
@@ -108,14 +97,12 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
     if (fi.get_mesh_type() != first.get_mesh_type())
     {
       error("Mesh elements need to be equal in order to join multiple fields together");
-      algo_end();
       return false;
     }
 
     if (fi.mesh_basis_order() != first.mesh_basis_order())
     {
       error("Mesh elements need to be of the same order in for joining multiple fields together");
-      algo_end();
       return false;
     }
   }
@@ -132,7 +119,7 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
       if (fi.field_basis_order() != first.field_basis_order())
       {
         error("Fields need to have the same basis order");
-        algo_end();
+
         return false;
       }
 
@@ -146,7 +133,6 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
         else
         {
           error("Fields have different, possibly non-scalar, data types");
-          algo_end();
           return false;
         }
       }
@@ -161,7 +147,6 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
       if (! fi.is_scalar() )
       {
         error("Node values can only be matched for scalar values");
-        algo_end();
         return false;
       }
 
@@ -174,7 +159,7 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
   }
 
   BBox box;
-  Handle<SearchGridT<index_type> > node_grid;
+  std::unique_ptr<SearchGridT<index_type>> node_grid;
   size_type ni = 0, nj = 0, nk = 0;
 
   size_type tot_num_nodes = 0;
@@ -208,26 +193,25 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
     size_type sy = static_cast<size_type>(ceil(diag.y() / trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z() / trace*s));
 
-    node_grid = new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max());
+    node_grid = std::make_unique<SearchGridT<index_type>>(sx, sy, sz, box.get_min(), box.get_max());
 
     ni = node_grid->get_ni() - 1;
     nj = node_grid->get_nj() - 1;
     nk = node_grid->get_nk() - 1;
   }
 
-  MeshHandle mesh = CreateMesh(first);
-  if (mesh.get_rep() == 0)
+  auto mesh = CreateMesh(first);
+  if (!mesh)
   {
     error("Could not create output mesh");
-    algo_end();
+
     return false;
   }
 
-  output = CreateField(first,mesh);
-  if (output.get_rep() == 0)
+  output = CreateField(first, mesh);
+  if (!output)
   {
     error("Could not create output field");
-    algo_end();
     return false;
   }
 
@@ -237,7 +221,6 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
   omesh->node_reserve(tot_num_nodes);
   omesh->elem_reserve(tot_num_elems);
 
-  size_type nodes_offset = 0;
   size_type elems_offset = 0;
   size_type nodes_count = 0;
   size_type elems_count = 0;
@@ -427,13 +410,26 @@ ConvertBundleToFieldAlgo::run(BundleHandle& input, FieldHandle& output)
     }
 
     elems_offset += elems_count;
-    nodes_offset += nodes_count;
 
-    update_progress(p+1, inputs.size());
+    update_progress_max(p+1, inputs.size());
   }
 
-  algo_end();
   return true;
 }
 
-} // end namespace SCIRunAlgo
+const AlgorithmInputName ConvertBundleToFieldAlgo::InputBundle("InputBundle");
+
+AlgorithmOutput ConvertBundleToFieldAlgo::run(const AlgorithmInput& input) const
+{
+  auto bundle = input.get<Bundle>(InputBundle);
+
+  FieldHandle outputField;
+
+  if (!runImpl(bundle, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False thrown on legacy run call");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+
+  return output;
+}

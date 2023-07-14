@@ -42,8 +42,8 @@ FairMeshDialog::FairMeshDialog(const std::string& name, ModuleStateHandle state,
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(fastWeightingButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(desbrunWeightingButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(fastWeightingButton_, &QPushButton::clicked, this, &FairMeshDialog::push);
+  connect(desbrunWeightingButton_, &QPushButton::clicked, this, &FairMeshDialog::push);
 
   using namespace Parameters;
   addSpinBoxManager(iterationsSpinBox_, NumIterations);

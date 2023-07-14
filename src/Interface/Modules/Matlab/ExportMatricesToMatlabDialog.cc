@@ -45,9 +45,9 @@ ExportMatricesToMatlabDialog::ExportMatricesToMatlabDialog(const std::string& na
 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  connect(openFileButton_, &QPushButton::clicked, this, &ExportMatricesToMatlabDialog::saveFile);
+  connect(fileNameLineEdit_, &QLineEdit::editingFinished, this, &ExportMatricesToMatlabDialog::pushFileNameToState);
+  connect(fileNameLineEdit_, &QLineEdit::returnPressed, this, &ExportMatricesToMatlabDialog::pushFileNameToState);
 }
 
 void ExportMatricesToMatlabDialog::updateFromPortChange(int, const std::string& portName, DynamicPortChange type)
@@ -84,7 +84,7 @@ QComboBox* ExportMatricesToMatlabDialog::makeInputArrayTypeComboBoxItem() const
     bcBox->setCurrentIndex(0);
   }
 
-  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushArrayType()));
+  connect(bcBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &ExportMatricesToMatlabDialog::pushArrayType);
   return bcBox;
 }
 

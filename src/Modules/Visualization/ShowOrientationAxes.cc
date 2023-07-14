@@ -20,7 +20,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/BBox.h>
@@ -202,7 +202,7 @@ void ShowOrientationAxes::execute()
   {
     auto state = get_state();
     if (inputField)
-      impl_->setField(inputField.get());
+      impl_->setField(*inputField);
 
     impl_->setFieldScaling(state->getValue(ScaleByField).toBool() && inputField);
     if (state->getValue(ScaleByScaleFactor).toBool())

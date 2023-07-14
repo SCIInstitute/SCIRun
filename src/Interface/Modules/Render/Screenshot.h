@@ -47,18 +47,12 @@ namespace SCIRun
       explicit Screenshot(QOpenGLWidget *glwidget, QObject *parent = nullptr);
       void takeScreenshot();
       QImage getScreenshot();
-      void saveScreenshot();
       void saveScreenshot(const QString& filename);
-      void saveScreenshotFromPath(bool prompt);
-      QString screenshotFileFromPreferences() const;
-      QString screenshotFile() const;
       Modules::Render::RGBMatrices toMatrix() const;
-      static QString screenshotDirectory();
 
     private:
       QOpenGLWidget* viewport_;
       QImage screenshot_;
-      uint index_;
     };
   }
 }

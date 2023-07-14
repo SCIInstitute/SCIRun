@@ -274,8 +274,10 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
   /// prepare LHS_KNOWNS which is the an input to addknownstolinearsystem (called x) besides the
   /// stiffness matrix
   lhs_knows = makeShared<DenseMatrix>(mesh_num_nodes, 1);
-  for (VMesh::Node::index_type idx = 0; idx < mesh_num_nodes; idx++)
-  { (*lhs_knows)(idx, 0) = std::numeric_limits<double>::quiet_NaN(); }
+  for (auto idx = 0; idx < mesh_num_nodes; idx++)
+  {
+    (*lhs_knows)(idx, 0) = std::numeric_limits<double>::quiet_NaN();
+  }
   (*lhs_knows)(refnode_number, 0) = 0;
 
   if (fi4.is_pointcloudmesh())
@@ -363,7 +365,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
   /// (Cleaver), this mapping is meant to map the GUI inputs to actual electrode geometry by having
   /// a lookup table
   int electrode_sponges = elc_sponge_location->nrows();
-  DenseMatrixHandle lookup(new DenseMatrix(electrode_sponges, 1));
+  std::vector<long> lookup(electrode_sponges);
   DenseMatrixHandle distances(new DenseMatrix(electrode_sponges, 1));
   VMesh::Node::index_type didx;
   double distance = 0;
@@ -388,7 +390,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
         found_index = j;
       }
     }
-    (*lookup)(i, 0) = found_index;
+    lookup[i] = found_index;
     (*distances)(i, 0) = min_dis;
   }
 
@@ -580,11 +582,11 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
       double elc_thickness = 0;
       bool found = false;
 
-      for (long j = 0; j < lookup->nrows(); j++)
+      for (auto j = 0; j < lookup.size(); j++)
       {
-        if ((*lookup)(j, 0) == k)
+        if (lookup[j] == k)
         {
-          elc_thickness = (*elc_sponge_location)((*lookup)(j, 0), 3);
+          elc_thickness = (*elc_sponge_location)(k, 3);
           found = true;
         }
       }
@@ -816,7 +818,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
   double area = 0.0, prev_elc = 0, tmp_fld_val = 0;
   for (VMesh::Elem::index_type l = 0; l < elc_sponge_surf_vmesh->num_elems(); l++)
   {
-    (*elc_elem_typ)(l, 0) = 2;  // define triangles to incject currents in TDCS simulations
+    (*elc_elem_typ)(static_cast<std::uint64_t>(l), 0) = 2;  // define triangles to incject currents in TDCS simulations
     VMesh::Node::array_type onodes(3);
     elc_sponge_surf_vmesh->get_nodes(onodes, l);
     elc_sponge_surf_vmesh->get_center(p, onodes[0]);
@@ -828,7 +830,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
           "Reference node is part of electrode definition. Choose another reference node for given "
           "electrode surface mesh. ");
     }
-    (*elc_elem_def)(l, 0) = node_ind;
+    (*elc_elem_def)(static_cast<std::uint64_t>(l), 0) = node_ind;
     Point pos;
     mesh_vmesh->get_point(pos, node_ind);
     double x1 = pos.x(), y1 = pos.y(), z1 = pos.z();
@@ -842,7 +844,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
           "Reference node is part of electrode definition. Choose another reference node for given "
           "electrode surface mesh. ");
     }
-    (*elc_elem_def)(l, 1) = node_ind;
+    (*elc_elem_def)(static_cast<uint64_t>(l), 1) = node_ind;
     mesh_vmesh->get_point(pos, node_ind);
     double x2 = pos.x(), y2 = pos.y(), z2 = pos.z();
     elc_sponge_surf_vmesh->get_center(p, onodes[2]);
@@ -854,12 +856,12 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
           "Reference node is part of electrode definition. Choose another reference node for given "
           "electrode surface mesh. ");
     }
-    (*elc_elem_def)(l, 2) = node_ind;
+    (*elc_elem_def)(static_cast<uint64_t>(l), 2) = node_ind;
     mesh_vmesh->get_point(pos, node_ind);
     double x3 = pos.x(), y3 = pos.y(), z3 = pos.z();
 
-    (*elc_elem_def)(l, 3) = 0;
-    (*elc_elem)(l, 0) = field_values[l];
+    (*elc_elem_def)(static_cast<uint64_t>(l), 3) = 0;
+    (*elc_elem)(static_cast<uint64_t>(l), 0) = field_values[l];
 
     /// compute surface area of electrode/scalp interface
     double area_tmp = y1 * z2 + z1 * y3 + y2 * z3 - z2 * y3 - z1 * y2 - y1 * z3;
@@ -898,7 +900,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
           "Internal ERROR (should not happen): could not scale contact impedance by electrode "
           "surface area (index out of bound). ");
     }
-    (*elc_con_imp)(l, 0) = impedances[tmp_fld_val] * electrode_sponge_areas[tmp_fld_val];
+    (*elc_con_imp)(static_cast<uint64_t>(l), 0) = impedances[tmp_fld_val] * electrode_sponge_areas[tmp_fld_val];
   }
 
   DenseMatrixHandle selectmatrixind(
@@ -939,7 +941,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
     auto mesh_elc_tri_surf = elc_tri_surf->vmesh();
     mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E);
     vmesh->synchronize(Mesh::NODE_LOCATE_E);
-    for (VMesh::Node::index_type l = 0; l < vmesh->num_nodes(); l++) { (*output)(l, 0) = 0; }
+    for (auto l = 0; l < vmesh->num_nodes(); l++) { (*output)(l, 0) = 0; }
     double min_dis = get(Parameters::pointdistancebound).toDouble();
     for (VMesh::Node::index_type l = 0; l < mesh_elc_tri_surf->num_nodes(); l++)
     {
@@ -948,14 +950,10 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
       double distance = -1;
       VMesh::Node::index_type ind;
       vmesh->find_closest_node(distance, q, ind, p);
-      (*output)(ind, 0) = elcs_wanted[l].toDouble() / 1000.0;
+      (*output)(static_cast<uint64_t>(ind), 0) = elcs_wanted[l].toDouble() / 1000.0;
       if (min_dis < distance)
       {
-        std::ostringstream ostr4;
-        ostr4 << " The electrode locations (4th module input) are further away from them mesh as "
-                 "provided by the GUI (min. distance bound). "
-              << std::endl;
-        remark(ostr4.str());
+        remark("The electrode locations (4th module input) are further away from them mesh as provided by the GUI (min. distance bound).\n");
       }
     }
 
