@@ -46,7 +46,7 @@ using namespace Render;
 using namespace Core::Datatypes;
 using namespace Core::Geometry;
 
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 //int OSPRayRenderer::osprayRendererInstances = 0;
 OSPRayDataManager OSPRayRenderer::dataManager;
 

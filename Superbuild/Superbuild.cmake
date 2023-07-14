@@ -76,6 +76,10 @@ OPTION(WITH_TETGEN "Build Tetgen." OFF)
 OPTION(WITH_OSPRAY "Build Ospray." OFF)
 
 ###########################################
+# Use local ospray
+OPTION(WITH_OSPRAY_LOCAL "Use Local Ospray." OFF)
+
+###########################################
 # Configure data
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
@@ -182,7 +186,9 @@ IF(WITH_TETGEN)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
 ENDIF()
 
-IF(WITH_OSPRAY)
+IF(WITH_OSPRAY_LOCAL)
+  find_package(ospray 2.10.0 REQUIRED)
+ELSEIF(WITH_OSPRAY)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
 ENDIF()
 

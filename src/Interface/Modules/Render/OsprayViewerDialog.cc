@@ -30,7 +30,7 @@
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <boost/algorithm/string/predicate.hpp>
 
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 #include <ospray/ospray.h>
 
 #include <Modules/Render/ViewScene.h>
@@ -48,7 +48,7 @@ using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-  #ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 using namespace SCIRun::Core::Algorithms::Render;
 #endif
 using namespace SCIRun::Core::Datatypes;
@@ -61,7 +61,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   QWidget* parent)
   : ModuleDialogGeneric(state, parent)
 {
-  #ifdef WITH_OSPRAY
+  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   statusBar_ = new QStatusBar(this);
 
   renderer_ = new OSPRayRenderer();
@@ -133,7 +133,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
 OsprayViewerDialog::~OsprayViewerDialog()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   delete viewer_;
   delete renderer_;
 #endif
@@ -141,7 +141,7 @@ OsprayViewerDialog::~OsprayViewerDialog()
 
 void OsprayViewerDialog::newGeometryValue()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (!geomDataTransient || geomDataTransient->empty()) return;
@@ -200,14 +200,14 @@ void OsprayViewerDialog::addConfigurationButton()
 
 void OsprayViewerDialog::configButtonClicked()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   configDialog_->setVisible(!configDialog_->isVisible());
 #endif
 }
 
 void OsprayViewerDialog::addConfigurationDialog()
 {
-  #ifdef WITH_OSPRAY
+  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   auto name = windowTitle() + " Configuration";
   configDialog_ = new ViewOspraySceneConfigDialog(name, this);
 #endif
@@ -298,49 +298,49 @@ void OsprayViewerDialog::toggleLockColor(bool locked)
 
 void OsprayViewerDialog::autoRotateClicked()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
 
 void OsprayViewerDialog::autoViewClicked()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   renderer_->autoView();
 #endif
 }
 
 void OsprayViewerDialog::screenshotClicked()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
 
 void OsprayViewerDialog::nextTimestepClicked()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
 
 void OsprayViewerDialog::playTimestepsClicked()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
 
 void OsprayViewerDialog::setViewportCamera()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
 
 float OsprayViewerDialog::getFloat(const Name& name) const
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   return static_cast<float>(state_->getValue(name).toDouble());
 #endif
   return 0;
@@ -348,21 +348,21 @@ float OsprayViewerDialog::getFloat(const Name& name) const
 
 void OsprayViewerDialog::setCameraWidgets()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
 
 void OsprayViewerDialog::setLightColor()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
 
 void OsprayViewerDialog::setBGColor()
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
 
 #endif
 }
@@ -370,7 +370,7 @@ void OsprayViewerDialog::setBGColor()
 
 void OsprayViewerDialog::pullSpecial()
 {
-  #ifdef WITH_OSPRAY
+  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   auto ambient = colorFromState(Parameters::AmbientLightColor);
   configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
   configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
@@ -385,7 +385,7 @@ void OsprayViewerDialog::pullSpecial()
 
 void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   int xWindow = xIn - viewer_->pos().x();
   int yWindow = yIn - viewer_->pos().y();
 
@@ -396,7 +396,7 @@ void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOu
 
 MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   auto btn = MouseButton::NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
@@ -408,7 +408,7 @@ MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 
 void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
 {
-  #ifdef WITH_OSPRAY
+  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
@@ -418,7 +418,7 @@ void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
 
 void OsprayViewerDialog::mouseMoveEvent(QMouseEvent* event)
 {
-  #ifdef WITH_OSPRAY
+  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
@@ -428,7 +428,7 @@ void OsprayViewerDialog::mouseMoveEvent(QMouseEvent* event)
 
 void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
 {
-#ifdef WITH_OSPRAY
+#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   renderer_->mouseRelease();
   #endif
 }
@@ -438,7 +438,7 @@ void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
 
 void OsprayViewerDialog::wheelEvent(QWheelEvent* event)
 {
-  #ifdef WITH_OSPRAY
+  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
   renderer_->mouseWheel(event->delta());
   #endif
 }
