@@ -9,12 +9,12 @@
 #### OS X
   - Tested on 10.12 - 10.15
   - Apple clang 9.0.0 or newer
-  - Qt 5.13 or later
+  - Qt 5.15 or later
     + [Download](https://download.qt.io/archive/qt/) and run the desired Qt 5.x or 6.x installer.  Make sure to turn off other versions and system configurations to save space and build time.  Configure CMake for Qt 5.
       Optionally, install Qt through the package manager, [brew](https://brew.sh/).
 
       To install Qt 5, the command is:
-      ```
+      ```Tetgen
       brew install qt@5
       ```
       To install Qt 6, the command is:
@@ -27,14 +27,14 @@
   - Tested on Windows 10
   - Visual Studio 2017 or 2019
     + Using 2017, be sure to change the CMake platform to x64.
-  - Qt 5.13 or later
-    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.13 installer.  Make sure to turn off other versions and system configurations to save space and build time.
+  - Qt 5.15 or later
+    + [Download](https://download.qt.io/archive/qt/) and run the Qt 5.15 installer.  Make sure to turn off other versions and system configurations to save space and build time.
 
 
 #### Linux
   - Tested on Ubuntu 16.04 LTS, 18.04 LTS, 22.04 LTS, OpenSUSE Leap 42.1, Arch Linux
   - gcc 7+
-  - Qt 5.13 or later
+  - Qt 5.15 or later
     + [Download](https://download.qt.io/archive/qt/) and run the desired Qt 5.x or 6.x installer.  Make sure to turn off other versions and system configurations to save space and build time. 
       Optionally, install Qt through your distro's package manager instead(apt on Ubuntu/Debian, pacman on Arch). 
 
@@ -105,7 +105,7 @@ Or they can be set in the CMake GUI or with the `ccmake` function.
 
 The command will be similar to the following:
 ```
-cmake -DQt5_PATH=path_to_Qt5/5.13.1/clang_64/ ../Superbuild/
+cmake -DQt5_PATH=path_to_Qt5/5.15.1/clang_64/ ../Superbuild/
 ```
 
 ### Configuring SCIRun with Qt 6
@@ -127,7 +127,7 @@ To use the InterfaceWithTetgen module, SCIRun needs to download and install Tetg
 cmake -DWITH_TETGEN=True ../Superbuild/
 ```
 
-### Configuring SCIRun with Tetgen
+### Configuring SCIRun with OSPRay
 To use the OsprayViewer module, SCIRun needs to download and install Ospray during the build process, which is off by default. This is enabled with the `WITH_OSPRAY` flag. In the command line, it would look like:
 ```
 cmake -DWITH_OSPRAY=True ../Superbuild/
