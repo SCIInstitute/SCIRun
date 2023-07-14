@@ -87,5 +87,9 @@ To use the InterfaceWithTetgen module, SCIRun needs to be built with Tetgen, whi
 cmake -DWITH_TETGEN=True ../Superbuild/
 ```
 
+### Configuring SCIRun with Prebuilt OSPRay
+
+To use the OsprayViewer module with a prebuilt binary, you need to download from the [releases page](https://github.com/ospray/OSPRay/releases) and extract the zip. Only OSPRay 2.4 and 2.10 have been tested. Then add the directory to your shell's PATH variable. CMake will automatically find it when the flag `WITH_OSPRAY_LOCAL` is enabled.
+
 ## Tagging Releases
 On an OSX system, run script `release.sh` in the `src` directory with the release name in format ***beta.XX*** as a parameter.
