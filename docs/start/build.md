@@ -7,7 +7,7 @@
 ### Build requirements
 
 #### OS X
-  - Tested on 10.12 - 10.15
+  - MacOS 11 or newer
   - Apple clang 9.0.0 or newer
   - Qt 5.15 or later
     + [Download](https://download.qt.io/archive/qt/) and run the desired Qt 5.x or 6.x installer.  Make sure to turn off other versions and system configurations to save space and build time.  Configure CMake for Qt 5.
