@@ -52,7 +52,7 @@ For help, check out the discussion page: https://github.com/SCIInstitute/SCIRun/
 
   The MIT License
 
-  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+  Copyright (c) 2023 Scientific Computing and Imaging Institute,
   University of Utah.
 
 
