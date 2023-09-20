@@ -14,7 +14,7 @@
       Optionally, install Qt through the package manager, [brew](https://brew.sh/).
 
       To install Qt 5, the command is:
-      ```bash
+      ```
       brew install qt@5
       ```bash
       To install Qt 6, the command is:
