@@ -121,7 +121,6 @@ The command will be similar to the following:
 cmake -DQt_PATH=path_to_Qt6/6.4.2/clang_64/ -DSCIRUN_QT_MIN_VERSION="6.3.1" ../Superbuild/
 ```
 
-cmake -DWITH_TETGEN=True ../Superbuild/
 ```
 
 ### Configuring SCIRun with OSPRay
