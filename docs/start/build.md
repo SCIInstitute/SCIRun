@@ -121,7 +121,6 @@ The command will be similar to the following:
 cmake -DQt_PATH=path_to_Qt6/6.4.2/clang_64/ -DSCIRUN_QT_MIN_VERSION="6.3.1" ../Superbuild/
 ```
 
-```
 
 ### Configuring SCIRun with OSPRay
 To use the OsprayViewer module, SCIRun needs to download and install Ospray during the build process, which is off by default. This is enabled with the `WITH_OSPRAY` flag. In the command line, it would look like:
