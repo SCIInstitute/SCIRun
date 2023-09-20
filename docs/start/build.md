@@ -122,7 +122,6 @@ cmake -DQt_PATH=path_to_Qt6/6.4.2/clang_64/ -DSCIRUN_QT_MIN_VERSION="6.3.1" ../S
 ```
 
 To use the InterfaceWithTetgen module, SCIRun needs to download and install Tetgen during the build process, which is off by default. This is enabled with the `WITH_TETGEN` flag. In the command line, it would look like:
-```
 cmake -DWITH_TETGEN=True ../Superbuild/
 ```
 
