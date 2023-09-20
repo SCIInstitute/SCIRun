@@ -16,7 +16,7 @@
       To install Qt 5, the command is:
       ```
       brew install qt@5
-      ```bash
+      ```
       To install Qt 6, the command is:
       ```
       brew install qt@6
