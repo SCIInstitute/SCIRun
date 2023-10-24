@@ -25,7 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(ospray_GIT_TAG "origin/scirun-build-2.4")
+SET(ospray_GIT_TAG "origin/scirun-build-2.10")
 
 set(ospray_DEPENDENCIES)
 LIST(APPEND ospray_DEPENDENCIES GLM_external)
@@ -45,6 +45,7 @@ ExternalProject_Add(Ospray_external
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
     -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
+    -DBUILD_ISA_AVX512:BOOL=OFF
 )
 
 ExternalProject_Get_Property(Ospray_external BINARY_DIR)
