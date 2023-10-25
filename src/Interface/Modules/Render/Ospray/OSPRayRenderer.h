@@ -31,7 +31,7 @@
 #include <cstdio>
 
 
-#ifdef (WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
 #include <ospray/ospray_util.h>
 
