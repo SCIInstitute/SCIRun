@@ -30,7 +30,7 @@
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <boost/algorithm/string/predicate.hpp>
 
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 #include <ospray/ospray.h>
 
 #include <Modules/Render/ViewScene.h>
@@ -48,7 +48,7 @@ using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 using namespace SCIRun::Core::Algorithms::Render;
 #endif
 using namespace SCIRun::Core::Datatypes;
@@ -61,7 +61,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   QWidget* parent)
   : ModuleDialogGeneric(state, parent)
 {
-  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+  #if defined(WITH_OSPRAY)
   statusBar_ = new QStatusBar(this);
 
   renderer_ = new OSPRayRenderer();
@@ -133,7 +133,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
 OsprayViewerDialog::~OsprayViewerDialog()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
   delete viewer_;
   delete renderer_;
 #endif
@@ -141,7 +141,7 @@ OsprayViewerDialog::~OsprayViewerDialog()
 
 void OsprayViewerDialog::newGeometryValue()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (!geomDataTransient || geomDataTransient->empty()) return;
@@ -200,14 +200,14 @@ void OsprayViewerDialog::addConfigurationButton()
 
 void OsprayViewerDialog::configButtonClicked()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
   configDialog_->setVisible(!configDialog_->isVisible());
 #endif
 }
 
 void OsprayViewerDialog::addConfigurationDialog()
 {
-  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+  #if defined(WITH_OSPRAY)
   auto name = windowTitle() + " Configuration";
   configDialog_ = new ViewOspraySceneConfigDialog(name, this);
 #endif
@@ -298,49 +298,49 @@ void OsprayViewerDialog::toggleLockColor(bool locked)
 
 void OsprayViewerDialog::autoRotateClicked()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
 
 void OsprayViewerDialog::autoViewClicked()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
   renderer_->autoView();
 #endif
 }
 
 void OsprayViewerDialog::screenshotClicked()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
 
 void OsprayViewerDialog::nextTimestepClicked()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
 
 void OsprayViewerDialog::playTimestepsClicked()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
 
 void OsprayViewerDialog::setViewportCamera()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
 
 float OsprayViewerDialog::getFloat(const Name& name) const
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
   return static_cast<float>(state_->getValue(name).toDouble());
 #endif
   return 0;
@@ -348,21 +348,21 @@ float OsprayViewerDialog::getFloat(const Name& name) const
 
 void OsprayViewerDialog::setCameraWidgets()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
 
 void OsprayViewerDialog::setLightColor()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
 
 void OsprayViewerDialog::setBGColor()
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
 
 #endif
 }
@@ -370,7 +370,7 @@ void OsprayViewerDialog::setBGColor()
 
 void OsprayViewerDialog::pullSpecial()
 {
-  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+  #if defined(WITH_OSPRAY)
   auto ambient = colorFromState(Parameters::AmbientLightColor);
   configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
   configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
@@ -385,7 +385,7 @@ void OsprayViewerDialog::pullSpecial()
 
 void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
   int xWindow = xIn - viewer_->pos().x();
   int yWindow = yIn - viewer_->pos().y();
 
@@ -396,7 +396,7 @@ void OsprayViewerDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOu
 
 MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
   auto btn = MouseButton::NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
@@ -408,7 +408,7 @@ MouseButton OsprayViewerDialog::getRenderButton(QMouseEvent* event)
 
 void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
 {
-  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+  #if defined(WITH_OSPRAY)
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
@@ -418,7 +418,7 @@ void OsprayViewerDialog::mousePressEvent(QMouseEvent* event)
 
 void OsprayViewerDialog::mouseMoveEvent(QMouseEvent* event)
 {
-  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+  #if defined(WITH_OSPRAY)
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
@@ -428,14 +428,14 @@ void OsprayViewerDialog::mouseMoveEvent(QMouseEvent* event)
 
 void OsprayViewerDialog::mouseReleaseEvent(QMouseEvent* event)
 {
-#if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+#if defined(WITH_OSPRAY)
   renderer_->mouseRelease();
   #endif
 }
 
 void OsprayViewerDialog::wheelEvent(QWheelEvent* event)
 {
-  #if defined(WITH_OSPRAY) || defined(WITH_OSPRAY_LOCAL)
+  #if defined(WITH_OSPRAY)
   renderer_->mouseWheel(event->angleDelta().y());
   #endif
 }
