@@ -79,6 +79,10 @@ OPTION(BUILD_OSPRAY "Build Ospray." OFF)
 # Use local ospray
 OPTION(PREBUILT_OSPRAY "Use prebuilt copy of Ospray." OFF)
 
+IF (BUILD_OSPRAY AND PREBUILT_OSPRAY)
+  MESSAGE(SEND_ERROR "Cannot set both building and prebuilt Ospray.")
+ENDIF()
+
 ###########################################
 # Configure data
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
