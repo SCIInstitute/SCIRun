@@ -2803,7 +2803,7 @@ xmlShell(xmlDocPtr doc, char *filename, xmlShellReadlineFunc input,
 {
     char prompt[500] = "/ > ";
     char *cmdline = NULL, *cur;
-    int nbargs;
+    //int nbargs;
     char command[100];
     char arg[400];
     int i;
@@ -2855,7 +2855,7 @@ xmlShell(xmlDocPtr doc, char *filename, xmlShellReadlineFunc input,
          * Parse the command itself
          */
         cur = cmdline;
-        nbargs = 0;
+        //nbargs = 0;
         while ((*cur == ' ') || (*cur == '\t'))
             cur++;
         i = 0;
@@ -2868,7 +2868,7 @@ xmlShell(xmlDocPtr doc, char *filename, xmlShellReadlineFunc input,
         command[i] = 0;
         if (i == 0)
             continue;
-        nbargs++;
+        //nbargs++;
 
         /*
          * Parse the argument
@@ -2882,8 +2882,8 @@ xmlShell(xmlDocPtr doc, char *filename, xmlShellReadlineFunc input,
             arg[i++] = *cur++;
         }
         arg[i] = 0;
-        if (i != 0)
-            nbargs++;
+        //if (i != 0)
+        //    nbargs++;
 
         /*
          * start interpreting the command
