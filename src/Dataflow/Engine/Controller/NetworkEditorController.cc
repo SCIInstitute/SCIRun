@@ -103,23 +103,12 @@ NetworkEditorController::NetworkEditorController(const NetworkEditorController& 
   collabs_.reexFactory_ = other.collabs_.reexFactory_;
   collabs_.executorFactory_ = other.collabs_.executorFactory_;
   collabs_.executionManager_.reset(new SimpleExecutionManager);
-
-  //collabs_.cmdFactory_ = other.collabs_.cmdFactory_;
-  //collabs_.eventCmdFactory_ = eventCmdFactory ? eventCmdFactory : makeShared<NullCommandFactory>();
   collabs_.serializationManager_ = other.collabs_.serializationManager_;
   signals_.signalSwitch_ = true;
   signals_.loadingContext_ = false;
 
   collabs_.dynamicPortManager_.reset(new DynamicPortManager(signals_.connectionAdded_,
     signals_.connectionRemoved_, this));
-
-  /// @todo should this class own the network or just keep a reference?
-
-#ifdef BUILD_WITH_PYTHON
-  //NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, collabs_.cmdFactory_));
-#endif
-
-  //collabs_.eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
 }
 
 NetworkEditorController::NetworkEditorController(NetworkStateHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
@@ -293,14 +282,15 @@ ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info
   return realModule;
 }
 
-void NetworkEditorController::removeModule(const ModuleId& id)
+bool NetworkEditorController::removeModule(const ModuleId& id)
 {
-  collabs_.theNetwork_->remove_module(id);
+  auto ret = collabs_.theNetwork_->remove_module(id);
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
   /*emit*/ signals_.moduleRemoved_(id);
 
   printNetwork();
+  return ret;
 }
 
 namespace
@@ -943,6 +933,15 @@ void NetworkEditorController::updateModulePositions(const ModulePositions& modul
   {
     collabs_.serializationManager_->updateModulePositions(modulePositions, selectAll);
   }
+}
+
+bool NetworkEditorController::moveModule(const std::string& id, double x, double y)
+{
+  if (collabs_.serializationManager_)
+  {
+    return collabs_.serializationManager_->updateModulePosition(id, x, y);
+  }
+  return false;
 }
 
 void NetworkEditorController::cleanUpNetwork()

@@ -11008,7 +11008,7 @@ xmlXPathRunStreamEval(xmlXPathContextPtr ctxt, xmlPatternPtr comp) {
     xmlXPathObjectPtr retval;
     xmlStreamCtxtPtr patstream;
 
-    int nb_nodes = 0;
+    //int nb_nodes = 0;
 
     if ((ctxt == NULL) || (comp == NULL))
         return(NULL);
@@ -11098,7 +11098,7 @@ xmlXPathRunStreamEval(xmlXPathContextPtr ctxt, xmlPatternPtr comp) {
     goto scan_children;
     do {
 next_node:
-        nb_nodes++;
+        //nb_nodes++;
 	if (cur->type == XML_ELEMENT_NODE) {
 	    ret = xmlStreamPush(patstream, cur->name,
 				(cur->ns ? cur->ns->href : NULL));

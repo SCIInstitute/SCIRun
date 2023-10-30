@@ -290,6 +290,8 @@ namespace SCIRun {
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
       void saveScreenshot(QString directory, bool notify);
+      void adjustSizeFromState();
+      void adjustPositionFromState();
 
       std::unique_ptr<ViewSceneDialogImpl> impl_;
 

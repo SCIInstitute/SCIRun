@@ -319,7 +319,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupDockToggleViewAction(userModuleSelectorDockWidget_, "Ctrl+Shift+U");
   setupDockToggleViewAction(logDockWidget_, "Ctrl+Shift+L");
   setupDockToggleViewAction(networkMiniViewDockWidget_, "Ctrl+Shift+V");
-  setupDockToggleViewAction(provenanceWindow_, "Ctrl+Shift+P");
+  //setupDockToggleViewAction(provenanceWindow_, "Ctrl+Shift+P");
   setupDockToggleViewAction(triggeredEventsWindow_, "Ctrl+Shift+E");
   setupDockToggleViewAction(tagManagerWindow_, "Ctrl+Shift+T");
   setupDockToggleViewAction(macroEditor_, "Ctrl+Shift+X");
@@ -399,7 +399,7 @@ QString SCIRunMainWindow::strippedName(const QString& fullFileName)
   return info.fileName();
 }
 
-namespace 
+namespace
 {
 bool fileExistCheck(const std::string& filename)
 {
@@ -429,10 +429,10 @@ bool superFileExistCheck(const std::string& filename)
 void SCIRunMainWindow::updateRecentFileActions()
 {
   QMutableStringListIterator i(recentFiles_);
-  while (i.hasNext()) 
+  while (i.hasNext())
   {
     const auto file = i.next().toStdString();
-    
+
     if (!superFileExistCheck(file))
     {
       logWarning("Network file {} not found, removing entry from recent list.", file);

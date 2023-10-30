@@ -781,9 +781,9 @@ void ctkBasePopupWidget::hidePopup()
       d->setupPopupPixmapWidget();
       d->PopupPixmapWidget->setGeometry(this->geometry());
       d->PopupPixmapWidget->show();
-      if (this->isActiveWindow())
+      if (this->isActiveWindow() && !d->BaseWidget.isNull())
         {
-        qApp->setActiveWindow(!d->BaseWidget.isNull() ? d->BaseWidget->window() : 0);
+            d->BaseWidget->window()->activateWindow();
         }
       this->hide();
       break;

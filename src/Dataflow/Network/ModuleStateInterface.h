@@ -81,8 +81,10 @@ namespace Networks {
     virtual void fireTransientStateChangeSignal() = 0;
 
     typedef boost::signals2::signal<void()> state_changed_sig_t;
+    typedef boost::signals2::signal<void(const Name&, const Value::Value& /*old*/, const Value::Value& /*new*/)> provenance_state_changed_sig_t;
 
     virtual boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) = 0;
+    virtual boost::signals2::connection connectProvenanceStateChanged(provenance_state_changed_sig_t::slot_function_type subscriber) = 0;
     virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) = 0;
     virtual void disconnectAll() = 0;
   };
