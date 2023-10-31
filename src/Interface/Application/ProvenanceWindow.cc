@@ -37,14 +37,19 @@
 //TODO: factory
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
 
+#ifdef BUILD_WITH_PYTHON
+#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#endif
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
-ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QWidget* parent /* = 0 */) : QDockWidget(parent),
+ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, NetworkEditor* editor, QWidget* parent /* = 0 */) : QDockWidget(parent),
   provenanceManager_(provenanceManager),
   lastUndoRow_(-1),
-  networkEditor_(provenanceManager->networkIO())
+  networkEditor_(provenanceManager->networkIO()),
+  editor_(editor)
 {
   setupUi(this);
   // TODO deprecated
@@ -200,11 +205,14 @@ void ProvenanceWindow::undo()
 
     {
       Q_EMIT modifyingNetwork(true);
-      auto undone = provenanceManager_->undo();
+      {
+        NetworkEditor::InEditingContext iec(editor_);
+        auto undone = provenanceManager_->undo();
+        if (undone->name() != provenanceItem->name())
+          std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
+      }
       Q_EMIT modifyingNetwork(false);
       Q_EMIT networkModified();
-      if (undone->name() != provenanceItem->name())
-        std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
 
     lastUndoRow_--;
@@ -228,11 +236,14 @@ void ProvenanceWindow::redo()
 
     {
       Q_EMIT modifyingNetwork(true);
-      auto redone = provenanceManager_->redo();
+      {
+        NetworkEditor::InEditingContext iec(editor_);
+        auto redone = provenanceManager_->redo();
+        if (redone->name() != provenanceItem->name())
+          std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
+      }
       Q_EMIT modifyingNetwork(false);
       Q_EMIT networkModified();
-      if (redone->name() != provenanceItem->name())
-        std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
 
     lastUndoRow_++;
@@ -256,7 +267,10 @@ void ProvenanceWindow::undoAll()
   lastUndoRow_ = -1;
 
   Q_EMIT modifyingNetwork(true);
-  provenanceManager_->undoAll();
+  {
+    NetworkEditor::InEditingContext iec(editor_);
+    provenanceManager_->undoAll();
+  }
   Q_EMIT modifyingNetwork(false);
   Q_EMIT networkModified();
   setUndoEnabled(false);
@@ -273,7 +287,10 @@ void ProvenanceWindow::redoAll()
   lastUndoRow_ = provenanceListWidget_->count() - 1;
 
   Q_EMIT modifyingNetwork(true);
-  provenanceManager_->redoAll();
+  {
+    NetworkEditor::InEditingContext iec(editor_);
+    provenanceManager_->redoAll();
+  }
   Q_EMIT modifyingNetwork(false);
   Q_EMIT networkModified();
   setUndoEnabled(true);
@@ -288,11 +305,17 @@ GuiActionProvenanceConverter::GuiActionProvenanceConverter(NetworkEditor* editor
   provenanceManagerModifyingNetwork_(false)
 {}
 
-void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle)
+#ifdef BUILD_WITH_PYTHON
+#define pythonAPIPtr NetworkEditorPythonAPI::getImpl()
+#else
+#define pythonAPIPtr nullptr
+#endif
+
+void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle mod)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleAddedProvenanceItem>(name, mod->id().id_, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -301,7 +324,7 @@ void GuiActionProvenanceConverter::moduleRemoved(const ModuleId& id)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleRemovedProvenanceItem>(id, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -310,7 +333,7 @@ void GuiActionProvenanceConverter::connectionAdded(const SCIRun::Dataflow::Netwo
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ConnectionAddedProvenanceItem>(cd, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
@@ -319,16 +342,16 @@ void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Net
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ConnectionRemovedProvenanceItem>(id, editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }
 
-void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY)
+void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, const QPointF& oldPos, double newX, double newY)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
-    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, editor_->saveNetwork()));
+    ProvenanceItemHandle item(makeShared<ModuleMovedProvenanceItem>(id, newX, newY, oldPos.x(), oldPos.y(), editor_->saveNetwork(), pythonAPIPtr));
     Q_EMIT provenanceItemCreated(item);
   }
 }

@@ -26,6 +26,7 @@
 */
 
 #include <Modules/Basic/AsyncPortTestModule.h>
+#include <Modules/Basic/AsyncStreamingTestModule.h>
 #include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Basic/LoggingTester.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
@@ -35,6 +36,7 @@
 #include <Modules/Basic/SendComplexScalar.h>
 #include <Modules/Basic/CompositeModuleWithStaticPorts.h>
 #include <Modules/Basic/CompositeModuleWithTypedStaticPorts.h>
+#include <Modules/Basic/SimulationReaderBaseModule.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteField.h>
@@ -209,6 +211,9 @@ void ModuleDescriptionLookup::addEssentialModules()
 
   addModuleDesc<CompositeModuleWithStaticPorts>("...", "...");
   addModuleDesc<CompositeModuleWithTypedStaticPorts>("...", "...");
+
+  addModuleDesc<AsyncStreamingTest>("...", "...");
+  addModuleDesc<SimulationStreamingReaderBase>("...", "...");
 }
 
 void ModuleDescriptionLookup::addTestingModules()
@@ -222,4 +227,5 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<PortFeedbackSender>("...", "...");
   addModuleDesc<LoggingTester>("...", "...");
   addModuleDesc<CreateTestingArrow>("...", "...");
+
 }

@@ -56,6 +56,7 @@
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
+#include <Core/Python/PythonInterpreter.h>
 #endif
 
 using namespace SCIRun;
@@ -192,16 +193,8 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
     networkEditor_, &NetworkEditor::removeModuleWidget);
 
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleAdded,
-    commandConverter_.get(), &GuiActionProvenanceConverter::moduleAdded);
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
-    commandConverter_.get(), &GuiActionProvenanceConverter::moduleRemoved);
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::connectionAdded,
-    commandConverter_.get(), &GuiActionProvenanceConverter::connectionAdded);
-  connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::connectionRemoved,
-    commandConverter_.get(), &GuiActionProvenanceConverter::connectionRemoved);
-  connect(networkEditor_, &NetworkEditor::moduleMoved,
-    commandConverter_.get(), &GuiActionProvenanceConverter::moduleMoved);
+  networkEditor_->connectCommandConverterEvents(commandConverter_.get());
+
   connect(provenanceWindow_, &ProvenanceWindow::modifyingNetwork, commandConverter_.get(), &GuiActionProvenanceConverter::networkBeingModifiedByProvenanceManager);
   connect(networkEditor_, &NetworkEditor::newModule, this, &SCIRunMainWindow::addModuleToWindowList);
   connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
@@ -371,15 +364,20 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
 
 void SCIRunMainWindow::setupProvenanceWindow()
 {
-  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_));
-  provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
+  Core::PythonCommandInterpreterInterface* py = nullptr;
+#ifdef BUILD_WITH_PYTHON
+  py = &Core::PythonInterpreter::Instance();
+#endif
+  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_, py));
+  provenanceWindow_ = new ProvenanceWindow(provenanceManager, networkEditor_, this);
 
-  connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
-  connect(actionRedo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::redo);
+  //TODO: work in progress with new undo stack
+  //connect(actionUndo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::undo);
+  //connect(actionRedo_, &QAction::triggered, provenanceWindow_, &ProvenanceWindow::redo);
   actionUndo_->setEnabled(false);
   actionRedo_->setEnabled(false);
-  connect(provenanceWindow_, &ProvenanceWindow::undoStateChanged, actionUndo_, &QAction::setEnabled);
-  connect(provenanceWindow_, &ProvenanceWindow::redoStateChanged, actionRedo_, &QAction::setEnabled);
+  //connect(provenanceWindow_, &ProvenanceWindow::undoStateChanged, actionUndo_, &QAction::setEnabled);
+  //connect(provenanceWindow_, &ProvenanceWindow::redoStateChanged, actionRedo_, &QAction::setEnabled);
   connect(provenanceWindow_, &ProvenanceWindow::networkModified, networkEditor_, &NetworkEditor::updateViewport);
 
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));

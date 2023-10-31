@@ -462,7 +462,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if (position_ != pos())
     {
       snapToGrid();
-      Q_EMIT widgetMoved(ModuleId(module_->getModuleId()), pos().x(), pos().y());
+      Q_EMIT widgetMoved(ModuleId(module_->getModuleId()), position_, pos().x(), pos().y());
     }
     QGraphicsItem::mouseReleaseEvent(event);
   }

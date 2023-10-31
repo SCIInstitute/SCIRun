@@ -97,7 +97,9 @@ bool SimpleMapModuleState::containsKey(const Name& name) const
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
   auto oldLocation = stateMap_.find(parameterName);
-  bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value() == value);
+  bool atEnd = oldLocation == stateMap_.end();
+  const auto& oldValue = atEnd ? AlgorithmParameter::Value() : oldLocation->second.value();
+  bool newValue = atEnd || !(oldValue == value);
 
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
 
@@ -105,10 +107,14 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   {
     LOG_DEBUG("----signaling from state map: ({}, {}), num_slots = {}", parameterName.name_,
       SCIRun::Core::to_string(value), stateChangedSignal_.num_slots());
+
     stateChangedSignal_();
+
     auto specSig = specificStateChangeSignalMap_.find(parameterName);
     if (specSig != specificStateChangeSignalMap_.end())
       specSig->second();
+
+    provenanceStateChangedSignal_(parameterName, oldValue, value);
   }
 }
 
@@ -117,6 +123,14 @@ boost::signals2::connection SimpleMapModuleState::connectStateChanged(state_chan
   auto conn = stateChangedSignal_.connect(subscriber);
   LOG_TRACE("SimpleMapModuleState::connectStateChanged, num_slots = {}", stateChangedSignal_.num_slots());
   generalStateConnections_.push_back(conn);
+  return conn;
+}
+
+boost::signals2::connection SimpleMapModuleState::connectProvenanceStateChanged(provenance_state_changed_sig_t::slot_function_type subscriber)
+{
+  auto conn = provenanceStateChangedSignal_.connect(subscriber);
+  LOG_TRACE("SimpleMapModuleState::connectProvenanceStateChanged, num_slots = {}", provenanceStateChangedSignal_.num_slots());
+  provenanceStateConnections_.push_back(conn);
   return conn;
 }
 
@@ -181,5 +195,7 @@ void SimpleMapModuleState::disconnectAll()
   for (auto& c : generalStateConnections_)
     c.disconnect();
   for (auto& c : specificStateConnections_)
+    c.disconnect();
+  for (auto& c : provenanceStateConnections_)
     c.disconnect();
 }

@@ -31,12 +31,17 @@
 #include <string>
 #include <sstream>
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
+#ifdef BUILD_WITH_PYTHON
+#include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
+#endif
+#include <Core/Logging/Log.h>
+#include <spdlog/fmt/fmt.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-ProvenanceItemBase::ProvenanceItemBase(NetworkFileHandle state) : state_(state)
+ProvenanceItemBase::ProvenanceItemBase(NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy) : state_(state), nedPy_(nedPy)
 {
 }
 
@@ -45,8 +50,8 @@ NetworkFileHandle ProvenanceItemBase::memento() const
   return state_;
 }
 
-ModuleAddedProvenanceItem::ModuleAddedProvenanceItem(const std::string& moduleName, NetworkFileHandle state)
-  : ProvenanceItemBase(state), moduleName_(moduleName)
+ModuleAddedProvenanceItem::ModuleAddedProvenanceItem(const std::string& moduleName, const std::string& modId, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), moduleName_(moduleName), moduleId_(modId)
 {
 }
 
@@ -55,8 +60,26 @@ std::string ModuleAddedProvenanceItem::name() const
   return "Module Added: " + moduleName_;
 }
 
-ModuleRemovedProvenanceItem::ModuleRemovedProvenanceItem(const ModuleId& moduleId, NetworkFileHandle state)
-  : ProvenanceItemBase(state), moduleId_(moduleId)
+std::string ModuleAddedProvenanceItem::undoCode() const
+{
+#ifdef BUILD_WITH_PYTHON
+  if (redone_)
+  {
+    // logCritical("here is where i need to pull the most recently added id");
+    moduleId_ = nedPy_->mostRecentAddModuleId();
+  }
+#endif
+  return fmt::format("scirun_remove_module(\"{}\")", moduleId_);
+}
+
+std::string ModuleAddedProvenanceItem::redoCode() const
+{
+  redone_ = true;
+  return fmt::format("scirun_add_module(\"{}\")", moduleName_);
+}
+
+ModuleRemovedProvenanceItem::ModuleRemovedProvenanceItem(const ModuleId& moduleId, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), moduleId_(moduleId)
 {
 }
 
@@ -65,9 +88,31 @@ std::string ModuleRemovedProvenanceItem::name() const
   return "Module Removed: " + moduleId_.id_;
 }
 
-ConnectionAddedProvenanceItem::ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state)
-  : ProvenanceItemBase(state), desc_(cd)
+std::string ModuleRemovedProvenanceItem::undoCode() const
 {
+  redone_ = true;
+  return fmt::format("scirun_add_module(\"{}\")", moduleId_.name_);
+}
+
+std::string ModuleRemovedProvenanceItem::redoCode() const
+{
+  if (redone_)
+  {
+    //logCritical("here is where i need to pull the most recently added id");
+    //moduleId_ = nedPy_->mostRecentAddModuleId();
+  }
+  return fmt::format("scirun_remove_module(\"{}\")", moduleId_.id_);
+}
+
+ConnectionAddedProvenanceItem::ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), desc_(cd)
+{
+#if 0
+  //TODO
+  auto outIndex = module_->getOutputPort(desc_.out_.portId_)->getIndex();
+  logCritical("REDO CODE: scirun_connect_modules(\"{}\", {}, \"{}\", {})", desc_.out_.moduleId_.id_, outIndex, desc_.in_.moduleId_.id_, "INDEX_NEEDED");
+  logCritical("REDO CODE: scirun_disconnect_modules(\"{}\", {}, \"{}\", {})", desc_.out_.moduleId_.id_, "INDEX_NEEDED", desc_.in_.moduleId_.id_, "INDEX_NEEDED");
+#endif
 }
 
 std::string ConnectionAddedProvenanceItem::name() const
@@ -75,9 +120,21 @@ std::string ConnectionAddedProvenanceItem::name() const
   return "Connection added: " + ConnectionId::create(desc_).id_;
 }
 
-ConnectionRemovedProvenanceItem::ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, NetworkFileHandle state)
-  : ProvenanceItemBase(state), id_(id)
+std::string ConnectionAddedProvenanceItem::undoCode() const
 {
+  return fmt::format("scirun_remove_connection(\"{}\")", ConnectionId::create(desc_).id_);
+}
+
+std::string ConnectionAddedProvenanceItem::redoCode() const
+{
+  return fmt::format("scirun_connect_modules(\"{}\")", ConnectionId::create(desc_).id_);
+}
+
+ConnectionRemovedProvenanceItem::ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), id_(id)
+{
+  //logCritical("REDO CODE: scirun_remove_connection(\"{}\")", id.id_);
+  //logCritical("UNDO CODE: scirun_add_connection(\"{}\")", id.id_);
 }
 
 std::string ConnectionRemovedProvenanceItem::name() const
@@ -85,8 +142,19 @@ std::string ConnectionRemovedProvenanceItem::name() const
   return "Connection Removed: " + id_.id_;
 }
 
-ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, NetworkFileHandle state)
-  : ProvenanceItemBase(state), moduleId_(moduleId), newX_(newX), newY_(newY)
+std::string ConnectionRemovedProvenanceItem::undoCode() const
+{
+  return fmt::format("scirun_connect_modules(\"{}\")", id_.id_);
+}
+
+std::string ConnectionRemovedProvenanceItem::redoCode() const
+{
+  return fmt::format("scirun_remove_connection(\"{}\")", id_.id_);
+}
+
+ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, double oldX, double oldY,
+  NetworkFileHandle state, SharedPointer<NetworkEditorPythonInterface> nedPy)
+  : ProvenanceItemBase(state, nedPy), moduleId_(moduleId), newX_(newX), newY_(newY), oldX_(oldX), oldY_(oldY)
 {
 }
 
@@ -95,4 +163,14 @@ std::string ModuleMovedProvenanceItem::name() const
   std::ostringstream ostr;
   ostr << "Module " << moduleId_.id_ << " moved to (" << newX_ << "," << newY_ << ")";
   return ostr.str();
+}
+
+std::string ModuleMovedProvenanceItem::undoCode() const
+{
+  return fmt::format("scirun_move_module(\"{}\", {}, {})", moduleId_.id_, oldX_, oldY_);
+}
+
+std::string ModuleMovedProvenanceItem::redoCode() const
+{
+  return fmt::format("scirun_move_module(\"{}\", {}, {})", moduleId_.id_, newX_, newY_);
 }

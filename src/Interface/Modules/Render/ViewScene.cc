@@ -330,10 +330,7 @@ bool PreviousWidgetSelectionInfo::hasSameWidget(const WidgetHandle widget) const
 
 bool PreviousWidgetSelectionInfo::hasPreviousWidget() const
 {
-  if (previousSelectedWidget_)
-    return true;
-  else
-    return false;
+  return previousSelectedWidget_ != nullptr;
 }
 
 void PreviousWidgetSelectionInfo::deletePreviousWidget()
@@ -1086,11 +1083,7 @@ void ViewSceneDialog::pullSpecial()
       parentWidget()->show();
     }
 
-    if (parentWidget())
-    {
-      const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
-      parentWidget()->resize(qs);
-    }
+    adjustSizeFromState();
 
     if (parentWidget())
     {
@@ -1107,9 +1100,7 @@ void ViewSceneDialog::pullSpecial()
         }
         else
         {
-          const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
-          const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
-          parentWidget()->move(x, y);
+          adjustPositionFromState();
         }
       }
     }
@@ -1119,6 +1110,25 @@ void ViewSceneDialog::pullSpecial()
     initializeVisibleObjects();
     setInitialLightValues();
     impl_->pulledSavedVisibility_ = true;
+  }
+}
+
+void ViewSceneDialog::adjustSizeFromState()
+{
+  if (parentWidget())
+  {
+    const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
+    parentWidget()->resize(qs);
+  }
+}
+
+void ViewSceneDialog::adjustPositionFromState()
+{
+  if (parentWidget() && state_->getValue(Parameters::IsFloating).toBool())
+  {
+    const auto x = state_->getValue(Parameters::WindowPositionX).toInt();
+    const auto y = state_->getValue(Parameters::WindowPositionY).toInt();
+    parentWidget()->move(x, y);
   }
 }
 
