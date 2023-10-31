@@ -80,6 +80,11 @@ void NetworkEditorPythonAPI::setImpl(SharedPointer<NetworkEditorPythonInterface>
   }
 }
 
+SharedPointer<NetworkEditorPythonInterface> NetworkEditorPythonAPI::getImpl()
+{
+  return impl_;
+}
+
 void NetworkEditorPythonAPI::clearImpl()
 {
   impl_.reset();
@@ -123,6 +128,11 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
   {
     return "Null implementation: NetworkEditorPythonAPI::removeModule()";
   }
+}
+
+std::string NetworkEditorPythonAPI::moveModule(const std::string& id, double x, double y)
+{
+  return impl_->moveModule(id, x, y);
 }
 
 std::vector<SharedPointer<PyModule>> NetworkEditorPythonAPI::modules()
@@ -351,7 +361,9 @@ SharedPointer<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 std::string SimplePythonAPI::scirun_add_module(const std::string& name)
 {
   auto mod = NetworkEditorPythonAPI::addModule(name);
-  return mod ? mod->id() : "<Null module--function not available or module not defined>";
+  return mod ?
+    "Module added: " + mod->id() :
+    "Error: null module--function not available or module not defined (" + name + ")";
 }
 
 std::string SimplePythonAPI::scirun_quit()

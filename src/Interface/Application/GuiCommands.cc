@@ -192,7 +192,7 @@ bool NetworkFileProcessCommand::execute()
     if (file)
     {
       auto load = [this, file] { return guiProcess(file); };
-      if (Application::Instance().parameters()->isRegressionMode())
+      if (Application::Instance().parameters()->isRegressionMode() || std::string(qVersion()) > "6.4")
       {
         load();
       }
@@ -200,7 +200,8 @@ bool NetworkFileProcessCommand::execute()
       {
         const int numModules = static_cast<int>(file->network.modules.size());
         QProgressDialog progress("Loading network " + (tempFile ? "" : QString::fromStdString(filename)), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
-        QObject::connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::networkDoneLoading, &progress, &QProgressDialog::setValue);
+        QObject::connect(networkEditor_->getNetworkEditorController().get(), &NetworkEditorControllerGuiProxy::networkDoneLoading,
+          &progress, &QProgressDialog::setValue);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
         progress.setValue(0);

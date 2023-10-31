@@ -19340,7 +19340,7 @@ xmlSchemaAssembleByXSI(xmlSchemaValidCtxtPtr vctxt)
 {
     const xmlChar *cur, *end;
     const xmlChar *nsname = NULL, *location;
-    int count = 0;
+    //int count = 0;
     int ret = 0;
     xmlSchemaAttrInfoPtr iattr;
 
@@ -19368,7 +19368,7 @@ xmlSchemaAssembleByXSI(xmlSchemaValidCtxtPtr vctxt)
 		end++;
 	    if (end == cur)
 		break;
-	    count++;
+	    //count++;
 	    nsname = xmlDictLookup(vctxt->schema->dict, cur, end - cur);
 	    cur = end;
 	}
@@ -19382,7 +19382,7 @@ xmlSchemaAssembleByXSI(xmlSchemaValidCtxtPtr vctxt)
 	    end++;
 	if (end == cur)
 	    break;
-	count++;
+	//count++;
 	location = xmlDictLookup(vctxt->schema->dict, cur, end - cur);
 	cur = end;
 	ret = xmlSchemaAssembleByLocation(vctxt, vctxt->schema,

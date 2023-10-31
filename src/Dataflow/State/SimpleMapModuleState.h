@@ -52,6 +52,7 @@ namespace State {
     SCIRun::Dataflow::Networks::ModuleStateHandle clone() const override;
     boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) override;
     boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) override;
+    boost::signals2::connection connectProvenanceStateChanged(provenance_state_changed_sig_t::slot_function_type subscriber) override;
 
     TransientValueOption getTransientValue(const Name& name) const override;
     void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) override;
@@ -64,9 +65,10 @@ namespace State {
     typedef std::map<std::string, TransientValue> TransientStateMap;
     TransientStateMap transientStateMap_;
     state_changed_sig_t stateChangedSignal_;
+    provenance_state_changed_sig_t provenanceStateChangedSignal_;
     std::map<Name, state_changed_sig_t> specificStateChangeSignalMap_;
     std::string name_;
-    std::vector<boost::signals2::connection> generalStateConnections_, specificStateConnections_;
+    std::vector<boost::signals2::connection> generalStateConnections_, specificStateConnections_, provenanceStateConnections_;
   private:
     void print() const;
   };

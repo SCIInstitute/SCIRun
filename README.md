@@ -3,7 +3,6 @@
 ## SCIRun 5
 <!-- https://github.com/SCIInstitute/SCIRun -->
 
-[![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
 ![mac-build](https://github.com/SCIInstitute/SCIRun/workflows/mac-build/badge.svg)
 ![linux-build](https://github.com/SCIInstitute/SCIRun/workflows/linux-build/badge.svg)
 ![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
@@ -53,7 +52,7 @@ For help, check out the discussion page: https://github.com/SCIInstitute/SCIRun/
 
   The MIT License
 
-  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+  Copyright (c) 2023 Scientific Computing and Imaging Institute,
   University of Utah.
 
 

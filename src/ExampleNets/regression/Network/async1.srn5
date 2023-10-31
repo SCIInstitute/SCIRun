@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="18">
+<networkFile class_id="0" tracking_level="0" version="6">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>4</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>AsyncStreamingTest:0</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Testing</category_name_>
+						<module_name_>AsyncStreamingTest</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>1</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>ProgrammableInputPortEnabled</name>
+									<value class_id="11" tracking_level="1" version="0" object_id="_0">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value object_id="_1">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value object_id="_2">
+										<which>2</which>
+										<value>1 2 3
+4 5 6
+7 8 9</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetMatricesFromBundle:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Bundle</category_name_>
+						<module_name_>GetMatricesFromBundle</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>7</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value object_id="_3">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>matrix1-name</name>
+								</first>
+								<second>
+									<name>matrix1-name</name>
+									<value object_id="_4">
+										<which>2</which>
+										<value>Slice</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>matrix2-name</name>
+								</first>
+								<second>
+									<name>matrix2-name</name>
+									<value object_id="_5">
+										<which>2</which>
+										<value>matrix1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>matrix3-name</name>
+								</first>
+								<second>
+									<name>matrix3-name</name>
+									<value object_id="_6">
+										<which>2</which>
+										<value>matrix2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>matrix4-name</name>
+								</first>
+								<second>
+									<name>matrix4-name</name>
+									<value object_id="_7">
+										<which>2</which>
+										<value>matrix3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>matrix5-name</name>
+								</first>
+								<second>
+									<name>matrix5-name</name>
+									<value object_id="_8">
+										<which>2</which>
+										<value>matrix4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>matrix6-name</name>
+								</first>
+								<second>
+									<name>matrix6-name</name>
+									<value object_id="_9">
+										<which>2</which>
+										<value>matrix5</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ProgrammableInputPortEnabled</name>
+								</first>
+								<second>
+									<name>ProgrammableInputPortEnabled</name>
+									<value object_id="_10">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>3</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>AsyncStreamingTest:0</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputSlice</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatricesFromBundle:0</moduleId2_>
+				<port2_>
+					<name>InputBundle</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AsyncStreamingTest:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetMatricesFromBundle:0</moduleId1_>
+				<port1_>
+					<name>matrix1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>AsyncStreamingTest:0</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-2.66000000000000000e+02</first>
+				<second>-2.75000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateMatrix:0</first>
+			<second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>GetMatricesFromBundle:0</first>
+			<second>
+				<first>-2.50000000000000000e+02</first>
+				<second>-1.18000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>
+				<first>-3.04000000000000000e+02</first>
+				<second>0.00000000000000000e+00</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>AsyncStreamingTest:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateMatrix:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>GetMatricesFromBundle:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>-1</second>
+		</item>
+	</moduleTags>
+	<disabledModules class_id="21" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
+</networkFile>
+</boost_serialization>
+

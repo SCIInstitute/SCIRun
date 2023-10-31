@@ -26,37 +26,35 @@
 */
 
 
-#ifndef ComputePCA_ComputePCA_h
-#define ComputePCA_ComputePCA_h
+#ifndef MODULES_BASIC_ASYNCSTREAMINGTESTMODULE_H
+#define MODULES_BASIC_ASYNCSTREAMINGTESTMODULE_H
 
 #include <Dataflow/Network/Module.h>
-//#include <Dataflow/Network/ModulePortDescriptionTagsVariadic.h>
-#include <Modules/Math/share.h>
+#include <Modules/Basic/share.h>
 
 namespace SCIRun {
-    namespace Modules {
-        namespace Math {
+namespace Modules {
+namespace Basic {
 
-            class SCISHARE ComputePCA : public Dataflow::Networks::Module,
-            //public HasInputPorts<MatrixPortTag>,
-            public Has1InputPort<MatrixPortTag>,
-            public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-            {
-            public:
-                ComputePCA();
-                void setStateDefaults() override {}
-                void execute() override;
+  class SCISHARE AsyncStreamingTest : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<BundlePortTag>
+  {
+  public:
+    AsyncStreamingTest();
+    ~AsyncStreamingTest();
+    void execute() override;
+    void setStateDefaults() override {}
 
-                INPUT_PORT(0, InputMatrix, Matrix);
-                OUTPUT_PORT(0, LeftPrincipalMatrix, DenseMatrix);
-                OUTPUT_PORT(1, PrincipalValues, DenseMatrix);
-                OUTPUT_PORT(2, RightPrincipalMatrix, DenseMatrix);
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputSlice, Bundle);
 
-                MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
-                NEW_HELP_WEBPAGE_ONLY
-            };
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+  private:
+    friend class StreamAppender;
+    std::unique_ptr<class StreamAppender> impl_;
+  };
 
-        }}};
-
+}}}
 
 #endif

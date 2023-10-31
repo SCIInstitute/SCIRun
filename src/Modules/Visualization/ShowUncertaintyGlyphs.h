@@ -47,7 +47,7 @@ namespace Visualization {
     INPUT_PORT(1, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputGeom, GeometryObject);
 
-    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI);
 
     static const Core::Algorithms::AlgorithmParameterName FieldName;
     static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;

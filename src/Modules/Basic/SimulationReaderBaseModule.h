@@ -26,37 +26,42 @@
 */
 
 
-#ifndef ComputePCA_ComputePCA_h
-#define ComputePCA_ComputePCA_h
+#ifndef MODULES_DATAIO_SIMULATIONREADERBASEMODULE_H
+#define MODULES_DATAIO_SIMULATIONREADERBASEMODULE_H
 
-#include <Dataflow/Network/Module.h>
-//#include <Dataflow/Network/ModulePortDescriptionTagsVariadic.h>
-#include <Modules/Math/share.h>
+#include <Modules/Basic/AsyncStreamingTestModule.h>
+#include <Modules/Basic/share.h>
 
 namespace SCIRun {
-    namespace Modules {
-        namespace Math {
+namespace Modules {
+namespace Basic {
 
-            class SCISHARE ComputePCA : public Dataflow::Networks::Module,
-            //public HasInputPorts<MatrixPortTag>,
-            public Has1InputPort<MatrixPortTag>,
-            public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-            {
-            public:
-                ComputePCA();
-                void setStateDefaults() override {}
-                void execute() override;
+  SCISHARE Core::Datatypes::BundleHandle bundleOutputs(std::initializer_list<std::string> names, std::initializer_list<Core::Datatypes::DatatypeHandle> dataList);
 
-                INPUT_PORT(0, InputMatrix, Matrix);
-                OUTPUT_PORT(0, LeftPrincipalMatrix, DenseMatrix);
-                OUTPUT_PORT(1, PrincipalValues, DenseMatrix);
-                OUTPUT_PORT(2, RightPrincipalMatrix, DenseMatrix);
+  class SCISHARE SimulationStreamingReaderBase : public SCIRun::Dataflow::Networks::Module,
+    public HasNoInputPorts,
+    public Has1OutputPort<BundlePortTag>
+  {
+  public:
+    SimulationStreamingReaderBase();
+    ~SimulationStreamingReaderBase();
+    void execute() override;
+    void setStateDefaults() override;
 
-                MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasAlgorithm)
-                NEW_HELP_WEBPAGE_ONLY
-            };
+    // override these methods in subclass
+    virtual void setupStream();
+    virtual bool hasData() const;
+    virtual Core::Datatypes::BundleHandle nextData() const;
+    virtual void shutdownStream();
 
-        }}};
+    OUTPUT_PORT(0, OutputData, Bundle);
 
+    MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+  private:
+    std::unique_ptr<class StreamAppenderImpl> streamer_;
+    std::unique_ptr<class SimulationStreamingReaderBaseImpl> impl_;
+  };
+
+}}}
 
 #endif

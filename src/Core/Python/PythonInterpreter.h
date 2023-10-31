@@ -53,7 +53,7 @@ namespace Core
 class PythonInterpreterPrivate;
 typedef SharedPointer< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
-class SCISHARE PythonInterpreter
+class SCISHARE PythonInterpreter : public PythonCommandInterpreterInterface
 {
 	CORE_SINGLETON( PythonInterpreter )
 
@@ -84,7 +84,7 @@ public:
 	// RUN_STRING:
 	/// Execute a single python command.
 	/// NOTE: The command is run in the main namespace.
-	bool run_string( const std::string& command );
+	bool run_string( const std::string& command ) override;
 
 	// RUN_SCRIPT:
 	/// Execute a python script.

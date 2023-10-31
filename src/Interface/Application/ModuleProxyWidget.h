@@ -82,7 +82,7 @@ namespace SCIRun
 
     Q_SIGNALS:
       void selected();
-      void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
+      void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, const QPointF& oldPosition, double newX, double newY);
       void tagChanged(int tag);
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
