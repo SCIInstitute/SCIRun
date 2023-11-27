@@ -44,6 +44,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes_Legacy_Field
   Graphics_Glyphs
   Algorithms_Base
+  Core_Algorithms_Field
   ${SCI_BOOST_LIBRARY}
 )
 
