@@ -140,7 +140,6 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   /// This algorithm was copy from the original dynamic compiled version
   /// and was slightly adapted to work here:
 
-  imesh->begin(be);
   imesh->end(ee);
 
   for (imesh->begin(be); be != ee; ++be)
@@ -376,7 +375,6 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
   /// This algorithm was copy from the original dynamic compiled version
   /// and was slightly adapted to work here:
 
-  imesh->begin(be);
   imesh->end(ee);
 
   for (imesh->begin(be); be != ee; ++be )
