@@ -143,7 +143,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   imesh->begin(be);
   imesh->end(ee);
 
-  while (be != ee)
+  for (imesh->begin(be); be != ee; ++be)
   {
 
     ci = *be;
@@ -177,7 +177,6 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
         elem_map[omesh->add_elem(onodes)] = ci;
       }
     }
-    ++be;
   }
 
   mapping.reset();
@@ -210,13 +209,11 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     tripletList.reserve(nrows);
 
     hash_map_type::iterator it, it_end;
-    it = elem_map.begin();
     it_end = elem_map.end();
 
-    while (it != it_end)
+    for (it = node_map.begin(); it != it_end; ++it)
     {
       tripletList.push_back(T(it->first, it->second, 1));
-      ++it;
     }
     SparseRowMatrixHandle mat(new SparseRowMatrix(nrows, ncols));
     mat->setFromTriplets(tripletList.begin(), tripletList.end());
@@ -249,10 +246,9 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     it = node_map.begin();
     it_end = node_map.end();
 
-    while (it != it_end)
+    for (it = node_map.begin(); it != it_end; ++it)
     {
       tripletList.push_back(T(it->second, it->first, 1));
-      ++it;
     }
     SparseRowMatrixHandle mat(new SparseRowMatrix(nrows, ncols));
     mat->setFromTriplets(tripletList.begin(), tripletList.end());
@@ -262,10 +258,9 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   if (ifield->basis_order() == 0)
   {
     hash_map_type::iterator it, it_end;
-    it = elem_map.begin();
     it_end = elem_map.end();
 
-    while (it != it_end)
+    for (it = node_map.begin(); it != it_end; ++it)
     {
 
       VMesh::Elem::index_type idx1((*it).second);
@@ -273,22 +268,20 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 
       /// Copying values
       ofield->copy_value(ifield,idx1,idx2);
-      ++it;
     }
   }
   else if (input->basis_order() == 1)
   {
     hash_map_type::iterator it, it_end;
-    it = node_map.begin();
+    
     it_end = node_map.end();
 
-    while (it != it_end)
+    for (it = node_map.begin(); it != it_end; ++it)
     {
 
       VMesh::Node::index_type idx1((*it).first);
       VMesh::Node::index_type idx2((*it).second);
       ofield->copy_value(ifield,idx1,idx2);
-      ++it;
     }
   }
 
@@ -386,7 +379,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
   imesh->begin(be);
   imesh->end(ee);
 
-  while (be != ee)
+  for (imesh->begin(be); be != ee; ++be )
   {
 
     ci = *be;
@@ -419,7 +412,6 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
         elem_map[omesh->add_elem(onodes)] = ci;
       }
     }
-    ++be;
   }
 
   ofield->resize_fdata();
@@ -427,17 +419,15 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
   if (ifield->basis_order() == 0)
   {
     hash_map_type::iterator it, it_end;
-    it = elem_map.begin();
     it_end = elem_map.end();
 
-    while (it != it_end)
+    for (it = node_map.begin(); it != it_end; ++it)
     {
       VMesh::Elem::index_type idx1((*it).second);
       VMesh::Elem::index_type idx2((*it).first);
 
       /// Copying values
       ofield->copy_value(ifield,idx1,idx2);
-      ++it;
     }
   }
   else if (input->basis_order() == 1)
@@ -446,12 +436,11 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
     it = node_map.begin();
     it_end = node_map.end();
 
-    while (it != it_end)
+    for (it = node_map.begin(); it != it_end; ++it)
     {
       VMesh::Node::index_type idx1((*it).first);
       VMesh::Node::index_type idx2((*it).second);
       ofield->copy_value(ifield,idx1,idx2);
-      ++it;
     }
   }
 
