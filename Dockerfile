@@ -20,7 +20,7 @@ RUN cmake -DQt_PATH=/usr/lib/x86_64-linux-gnu/cmake \
 # Make the internal python usable externally
 ENV LD_LIBRARY_PATH=/opt/scirun/Externals/Install/Python_external/lib:$LD_LIBRARY_PATH
 ENV PATH=/opt/scirun/SCIRun:/opt/scirun/Externals/Install/Python_external/bin:$PATH 
-RUN python3 -m ensurepip && python3 -m pip install --upgrade pip && python3 -m venv /opt/venv
+RUN python3 -m ensurepip && python3 -m pip install --no-cache-dir --upgrade pip && python3 -m venv /opt/venv
 
 WORKDIR /opt/scripts 
 COPY <<EOF /opt/scripts/entrypoint.sh
