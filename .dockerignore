@@ -1,0 +1,9 @@
+.github
+scripts
+.clang-format
+.git 
+.gitattributes
+.gitignore
+.travis.yml
+build.sh
+compile_commands.json
