@@ -11,7 +11,6 @@ RUN apt-get -y update \
 
 WORKDIR /scirun-src
 COPY . /scirun-src/
-# RUN git clone --depth 1 --branch ${SCIRUN_VERSION} https://github.com/georgiastuart/SCIRun.git .
 
 WORKDIR /opt/scirun
 # TODO: Separate external building from SCIRun
