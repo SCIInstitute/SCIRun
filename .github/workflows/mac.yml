@@ -24,7 +24,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
@@ -47,7 +47,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SCIRunMacInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -82,7 +82,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Prepare
@@ -102,7 +102,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SCIRunMacNPInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -125,7 +125,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
@@ -148,7 +148,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SCIRunMacOsprayInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
