@@ -17,22 +17,18 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
       run: echo $Qt5_DIR; echo $Qt5_Dir
-
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
       run: ./build.sh -DQt_PATH="${Qt5_Dir}"
@@ -47,7 +43,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SCIRunMacInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -75,19 +71,15 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
-
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
       run: ./build.sh -DBUILD_WITH_PYTHON=OFF -DQt_PATH="${Qt5_Dir}"
@@ -102,7 +94,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SCIRunMacNPInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -118,22 +110,18 @@ jobs:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
       run: echo $Qt5_DIR; echo $Qt5_Dir
-
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
       run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt_PATH="${Qt5_Dir}"
@@ -148,7 +136,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SCIRunMacOsprayInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -172,10 +160,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: Compile
       run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON
