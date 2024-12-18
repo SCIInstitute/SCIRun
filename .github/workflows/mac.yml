@@ -30,10 +30,6 @@ jobs:
     - name: Print out Qt directory
       run: echo $Qt5_DIR; echo $Qt5_Dir
 
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
-
     - name: make
       run: ./build.sh -DQt_PATH="${Qt5_Dir}"
 
@@ -85,10 +81,6 @@ jobs:
         setup-python: 'true'
         install-deps: true
 
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
-
     - name: make
       run: ./build.sh -DBUILD_WITH_PYTHON=OFF -DQt_PATH="${Qt5_Dir}"
 
@@ -131,10 +123,6 @@ jobs:
     - name: Print out Qt directory
       run: echo $Qt5_DIR; echo $Qt5_Dir
 
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
-
     - name: make
       run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt_PATH="${Qt5_Dir}"
 
@@ -172,10 +160,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-
-    - name: Prepare
-      run: |
-        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: Compile
       run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON
