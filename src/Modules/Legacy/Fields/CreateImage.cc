@@ -169,6 +169,16 @@ void CreateImage::execute()
         customCenter = Point((*oVMatrix)(0, 0), (*oVMatrix)(0, 1), (*oVMatrix)(0, 2));
         customNormal = Vector((*oVMatrix)(1, 0), (*oVMatrix)(1, 1), (*oVMatrix)(1, 2));
         customNormal.safe_normalize();
+        
+        if (axis == 3)
+        {
+          get_state()->setValue(NormalX, customCenter.x());
+          get_state()->setValue(NormalY, customCenter.y());
+          get_state()->setValue(NormalZ, customCenter.y());
+          get_state()->setValue(CenterX, customNormal.x());
+          get_state()->setValue(CenterX, customNormal.y());
+          get_state()->setValue(CenterX, customNormal.z());
+        }
       }
     }
 
