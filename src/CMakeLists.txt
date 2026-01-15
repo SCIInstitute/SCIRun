@@ -410,10 +410,19 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # Find and configure Qt
 
 IF(NOT BUILD_HEADLESS)
-  if (${QT_VERSION_MAJOR} STREQUAL "6")
-    FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
+
+  if (SCIRUN_QT_MAJOR STREQUAL "6")
+    find_package(Qt6 REQUIRED COMPONENTS
+      DBus Core Gui Widgets Network OpenGL Concurrent
+      PrintSupport Svg OpenGLWidgets
+      HINTS ${Qt_PATH})
+  elseif (SCIRUN_QT_MAJOR STREQUAL "5")
+    find_package(Qt5 REQUIRED COMPONENTS
+      Core Gui Widgets Network OpenGL Concurrent
+      PrintSupport Svg
+      HINTS ${Qt_PATH})
   else()
-    FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt_PATH})
+    message(FATAL_ERROR "Unsupported Qt major version: ${SCIRUN_QT_MAJOR}")
   endif()
 
   IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
