@@ -28,19 +28,17 @@
 set(_boost_git_url "https://github.com/CIBC-Internal/boost.git")
 set(_boost_git_tag "v1.90.0")
 
+
 ExternalProject_Add(Boost_external
   GIT_REPOSITORY            ${_boost_git_url}
   GIT_TAG                   ${_boost_git_tag}
   GIT_SHALLOW               FALSE
   GIT_PROGRESS              TRUE
 
-  # Ensure all modular libraries are present
   UPDATE_COMMAND            ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> git submodule update --init --recursive
 
-  # Build out of source (let ExternalProject choose dirs)
   BUILD_IN_SOURCE           OFF
 
-  # Configure using Boost's official CMake support (tools/cmake in the repo)
   CONFIGURE_COMMAND
     ${CMAKE_COMMAND}
       -S <SOURCE_DIR>
@@ -50,16 +48,15 @@ ExternalProject_Add(Boost_external
       -DCMAKE_POSITION_INDEPENDENT_CODE=ON
       -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
       -DSCI_BOOST_CXX_FLAGS=${boost_CXX_Flags}
-      # Optional: build static by default
-      # -DBUILD_SHARED_LIBS=OFF
-      # Optional: enforce Boost.Python if your build requires it
-      # -DBoost_ENABLE_PYTHON=$<IF:${BUILD_WITH_PYTHON},ON,OFF>
 
-  BUILD_COMMAND
-    ${CMAKE_COMMAND} --build <BINARY_DIR> --config ${CMAKE_BUILD_TYPE} --parallel
 
-  INSTALL_COMMAND
-    ${CMAKE_COMMAND} --build <BINARY_DIR> --target install --config ${CMAKE_BUILD_TYPE}
+
+BUILD_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --config ${CMAKE_CFG_INTDIR}
+
+INSTALL_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --target install --config ${CMAKE_CFG_INTDIR}
+
 )
 
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
