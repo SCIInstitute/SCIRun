@@ -241,22 +241,22 @@ jobs:
     #     title: "Development Build for Windows"
     #     files: |
     #          bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
-
-  windows-better-build:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2022, windows-2019]
-        qt: ["5.15.2", "6.3.1"]
-        hl: ["ON", "OFF"]
-        py: ["ON", "OFF"]
-        osp: ["ON", "OFF"]
-        tst: ["ON", "OFF"]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Print out config command
-      run: echo "cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -DWITH_OSPRAY:BOOL=${{ matrix.osp }} -DQt_PATH:STRING=${{ matrix.qt }}  -DBUILD_HEADLESS:BOOL=${{ matrix.hl }} -DBUILD_WITH_PYTHON:BOOL=${{ matrix.py }} -DBUILD_TESTING:BOOL=${{ matrix.tst }}"
+  #
+  # windows-better-build:
+  #
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022, windows-2019]
+  #       qt: ["5.15.2", "6.3.1"]
+  #       hl: ["ON", "OFF"]
+  #       py: ["ON", "OFF"]
+  #       osp: ["ON", "OFF"]
+  #       tst: ["ON", "OFF"]
+  #
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
+  #
+  #   - name: Print out config command
+  #     run: echo "cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -DWITH_OSPRAY:BOOL=${{ matrix.osp }} -DQt_PATH:STRING=${{ matrix.qt }}  -DBUILD_HEADLESS:BOOL=${{ matrix.hl }} -DBUILD_WITH_PYTHON:BOOL=${{ matrix.py }} -DBUILD_TESTING:BOOL=${{ matrix.tst }}"
