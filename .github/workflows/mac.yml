@@ -12,12 +12,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout
+      uses: actions/checkout@latest
       with:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action
+      uses: jurplel/install-qt-action@latest
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -47,7 +47,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact
+      uses: actions/upload-artifact@latest
       with:
         name: SCIRunMacInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -70,12 +70,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout
+      uses: actions/checkout@latest
       with:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action
+      uses: jurplel/install-qt-action@latest
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -102,7 +102,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact
+      uses: actions/upload-artifact@latest
       with:
         name: SCIRunMacNPInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -113,12 +113,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout
+      uses: actions/checkout@latest
       with:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action
+      uses: jurplel/install-qt-action@latest
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -148,7 +148,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact
+      uses: actions/upload-artifact@latest
       with:
         name: SCIRunMacOsprayInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -171,7 +171,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout
+      uses: actions/checkout@latest
 
     - name: Prepare
       run: |
