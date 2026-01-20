@@ -24,7 +24,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
@@ -78,7 +78,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: make
@@ -117,7 +117,7 @@ jobs:
         version: 5.15.2
         target: desktop
         host: mac
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
