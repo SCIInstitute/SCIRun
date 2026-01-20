@@ -47,7 +47,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@latest
+      uses: actions/upload-artifact@v6
       with:
         name: SCIRunMacInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -102,7 +102,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@latest
+      uses: actions/upload-artifact@v6
       with:
         name: SCIRunMacNPInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
@@ -148,7 +148,7 @@ jobs:
         ./repair_package.sh
 
     - name: Upload installer
-      uses: actions/upload-artifact@latest
+      uses: actions/upload-artifact@v6
       with:
         name: SCIRunMacOsprayInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
