@@ -236,6 +236,10 @@ ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
+ExternalProject_Get_Property(Boost_external INSTALL_DIR)
+set(SCI_BOOST_INCLUDE     ${INSTALL_DIR}/include)
+set(SCI_BOOST_LIBRARY_DIR ${INSTALL_DIR}/lib)
+
 ###########################################
 # Download external data sources
 OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
@@ -268,6 +272,8 @@ SET(SCIRUN_CACHE_ARGS
     "-DZlib_DIR:PATH=${Zlib_DIR}"
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
     "-DBoost_DIR:PATH=${Boost_DIR}"
+    "-DSCI_BOOST_INCLUDE:PATH=${SCI_BOOST_INCLUDE}"
+    "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
     "-DGLM_DIR:PATH=${GLM_DIR}"

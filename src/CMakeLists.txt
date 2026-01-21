@@ -409,6 +409,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 ########################################################################
 # Find and configure Qt
 
+
 IF(NOT BUILD_HEADLESS)
 
   if (SCIRUN_QT_MAJOR STREQUAL "6")
@@ -425,61 +426,45 @@ IF(NOT BUILD_HEADLESS)
     message(FATAL_ERROR "Unsupported Qt major version: ${SCIRUN_QT_MAJOR}")
   endif()
 
-  IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
-    MESSAGE(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}")
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Core_INCLUDE_DIRS})
-	  INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Widgets_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Gui_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Network_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}OpenGL_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Concurrent_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}PrintSupport_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Svg_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}DBus_INCLUDE_DIRS})
-  ELSE()
-    MESSAGE(FATAL_ERROR "Qt is required for building the SCIRun GUI")
-  ENDIF()
-
-  IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
-    INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-    ADD_DEFINITIONS(${QT_DEFINITIONS})
-  ELSE()
-    MESSAGE(FATAL_ERROR "Qt 5.13 or greater is required to build SCIRun")
-  ENDIF()
-
-  ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
-
-  if (${QT_VERSION_MAJOR} STREQUAL "6")
-    ADD_DEFINITIONS(-DSCIRUN_QT6_ENABLED)
-  endif()
-
-  if (${QT_VERSION_MAJOR} STREQUAL "5")
-    MACRO(QT_WRAP_UI arg1 arg2)
-      QT5_WRAP_UI(${arg1} ${arg2})
-    ENDMACRO(QT_WRAP_UI)
-
-    MACRO(QT_WRAP_CPP arg1 arg2)
-      QT5_WRAP_CPP(${arg1} ${arg2})
-    ENDMACRO(QT_WRAP_CPP)
-
-    MACRO(QT_ADD_RESOURCES arg1 arg2)
-      QT5_ADD_RESOURCES(${arg1} ${arg2})
-    ENDMACRO(QT_ADD_RESOURCES)
-
-    SET(QT_GRAPHICS_LIBRARIES Qt5::OpenGL)
-    SET(QT_NETWORK_LIBRARIES Qt5::Network)
-    SET(QT_LIBRARIES Qt5::Widgets)
+  if (Qt6_FOUND OR Qt5_FOUND)
+    message(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}_VERSION}")
   else()
-    SET(QT_GRAPHICS_LIBRARIES Qt::OpenGL Qt::OpenGLWidgets)
-    SET(QT_NETWORK_LIBRARIES Qt::Network)
-    SET(QT_LIBRARIES Qt::Widgets)
+    message(FATAL_ERROR "Qt is required for building the SCIRun GUI")
+  endif()
+
+  add_definitions(-DQT_NO_KEYWORDS)
+
+  if (QT_VERSION_MAJOR EQUAL 6)
+    add_definitions(-DSCIRUN_QT6_ENABLED)
+  endif()
+
+  if (QT_VERSION_MAJOR EQUAL 5)
+    macro(QT_WRAP_UI arg1 arg2)
+      qt5_wrap_ui(${arg1} ${arg2})
+    endmacro()
+
+    macro(QT_WRAP_CPP arg1 arg2)
+      qt5_wrap_cpp(${arg1} ${arg2})
+    endmacro()
+
+    macro(QT_ADD_RESOURCES arg1 arg2)
+      qt5_add_resources(${arg1} ${arg2})
+    endmacro()
+
+    set(QT_GRAPHICS_LIBRARIES Qt5::OpenGL)
+    set(QT_NETWORK_LIBRARIES Qt5::Network)
+    set(QT_LIBRARIES Qt5::Widgets)
+  else()
+    set(QT_GRAPHICS_LIBRARIES Qt::OpenGL Qt::OpenGLWidgets)
+    set(QT_NETWORK_LIBRARIES Qt::Network)
+    set(QT_LIBRARIES Qt::Widgets)
   endif()
 
 ENDIF()
 
-IF(Qt${QT_VERSION_MAJOR}Widgets_VERSION VERSION_LESS 5.13.0)
-  ADD_DEFINITIONS(-DOLDER_QT_SUPPORT_NEEDED)
-ENDIF()
+if (QT_VERSION_MAJOR EQUAL 5 AND Qt5Widgets_VERSION VERSION_LESS 5.13.0)
+  add_definitions(-DOLDER_QT_SUPPORT_NEEDED)
+endif()
 
 ########################################################################
 # Find and configure dl library
