@@ -31,7 +31,7 @@ jobs:
       run: echo $Qt5_DIR; echo $Qt5_Dir
 
     - name: make
-      run: ./build.sh -DQt_PATH="${Qt_Dir}"
+      run: ./build.sh -DQt_PATH="${Qt5_DIR}"
 
     - name: Package
       working-directory: bin/SCIRun
@@ -124,7 +124,7 @@ jobs:
       run: echo $Qt5_DIR; echo $Qt5_Dir
 
     - name: make
-      run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt_PATH="${Qt_Dir}"
+      run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt_PATH="${Qt5_DIR}"
 
     - name: Package
       working-directory: bin/SCIRun
