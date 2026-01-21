@@ -31,7 +31,7 @@ jobs:
       run: echo $Qt5_DIR; echo $Qt5_Dir
 
     - name: make
-      run: ./build.sh -DQt_PATH="${Qt5_Dir}"
+      run: ./build.sh -DQt_PATH="${Qt_Dir}"
 
     - name: Package
       working-directory: bin/SCIRun
@@ -82,7 +82,7 @@ jobs:
         install-deps: true
 
     - name: make
-      run: ./build.sh -DBUILD_WITH_PYTHON=OFF -DQt_PATH="${Qt5_Dir}"
+      run: ./build.sh -DBUILD_WITH_PYTHON=OFF -DQt_PATH="${Qt_Dir}"
 
     - name: Package
       working-directory: bin/SCIRun
@@ -124,7 +124,7 @@ jobs:
       run: echo $Qt5_DIR; echo $Qt5_Dir
 
     - name: make
-      run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt_PATH="${Qt5_Dir}"
+      run: ./build.sh -DWITH_OSPRAY:BOOL=ON -DQt_PATH="${Qt_Dir}"
 
     - name: Package
       working-directory: bin/SCIRun
