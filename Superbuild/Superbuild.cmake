@@ -237,8 +237,16 @@ ENDIF()
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
-set(SCI_BOOST_INCLUDE     ${INSTALL_DIR}/include)
-set(SCI_BOOST_LIBRARY_DIR ${INSTALL_DIR}/lib)
+set(Boost_DIR "${INSTALL_DIR}/lib/cmake/Boost")
+set(SCI_BOOST_INCLUDE "${INSTALL_DIR}/include")
+# Define the Boost install prefix for downstream use
+set(SCI_BOOST_PREFIX "${INSTALL_DIR}" CACHE PATH "Boost install prefix (produced by Boost_external)" FORCE)
+
+if (WIN32 AND EXISTS "${INSTALL_DIR}/lib64")
+  set(SCI_BOOST_LIBRARY_DIR "${INSTALL_DIR}/lib64")
+else()
+  set(SCI_BOOST_LIBRARY_DIR "${INSTALL_DIR}/lib")
+endif()
 
 ###########################################
 # Download external data sources
@@ -271,9 +279,13 @@ SET(SCIRUN_CACHE_ARGS
     "-DEigen_DIR:PATH=${Eigen_DIR}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
-    "-DBoost_DIR:PATH=${Boost_DIR}"
-    "-DSCI_BOOST_INCLUDE:PATH=${SCI_BOOST_INCLUDE}"
-    "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
+    "-DBoost_DIR:PATH=${Boost_DIR}"              # Try CONFIG package first
+    "-DBOOST_ROOT:PATH=${INSTALL_DIR}"           # Fallback: FindBoost
+    "-DBoost_INCLUDE_DIR:PATH=${SCI_BOOST_INCLUDE}"
+    "-DBoost_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
+    "-DBoost_NO_BOOST_CMAKE:BOOL=OFF"            # Allow CONFIG if present
+    "-DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}"
+    "-DSCI_BOOST_PREFIX:PATH=${SCI_BOOST_PREFIX}"          # so the macro can use the prefix
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
     "-DGLM_DIR:PATH=${GLM_DIR}"

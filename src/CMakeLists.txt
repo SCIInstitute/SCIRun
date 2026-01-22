@@ -201,12 +201,127 @@ endif()
 #########################################################################
 # External projects
 
-MACRO(CONFIG_STANDARD_EXTERNAL name config_file directory)
-  FIND_PACKAGE(${name} CONFIGS ${config_file} HINTS ${directory} NO_SYSTEM_ENVIRONMENT_PATH)
-  IF(NOT ${name}_FOUND)
-    MESSAGE(FATAL_ERROR "${name} library not found in ${directory}")
-  ENDIF()
-ENDMACRO()
+
+# CONFIG_STANDARD_EXTERNAL(name config_file directory [REQUIRED])
+#
+# - name:        Package name (e.g., Boost)
+# - config_file: Primary config file to look for (e.g., BoostConfig.cmake)
+# - directory:   Either the exact package cmake dir OR an install prefix.
+#                The macro will probe common subpaths and versioned dirs.
+# - REQUIRED:    Optional. If provided and not found, errors out. Otherwise warns.
+#
+# Behavior:
+#  - Respects pre-set ${name}_DIR and ${name}_ROOT if they point to a valid config.
+#  - If 'directory' points to a prefix, searches under lib/cmake/${name}-* and ${name}/.
+#  - If 'directory' points to an unversioned ${name}/, also probes siblings ${name}-*.
+#  - On success, FORCE-caches ${name}_DIR and calls find_package(${name} CONFIG).
+#  - On failure:
+#       - If REQUIRED: fatal error with detailed diagnostics.
+#       - Else: issues a status/warning and returns (for two-phase superbuilds).
+#
+macro(CONFIG_STANDARD_EXTERNAL name config_file directory)
+  set(_cse_REQUIRED OFF)
+  foreach(_arg IN LISTS ARGN)
+    if(_arg STREQUAL "REQUIRED")
+      set(_cse_REQUIRED ON)
+    endif()
+  endforeach()
+
+  # 0) If caller already set ${name}_DIR and it contains the config, prefer it.
+  if(DEFINED ${name}_DIR AND EXISTS "${${name}_DIR}/${config_file}")
+    set(_cse_pkg_dir "${${name}_DIR}")
+  endif()
+
+  # 1) If not set or invalid, consider ${name}_ROOT
+  if(NOT DEFINED _cse_pkg_dir AND DEFINED ${name}_ROOT)
+    # Common place for config under a prefix
+    set(_cse_try1 "${${name}_ROOT}/lib/cmake/${name}")
+    set(_cse_try2 "${${name}_ROOT}/lib/cmake/${name}-*")
+    if(EXISTS "${_cse_try1}/${config_file}")
+      set(_cse_pkg_dir "${_cse_try1}")
+    else()
+      file(GLOB _cse_glob2 "${_cse_try2}")
+      foreach(_cand IN LISTS _cse_glob2)
+        if(EXISTS "${_cand}/${config_file}")
+          set(_cse_pkg_dir "${_cand}")
+          break()
+        endif()
+      endforeach()
+    endif()
+  endif()
+
+  # 2) If still not found, interpret 'directory' (may be exact dir or a prefix)
+  if(NOT DEFINED _cse_pkg_dir)
+    set(_cse_root "${directory}")
+
+    # If 'directory' itself is a config dir
+    if(EXISTS "${_cse_root}/${config_file}")
+      set(_cse_pkg_dir "${_cse_root}")
+    else()
+      # If 'directory' looks like .../lib/cmake/${name}, also try versioned siblings
+      if(EXISTS "${_cse_root}" AND "${_cse_root}" MATCHES "/lib/cmake/${name}$")
+        file(GLOB _cse_glob3 "${_cse_root}-*")
+        foreach(_cand IN LISTS _cse_glob3)
+          if(EXISTS "${_cand}/${config_file}")
+            set(_cse_pkg_dir "${_cand}")
+            break()
+          endif()
+        endforeach()
+      endif()
+
+      # Otherwise, treat as prefix and probe common subpaths
+      if(NOT DEFINED _cse_pkg_dir)
+        set(_cse_try3 "${_cse_root}/lib/cmake/${name}")
+        set(_cse_try4 "${_cse_root}/lib/cmake/${name}-*")
+        if(EXISTS "${_cse_try3}/${config_file}")
+          set(_cse_pkg_dir "${_cse_try3}")
+        else()
+          file(GLOB _cse_glob4 "${_cse_try4}")
+          foreach(_cand IN LISTS _cse_glob4)
+            if(EXISTS "${_cand}/${config_file}")
+              set(_cse_pkg_dir "${_cand}")
+              break()
+            endif()
+          endforeach()
+        endif()
+      endif()
+    endif()
+  endif()
+
+  # 3) If found, cache it and run find_package in CONFIG mode
+  if(DEFINED _cse_pkg_dir)
+    set(${name}_DIR "${_cse_pkg_dir}" CACHE PATH "${name} package directory" FORCE)
+
+    # Prefer config packages and allow hints/prefix path to participate
+    set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
+    find_package(${name} CONFIG QUIET
+      HINTS "${${name}_DIR}" "${${name}_ROOT}"
+    )
+
+    if(${name}_FOUND)
+      message(STATUS "[CONFIG_STANDARD_EXTERNAL] Found ${name} at ${${name}_DIR}")
+      return()
+    endif()
+  endif()
+
+  # 4) Not found — decide whether to fail now
+  if(_cse_REQUIRED)
+    message(FATAL_ERROR
+      "[CONFIG_STANDARD_EXTERNAL] ${name} not found.\n"
+      "  Tried:\n"
+      "    - ${name}_DIR='${${name}_DIR}'\n"
+      "    - ${name}_ROOT='${${name}_ROOT}'\n"
+      "    - directory='${directory}' (searched versioned '${name}-*' under lib/cmake)\n"
+      "  Hint: ensure the external is built/installed and re-run CMake.\n"
+    )
+  else()
+    message(STATUS
+      "[CONFIG_STANDARD_EXTERNAL] ${name} not found yet. "
+      "This is expected before externals are built. "
+      "After building ${name}, re-run CMake."
+    )
+  endif()
+endmacro()
 
 CONFIG_STANDARD_EXTERNAL( Zlib ZlibConfig.cmake ${Zlib_DIR} )
 INCLUDE(${ZLIB_USE_FILE})
@@ -228,7 +343,7 @@ IF(BUILD_WITH_PYTHON)
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
 
-CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
+CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${SCI_BOOST_PREFIX} REQUIRED)
 INCLUDE(${SCI_BOOST_USE_FILE})
 
 CONFIG_STANDARD_EXTERNAL( Tny TnyConfig.cmake ${TNY_DIR} )
