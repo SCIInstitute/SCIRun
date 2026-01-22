@@ -102,24 +102,93 @@ IF(UNIX)
 	WORKING_DIRECTORY <INSTALL_DIR>
     )
   ENDIF()
+
+# --- Windows path (MSVC) ---
 ELSE()
+  # 64-bit build only (keeps your original assumptions)
+  set(python_WIN32_ARCH "x64")
+  set(python_WIN32_64BIT_DIR "/amd64")
+  set(python_ABIFLAG_PYDEBUG "_d")
+
+  # Helper script to resolve and copy pyconfig.h in a version-robust way
+  # We embed a small -P script rather than relying on shell tricks.
+  set(_copy_pyconfig_cmake "${CMAKE_CURRENT_BINARY_DIR}/CopyPyConfig.cmake")
+  file(WRITE "${_copy_pyconfig_cmake}" [=[
+    # CopyPyConfig.cmake
+    # Inputs:
+    #   _SRC  : CPython source root
+    #   _DST  : Destination include directory (expects Include/)
+    #   _PYEXE: Built python.exe to query sysconfig (optional if legacy fallback used)
+
+    if(NOT DEFINED _SRC OR NOT DEFINED _DST)
+      message(FATAL_ERROR "CopyPyConfig.cmake: _SRC and _DST must be defined.")
+    endif()
+
+    file(MAKE_DIRECTORY "${_DST}")
+
+    # 1) Legacy fallback (works for older trees/tags if file exists)
+    if(EXISTS "${_SRC}/PC/pyconfig.h")
+      message(STATUS "[Python_external] Using legacy PC/pyconfig.h")
+      file(COPY "${_SRC}/PC/pyconfig.h" DESTINATION "${_DST}")
+      return()
+    endif()
+
+    # 2) Preferred: ask the built interpreter where pyconfig.h is
+    if(NOT DEFINED _PYEXE OR NOT EXISTS "${_PYEXE}")
+      message(FATAL_ERROR
+        "CopyPyConfig.cmake: Built python.exe not found at '${_PYEXE}'.\n"
+        "Cannot query sysconfig.get_config_h_filename(); please check the build output under PCbuild.")
+    endif()
+
+    execute_process(
+      COMMAND "${_PYEXE}" -c "import sysconfig, sys; print(sysconfig.get_config_h_filename())"
+      OUTPUT_VARIABLE _CFG
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+    )
+
+    if(NOT _CFG OR NOT EXISTS "${_CFG}")
+      message(FATAL_ERROR
+        "CopyPyConfig.cmake: sysconfig.get_config_h_filename() returned '${_CFG}', which does not exist.")
+    endif()
+
+    message(STATUS "[Python_external] Copying pyconfig.h from: ${_CFG}")
+    file(COPY "${_CFG}" DESTINATION "${_DST}")
+  ]=])
+
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
-    GIT_TAG ${python_GIT_TAG}
-    PATCH_COMMAND ""
-    CONFIGURE_COMMAND PCbuild/build.bat
+    GIT_TAG        ${python_GIT_TAG}
+    PATCH_COMMAND  ""
+    # Pass platform to build.bat so it generates the right artifacts
+    CONFIGURE_COMMAND PCbuild/build.bat -p ${python_WIN32_ARCH}
     BUILD_IN_SOURCE ON
-    BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
-    INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-      <SOURCE_DIR>/PC/pyconfig.h
-      <SOURCE_DIR>/Include/pyconfig.h
+
+    # Build Release first (keeps your logic)
+    BUILD_COMMAND
+      ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo
+        /property:Configuration=Release
+        /property:Platform=${python_WIN32_ARCH}
+
+    # INSTALL_COMMAND: robust pyconfig.h copy
+    # - Prefer sysconfig.get_config_h_filename() from the built interpreter
+    # - Fallback to legacy PC/pyconfig.h if present
+    INSTALL_COMMAND
+      "${CMAKE_COMMAND}"
+        -D_SRC=<SOURCE_DIR>
+        -D_DST=<SOURCE_DIR>/Include
+        -D_PYEXE=<SOURCE_DIR>/PCbuild${python_WIN32_64BIT_DIR}/python.exe
+        -P "${_copy_pyconfig_cmake}"
   )
-  # build both Release and Debug versions
+
+  # Also build Debug (as you had), and ensure it happens before "install"
   ExternalProject_Add_Step(Python_external debug_build
-    COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH}
-      DEPENDEES build
-      DEPENDERS install
-      WORKING_DIRECTORY <SOURCE_DIR>
+    COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo
+              /property:Configuration=Debug
+              /property:Platform=${python_WIN32_ARCH}
+    DEPENDEES build
+    DEPENDERS install
+    WORKING_DIRECTORY <SOURCE_DIR>
   )
 ENDIF()
 
