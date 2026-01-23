@@ -1,4 +1,4 @@
-![SCIRun Banner](http://www.sci.utah.edu/images/software/SCIRun/scirun.png "")
+![SCIRun Banner](https://sci.utah.edu/wp-content/uploads/2025/07/scirun.webp "")
 
 ## SCIRun 5
 <!-- https://github.com/SCIInstitute/SCIRun -->
