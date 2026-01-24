@@ -10,3 +10,4 @@ furo
 sphinxcontrib-bibtex
 sphinx-markdown-tables
 myst-parser
+sphinx-design
