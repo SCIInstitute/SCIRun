@@ -2,7 +2,6 @@ docutils
 pygments
 linkify-it-py
 lxml
-myst-parser
 sphinx
 sphinx-issues
 sphinx-markdown-tables
@@ -10,3 +9,4 @@ sphinx-notfound-page
 furo
 sphinxcontrib-bibtex
 sphinx-markdown-tables
+myst-parser
