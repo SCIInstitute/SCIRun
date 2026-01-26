@@ -24,47 +24,64 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-
 # TetgenExternal.cmake
-set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
+
+# Common CMake args
+set(_cmake_args
+  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+
+  # Force output directories so install() is not needed
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
+
+  # Multi-config versions for VS
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
+)
+
+# Only add CMAKE_BUILD_TYPE for single-config generators (e.g. Ninja)
+if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
+  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+endif()
 
 ExternalProject_Add(Tetgen_external
   URL "https://github.com/CIBC-Internal/SCIRunTestData/releases/download/test/tetgen1.5.1-beta1.tar.gz"
   PATCH_COMMAND ""
 
-  # REMOVE THESE — they suppress installation
-  # INSTALL_DIR ""
-  # INSTALL_COMMAND ""
+  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
+  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
+  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  CMAKE_CACHE_ARGS
-    -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    # -DTETLIBRARY  # optional
+  CMAKE_ARGS ${_cmake_args}
 
-    # Install Tetgen under the superbuild prefix
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Tetgen_external
+  # Skip install entirely
+  INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
-  LOG_BUILD 1
-  LOG_INSTALL 1
+  LOG_BUILD     1
+  LOG_INSTALL   1
 )
 
-# Extract install directory
-ExternalProject_Get_Property(Tetgen_external INSTALL_DIR)
+ExternalProject_Get_Property(Tetgen_external SOURCE_DIR INSTALL_DIR)
 message(STATUS "[Tetgen_external] INSTALL_DIR=${INSTALL_DIR}")
 
-# Custom variables expected by SCIRun (Tetgen's CMake does not export any)
-set(TETGEN_INCLUDE        ${INSTALL_DIR}/include)
-set(TETGEN_LIBRARY_DIR    ${INSTALL_DIR}/lib)
-set(TETGEN_LIBRARY        "tet")   # matches Tetgen’s built library name
-set(TETGEN_USE_FILE       ${INSTALL_DIR}/UseTetgen.cmake)
+# Tetgen headers live in the source tree
+set(TETGEN_INCLUDE     ${SOURCE_DIR})
+set(TETGEN_LIBRARY_DIR ${INSTALL_DIR}/lib)
+set(TETGEN_LIBRARY     "tet")   # static or shared, same name root
 
-# This is the "package root" for SCIRun, not source or build dir
+set(TETGEN_USE_FILE    ${INSTALL_DIR}/UseTetgen.cmake)
 set(Tetgen_DIR ${INSTALL_DIR} CACHE PATH "")
 
-# Generate the config + use file (same as original)
+# If you have these files, you can still generate them:
 configure_file(${SUPERBUILD_DIR}/TetgenConfig.cmake.in
                ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
 

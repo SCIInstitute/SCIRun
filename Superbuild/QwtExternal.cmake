@@ -28,7 +28,7 @@
 # QwtExternal.cmake
 set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# Common cache args for the ExternalProject
+# Common cache args
 set(QWT_CACHE_ARGS
   "-DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5"
   "-DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}"
@@ -36,16 +36,15 @@ set(QWT_CACHE_ARGS
   "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON"
 )
 
-# Sanity check Qt_PATH once, fail early if not set correctly
+# Sanity check
 if (NOT IS_DIRECTORY "${Qt_PATH}")
   message(FATAL_ERROR "Qt_PATH is invalid or not set: ${Qt_PATH}")
 endif()
 
-# Help the sub-build find Qt by giving it the correct prefix path.
-# On Windows Qt installs, ${Qt_PATH} contains bin/, lib/, plugins/, and lib/cmake/Qt6 (or Qt5).
+# Help Qwt find Qt
 list(APPEND QWT_CACHE_ARGS "-DCMAKE_PREFIX_PATH:PATH=${Qt_PATH}")
 
-# Pass a minimal, version-appropriate Qt hint (primary config package root).
+# Choose Qt major and tag + give one primary hint
 if (SCIRUN_QT_MAJOR STREQUAL "6")
   list(APPEND QWT_CACHE_ARGS "-DQt6_DIR:PATH=${Qt_PATH}/lib/cmake/Qt6")
   set(qwt_GIT_TAG "origin/qt6-static-6.2.0")
@@ -56,27 +55,47 @@ else()
   message(FATAL_ERROR "SCIRUN_QT_MAJOR must be '5' or '6'. Current value: ${SCIRUN_QT_MAJOR}")
 endif()
 
-# Let Qwt know which Qt major to target (if its CMake uses this)
 list(APPEND QWT_CACHE_ARGS "-DSCIRUN_QT_MAJOR:STRING=${SCIRUN_QT_MAJOR}")
+
+# Build up args in a list; only add platform/toolset when non-empty.
+set(_cmake_args
+  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+# Visual Studio generators are multi-config; don't force CMAKE_BUILD_TYPE
+if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
+  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+endif()
 
 ExternalProject_Add(Qwt_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt.git"
   GIT_TAG ${qwt_GIT_TAG}
   PATCH_COMMAND ""
 
-  # REMOVE THESE (they suppress installation)
-  # INSTALL_DIR ""
-  # INSTALL_COMMAND ""
+  # Use the built-in generator handling
+  CMAKE_GENERATOR "${CMAKE_GENERATOR}"
+  # Only add these if they are set in the parent build
+  # (CMake treats empty values as "not present")
+  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
+  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  CMAKE_CACHE_ARGS
-    ${QWT_CACHE_ARGS}
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Qwt_external
+  # Normal CMake cache/args
+  CMAKE_ARGS ${_cmake_args}
+
+  # --- Explicit build ---
+  BUILD_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --config <CONFIG>
+
+  # --- Explicit install ---
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} --install <BINARY_DIR> --config <CONFIG>
 
   LOG_CONFIGURE 1
-  LOG_BUILD 1
-  LOG_INSTALL 1
+  LOG_BUILD     1
+  LOG_INSTALL   1
 )
 
-# For trace/debug: show install prefix (the helper will discover the config from here)
 ExternalProject_Get_Property(Qwt_external INSTALL_DIR)
 message(STATUS "[Qwt_external] INSTALL_DIR=${INSTALL_DIR}")

@@ -26,22 +26,17 @@
 
 
 # LodePngExternal.cmake
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
 ExternalProject_Add(LodePng_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cibc-lodepng.git"
   GIT_TAG "origin/master"
   PATCH_COMMAND ""
-
-  # LodePNG has no configure/build step.
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
 
-  # Install manually: headers + source (library is header-only/inline or single .cpp)
+  # FIX: use a single copy_directory (NO &&)
   INSTALL_COMMAND
-    ${CMAKE_COMMAND} -E make_directory
-      "${CMAKE_BINARY_DIR}/Externals/Install/LodePng_external/include/lodepng"
-    &&
     ${CMAKE_COMMAND} -E copy_directory
       "<SOURCE_DIR>/lodepng"
       "${CMAKE_BINARY_DIR}/Externals/Install/LodePng_external/include/lodepng"
@@ -56,6 +51,5 @@ ExternalProject_Add(LodePng_external
   LOG_INSTALL 1
 )
 
-# Debug output for install prefix
 ExternalProject_Get_Property(LodePng_external INSTALL_DIR)
 message(STATUS "[LodePng_external] INSTALL_DIR=${INSTALL_DIR}")

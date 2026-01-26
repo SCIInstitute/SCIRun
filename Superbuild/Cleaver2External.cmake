@@ -25,33 +25,49 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-# Cleaver2External.cmake
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(cleaver2_GIT_TAG "origin/master")
+# Cleaver2External.cmake (fixed)
+set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+set(cleaver2_GIT_TAG "origin/master")
+
+# Build up args in a list; only add platform/toolset when non-empty.
+set(_cmake_args
+  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+# Visual Studio generators are multi-config; don't force CMAKE_BUILD_TYPE
+if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
+  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+endif()
 
 ExternalProject_Add(Cleaver2_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Cleaver2Library.git"
-  GIT_TAG ${cleaver2_GIT_TAG}
-  PATCH_COMMAND ""
+  GIT_TAG        ${cleaver2_GIT_TAG}
+  PATCH_COMMAND  ""
 
-  # REMOVE THESE (they break installation)
-  # INSTALL_DIR ""
-  # INSTALL_COMMAND ""
+  # Use the built-in generator handling
+  CMAKE_GENERATOR "${CMAKE_GENERATOR}"
+  # Only add these if they are set in the parent build
+  # (CMake treats empty values as "not present")
+  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
+  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  # Correct: install to a known prefix under Externals/Install
-  CMAKE_CACHE_ARGS
-    -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DBUILD_SHARED_LIBS:BOOL=OFF
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Cleaver2_external
+  # Normal CMake cache/args
+  CMAKE_ARGS ${_cmake_args}
+
+  # --- Explicit build ---
+  BUILD_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --config <CONFIG>
+
+  # --- Explicit install ---
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} --install <BINARY_DIR> --config <CONFIG>
 
   LOG_CONFIGURE 1
-  LOG_BUILD 1
-  LOG_INSTALL 1
+  LOG_BUILD     1
+  LOG_INSTALL   1
 )
 
-# For debugging: show where Cleaver2 will be installed
 ExternalProject_Get_Property(Cleaver2_external INSTALL_DIR)
 message(STATUS "[Cleaver2_external] INSTALL_DIR=${INSTALL_DIR}")

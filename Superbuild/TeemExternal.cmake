@@ -25,10 +25,22 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-# TeemExternal.cmake
+# TeemExternal.cmake (fixed)
 set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 set(teem_GIT_TAG "origin/adjust-png")
 set(teem_DEPENDENCIES Zlib_external)
+
+# Build up args in a list; only add platform/toolset when non-empty.
+set(_cmake_args
+  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+# Visual Studio generators are multi-config; don't force CMAKE_BUILD_TYPE
+if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
+  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+endif()
 
 ExternalProject_Add(Teem_external
   DEPENDS ${teem_DEPENDENCIES}
@@ -36,31 +48,28 @@ ExternalProject_Add(Teem_external
   GIT_TAG ${teem_GIT_TAG}
   PATCH_COMMAND ""
 
-  # REMOVE THESE — they suppress installation
-  # INSTALL_DIR ""
-  # INSTALL_COMMAND ""
+  # Use the built-in generator handling
+  CMAKE_GENERATOR "${CMAKE_GENERATOR}"
+  # Only add these if they are set in the parent build
+  # (CMake treats empty values as "not present")
+  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
+  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  CMAKE_CACHE_ARGS
-    -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+  # Normal CMake cache/args
+  CMAKE_ARGS ${_cmake_args}
 
-    # Important: point Teem at installed Zlib
-    -DZlib_DIR:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Zlib_external/lib/cmake/ZLIB
+  # --- Explicit build step ---
+  BUILD_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --config <CONFIG>
 
-    # Teem options
-    -DTeem_USE_NRRD_INTERNALS:BOOL=ON
-    -DBUILD_SHARED_LIBS:BOOL=OFF
-
-    # Install Teem under the superbuild prefix
-    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Teem_external
+  # --- Explicit install step ---
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} --install <BINARY_DIR> --config <CONFIG>
 
   LOG_CONFIGURE 1
-  LOG_BUILD 1
-  LOG_INSTALL 1
+  LOG_BUILD     1
+  LOG_INSTALL   1
 )
 
-# Debug: show Teem install prefix (helpers will find include/lib automatically)
 ExternalProject_Get_Property(Teem_external INSTALL_DIR)
 message(STATUS "[Teem_external] INSTALL_DIR=${INSTALL_DIR}")

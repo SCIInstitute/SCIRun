@@ -28,29 +28,21 @@
 # TnyExternal.cmake
 set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
+
 ExternalProject_Add(Tny_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Tny.git"
   GIT_TAG "origin/master"
   PATCH_COMMAND ""
-
-  # Tny has no configure/build — header/ single-file library
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
-
-  # Install headers (and optionally .c/.cpp files)
   INSTALL_COMMAND
-    ${CMAKE_COMMAND} -E make_directory
-      "${CMAKE_BINARY_DIR}/Externals/Install/Tny_external/include/Tny"
-    &&
     ${CMAKE_COMMAND} -E copy_directory
       "<SOURCE_DIR>"
       "${CMAKE_BINARY_DIR}/Externals/Install/Tny_external/include/Tny"
-
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-
   LOG_CONFIGURE 1
   LOG_BUILD 1
   LOG_INSTALL 1
