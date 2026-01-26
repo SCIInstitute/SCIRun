@@ -24,18 +24,25 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+
+# EigenExternal.cmake
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
 ExternalProject_Add(Eigen_external
   URL "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
+  UPDATE_DISCONNECTED 1
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_IN_SOURCE ON
   BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
+                  "<SOURCE_DIR>/Eigen"  # headers live under Eigen/ and (for 3.4) CMake files under cmake/
+                  "${CMAKE_BINARY_DIR}/Externals/Install/Eigen_external/include/Eigen"
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(Eigen_external SOURCE_DIR)
-SET(Eigen_DIR ${SOURCE_DIR} CACHE PATH "")
-
-MESSAGE(STATUS "Eigen_DIR: ${Eigen_DIR}")
+# Optional trace
+ExternalProject_Get_Property(Eigen_external INSTALL_DIR)
+message(STATUS "[Eigen_external] INSTALL_DIR=${INSTALL_DIR}")

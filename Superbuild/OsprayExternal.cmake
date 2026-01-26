@@ -24,32 +24,48 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+
+# OsprayExternal.cmake
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(ospray_GIT_TAG "origin/scirun-build-2.10")
 
+# OSPRay depends on GLM
 set(ospray_DEPENDENCIES)
-LIST(APPEND ospray_DEPENDENCIES GLM_external)
+list(APPEND ospray_DEPENDENCIES GLM_external)
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Ospray_external
   DEPENDS ${ospray_DEPENDENCIES}
   GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
   GIT_TAG ${ospray_GIT_TAG}
   PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
+
+  # REMOVE THESE — they suppress installation
+  # INSTALL_DIR ""
+  # INSTALL_COMMAND ""
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+
+    # Use ospray's built-in superbuild
     -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
-    -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
+
+    # IMPORTANT: point glm_DIR to the INSTALL tree, not source tree
+    -Dglm_DIR:PATH=${CMAKE_BINARY_DIR}/Externals/Install/GLM_external/include/glm/cmake
+
+    # Disable AVX512 unless needed
     -DBUILD_ISA_AVX512:BOOL=OFF
+
+    # Install OSPRay into the superbuild Install tree
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Ospray_external
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(Ospray_external BINARY_DIR)
-SET(OSPRAY_BUILD_DIR ${BINARY_DIR} CACHE PATH "")
-
-MESSAGE(STATUS "OSPRAY_BUILD_DIR: ${OSPRAY_BUILD_DIR}")
+# Debug output
+ExternalProject_Get_Property(Ospray_external INSTALL_DIR)
+message(STATUS "[Ospray_external] INSTALL_DIR=${INSTALL_DIR}")

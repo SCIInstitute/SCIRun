@@ -24,25 +24,33 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+
+# SQLiteExternal.cmake
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(sqlite_GIT_TAG "origin/master")
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(SQLite_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/sqlite.git"
   GIT_TAG ${sqlite_GIT_TAG}
   PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
+
+  # REMOVE THESE (they suppress installation)
+  # INSTALL_DIR ""
+  # INSTALL_COMMAND ""
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/SQLite_external
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(SQLite_external BINARY_DIR)
-SET(SQLite_DIR ${BINARY_DIR} CACHE PATH "")
-
-MESSAGE(STATUS "SQLite_DIR: ${SQLite_DIR}")
+# Trace the resolved install prefix (your helper will scan from here)
+ExternalProject_Get_Property(SQLite_external INSTALL_DIR)
+message(STATUS "[SQLite_external] INSTALL_DIR=${INSTALL_DIR}")

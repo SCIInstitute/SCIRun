@@ -24,24 +24,35 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+
+# GLMExternal.cmake
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(GLM_external
   GIT_REPOSITORY "https://github.com/g-truc/glm.git"
   GIT_TAG "0.9.9.8"
+  PATCH_COMMAND ""
+
+  # GLM is header-only — no configure/build steps needed.
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+
+  # Install headers into the superbuild install tree.
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} -E copy_directory
+      "<SOURCE_DIR>/glm"
+      "${CMAKE_BINARY_DIR}/Externals/Install/GLM_external/include/glm"
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-	-DGLM_FORCE_CXX03:BOOL=ON
-	-DGLM_FORCE_RADIANS:BOOL=ON
+    -DGLM_FORCE_CXX03:BOOL=ON
+    -DGLM_FORCE_RADIANS:BOOL=ON
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(GLM_external SOURCE_DIR)
-SET(GLM_DIR ${SOURCE_DIR})
-
-MESSAGE(STATUS "GLM_DIR: ${GLM_DIR}")
+ExternalProject_Get_Property(GLM_external INSTALL_DIR)
+message(STATUS "[GLM_external] INSTALL_DIR=${INSTALL_DIR}")

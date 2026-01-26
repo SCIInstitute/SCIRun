@@ -24,29 +24,43 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(teem_GIT_TAG "origin/adjust-png")
-SET(teem_DEPENDENCIES "Zlib_external")
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
+# TeemExternal.cmake
+set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+set(teem_GIT_TAG "origin/adjust-png")
+set(teem_DEPENDENCIES Zlib_external)
+
 ExternalProject_Add(Teem_external
   DEPENDS ${teem_DEPENDENCIES}
   GIT_REPOSITORY "https://github.com/SCIInstitute/teem.git"
   GIT_TAG ${teem_GIT_TAG}
   PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
+
+  # REMOVE THESE — they suppress installation
+  # INSTALL_DIR ""
+  # INSTALL_COMMAND ""
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DZlib_DIR:PATH=${Zlib_DIR}
+
+    # Important: point Teem at installed Zlib
+    -DZlib_DIR:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Zlib_external/lib/cmake/ZLIB
+
+    # Teem options
     -DTeem_USE_NRRD_INTERNALS:BOOL=ON
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+
+    # Install Teem under the superbuild prefix
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Teem_external
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(Teem_external BINARY_DIR)
-SET(Teem_DIR ${BINARY_DIR} CACHE PATH "")
-
-MESSAGE(STATUS "Teem_DIR: ${Teem_DIR}")
+# Debug: show Teem install prefix (helpers will find include/lib automatically)
+ExternalProject_Get_Property(Teem_external INSTALL_DIR)
+message(STATUS "[Teem_external] INSTALL_DIR=${INSTALL_DIR}")

@@ -24,22 +24,33 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
+# SpdLogExternal.cmake
+set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
 ExternalProject_Add(SpdLog_external
   GIT_REPOSITORY "https://github.com/gabime/spdlog"
   GIT_TAG "v1.10.0"
+  PATCH_COMMAND ""
+
+  # Header-only library — no build needed
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
-  INSTALL_COMMAND ""
+
+  # Install headers into the superbuild install prefix
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} -E copy_directory
+      "<SOURCE_DIR>/include"
+      "${CMAKE_BINARY_DIR}/Externals/Install/SpdLog_external/include"
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(SpdLog_external SOURCE_DIR)
-SET(SPDLOG_DIR ${SOURCE_DIR})
-
-MESSAGE(STATUS "SPDLOG_DIR: ${SPDLOG_DIR}")
+ExternalProject_Get_Property(SpdLog_external INSTALL_DIR)
+message(STATUS "[SpdLog_external] INSTALL_DIR=${INSTALL_DIR}")

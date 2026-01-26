@@ -236,16 +236,132 @@ ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
+
+# Helper to export a CONFIG package directory to SCIRun_CACHE_ARGS
+function(_export_config_dir pkg target subdir_pattern)
+  # Get the external's install prefix
+  ExternalProject_Get_Property(${target} INSTALL_DIR)
+  if(NOT INSTALL_DIR)
+    message(FATAL_ERROR "INSTALL_DIR not set for ${target}. Ensure INSTALL is enabled in its ExternalProject_Add.")
+  endif()
+
+  # The folder that contains <Pkg>Config.cmake varies slightly by project.
+  # Common patterns: lib/cmake/<Pkg>, lib/cmake/<PKG_UPPER>, share/<Pkg>/cmake
+  set(_candidates
+    "${INSTALL_DIR}/lib/cmake/${pkg}"
+    "${INSTALL_DIR}/lib/cmake/${pkg}-*"
+    "${INSTALL_DIR}/lib/cmake/${pkg_upper}"
+    "${INSTALL_DIR}/share/${pkg}/cmake"
+  )
+
+  string(TOUPPER "${pkg}" pkg_upper)
+  unset(_found_dir)
+  foreach(_cand IN LISTS _candidates)
+    file(GLOB _hits "${_cand}")
+    foreach(_d IN LISTS _hits)
+      if(EXISTS "${_d}/${pkg}Config.cmake" OR EXISTS "${_d}/${pkg_upper}Config.cmake")
+        set(_found_dir "${_d}")
+        break()
+      endif()
+    endforeach()
+    if(DEFINED _found_dir)
+      break()
+    endif()
+  endforeach()
+
+  if(NOT DEFINED _found_dir)
+    message(STATUS "[superbuild] ${pkg}: no *Config.cmake found under ${INSTALL_DIR}. "
+                   "This may be expected if the package does not export configs. "
+                   "We will skip setting ${pkg}_DIR for now.")
+    return()
+  endif()
+
+  # Export <Pkg>_DIR to the SCIRun configure cache
+  set(${pkg}_DIR "${_found_dir}" CACHE PATH "${pkg} config dir" FORCE)
+  list(APPEND SCIRun_CACHE_ARGS "-D${pkg}_DIR:PATH=${${pkg}_DIR}")
+  set(SCIRun_CACHE_ARGS "${SCIRun_CACHE_ARGS}" PARENT_SCOPE)
+
+  message(STATUS "[superbuild] ${pkg}_DIR = ${${pkg}_DIR}")
+endfunction()
+
+# Helper to export just include/lib hints (for header-only or non-config packages)
+function(_export_include_lib pkg target)
+  ExternalProject_Get_Property(${target} INSTALL_DIR)
+  if(NOT INSTALL_DIR)
+    message(FATAL_ERROR "INSTALL_DIR not set for ${target}.")
+  endif()
+
+  # Heuristics: include/ and lib{,64}/ under install prefix
+  set(_inc "${INSTALL_DIR}/include")
+  if(EXISTS "${INSTALL_DIR}/lib64")
+    set(_lib "${INSTALL_DIR}/lib64")
+  else()
+    set(_lib "${INSTALL_DIR}/lib")
+  endif()
+
+  if(EXISTS "${_inc}")
+    set(${pkg}_INCLUDE_DIR "${_inc}" CACHE PATH "${pkg} include dir" FORCE)
+    list(APPEND SCIRun_CACHE_ARGS "-D${pkg}_INCLUDE_DIR:PATH=${${pkg}_INCLUDE_DIR}")
+  endif()
+  if(EXISTS "${_lib}")
+    set(${pkg}_LIB_DIR "${_lib}" CACHE PATH "${pkg} lib dir" FORCE)
+    list(APPEND SCIRun_CACHE_ARGS "-D${pkg}_LIB_DIR:PATH=${${pkg}_LIB_DIR}")
+  endif()
+  set(SCIRun_CACHE_ARGS "${SCIRun_CACHE_ARGS}" PARENT_SCOPE)
+
+  message(STATUS "[superbuild] ${pkg}: include=${_inc}  lib=${_lib}")
+endfunction()
+
+#get boost properties and pass to SCIRun
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
 set(Boost_DIR "${INSTALL_DIR}/lib/cmake/Boost")
 set(SCI_BOOST_INCLUDE "${INSTALL_DIR}/include")
-# Define the Boost install prefix for downstream use
 set(SCI_BOOST_PREFIX "${INSTALL_DIR}" CACHE PATH "Boost install prefix (produced by Boost_external)" FORCE)
-
 if (WIN32 AND EXISTS "${INSTALL_DIR}/lib64")
   set(SCI_BOOST_LIBRARY_DIR "${INSTALL_DIR}/lib64")
 else()
   set(SCI_BOOST_LIBRARY_DIR "${INSTALL_DIR}/lib")
+endif()
+
+# CONFIG-package externals (expect *Config.cmake)
+# Adjust names if the actual package names differ.
+_export_config_dir(Zlib       Zlib_external       "<auto>")
+_export_config_dir(Freetype   Freetype_external   "<auto>")
+_export_config_dir(SQLite     SQLite_external     "<auto>")
+_export_config_dir(Qwt        Qwt_external        "<auto>")
+
+# GLEW: depends on its CMake; if it exports configs, use config; otherwise include/lib
+if(WIN32)
+  _export_config_dir(GLEW Glew_external "<auto>")
+endif()
+
+# Python: if your PythonExternal builds a CPython with a CMake export, use config;
+# otherwise export include/lib and PYTHONHOME-ish prefix for embedding.
+if(BUILD_WITH_PYTHON)
+  _export_config_dir(Python Python_external "<auto>")
+endif()
+
+# Header-only or non-config: export include/lib hints
+_export_include_lib(Eigen     Eigen_external)
+_export_include_lib(GLM       GLM_external)
+_export_include_lib(SpdLog    SpdLog_external)
+
+# Likely non-config or custom installs—export include/lib for now
+_export_include_lib(Teem      Teem_external)
+_export_include_lib(Tny       Tny_external)
+_export_include_lib(LodePng   LodePng_external)
+_export_include_lib(Cleaver2  Cleaver2_external)
+
+# Optional sets (only if enabled)
+if(WITH_TETGEN)
+  _export_include_lib(Tetgen Tetgen_external)
+endif()
+if(WITH_OSPRAY)
+  # OSPRay typically has a config; try config first, fall back to include/lib
+  _export_config_dir(ospray Ospray_external "<auto>")
+endif()
+if(BUILD_TESTING)
+  # Test data external likely doesn't export headers/libs; skip
 endif()
 
 ###########################################
@@ -258,7 +374,9 @@ IF(DOWNLOAD_TOOLKITS)
   EXTERNAL_TOOLKIT(FwdInvToolkit)
 ENDIF()
 
-SET(SCIRUN_CACHE_ARGS
+
+# --- SCIRUN CACHE ARGUMENTS (SCIRun internal settings only) ---
+set(SCIRUN_CACHE_ARGS
     "-DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}"
     "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
     "-DSCIRUN_BINARY_DIR:PATH=${SCIRUN_BINARY_DIR}"
@@ -276,70 +394,38 @@ SET(SCIRUN_CACHE_ARGS
     "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
-    "-DEigen_DIR:PATH=${Eigen_DIR}"
-    "-DZlib_DIR:PATH=${Zlib_DIR}"
-    "-DSQLite_DIR:PATH=${SQLite_DIR}"
-    "-DBoost_DIR:PATH=${Boost_DIR}"              # Try CONFIG package first
-    "-DBOOST_ROOT:PATH=${INSTALL_DIR}"           # Fallback: FindBoost
-    "-DBoost_INCLUDE_DIR:PATH=${SCI_BOOST_INCLUDE}"
-    "-DBoost_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
-    "-DBoost_NO_BOOST_CMAKE:BOOL=OFF"            # Allow CONFIG if present
     "-DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}"
-    "-DSCI_BOOST_PREFIX:PATH=${SCI_BOOST_PREFIX}"          # so the macro can use the prefix
-    "-DTeem_DIR:PATH=${Teem_DIR}"
-    "-DFreetype_DIR:PATH=${Freetype_DIR}"
-    "-DGLM_DIR:PATH=${GLM_DIR}"
-    "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
-    "-DTNY_DIR:PATH=${TNY_DIR}"
-    "-DGLEW_DIR:PATH=${Glew_DIR}"
-    "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
-    "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
-    "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
     "-DSCIRUN_QT_MAJOR:STRING=${SCIRUN_QT_MAJOR}"
     "-DQt_PATH:PATH=${Qt_PATH}"
 )
 
-IF(BUILD_WITH_PYTHON)
-  LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DPython_DIR:PATH=${Python_DIR}"
+if(BUILD_WITH_PYTHON)
+  list(APPEND SCIRUN_CACHE_ARGS
     "-DPYTHON_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}"
   )
-ENDIF()
+endif()
 
-IF(WITH_TETGEN)
-  LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DTetgen_DIR:PATH=${Tetgen_DIR}"
-  )
-ENDIF()
-
-IF(WITH_OSPRAY)
-  LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DOspray_External_Dir:PATH=${OSPRAY_BUILD_DIR}"
-  )
-ENDIF()
-
-IF(WIN32)
-  LIST(APPEND SCIRUN_CACHE_ARGS
+if(WIN32)
+  list(APPEND SCIRUN_CACHE_ARGS
     "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}"
   )
-ENDIF()
+endif()
 
-IF(NOT BUILD_HEADLESS)
-  LIST(APPEND SCIRUN_CACHE_ARGS
+if(NOT BUILD_HEADLESS)
+  list(APPEND SCIRUN_CACHE_ARGS
     "-DQt_PATH:PATH=${Qt_PATH}"
     "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
     "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
     "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"
     "-DQt${QT_VERSION_MAJOR}GuiTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}GuiTools_DIR}"
     "-DQt${QT_VERSION_MAJOR}OpenGL_DIR:PATH=${Qt${QT_VERSION_MAJOR}OpenGL_DIR}"
-	  "-DQt${QT_VERSION_MAJOR}Network_DIR:PATH=${Qt${QT_VERSION_MAJOR}Network_DIR}"
- 	  "-DQt${QT_VERSION_MAJOR}Widgets_DIR:PATH=${Qt${QT_VERSION_MAJOR}Widgets_DIR}"
-	  "-DQt${QT_VERSION_MAJOR}Concurrent_DIR:PATH=${Qt${QT_VERSION_MAJOR}Concurrent_DIR}"
+    "-DQt${QT_VERSION_MAJOR}Network_DIR:PATH=${Qt${QT_VERSION_MAJOR}Network_DIR}"
+    "-DQt${QT_VERSION_MAJOR}Widgets_DIR:PATH=${Qt${QT_VERSION_MAJOR}Widgets_DIR}"
+    "-DQt${QT_VERSION_MAJOR}Concurrent_DIR:PATH=${Qt${QT_VERSION_MAJOR}Concurrent_DIR}"
     "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
-    "-DQWT_DIR:PATH=${QWT_DIR}"
   )
-ENDIF()
+endif()
 
 ExternalProject_Add( SCIRun_external
   DEPENDS ${SCIRun_DEPENDENCIES}

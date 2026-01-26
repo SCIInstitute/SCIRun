@@ -24,31 +24,49 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
+# TetgenExternal.cmake
+set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
 ExternalProject_Add(Tetgen_external
   URL "https://github.com/CIBC-Internal/SCIRunTestData/releases/download/test/tetgen1.5.1-beta1.tar.gz"
   PATCH_COMMAND ""
-  INSTALL_COMMAND ""
+
+  # REMOVE THESE — they suppress installation
+  # INSTALL_DIR ""
+  # INSTALL_COMMAND ""
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    #-DTETLIBRARY
+    # -DTETLIBRARY  # optional
+
+    # Install Tetgen under the superbuild prefix
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Tetgen_external
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(Tetgen_external SOURCE_DIR)
-ExternalProject_Get_Property(Tetgen_external BINARY_DIR)
+# Extract install directory
 ExternalProject_Get_Property(Tetgen_external INSTALL_DIR)
-SET(TETGEN_INCLUDE ${SOURCE_DIR})
-SET(TETGEN_LIBRARY_DIR ${BINARY_DIR})
-SET(TETGEN_USE_FILE ${INSTALL_DIR}/UseTetgen.cmake)
-# see Tetgen CMakeLists.txt file
-SET(TETGEN_LIBRARY "tet")
-SET(Tetgen_DIR ${INSTALL_DIR} CACHE PATH "")
+message(STATUS "[Tetgen_external] INSTALL_DIR=${INSTALL_DIR}")
 
-# Boost is special case - normally this should be handled in external library repo
-CONFIGURE_FILE(${SUPERBUILD_DIR}/TetgenConfig.cmake.in ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
-CONFIGURE_FILE(${SUPERBUILD_DIR}/UseTetgen.cmake ${TETGEN_USE_FILE} COPYONLY)
+# Custom variables expected by SCIRun (Tetgen's CMake does not export any)
+set(TETGEN_INCLUDE        ${INSTALL_DIR}/include)
+set(TETGEN_LIBRARY_DIR    ${INSTALL_DIR}/lib)
+set(TETGEN_LIBRARY        "tet")   # matches Tetgen’s built library name
+set(TETGEN_USE_FILE       ${INSTALL_DIR}/UseTetgen.cmake)
 
-MESSAGE(STATUS "Tetgen_DIR: ${Tetgen_DIR}")
+# This is the "package root" for SCIRun, not source or build dir
+set(Tetgen_DIR ${INSTALL_DIR} CACHE PATH "")
+
+# Generate the config + use file (same as original)
+configure_file(${SUPERBUILD_DIR}/TetgenConfig.cmake.in
+               ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
+
+configure_file(${SUPERBUILD_DIR}/UseTetgen.cmake
+               ${TETGEN_USE_FILE} COPYONLY)

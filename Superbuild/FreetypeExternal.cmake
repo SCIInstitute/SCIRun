@@ -24,25 +24,33 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+
+# FreetypeExternal.cmake
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(freetype_GIT_TAG "origin/seg3d_external_test")
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Freetype_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/freetype.git"
   GIT_TAG ${freetype_GIT_TAG}
   PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
+
+  # REMOVE THESE (they block installation)
+  # INSTALL_DIR ""
+  # INSTALL_COMMAND ""
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -DFT_WITH_ZLIB:BOOL=ON
+    -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_BINARY_DIR}/Externals/Install/Freetype_external
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(Freetype_external BINARY_DIR)
-SET(Freetype_DIR ${BINARY_DIR} CACHE PATH "")
-
-MESSAGE(STATUS "Freetype_DIR: ${Freetype_DIR}")
+ExternalProject_Get_Property(Freetype_external INSTALL_DIR)
+message(STATUS "[Freetype_external] INSTALL_DIR=${INSTALL_DIR}")

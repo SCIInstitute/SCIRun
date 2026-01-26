@@ -24,21 +24,38 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+
+# LodePngExternal.cmake
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(LodePng_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cibc-lodepng.git"
   GIT_TAG "origin/master"
-  INSTALL_COMMAND ""
+  PATCH_COMMAND ""
+
+  # LodePNG has no configure/build step.
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+
+  # Install manually: headers + source (library is header-only/inline or single .cpp)
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} -E make_directory
+      "${CMAKE_BINARY_DIR}/Externals/Install/LodePng_external/include/lodepng"
+    &&
+    ${CMAKE_COMMAND} -E copy_directory
+      "<SOURCE_DIR>/lodepng"
+      "${CMAKE_BINARY_DIR}/Externals/Install/LodePng_external/include/lodepng"
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-	-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(LodePng_external BINARY_DIR)
-SET(LODEPNG_DIR ${BINARY_DIR})
-
-MESSAGE(STATUS "LODEPNG_DIR: ${LODEPNG_DIR}")
+# Debug output for install prefix
+ExternalProject_Get_Property(LodePng_external INSTALL_DIR)
+message(STATUS "[LodePng_external] INSTALL_DIR=${INSTALL_DIR}")

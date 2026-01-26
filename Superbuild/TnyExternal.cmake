@@ -24,21 +24,37 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
+# TnyExternal.cmake
+set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
 ExternalProject_Add(Tny_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Tny.git"
   GIT_TAG "origin/master"
-  INSTALL_COMMAND ""
+  PATCH_COMMAND ""
+
+  # Tny has no configure/build — header/ single-file library
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+
+  # Install headers (and optionally .c/.cpp files)
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} -E make_directory
+      "${CMAKE_BINARY_DIR}/Externals/Install/Tny_external/include/Tny"
+    &&
+    ${CMAKE_COMMAND} -E copy_directory
+      "<SOURCE_DIR>"
+      "${CMAKE_BINARY_DIR}/Externals/Install/Tny_external/include/Tny"
+
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-	-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+
+  LOG_CONFIGURE 1
+  LOG_BUILD 1
+  LOG_INSTALL 1
 )
 
-ExternalProject_Get_Property(Tny_external BINARY_DIR)
-SET(TNY_DIR ${BINARY_DIR})
-
-MESSAGE(STATUS "TNY_DIR: ${TNY_DIR}")
+ExternalProject_Get_Property(Tny_external INSTALL_DIR)
+message(STATUS "[Tny_external] INSTALL_DIR=${INSTALL_DIR}")
