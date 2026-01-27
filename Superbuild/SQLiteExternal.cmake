@@ -25,50 +25,65 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-# SQLiteExternal.cmake
-set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-set(sqlite_GIT_TAG "origin/master")
+# SQLiteExternal.cmake (modernized + consistent)
 
-# Build up args in a list; only add platform/toolset when non-empty.
+set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
+
+set(sqlite_GIT_TAG "v3.0.1")
+
+# Common CMake args
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+
+  # Redirect all outputs so install step is unnecessary
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
+
+  # Multi-config (VS)
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
 )
 
-# Visual Studio generators are multi-config; don't force CMAKE_BUILD_TYPE
+# Single-config generators
 if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
   list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 endif()
 
+# Superbuild directories
+set(_sqlite_src  "${CMAKE_BINARY_DIR}/Externals/Source/SQLite_external")
+set(_sqlite_bin  "${CMAKE_BINARY_DIR}/Externals/Build/SQLite_external")
+set(_sqlite_inst "${CMAKE_BINARY_DIR}/Externals/Install/SQLite_external")
+
 ExternalProject_Add(SQLite_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/sqlite.git"
   GIT_TAG        ${sqlite_GIT_TAG}
-  PATCH_COMMAND  ""
+  UPDATE_DISCONNECTED 1
 
-  # Use the built-in generator handling
-  CMAKE_GENERATOR "${CMAKE_GENERATOR}"
-  # Only add these if they are set in the parent build
-  # (CMake treats empty values as "not present")
+  SOURCE_DIR ${_sqlite_src}
+  BINARY_DIR ${_sqlite_bin}
+
+  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
   CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
   CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  # Normal CMake cache/args
   CMAKE_ARGS ${_cmake_args}
 
-  # Explicit build
-  BUILD_COMMAND
-    ${CMAKE_COMMAND} --build <BINARY_DIR> --config <CONFIG>
-
-  # Explicit install
-  INSTALL_COMMAND
-    ${CMAKE_COMMAND} --install <BINARY_DIR> --config <CONFIG>
+  # Outputs already redirected -> skip install
+  INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
-# Trace the resolved install prefix (your helper will scan from here)
-ExternalProject_Get_Property(SQLite_external INSTALL_DIR)
-message(STATUS "[SQLite_external] INSTALL_DIR=${INSTALL_DIR}")
+# Export variables for SCIRun
+set(SQLITE_SOURCE_DIR  ${_sqlite_src})
+set(SQLITE_INSTALL_DIR ${_sqlite_inst})
+set(SQLITE_INCLUDE

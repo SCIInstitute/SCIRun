@@ -25,54 +25,69 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-# GlewExternal.cmake
-set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-set(glew_GIT_TAG "origin/master")
+# GlewExternal.cmake (modernized + consistent)
 
-if(TRAVIS_BUILD)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-  set(CMAKE_C_FLAGS    "${CMAKE_C_FLAGS} -w")
-endif()
+set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
-# Build up args in a list; only add platform/toolset when non-empty.
+set(glew_GIT_TAG "v1.0.1")
+
+# Common CMake args
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+
+  # Redirect all outputs so install step is unnecessary
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
+
+  # Multi-config (VS)
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
 )
 
-# Visual Studio generators are multi-config; don't force CMAKE_BUILD_TYPE
+# Single-config generators
 if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
   list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 endif()
 
+# Superbuild directories
+set(_glew_src  "${CMAKE_BINARY_DIR}/Externals/Source/Glew_external")
+set(_glew_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Glew_external")
+set(_glew_inst "${CMAKE_BINARY_DIR}/Externals/Install/Glew_external")
+
 ExternalProject_Add(Glew_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/glew.git"
-  GIT_TAG ${glew_GIT_TAG}
-  PATCH_COMMAND ""
+  GIT_TAG        ${glew_GIT_TAG}
+  UPDATE_DISCONNECTED 1
 
-  # Use the built-in generator handling
-  CMAKE_GENERATOR "${CMAKE_GENERATOR}"
-  # Only add these if they are set in the parent build
-  # (CMake treats empty values as "not present")
+  SOURCE_DIR ${_glew_src}
+  BINARY_DIR ${_glew_bin}
+
+  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
   CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
   CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  # Normal CMake cache/args
   CMAKE_ARGS ${_cmake_args}
 
-  # --- Explicit build step ---
-  BUILD_COMMAND
-    ${CMAKE_COMMAND} --build <BINARY_DIR> --config <CONFIG>
-
-  # --- Explicit install step ---
-  INSTALL_COMMAND
-    ${CMAKE_COMMAND} --install <BINARY_DIR> --config <CONFIG>
+  # Outputs already redirected -> skip install
+  INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
-ExternalProject_Get_Property(Glew_external INSTALL_DIR)
-message(STATUS "[Glew_external] INSTALL_DIR=${INSTALL_DIR}")
+# Export variables for SCIRun
+set(GLEW_SOURCE_DIR  ${_glew_src})
+set(GLEW_INSTALL_DIR ${_glew_inst})
+set(GLEW_INCLUDE     ${GLEW_SOURCE_DIR}/include)
+set(GLEW_LIBRARY_DIR ${GLEW_INSTALL_DIR}/lib)
+set(GLEW_LIBRARY     "glew")
+
+message(STATUS "[Glew_external] INSTALL_DIR=${GLEW_INSTALL_DIR}")
