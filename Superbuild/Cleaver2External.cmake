@@ -25,7 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(cleaver2_GIT_TAG "origin/master")
+SET(cleaver2_GIT_TAG "origin/scirun-5.0.0-beta")
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
