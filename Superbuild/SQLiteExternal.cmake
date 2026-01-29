@@ -86,4 +86,8 @@ ExternalProject_Add(SQLite_external
 # Export variables for SCIRun
 set(SQLITE_SOURCE_DIR  ${_sqlite_src})
 set(SQLITE_INSTALL_DIR ${_sqlite_inst})
-set(SQLITE_INCLUDE
+set(SQLITE_INCLUDE     ${SQLITE_SOURCE_DIR})        # sqlite3.h lives in source root
+set(SQLITE_LIBRARY_DIR ${SQLITE_INSTALL_DIR}/lib)
+set(SQLITE_LIBRARY     "sqlite")
+
+message(STATUS "[SQLite_external] INSTALL_DIR=${SQLITE_INSTALL_DIR}")
