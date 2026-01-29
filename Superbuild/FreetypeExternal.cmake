@@ -27,35 +27,26 @@
 
 # FreetypeExternal.cmake (modernized + consistent)
 
+# FreetypeExternal.cmake — use installed zlib via CMAKE_PREFIX_PATH
+
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
 set(freetype_GIT_TAG "v2.14.1")
 
-# Common CMake args (keep yours)
+# Common CMake args for FreeType
+# NOTE:
+#  - We no longer need to redirect all output dirs when using find_package().
+#  - We pass CMAKE_PREFIX_PATH to point at the installed zlib prefix.
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-
-  # Redirect all outputs so install step is unnecessary
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
 
-  # Multi-config (VS)
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
-
-  # --- Make FreeType use *your* zlib ---
+  # Make FreeType use the zlib we installed in its own external
+  -DCMAKE_PREFIX_PATH=${ZLIB_INSTALL_DIR}
   -DFT_REQUIRE_ZLIB=ON
-  -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE}
-  -DZLIB_LIBRARY=${_zlib_lib}
 
-  # --- Start minimal: disable other optional deps for now ---
+  # Start minimal to avoid surprise dependencies during bring-up
   -DFT_DISABLE_BZIP2=ON
   -DFT_DISABLE_PNG=ON
   -DFT_DISABLE_BROTLI=ON
@@ -86,10 +77,10 @@ ExternalProject_Add(Freetype_external
 
   CMAKE_ARGS ${_cmake_args}
 
-  # Ensure zlib builds first
+  # Ensure zlib is fully built & installed before configuring FreeType
   DEPENDS Zlib_external
 
-  # Outputs already redirected -> skip install
+  # Keep FreeType in "no-install" mode for now (you can enable later if desired)
   INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
@@ -100,7 +91,15 @@ ExternalProject_Add(Freetype_external
 # Export variables for SCIRun (consumer side)
 set(FREETYPE_SOURCE_DIR  ${_freetype_src})
 set(FREETYPE_INSTALL_DIR ${_freetype_inst})
-set(FREETYPE_INCLUDE     ${FREETYPE_SOURCE_DIR}/include)   # FreeType's public headers live in source/include
+
+# Public headers for consumers are under source/include
+set(FREETYPE_INCLUDE     ${FREETYPE_SOURCE_DIR}/include)
+
+# Libraries land here if you later enable FreeType's install;
+# with INSTALL_COMMAND "" it remains empty, but we keep the var for consistency.
 set(FREETYPE_LIBRARY_DIR ${FREETYPE_INSTALL_DIR}/lib)
-set(FREETYPE_LIBRARY     "freetype")  # basename (actual file becomes freetype.lib/libfreetype.a)
+
+# Basename (actual file becomes freetype.lib / libfreetype.a / libfreetype.{so,dylib})
+set(FREETYPE_LIBRARY     "freetype")
+
 message(STATUS "[Freetype_external] INSTALL_DIR=${FREETYPE_INSTALL_DIR}")

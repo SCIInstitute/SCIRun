@@ -27,28 +27,22 @@
 
 # ZlibExternal.cmake (modernized + consistent)
 
+# ZlibExternal.cmake  —  installs zlib and exports an installed prefix for consumers
+
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
 set(zlib_GIT_TAG "v1.2.8")
 
-# Common CMake args
+# Common CMake args for the external
+# NOTE: We intentionally DO NOT redirect output directories here,
+# so that `cmake --install` produces a normal <INSTALL_DIR> layout.
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-
-  # Redirect all outputs so install step is unnecessary
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
 
-  # Multi-config (VS)
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
+  # If your zlib source honors BUILD_SHARED_LIBS, uncomment to force static:
+  # -DBUILD_SHARED_LIBS=OFF
 )
 
 # Single-config generators
@@ -75,19 +69,49 @@ ExternalProject_Add(Zlib_external
 
   CMAKE_ARGS ${_cmake_args}
 
-  # Outputs already redirected -> skip install
-  INSTALL_COMMAND ""
+  # Run the install step for this external (required for Fix B)
+  INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
-# Export variables for SCIRun
+# ----------------------------------------------------------------------
+# Export variables for downstream projects (FreeType, SCIRun, etc.)
+# Expect a standard install layout:
+#   <INSTALL_DIR>/include/{zlib.h,zconf.h}
+#   <INSTALL_DIR>/lib/{z.lib|libz.a|libz.so|libz.dylib}
+# ----------------------------------------------------------------------
 set(ZLIB_SOURCE_DIR  ${_zlib_src})
 set(ZLIB_INSTALL_DIR ${_zlib_inst})
-set(ZLIB_INCLUDE     ${ZLIB_SOURCE_DIR})        # zlib headers live in source root
+
+# Public headers for consumers (FreeType only needs zlib.h)
+set(ZLIB_INCLUDE     ${ZLIB_INSTALL_DIR}/include)
+
+# Library directory
 set(ZLIB_LIBRARY_DIR ${ZLIB_INSTALL_DIR}/lib)
-set(ZLIB_LIBRARY     "zlib")                    # matches add_library(zlib ...)
+
+# Pick the most likely library filename for each platform
+if(WIN32)
+  # Your custom zlib typically names the static lib 'z.lib'.
+  set(ZLIB_LIBRARY "${ZLIB_LIBRARY_DIR}/z.lib")
+elseif(APPLE)
+  # Prefer shared if present, otherwise static
+  if(EXISTS "${ZLIB_LIBRARY_DIR}/libz.dylib")
+    set(ZLIB_LIBRARY "${ZLIB_LIBRARY_DIR}/libz.dylib")
+  else()
+    set(ZLIB_LIBRARY "${ZLIB_LIBRARY_DIR}/libz.a")
+  endif()
+else()
+  # Linux/*nix: prefer shared if present, otherwise static
+  if(EXISTS "${ZLIB_LIBRARY_DIR}/libz.so")
+    set(ZLIB_LIBRARY "${ZLIB_LIBRARY_DIR}/libz.so")
+  else()
+    set(ZLIB_LIBRARY "${ZLIB_LIBRARY_DIR}/libz.a")
+  endif()
+endif()
 
 message(STATUS "[Zlib_external] INSTALL_DIR=${ZLIB_INSTALL_DIR}")
+message(STATUS "[Zlib_external] INCLUDE=${ZLIB_INCLUDE}")
+message(STATUS "[Zlib_external] LIB=${ZLIB_LIBRARY}")
