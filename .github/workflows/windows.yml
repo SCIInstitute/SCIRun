@@ -15,7 +15,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
     - name: Configure
       working-directory: bin
@@ -40,12 +40,12 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -53,7 +53,7 @@ jobs:
         target: desktop
         host: windows
         arch: win64_msvc2019_64
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
@@ -76,11 +76,11 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       continue-on-error: true
       with:
         name: SCIRunWindowsInstaller_qt5
-        path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+        path: bin/SCIRun/SCIRun-5.0.*.exe
 
   windows-build-gui-qt6:
     runs-on: windows-2019
@@ -88,12 +88,12 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -101,7 +101,7 @@ jobs:
         target: desktop
         host: windows
         arch: win64_msvc2019_64
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Print out Qt directory
@@ -110,7 +110,7 @@ jobs:
     - name: Configure
       working-directory: bin
       run: |
-        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DSCIRUN_QT_MIN_VERSION:STRING="6.3.1" -DQt_PATH:PATH="$env:Qt6_Dir" -DBUILD_WITH_PYTHON:BOOL=OFF
+        cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 16 2019" -Ax64 -DSCIRUN_QT_MIN_VERSION:STRING="6.3.1" -DQt_PATH:PATH="$env:QT_ROOT_DIR" -DBUILD_WITH_PYTHON:BOOL=OFF
 
     - name: Compile
       working-directory: bin
@@ -124,11 +124,11 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       continue-on-error: true
       with:
         name: SCIRunWindowsInstaller_qt6
-        path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+        path: bin/SCIRun/SCIRun-5.0.*.exe
 
   windows-build-gui-python:
     runs-on: windows-2019
@@ -136,12 +136,12 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -149,7 +149,7 @@ jobs:
         target: desktop
         host: windows
         arch: win64_msvc2019_64
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Configure
@@ -169,11 +169,11 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       continue-on-error: true
       with:
         name: SCIRunWindowsPythonInstaller
-        path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+        path: bin/SCIRun/SCIRun-5.0.*.exe
 
     # - name: Deploy
     #   if: github.ref == 'refs/heads/master'
@@ -192,12 +192,12 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
@@ -205,7 +205,7 @@ jobs:
         target: desktop
         host: windows
         arch: win64_msvc2019_64
-        setup-python: 'false'
+        setup-python: 'true'
         install-deps: true
 
     - name: Configure
@@ -225,11 +225,11 @@ jobs:
       run: cmake --build . --config Release --target package
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       continue-on-error: true
       with:
         name: SCIRunWindowsOsprayInstaller
-        path: bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
+        path: bin/SCIRun/SCIRun-5.0.*.exe
 
     # - name: Deploy
     #   if: github.ref == 'refs/heads/master'
@@ -241,22 +241,22 @@ jobs:
     #     title: "Development Build for Windows"
     #     files: |
     #          bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
-
-  windows-better-build:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2022, windows-2019]
-        qt: ["5.15.2", "6.3.1"]
-        hl: ["ON", "OFF"]
-        py: ["ON", "OFF"]
-        osp: ["ON", "OFF"]
-        tst: ["ON", "OFF"]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Print out config command
-      run: echo "cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -DWITH_OSPRAY:BOOL=${{ matrix.osp }} -DQt_PATH:STRING=${{ matrix.qt }}  -DBUILD_HEADLESS:BOOL=${{ matrix.hl }} -DBUILD_WITH_PYTHON:BOOL=${{ matrix.py }} -DBUILD_TESTING:BOOL=${{ matrix.tst }}"
+  #
+  # windows-better-build:
+  #
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022, windows-2019]
+  #       qt: ["5.15.2", "6.3.1"]
+  #       hl: ["ON", "OFF"]
+  #       py: ["ON", "OFF"]
+  #       osp: ["ON", "OFF"]
+  #       tst: ["ON", "OFF"]
+  #
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v6
+  #
+  #   - name: Print out config command
+  #     run: echo "cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -DWITH_OSPRAY:BOOL=${{ matrix.osp }} -DQt_PATH:STRING=${{ matrix.qt }}  -DBUILD_HEADLESS:BOOL=${{ matrix.hl }} -DBUILD_WITH_PYTHON:BOOL=${{ matrix.py }} -DBUILD_TESTING:BOOL=${{ matrix.tst }}"
