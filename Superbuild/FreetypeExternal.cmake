@@ -29,9 +29,9 @@
 
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
-set(freetype_GIT_TAG "v1.0.1")
+set(freetype_GIT_TAG "v2.14.1")
 
-# Common CMake args
+# Common CMake args (keep yours)
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
@@ -49,6 +49,17 @@ set(_cmake_args
   -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
   -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
   -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
+
+  # --- Make FreeType use *your* zlib ---
+  -DFT_REQUIRE_ZLIB=ON
+  -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE}
+  -DZLIB_LIBRARY=${_zlib_lib}
+
+  # --- Start minimal: disable other optional deps for now ---
+  -DFT_DISABLE_BZIP2=ON
+  -DFT_DISABLE_PNG=ON
+  -DFT_DISABLE_BROTLI=ON
+  -DFT_DISABLE_HARFBUZZ=ON
 )
 
 # Single-config generators
@@ -75,6 +86,9 @@ ExternalProject_Add(Freetype_external
 
   CMAKE_ARGS ${_cmake_args}
 
+  # Ensure zlib builds first
+  DEPENDS Zlib_external
+
   # Outputs already redirected -> skip install
   INSTALL_COMMAND ""
 
@@ -83,11 +97,10 @@ ExternalProject_Add(Freetype_external
   LOG_INSTALL   1
 )
 
-# Export variables for SCIRun
+# Export variables for SCIRun (consumer side)
 set(FREETYPE_SOURCE_DIR  ${_freetype_src})
 set(FREETYPE_INSTALL_DIR ${_freetype_inst})
-set(FREETYPE_INCLUDE     ${FREETYPE_SOURCE_DIR}/include)
+set(FREETYPE_INCLUDE     ${FREETYPE_SOURCE_DIR}/include)   # FreeType's public headers live in source/include
 set(FREETYPE_LIBRARY_DIR ${FREETYPE_INSTALL_DIR}/lib)
-set(FREETYPE_LIBRARY     "freetype")
-
+set(FREETYPE_LIBRARY     "freetype")  # basename (actual file becomes freetype.lib/libfreetype.a)
 message(STATUS "[Freetype_external] INSTALL_DIR=${FREETYPE_INSTALL_DIR}")
