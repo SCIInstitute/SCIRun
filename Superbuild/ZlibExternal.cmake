@@ -52,35 +52,30 @@ set(_zlib_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Zlib_external")
 set(_zlib_inst "${CMAKE_BINARY_DIR}/Externals/Install/Zlib_external")
 
 ExternalProject_Add(Zlib_external
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/zlib.git"
-  GIT_TAG        ${zlib_GIT_TAG}
-  UPDATE_DISCONNECTED 1
+  # ...
+  CMAKE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+    # Optional – prefer static libraries everywhere:
+    # -DBUILD_SHARED_LIBS=OFF
 
-  SOURCE_DIR ${_zlib_src}
-  BINARY_DIR ${_zlib_bin}
-
-  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
-  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
-  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
-
-  CMAKE_ARGS ${_cmake_args}
-
-  # Run install to produce a normal <INSTALL_DIR> layout
   INSTALL_COMMAND "${CMAKE_COMMAND}" --build . --target install
 
-  # Tell the generator which files will exist before dependents configure
+  # Let the generator know which files must exist before dependents configure
   BUILD_BYPRODUCTS
     "${_zlib_inst}/include/zlib.h"
     "${_zlib_inst}/include/zconf.h"
-    "${_zlib_inst}/lib/z.lib"        # Windows static (your custom build)
-    "${_zlib_inst}/lib/libz.a"       # Unix static
-    "${_zlib_inst}/lib/libz.so"      # Linux shared (if built)
-    "${_zlib_inst}/lib/libz.dylib"   # macOS shared (if built)
-
-  LOG_CONFIGURE 1
-  LOG_BUILD     1
-  LOG_INSTALL   1
+    # We don't rely on exact names later, but byproducts help ordering.
+    "${_zlib_inst}/lib/z.lib"
+    "${_zlib_inst}/lib/libz.a"
+    "${_zlib_inst}/lib/libz.so"
+    "${_zlib_inst}/lib/libz.dylib"
 )
+
+# Export just the prefix (cached so other files/functions can see it)
+ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
+set(ZLIB_INSTALL_DIR "${INSTALL_DIR}" CACHE PATH "zlib install prefix" FORCE)
 
 # ---------------- Export for other externals (FreeType, etc.) ----------------
 # Always export the install prefix and canonical include/lib dirs to the cache.

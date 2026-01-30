@@ -79,13 +79,19 @@ ExternalProject_Add(Teem_external
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+
     -DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}
     -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}
     -DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include
-    # If you prefer to be explicit, also pass ZLIB_LIBRARY:
-    # -DZLIB_LIBRARY:FILEPATH=${ZLIB_LIBRARY}
+    -DZLIB_USE_STATIC_LIBS:BOOL=ON   # optional
 
-  # Keep Teem no-install for now; switch to install later if you want
+    # If Teem exposes switches, keep them minimal while bringing up:
+    # -DTEEM_ZLIB:BOOL=ON
+    # -DTEEM_PNG:BOOL=OFF
+    # -DTEEM_BZIP2:BOOL=OFF
+    # -DTEEM_FFTW:BOOL=OFF
+
+  DEPENDS Zlib_external
   INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
@@ -100,11 +106,7 @@ ExternalProject_Add_Step(Teem_external wait_for_zlib
   DEPENDERS configure
   DEPENDS
     "${ZLIB_INSTALL_DIR}/include/zlib.h"
-    "${ZLIB_INSTALL_DIR}/include/zconf.h"
-    "${ZLIB_INSTALL_DIR}/lib/z.lib"         # Windows static
-    # "${ZLIB_INSTALL_DIR}/lib/libz.a"      # Unix static (if that’s what you build)
-    # "${ZLIB_INSTALL_DIR}/lib/libz.so"     # Linux shared
-    # "${ZLIB_INSTALL_DIR}/lib/libz.dylib"  # macOS shared
+    "${ZLIB_INSTALL_DIR}/lib"
 )
 
 # Export variables for SCIRun (consumer side)

@@ -82,26 +82,18 @@ ExternalProject_Add(Freetype_external
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 
-    # Point find_package(ZLIB) to zlib's install prefix
+    # Let FindZLIB.cmake search under zlib's install prefix
     -DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}
-
-    # Belt-and-suspenders explicit hints (kept as CACHE so FreeType's run sees them)
     -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}
-    -DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include
-    # If you computed a best-guess lib path in Superbuild.cmake, pass it here:
-    # -DZLIB_LIBRARY:FILEPATH=${_ZLIB_LIB}
+    -DZLIB_USE_STATIC_LIBS:BOOL=ON    # optional preference, no filename
 
-    # Minimal deps while bringing up
     -DFT_REQUIRE_ZLIB:BOOL=ON
     -DFT_DISABLE_BZIP2:BOOL=ON
     -DFT_DISABLE_PNG:BOOL=ON
     -DFT_DISABLE_BROTLI:BOOL=ON
     -DFT_DISABLE_HARFBUZZ:BOOL=ON
 
-  # Build order at the target level
   DEPENDS Zlib_external
-
-  # Keep FreeType "no-install" for now (enable later if desired)
   INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
@@ -117,12 +109,7 @@ ExternalProject_Add_Step(Freetype_external wait_for_zlib
   DEPENDERS configure
   DEPENDS
     "${ZLIB_INSTALL_DIR}/include/zlib.h"
-    "${ZLIB_INSTALL_DIR}/include/zconf.h"
-    # Pick one that matches what you build on each platform:
-    "${ZLIB_INSTALL_DIR}/lib/z.lib"         # Windows static
-    # "${ZLIB_INSTALL_DIR}/lib/libz.a"      # Unix static (if that’s what you build)
-    # "${ZLIB_INSTALL_DIR}/lib/libz.so"     # Linux shared
-    # "${ZLIB_INSTALL_DIR}/lib/libz.dylib"  # macOS shared
+    "${ZLIB_INSTALL_DIR}/lib"   # Directory's existence/time is sufficient; no file name
 )
 
 # Export variables for SCIRun (consumer side)

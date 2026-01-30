@@ -527,11 +527,32 @@ if(NOT BUILD_HEADLESS)
   )
 endif()
 
+# Ensure ZLIB_INSTALL_DIR is already cached by ZlibExternal.cmake:
+#   set(ZLIB_INSTALL_DIR "<...>/Externals/Install/Zlib_external" CACHE PATH ... FORCE)
+
+list(APPEND SCIRUN_CACHE_ARGS
+  "-DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}"
+  "-DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}"
+  "-DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include"
+  # Optional preference (keeps things deterministic if both static & shared exist):
+  "-DZLIB_USE_STATIC_LIBS:BOOL=ON"
+)
+
 ExternalProject_Add( SCIRun_external
   DEPENDS ${SCIRun_DEPENDENCIES}
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${SCIRUN_SOURCE_DIR}
   BINARY_DIR ${SCIRUN_BINARY_DIR}
   CMAKE_CACHE_ARGS ${SCIRUN_CACHE_ARGS}
+  DEPENDS Zlib_external
   INSTALL_COMMAND ""
+)
+
+ExternalProject_Add_Step(SCIRun wait_for_zlib
+  COMMAND ${CMAKE_COMMAND} -E echo "Waiting for zlib artifacts before SCIRun configure..."
+  DEPENDEES download
+  DEPENDERS configure
+  DEPENDS
+    "${ZLIB_INSTALL_DIR}/include/zlib.h"
+    "${ZLIB_INSTALL_DIR}/lib"
 )
