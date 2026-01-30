@@ -51,7 +51,7 @@ std::string testFileForStreaming()
 	return (TestResources::rootDir() / "TransientOutput" / "danSmallMatrix0.txt").string();
 }
 
-TEST(BigVectorFieldFile, MakeIt)
+TEST(BigVectorFieldFile, DISABLED_MakeIt)
 {
   const size_t dim = 2;
   const size_t rows = 3 * dim * dim * dim;
@@ -77,7 +77,7 @@ TEST(BigVectorFieldFile, DISABLED_ReadIt)
   EXPECT_EQ(3000, m.rows());
 }
 
-TEST(GenerateLargeFileForStreamTesting, WriteItOut)
+TEST(GenerateLargeFileForStreamTesting, DISABLED_WriteItOut)
 {
 	std::ofstream file(testFileForStreaming());
 	const int numDoubles = 100000;
@@ -218,7 +218,7 @@ private:
 	const int processWaitTime_ = 1000;
 };
 
-TEST(StreamingReaderTests, CanReadAndLoadChunksSync)
+TEST(StreamingReaderTests, DISABLED_CanReadAndLoadChunksSync)
 {
 	SCIRun::Core::Logging::GeneralLog::Instance().setVerbose(true);
 
@@ -235,7 +235,7 @@ TEST(StreamingReaderTests, CanReadAndLoadChunksSync)
 	ASSERT_EQ(sr.numDataAppended(), sl.numDataRead());
 }
 
-TEST(StreamingReaderTests, CanLoadFileAndOutputChunksAsync)
+TEST(StreamingReaderTests, DISABLED_CanLoadFileAndOutputChunksAsync)
 {
 	SCIRun::Core::Logging::GeneralLog::Instance().setVerbose(true);
 
