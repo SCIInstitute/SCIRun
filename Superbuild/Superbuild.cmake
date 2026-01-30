@@ -548,7 +548,7 @@ ExternalProject_Add( SCIRun_external
   INSTALL_COMMAND ""
 )
 
-ExternalProject_Add_Step(SCIRun wait_for_zlib
+ExternalProject_Add_Step(SCIRun_external wait_for_zlib
   COMMAND ${CMAKE_COMMAND} -E echo "Waiting for zlib artifacts before SCIRun configure..."
   DEPENDEES download
   DEPENDERS configure

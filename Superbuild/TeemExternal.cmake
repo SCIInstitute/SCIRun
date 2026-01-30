@@ -50,10 +50,10 @@ set(_cmake_args
 
   # Start minimal: disable optional deps until zlib link works
   # (Uncomment if these options exist in your Teem tree)
-  # -DTEEM_ZLIB=ON
-  # -DTEEM_PNG=OFF
-  # -DTEEM_BZIP2=OFF
-  # -DTEEM_FFTW=OFF
+   -DTEEM_ZLIB=ON
+   -DTEEM_PNG=OFF
+   -DTEEM_BZIP2=OFF
+   -DTEEM_FFTW=OFF
 )
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
@@ -79,6 +79,8 @@ ExternalProject_Add(Teem_external
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+
+    -DZlib_DIR:PATH=${Zlib_DIR}
 
     -DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}
     -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}

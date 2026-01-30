@@ -33,7 +33,7 @@
 
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
-set(zlib_GIT_TAG "v1.2.8")
+set(zlib_GIT_TAG "v1.3.1.2")
 
 # No output redirection; let install populate a normal prefix
 set(_cmake_args
@@ -52,7 +52,17 @@ set(_zlib_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Zlib_external")
 set(_zlib_inst "${CMAKE_BINARY_DIR}/Externals/Install/Zlib_external")
 
 ExternalProject_Add(Zlib_external
-  # ...
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/zlib.git"
+  GIT_TAG        ${zlib_GIT_TAG}
+  UPDATE_DISCONNECTED 1
+
+  SOURCE_DIR ${_zlib_src}
+  BINARY_DIR ${_zlib_bin}
+
+  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
+  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
+  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
+
   CMAKE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
@@ -76,6 +86,7 @@ ExternalProject_Add(Zlib_external
 # Export just the prefix (cached so other files/functions can see it)
 ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
 set(ZLIB_INSTALL_DIR "${INSTALL_DIR}" CACHE PATH "zlib install prefix" FORCE)
+set(Zlib_DIR "${ZLIB_INSTALL_DIR}/lib/cmake/zlib" CACHE PATH "zlib config directory" FORCE)
 
 # ---------------- Export for other externals (FreeType, etc.) ----------------
 # Always export the install prefix and canonical include/lib dirs to the cache.
