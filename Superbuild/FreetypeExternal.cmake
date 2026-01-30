@@ -63,6 +63,7 @@ set(_freetype_src  "${CMAKE_BINARY_DIR}/Externals/Source/Freetype_external")
 set(_freetype_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Freetype_external")
 set(_freetype_inst "${CMAKE_BINARY_DIR}/Externals/Install/Freetype_external")
 
+# --- FreeType external ---
 ExternalProject_Add(Freetype_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/freetype.git"
   GIT_TAG        ${freetype_GIT_TAG}
@@ -75,17 +76,53 @@ ExternalProject_Add(Freetype_external
   CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
   CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  CMAKE_ARGS ${_cmake_args}
+  # Use CMAKE_CACHE_ARGS so hints are written into FreeType's *own* CMake cache
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 
-  # Ensure zlib is fully built & installed before configuring FreeType
+    # Point find_package(ZLIB) to zlib's install prefix
+    -DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}
+
+    # Belt-and-suspenders explicit hints (kept as CACHE so FreeType's run sees them)
+    -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}
+    -DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include
+    # If you computed a best-guess lib path in Superbuild.cmake, pass it here:
+    # -DZLIB_LIBRARY:FILEPATH=${_ZLIB_LIB}
+
+    # Minimal deps while bringing up
+    -DFT_REQUIRE_ZLIB:BOOL=ON
+    -DFT_DISABLE_BZIP2:BOOL=ON
+    -DFT_DISABLE_PNG:BOOL=ON
+    -DFT_DISABLE_BROTLI:BOOL=ON
+    -DFT_DISABLE_HARFBUZZ:BOOL=ON
+
+  # Build order at the target level
   DEPENDS Zlib_external
 
-  # Keep FreeType in "no-install" mode for now (you can enable later if desired)
+  # Keep FreeType "no-install" for now (enable later if desired)
   INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
+)
+
+# --- Force FreeType 'configure' to wait for zlib's actual files ---
+# This prevents configure from running before zlib installs headers/libs.
+ExternalProject_Add_Step(Freetype_external wait_for_zlib
+  COMMAND ${CMAKE_COMMAND} -E echo "Waiting for zlib artifacts..."
+  DEPENDEES download
+  DEPENDERS configure
+  DEPENDS
+    "${ZLIB_INSTALL_DIR}/include/zlib.h"
+    "${ZLIB_INSTALL_DIR}/include/zconf.h"
+    # Pick one that matches what you build on each platform:
+    "${ZLIB_INSTALL_DIR}/lib/z.lib"         # Windows static
+    # "${ZLIB_INSTALL_DIR}/lib/libz.a"      # Unix static (if that’s what you build)
+    # "${ZLIB_INSTALL_DIR}/lib/libz.so"     # Linux shared
+    # "${ZLIB_INSTALL_DIR}/lib/libz.dylib"  # macOS shared
 )
 
 # Export variables for SCIRun (consumer side)

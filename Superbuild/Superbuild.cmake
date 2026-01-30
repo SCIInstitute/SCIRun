@@ -156,6 +156,46 @@ if (NOT BUILD_HEADLESS)
         message(FATAL_ERROR "SCIRUN_QT_MAJOR must be '5' or '6'.")
     endif()
 
+    if(SCIRUN_QT_MAJOR STREQUAL "6")
+      if(TARGET Qt6::qmake)
+        get_target_property(_qmake_path Qt6::qmake LOCATION)
+      else()
+        # Fallback: derive from Qt6_DIR if the qmake target is missing
+        # Qt6_DIR typically points to .../lib/cmake/Qt6
+        # qmake is usually under the corresponding bin/
+        get_filename_component(_qt6_cmake_dir "${Qt6_DIR}" DIRECTORY)         # .../lib/cmake
+        get_filename_component(_qt6_prefix    "${_qt6_cmake_dir}" DIRECTORY)  # .../lib
+        get_filename_component(_qt6_root      "${_qt6_prefix}" DIRECTORY)     # ...
+        if(WIN32)
+          set(_qmake_path "${_qt6_root}/bin/qmake.exe")
+        else()
+          set(_qmake_path "${_qt6_root}/bin/qmake")
+        endif()
+      endif()
+    elseif(SCIRUN_QT_MAJOR STREQUAL "5")
+      if(TARGET Qt5::qmake)
+        get_target_property(_qmake_path Qt5::qmake LOCATION)
+      else()
+        get_filename_component(_qt5_cmake_dir "${Qt5_DIR}" DIRECTORY)
+        get_filename_component(_qt5_prefix    "${_qt5_cmake_dir}" DIRECTORY)
+        get_filename_component(_qt5_root      "${_qt5_prefix}" DIRECTORY)
+        if(WIN32)
+          set(_qmake_path "${_qt5_root}/bin/qmake.exe")
+        else()
+          set(_qmake_path "${_qt5_root}/bin/qmake")
+        endif()
+      endif()
+    endif()
+    
+    # Validate and publish for QwtExternal.cmake to use
+    if(NOT _qmake_path OR NOT EXISTS "${_qmake_path}")
+      message(FATAL_ERROR "Could not locate qmake. Checked: ${_qmake_path}")
+    endif()
+    
+    # Make it visible to the external (cache it so EPs see it in their configure env)
+    set(QT_QMAKE_EXECUTABLE "${_qmake_path}" CACHE FILEPATH "Path to Qt qmake for building Qwt" FORCE)
+    
+    message(STATUS "QT_QMAKE_EXECUTABLE = ${QT_QMAKE_EXECUTABLE}")
 else()
     add_definitions(-DBUILD_HEADLESS)
 endif()
@@ -328,7 +368,67 @@ endif()
 _export_config_dir(Zlib       Zlib_external       "<auto>")
 _export_config_dir(Freetype   Freetype_external   "<auto>")
 _export_config_dir(SQLite     SQLite_external     "<auto>")
-_export_config_dir(Qwt        Qwt_external        "<auto>")
+
+# Qwt: do not try to 'find' files at configure time; define an imported target
+# that will point to the expected install location(s) and depend on the EP.
+
+# (Optional) This helper won't find anything for Qwt (no CMake config), but harmless
+_export_config_dir(Qwt Qwt_external "<auto>")
+
+# Get the external's install prefix
+ExternalProject_Get_Property(Qwt_external INSTALL_DIR)
+set(QWT_INSTALL_DIR "${INSTALL_DIR}")
+
+# Include & lib dirs as installed by qmake
+set(QWT_INCLUDE_DIR "${QWT_INSTALL_DIR}/include")
+set(QWT_LIBRARY_DIR "${QWT_INSTALL_DIR}/lib")
+
+# Create an imported target that *will* exist after the external builds.
+# Use per-config locations on Windows to handle qwt.lib (Release) and qwtd.lib (Debug).
+add_library(Qwt::Qwt UNKNOWN IMPORTED GLOBAL)
+add_dependencies(Qwt::Qwt Qwt_external)
+
+# Include directories (Qwt typically installs headers under include/ or include/qwt-<ver>)
+set_property(TARGET Qwt::Qwt PROPERTY
+  INTERFACE_INCLUDE_DIRECTORIES
+    "${QWT_INCLUDE_DIR}"
+)
+
+if(WIN32)
+  # Windows/MSVC typically uses a 'd' suffix for Debug builds.
+  set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_CONFIGURATIONS "Debug;Release")
+
+  set_property(TARGET Qwt::Qwt PROPERTY
+    IMPORTED_LOCATION_RELEASE "${QWT_LIBRARY_DIR}/qwt.lib")
+  # Try qwtd.lib first; if your build produces qwt.lib for Debug too, you can
+  # set both to qwt.lib and it will still work.
+  set_property(TARGET Qwt::Qwt PROPERTY
+    IMPORTED_LOCATION_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib")
+
+  # If you prefer a single generator expression instead of config-specific props,
+  # you could do:
+  # set_property(TARGET Qwt::Qwt PROPERTY
+  #   IMPORTED_LOCATION "$<IF:$<CONFIG:Debug>,${QWT_LIBRARY_DIR}/qwtd.lib,${QWT_LIBRARY_DIR}/qwt.lib>")
+elseif(APPLE)
+  # Prefer shared if present, otherwise static (the file will appear at build time)
+  set_property(TARGET Qwt::Qwt PROPERTY
+    IMPORTED_LOCATION "${QWT_LIBRARY_DIR}/libqwt.dylib")
+  # Optional: provide a static fallback for environments that build static
+  # set_property(TARGET Qwt::Qwt PROPERTY
+  #   IMPORTED_LOCATION "${QWT_LIBRARY_DIR}/libqwt.a")
+else()
+  # Linux/*nix: prefer shared, static as fallback
+  # If you know you're building static-only, you can point straight to libqwt.a
+  set_property(TARGET Qwt::Qwt PROPERTY
+    IMPORTED_LOCATION "${QWT_LIBRARY_DIR}/libqwt.so")
+  # Optional static fallback:
+  # set_property(TARGET Qwt::Qwt PROPERTY
+  #   IMPORTED_LOCATION "${QWT_LIBRARY_DIR}/libqwt.a")
+endif()
+
+# IMPORTANT: Do not 'EXISTS'-check the files at configure time. They'll be created during build.
+# Now consumers can safely link:
+# target_link_libraries(SCIRunGui PRIVATE Qwt::Qwt)
 
 # GLEW: depends on its CMake; if it exports configs, use config; otherwise include/lib
 if(WIN32)

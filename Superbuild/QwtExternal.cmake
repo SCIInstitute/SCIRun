@@ -25,69 +25,94 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-# QwtExternal.cmake (modernized + consistent)
+# QwtExternal.cmake — build Qwt 6.3.0 with qmake from the superbuild
 
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
-set(qwt_GIT_TAG "v1.0.1")
-
-# Common CMake args
-set(_cmake_args
-  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
-  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-
-  # Redirect all outputs so install step is unnecessary
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
-
-  # Multi-config (VS)
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
-)
-
-# Single-config generators
-if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
-  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-endif()
+# Your mirror/tag
+set(qwt_GIT_TAG "v6.3.0")
 
 # Superbuild directories
 set(_qwt_src  "${CMAKE_BINARY_DIR}/Externals/Source/Qwt_external")
 set(_qwt_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Qwt_external")
 set(_qwt_inst "${CMAKE_BINARY_DIR}/Externals/Install/Qwt_external")
 
+# -------- Select build tool per platform --------
+if(WIN32)
+  # Prefer jom if available; otherwise nmake
+  find_program(JOM_EXECUTABLE NAMES jom PATHS ENV PATH NO_DEFAULT_PATH)
+  if(NOT JOM_EXECUTABLE)
+    find_program(JOM_EXECUTABLE NAMES jom)
+  endif()
+  if(JOM_EXECUTABLE)
+    set(_MAKE_TOOL "${JOM_EXECUTABLE}")
+  else()
+    set(_MAKE_TOOL "nmake")
+  endif()
+else()
+  # make or gmake; ExternalProject will run it in the source tree where qmake generates Makefiles
+  find_program(MAKE_EXECUTABLE NAMES make gmake)
+  if(NOT MAKE_EXECUTABLE)
+    message(FATAL_ERROR "No 'make' tool found for building Qwt.")
+  endif()
+  set(_MAKE_TOOL "${MAKE_EXECUTABLE}")
+endif()
+
+# -------- Require the Qt qmake path --------
+if(NOT DEFINED QT_QMAKE_EXECUTABLE OR NOT EXISTS "${QT_QMAKE_EXECUTABLE}")
+  message(FATAL_ERROR "QT_QMAKE_EXECUTABLE is not set to a valid Qt qmake path (Qt 5/6).")
+endif()
+
+# Qwt’s qmake accepts PREFIX/INSTALLBASE to control where it installs.
+# We pass both to cover different setups.
+set(_QMAKE_CONFIG
+  "${QT_QMAKE_EXECUTABLE}"
+  "qwt.pro"
+  "PREFIX=${_qwt_inst}"
+  "INSTALLBASE=${_qwt_inst}"
+)
+
+# Note:
+#  - We *don’t* set CMAKE_*_OUTPUT_DIRECTORY here—qmake controls build dirs.
+#  - We *do* run an actual install so downstream consumers get include/lib/plugin layout.
+
 ExternalProject_Add(Qwt_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt.git"
-  GIT_TAG        ${qwt_GIT_TAG}
+  GIT_TAG        ${qwt_GIT_TAG}            # v6.3.0 in your setup
   UPDATE_DISCONNECTED 1
 
   SOURCE_DIR ${_qwt_src}
-  BINARY_DIR ${_qwt_bin}
+  BINARY_DIR ${_qwt_bin}                   # not used by qmake; kept for symmetry/logs
 
-  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
-  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
-  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
+  # --- Configure: run qmake in the source dir so it finds qwt.pro ---
+  CONFIGURE_COMMAND
+    ${CMAKE_COMMAND} -E chdir ${_qwt_src}
+    "${QT_QMAKE_EXECUTABLE}" qwt.pro
+      "PREFIX=${_qwt_inst}"
+      "INSTALLBASE=${_qwt_inst}"
 
-  CMAKE_ARGS ${_cmake_args}
+  # --- Build: run the chosen make tool in the same source dir ---
+  BUILD_COMMAND
+    ${CMAKE_COMMAND} -E chdir ${_qwt_src} ${_MAKE_TOOL}
 
-  # Outputs already redirected -> skip install
-  INSTALL_COMMAND ""
+  # --- Install: same directory (qmake’s Makefile target `install`) ---
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} -E chdir ${_qwt_src} ${_MAKE_TOOL} install
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
-# Export variables for SCIRun
+# ------- Export variables for SCIRun / downstream -------
 set(QWT_SOURCE_DIR  ${_qwt_src})
 set(QWT_INSTALL_DIR ${_qwt_inst})
-set(QWT_INCLUDE     ${QWT_SOURCE_DIR}/src)
-set(QWT_LIBRARY_DIR ${QWT_INSTALL_DIR}/lib)
+
+# Qwt installs headers under include/ (often include/qwt-6.3.0) and libs under lib/
+set(QWT_INCLUDE     "${QWT_INSTALL_DIR}/include")
+set(QWT_LIBRARY_DIR "${QWT_INSTALL_DIR}/lib")
+
+# Library base name (actual file is qwt.lib / libqwt.a / libqwt.{so,dylib})
 set(QWT_LIBRARY     "qwt")
 
 message(STATUS "[Qwt_external] INSTALL_DIR=${QWT_INSTALL_DIR}")
