@@ -50,10 +50,10 @@ set(_cmake_args
 
   # Start minimal: disable optional deps until zlib link works
   # (Uncomment if these options exist in your Teem tree)
-   -DTEEM_ZLIB=ON
-   -DTEEM_PNG=OFF
-   -DTEEM_BZIP2=OFF
-   -DTEEM_FFTW=OFF
+   -DTeem_ZLIB=ON
+   -DTeem_PNG=OFF
+   -DTeem_BZIP2=OFF
+   -DTeem_FFTW=OFF
 )
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
@@ -74,6 +74,9 @@ ExternalProject_Add(Teem_external
   CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
   CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
+  CMAKE_ARGS
+    ${_cmake_args}
+
   # Use CMAKE_CACHE_ARGS so Teem's *own* cache sees the hints
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
@@ -88,10 +91,10 @@ ExternalProject_Add(Teem_external
     -DZLIB_USE_STATIC_LIBS:BOOL=ON   # optional
 
     # If Teem exposes switches, keep them minimal while bringing up:
-    # -DTEEM_ZLIB:BOOL=ON
-    # -DTEEM_PNG:BOOL=OFF
-    # -DTEEM_BZIP2:BOOL=OFF
-    # -DTEEM_FFTW:BOOL=OFF
+    -DTeem_ZLIB:BOOL=ON
+    -DTeem_PNG:BOOL=OFF
+    -DTeem_BZIP2:BOOL=OFF
+    -DTeem_FFTW:BOOL=OFF
 
   DEPENDS Zlib_external
   INSTALL_COMMAND ""
