@@ -1,4 +1,4 @@
-#
+﻿#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -201,25 +201,29 @@ endif()
 #########################################################################
 # External projects
 
-
 # CONFIG_STANDARD_EXTERNAL(name config_file directory [REQUIRED])
 #
-# - name:        Package name (e.g., Boost)
-# - config_file: Primary config file to look for (e.g., BoostConfig.cmake)
+# - name:        Package name as used by find_package (e.g., Boost, ZLIB, Freetype).
+# - config_file: Primary config file name (e.g., BoostConfig.cmake).
 # - directory:   Either the exact package cmake dir OR an install prefix.
-#                The macro will probe common subpaths and versioned dirs.
+#                This macro probes common subpaths and versioned dirs.
 # - REQUIRED:    Optional. If provided and not found, errors out. Otherwise warns.
 #
 # Behavior:
-#  - Respects pre-set ${name}_DIR and ${name}_ROOT if they point to a valid config.
-#  - If 'directory' points to a prefix, searches under lib/cmake/${name}-* and ${name}/.
-#  - If 'directory' points to an unversioned ${name}/, also probes siblings ${name}-*.
-#  - On success, FORCE-caches ${name}_DIR and calls find_package(${name} CONFIG).
+#  - Respects pre-set ${name}_DIR, ${NAME}_DIR and ${name}_ROOT, ${NAME}_ROOT if valid.
+#  - If 'directory' looks like .../lib/cmake/<name> (or <NAME>), probes versioned siblings
+#    <name>-* / <NAME>-* even if the unversioned dir DOES NOT exist.
+#  - If 'directory' is a prefix, probes under lib/cmake/<name>*, lib/cmake/<NAME>* and <name>*/ <NAME>*.
+#  - Also probes each entry of CMAKE_PREFIX_PATH with the same rules.
+#  - On success, caches ${name}_DIR and ${NAME}_DIR, then calls find_package(${name} CONFIG).
 #  - On failure:
-#       - If REQUIRED: fatal error with detailed diagnostics.
-#       - Else: issues a status/warning and returns (for two-phase superbuilds).
+#       - If REQUIRED: fatal error with diagnostics.
+#       - Else: status message (for two-phase superbuilds).
 #
 macro(CONFIG_STANDARD_EXTERNAL name config_file directory)
+  # ---------------------------
+  # Parse OPTIONAL 'REQUIRED'
+  # ---------------------------
   set(_cse_REQUIRED OFF)
   foreach(_arg IN LISTS ARGN)
     if(_arg STREQUAL "REQUIRED")
@@ -227,150 +231,272 @@ macro(CONFIG_STANDARD_EXTERNAL name config_file directory)
     endif()
   endforeach()
 
-  # 0) If caller already set ${name}_DIR and it contains the config, prefer it.
-  if(DEFINED ${name}_DIR AND EXISTS "${${name}_DIR}/${config_file}")
-    set(_cse_pkg_dir "${${name}_DIR}")
-  endif()
+  # Case variants
+  set(_cse_name "${name}")
+  string(TOUPPER "${_cse_name}" _cse_UP)
+  string(TOLOWER "${_cse_name}" _cse_LOW)
 
-  # 1) If not set or invalid, consider ${name}_ROOT
-  if(NOT DEFINED _cse_pkg_dir AND DEFINED ${name}_ROOT)
-    # Common place for config under a prefix
-    set(_cse_try1 "${${name}_ROOT}/lib/cmake/${name}")
-    set(_cse_try2 "${${name}_ROOT}/lib/cmake/${name}-*")
-    if(EXISTS "${_cse_try1}/${config_file}")
-      set(_cse_pkg_dir "${_cse_try1}")
-    else()
-      file(GLOB _cse_glob2 "${_cse_try2}")
-      foreach(_cand IN LISTS _cse_glob2)
-        if(EXISTS "${_cand}/${config_file}")
-          set(_cse_pkg_dir "${_cand}")
+  # Normalize inputs
+  set(_cse_cfg "${config_file}")
+  set(_cse_dir "${directory}")
+
+  # For diagnostics
+  set(_cse_tried_dirs "")
+
+  # Utility: check a candidate dir for config_file and select it
+  macro(_cse_try_dir _dir)
+    if(NOT DEFINED _cse_pkg_dir AND _dir AND EXISTS "${_dir}/${_cse_cfg}")
+      set(_cse_pkg_dir "${_dir}")
+      list(APPEND _cse_tried_dirs "  ✓ ${_dir}/${_cse_cfg}")
+    elseif(_dir)
+      list(APPEND _cse_tried_dirs "    ${_dir}/${_cse_cfg}")
+    endif()
+  endmacro()
+
+  # Utility: probe a prefix for typical config install subdirs (incl. versioned)
+  macro(_cse_probe_prefix _prefix)
+    if(NOT _prefix)
+      return()
+    endif()
+    # lib/cmake/<name> and versioned siblings
+    file(GLOB _cse_glob_nc "${_prefix}/lib/cmake/${_cse_name}*")
+    foreach(_cand IN LISTS _cse_glob_nc)
+      _cse_try_dir("${_cand}")
+      if(DEFINED _cse_pkg_dir)
+        break()
+      endif()
+    endforeach()
+    if(NOT DEFINED _cse_pkg_dir)
+      # Also try uppercase variant directory
+      file(GLOB _cse_glob_uc "${_prefix}/lib/cmake/${_cse_UP}*")
+      foreach(_cand IN LISTS _cse_glob_uc)
+        _cse_try_dir("${_cand}")
+        if(DEFINED _cse_pkg_dir)
           break()
         endif()
       endforeach()
     endif()
+    if(NOT DEFINED _cse_pkg_dir)
+      # Some projects install <prefix>/<name>*/ directly with config inside
+      file(GLOB _cse_glob_flat_nc "${_prefix}/${_cse_name}*")
+      foreach(_cand IN LISTS _cse_glob_flat_nc)
+        _cse_try_dir("${_cand}")
+        if(DEFINED _cse_pkg_dir)
+          break()
+        endif()
+      endforeach()
+    endif()
+    if(NOT DEFINED _cse_pkg_dir)
+      file(GLOB _cse_glob_flat_uc "${_prefix}/${_cse_UP}*")
+      foreach(_cand IN LISTS _cse_glob_flat_uc)
+        _cse_try_dir("${_cand}")
+        if(DEFINED _cse_pkg_dir)
+          break()
+        endif()
+      endforeach()
+    endif()
+  endmacro()
+
+  # ---------------------------
+  # 0) If caller already set *_DIR and it contains the config, prefer it.
+  # ---------------------------
+  if(DEFINED ${_cse_name}_DIR)
+    _cse_try_dir("${${_cse_name}_DIR}")
+  endif()
+  if(NOT DEFINED _cse_pkg_dir AND DEFINED ${_cse_UP}_DIR)
+    _cse_try_dir("${${_cse_UP}_DIR}")
   endif()
 
-  # 2) If still not found, interpret 'directory' (may be exact dir or a prefix)
-  if(NOT DEFINED _cse_pkg_dir)
-    set(_cse_root "${directory}")
+  # ---------------------------
+  # 1) Consider *_ROOT hints (both cases)
+  # ---------------------------
+  if(NOT DEFINED _cse_pkg_dir AND DEFINED ${_cse_name}_ROOT)
+    _cse_probe_prefix("${${_cse_name}_ROOT}")
+  endif()
+  if(NOT DEFINED _cse_pkg_dir AND DEFINED ${_cse_UP}_ROOT)
+    _cse_probe_prefix("${${_cse_UP}_ROOT}")
+  endif()
 
-    # If 'directory' itself is a config dir
-    if(EXISTS "${_cse_root}/${config_file}")
-      set(_cse_pkg_dir "${_cse_root}")
-    else()
-      # If 'directory' looks like .../lib/cmake/${name}, also try versioned siblings
-      if(EXISTS "${_cse_root}" AND "${_cse_root}" MATCHES "/lib/cmake/${name}$")
-        file(GLOB _cse_glob3 "${_cse_root}-*")
-        foreach(_cand IN LISTS _cse_glob3)
-          if(EXISTS "${_cand}/${config_file}")
-            set(_cse_pkg_dir "${_cand}")
+  # ---------------------------
+  # 2) Interpret 'directory' (exact config dir OR prefix), version-tolerant
+  # ---------------------------
+  if(NOT DEFINED _cse_pkg_dir AND _cse_dir)
+    # a) Exact config dir
+    _cse_try_dir("${_cse_dir}")
+
+    # b) If it looks like .../lib/cmake/<name or NAME>, probe versioned siblings,
+    #    even if the unversioned dir doesn't exist.
+    if(NOT DEFINED _cse_pkg_dir)
+      if("${_cse_dir}" MATCHES "/lib/cmake/${_cse_name}$" OR "${_cse_dir}" MATCHES "/lib/cmake/${_cse_UP}$")
+        file(GLOB _cse_siblings_nc "${_cse_dir}-*")
+        foreach(_cand IN LISTS _cse_siblings_nc)
+          _cse_try_dir("${_cand}")
+          if(DEFINED _cse_pkg_dir)
             break()
           endif()
         endforeach()
-      endif()
-
-      # Otherwise, treat as prefix and probe common subpaths
-      if(NOT DEFINED _cse_pkg_dir)
-        set(_cse_try3 "${_cse_root}/lib/cmake/${name}")
-        set(_cse_try4 "${_cse_root}/lib/cmake/${name}-*")
-        if(EXISTS "${_cse_try3}/${config_file}")
-          set(_cse_pkg_dir "${_cse_try3}")
-        else()
-          file(GLOB _cse_glob4 "${_cse_try4}")
-          foreach(_cand IN LISTS _cse_glob4)
-            if(EXISTS "${_cand}/${config_file}")
-              set(_cse_pkg_dir "${_cand}")
-              break()
-            endif()
-          endforeach()
+        if(NOT DEFINED _cse_pkg_dir)
+          # Also check uppercase base when lowercased given, and vice versa
+          if("${_cse_dir}" MATCHES "/lib/cmake/${_cse_name}$")
+            file(GLOB _cse_siblings_uc "${_cse_dir}-${_cse_UP}*") # rarely useful, but harmless
+            foreach(_cand IN LISTS _cse_siblings_uc)
+              _cse_try_dir("${_cand}")
+              if(DEFINED _cse_pkg_dir)
+                break()
+              endif()
+            endforeach()
+          endif()
         endif()
       endif()
     endif()
+
+    # c) Otherwise treat as prefix and probe typical subpaths
+    if(NOT DEFINED _cse_pkg_dir)
+      _cse_probe_prefix("${_cse_dir}")
+    endif()
   endif()
 
-  # 3) If found, cache it and run find_package in CONFIG mode
-  if(DEFINED _cse_pkg_dir)
-    set(${name}_DIR "${_cse_pkg_dir}" CACHE PATH "${name} package directory" FORCE)
+  # ---------------------------
+  # 3) Fall back to probing CMAKE_PREFIX_PATH entries
+  # ---------------------------
+  if(NOT DEFINED _cse_pkg_dir AND DEFINED CMAKE_PREFIX_PATH AND CMAKE_PREFIX_PATH)
+    foreach(_cpp IN LISTS CMAKE_PREFIX_PATH)
+      _cse_probe_prefix("${_cpp}")
+      if(DEFINED _cse_pkg_dir)
+        break()
+      endif()
+    endforeach()
+  endif()
 
-    # Prefer config packages and allow hints/prefix path to participate
+  # ---------------------------
+  # 4) If found, cache it and run find_package in CONFIG mode
+  # ---------------------------
+  if(DEFINED _cse_pkg_dir)
+    # Cache both case variants for compatibility
+    set(${_cse_name}_DIR "${_cse_pkg_dir}" CACHE PATH "${_cse_name} package directory" FORCE)
+    set(${_cse_UP}_DIR   "${_cse_pkg_dir}" CACHE PATH "${_cse_name} package directory (upper)" FORCE)
+
+    # Prefer config packages
     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
-    find_package(${name} CONFIG QUIET
-      HINTS "${${name}_DIR}" "${${name}_ROOT}"
+
+    # Use the exact case 'name' the caller provided
+    find_package(${_cse_name} CONFIG QUIET
+      HINTS "${${_cse_name}_DIR}" "${${_cse_name}_ROOT}" "${${_cse_UP}_ROOT}"
     )
 
-    if(${name}_FOUND)
-      message(STATUS "[CONFIG_STANDARD_EXTERNAL] Found ${name} at ${${name}_DIR}")
+    # Normalize FOUND across case variants
+    if(DEFINED ${_cse_name}_FOUND AND ${_cse_name}_FOUND)
+      set(_cse_found TRUE)
+    elseif(DEFINED ${_cse_UP}_FOUND AND ${_cse_UP}_FOUND)
+      set(_cse_found TRUE)
+    endif()
+
+    if(_cse_found)
+      message(STATUS "[CONFIG_STANDARD_EXTERNAL] Found ${_cse_name} at '${_cse_pkg_dir}'")
+      unset(_cse_found)
+      unset(_cse_pkg_dir)
+      unset(_cse_tried_dirs)
       return()
     endif()
   endif()
 
-  # 4) Not found � decide whether to fail now
+  # ---------------------------
+  # 5) Not found — decide whether to fail now
+  # ---------------------------
   if(_cse_REQUIRED)
+    # Pretty-print diagnostics
+    set(_cse_dir_print "${_cse_dir}")
+    set(_cse_name_dir "${${_cse_name}_DIR}")
+    set(_cse_up_dir   "${${_cse_UP}_DIR}")
+    set(_cse_name_root "${${_cse_name}_ROOT}")
+    set(_cse_up_root   "${${_cse_UP}_ROOT}")
+
     message(FATAL_ERROR
-      "[CONFIG_STANDARD_EXTERNAL] ${name} not found.\n"
-      "  Tried:\n"
-      "    - ${name}_DIR='${${name}_DIR}'\n"
-      "    - ${name}_ROOT='${${name}_ROOT}'\n"
-      "    - directory='${directory}' (searched versioned '${name}-*' under lib/cmake)\n"
-      "  Hint: ensure the external is built/installed and re-run CMake.\n"
+      "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found.\n"
+      "  Looked for '${_cse_cfg}' under:\n"
+      "${_cse_tried_dirs}\n"
+      "  Hints:\n"
+      "    - ${_cse_name}_DIR='${_cse_name_dir}'\n"
+      "    - ${_cse_UP}_DIR='${_cse_up_dir}'\n"
+      "    - ${_cse_name}_ROOT='${_cse_name_root}'\n"
+      "    - ${_cse_UP}_ROOT='${_cse_up_root}'\n"
+      "    - directory='${_cse_dir_print}'\n"
+      "    - CMAKE_PREFIX_PATH='${CMAKE_PREFIX_PATH}'\n"
+      "  Hint: ensure the external is built/installed and re-run CMake."
     )
   else()
     message(STATUS
-      "[CONFIG_STANDARD_EXTERNAL] ${name} not found yet. "
+      "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found yet. "
       "This is expected before externals are built. "
-      "After building ${name}, re-run CMake."
+      "After building ${_cse_name}, re-run CMake."
     )
   endif()
+
+  # Cleanup locals
+  unset(_cse_pkg_dir)
+  unset(_cse_tried_dirs)
 endmacro()
 
-CONFIG_STANDARD_EXTERNAL( Zlib ZlibConfig.cmake ${Zlib_DIR} )
-INCLUDE(${ZLIB_USE_FILE})
+# Zlib: module first (most common), config if present; NO legacy USE_FILE.
+CONFIG_STANDARD_EXTERNAL(ZLIB
+  ROOT ${ZLIB_ROOT} DIR ${ZLIB_DIR}
+  # MODULE default allowed; CONFIG default allowed; not REQUIRED (two-pass)
+)
 
-CONFIG_STANDARD_EXTERNAL( SQLite SQLiteConfig.cmake ${SQLite_DIR} )
-INCLUDE(${SQLITE_USE_FILE})
+CONFIG_STANDARD_EXTERNAL(SQLite
+  DIR ${SQLite_DIR} CONFIG_FILE SQLiteConfig.cmake
+)
 
-CONFIG_STANDARD_EXTERNAL( Teem TeemConfig.cmake ${Teem_DIR} )
-INCLUDE(${Teem_USE_FILE})
+CONFIG_STANDARD_EXTERNAL(Teem
+  DIR ${Teem_DIR} CONFIG_FILE TeemConfig.cmake
+)
 
-CONFIG_STANDARD_EXTERNAL( Freetype FreetypeConfig.cmake ${Freetype_DIR} )
-INCLUDE(${FREETYPE_USE_FILE})
+CONFIG_STANDARD_EXTERNAL(Freetype
+  DIR ${Freetype_DIR} CONFIG_FILE FreetypeConfig.cmake
+)
 
-CONFIG_STANDARD_EXTERNAL( Cleaver2 Cleaver2Config.cmake ${CLEAVER2_DIR} )
-INCLUDE(${CLEAVER2_USE_FILE})
+CONFIG_STANDARD_EXTERNAL(Cleaver2
+  DIR ${CLEAVER2_DIR} CONFIG_FILE Cleaver2Config.cmake
+)
 
-IF(BUILD_WITH_PYTHON)
-  CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
-  INCLUDE(${SCI_PYTHON_USE_FILE})
-ENDIF()
+if(BUILD_WITH_PYTHON)
+  # Python packaging varies by version (Python3 vs Python). If you ship a config, specify CONFIG_ONLY.
+  CONFIG_STANDARD_EXTERNAL(Python
+    DIR ${Python_DIR} CONFIG_FILE PythonConfig.cmake
+  )
+endif()
 
-CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${SCI_BOOST_PREFIX} REQUIRED)
-INCLUDE(${SCI_BOOST_USE_FILE})
+CONFIG_STANDARD_EXTERNAL(Boost
+  ROOT ${Boost_DIR}
+  CONFIG_ONLY           # You likely rely on BoostConfig.cmake in your superbuild
+  REQUIRED
+)
 
-CONFIG_STANDARD_EXTERNAL( Tny TnyConfig.cmake ${TNY_DIR} )
-INCLUDE(${TNY_USE_FILE})
+CONFIG_STANDARD_EXTERNAL(Tny
+  DIR ${TNY_DIR} CONFIG_FILE TnyConfig.cmake
+)
 
-CONFIG_STANDARD_EXTERNAL( LodePng LodePngConfig.cmake ${LODEPNG_DIR} )
-INCLUDE(${LODEPNG_USE_FILE})
+CONFIG_STANDARD_EXTERNAL(LodePng
+  DIR ${LODEPNG_DIR} CONFIG_FILE LodePngConfig.cmake
+)
 
-IF(WITH_TETGEN)
-  CONFIG_STANDARD_EXTERNAL( Tetgen TetgenConfig.cmake ${Tetgen_DIR} )
-  INCLUDE(${TETGEN_USE_FILE})
-ENDIF()
+if(WITH_TETGEN)
+  CONFIG_STANDARD_EXTERNAL(Tetgen
+    DIR ${Tetgen_DIR} CONFIG_FILE TetgenConfig.cmake
+  )
+endif()
 
-IF(WITH_OSPRAY)
-  set(ospray_DIR ${Ospray_External_Dir}/install/ospray/lib/cmake/ospray-2.0.1)
-  find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
-ENDIF()
+if(WIN32)
+  CONFIG_STANDARD_EXTERNAL(GLEW
+    DIR ${GLEW_DIR} CONFIG_FILE GlewConfig.cmake
+  )
+endif()
 
-IF(WIN32)
-  CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
-  INCLUDE(${GLEW_USE_FILE})
-ENDIF()
-
-IF(NOT BUILD_HEADLESS)
-  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
-  INCLUDE(${QWT_USE_FILE})
-ENDIF()
+if(NOT BUILD_HEADLESS)
+  CONFIG_STANDARD_EXTERNAL(Qwt
+    DIR ${QWT_DIR} CONFIG_FILE QwtConfig.cmake
+  )
+endif()
 
 ########################################################################
 # Custom compiler flags and definitions

@@ -536,7 +536,18 @@ list(APPEND SCIRUN_CACHE_ARGS
   "-DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include"
   # Optional preference (keeps things deterministic if both static & shared exist):
   "-DZLIB_USE_STATIC_LIBS:BOOL=ON"
+  "-DBoost_DIR:PATH=${Boost_DIR}"                 # Direct path to BoostConfig.cmake directory
+  "-DBOOST_ROOT:PATH=${SCI_BOOST_PREFIX}"         # Optional: some tooling still honors BOOST_ROOT
+  "-DBoost_ROOT:PATH=${SCI_BOOST_PREFIX}"         # Newer CMake convention
+  "-DSCI_BOOST_PREFIX:PATH=${SCI_BOOST_PREFIX}" # Custom variable for SCIRun code"
+  "-DCMAKE_PREFIX_PATH:PATH=${SCI_BOOST_PREFIX}"  # Helps both config and module fallbacks
+  "-DBoost_NO_SYSTEM_PATHS:BOOL=ON"               # Avoid leaking to system Boost
 )
+
+message(STATUS "Superbuild passing to SCIRun:")
+foreach(arg IN LISTS SCIRUN_CACHE_ARGS)
+  message(STATUS "  ${arg}")
+endforeach()
 
 ExternalProject_Add( SCIRun_external
   DEPENDS ${SCIRun_DEPENDENCIES}
@@ -544,7 +555,7 @@ ExternalProject_Add( SCIRun_external
   SOURCE_DIR ${SCIRUN_SOURCE_DIR}
   BINARY_DIR ${SCIRUN_BINARY_DIR}
   CMAKE_CACHE_ARGS ${SCIRUN_CACHE_ARGS}
-  DEPENDS Zlib_external
+  DEPENDS Zlib_external Boost_external
   INSTALL_COMMAND ""
 )
 
