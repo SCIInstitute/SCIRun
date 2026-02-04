@@ -223,6 +223,13 @@ endif()
 # --- Keyword-based CONFIG_STANDARD_EXTERNAL macro ---
 include(CMakeParseArguments)
 
+# Initialize global summary storage once (safe to include multiple times)
+get_property(_sum_init GLOBAL PROPERTY SCIRUN_CONFIG_STD_SUMMARY SET)
+if(NOT _sum_init)
+  set_property(GLOBAL PROPERTY SCIRUN_CONFIG_STD_SUMMARY "")
+endif()
+unset(_sum_init)
+
 # CONFIG_STANDARD_EXTERNAL(name [DIR <path>] [ROOT <prefix>] [CFG <file>] [CFGS <file>...]
 #                          [CONFIG_ONLY] [REQUIRED] [QUIET] [VERBOSE])
 #
@@ -232,7 +239,7 @@ include(CMakeParseArguments)
 # - CFG:  Primary config filename to look for (e.g., ZLIBConfig.cmake).
 # - CFGS: Alternative config filenames to try if CFG not present (case variants).
 # - CONFIG_ONLY: Prefer config packages (sets CMAKE_FIND_PACKAGE_PREFER_CONFIG ON during the call).
-# - REQUIRED: Fail configure if not found.
+# - REQUIRED: Fail configure if not found (but optionally gated when in superbuild mode).
 # - QUIET: Less chatter.
 # - VERBOSE: Print every probed path when not found.
 #
@@ -243,7 +250,7 @@ macro(CONFIG_STANDARD_EXTERNAL name)
   set(_cse_bool REQUIRED CONFIG_ONLY QUIET VERBOSE)
   cmake_parse_arguments(_CSE "${_cse_bool}" "" "${_cse_one};${_cse_multi}" ${ARGN})
 
-  # Case variants
+  # Derive case variants
   set(_cse_name "${name}")
   string(TOUPPER "${_cse_name}" _cse_UP)
   string(TOLOWER "${_cse_name}" _cse_LOW)
@@ -274,16 +281,18 @@ macro(CONFIG_STANDARD_EXTERNAL name)
   unset(_cse_pkg_dir)
   set(_cse_tried_dirs "")
 
-  # Helpers
-  function(_cse_found_in_dir dir_out)
-    foreach(_cfg IN LISTS _cse_cfgs)
-      if(EXISTS "${dir_out}/${_cfg}")
-        set(_cse_pkg_dir "${dir_out}" PARENT_SCOPE)
-        return()
-      endif()
-    endforeach()
-  endfunction()
+  # Detect superbuild mode heuristically if not already set by the project
+  if(NOT DEFINED SCIRUN_SUPERBUILD_MODE)
+    string(FIND "${CMAKE_PREFIX_PATH}" "Externals/Install" _cse_sb_idx)
+    if(_cse_sb_idx GREATER -1)
+      set(SCIRUN_SUPERBUILD_MODE ON)
+    else()
+      set(SCIRUN_SUPERBUILD_MODE OFF)
+    endif()
+    unset(_cse_sb_idx)
+  endif()
 
+  # Helpers
   macro(_cse_mark _dir)
     if(NOT _dir)
       # skip
@@ -308,7 +317,7 @@ macro(CONFIG_STANDARD_EXTERNAL name)
     if(NOT _prefix)
       return()
     endif()
-  
+
     # Common locations (with lib64, cmake/CMake, share)
     set(_cse_candidate_dirs
       "${_prefix}/lib/cmake/${_cse_name}"
@@ -324,7 +333,7 @@ macro(CONFIG_STANDARD_EXTERNAL name)
       "${_prefix}/share/${_cse_name}"
       "${_prefix}/share/${_cse_UP}"
     )
-  
+
     # Versioned siblings under lib/cmake and lib64/cmake
     foreach(_base IN ITEMS
       "${_prefix}/lib/cmake/${_cse_name}"
@@ -339,7 +348,7 @@ macro(CONFIG_STANDARD_EXTERNAL name)
           return()
         endif()
       endif()
-  
+
       file(GLOB _sib "${_base}-*")
       foreach(_cand IN LISTS _sib)
         _cse_mark("${_cand}")
@@ -349,7 +358,7 @@ macro(CONFIG_STANDARD_EXTERNAL name)
         endif()
       endforeach()
     endforeach()
-  
+
     foreach(_cand IN LISTS _cse_candidate_dirs)
       _cse_mark("${_cand}")
       if(DEFINED _cse_pkg_dir)
@@ -389,7 +398,7 @@ macro(CONFIG_STANDARD_EXTERNAL name)
   # 2) Interpret DIR as exact config dir, then as prefix
   if(NOT DEFINED _cse_pkg_dir AND _cse_dir)
     _cse_mark("${_cse_dir}")
-  
+
     if(NOT DEFINED _cse_pkg_dir)
       if("${_cse_dir}" MATCHES "/lib64?/cmake/${_cse_name}$"
          OR "${_cse_dir}" MATCHES "/lib64?/cmake/${_cse_UP}$")
@@ -402,7 +411,7 @@ macro(CONFIG_STANDARD_EXTERNAL name)
         endforeach()
       endif()
     endif()
-  
+
     if(NOT DEFINED _cse_pkg_dir)
       _cse_probe_prefix("${_cse_dir}")
     endif()
@@ -424,78 +433,129 @@ macro(CONFIG_STANDARD_EXTERNAL name)
     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
   endif()
 
-  # 4) If found, cache *_DIR and call find_package(CONFIG)
+  # 4) Always attempt find_package() (even if _cse_pkg_dir wasn't detected).
+  #    Assemble HINTS list from detected dir + all available hints.
+  set(_cse_hints "")
   if(DEFINED _cse_pkg_dir)
+    list(APPEND _cse_hints "${_cse_pkg_dir}")
+    # Cache *_DIR to stabilize subsequent configures
     set(${_cse_name}_DIR "${_cse_pkg_dir}" CACHE PATH "${_cse_name} package directory" FORCE)
     set(${_cse_UP}_DIR   "${_cse_pkg_dir}" CACHE PATH "${_cse_name} package directory (upper)" FORCE)
-
     if(NOT _CSE_QUIET)
       list(JOIN _cse_cfgs ", " _cfgs_join)
       message(STATUS "[CONFIG_STANDARD_EXTERNAL] ${_cse_name}: using '${_cfgs_join}' in '${_cse_pkg_dir}'")
     endif()
-
-    find_package(${_cse_name} CONFIG QUIET
-      HINTS "${${_cse_name}_DIR}" "${${_cse_name}_ROOT}" "${${_cse_UP}_ROOT}" "${_cse_root}"
-    )
-
-    if(DEFINED ${_cse_name}_FOUND AND ${_cse_name}_FOUND)
-      set(_cse_found TRUE)
-    elseif(DEFINED ${_cse_UP}_FOUND AND ${_cse_UP}_FOUND)
-      set(_cse_found TRUE)
-    endif()
-
-    if(_cse_found)
-      if(NOT _CSE_QUIET)
-        message(STATUS "[CONFIG_STANDARD_EXTERNAL] Found ${_cse_name} at '${_cse_pkg_dir}'")
-      endif()
-      list(APPEND _CONFIG_STANDARD_SUMMARY "  ${_cse_name}: FOUND at '${_cse_pkg_dir}'")
-      set(_CONFIG_STANDARD_SUMMARY "${_CONFIG_STANDARD_SUMMARY}" PARENT_SCOPE)
-      unset(_cse_found)
-      unset(_cse_pkg_dir)
-      unset(_cse_tried_dirs)
-      if(_CSE_CONFIG_ONLY)
-        set(CMAKE_FIND_PACKAGE_PREFER_CONFIG "${_cse_prev_pref}")
-        unset(_cse_prev_pref)
-      endif()
-      return()
-    endif()
+  endif()
+  if(_cse_dir)
+    list(APPEND _cse_hints "${_cse_dir}")
+  endif()
+  if(DEFINED ${_cse_name}_DIR)
+    list(APPEND _cse_hints "${${_cse_name}_DIR}")
+  endif()
+  if(DEFINED ${_cse_UP}_DIR)
+    list(APPEND _cse_hints "${${_cse_UP}_DIR}")
+  endif()
+  if(DEFINED ${_cse_name}_ROOT)
+    list(APPEND _cse_hints "${${_cse_name}_ROOT}")
+  endif()
+  if(DEFINED ${_cse_UP}_ROOT)
+    list(APPEND _cse_hints "${${_cse_UP}_ROOT}")
+  endif()
+  if(_cse_root)
+    list(APPEND _cse_hints "${_cse_root}")
+  endif()
+  foreach(_cpp IN LISTS CMAKE_PREFIX_PATH)
+    list(APPEND _cse_hints "${_cpp}")
+  endforeach()
+  if(_cse_hints)
+    list(REMOVE_DUPLICATES _cse_hints)
   endif()
 
-  # 5) Not found
-  if(_CSE_REQUIRED)
-    if(NOT _CSE_QUIET)
-      message(STATUS "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found. Probed:\n${_cse_tried_dirs}")
-    endif()
-    message(FATAL_ERROR
-      "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found.\n"
-      "  Tried locations for (${_cse_cfgs}):\n${_cse_tried_dirs}\n"
-      "  Hints:\n"
-      "    - ${_cse_name}_DIR='${${_cse_name}_DIR}'\n"
-      "    - ${_cse_UP}_DIR='${${_cse_UP}_DIR}'\n"
-      "    - ${_cse_name}_ROOT='${${_cse_name}_ROOT}'\n"
-      "    - ${_cse_UP}_ROOT='${${_cse_UP}_ROOT}'\n"
-      "    - DIR='${_cse_dir}'\n"
-      "    - ROOT='${_cse_root}'\n"
-      "    - CMAKE_PREFIX_PATH='${CMAKE_PREFIX_PATH}'\n"
-      "  Hint: ensure the external is built/installed and re-run CMake."
-    )
+  # Call find_package() in CONFIG mode quietly and let defaults work (no NO_DEFAULT_PATH).
+  if(_cse_hints)
+    find_package(${_cse_name} CONFIG QUIET HINTS ${_cse_hints})
   else()
-    if(_CSE_VERBOSE AND NOT _CSE_QUIET)
-      message(STATUS "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found. Probed:\n${_cse_tried_dirs}")
-    elseif(NOT _CSE_QUIET)
-      message(STATUS "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found yet. This can be expected before externals are built.")
-    endif()
-    list(APPEND _CONFIG_STANDARD_SUMMARY "  ${_cse_name}: NOT FOUND")
-    set(_CONFIG_STANDARD_SUMMARY "${_CONFIG_STANDARD_SUMMARY}" PARENT_SCOPE)
+    find_package(${_cse_name} CONFIG QUIET)
   endif()
 
+  # Determine FOUND state robustly
+  set(_cse_found FALSE)
+  if(DEFINED ${_cse_name}_FOUND AND ${_cse_name}_FOUND)
+    set(_cse_found TRUE)
+  elseif(DEFINED ${_cse_UP}_FOUND AND ${_cse_UP}_FOUND)
+    set(_cse_found TRUE)
+  else()
+    # Fallback for well-known packages: check imported targets
+    if("${_cse_name}" STREQUAL "Boost")
+      if(TARGET Boost::headers OR TARGET Boost::boost)
+        set(_cse_found TRUE)
+      endif()
+    endif()
+  endif()
+
+  # Update summary (GLOBAL property to avoid parent-scope warnings)
+  get_property(_sum GLOBAL PROPERTY SCIRUN_CONFIG_STD_SUMMARY)
+  if(NOT _sum)
+    set(_sum "")
+  endif()
+
+  if(_cse_found)
+    if(NOT _CSE_QUIET)
+      if(DEFINED _cse_pkg_dir)
+        message(STATUS "[CONFIG_STANDARD_EXTERNAL] Found ${_cse_name} at '${_cse_pkg_dir}'")
+      else()
+        message(STATUS "[CONFIG_STANDARD_EXTERNAL] Found ${_cse_name} (via CMake search paths)")
+      endif()
+    endif()
+    if(DEFINED _cse_pkg_dir)
+      string(APPEND _sum "  ${_cse_name}: FOUND at '${_cse_pkg_dir}'\n")
+    else()
+      string(APPEND _sum "  ${_cse_name}: FOUND\n")
+    endif()
+  else()
+    # Not found → decide whether to fail
+    if(_CSE_REQUIRED AND NOT SCIRUN_SUPERBUILD_MODE)
+      if(NOT _CSE_QUIET)
+        message(STATUS "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found. Probed:\n${_cse_tried_dirs}")
+      endif()
+      set_property(GLOBAL PROPERTY SCIRUN_CONFIG_STD_SUMMARY "${_sum}")
+      # Fatal error for non-superbuild REQUIRED case
+      message(FATAL_ERROR
+        "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found.\n"
+        "  Tried locations for (${_cse_cfgs}):\n${_cse_tried_dirs}\n"
+        "  Hints:\n"
+        "    - ${_cse_name}_DIR='${${_cse_name}_DIR}'\n"
+        "    - ${_cse_UP}_DIR='${${_cse_UP}_DIR}'\n"
+        "    - ${_cse_name}_ROOT='${${_cse_name}_ROOT}'\n"
+        "    - ${_cse_UP}_ROOT='${${_cse_UP}_ROOT}'\n"
+        "    - DIR='${_cse_dir}'\n"
+        "    - ROOT='${_cse_root}'\n"
+        "    - CMAKE_PREFIX_PATH='${CMAKE_PREFIX_PATH}'\n"
+        "  Hint: ensure the external is built/installed and re-run CMake."
+      )
+    else()
+      if(_CSE_VERBOSE AND NOT _CSE_QUIET)
+        message(STATUS "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found. Probed:\n${_cse_tried_dirs}")
+      elseif(NOT _CSE_QUIET)
+        message(STATUS "[CONFIG_STANDARD_EXTERNAL] ${_cse_name} not found yet. This can be expected before externals are built.")
+      endif()
+      string(APPEND _sum "  ${_cse_name}: NOT FOUND\n")
+    endif()
+  endif()
+
+  set_property(GLOBAL PROPERTY SCIRUN_CONFIG_STD_SUMMARY "${_sum}")
+  unset(_sum)
+
+  # Restore prefer-config policy if we changed it
   if(_CSE_CONFIG_ONLY)
     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG "${_cse_prev_pref}")
     unset(_cse_prev_pref)
   endif()
 
+  # Cleanup
   unset(_cse_pkg_dir)
   unset(_cse_tried_dirs)
+  unset(_cse_hints)
 endmacro()
 
 # --- Calls for each external ---
