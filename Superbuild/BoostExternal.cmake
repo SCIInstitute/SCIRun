@@ -60,6 +60,7 @@ set(_BOOST_LIBS_SAFE
   thread
   timer
   type_erasure
+  utility
   wave
 )
 
@@ -107,6 +108,7 @@ ExternalProject_Add(Boost_external
       -DBUILD_TESTING=OFF
       # Install headers + requested libs; header-only libs are always usable
       -DBOOST_INSTALL_HEADERS=ON
+      -DBOOST_INSTALL_LAYOUT=system
       # IMPORTANT: pass the list as a single argument
       -DBOOST_INCLUDE_LIBRARIES:STRING=${_BOOST_LIBS}
       # Propagate toolchain/flags if you define them in the parent
