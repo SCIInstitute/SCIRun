@@ -871,7 +871,16 @@ ENDIF()
 
 SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
-INCLUDE_DIRECTORIES(
+# Helper to pretty-print a list variable line by line
+function(print_list name)
+  message(STATUS "${name}:")
+  foreach(item IN LISTS ${name})
+    message(STATUS "  - ${item}")
+  endforeach()
+endfunction()
+
+# Collect the include dirs in one list first (mirrors your INCLUDE_DIRECTORIES block)
+set(_SCIRUN_INCLUDE_DIRS
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
   ${SCIRun_SOURCE_DIR}/include
@@ -885,7 +894,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_BINARY_DIR}/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
-  ${GLM_DIR}
+  ${GLM_INCLUDE_DIR}
   ${SPDLOG_DIR}/include
   ${Eigen_DIR}
   ${SCI_TNY_INCLUDE}
@@ -893,6 +902,35 @@ INCLUDE_DIRECTORIES(
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
+
+# Print them before applying
+print_list("_SCIRUN_INCLUDE_DIRS")
+
+# Then actually apply them
+include_directories(${_SCIRUN_INCLUDE_DIRS})
+
+#INCLUDE_DIRECTORIES(
+#  ${CMAKE_CURRENT_BINARY_DIR}
+#  ${SCIRun_SOURCE_DIR}/
+#  ${SCIRun_SOURCE_DIR}/include
+#  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
+#  ${SCIRun_SOURCE_DIR}/Externals/spire/
+#  ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googletest/include
+#  ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googlemock/include
+#  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
+#  ${SCIRun_SOURCE_DIR}/Externals/
+#  ${SCIRun_BINARY_DIR}/
+#  ${SCIRun_BINARY_DIR}/include
+#  ${SCI_TEEM_INCLUDE}
+#  ${SCI_ZLIB_INCLUDE}
+#  ${GLM_INCLUDE_DIR}
+#  ${SPDLOG_DIR}/include
+#  ${Eigen_DIR}
+#  ${SCI_TNY_INCLUDE}
+#  ${SCI_LODEPNG_INCLUDE}
+#  ${SCI_QWT_INCLUDE}
+#  ${SCI_CLEAVER2_INCLUDE}
+#)
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 

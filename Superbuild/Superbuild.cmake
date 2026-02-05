@@ -514,9 +514,51 @@ if(NOT BUILD_HEADLESS)
   endif()
 endif()
 
-###########################################
-# Explicit Zlib/Boost hints (good to keep)
-###########################################
+# ----------------- Helpers to export include/lib/config dirs -----------------
+function(_sb_export_inc_lib pkg target)
+  # Export include/lib dirs for an ExternalProject target, even if not yet built.
+  ExternalProject_Get_Property(${target} INSTALL_DIR)
+  if(NOT INSTALL_DIR)
+    message(FATAL_ERROR "INSTALL_DIR not set for ${target}.")
+  endif()
+
+  # Standard install subdirs
+  set(_inc "${INSTALL_DIR}/include")
+  if(EXISTS "${INSTALL_DIR}/lib64")
+    set(_lib "${INSTALL_DIR}/lib64")
+  else()
+    set(_lib "${INSTALL_DIR}/lib")
+  endif()
+
+  # Unconditionally export include/lib cache args so SCIRun gets them at configure time
+  set(${pkg}_INCLUDE_DIR "${_inc}" CACHE PATH "${pkg} include dir" FORCE)
+  list(APPEND SCIRUN_CACHE_ARGS "-D${pkg}_INCLUDE_DIR:PATH=${${pkg}_INCLUDE_DIR}")
+
+  # Only add lib dir if it exists (some are header-only)
+  if(EXISTS "${_lib}")
+    set(${pkg}_LIB_DIR "${_lib}" CACHE PATH "${pkg} lib dir" FORCE)
+    list(APPEND SCIRUN_CACHE_ARGS "-D${pkg}_LIB_DIR:PATH=${${pkg}_LIB_DIR}")
+  endif()
+
+  set(SCIRUN_CACHE_ARGS "${SCIRUN_CACHE_ARGS}" PARENT_SCOPE)
+  message(STATUS "[superbuild] ${pkg}: include=${_inc}  lib=${_lib}")
+endfunction()
+
+function(_sb_export_config pkg target config_subdir)
+  # Export a *Config.cmake directory for config-package find_package
+  ExternalProject_Get_Property(${target} INSTALL_DIR)
+  if(NOT INSTALL_DIR)
+    message(FATAL_ERROR "INSTALL_DIR not set for ${target}.")
+  endif()
+  set(_cfg "${INSTALL_DIR}/${config_subdir}")
+  # Cache even if it might not exist yet; it will by the time SCIRun compiles
+  set(${pkg}_DIR "${_cfg}" CACHE PATH "${pkg}Config.cmake dir" FORCE)
+  list(APPEND SCIRUN_CACHE_ARGS "-D${pkg}_DIR:PATH=${${pkg}_DIR}")
+  set(SCIRUN_CACHE_ARGS "${SCIRUN_CACHE_ARGS}" PARENT_SCOPE)
+  message(STATUS "[superbuild] ${pkg}_DIR=${_cfg}")
+endfunction()
+
+# ----------------- Zlib + Boost -----------------
 ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
 set(ZLIB_INSTALL_DIR "${INSTALL_DIR}")
 
@@ -524,19 +566,74 @@ list(APPEND SCIRUN_CACHE_ARGS
   "-DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}"
   "-DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include"
   "-DZLIB_USE_STATIC_LIBS:BOOL=ON"
-  "-DBoost_DIR:PATH=${Boost_DIR}"                 # points to folder containing BoostConfig.cmake
+  "-DBoost_DIR:PATH=${Boost_DIR}"                 # folder with BoostConfig.cmake
   "-DBoost_ROOT:PATH=${SCI_BOOST_PREFIX}"
   "-DBOOST_ROOT:PATH=${SCI_BOOST_PREFIX}"
   "-DSCI_BOOST_PREFIX:PATH=${SCI_BOOST_PREFIX}"
   "-DBoost_NO_SYSTEM_PATHS:BOOL=ON"
 )
 
-# If Zlib_DIR is known from _export_config_dir, pass it (helps config-package resolution)
+# If Zlib config dir is known, pass it as well (improves config-package finding)
 if(DEFINED Zlib_DIR)
   list(APPEND SCIRUN_CACHE_ARGS "-DZLIB_DIR:PATH=${Zlib_DIR}")
+else()
+  # Try to export it based on typical layout
+  _sb_export_config(Zlib Zlib_external "lib/cmake/zlib")
 endif()
 
-# Compose ONE clean CMAKE_PREFIX_PATH for SCIRun
+# ----------------- Export include/lib/config dirs for other externals -----------------
+# GLM (header-only)
+_sb_export_inc_lib(GLM GLM_external)               # sets GLM_INCLUDE_DIR
+
+# Eigen (header-only; some builds also export a config)
+_sb_export_inc_lib(Eigen Eigen_external)
+# If your Eigen install has a config dir, uncomment the next line:
+# _sb_export_config(Eigen3 Eigen_external "share/eigen3/cmake")
+
+# spdlog
+_sb_export_inc_lib(SpdLog SpdLog_external)
+_sb_export_config(spdlog SpdLog_external "lib/cmake/spdlog")
+
+# GLEW
+_sb_export_inc_lib(GLEW Glew_external)
+# Some generators put a config under lib/cmake; if your Glew has config:
+# _sb_export_config(GLEW Glew_external "lib/cmake/glew")
+
+# Freetype
+_sb_export_inc_lib(Freetype Freetype_external)
+_sb_export_config(Freetype Freetype_external "lib/cmake/freetype")
+
+# SQLite (optional; used by some builds)
+_sb_export_inc_lib(SQLite SQLite_external)
+
+# Qwt
+_sb_export_inc_lib(Qwt Qwt_external)
+# If Qwt exports a config, add:
+# _sb_export_config(Qwt Qwt_external "lib/cmake/qwt")
+
+# Python (using the one you already pass via PYTHON_EXECUTABLE)
+_sb_export_inc_lib(Python Python_external)
+# If there is a config dir, add it similarly.
+
+# Teem
+_sb_export_inc_lib(Teem Teem_external)
+_sb_export_config(Teem Teem_external "lib/cmake/Teem")
+
+# Tny (header-only/small lib)
+_sb_export_inc_lib(TNY Tny_external)
+
+# LodePNG (header-only/small lib)
+_sb_export_inc_lib(LODEPNG LodePng_external)
+
+# Cleaver2
+_sb_export_inc_lib(CLEAVER2 Cleaver2_external)
+# If Cleaver2 exports a config:
+# _sb_export_config(Cleaver2 Cleaver2_external "lib/cmake/Cleaver2")
+
+# Tetgen
+_sb_export_inc_lib(TETGEN Tetgen_external)
+
+# ----------------- Re-compose the single CMAKE_PREFIX_PATH -----------------
 get_property(_acc GLOBAL PROPERTY SCIRUN_PREFIXES)
 set(_joined_prefixes "")
 if(_acc)
@@ -544,7 +641,7 @@ if(_acc)
   string(JOIN ";" _joined_prefixes ${_acc})
 endif()
 
-# ESCAPE the semicolons so the whole value stays ONE list element
+# escape semicolons so the list stays as a single CMake cache entry
 set(_joined_prefixes_escaped "${_joined_prefixes}")
 string(REPLACE ";" "\\;" _joined_prefixes_escaped "${_joined_prefixes}")
 
@@ -557,19 +654,17 @@ foreach(arg IN LISTS SCIRUN_CACHE_ARGS)
 endforeach()
 set(SCIRUN_CACHE_ARGS "${_filtered}")
 
-# Append exactly ONE CMAKE_PREFIX_PATH argument (escaped)
+# Append exactly one CMAKE_PREFIX_PATH argument
 list(APPEND SCIRUN_CACHE_ARGS "-DCMAKE_PREFIX_PATH:PATH=${_joined_prefixes_escaped}")
 
-# Log what we will pass
+# ----------------- Log the final arguments passed to SCIRun -----------------
 message(STATUS "[superbuild] Final CMAKE_PREFIX_PATH for SCIRun: ${_joined_prefixes}")
 message(STATUS "Superbuild passing to SCIRun:")
 foreach(arg IN LISTS SCIRUN_CACHE_ARGS)
   message(STATUS "  ${arg}")
 endforeach()
 
-###########################################
-# ExternalProject for SCIRun
-###########################################
+# ----------------- SCIRun ExternalProject remains the same -----------------
 ExternalProject_Add(SCIRun_external
   DEPENDS ${SCIRun_DEPENDENCIES}
   DOWNLOAD_COMMAND ""
@@ -579,7 +674,7 @@ ExternalProject_Add(SCIRun_external
   INSTALL_COMMAND ""
 )
 
-# Optional: ensure Zlib artifacts exist before SCIRun config (keeps order tidy)
+# Optional: keep order tidy for artifacts needed during SCIRun configure
 ExternalProject_Add_Step(SCIRun_external wait_for_zlib
   COMMAND ${CMAKE_COMMAND} -E echo "Waiting for zlib artifacts before SCIRun configure..."
   DEPENDEES download
