@@ -73,15 +73,12 @@ ExternalProject_Add(SQLite_external
 
   CMAKE_ARGS ${_cmake_args}
 
-  # Skip 'install' to keep the fast redirect flow for libs
-  INSTALL_COMMAND ""
-
-  # After build, ensure headers are available in <INSTALL_DIR>/include
-  # (sqlite3.h is typically at the source root; sqlite3ext.h may also be present)
-  STEP_TARGETS copy_headers
-  COMMAND ${CMAKE_COMMAND} -E make_directory "<INSTALL_DIR>/include"
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_sqlite_src}/sqlite3.h"     "<INSTALL_DIR>/include/sqlite3.h"
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_sqlite_src}/sqlite3ext.h"  "<INSTALL_DIR>/include/sqlite3ext.h"
+  # Let our script act as the "install" step
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND}
+      -Dsrc=<SOURCE_DIR>         # this is Externals/Source/SQLite_external
+      -Ddst=${_sqlite_inst}/include
+      -P ${CMAKE_CURRENT_LIST_DIR}/SQLiteInstall.cmake
 
   LOG_CONFIGURE 1
   LOG_BUILD     1

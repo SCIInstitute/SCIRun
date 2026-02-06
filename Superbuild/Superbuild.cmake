@@ -242,6 +242,17 @@ endif()
 # Keep Boost last so we can compute Boost_DIR & legacy hints afterward
 ADD_EXTERNAL(${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external)
 
+# Ensure header copy steps run before SCIRun config/build
+if(TARGET Glew_external-copy_headers)
+  add_dependencies(SCIRun_external Glew_external-copy_headers)
+endif()
+if(TARGET Tny_external-copy_headers)
+  add_dependencies(SCIRun_external Tny_external-copy_headers)
+endif()
+if(TARGET SQLite_external-copy_headers)
+  add_dependencies(SCIRun_external SQLite_external-copy_headers)
+endif()
+
 # =========================
 # Exporters (config dir / include & lib dir)
 # =========================

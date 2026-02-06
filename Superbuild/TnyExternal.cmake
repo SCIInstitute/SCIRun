@@ -37,11 +37,12 @@ ExternalProject_Add(Tny_external
   CONFIGURE_COMMAND ""
   BUILD_COMMAND     ""
 
-  # Copy only the headers into a conventional layout:
-  #   <INSTALL_DIR>/include/tny/tny.hpp
+  # Run the script to create the dir and copy headers
   INSTALL_COMMAND
-    ${CMAKE_COMMAND} -E make_directory "${_tny_inst}/include/tny" &&
-    ${CMAKE_COMMAND} -E copy_directory "<SOURCE_DIR>/tny/src/tny" "${_tny_inst}/include/tny"
+    ${CMAKE_COMMAND}
+      -Dsrc=<SOURCE_DIR>/tny/src/tny
+      -Ddst=${_tny_inst}/include/tny
+      -P ${CMAKE_CURRENT_LIST_DIR}/TnyInstall.cmake
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
