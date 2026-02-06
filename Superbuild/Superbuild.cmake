@@ -100,10 +100,22 @@ set(QT5_MIN_VERSION "5.15.2")
 set(QT6_MIN_VERSION "6.3.0")
 set(Qt_PATH "" CACHE PATH "Qt install prefix (e.g. C:/Qt/6.10.1/msvc2022_64)")
 
+if (WIN32 AND NOT BUILD_HEADLESS)
+  if (NOT Qt_PATH OR NOT IS_DIRECTORY "${Qt_PATH}")
+    set(_qt_default "C:/Qt/6.10.1/msvc2022_64")
+    if (IS_DIRECTORY "${_qt_default}")
+      message(STATUS "Qt_PATH not set or invalid — defaulting to ${_qt_default}")
+      set(Qt_PATH "${_qt_default}" CACHE PATH "Qt install prefix" FORCE)
+    endif()
+  endif()
+endif()
+
+# Validate
 if (NOT BUILD_HEADLESS)
   if (NOT IS_DIRECTORY "${Qt_PATH}")
     message(FATAL_ERROR
-      "Qt_PATH invalid. Point it to the Qt install prefix with lib/, bin/, and lib/cmake/Qt[56].\n"
+      "Qt_PATH invalid or not set.\n"
+      "Point it to the Qt install prefix with lib/, bin/, and lib/cmake/Qt[56].\n"
       "Example: C:/Qt/6.10.1/msvc2022_64")
   endif()
 
