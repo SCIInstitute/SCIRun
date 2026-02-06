@@ -871,15 +871,55 @@ ENDIF()
 
 SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
-# Helper to pretty-print a list variable line by line
-function(print_list name)
-  message(STATUS "${name}:")
-  foreach(item IN LISTS ${name})
-    message(STATUS "  - ${item}")
-  endforeach()
+# ---------- Diagnostics + optional auto-derive from CMAKE_PREFIX_PATH ----------
+# Helper to derive an include dir from CMAKE_PREFIX_PATH if the var is not set
+function(_derive_include_dir _outvar _header_glob)
+  if(NOT ${_outvar})
+    set(_candidates)
+    foreach(_p IN LISTS CMAKE_PREFIX_PATH)
+      list(APPEND _candidates "${_p}/include")
+    endforeach()
+    find_path(_found_dir
+      NAMES ${_header_glob}
+      PATHS ${_candidates}
+      NO_DEFAULT_PATH
+    )
+    if(_found_dir)
+      set(${_outvar} "${_found_dir}" PARENT_SCOPE)
+    endif()
+  endif()
 endfunction()
 
-# Collect the include dirs in one list first (mirrors your INCLUDE_DIRECTORIES block)
+# Try to fill any missing include dir variables using the expected headers:
+_derive_include_dir(GLEW_INCLUDE_DIR     "GL/glew.h")
+_derive_include_dir(LODEPNG_INCLUDE_DIR  "lodepng/lodepng.h")
+_derive_include_dir(SQLite3_INCLUDE_DIR  "sqlite3.h")
+_derive_include_dir(TNY_INCLUDE_DIR      "tny/tny.hpp")
+# Boost_INCLUDE_DIR is already passed; if needed:
+# _derive_include_dir(Boost_INCLUDE_DIR "boost/array.hpp")
+
+# Print diagnostics so you can see them in the configure log
+message(STATUS "Boost_INCLUDE_DIR='${Boost_INCLUDE_DIR}'")
+message(STATUS "GLEW_INCLUDE_DIR='${GLEW_INCLUDE_DIR}'")
+message(STATUS "LODEPNG_INCLUDE_DIR='${LODEPNG_INCLUDE_DIR}'")
+message(STATUS "SQLite3_INCLUDE_DIR='${SQLite3_INCLUDE_DIR}'")
+message(STATUS "TNY_INCLUDE_DIR='${TNY_INCLUDE_DIR}'")
+
+# Quick existence checks (helpful during iteration)
+if(GLEW_INCLUDE_DIR AND EXISTS "${GLEW_INCLUDE_DIR}/GL/glew.h")
+  message(STATUS "GLEW header OK: ${GLEW_INCLUDE_DIR}/GL/glew.h")
+endif()
+if(LODEPNG_INCLUDE_DIR AND EXISTS "${LODEPNG_INCLUDE_DIR}/lodepng/lodepng.h")
+  message(STATUS "LodePNG header OK: ${LODEPNG_INCLUDE_DIR}/lodepng/lodepng.h")
+endif()
+if(SQLite3_INCLUDE_DIR AND EXISTS "${SQLite3_INCLUDE_DIR}/sqlite3.h")
+  message(STATUS "SQLite3 header OK: ${SQLite3_INCLUDE_DIR}/sqlite3.h")
+endif()
+if(TNY_INCLUDE_DIR AND EXISTS "${TNY_INCLUDE_DIR}/tny/tny.hpp")
+  message(STATUS "TNY header OK: ${TNY_INCLUDE_DIR}/tny/tny.hpp")
+endif()
+
+# ---------- Build include list with guards to avoid '/include' ----------
 set(_SCIRUN_INCLUDE_DIRS
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
@@ -895,18 +935,44 @@ set(_SCIRUN_INCLUDE_DIRS
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${GLM_INCLUDE_DIR}
-  ${SPDLOG_DIR}/include
-  ${Eigen_DIR}
-  ${SCI_TNY_INCLUDE}
-  ${SCI_LODEPNG_INCLUDE}
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-# Print them before applying
+# Append externals only if the variables are set (prevents stray '/include')
+if(Boost_INCLUDE_DIR)
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
+endif()
+if(GLEW_INCLUDE_DIR)
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${GLEW_INCLUDE_DIR}")
+endif()
+if(LODEPNG_INCLUDE_DIR)
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${LODEPNG_INCLUDE_DIR}")
+endif()
+if(SQLite3_INCLUDE_DIR)
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${SQLite3_INCLUDE_DIR}")
+endif()
+if(TNY_INCLUDE_DIR)
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${TNY_INCLUDE_DIR}")
+endif()
+
+# Optional: SPDLOG and Eigen if present; guard to avoid '/include'
+if(SPDLOG_DIR)
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${SPDLOG_DIR}/include")
+endif()
+if(Eigen_DIR)
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${Eigen_DIR}")
+endif()
+
+# Debug print and apply
+function(print_list name)
+  message(STATUS "${name}:")
+  foreach(item IN LISTS ${name})
+    message(STATUS "  - ${item}")
+  endforeach()
+endfunction()
 print_list("_SCIRUN_INCLUDE_DIRS")
 
-# Then actually apply them
 include_directories(${_SCIRUN_INCLUDE_DIRS})
 
 #INCLUDE_DIRECTORIES(
