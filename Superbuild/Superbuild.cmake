@@ -597,17 +597,20 @@ if(TARGET Boost_external)
   )
 
   # 3) Copy full headers into install/include WITHOUT deleting first
-  ExternalProject_Add_Step(Boost_external install_full_headers
-    COMMAND ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/include/boost
-    COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost <INSTALL_DIR>/include/boost
-    DEPENDEES stage_headers
-    DEPENDERS build
-    BYPRODUCTS "<INSTALL_DIR>/include/boost/array.hpp"
-    COMMENT "Staging full Boost headers into <INSTALL_DIR>/include/boost (no delete)"
-  )
+  if(NOT DEFINED _SB_BOOST_HEADERS_COPY_STEP_DEFINED)
+    ExternalProject_Add_Step(Boost_external stage_boost_headers_copy
+      COMMAND ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/include/boost
+      COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost <INSTALL_DIR>/include/boost
+      DEPENDEES stage_headers
+      DEPENDERS build
+      BYPRODUCTS "<INSTALL_DIR>/include/boost/array.hpp"
+      COMMENT "Staging full Boost headers into <INSTALL_DIR>/include/boost (no delete)"
+    )
+    set(_SB_BOOST_HEADERS_COPY_STEP_DEFINED TRUE)
+  endif()
 
-  # Expose step targets for ordering elsewhere if needed
-  ExternalProject_Add_StepTargets(Boost_external stage_headers install_full_headers)
+  # Expose step targets for ordering elsewhere
+  ExternalProject_Add_StepTargets(Boost_external stage_headers stage_boost_headers_copy)
 
   # Gate SCIRun configure on staged headers
   ExternalProject_Get_Property(Boost_external INSTALL_DIR)
@@ -617,7 +620,7 @@ if(TARGET Boost_external)
       "${INSTALL_DIR}/include/boost/exception/all.hpp"
     DIRS  "${INSTALL_DIR}/include/boost"
   )
-  add_dependencies(SCIRun_external Boost_external-install_full_headers)
+  add_dependencies(SCIRun_external Boost_external-stage_boost_headers_copy)
 endif()
 
 # =========================
