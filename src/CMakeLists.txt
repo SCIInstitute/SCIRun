@@ -55,6 +55,45 @@ message(STATUS "[SCIRun] Qt_PATH='${Qt_PATH}'")
 message(STATUS "[SCIRun] Boost_DIR='${Boost_DIR}' ; Boost_ROOT='${Boost_ROOT}' ; BOOST_ROOT='${BOOST_ROOT}' ; SCI_BOOST_PREFIX='${SCI_BOOST_PREFIX}'")
 message(STATUS "[SCIRun] ZLIB_ROOT='${ZLIB_ROOT}' ; ZLIB_DIR='${ZLIB_DIR}' ; ZLIB_INCLUDE_DIR='${ZLIB_INCLUDE_DIR}'")
 
+# --- Boost (Windows-only: b2-built libs with MSVC auto-link) ---
+# This expects the external Boost builder to have created:
+#   - ${SCI_BOOST_PREFIX}/include/boost/**           (from `b2 headers` copy)
+#   - ${SCI_BOOST_PREFIX}/lib/libboost_*vc143*.lib   (from b2 with --layout=versioned)
+#
+# It keeps auto-linking ON (do NOT define BOOST_ALL_NO_LIB here).
+# It ensures the linker can find the versioned .lib names injected by Boost headers.
+
+if(WIN32)
+  if(DEFINED SCI_BOOST_PREFIX)
+    set(_boost_use "${SCI_BOOST_PREFIX}/UseBoost.cmake")
+    if(EXISTS "${_boost_use}")
+      include("${_boost_use}")  # adds include + lib search dirs, keeps autolink ON
+    else()
+      # Fallback: add include and library search dirs from exported vars
+      if(DEFINED SCI_BOOST_INCLUDE AND IS_DIRECTORY "${SCI_BOOST_INCLUDE}")
+        include_directories(SYSTEM "${SCI_BOOST_INCLUDE}")
+      endif()
+      if(DEFINED SCI_BOOST_LIBRARY_DIR AND IS_DIRECTORY "${SCI_BOOST_LIBRARY_DIR}")
+        # Directory-wide link search path so MSVC finds libboost_*‑vc143‑... .lib files
+        link_directories("${SCI_BOOST_LIBRARY_DIR}")
+      endif()
+    endif()
+
+    # Optional sanity check: warn if no versioned Boost libs were found
+    if(DEFINED SCI_BOOST_LIBRARY_DIR AND IS_DIRECTORY "${SCI_BOOST_LIBRARY_DIR}")
+      file(GLOB _boost_ver_libs "${SCI_BOOST_LIBRARY_DIR}/libboost_*vc*.lib")
+      if(NOT _boost_ver_libs)
+        message(WARNING
+          "[SCIRun] No versioned Boost .lib files detected under '${SCI_BOOST_LIBRARY_DIR}'.\n"
+          "         Ensure your external Boost build used b2 with '--layout=versioned' and staged/installed libs.")
+      endif()
+      unset(_boost_ver_libs)
+    endif()
+  else()
+    message(WARNING "[SCIRun] SCI_BOOST_PREFIX is not defined; Windows auto-link may fail to locate Boost libs.")
+  endif()
+endif()
+
 ###############################################################################
 # Don't allow the user to build in the src directory...
 #
@@ -600,14 +639,19 @@ if(BUILD_WITH_PYTHON)
   )
 endif()
 
-# Boost — REQUIRED, prefer config package
-CONFIG_STANDARD_EXTERNAL(Boost
-  ROOT "${SCI_BOOST_PREFIX}"
-  DIR  "${Boost_DIR}"
-  CFG  "BoostConfig.cmake"
-  CONFIG_ONLY
-  REQUIRED
-)
+# Boost — REQUIRED on non-Windows (prefer config package).
+# On Windows with b2-built Boost, skip CONFIG mode: rely on auto-link + link_directories above.
+if(WIN32)
+  message(STATUS "[SCIRun] Boost: using b2-built libraries with MSVC auto-link (no BoostConfig.cmake). Skipping CONFIG package discovery on Windows.")
+else()
+  CONFIG_STANDARD_EXTERNAL(Boost
+    ROOT "${SCI_BOOST_PREFIX}"
+    DIR  "${Boost_DIR}"
+    CFG  "BoostConfig.cmake"
+    CONFIG_ONLY
+    REQUIRED
+  )
+endif()
 
 # Tiny (Tny)
 CONFIG_STANDARD_EXTERNAL(Tny
