@@ -24,29 +24,33 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-
 # TnyExternal.cmake
-set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
+# Superbuild directories (match your pattern—optional but helps clarity)
+set(_tny_inst "${CMAKE_BINARY_DIR}/Externals/Install/Tny_external")
 
 ExternalProject_Add(Tny_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Tny.git"
-  GIT_TAG "origin/master"
-  PATCH_COMMAND ""
+  GIT_TAG        "origin/master"
+  PATCH_COMMAND  ""
   CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
+  BUILD_COMMAND     ""
+
+  # Copy only the headers into a conventional layout:
+  #   <INSTALL_DIR>/include/tny/tny.hpp
   INSTALL_COMMAND
-    ${CMAKE_COMMAND} -E copy_directory
-      "<SOURCE_DIR>"
-      "${CMAKE_BINARY_DIR}/Externals/Install/Tny_external/include/Tny"
-  CMAKE_CACHE_ARGS
-    -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    ${CMAKE_COMMAND} -E make_directory "${_tny_inst}/include/tny" &&
+    ${CMAKE_COMMAND} -E copy_directory "<SOURCE_DIR>/tny/src/tny" "${_tny_inst}/include/tny"
+
   LOG_CONFIGURE 1
-  LOG_BUILD 1
-  LOG_INSTALL 1
+  LOG_BUILD     1
+  LOG_INSTALL   1
 )
 
-ExternalProject_Get_Property(Tny_external INSTALL_DIR)
-message(STATUS "[Tny_external] INSTALL_DIR=${INSTALL_DIR}")
+# Export variables for SCIRun consumption
+ExternalProject_Get_Property(Tny_external SOURCE_DIR)
+set(TNY_SOURCE_DIR  "${SOURCE_DIR}")
+set(TNY_INSTALL_DIR "${_tny_inst}")
+set(TNY_INCLUDE     "${TNY_INSTALL_DIR}/include")
+message(STATUS "[Tny_external] INSTALL_DIR=${TNY_INSTALL_DIR}")

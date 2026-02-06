@@ -24,9 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-
-# SQLiteExternal.cmake (modernized + consistent)
-
+# SQLiteExternal.cmake (redirect libs + copy headers into Install/include)
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
 set(sqlite_GIT_TAG "v3.0.1")
@@ -36,7 +34,7 @@ set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
-  # Redirect all outputs so install step is unnecessary
+  # Redirect all outputs so install step is unnecessary for libs
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
   -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
@@ -75,8 +73,15 @@ ExternalProject_Add(SQLite_external
 
   CMAKE_ARGS ${_cmake_args}
 
-  # Outputs already redirected -> skip install
+  # Skip 'install' to keep the fast redirect flow for libs
   INSTALL_COMMAND ""
+
+  # After build, ensure headers are available in <INSTALL_DIR>/include
+  # (sqlite3.h is typically at the source root; sqlite3ext.h may also be present)
+  STEP_TARGETS copy_headers
+  COMMAND ${CMAKE_COMMAND} -E make_directory "<INSTALL_DIR>/include"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_sqlite_src}/sqlite3.h"     "<INSTALL_DIR>/include/sqlite3.h"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_sqlite_src}/sqlite3ext.h"  "<INSTALL_DIR>/include/sqlite3ext.h"
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
@@ -86,8 +91,13 @@ ExternalProject_Add(SQLite_external
 # Export variables for SCIRun
 set(SQLITE_SOURCE_DIR  ${_sqlite_src})
 set(SQLITE_INSTALL_DIR ${_sqlite_inst})
-set(SQLITE_INCLUDE     ${SQLITE_SOURCE_DIR})        # sqlite3.h lives in source root
+set(SQLITE_INCLUDE     ${SQLITE_INSTALL_DIR}/include)
 set(SQLITE_LIBRARY_DIR ${SQLITE_INSTALL_DIR}/lib)
+
+# Library name note:
+# Many SQLite CMake builds produce 'sqlite3' as the lib name.
+# Your repo tag v3.0.1 may export 'sqlite' or 'sqlite3' depending on CMakeLists.
+# If build fails to link, try switching this to 'sqlite3'.
 set(SQLITE_LIBRARY     "sqlite")
 
 message(STATUS "[SQLite_external] INSTALL_DIR=${SQLITE_INSTALL_DIR}")

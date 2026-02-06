@@ -24,9 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-
-# GlewExternal.cmake (modernized + consistent)
-
+# GlewExternal.cmake (modernized + consistent + header copy into Install)
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
 set(glew_GIT_TAG "v1.0.1")
@@ -36,7 +34,7 @@ set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
-  # Redirect all outputs so install step is unnecessary
+  # Redirect all outputs so install step is unnecessary for libs
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
   -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
@@ -75,19 +73,41 @@ ExternalProject_Add(Glew_external
 
   CMAKE_ARGS ${_cmake_args}
 
-  # Outputs already redirected -> skip install
+  # We skip 'install' to keep the fast redirect flow for libs
   INSTALL_COMMAND ""
+
+  # After build, ensure headers are available in <INSTALL_DIR>/include
+  # (glew's headers live in <SOURCE_DIR>/include)
+  BUILD_BYPRODUCTS
+    "<INSTALL_DIR>/lib"  # helps order-only deps
+
+  # Add a step to copy headers into Install prefix
+  # (idempotent; safe for multi-config)
+  STEP_TARGETS copy_headers
+  COMMAND ${CMAKE_COMMAND} -E make_directory "<INSTALL_DIR>/include"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${_glew_src}/include" "<INSTALL_DIR>/include"
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
+# Tie the header copy to the build
+add_custom_command(TARGET Glew_external
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${_glew_inst}/include"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${_glew_src}/include" "${_glew_inst}/include"
+  COMMENT "Copying GLEW headers to ${_glew_inst}/include"
+)
+
 # Export variables for SCIRun
 set(GLEW_SOURCE_DIR  ${_glew_src})
 set(GLEW_INSTALL_DIR ${_glew_inst})
-set(GLEW_INCLUDE     ${GLEW_SOURCE_DIR}/include)
+set(GLEW_INCLUDE     ${GLEW_INSTALL_DIR}/include)
 set(GLEW_LIBRARY_DIR ${GLEW_INSTALL_DIR}/lib)
+
+# Library name on Windows built with CMake is typically 'glew' or 'glew32'.
+# If you’ve standardized your export to 'glew', keep it:
 set(GLEW_LIBRARY     "glew")
 
 message(STATUS "[Glew_external] INSTALL_DIR=${GLEW_INSTALL_DIR}")
