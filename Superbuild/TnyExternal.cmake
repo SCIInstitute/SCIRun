@@ -40,7 +40,7 @@ ExternalProject_Add(Tny_external
   # Run the script to create the dir and copy headers
   INSTALL_COMMAND
     ${CMAKE_COMMAND}
-      -Dsrc=<SOURCE_DIR>/tny/src/tny
+      -Dsrc=<SOURCE_DIR>/src/tny
       -Ddst=${_tny_inst}/include/tny
       -P ${CMAKE_CURRENT_LIST_DIR}/TnyInstall.cmake
 
