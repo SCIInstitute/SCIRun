@@ -27,7 +27,7 @@
 # SQLiteExternal.cmake (redirect libs + copy headers into Install/include)
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
-set(sqlite_GIT_TAG "v3.0.1")
+set(sqlite_GIT_TAG "v3.51.2")
 
 # Common CMake args
 set(_cmake_args
@@ -85,16 +85,62 @@ ExternalProject_Add(SQLite_external
   LOG_INSTALL   1
 )
 
+ExternalProject_Get_Property(SQLite_external INSTALL_DIR)
+set(SQLITE_INSTALL_DIR "${INSTALL_DIR}")
+set(SQLITE_INCLUDE     "${SQLITE_INSTALL_DIR}/include")
+set(SQLITE_LIBRARY_DIR "${SQLITE_INSTALL_DIR}/lib")
+
+# Detect sqlite library name after build (sqlite vs sqlite3) with multi-config awareness
+# We’ll prefer sqlite3.*, then sqlite.*
+set(_sqlite_lib_names "sqlite3" "sqlite")
+set(_sqlite_lib_exts)
+if(WIN32)
+  list(APPEND _sqlite_lib_exts ".lib")
+else()
+  list(APPEND _sqlite_lib_exts ".a" ".so" ".dylib")
+endif()
+
+# Small CMake script to resolve the name after build
+set(_sqlite_check "${CMAKE_BINARY_DIR}/check_sqlite_lib_name.cmake")
+file(WRITE "${_sqlite_check}" "
+  set(LIBDIR \"${SQLITE_LIBRARY_DIR}\")
+  set(names sqlite3 sqlite)
+  if(WIN32)
+    set(exts .lib)
+  else()
+    set(exts .a .so .dylib)
+  endif()
+  set(found \"\")
+  foreach(n IN LISTS names)
+    foreach(e IN LISTS exts)
+      file(GLOB hits \"${SQLITE_LIBRARY_DIR}/${n}*${e}\")
+      if(hits)
+        set(found \"${n}\")
+        break()
+      endif()
+    endforeach()
+    if(found)
+      break()
+    endif()
+  endforeach()
+  if(NOT found)
+    message(FATAL_ERROR \"SQLite lib not found in ${SQLITE_LIBRARY_DIR}. Expected sqlite3 or sqlite.\")
+  endif()
+  # Persist the detected base name
+  set(SQLITE_LIBRARY \"${found}\" CACHE STRING \"SQLite library base name (sqlite vs sqlite3)\" FORCE)
+  message(STATUS \"[SQLite_external] Detected library basename: ${found}\")
+")
+
+ExternalProject_Add_Step(SQLite_external verify_lib_name
+  COMMAND ${CMAKE_COMMAND} -P "${_sqlite_check}"
+  DEPENDEES build
+  COMMENT "Verifying SQLite library name and caching SQLITE_LIBRARY"
+)
+
 # Export variables for SCIRun
 set(SQLITE_SOURCE_DIR  ${_sqlite_src})
 set(SQLITE_INSTALL_DIR ${_sqlite_inst})
 set(SQLITE_INCLUDE     ${SQLITE_INSTALL_DIR}/include)
 set(SQLITE_LIBRARY_DIR ${SQLITE_INSTALL_DIR}/lib)
-
-# Library name note:
-# Many SQLite CMake builds produce 'sqlite3' as the lib name.
-# Your repo tag v3.0.1 may export 'sqlite' or 'sqlite3' depending on CMakeLists.
-# If build fails to link, try switching this to 'sqlite3'.
-set(SQLITE_LIBRARY     "sqlite")
 
 message(STATUS "[SQLite_external] INSTALL_DIR=${SQLITE_INSTALL_DIR}")

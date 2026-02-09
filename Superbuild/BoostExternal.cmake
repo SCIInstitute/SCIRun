@@ -37,8 +37,8 @@ set(_BOOST_LIBS
   filesystem
   system
   atomic
-  # Add here only if/when linker complains:
-  # chrono; thread; regex; program_options; iostreams; date_time; serialization
+  thread
+  program_options
 )
 
 # Optional compiled libs (usually OFF)

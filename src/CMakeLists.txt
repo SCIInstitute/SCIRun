@@ -915,41 +915,88 @@ ENDIF()
 
 SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
-# ---------- Diagnostics + optional auto-derive from CMAKE_PREFIX_PATH ----------
-# Helper to derive an include dir from CMAKE_PREFIX_PATH if the var is not set
-function(_derive_include_dir _outvar _header_glob)
-  if(NOT ${_outvar})
+# ---------- Diagnostics + robust include discovery ----------
+
+# Normalize superbuild-provided names to what SCIRun uses internally
+if(DEFINED LodePng_INCLUDE_DIR AND NOT DEFINED LODEPNG_INCLUDE_DIR)
+  set(LODEPNG_INCLUDE_DIR "${LodePng_INCLUDE_DIR}")
+endif()
+if(DEFINED Tny_INCLUDE_DIR AND NOT DEFINED TNY_INCLUDE_DIR)
+  set(TNY_INCLUDE_DIR "${Tny_INCLUDE_DIR}")
+endif()
+
+# Helper: validate a cached include dir (VAR) by checking it contains REL_HEADER.
+# If empty or incorrect, auto-derive from CMAKE_PREFIX_PATH and cache the fix.
+function(_ensure_header _var_name _rel_header)
+  # current value (from cache or parent)
+  set(_val "${${_var_name}}")
+
+  # Decide if current value is valid
+  set(_valid FALSE)
+  if(_val AND EXISTS "${_val}/${_rel_header}")
+    set(_valid TRUE)
+  endif()
+
+  if(NOT _valid)
+    # Try to auto-derive from CMAKE_PREFIX_PATH: look for include dirs that contain the header
     set(_candidates)
-    foreach(_p IN LISTS CMAKE_PREFIX_PATH)
-      list(APPEND _candidates "${_p}/include")
-    endforeach()
-    find_path(_found_dir
-      NAMES ${_header_glob}
-      PATHS ${_candidates}
-      NO_DEFAULT_PATH
-    )
-    if(_found_dir)
-      set(${_outvar} "${_found_dir}" PARENT_SCOPE)
+    if(CMAKE_PREFIX_PATH)
+      foreach(_p IN LISTS CMAKE_PREFIX_PATH)
+        list(APPEND _candidates "${_p}/include")
+      endforeach()
     endif()
+
+    set(_found "")
+    foreach(_inc IN LISTS _candidates)
+      if(EXISTS "${_inc}/${_rel_header}")
+        set(_found "${_inc}")
+        break()
+      endif()
+    endforeach()
+
+    if(_found)
+      # Cache-stabilize the corrected value
+      set(${_var_name} "${_found}" CACHE PATH "${_var_name}" FORCE)
+      message(STATUS "[SCIRun] Fixed ${_var_name} -> '${_found}' (found '${_rel_header}')")
+    else()
+      # Clear wrong cached value if it was set but invalid
+      if(_val AND NOT _valid)
+        message(WARNING "[SCIRun] ${_var_name} ('${_val}') does not contain '${_rel_header}'. Clearing.")
+      endif()
+      unset(${_var_name} CACHE)
+      unset(${_var_name})
+    endif()
+  else()
+    # Keep and cache-stabilize a correct value
+    set(${_var_name} "${_val}" CACHE PATH "${_var_name}" FORCE)
   endif()
 endfunction()
 
-# Try to fill any missing include dir variables using the expected headers:
-_derive_include_dir(GLEW_INCLUDE_DIR     "GL/glew.h")
-_derive_include_dir(LODEPNG_INCLUDE_DIR  "lodepng/lodepng.h")
-_derive_include_dir(SQLite3_INCLUDE_DIR  "sqlite3.h")
-_derive_include_dir(TNY_INCLUDE_DIR      "tny/tny.hpp")
-# Boost_INCLUDE_DIR is already passed; if needed:
-# _derive_include_dir(Boost_INCLUDE_DIR "boost/array.hpp")
+# Validate / auto-fix externals we depend on:
+#   GLEW:     GL/glew.h
+#   LodePNG:  lodepng/lodepng.h
+#   SQLite3:  sqlite3.h
+#   Tny:      tny/tny.hpp
+#   Spdlog:   spdlog/spdlog.h
+#   GLM:      glm/glm.hpp
+_ensure_header(GLEW_INCLUDE_DIR      "GL/glew.h")
+_ensure_header(LODEPNG_INCLUDE_DIR   "lodepng/lodepng.h")
+_ensure_header(SQLite3_INCLUDE_DIR   "sqlite3.h")
+_ensure_header(TNY_INCLUDE_DIR       "tny/tny.hpp")
+_ensure_header(SpdLog_INCLUDE_DIR    "spdlog/spdlog.h")
+_ensure_header(GLM_INCLUDE_DIR       "glm/glm.hpp")
 
-# Print diagnostics so you can see them in the configure log
+# Print diagnostics
 message(STATUS "Boost_INCLUDE_DIR='${Boost_INCLUDE_DIR}'")
 message(STATUS "GLEW_INCLUDE_DIR='${GLEW_INCLUDE_DIR}'")
 message(STATUS "LODEPNG_INCLUDE_DIR='${LODEPNG_INCLUDE_DIR}'")
 message(STATUS "SQLite3_INCLUDE_DIR='${SQLite3_INCLUDE_DIR}'")
 message(STATUS "TNY_INCLUDE_DIR='${TNY_INCLUDE_DIR}'")
+message(STATUS "SpdLog_INCLUDE_DIR='${SpdLog_INCLUDE_DIR}'")
+message(STATUS "GLM_INCLUDE_DIR='${GLM_INCLUDE_DIR}'")
+message(STATUS "Eigen_DIR='${Eigen_DIR}'")
 
-# Quick existence checks (helpful during iteration)
+# Quick existence confirmations
 if(GLEW_INCLUDE_DIR AND EXISTS "${GLEW_INCLUDE_DIR}/GL/glew.h")
   message(STATUS "GLEW header OK: ${GLEW_INCLUDE_DIR}/GL/glew.h")
 endif()
@@ -962,8 +1009,15 @@ endif()
 if(TNY_INCLUDE_DIR AND EXISTS "${TNY_INCLUDE_DIR}/tny/tny.hpp")
   message(STATUS "TNY header OK: ${TNY_INCLUDE_DIR}/tny/tny.hpp")
 endif()
+if(SpdLog_INCLUDE_DIR AND EXISTS "${SpdLog_INCLUDE_DIR}/spdlog/spdlog.h")
+  message(STATUS "Spdlog header OK: ${SpdLog_INCLUDE_DIR}/spdlog/spdlog.h")
+endif()
+if(GLM_INCLUDE_DIR AND EXISTS "${GLM_INCLUDE_DIR}/glm/glm.hpp")
+  message(STATUS "GLM header OK: ${GLM_INCLUDE_DIR}/glm/glm.hpp")
+endif()
 
-# ---------- Build include list with guards to avoid '/include' ----------
+# ---------- Build include list with guards to avoid stray '/include' ----------
+
 set(_SCIRUN_INCLUDE_DIRS
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
@@ -978,37 +1032,55 @@ set(_SCIRUN_INCLUDE_DIRS
   ${SCIRun_BINARY_DIR}/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
-  ${GLM_INCLUDE_DIR}
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-# Append externals only if the variables are set (prevents stray '/include')
-if(Boost_INCLUDE_DIR)
+# Append externals only if valid (directory exists and contains expected header)
+
+# Boost (legacy var)
+if(Boost_INCLUDE_DIR AND EXISTS "${Boost_INCLUDE_DIR}/boost")
   list(APPEND _SCIRUN_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
 endif()
-if(GLEW_INCLUDE_DIR)
+
+# GLEW
+if(GLEW_INCLUDE_DIR AND EXISTS "${GLEW_INCLUDE_DIR}/GL/glew.h")
   list(APPEND _SCIRUN_INCLUDE_DIRS "${GLEW_INCLUDE_DIR}")
 endif()
-if(LODEPNG_INCLUDE_DIR)
-  list(APPEND _SCIRUN_INCLUDE_DIRS "${LODEPNG_INCLUDE_DIR}")
-endif()
-if(SQLite3_INCLUDE_DIR)
+
+# SQLite
+if(SQLite3_INCLUDE_DIR AND EXISTS "${SQLite3_INCLUDE_DIR}/sqlite3.h")
   list(APPEND _SCIRUN_INCLUDE_DIRS "${SQLite3_INCLUDE_DIR}")
 endif()
-if(TNY_INCLUDE_DIR)
+
+# Spdlog (IMPORTANT: do NOT append '/include'; var already points to include dir)
+if(SpdLog_INCLUDE_DIR AND EXISTS "${SpdLog_INCLUDE_DIR}/spdlog/spdlog.h")
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${SpdLog_INCLUDE_DIR}")
+endif()
+
+# GLM
+if(GLM_INCLUDE_DIR AND EXISTS "${GLM_INCLUDE_DIR}/glm/glm.hpp")
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${GLM_INCLUDE_DIR}")
+endif()
+
+# Tny
+if(TNY_INCLUDE_DIR AND EXISTS "${TNY_INCLUDE_DIR}/tny/tny.hpp")
   list(APPEND _SCIRUN_INCLUDE_DIRS "${TNY_INCLUDE_DIR}")
 endif()
 
-# Optional: SPDLOG and Eigen if present; guard to avoid '/include'
-if(SPDLOG_DIR)
-  list(APPEND _SCIRUN_INCLUDE_DIRS "${SPDLOG_DIR}/include")
+# LodePNG
+if(LODEPNG_INCLUDE_DIR AND EXISTS "${LODEPNG_INCLUDE_DIR}/lodepng/lodepng.h")
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${LODEPNG_INCLUDE_DIR}")
 endif()
-if(Eigen_DIR)
+
+# Eigen (if provided as a directory)
+if(Eigen_DIR AND IS_DIRECTORY "${Eigen_DIR}")
   list(APPEND _SCIRUN_INCLUDE_DIRS "${Eigen_DIR}")
 endif()
 
-# Debug print and apply
+# De-duplicate & print for visibility
+list(REMOVE_DUPLICATES _SCIRUN_INCLUDE_DIRS)
+
 function(print_list name)
   message(STATUS "${name}:")
   foreach(item IN LISTS ${name})
@@ -1018,30 +1090,6 @@ endfunction()
 print_list("_SCIRUN_INCLUDE_DIRS")
 
 include_directories(${_SCIRUN_INCLUDE_DIRS})
-
-#INCLUDE_DIRECTORIES(
-#  ${CMAKE_CURRENT_BINARY_DIR}
-#  ${SCIRun_SOURCE_DIR}/
-#  ${SCIRun_SOURCE_DIR}/include
-#  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
-#  ${SCIRun_SOURCE_DIR}/Externals/spire/
-#  ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googletest/include
-#  ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googlemock/include
-#  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
-#  ${SCIRun_SOURCE_DIR}/Externals/
-#  ${SCIRun_BINARY_DIR}/
-#  ${SCIRun_BINARY_DIR}/include
-#  ${SCI_TEEM_INCLUDE}
-#  ${SCI_ZLIB_INCLUDE}
-#  ${GLM_INCLUDE_DIR}
-#  ${SPDLOG_DIR}/include
-#  ${Eigen_DIR}
-#  ${SCI_TNY_INCLUDE}
-#  ${SCI_LODEPNG_INCLUDE}
-#  ${SCI_QWT_INCLUDE}
-#  ${SCI_CLEAVER2_INCLUDE}
-#)
-
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
