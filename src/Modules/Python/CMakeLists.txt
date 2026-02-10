@@ -1,4 +1,4 @@
-#
+﻿#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -26,7 +26,12 @@
 #
 
 
-SET(Modules_Python_SRCS
+# =========================
+# Modules/Python CMake file
+# =========================
+
+# --- Sources & headers ---
+set(Modules_Python_SRCS
   PythonObjectForwarder.cc
   InterfaceWithPython.cc
   PythonInterfaceParser.cc
@@ -36,7 +41,7 @@ SET(Modules_Python_SRCS
   #LoopIncrement.cc
 )
 
-SET(Modules_Python_HEADERS
+set(Modules_Python_HEADERS
   PythonObjectForwarder.h
   InterfaceWithPython.h
   PythonInterfaceParser.h
@@ -47,28 +52,110 @@ SET(Modules_Python_HEADERS
   share.h
 )
 
+# --- Library target ---
 SCIRUN_ADD_LIBRARY(Modules_Python
   ${Modules_Python_HEADERS}
   ${Modules_Python_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Modules_Python
-  Dataflow_Network
-  Core_Datatypes
-  Algorithms_Base
-  Core_Thread
+if(BUILD_SHARED_LIBS)
+  add_definitions(-DBUILD_Modules_Python)
+endif()
+
+# ====================================================================================
+# Optional Python detection (only if the build is configured with Python support)
+# ====================================================================================
+
+set(_SCIRUN_MODULES_PY_OK FALSE)
+if(BUILD_WITH_PYTHON)
+  # 1) Prefer modern FindPython (generic)
+  find_package(Python QUIET COMPONENTS Interpreter Development)
+  if(Python_Interpreter_FOUND AND Python_Development_FOUND)
+    set(_SCIRUN_MODULES_PY_OK TRUE)
+  elseif(NOT _SCIRUN_MODULES_PY_OK)
+    # 2) Try Python3 module
+    find_package(Python3 QUIET COMPONENTS Interpreter Development)
+    if(Python3_Interpreter_FOUND AND Python3_Development_FOUND)
+      # Normalize to Python_* names so logic below is uniform
+      set(Python_EXECUTABLE   "${Python3_EXECUTABLE}")
+      set(Python_INCLUDE_DIRS "${Python3_INCLUDE_DIRS}")
+      set(Python_LIBRARIES    "${Python3_LIBRARIES}")
+      # Alias Python3::Python → Python::Python for consistent linking
+      if(TARGET Python3::Python AND NOT TARGET Python::Python)
+        add_library(Python::Python ALIAS Python3::Python)
+      endif()
+      set(_SCIRUN_MODULES_PY_OK TRUE)
+    endif()
+  endif()
+
+  # 3) Legacy fallback (older CMake or missing modules)
+  if(NOT _SCIRUN_MODULES_PY_OK)
+    find_package(PythonInterp REQUIRED)
+    find_package(PythonLibs REQUIRED)
+    # Normalize legacy vars
+    set(Python_EXECUTABLE   "${PYTHON_EXECUTABLE}")
+    set(Python_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
+    set(Python_LIBRARIES    "${PYTHON_LIBRARIES}")
+    # Provide an imported target for consistency
+    if(NOT TARGET Python::Python)
+      add_library(Python::Python UNKNOWN IMPORTED)
+      set_target_properties(Python::Python PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${Python_INCLUDE_DIRS}"
+      )
+      if(WIN32)
+        set_target_properties(Python::Python PROPERTIES
+          IMPORTED_IMPLIB "${Python_LIBRARIES}"
+        )
+      else()
+        set_target_properties(Python::Python PROPERTIES
+          IMPORTED_LOCATION "${Python_LIBRARIES}"
+        )
+      endif()
+    endif()
+    set(_SCIRUN_MODULES_PY_OK TRUE)
+  endif()
+
+  if(NOT _SCIRUN_MODULES_PY_OK)
+    message(FATAL_ERROR "BUILD_WITH_PYTHON is ON, but Python (Interpreter + Development) could not be found.")
+  endif()
+endif() # BUILD_WITH_PYTHON
+
+# ====================================================================================
+# Link dependencies
+# ====================================================================================
+
+# Always link these:
+target_link_libraries(Modules_Python
+  PRIVATE
+    Dataflow_Network
+    Core_Datatypes
+    Algorithms_Base
+    Core_Thread
 )
 
-IF(BUILD_WITH_PYTHON)
-  TARGET_LINK_LIBRARIES(Modules_Python
-    Core_Python
-    )
-ENDIF()
+# Only link Python-related libs when enabled:
+if(BUILD_WITH_PYTHON)
+  # Link the Python runtime and your Core_Python layer
+  target_link_libraries(Modules_Python
+    PRIVATE
+      Python::Python
+      Core_Python
+  )
+endif()
 
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Python)
-ENDIF(BUILD_SHARED_LIBS)
+# ====================================================================================
+# Tests (kept as in your original)
+# ====================================================================================
 
-IF(BUILD_WITH_PYTHON)
+if(BUILD_WITH_PYTHON)
   SCIRUN_ADD_TEST_DIR(Tests)
-ENDIF()
+endif()
+
+# ====================================================================================
+# Diagnostics (helpful while bringing up the superbuild)
+# ====================================================================================
+if(BUILD_WITH_PYTHON)
+  message(STATUS "[Modules/Python] Python executable : ${Python_EXECUTABLE}")
+  message(STATUS "[Modules/Python] Python include(s) : ${Python_INCLUDE_DIRS}")
+  message(STATUS "[Modules/Python] Python libraries  : ${Python_LIBRARIES}")
+endif()

@@ -631,14 +631,6 @@ CONFIG_STANDARD_EXTERNAL(Cleaver2
   CFG  "Cleaver2Config.cmake"
 )
 
-# Python
-if(BUILD_WITH_PYTHON)
-  CONFIG_STANDARD_EXTERNAL(Python
-    DIR  "${Python_DIR}"
-    CFGS "PythonConfig.cmake;Python3Config.cmake"
-  )
-endif()
-
 # Boost — REQUIRED on non-Windows (prefer config package).
 # On Windows with b2-built Boost, skip CONFIG mode: rely on auto-link + link_directories above.
 if(WIN32)
@@ -1030,7 +1022,7 @@ set(_SCIRUN_INCLUDE_DIRS
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
-  ${SCI_TEEM_INCLUDE}
+  ${SCI_TEEM_INCLUDE}/include
   ${SCI_ZLIB_INCLUDE}
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}

@@ -1,4 +1,4 @@
-#  For more information, please see: http://software.sci.utah.edu
+﻿#  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
@@ -25,7 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 
-# TeemExternal.cmake � wire Teem to the installed zlib
+# TeemExternal.cmake — wire Teem to the installed zlib
 
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
@@ -37,7 +37,7 @@ set(_teem_src  "${CMAKE_BINARY_DIR}/Externals/Source/Teem_external")
 set(_teem_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Teem_external")
 set(_teem_inst "${CMAKE_BINARY_DIR}/Externals/Install/Teem_external")
 
-# Teem CMake args (no output redirection needed)
+# Teem CMake args
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
@@ -47,13 +47,13 @@ set(_cmake_args
   -DCMAKE_PREFIX_PATH=${ZLIB_INSTALL_DIR}
   -DZLIB_ROOT=${ZLIB_INSTALL_DIR}
   -DZLIB_INCLUDE_DIR=${ZLIB_INSTALL_DIR}/include
+  -DZLIB_USE_STATIC_LIBS=ON
 
-  # Start minimal: disable optional deps until zlib link works
-  # (Uncomment if these options exist in your Teem tree)
-   -DTeem_ZLIB=ON
-   -DTeem_PNG=OFF
-   -DTeem_BZIP2=OFF
-   -DTeem_FFTW=OFF
+  # Keep optional deps minimal for now
+  -DTeem_ZLIB=ON
+  -DTeem_PNG=OFF
+  -DTeem_BZIP2=OFF
+  -DTeem_FFTW=OFF
 )
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
@@ -69,6 +69,7 @@ ExternalProject_Add(Teem_external
 
   SOURCE_DIR ${_teem_src}
   BINARY_DIR ${_teem_bin}
+  INSTALL_DIR ${_teem_inst}   # ensure install goes to Externals/Install/Teem_external
 
   CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
   CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
@@ -77,34 +78,27 @@ ExternalProject_Add(Teem_external
   CMAKE_ARGS
     ${_cmake_args}
 
-  # Use CMAKE_CACHE_ARGS so Teem's *own* cache sees the hints
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 
     -DZlib_DIR:PATH=${Zlib_DIR}
-
     -DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}
     -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}
     -DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include
-    -DZLIB_USE_STATIC_LIBS:BOOL=ON   # optional
+    -DZLIB_USE_STATIC_LIBS:BOOL=ON
 
-    # If Teem exposes switches, keep them minimal while bringing up:
     -DTeem_ZLIB:BOOL=ON
     -DTeem_PNG:BOOL=OFF
     -DTeem_BZIP2:BOOL=OFF
     -DTeem_FFTW:BOOL=OFF
-
-  DEPENDS Zlib_external
-  INSTALL_COMMAND ""
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
-# Make Teem's configure wait for zlib artifacts to exist
 ExternalProject_Add_Step(Teem_external wait_for_zlib
   COMMAND ${CMAKE_COMMAND} -E echo "Waiting for zlib artifacts..."
   DEPENDEES download
@@ -118,9 +112,9 @@ ExternalProject_Add_Step(Teem_external wait_for_zlib
 set(TEEM_SOURCE_DIR  ${_teem_src})
 set(TEEM_INSTALL_DIR ${_teem_inst})
 
-# If you keep Teem in no-install mode for now, public headers remain in source:
-set(TEEM_INCLUDE     ${TEEM_SOURCE_DIR}/src)
-set(TEEM_LIBRARY_DIR ${TEEM_INSTALL_DIR}/lib)   # will populate when/if you enable install
+# After enabling install, point includes to the installed headers
+set(TEEM_INCLUDE     ${TEEM_INSTALL_DIR}/include)
+set(TEEM_LIBRARY_DIR ${TEEM_INSTALL_DIR}/lib)
 set(TEEM_LIBRARY     "teem")
 
 message(STATUS "[Teem_external] INSTALL_DIR=${TEEM_INSTALL_DIR}")

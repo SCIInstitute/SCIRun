@@ -51,6 +51,9 @@ file(MAKE_DIRECTORY "${_wrapper_dir}")
 
 file(WRITE "${_wrapper_dir}/CMakeLists.txt" "
 cmake_minimum_required(VERSION 3.15)
+# Force VS to use $(Configuration) instead of <CONFIG>
+set(CMAKE_CFG_INTDIR \"$(Configuration)\" CACHE STRING \"VS config placeholder\" FORCE)
+
 project(SQLiteExternal C)
 
 if(NOT SQLite_SOURCE_DIR)
@@ -116,6 +119,7 @@ set(_cfg_args
   -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE:PATH=<INSTALL_DIR>/lib
   -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG:PATH=<INSTALL_DIR>/bin
   -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE:PATH=<INSTALL_DIR>/bin
+  -DCMAKE_CFG_INTDIR:STRING=$(Configuration)
 )
 if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
   list(APPEND _cfg_args -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE})
@@ -149,10 +153,10 @@ ExternalProject_Add(SQLite_external
     ${CMAKE_COMMAND} -S "${_wrapper_dir}" -B "<BINARY_DIR>/wrap" ${_cfg_args}
 
   BUILD_COMMAND
-    ${CMAKE_COMMAND} --build "<BINARY_DIR>/wrap" --config <CONFIG>
+    ${CMAKE_COMMAND} --build "<BINARY_DIR>/wrap" --config Release
 
   INSTALL_COMMAND
-    ${CMAKE_COMMAND} --build "<BINARY_DIR>/wrap" --target install --config <CONFIG>
+    ${CMAKE_COMMAND} --build "<BINARY_DIR>/wrap" --target install --config Release
 
   ${_gen_fwd}
 
@@ -164,7 +168,7 @@ ExternalProject_Add(SQLite_external
 # Pre-configure step: verify amalgamation exists at repo root
 ExternalProject_Add_Step(SQLite_external verify_amalgamation
   COMMAND ${CMAKE_COMMAND} -Dsrc=<SOURCE_DIR> -P "${_precheck}"
-  DEPENDEES update
+  DEPENDEES download
   DEPENDERS configure
   COMMENT "Verifying sqlite3.c/sqlite3.h exist at <SOURCE_DIR> (amalgamation at repo root)"
 )
