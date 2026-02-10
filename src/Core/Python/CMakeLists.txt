@@ -192,7 +192,6 @@ target_link_libraries(Core_Python
   PRIVATE
     Python::Python
     ${SCI_BOOST_LIBRARY}
-    SCIRunPythonAPI
     Core_Matlab
     Core_Datatypes
     Core_Datatypes_Legacy_Field

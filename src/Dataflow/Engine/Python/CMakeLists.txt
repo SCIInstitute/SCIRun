@@ -130,6 +130,7 @@ target_link_libraries(SCIRunPythonAPI
     Core_Thread
     Core_Datatypes_Legacy_Base
     Core_Persistent
+    Core_Python
     Python::Python
     ${SCI_BOOST_LIBRARY}
 )

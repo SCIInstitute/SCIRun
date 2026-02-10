@@ -916,6 +916,12 @@ endif()
 if(DEFINED Tny_INCLUDE_DIR AND NOT DEFINED TNY_INCLUDE_DIR)
   set(TNY_INCLUDE_DIR "${Tny_INCLUDE_DIR}")
 endif()
+if(DEFINED Teem_INCLUDE_DIR AND NOT DEFINED SCI_TEEM_INCLUDE)
+  set(SCI_TEEM_INCLUDE "${Teem_INCLUDE_DIR}")
+endif()
+if(DEFINED TEEM_INCLUDE AND NOT DEFINED SCI_TEEM_INCLUDE)
+  set(SCI_TEEM_INCLUDE "${TEEM_INCLUDE}")
+endif()
 
 # Helper: validate a cached include dir (VAR) by checking it contains REL_HEADER.
 # If empty or incorrect, auto-derive from CMAKE_PREFIX_PATH and cache the fix.
@@ -977,6 +983,7 @@ _ensure_header(SQLite3_INCLUDE_DIR   "sqlite3.h")
 _ensure_header(TNY_INCLUDE_DIR       "tny/tny.hpp")
 _ensure_header(SpdLog_INCLUDE_DIR    "spdlog/spdlog.h")
 _ensure_header(GLM_INCLUDE_DIR       "glm/glm.hpp")
+_ensure_header(SCI_TEEM_INCLUDE "teem/ten.h")
 
 # Print diagnostics
 message(STATUS "Boost_INCLUDE_DIR='${Boost_INCLUDE_DIR}'")
@@ -1022,7 +1029,7 @@ set(_SCIRUN_INCLUDE_DIRS
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
-  ${SCI_TEEM_INCLUDE}/include
+  ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
