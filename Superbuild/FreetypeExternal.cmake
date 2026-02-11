@@ -76,16 +76,16 @@ ExternalProject_Add(Freetype_external
   CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
   CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
-  # Use CMAKE_CACHE_ARGS so hints are written into FreeType's *own* CMake cache
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_INSTALL_LIBDIR:PATH=lib
 
-    # Let FindZLIB.cmake search under zlib's install prefix
+    # Let FreeType find the zlib we built
     -DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}
     -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}
-    -DZLIB_USE_STATIC_LIBS:BOOL=ON    # optional preference, no filename
+    -DZLIB_USE_STATIC_LIBS:BOOL=ON
 
     -DFT_REQUIRE_ZLIB:BOOL=ON
     -DFT_DISABLE_BZIP2:BOOL=ON
@@ -94,22 +94,22 @@ ExternalProject_Add(Freetype_external
     -DFT_DISABLE_HARFBUZZ:BOOL=ON
 
   DEPENDS Zlib_external
-  INSTALL_COMMAND ""
 
+  # IMPORTANT: let ExternalProject install files (remove the empty INSTALL_COMMAND)
+  # INSTALL_COMMAND ""
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
-# --- Force FreeType 'configure' to wait for zlib's actual files ---
-# This prevents configure from running before zlib installs headers/libs.
+# Ensure zlib artifacts exist before FreeType config
 ExternalProject_Add_Step(Freetype_external wait_for_zlib
   COMMAND ${CMAKE_COMMAND} -E echo "Waiting for zlib artifacts..."
   DEPENDEES download
   DEPENDERS configure
   DEPENDS
     "${ZLIB_INSTALL_DIR}/include/zlib.h"
-    "${ZLIB_INSTALL_DIR}/lib"   # Directory's existence/time is sufficient; no file name
+    "${ZLIB_INSTALL_DIR}/lib"
 )
 
 # Export variables for SCIRun (consumer side)

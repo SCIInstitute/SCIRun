@@ -988,6 +988,7 @@ _ensure_header(SpdLog_INCLUDE_DIR    "spdlog/spdlog.h")
 _ensure_header(GLM_INCLUDE_DIR       "glm/glm.hpp")
 _ensure_header(SCI_TEEM_INCLUDE "teem/ten.h")
 _ensure_header(Eigen_INCLUDE_DIR "Eigen/Dense")
+_ensure_header(Freetype_INCLUDE_DIR  "ft2build.h")
 
 # Print diagnostics
 message(STATUS "Boost_INCLUDE_DIR='${Boost_INCLUDE_DIR}'")
@@ -1039,7 +1040,21 @@ set(_SCIRUN_INCLUDE_DIRS
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-# Append externals only if valid (directory exists and contains expected header)
+
+# If the second include dir wasn't set, derive it from the first
+if(NOT FREETYPE_INCLUDE_DIR2 OR NOT EXISTS "${FREETYPE_INCLUDE_DIR2}/freetype/config/ftheader.h")
+  if(Freetype_INCLUDE_DIR AND EXISTS "${Freetype_INCLUDE_DIR}/freetype2/freetype/config/ftheader.h")
+    set(FREETYPE_INCLUDE_DIR2 "${Freetype_INCLUDE_DIR}/freetype2" CACHE PATH "FREETYPE_INCLUDE_DIR2" FORCE)
+  endif()
+endif()
+
+# Append both include roots (only if they exist)
+if(Freetype_INCLUDE_DIR AND EXISTS "${Freetype_INCLUDE_DIR}/ft2build.h")
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${Freetype_INCLUDE_DIR}")
+endif()
+if(FREETYPE_INCLUDE_DIR2 AND EXISTS "${FREETYPE_INCLUDE_DIR2}/freetype/config/ftheader.h")
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${FREETYPE_INCLUDE_DIR2}")
+endif()
 
 # Boost (legacy var)
 if(Boost_INCLUDE_DIR AND EXISTS "${Boost_INCLUDE_DIR}/boost")

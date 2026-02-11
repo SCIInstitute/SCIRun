@@ -451,6 +451,7 @@ endif()
 
 # Include/lib hints (guarded by target existence)
 _sb_export_inc_lib(Eigen     Eigen_external)
+_sb_export_inc_lib(Freetype  Freetype_external)
 _sb_export_inc_lib(GLM       GLM_external)
 _sb_export_inc_lib(SpdLog    SpdLog_external)
 _sb_export_inc_lib(Teem      Teem_external)
@@ -509,6 +510,49 @@ endif()
 
 if(WIN32)
   list(APPEND SCIRUN_CACHE_ARGS "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}")
+endif()
+
+# FreeType essential hints (include & lib paths explicitly)
+if(TARGET Freetype_external)
+  ExternalProject_Get_Property(Freetype_external INSTALL_DIR)
+  set(FREETYPE_INSTALL_DIR "${INSTALL_DIR}")
+
+  # Primary include (contains ft2build.h) and the 'freetype2' sub-include
+  set(Freetype_INCLUDE_DIR       "${FREETYPE_INSTALL_DIR}/include")
+  set(FREETYPE_INCLUDE_DIR2      "${FREETYPE_INSTALL_DIR}/include/freetype2")
+
+  # Library directory (freetype.lib / libfreetype.{a,so,dylib})
+  # If you set CMAKE_INSTALL_LIBDIR=lib in the external, this is stable:
+  set(Freetype_LIB_DIR           "${FREETYPE_INSTALL_DIR}/lib")
+
+  # Append cache args consumed by the inner SCIRun configure
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DFreetype_INCLUDE_DIR:PATH=${Freetype_INCLUDE_DIR}"
+    "-DFREETYPE_INCLUDE_DIR2:PATH=${FREETYPE_INCLUDE_DIR2}"
+    "-DFreetype_LIB_DIR:PATH=${Freetype_LIB_DIR}"
+  )
+
+  # If the external produced a *Config.cmake, pass its DIR like you do for Zlib.
+  # Prefer an explicit Freetype_DIR if the superbuild has one; else export the common location.
+  if(DEFINED Freetype_DIR)
+    list(APPEND SCIRUN_CACHE_ARGS "-DFreetype_DIR:PATH=${Freetype_DIR}")
+  else()
+    # Helper you already use for Zlib to export a config dir that the inner find_package() can pick up.
+    # Adjust the suffix if your FreeType external installs config files elsewhere.
+    _export_config_dir(Freetype Freetype_external "lib/cmake/freetype")
+  endif()
+
+  # (Optional) If you also maintain legacy alias variables for consistency with older code:
+  set(SCI_FREETYPE_INCLUDE "${Freetype_INCLUDE_DIR}" CACHE PATH "Legacy: FreeType include dir (ft2build.h)" FORCE)
+  set(SCI_FREETYPE_INCLUDE2 "${FREETYPE_INCLUDE_DIR2}" CACHE PATH "Legacy: FreeType include dir (freetype2)" FORCE)
+  set(SCI_FREETYPE_LIBRARY_DIR "${Freetype_LIB_DIR}" CACHE PATH "Legacy: FreeType library dir" FORCE)
+
+  # And push those legacy names too if you want them available in the inner cache:
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DSCI_FREETYPE_INCLUDE:PATH=${SCI_FREETYPE_INCLUDE}"
+    "-DSCI_FREETYPE_INCLUDE2:PATH=${SCI_FREETYPE_INCLUDE2}"
+    "-DSCI_FREETYPE_LIBRARY_DIR:PATH=${SCI_FREETYPE_LIBRARY_DIR}"
+  )
 endif()
 
 # Zlib + Boost essential hints (include & lib paths explicitly)
