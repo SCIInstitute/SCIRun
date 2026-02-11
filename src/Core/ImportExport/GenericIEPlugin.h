@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <map>
 #include <vector>
+#include <functional>
 #include <boost/lexical_cast.hpp>
 #include <Core/ImportExport/share.h>
 

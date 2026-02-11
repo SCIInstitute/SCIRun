@@ -922,6 +922,9 @@ endif()
 if(DEFINED TEEM_INCLUDE AND NOT DEFINED SCI_TEEM_INCLUDE)
   set(SCI_TEEM_INCLUDE "${TEEM_INCLUDE}")
 endif()
+if(DEFINED SCIRUN_EIGEN_INCLUDE AND NOT DEFINED Eigen_INCLUDE_DIR)
+  set(Eigen_INCLUDE_DIR "${SCIRUN_EIGEN_INCLUDE}")
+endif()
 
 # Helper: validate a cached include dir (VAR) by checking it contains REL_HEADER.
 # If empty or incorrect, auto-derive from CMAKE_PREFIX_PATH and cache the fix.
@@ -984,6 +987,7 @@ _ensure_header(TNY_INCLUDE_DIR       "tny/tny.hpp")
 _ensure_header(SpdLog_INCLUDE_DIR    "spdlog/spdlog.h")
 _ensure_header(GLM_INCLUDE_DIR       "glm/glm.hpp")
 _ensure_header(SCI_TEEM_INCLUDE "teem/ten.h")
+_ensure_header(Eigen_INCLUDE_DIR "Eigen/Dense")
 
 # Print diagnostics
 message(STATUS "Boost_INCLUDE_DIR='${Boost_INCLUDE_DIR}'")
@@ -993,7 +997,7 @@ message(STATUS "SQLite3_INCLUDE_DIR='${SQLite3_INCLUDE_DIR}'")
 message(STATUS "TNY_INCLUDE_DIR='${TNY_INCLUDE_DIR}'")
 message(STATUS "SpdLog_INCLUDE_DIR='${SpdLog_INCLUDE_DIR}'")
 message(STATUS "GLM_INCLUDE_DIR='${GLM_INCLUDE_DIR}'")
-message(STATUS "Eigen_DIR='${Eigen_DIR}'")
+message(STATUS "Eigen_INCLUDE_DIR='${Eigen_INCLUDE_DIR}'")
 
 # Quick existence confirmations
 if(GLEW_INCLUDE_DIR AND EXISTS "${GLEW_INCLUDE_DIR}/GL/glew.h")
@@ -1072,9 +1076,9 @@ if(LODEPNG_INCLUDE_DIR AND EXISTS "${LODEPNG_INCLUDE_DIR}/lodepng/lodepng.h")
   list(APPEND _SCIRUN_INCLUDE_DIRS "${LODEPNG_INCLUDE_DIR}")
 endif()
 
-# Eigen (if provided as a directory)
-if(Eigen_DIR AND IS_DIRECTORY "${Eigen_DIR}")
-  list(APPEND _SCIRUN_INCLUDE_DIRS "${Eigen_DIR}")
+# Eigen: add only if the directory contains Eigen/Dense
+if(Eigen_INCLUDE_DIR AND EXISTS "${Eigen_INCLUDE_DIR}/Eigen/Dense")
+  list(APPEND _SCIRUN_INCLUDE_DIRS "${Eigen_INCLUDE_DIR}")
 endif()
 
 # De-duplicate & print for visibility

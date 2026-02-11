@@ -47,12 +47,12 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(inputMatrix, "Cannot write null matrix.");
 
-  if (boost::filesystem::extension(filename) == ".txt")
+  if (boost::filesystem::path(filename).extension().string() == ".txt")
   {
     std::ofstream writer(filename.c_str());
     writer << *inputMatrix;
   }
-  else if (boost::filesystem::extension(filename) == ".mat")
+  else if (boost::filesystem::path(filename).extension().string() == ".mat")
   {
     status("Writing matrix file as binary .mat");
 

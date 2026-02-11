@@ -68,7 +68,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
     ENSURE_FILE_EXISTS(filename);
   }
 
-  if (boost::filesystem::extension(filename) == ".txt")
+  if (boost::filesystem::path(filename).extension().string() == ".txt")
   {
     std::ifstream reader(filename.c_str());
     DenseMatrixHandle matrix(makeShared<DenseMatrix>());
@@ -76,7 +76,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
 
     return matrix;
   }
-  else if (boost::filesystem::extension(filename) == ".mat")
+  else if (boost::filesystem::path(filename).extension().string() == ".mat")
   {
     status("FOUND .mat file: assuming is SCIRUNv4 Matrix format.");
 

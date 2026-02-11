@@ -1,4 +1,4 @@
-#
+﻿#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -24,7 +24,6 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
-
 
 # ================================
 # Core/GeometryPrimitives CMake
@@ -69,12 +68,26 @@ if(BUILD_SHARED_LIBS)
   add_definitions(-DBUILD_Core_Geometry_Primitives)
 endif()
 
+# ----------------------------------------------------------
+# Teem is currently built as a *static* library in your superbuild
+# (you only have teem.lib, no teem.dll). On Windows, Teem headers
+# would otherwise mark APIs as __declspec(dllimport), which produces
+# __imp_* references and triggers LNK2019 when linking to a static lib.
+# Defining TEEM_STATIC disables dllimport in Teem's TEN_EXPORT macros.  ⟶
+# See Microsoft docs on dllexport/dllimport and Teem's export macros.   ⟶
+# ----------------------------------------------------------
+# References:
+# - Microsoft Learn on dllexport/dllimport (__imp_ import thunks)       ⟶ https://learn.microsoft.com/ ...  (dllexport, dllimport)
+# - Teem Windows export macros recommending TEEM_STATIC for static link  ⟶ SourceForge mailing list thread
+# (Cited below in the chat text for traceability.)
+target_compile_definitions(Core_Geometry_Primitives
+  PRIVATE TEEM_STATIC)
+
 # ==========================================================
 # Teem discovery (provides tenEigensolve_f used by Tensor.cc)
 # ==========================================================
 
 # Preferred: Teem config package if available
-# (You can create/export one from the superbuild later; this handles that case automatically.)
 find_package(Teem CONFIG QUIET)
 
 if(TARGET Teem::teem)
@@ -109,7 +122,7 @@ else()
     endif()
   endif()
 
-  # Fallback: search by name with hints if not found yet
+  # Fallback: search by name with hints
   if(NOT _teem_lib)
     find_library(TEEM_LIBRARY
       NAMES teem libteem
@@ -131,30 +144,23 @@ else()
   set_target_properties(Teem::teem PROPERTIES
     IMPORTED_LOCATION "${_teem_lib}"
     INTERFACE_INCLUDE_DIRECTORIES "${Teem_INCLUDE_DIR}"
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"  # static C lib; helps some generators
   )
 
   set(_teem_target Teem::teem)
 endif()
 
 # ============================================
-# ZLIB (needed by Teem; useful for static Teem)
+# ZLIB (useful when Teem was built with zlib)
 # ============================================
-
-# Try to use a config/module package first.
-# Your superbuild already exports ZLIB_ROOT & ZLIB_DIR and sets CMAKE_PREFIX_PATH, so this should work.
 find_package(ZLIB QUIET)
 
-# If ZLIB::ZLIB target isn't available but include/lib hints exist, create one.
 if(NOT TARGET ZLIB::ZLIB)
-  # Common superbuild exports include ZLIB_INCLUDE_DIR and a library in <prefix>/lib[64].
-  # Try to deduce them if not set by find_package.
   if(NOT ZLIB_INCLUDE_DIR AND DEFINED ZLIB_ROOT AND EXISTS "${ZLIB_ROOT}/include")
     set(ZLIB_INCLUDE_DIR "${ZLIB_ROOT}/include")
   endif()
 
-  # Try typical library file names if not found by package
   set(_zlib_lib "")
-  # Prefer lib64 when present
   if(DEFINED ZLIB_ROOT AND EXISTS "${ZLIB_ROOT}/lib64")
     set(_zlib_libdir "${ZLIB_ROOT}/lib64")
   elseif(DEFINED ZLIB_ROOT AND EXISTS "${ZLIB_ROOT}/lib")
@@ -184,7 +190,6 @@ if(NOT TARGET ZLIB::ZLIB)
   endif()
 
   if(NOT _zlib_lib)
-    # Last resort: search by name with hints
     find_library(ZLIB_LIBRARY
       NAMES z zlib zlibstatic
       HINTS "${_zlib_libdir}" "${CMAKE_PREFIX_PATH}" "${CMAKE_PREFIX_PATH}/lib" "${CMAKE_PREFIX_PATH}/lib64"
@@ -214,7 +219,7 @@ target_link_libraries(Core_Geometry_Primitives
     ${_teem_target}
 )
 
-# If ZLIB::ZLIB exists, add it (especially useful when Teem is static and needs zlib symbols)
+# If ZLIB::ZLIB exists, add it (helpful when Teem static needs zlib symbols)
 if(TARGET ZLIB::ZLIB)
   target_link_libraries(Core_Geometry_Primitives PRIVATE ZLIB::ZLIB)
 endif()
