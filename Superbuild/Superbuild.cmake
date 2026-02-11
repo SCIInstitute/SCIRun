@@ -561,6 +561,92 @@ if(DEFINED SQLite_INCLUDE_DIR)
   set(SQLite3_INCLUDE_DIR "${SQLite_INCLUDE_DIR}" CACHE PATH "Alias: SQLite3 include dir" FORCE)
   list(APPEND SCIRUN_CACHE_ARGS "-DSQLite3_INCLUDE_DIR:PATH=${SQLite3_INCLUDE_DIR}")
 endif()
+# --- Ensure SQLite hints are present AFTER SCIRUN_CACHE_ARGS is created ---
+if(TARGET SQLite_external)
+  ExternalProject_Get_Property(SQLite_external INSTALL_DIR)
+  # Compute lib dir (lib64 preferred when present)
+  if(EXISTS "${INSTALL_DIR}/lib64")
+    set(_sqlite_lib_dir "${INSTALL_DIR}/lib64")
+  else()
+    set(_sqlite_lib_dir "${INSTALL_DIR}/lib")
+  endif()
+
+  # Always pass include + lib dir
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DSQLite_INCLUDE_DIR:PATH=${INSTALL_DIR}/include"
+    "-DSQLite_LIB_DIR:PATH=${_sqlite_lib_dir}"
+    # Alias the include to SQLite3_* for consumers that use that name
+    "-DSQLite3_INCLUDE_DIR:PATH=${INSTALL_DIR}/include"
+  )
+
+  # Optional: pass the exact library file if it exists (helps consumers)
+  if(WIN32)
+    set(_sqlite_lib "${_sqlite_lib_dir}/sqlite3.lib")
+    if(NOT EXISTS "${_sqlite_lib}" AND EXISTS "${_sqlite_lib_dir}/libsqlite3.lib")
+      set(_sqlite_lib "${_sqlite_lib_dir}/libsqlite3.lib")
+    endif()
+  elseif(APPLE)
+    set(_sqlite_lib "${_sqlite_lib_dir}/libsqlite3.dylib")
+  else()
+    set(_sqlite_lib "${_sqlite_lib_dir}/libsqlite3.so")
+  endif()
+
+  if(EXISTS "${_sqlite_lib}")
+    list(APPEND SCIRUN_CACHE_ARGS "-DSQLite3_LIBRARY:FILEPATH=${_sqlite_lib}")
+    message(STATUS "[superbuild] SQLite library: ${_sqlite_lib}")
+  else()
+    message(STATUS "[superbuild] SQLite library: (not found yet at configure time)")
+  endif()
+
+  message(STATUS "[superbuild] SQLite include: ${INSTALL_DIR}/include")
+  message(STATUS "[superbuild] SQLite lib dir: ${_sqlite_lib_dir}")
+endif()
+
+# --- Ensure Teem hints are present AFTER SCIRUN_CACHE_ARGS is created ---
+if(TARGET Teem_external)
+  ExternalProject_Get_Property(Teem_external INSTALL_DIR)
+
+  # Compute Teem lib dir (prefer lib64 when present)
+  if(EXISTS "${INSTALL_DIR}/lib64")
+    set(_teem_lib_dir "${INSTALL_DIR}/lib64")
+  else()
+    set(_teem_lib_dir "${INSTALL_DIR}/lib")
+  endif()
+
+  # Always pass include + lib dir
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DTeem_INCLUDE_DIR:PATH=${INSTALL_DIR}/include"
+    "-DTeem_LIB_DIR:PATH=${_teem_lib_dir}"
+  )
+
+  # Optional: pass full library path if present (helps consumers)
+  if(WIN32)
+    set(_teem_lib "${_teem_lib_dir}/teem.lib")
+    if(NOT EXISTS "${_teem_lib}" AND EXISTS "${_teem_lib_dir}/libteem.lib")
+      set(_teem_lib "${_teem_lib_dir}/libteem.lib")
+    endif()
+  elseif(APPLE)
+    set(_teem_lib "${_teem_lib_dir}/libteem.dylib")
+    if(NOT EXISTS "${_teem_lib}" AND EXISTS "${_teem_lib_dir}/libteem.a")
+      set(_teem_lib "${_teem_lib_dir}/libteem.a")
+    endif()
+  else()
+    set(_teem_lib "${_teem_lib_dir}/libteem.so")
+    if(NOT EXISTS "${_teem_lib}" AND EXISTS "${_teem_lib_dir}/libteem.a")
+      set(_teem_lib "${_teem_lib_dir}/libteem.a")
+    endif()
+  endif()
+
+  if(EXISTS "${_teem_lib}")
+    list(APPEND SCIRUN_CACHE_ARGS "-DTeem_LIBRARY:FILEPATH=${_teem_lib}")
+    message(STATUS "[superbuild] Teem library: ${_teem_lib}")
+  else()
+    message(STATUS "[superbuild] Teem library: (not found yet at configure time)")
+  endif()
+
+  message(STATUS "[superbuild] Teem include: ${INSTALL_DIR}/include")
+  message(STATUS "[superbuild] Teem lib dir: ${_teem_lib_dir}")
+endif()
 
 # Compose a single CMAKE_PREFIX_PATH for SCIRun
 get_property(_acc GLOBAL PROPERTY SCIRUN_PREFIXES)
