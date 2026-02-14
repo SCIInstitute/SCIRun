@@ -987,8 +987,72 @@ _ensure_header(TNY_INCLUDE_DIR       "tny/tny.hpp")
 _ensure_header(SpdLog_INCLUDE_DIR    "spdlog/spdlog.h")
 _ensure_header(GLM_INCLUDE_DIR       "glm/glm.hpp")
 _ensure_header(SCI_TEEM_INCLUDE "teem/ten.h")
-_ensure_header(Eigen_INCLUDE_DIR "Eigen/Dense")
 _ensure_header(Freetype_INCLUDE_DIR  "ft2build.h")
+
+# --- Robust Eigen include discovery (handles eigen3 layout and unsupported) ---
+# Try to honor a pre-set Eigen_INCLUDE_DIR first
+set(_eigen_ok FALSE)
+if(Eigen_INCLUDE_DIR)
+  if(EXISTS "${Eigen_INCLUDE_DIR}/Eigen/Dense" AND EXISTS "${Eigen_INCLUDE_DIR}/unsupported/Eigen/CXX11/Tensor")
+    set(_eigen_ok TRUE)
+  endif()
+endif()
+
+# If not OK, auto-probe from CMAKE_PREFIX_PATH (prefer eigen3 layout)
+if(NOT _eigen_ok)
+  set(_candidates "")
+  foreach(_p IN LISTS CMAKE_PREFIX_PATH)
+    list(APPEND _candidates
+      "${_p}/include/eigen3"
+      "${_p}/include"           # legacy fallback
+    )
+  endforeach()
+
+  set(_found "")
+  foreach(_inc IN LISTS _candidates)
+    if(EXISTS "${_inc}/Eigen/Dense" AND EXISTS "${_inc}/unsupported/Eigen/CXX11/Tensor")
+      set(_found "${_inc}")
+      break()
+    endif()
+  endforeach()
+
+  if(_found)
+    set(Eigen_INCLUDE_DIR "${_found}" CACHE PATH "Eigen include root (expects Eigen/ and unsupported/)" FORCE)
+    message(STATUS "[SCIRun] Eigen_INCLUDE_DIR -> '${Eigen_INCLUDE_DIR}' (contains Eigen and unsupported)")
+    set(_eigen_ok TRUE)
+  endif()
+endif()
+
+# If we still don’t have unsupported, warn loudly (this will cause compile errors later)
+if(NOT _eigen_ok)
+  # Try to at least find Eigen/Dense to help with diagnostics
+  set(_fallback "")
+  foreach(_p IN LISTS CMAKE_PREFIX_PATH)
+    foreach(_inc IN ITEMS "${_p}/include/eigen3" "${_p}/include")
+      if(EXISTS "${_inc}/Eigen/Dense")
+        set(_fallback "${_inc}")
+        break()
+      endif()
+    endforeach()
+    if(_fallback)
+      break()
+    endif()
+  endforeach()
+
+  if(_fallback)
+    set(Eigen_INCLUDE_DIR "${_fallback}" CACHE PATH "Eigen include root (no unsupported found)" FORCE)
+    message(WARNING
+      "[SCIRun] Found Eigen at '${Eigen_INCLUDE_DIR}', but 'unsupported/Eigen/CXX11/Tensor' is missing.\n"
+      "         Ensure the Eigen external installs the 'unsupported' directory (Eigen 3.4 install puts both under include/eigen3).")
+  else()
+    # Clear incorrect cache if present
+    if(Eigen_INCLUDE_DIR)
+      message(WARNING "[SCIRun] Eigen_INCLUDE_DIR='${Eigen_INCLUDE_DIR}' does not contain Eigen/Dense. Clearing.")
+      unset(Eigen_INCLUDE_DIR CACHE)
+      unset(Eigen_INCLUDE_DIR)
+    endif()
+  endif()
+endif()
 
 # Print diagnostics
 message(STATUS "Boost_INCLUDE_DIR='${Boost_INCLUDE_DIR}'")

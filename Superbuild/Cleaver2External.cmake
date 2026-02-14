@@ -83,6 +83,17 @@ ExternalProject_Add(Cleaver2_external
   LOG_INSTALL   1
 )
 
+# After build, copy headers from the source tree into the install/include tree
+ExternalProject_Add_Step(Cleaver2_external copy_headers
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${_cleaver2_inst}/include/cleaver2"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${_cleaver2_src}/src/lib/cleaver2"
+          "${_cleaver2_inst}/include/cleaver2"
+  DEPENDEES build
+  ALWAYS 1
+  COMMENT "Copying Cleaver2 headers to ${_cleaver2_inst}/include/cleaver2"
+)
+
 # Export properties for SCIRun
 ExternalProject_Get_Property(Cleaver2_external SOURCE_DIR)
 set(CLEAVER2_SOURCE_DIR ${SOURCE_DIR})

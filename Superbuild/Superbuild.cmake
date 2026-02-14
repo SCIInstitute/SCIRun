@@ -450,7 +450,6 @@ if(BUILD_WITH_PYTHON AND TARGET Python_external)
 endif()
 
 # Include/lib hints (guarded by target existence)
-_sb_export_inc_lib(Eigen     Eigen_external)
 _sb_export_inc_lib(Freetype  Freetype_external)
 _sb_export_inc_lib(GLM       GLM_external)
 _sb_export_inc_lib(SpdLog    SpdLog_external)
@@ -581,6 +580,28 @@ if(TARGET Boost_external)
     "-DBoost_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
     "-DBoost_NO_SYSTEM_PATHS:BOOL=ON"
   )
+endif()
+
+# ===== Eigen (special-case exporter to prefer include/eigen3) =====
+if(TARGET Eigen_external)
+  ExternalProject_Get_Property(Eigen_external INSTALL_DIR)
+
+  # Prefer the CMake-installed Eigen layout
+  set(_eigen_inc "${INSTALL_DIR}/include/eigen3")
+  if(NOT EXISTS "${_eigen_inc}/Eigen/Dense")
+    # Legacy fallback when copy-only install was used.
+    # Strongly recommend switching your Eigen external to CMake install.
+    set(_eigen_inc "${INSTALL_DIR}/include")
+  endif()
+
+  # Pass normalized include to SCIRun (it will also verify 'unsupported' exists)
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DEigen_INCLUDE_DIR:PATH=${_eigen_inc}"
+    "-DSCIRUN_EIGEN_INCLUDE:PATH=${_eigen_inc}"
+  )
+
+  # Ensure SCIRun sees Eigen's prefix in CMAKE_PREFIX_PATH
+  sb_prefix_append("${INSTALL_DIR}")
 endif()
 
 # Legacy alias variables (so existing SCIRun CMake picks them up)
@@ -877,5 +898,19 @@ if(NOT BUILD_HEADLESS AND TARGET Qwt_external)
   _sb_scirun_wait_for(NAME qwt
     FILES "${INSTALL_DIR}/include/qwt.h"
     DIRS  "${INSTALL_DIR}/include"
+  )
+endif()
+
+# --- Wait for Eigen headers (including unsupported/Tensor) before SCIRun configure ---
+if(TARGET Eigen_external)
+  ExternalProject_Get_Property(Eigen_external INSTALL_DIR)
+  set(_eigen_inc "${INSTALL_DIR}/include/eigen3")  # assume modern layout produced by CMake install
+
+  # Do not check EXISTS here—let ExternalProject step handle availability at build time.
+  _sb_scirun_wait_for(NAME eigen
+    FILES
+      "${_eigen_inc}/Eigen/Dense"
+      "${_eigen_inc}/unsupported/Eigen/CXX11/Tensor"
+    DIRS  "${_eigen_inc}"
   )
 endif()

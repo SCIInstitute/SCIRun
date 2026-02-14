@@ -250,49 +250,51 @@ bool needsSpecialPythonPathTreatment(const std::string& commandLine)
 #endif
 }
 
-void PythonInterpreter::initialize_eventhandler(bool needsSpecialPythonPathTreatment, const boost::filesystem::path& libPath)
+void PythonInterpreter::initialize_eventhandler(bool needsSpecialPythonPathTreatment,
+                                                const boost::filesystem::path& libPath)
 {
   PRINT_PY_INIT_DEBUG(1);
-	using namespace boost::python;
+  using namespace boost::python;
 
-	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
+  PythonInterpreterPrivate::lock_type lock(this->private_->get_mutex());
   PRINT_PY_INIT_DEBUG(2);
-	// Register C++ to Python type converters
-	//RegisterToPythonConverters();
 
-  // Add the extension modules
-  PyImport_AppendInittab( "interpreter", PyInit_interpreter );
-  PyImport_AppendInittab( "SCIRunPythonAPI", PyInit_SCIRunPythonAPI );
-  for ( module_list_type::iterator it = this->private_->modules_.begin();
-       it != this->private_->modules_.end(); ++it )
+  // Register built-in extension modules BEFORE initialization (still allowed)
+  PyImport_AppendInittab("interpreter",       PyInit_interpreter);
+  PyImport_AppendInittab("SCIRunPythonAPI",   PyInit_SCIRunPythonAPI);
+  for (module_list_type::iterator it = this->private_->modules_.begin();
+       it != this->private_->modules_.end(); ++it)
   {
-    PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
+    PyImport_AppendInittab((*it).first.c_str(), (*it).second);
   }
   PRINT_PY_INIT_DEBUG(3);
-  //std::wcerr << "initialize_eventhandler: program name=" << this->private_->programName() << std::endl;
-  Py_SetProgramName(const_cast< wchar_t* >(this->private_->programName()));
 
-  PRINT_PY_INIT_DEBUG(4);
-  //std::wcout << "lib_path: " << lib_path.wstring() << std::endl;
-  std::wstringstream lib_paths;
-#if defined( _WIN32 )
-  const std::wstring PATH_SEP(L";");
-#else
-  const std::wstring PATH_SEP(L":");
-#endif
-  PRINT_PY_INIT_DEBUG(5);
-#if defined( __APPLE__ )
+#if PY_VERSION_HEX >= 0x03080000
+  // -----------------------------
+  // Modern init path (Python >=3.8)
+  // -----------------------------
+  // Build a list of module search paths (as wide strings).
+  std::vector<std::wstring> search_paths;
+
+#if defined(_WIN32)
+  const std::wstring PATH_SEP(L";"); // not used in PyConfig, but kept for clarity
+  boost::filesystem::path lib_path = libPath;
+  boost::filesystem::path top_lib_path   = lib_path / PYTHONPATH / PYTHONNAME;
+  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+  boost::filesystem::path site_lib_path  = top_lib_path / "site-packages";
+
+  // Historically you only used top + site on Windows.
+  search_paths.push_back(top_lib_path.wstring());
+  search_paths.push_back(site_lib_path.wstring());
+
+#elif defined(__APPLE__)
+  const std::wstring PATH_SEP(L":"); // not used in PyConfig, but kept for clarity
   boost::filesystem::path lib_path = libPath.parent_path();
+
   std::vector<boost::filesystem::path> lib_path_list;
-  // relative paths
-  PRINT_PY_INIT_DEBUG(lib_path);
-  PRINT_PY_INIT_DEBUG(boost::filesystem::path(PYTHONPATH));
   lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
-  PRINT_PY_INIT_DEBUG(lib_path_list.back());
   lib_path_list.push_back(lib_path / PYTHONPATH);
-  PRINT_PY_INIT_DEBUG(lib_path_list.back());
   lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
-  PRINT_PY_INIT_DEBUG(lib_path_list.back());
 
   if (needsSpecialPythonPathTreatment)
   {
@@ -301,104 +303,215 @@ void PythonInterpreter::initialize_eventhandler(bool needsSpecialPythonPathTreat
     lib_path_list.push_back(full_lib_path);
   }
 
-  for ( size_t i = 0; i < lib_path_list.size(); ++i )
+  for (size_t i = 0; i < lib_path_list.size(); ++i)
+  {
+    const auto& path = lib_path_list[i];
+    boost::filesystem::path plat_lib_path   = path / "plat-darwin";   // keep legacy layout if present
+    boost::filesystem::path dynload_lib_path= path / "lib-dynload";
+    boost::filesystem::path site_lib_path   = path / "site-packages";
+
+    search_paths.push_back(path.wstring());
+    search_paths.push_back(plat_lib_path.wstring());
+    search_paths.push_back(dynload_lib_path.wstring());
+    search_paths.push_back(site_lib_path.wstring());
+  }
+
+#else
+  // Linux and other Unix
+  const std::wstring PATH_SEP(L":"); // not used in PyConfig, but kept for clarity
+  boost::filesystem::path lib_path     = libPath;
+  boost::filesystem::path top_lib_path = lib_path / PYTHONPATH;
+  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+  boost::filesystem::path site_lib_path    = top_lib_path / "site-packages";
+  boost::filesystem::path plat_lib_path    = top_lib_path / "plat-linux";
+
+  search_paths.push_back(top_lib_path.wstring());
+  search_paths.push_back(plat_lib_path.wstring());
+  search_paths.push_back(dynload_lib_path.wstring());
+  search_paths.push_back(site_lib_path.wstring());
+#endif
+
+  // -----------------------------
+  // PyPreConfig / PyConfig setup
+  // -----------------------------
+  PyStatus status;
+  PyPreConfig preconfig;
+  PyConfig config;
+
+  // If you previously set Py_IgnoreEnvironmentFlag = 1, use "isolated" preinit.
+  PyPreConfig_InitIsolatedConfig(&preconfig);
+  status = Py_PreInitialize(&preconfig);
+  if (PyStatus_Exception(status)) {
+    Py_ExitStatusException(status); // exits with message
+  }
+
+  // Start from isolated defaults (equivalent to ignoring env, no signal handlers, etc.)
+  PyConfig_InitIsolatedConfig(&config);
+
+  // Replace deprecated Py_SetProgramName(...) with config.program_name
+  // (Use your stored wide program name)
+  {
+    const wchar_t* prog = this->private_->programName();
+    status = PyConfig_SetString(&config, &config.program_name, prog);
+    if (PyStatus_Exception(status)) {
+      PyConfig_Clear(&config);
+      Py_ExitStatusException(status);
+    }
+  }
+
+  // Replace global flags:
+  //  Py_IgnoreEnvironmentFlag = 1  -> config.use_environment = 0
+  //  Py_InspectFlag = 1            -> config.inspect = 1
+  //  Py_OptimizeFlag = 2           -> config.optimization_level = 2
+  //  Py_NoSiteFlag = 1 (non-Windows)-> config.site_import = 0
+  config.use_environment    = 0;
+  config.inspect            = 1;
+  config.optimization_level = 2;
+#if !defined(_WIN32)
+  config.site_import        = 0;
+#endif
+
+  // Populate module_search_paths (replacement for Py_SetPath)
+  // NOTE: PyConfig expects absolute, existing directories; add only those that exist.
+  for (const auto& wpath : search_paths)
+  {
+    if (!wpath.empty()) {
+      // Optional: skip non-existing paths to avoid warnings
+      // (Converting back to narrow only for filesystem exists check if needed)
+      // Here we trust the layout and append directly:
+      status = PyWideStringList_Append(&config.module_search_paths, wpath.c_str());
+      if (PyStatus_Exception(status)) {
+        PyConfig_Clear(&config);
+        Py_ExitStatusException(status);
+      }
+    }
+  }
+
+  // Finalize initialization
+  status = Py_InitializeFromConfig(&config);
+  PyConfig_Clear(&config);
+  if (PyStatus_Exception(status)) {
+    Py_ExitStatusException(status);
+  }
+
+  PRINT_PY_INIT_DEBUG(8);
+
+#else
+  // -------------------------------
+  // Legacy fallback (Python < 3.8) 
+  // -------------------------------
+  Py_SetProgramName(const_cast<wchar_t*>(this->private_->programName()));
+
+  std::wstringstream lib_paths;
+# if defined(_WIN32)
+  const std::wstring PATH_SEP(L";");
+# else
+  const std::wstring PATH_SEP(L":");
+# endif
+
+# if defined(__APPLE__)
+  boost::filesystem::path lib_path = libPath.parent_path();
+  std::vector<boost::filesystem::path> lib_path_list;
+  lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
+  lib_path_list.push_back(lib_path / PYTHONPATH);
+  lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
+
+  if (needsSpecialPythonPathTreatment)
+  {
+    boost::filesystem::path full_lib_path(PYTHONLIBDIR);
+    full_lib_path /= PYTHONLIB;
+    lib_path_list.push_back(full_lib_path);
+  }
+
+  for (size_t i = 0; i < lib_path_list.size(); ++i)
   {
     auto path = lib_path_list[i];
     boost::filesystem::path plat_lib_path = path / "plat-darwin";
     boost::filesystem::path dynload_lib_path = path / "lib-dynload";
     boost::filesystem::path site_lib_path = path / "site-packages";
-    if (i > 0)
-    {
-      lib_paths << PATH_SEP;
-    }
+    if (i > 0) lib_paths << PATH_SEP;
     lib_paths << path.wstring() << PATH_SEP
               << plat_lib_path.wstring() << PATH_SEP
               << dynload_lib_path.wstring() << PATH_SEP
               << site_lib_path.wstring();
   }
+  Py_SetPath(lib_paths.str().c_str());
 
-  Py_SetPath( lib_paths.str().c_str() );
-#elif defined (_WIN32)
-  boost::filesystem::path lib_path = libPath;// Application::Instance().executablePath();
-  boost::filesystem::path top_lib_path = lib_path / PYTHONPATH / PYTHONNAME;
-  //std::cout << "top_lib_path: " << top_lib_path.string() << std::endl;
-  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
-  //std::cout << "dynload_lib_path: " << dynload_lib_path.string() << std::endl;
-  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
-  //std::cout << "site_lib_path: " << site_lib_path.string() << std::endl;
-  lib_paths << top_lib_path.wstring() << PATH_SEP
-            << site_lib_path.wstring();
-  //std::wcout << "lib_paths final: " << lib_paths.str() << std::endl;
-  Py_SetPath( lib_paths.str().c_str() );
-  PRINT_PY_INIT_DEBUG(6);
-#else
-  // linux...
-  boost::filesystem::path lib_path = libPath;
-  boost::filesystem::path top_lib_path = lib_path / PYTHONPATH;
-  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
-  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
-  boost::filesystem::path plat_lib_path = top_lib_path / "plat-linux";
-  lib_paths << top_lib_path.wstring() << PATH_SEP
-            << plat_lib_path.wstring() << PATH_SEP
-            << dynload_lib_path.wstring() << PATH_SEP
-            << site_lib_path.wstring();
-  Py_SetPath( lib_paths.str().c_str() );
-#endif
+# elif defined(_WIN32)
+  {
+    boost::filesystem::path lib_path = libPath;
+    boost::filesystem::path top_lib_path = lib_path / PYTHONPATH / PYTHONNAME;
+    boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
+    lib_paths << top_lib_path.wstring() << PATH_SEP
+              << site_lib_path.wstring();
+    Py_SetPath(lib_paths.str().c_str());
+  }
+# else
+  {
+    boost::filesystem::path lib_path = libPath;
+    boost::filesystem::path top_lib_path = lib_path / PYTHONPATH;
+    boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+    boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
+    boost::filesystem::path plat_lib_path = top_lib_path / "plat-linux";
+    lib_paths << top_lib_path.wstring() << PATH_SEP
+              << plat_lib_path.wstring() << PATH_SEP
+              << dynload_lib_path.wstring() << PATH_SEP
+              << site_lib_path.wstring();
+    Py_SetPath(lib_paths.str().c_str());
+  }
+# endif
 
-  // TODO: remove debug print when confident python initialization is stable
-  //std::wcerr << lib_paths.str() << std::endl;
-  PRINT_PY_INIT_DEBUG(7);
   Py_IgnoreEnvironmentFlag = 1;
   Py_InspectFlag = 1;
   Py_OptimizeFlag = 2;
-#if !defined( _WIN32 )
+# if !defined(_WIN32)
   Py_NoSiteFlag = 1;
-#endif
+# endif
+
   Py_Initialize();
   PRINT_PY_INIT_DEBUG(8);
-	// Create the compiler object
-	PyRun_SimpleString( "from codeop import CommandCompiler\n"
-		"__internal_compiler = CommandCompiler()\n" );
- 	boost::python::object main_module = boost::python::import( "__main__" );
- 	boost::python::object main_namespace = main_module.attr( "__dict__" );
-	this->private_->compiler_ = main_namespace[ "__internal_compiler" ];
-	this->private_->globals_ = main_namespace;
-  PRINT_PY_INIT_DEBUG(9);
-	// Set up the prompt strings
-	PyRun_SimpleString( "import sys\n"
-		"try:\n"
-		"\tsys.ps1\n"
-		"except AttributeError:\n"
-		"\tsys.ps1 = \">>> \"\n"
-		"try:\n"
-		"\tsys.ps2\n"
-		"except AttributeError:\n"
-		"\tsys.ps2 = \"... \"\n" );
-	boost::python::object sys_module = main_namespace[ "sys" ];
-	boost::python::object sys_namespace = sys_module.attr( "__dict__" );
-	this->private_->prompt1_ = boost::python::extract< std::string >( sys_namespace[ "ps1" ] );
-	this->private_->prompt2_ = boost::python::extract< std::string >( sys_namespace[ "ps2" ] );
-  PRINT_PY_INIT_DEBUG(10);
-	// Hook up the I/O
-	PyRun_SimpleString( "import interpreter\n"
-		"__term_io = interpreter.terminalio()\n"
-		"__term_err = interpreter.terminalerr()\n" );
-	PyRun_SimpleString( "import sys\n"
-		"sys.stdin = __term_io\n"
-		"sys.stdout = __term_io\n"
-		"sys.stderr = __term_err\n" );
+#endif // PY_VERSION_HEX >= 0x03080000
 
   PyRun_SimpleString(
+    "from codeop import CommandCompiler\n"
+    "__internal_compiler = CommandCompiler()\n" );
+
+  boost::python::object main_module = boost::python::import("__main__");
+  boost::python::object main_namespace = main_module.attr("__dict__");
+  this->private_->compiler_ = main_namespace["__internal_compiler"];
+  this->private_->globals_  = main_namespace;
+
+  PyRun_SimpleString(
+    "import sys\n"
+    "try:\n"
+    "\tsys.ps1\n"
+    "except AttributeError:\n"
+    "\tsys.ps1 = \">>> \"\n"
+    "try:\n"
+    "\tsys.ps2\n"
+    "except AttributeError:\n"
+    "\tsys.ps2 = \"... \"\n");
+
+  boost::python::object sys_module = main_namespace["sys"];
+  boost::python::object sys_namespace = sys_module.attr("__dict__");
+  this->private_->prompt1_ = boost::python::extract<std::string>(sys_namespace["ps1"]);
+  this->private_->prompt2_ = boost::python::extract<std::string>(sys_namespace["ps2"]);
+
+  PyRun_SimpleString(
+    "import interpreter\n"
+    "__term_io = interpreter.terminalio()\n"
+    "__term_err = interpreter.terminalerr()\n"
+    "import sys\n"
+    "sys.stdin = __term_io\n"
+    "sys.stdout = __term_io\n"
+    "sys.stderr = __term_err\n"
     "import atexit\n"
     "def quit_gracefully():\n"
     "\tprint('Goodbye!')\n"
     "atexit.register(quit_gracefully)\n"
   );
 
-  PRINT_PY_INIT_DEBUG(11);
-	// Remove intermediate python variables
-	PyRun_SimpleString( "del (interpreter, __internal_compiler, __term_io, __term_err)\n" );
-  PRINT_PY_INIT_DEBUG(12);
+  PyRun_SimpleString("del (interpreter, __internal_compiler, __term_io, __term_err)\n");
 
   this->private_->initialized_ = true;
   PRINT_PY_INIT_DEBUG(999);

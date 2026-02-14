@@ -44,6 +44,14 @@ SCIRUN_ADD_LIBRARY(Core_Python
   ${Core_Python_SRCS}
 )
 
+if(BUILD_WITH_PYTHON)
+  # PUBLIC so any target that links Core_Python also sees BUILD_WITH_PYTHON
+  target_compile_definitions(Core_Python PUBLIC BUILD_WITH_PYTHON)
+else()
+  # Optional: prevent building this lib at all if Python is off
+  message(STATUS "BUILD_WITH_PYTHON=OFF, Core_Python will not be used")
+endif()
+
 if(BUILD_SHARED_LIBS)
   add_definitions(-DBUILD_Core_Python)
 endif()

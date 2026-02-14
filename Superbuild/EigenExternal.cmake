@@ -26,23 +26,29 @@
 
 
 # EigenExternal.cmake
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+set_property(DIRECTORY PROPERTY EP_BASE ${ep_base})
 
 ExternalProject_Add(Eigen_external
   URL "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
   UPDATE_DISCONNECTED 1
-  PATCH_COMMAND ""
-  CONFIGURE_COMMAND ""
-  BUILD_IN_SOURCE ON
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
-                  "<SOURCE_DIR>/Eigen"  # headers live under Eigen/ and (for 3.4) CMake files under cmake/
-                  "${CMAKE_BINARY_DIR}/Externals/Install/Eigen_external/include/Eigen"
+
+  # Standard CMake configure + install (no build needed for header-only)
+  CONFIGURE_COMMAND
+    ${CMAKE_COMMAND}
+      -S <SOURCE_DIR>
+      -B <BINARY_DIR>
+      -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+
+  BUILD_COMMAND ""  # header-only
+
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --target install
+
   LOG_CONFIGURE 1
   LOG_BUILD 1
   LOG_INSTALL 1
 )
 
-# Optional trace
 ExternalProject_Get_Property(Eigen_external INSTALL_DIR)
 message(STATUS "[Eigen_external] INSTALL_DIR=${INSTALL_DIR}")
