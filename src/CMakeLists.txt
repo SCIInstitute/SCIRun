@@ -929,24 +929,20 @@ endif()
 # Helper: validate a cached include dir (VAR) by checking it contains REL_HEADER.
 # If empty or incorrect, auto-derive from CMAKE_PREFIX_PATH and cache the fix.
 function(_ensure_header _var_name _rel_header)
-  # current value (from cache or parent)
   set(_val "${${_var_name}}")
-
-  # Decide if current value is valid
   set(_valid FALSE)
   if(_val AND EXISTS "${_val}/${_rel_header}")
     set(_valid TRUE)
   endif()
 
   if(NOT _valid)
-    # Try to auto-derive from CMAKE_PREFIX_PATH: look for include dirs that contain the header
+    # Try to derive from CMAKE_PREFIX_PATH by probing <prefix>/include
     set(_candidates)
     if(CMAKE_PREFIX_PATH)
       foreach(_p IN LISTS CMAKE_PREFIX_PATH)
         list(APPEND _candidates "${_p}/include")
       endforeach()
     endif()
-
     set(_found "")
     foreach(_inc IN LISTS _candidates)
       if(EXISTS "${_inc}/${_rel_header}")
@@ -956,19 +952,16 @@ function(_ensure_header _var_name _rel_header)
     endforeach()
 
     if(_found)
-      # Cache-stabilize the corrected value
       set(${_var_name} "${_found}" CACHE PATH "${_var_name}" FORCE)
       message(STATUS "[SCIRun] Fixed ${_var_name} -> '${_found}' (found '${_rel_header}')")
     else()
-      # Clear wrong cached value if it was set but invalid
-      if(_val AND NOT _valid)
+      if(_val)
         message(WARNING "[SCIRun] ${_var_name} ('${_val}') does not contain '${_rel_header}'. Clearing.")
       endif()
       unset(${_var_name} CACHE)
       unset(${_var_name})
     endif()
   else()
-    # Keep and cache-stabilize a correct value
     set(${_var_name} "${_val}" CACHE PATH "${_var_name}" FORCE)
   endif()
 endfunction()
@@ -1054,7 +1047,29 @@ if(NOT _eigen_ok)
   endif()
 endif()
 
+# ---- Cleaver2 normalization + validation ----
+# Superbuild exports one of:
+#   Cleaver2_INCLUDE_DIR / Cleaver2_LIB_DIR
+#   CLEAVER2_INCLUDE / CLEAVER2_INCLUDE_DIR / CLEAVER2_LIBRARY_DIR
+# Normalize to SCIRun’s internal names for consistency.
+if(DEFINED Cleaver2_INCLUDE_DIR AND NOT DEFINED CLEAVER2_INCLUDE)
+  set(CLEAVER2_INCLUDE "${Cleaver2_INCLUDE_DIR}")
+endif()
+if(DEFINED Cleaver2_LIB_DIR AND NOT DEFINED CLEAVER2_LIBRARY_DIR)
+  set(CLEAVER2_LIBRARY_DIR "${Cleaver2_LIB_DIR}")
+endif()
+_ensure_header(CLEAVER2_INCLUDE "cleaver2/vec3.h")
+# Create easy-to-use internal aliases (like you do for other externals)
+if(DEFINED CLEAVER2_INCLUDE)
+  set(SCI_CLEAVER2_INCLUDE "${CLEAVER2_INCLUDE}" CACHE PATH "Cleaver2 include root (contains 'cleaver2/')" FORCE)
+endif()
+if(DEFINED CLEAVER2_LIBRARY_DIR)
+  set(SCI_CLEAVER2_LIBRARY_DIR "${CLEAVER2_LIBRARY_DIR}" CACHE PATH "Cleaver2 library directory" FORCE)
+endif()
+
 # Print diagnostics
+message(STATUS "CLEAVER2_INCLUDE='${CLEAVER2_INCLUDE}'")
+message(STATUS "CLEAVER2_LIBRARY_DIR='${CLEAVER2_LIBRARY_DIR}'")
 message(STATUS "Boost_INCLUDE_DIR='${Boost_INCLUDE_DIR}'")
 message(STATUS "GLEW_INCLUDE_DIR='${GLEW_INCLUDE_DIR}'")
 message(STATUS "LODEPNG_INCLUDE_DIR='${LODEPNG_INCLUDE_DIR}'")
@@ -1103,7 +1118,6 @@ set(_SCIRUN_INCLUDE_DIRS
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
-
 
 # If the second include dir wasn't set, derive it from the first
 if(NOT FREETYPE_INCLUDE_DIR2 OR NOT EXISTS "${FREETYPE_INCLUDE_DIR2}/freetype/config/ftheader.h")

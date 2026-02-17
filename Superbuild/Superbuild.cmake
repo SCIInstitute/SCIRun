@@ -631,6 +631,23 @@ if(DEFINED SQLite_INCLUDE_DIR)
   set(SQLite3_INCLUDE_DIR "${SQLite_INCLUDE_DIR}" CACHE PATH "Alias: SQLite3 include dir" FORCE)
   list(APPEND SCIRUN_CACHE_ARGS "-DSQLite3_INCLUDE_DIR:PATH=${SQLite3_INCLUDE_DIR}")
 endif()
+# ---- Cleaver2 uppercase aliases for inner CMake (legacy/consistent names) ----
+if(DEFINED Cleaver2_INCLUDE_DIR)
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DCLEAVER2_INCLUDE:PATH=${Cleaver2_INCLUDE_DIR}"
+    "-DCLEAVER2_INCLUDE_DIR:PATH=${Cleaver2_INCLUDE_DIR}"
+  )
+endif()
+if(DEFINED Cleaver2_LIB_DIR)
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DCLEAVER2_LIBRARY_DIR:PATH=${Cleaver2_LIB_DIR}"
+    "-DCLEAVER2_LIB_DIR:PATH=${Cleaver2_LIB_DIR}"
+  )
+endif()
+# Library logical name (import lib on Windows will be resolved by consumers)
+list(APPEND SCIRUN_CACHE_ARGS
+  "-DCLEAVER2_LIBRARY:STRING=cleaver2"
+)
 # --- Ensure SQLite hints are present AFTER SCIRUN_CACHE_ARGS is created ---
 if(TARGET SQLite_external)
   ExternalProject_Get_Property(SQLite_external INSTALL_DIR)
@@ -913,4 +930,19 @@ if(TARGET Eigen_external)
       "${_eigen_inc}/unsupported/Eigen/CXX11/Tensor"
     DIRS  "${_eigen_inc}"
   )
+endif()
+
+# --- Gate SCIRun configure on Cleaver2 headers (vec3.h) ---
+if(TARGET Cleaver2_external)
+  # Expose a phony target for the copy step so we can depend on it
+  ExternalProject_Add_StepTargets(Cleaver2_external copy_headers)
+
+  ExternalProject_Get_Property(Cleaver2_external INSTALL_DIR)
+  _sb_scirun_wait_for(NAME cleaver2
+    FILES "${INSTALL_DIR}/include/cleaver2/vec3.h"
+    DIRS  "${INSTALL_DIR}/include/cleaver2"
+  )
+
+  # Ensure SCIRun waits specifically for the header copy step to complete
+  add_dependencies(SCIRun_external Cleaver2_external-copy_headers)
 endif()
