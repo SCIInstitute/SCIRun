@@ -42,7 +42,7 @@ set(_BOOST_LIBS
 )
 
 # Optional compiled libs (usually OFF)
-option(BOOST_ENABLE_PYTHON "Build Boost.Python if Python is available" OFF)
+option(BOOST_ENABLE_PYTHON "Build Boost.Python if Python is available" ON)
 option(BOOST_ENABLE_MPI    "Build Boost.MPI if MPI is available"       OFF)
 option(BOOST_ENABLE_TEST   "Build Boost.Test (unit test framework)"    OFF)
 
