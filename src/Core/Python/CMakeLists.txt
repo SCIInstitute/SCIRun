@@ -65,7 +65,7 @@ SCIRUN_ADD_TEST_DIR(Tests)
 # ====================================================================================
 # Result:
 #   - Imported target: Python::Python
-#   - Vars: Python_EXECUTABLE, Python_INCLUDE_DIRS, Python_LIBRARIES
+#   - Vars: Python_EXECUTABLE, Python_INCLUDE_DIRS, Python_LIBRARIES, Python_VERSION_*
 set(_SCIRUN_PY_OK FALSE)
 
 # Prefer FindPython (CMake ≥ 3.15)
@@ -114,34 +114,37 @@ if(NOT _SCIRUN_PY_OK)
 endif()
 
 # ====================================================================================
-# Platform-specific compile definitions (PYTHONPATH, etc.)
+# Platform-specific compile definitions (PYTHONPATH, etc.) -- robust version
 # ====================================================================================
 
-# Ask Python for site-packages and use its parent (matches legacy semantics)
+# Compute "pythonXY" (e.g., python313) from detected version variables
+set(_PYTHON_NAME "")
+if(DEFINED Python_VERSION_MAJOR AND DEFINED Python_VERSION_MINOR)
+  set(_PYTHON_NAME "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+endif()
+
+# Compute parent of site-packages (purelib/platlib) using Python (safe: fully quoted string)
+# Note: semicolons inside the quoted string are part of Python code and NOT parsed by CMake.
 set(_SCIRUN_PY_QUERY
-  "import sys,sysconfig; p=sysconfig.get_paths(); print((p.get('purelib') or p.get('platlib') or ''))"
+  "import sysconfig; p=sysconfig.get_paths(); print((p.get('purelib') or p.get('platlib') or ''))"
 )
+set(_PY_SITE "")
 execute_process(
   COMMAND "${Python_EXECUTABLE}" -c "${_SCIRUN_PY_QUERY}"
   OUTPUT_VARIABLE _PY_SITE
   ERROR_QUIET
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-set(_PYTHON_MODULE_SEARCH_PARENT "${_PY_SITE}")
-if(_PYTHON_MODULE_SEARCH_PARENT)
+
+# Parent folder of site-packages
+set(_PYTHON_MODULE_SEARCH_PARENT "")
+if(_PY_SITE)
   get_filename_component(_PYTHON_MODULE_SEARCH_PARENT "${_PY_SITE}" DIRECTORY)
+  # Normalize slashes so the value is safe in a C string literal L"..."
+  file(TO_CMAKE_PATH "${_PYTHON_MODULE_SEARCH_PARENT}" _PYTHON_MODULE_SEARCH_PARENT)
 endif()
 
-# Compute 'pythonXY' (e.g., python313) if code uses it
-set(_SCIRUN_PY_NAME_QUERY "import sys; print('python{}{}'.format(sys.version_info.major, sys.version_info.minor))")
-execute_process(
-  COMMAND "${Python_EXECUTABLE}" -c "${_SCIRUN_PY_NAME_QUERY}"
-  OUTPUT_VARIABLE _PYTHON_NAME
-  ERROR_QUIET
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-# Extract a representative library and its dir (used on macOS legacy code)
+# Extract a representative Python lib path and its dir (used on macOS legacy code)
 set(_PYTHON_LIB "")
 if(Python_LIBRARIES)
   if(Python_LIBRARIES MATCHES ";")
@@ -152,20 +155,23 @@ if(Python_LIBRARIES)
 endif()
 get_filename_component(_PYTHON_LIBDIR "${_PYTHON_LIB}" DIRECTORY)
 
-# Apply defines (use add_definitions to preserve your existing behavior / L"...")
+# ALWAYS define these macros so sources never see an undefined identifier.
+# We use target_compile_definitions and inject *wide* string literals L"...".
 if(WIN32)
-  add_definitions(
-    -DPYTHONPATH=L"${_PYTHON_MODULE_SEARCH_PARENT}"
-    -DPYTHONNAME=L"${_PYTHON_NAME}"
+  target_compile_definitions(Core_Python PRIVATE
+    "PYTHONPATH=L\"${_PYTHON_MODULE_SEARCH_PARENT}\""
+    "PYTHONNAME=L\"${_PYTHON_NAME}\""
   )
 elseif(APPLE)
-  add_definitions(
-    -DPYTHONPATH=L"${_PYTHON_MODULE_SEARCH_PARENT}"
-    -DPYTHONLIBDIR=L"${_PYTHON_LIBDIR}"
-    -DPYTHONLIB=L"${_PYTHON_LIB}"
+  target_compile_definitions(Core_Python PRIVATE
+    "PYTHONPATH=L\"${_PYTHON_MODULE_SEARCH_PARENT}\""
+    "PYTHONLIBDIR=L\"${_PYTHON_LIBDIR}\""
+    "PYTHONLIB=L\"${_PYTHON_LIB}\""
   )
 else()
-  add_definitions(-DPYTHONPATH=L"${_PYTHON_MODULE_SEARCH_PARENT}")
+  target_compile_definitions(Core_Python PRIVATE
+    "PYTHONPATH=L\"${_PYTHON_MODULE_SEARCH_PARENT}\""
+  )
 endif()
 
 # ====================================================================================
@@ -191,22 +197,12 @@ target_link_libraries(Core_Python
 #   - Provide an opt-in to link explicitly by detecting the actual .lib names built by b2.
 #   - On non-Windows, explicitly link Boost.Python (no auto-link there).
 
-# Option to force explicit linking on Windows (helps when auto-link is altered by other macros)
 option(SCIRUN_EXPLICIT_BOOST_PYTHON_LINK "Explicitly link Boost.Python on MSVC; otherwise rely on auto-link" OFF)
 
 # Compute Python major.minor digits for filename patterns
-# (derive from modern FindPython or legacy values)
 set(_SCIRUN_PY_M "")
 if(DEFINED Python_VERSION_MAJOR AND DEFINED Python_VERSION_MINOR)
   set(_SCIRUN_PY_M "${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
-else()
-  # Fallback: try to query from interpreter
-  execute_process(
-    COMMAND "${Python_EXECUTABLE}" -c "import sys; print(f'{sys.version_info.major}{sys.version_info.minor}')"
-    OUTPUT_VARIABLE _SCIRUN_PY_M
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-  )
 endif()
 
 if(MSVC)
@@ -215,28 +211,34 @@ if(MSVC)
     target_compile_definitions(Core_Python PRIVATE BOOST_PYTHON_NO_LIB)
 
     # Find actual lib files under Boost's lib dir (Debug has '-gd-')
-    set(_bp_dbg "")
-    set(_bp_rel "")
+    set(SCI_BOOST_PYTHON_LIB_DEBUG "")
+    set(SCI_BOOST_PYTHON_LIB_RELEASE "")
 
-    if(DEFINED SCI_BOOST_LIBRARY_DIR)
+    if(DEFINED SCI_BOOST_LIBRARY_DIR AND EXISTS "${SCI_BOOST_LIBRARY_DIR}")
       file(GLOB _bp_dbg
         "${SCI_BOOST_LIBRARY_DIR}/libboost_python${_SCIRUN_PY_M}-vc*-mt-gd-*.lib"
       )
       file(GLOB _bp_rel_all
         "${SCI_BOOST_LIBRARY_DIR}/libboost_python${_SCIRUN_PY_M}-vc*-mt-*.lib"
       )
+      set(_bp_rel "")
       foreach(_cand IN LISTS _bp_rel_all)
         if(NOT _cand MATCHES "-gd-")
           list(APPEND _bp_rel "${_cand}")
         endif()
       endforeach()
+
+      if(_bp_dbg)
+        list(SORT _bp_dbg)
+        list(REVERSE _bp_dbg)
+        list(GET _bp_dbg 0 SCI_BOOST_PYTHON_LIB_DEBUG)
+      endif()
+      if(_bp_rel)
+        list(SORT _bp_rel)
+        list(REVERSE _bp_rel)
+        list(GET _bp_rel 0 SCI_BOOST_PYTHON_LIB_RELEASE)
+      endif()
     endif()
-
-    list(SORT _bp_dbg)  ; list(REVERSE _bp_dbg)
-    list(SORT _bp_rel)  ; list(REVERSE _bp_rel)
-
-    list(GET _bp_dbg 0 SCI_BOOST_PYTHON_LIB_DEBUG  )
-    list(GET _bp_rel 0 SCI_BOOST_PYTHON_LIB_RELEASE)
 
     if(NOT SCI_BOOST_PYTHON_LIB_DEBUG OR NOT EXISTS "${SCI_BOOST_PYTHON_LIB_DEBUG}")
       message(FATAL_ERROR
@@ -249,19 +251,18 @@ if(MSVC)
         "Expected 'libboost_python${_SCIRUN_PY_M}-vc*-mt-*.lib' (no -gd-)")
     endif()
 
+    # Per-config link of the actual .lib files
     target_link_libraries(Core_Python PRIVATE
-      $<$<CONFIG:Debug>:"${SCI_BOOST_PYTHON_LIB_DEBUG}">
-      $<$<CONFIG:RelWithDebInfo>:"${SCI_BOOST_PYTHON_LIB_RELEASE}">
-      $<$<CONFIG:Release>:"${SCI_BOOST_PYTHON_LIB_RELEASE}">
-      $<$<CONFIG:MinSizeRel>:"${SCI_BOOST_PYTHON_LIB_RELEASE}">
+      debug     "${SCI_BOOST_PYTHON_LIB_DEBUG}"
+      optimized "${SCI_BOOST_PYTHON_LIB_RELEASE}"
     )
-    message(STATUS "[Core/Python] Explicitly linking Boost.Python: ")
+    message(STATUS "[Core/Python] Explicitly linking Boost.Python:")
     message(STATUS "  Debug   : ${SCI_BOOST_PYTHON_LIB_DEBUG}")
     message(STATUS "  Release : ${SCI_BOOST_PYTHON_LIB_RELEASE}")
   else()
     # Auto-link path: do not add boost_python*.lib explicitly.
-    # Ensure the Boost lib dir is on the search path (top-level does this),
-    # and avoid defines like BOOST_ALL_NO_LIB / BOOST_PYTHON_NO_LIB here.
+    # Ensure the Boost lib dir is in the search path (top-level handles it).
+    # Avoid defines like BOOST_ALL_NO_LIB / BOOST_PYTHON_NO_LIB here.
     message(STATUS "[Core/Python] Using MSVC autolink for Boost.Python (recommended).")
   endif()
 else()
@@ -306,11 +307,8 @@ set_target_properties(Core_Python
 )
 
 # Helpful diagnostics
-message(STATUS "[Core/Python] Python executable: ${Python_EXECUTABLE}")
-message(STATUS "[Core/Python] Python include(s): ${Python_INCLUDE_DIRS}")
-message(STATUS "[Core/Python] Python libraries : ${Python_LIBRARIES}")
+message(STATUS "[Core/Python] Python executable : ${Python_EXECUTABLE}")
+message(STATUS "[Core/Python] Python include(s) : ${Python_INCLUDE_DIRS}")
+message(STATUS "[Core/Python] Python libraries  : ${Python_LIBRARIES}")
+message(STATUS "[Core/Python] PYTHONNAME       : ${_PYTHON_NAME}")
 message(STATUS "[Core/Python] PYTHONPATH       : ${_PYTHON_MODULE_SEARCH_PARENT}")
-if(APPLE)
-  message(STATUS "[Core/Python] macOS PYTHONLIBDIR: ${_PYTHON_LIBDIR}")
-  message(STATUS "[Core/Python] macOS PYTHONLIB   : ${_PYTHON_LIB}")
-endif()
