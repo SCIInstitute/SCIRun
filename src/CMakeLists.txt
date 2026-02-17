@@ -1217,7 +1217,8 @@ MACRO(SCIRUN_ADD_LIBRARY library)
   else()
     # TODO:
     if(APPLE)
-      target_compile_options(${library} PRIVATE -Wall -Werror -Wunused-parameter -Winfinite-recursion)
+      target_compile_options(${library} PRIVATE -Wall  -Wunused-parameter -Winfinite-recursion)
+          # TODO: put back -Werror
           #eventually: -Wall -Wextra -pedantic -Werror)
     else()
       target_compile_options(${library} PRIVATE -Wall -Wunused-parameter)

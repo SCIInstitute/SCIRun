@@ -39,6 +39,8 @@
 #include <boost/lexical_cast.hpp>
 #include <Core/ImportExport/share.h>
 
+#include <functional>
+
 namespace SCIRun
 {
 

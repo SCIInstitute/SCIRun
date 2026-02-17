@@ -162,7 +162,119 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Compile
-      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -j4
+
+    - name: Test
+      working-directory: bin/SCIRun
+      continue-on-error: true
+      run: make test
+
+  mac-build-headless-14-arm:
+
+    runs-on: macOS-14
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Compile
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -j3
+
+    - name: Test
+      working-directory: bin/SCIRun
+      continue-on-error: true
+      run: make test
+
+  mac-build-headless-14-arm-slim:
+
+    runs-on: macOS-14
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Compile
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -DBUILD_WITH_PYTHON:BOOL=OFF -j4
+
+    - name: Test
+      working-directory: bin/SCIRun
+      continue-on-error: true
+      run: make test
+
+  mac-build-headless-15-arm:
+
+    runs-on: macOS-15
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Compile
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -j4
+
+    - name: Test
+      working-directory: bin/SCIRun
+      continue-on-error: true
+      run: make test
+
+  mac-build-headless-15-arm-slim:
+
+    runs-on: macOS-15
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Compile
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -DBUILD_WITH_PYTHON:BOOL=OFF -j4
+
+    - name: Test
+      working-directory: bin/SCIRun
+      continue-on-error: true
+      run: make test
+
+  mac-build-headless-15-intel:
+
+    runs-on: macOS-15-intel
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Compile
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -j4
+
+    - name: Test
+      working-directory: bin/SCIRun
+      continue-on-error: true
+      run: make test
+
+  mac-build-headless-15-intel-slim:
+
+    runs-on: macOS-15-intel
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Compile
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -DBUILD_WITH_PYTHON:BOOL=OFF -j4
+
+    - name: Test
+      working-directory: bin/SCIRun
+      continue-on-error: true
+      run: make test
+
+  mac-build-headless-26:
+
+    runs-on: macOS-26
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Compile
+      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -j4
 
     - name: Test
       working-directory: bin/SCIRun

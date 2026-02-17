@@ -100,7 +100,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
             if (val != 0.0)
             {
                objmesh->get_delems(delems,fidx);
-               double mindist = DBL_MAX;
+               double mindist = std::numeric_limits<double>::max();
                double dist;
                int edgeidx = 0;
                for (size_t r=0; r<delems.size();r++)
@@ -184,7 +184,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
             if (val != 0.0)
             {
                objmesh->get_delems(delems,fidx);
-               double mindist = DBL_MAX;
+               double mindist = std::numeric_limits<double>::max();
                double dist;
                int edgeidx = 0;
                for (size_t r=0; r<delems.size();r++)
@@ -268,7 +268,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
             if (val != 0.0)
             {
                objmesh->get_delems(delems,fidx);
-               double mindist = DBL_MAX;
+               double mindist = std::numeric_limits<double>::max();
                double dist;
                int edgeidx = 0;
                for (size_t r=0; r<delems.size();r++)
@@ -365,7 +365,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
             if (val != 0.0)
             {
                objmesh->get_delems(delems,fidx);
-               double mindist = DBL_MAX;
+               double mindist = std::numeric_limits<double>::max();
                double dist;
                int edgeidx = 0;
                for (size_t r=0; r<delems.size();r++)
@@ -468,7 +468,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
             if (val != 0.0)
             {
                objmesh->get_delems(delems,fidx);
-               double mindist = DBL_MAX;
+               double mindist = std::numeric_limits<double>::max();
                double dist;
                int edgeidx = 0;
                for (size_t r=0; r<delems.size();r++)
@@ -572,7 +572,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
             if (val != 0.0)
             {
                objmesh->get_delems(delems,fidx);
-               double mindist = DBL_MAX;
+               double mindist = std::numeric_limits<double>::max();
                double dist;
                int edgeidx = 0;
                for (size_t r=0; r<delems.size();r++)
@@ -713,7 +713,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
   if (objmesh->num_nodes() == 0)
   {
     warning("Object Field does not contain any nodes, setting distance to maximum.");
-    ofield->set_all_values(DBL_MAX);
+    ofield->set_all_values(std::numeric_limits<double>::max());
 
     return (true);
   }
@@ -794,7 +794,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
   if (objmesh->num_nodes() == 0)
   {
     warning("Object Field does not contain any nodes, setting distance to maximum.");
-    dfield->set_all_values(DBL_MAX);
+    dfield->set_all_values(std::numeric_limits<double>::max());
     vfield->clear_all_values();
 
     return (true);

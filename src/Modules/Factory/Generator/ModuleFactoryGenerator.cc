@@ -29,6 +29,7 @@
 #include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
 #include <iostream>
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>

@@ -822,8 +822,8 @@ bool SCIRun::TetVolFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const char
         outputfile << "LOOKUP_TABLE default" << std::endl;
         mesh->begin(nodeIter);
         mesh->end(nodeIterEnd);
-        double min = DBL_MAX;
-        double max = DBL_MIN;
+        double min = std::numeric_limits<double>::max();
+        double max = std::numeric_limits<double>::min();
 
         while (nodeIter != nodeIterEnd)
         {
@@ -864,8 +864,8 @@ bool SCIRun::TetVolFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const char
         outputfile << "LOOKUP_TABLE default" << std::endl;
         mesh->begin(elemIter);
         mesh->end(elemIterEnd);
-        double min = DBL_MAX;
-        double max = DBL_MIN;
+        double min = std::numeric_limits<double>::max();
+        double max = std::numeric_limits<double>::min();
 
         while (elemIter != elemIterEnd)
         {
