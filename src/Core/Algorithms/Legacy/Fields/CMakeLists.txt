@@ -230,83 +230,133 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
 )
 
 # ==========================================================
-# Teem discovery (same pattern as Core_Geometry_Primitives)
+# Teem discovery (prefer config, fallback to superbuild vars)
+# Static consumption: ensure headers do NOT use dllimport.
 # ==========================================================
-# Prefer a config package if available
+# Expect these from superbuild:
+#   Teem_INCLUDE_DIR -> <.../Externals/Install/Teem_external>/include
+#   Teem_LIB_DIR     -> <.../Externals/Install/Teem_external>/lib
+
+# Prefer a config package if available (uncommon for Teem, but harmless):
 find_package(Teem CONFIG QUIET)
 
 if(TARGET Teem::teem)
+  # If this comes from a config that exported a SHARED target,
+  # force static-consumer macros at call sites:
+  set_property(TARGET Teem::teem APPEND PROPERTY
+    INTERFACE_COMPILE_DEFINITIONS "TEEM_STATIC"
+  )
+  # If your Teem was built with zlib and the config exposes it, link transitively.
+  # Otherwise we’ll add Zlib explicitly below when we link this target.
   set(_teem_target Teem::teem)
 else()
-  # Fallback to superbuild exports
   if(NOT Teem_INCLUDE_DIR OR NOT Teem_LIB_DIR)
     message(FATAL_ERROR
       "Teem not configured: need Teem_INCLUDE_DIR and Teem_LIB_DIR from the superbuild.\n"
       "Teem_INCLUDE_DIR='${Teem_INCLUDE_DIR}'  Teem_LIB_DIR='${Teem_LIB_DIR}'")
   endif()
 
-  set(_teem_lib "")
+  # Resolve static library for each config
+  set(_TEEM_LIB_RELEASE "")
+  set(_TEEM_LIB_DEBUG   "")
+
   if(WIN32)
+    # Common names used by Teem on Windows
     if(EXISTS "${Teem_LIB_DIR}/teem.lib")
-      set(_teem_lib "${Teem_LIB_DIR}/teem.lib")
+      set(_TEEM_LIB_RELEASE "${Teem_LIB_DIR}/teem.lib")
     elseif(EXISTS "${Teem_LIB_DIR}/libteem.lib")
-      set(_teem_lib "${Teem_LIB_DIR}/libteem.lib")
+      set(_TEEM_LIB_RELEASE "${Teem_LIB_DIR}/libteem.lib")
+    endif()
+
+    # Debug may use the same name or have a trailing 'd'
+    if(EXISTS "${Teem_LIB_DIR}/teemd.lib")
+      set(_TEEM_LIB_DEBUG "${Teem_LIB_DIR}/teemd.lib")
+    elseif(EXISTS "${Teem_LIB_DIR}/teem.lib")
+      set(_TEEM_LIB_DEBUG "${Teem_LIB_DIR}/teem.lib")
+    elseif(EXISTS "${Teem_LIB_DIR}/libteemd.lib")
+      set(_TEEM_LIB_DEBUG "${Teem_LIB_DIR}/libteemd.lib")
+    elseif(EXISTS "${Teem_LIB_DIR}/libteem.lib")
+      set(_TEEM_LIB_DEBUG "${Teem_LIB_DIR}/libteem.lib")
     endif()
   elseif(APPLE)
-    if(EXISTS "${Teem_LIB_DIR}/libteem.dylib")
-      set(_teem_lib "${Teem_LIB_DIR}/libteem.dylib")
-    elseif(EXISTS "${Teem_LIB_DIR}/libteem.a")
-      set(_teem_lib "${Teem_LIB_DIR}/libteem.a")
+    # Prefer static if available
+    if(EXISTS "${Teem_LIB_DIR}/libteem.a")
+      set(_TEEM_LIB_RELEASE "${Teem_LIB_DIR}/libteem.a")
+      set(_TEEM_LIB_DEBUG   "${Teem_LIB_DIR}/libteem.a")
+    elseif(EXISTS "${Teem_LIB_DIR}/libteem.dylib")
+      # Shared exists but we still treat consumer as static (headers need static defines)
+      set(_TEEM_LIB_RELEASE "${Teem_LIB_DIR}/libteem.dylib")
+      set(_TEEM_LIB_DEBUG   "${Teem_LIB_DIR}/libteem.dylib")
     endif()
   else()
-    if(EXISTS "${Teem_LIB_DIR}/libteem.so")
-      set(_teem_lib "${Teem_LIB_DIR}/libteem.so")
-    elseif(EXISTS "${Teem_LIB_DIR}/libteem.a")
-      set(_teem_lib "${Teem_LIB_DIR}/libteem.a")
+    if(EXISTS "${Teem_LIB_DIR}/libteem.a")
+      set(_TEEM_LIB_RELEASE "${Teem_LIB_DIR}/libteem.a")
+      set(_TEEM_LIB_DEBUG   "${Teem_LIB_DIR}/libteem.a")
+    elseif(EXISTS "${Teem_LIB_DIR}/libteem.so")
+      set(_TEEM_LIB_RELEASE "${Teem_LIB_DIR}/libteem.so")
+      set(_TEEM_LIB_DEBUG   "${Teem_LIB_DIR}/libteem.so")
     endif()
   endif()
 
-  if(NOT _teem_lib)
-    find_library(TEEM_LIBRARY
+  # Last-resort search
+  if(NOT _TEEM_LIB_RELEASE)
+    find_library(TEEM_LIBRARY_RELEASE
       NAMES teem libteem
       HINTS "${Teem_LIB_DIR}" "${CMAKE_PREFIX_PATH}" "${CMAKE_PREFIX_PATH}/lib" "${CMAKE_PREFIX_PATH}/lib64"
     )
-    if(TEEM_LIBRARY)
-      set(_teem_lib "${TEEM_LIBRARY}")
+    if(TEEM_LIBRARY_RELEASE)
+      set(_TEEM_LIB_RELEASE "${TEEM_LIBRARY_RELEASE}")
+      set(_TEEM_LIB_DEBUG   "${TEEM_LIBRARY_RELEASE}")
     endif()
   endif()
 
-  if(NOT _teem_lib OR NOT EXISTS "${_teem_lib}")
+  if(NOT _TEEM_LIB_RELEASE OR NOT EXISTS "${_TEEM_LIB_RELEASE}")
     message(FATAL_ERROR
       "Teem library not found. Looked under '${Teem_LIB_DIR}'.\n"
       "Teem_INCLUDE_DIR='${Teem_INCLUDE_DIR}'  Teem_LIB_DIR='${Teem_LIB_DIR}'\n"
-      "Ensure the Teem external installs libteem/teem.")
+      "Ensure the Teem external installs a static lib (teem.lib/libteem.a).")
   endif()
 
-  add_library(Teem::teem UNKNOWN IMPORTED)
+  # Create imported STATIC target and propagate include paths and *static* defines
+  add_library(Teem::teem STATIC IMPORTED GLOBAL)
   set_target_properties(Teem::teem PROPERTIES
-    IMPORTED_LOCATION "${_teem_lib}"
-    INTERFACE_INCLUDE_DIRECTORIES "${Teem_INCLUDE_DIR}"
+    IMPORTED_LOCATION_RELEASE         "${_TEEM_LIB_RELEASE}"
+    IMPORTED_LOCATION_DEBUG           "${_TEEM_LIB_DEBUG}"
+    INTERFACE_INCLUDE_DIRECTORIES     "${Teem_INCLUDE_DIR}"
+    # This disables __declspec(dllimport) in Teem headers for static consumption.
+    # If you still see __imp_* after a clean rebuild, replace with TEEM_STATIC_DEFINE
+    # or add module-level defines like AIR_STATIC;NRRD_STATIC, depending on your Teem version.
+    INTERFACE_COMPILE_DEFINITIONS     "TEEM_STATIC"
     IMPORTED_LINK_INTERFACE_LANGUAGES "C"
   )
 
   set(_teem_target Teem::teem)
 endif()
 
-TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
-  Core_Datatypes
-  Core_Datatypes_Legacy_Field
-  Core_Datatypes_Legacy_Nrrd
-  Core_Datatypes_Legacy_Bundle
-  Algorithms_Base
-  Core_Exceptions_Legacy
-  Core_Thread
-  Core_Geometry_Primitives
-  Core_Basis
-  Algorithms_Math
-  ${_teem_target}
+# ---- Link this library ----
+# Convert your legacy link line to target-based + PRIVATE for clarity.
+target_link_libraries(Core_Algorithms_Legacy_Fields
+  PRIVATE
+    Core_Datatypes
+    Core_Datatypes_Legacy_Field
+    Core_Datatypes_Legacy_Nrrd
+    Core_Datatypes_Legacy_Bundle
+    Algorithms_Base
+    Core_Exceptions_Legacy
+    Core_Thread
+    Core_Geometry_Primitives
+    Core_Basis
+    Algorithms_Math
+    ${_teem_target}
 )
 
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)
-ENDIF(BUILD_SHARED_LIBS)
+# If your Teem build uses zlib, add it explicitly (static Teem won’t drag it in automatically)
+if(TARGET Zlib::Zlib)
+  target_link_libraries(Core_Algorithms_Legacy_Fields PRIVATE Zlib::Zlib)
+endif()
+
+# Export macro for this DLL, unchanged
+if(BUILD_SHARED_LIBS)
+  target_compile_definitions(Core_Algorithms_Legacy_Fields PRIVATE BUILD_Core_Algorithms_Legacy_Fields)
+endif()
+
