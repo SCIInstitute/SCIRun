@@ -92,9 +92,14 @@ SCIRUN_ADD_LIBRARY(Modules_Math
   ${Modules_Math_SRCS}
 )
 
+if (MSVC)
+  target_compile_options(Modules_Math PRIVATE /showIncludes)
+endif()
+
 TARGET_LINK_LIBRARIES(Modules_Math
   Dataflow_Network
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
   Algorithms_Math
 )
 

@@ -65,6 +65,7 @@ TARGET_LINK_LIBRARIES(Graphics_Widgets
   Core_Math
   Core_Datatypes
   Core_Geometry_Primitives
+  Core_Persistent
   Graphics_Glyphs
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}

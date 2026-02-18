@@ -27,6 +27,8 @@
 
 # ---- Core/Python CMake ----
 
+cmake_minimum_required(VERSION 3.16)  # adjust if your project requires different
+
 # --- Sources ---
 set(Core_Python_SRCS
   PythonInterpreter.cc
@@ -51,6 +53,7 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 # If Python enabled, expose BUILD_WITH_PYTHON so dependents (and sources) can #ifdef code
+# IMPORTANT: Keep this PUBLIC only for the macro, not for third-party headers/libs.
 if(BUILD_WITH_PYTHON)
   target_compile_definitions(Core_Python PUBLIC BUILD_WITH_PYTHON)
 else()
@@ -62,10 +65,10 @@ SCIRUN_ADD_TEST_DIR(Tests)
 
 # ====================================================================================
 # Python detection (modern-first, robust fallbacks)
-# ====================================================================================
 # Result:
 #   - Imported target: Python::Python
 #   - Vars: Python_EXECUTABLE, Python_INCLUDE_DIRS, Python_LIBRARIES, Python_VERSION_*
+# ====================================================================================
 set(_SCIRUN_PY_OK FALSE)
 
 # Prefer FindPython (CMake ≥ 3.15)
@@ -114,7 +117,7 @@ if(NOT _SCIRUN_PY_OK)
 endif()
 
 # ====================================================================================
-# Platform-specific compile definitions (PYTHONPATH, etc.) -- robust version
+# Platform-specific compile definitions (PYTHONPATH, etc.)
 # ====================================================================================
 
 # Compute "pythonXY" (e.g., python313) from detected version variables
@@ -123,8 +126,7 @@ if(DEFINED Python_VERSION_MAJOR AND DEFINED Python_VERSION_MINOR)
   set(_PYTHON_NAME "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
 endif()
 
-# Compute parent of site-packages (purelib/platlib) using Python (safe: fully quoted string)
-# Note: semicolons inside the quoted string are part of Python code and NOT parsed by CMake.
+# Compute parent of site-packages using Python
 set(_SCIRUN_PY_QUERY
   "import sysconfig; p=sysconfig.get_paths(); print((p.get('purelib') or p.get('platlib') or ''))"
 )
@@ -140,11 +142,10 @@ execute_process(
 set(_PYTHON_MODULE_SEARCH_PARENT "")
 if(_PY_SITE)
   get_filename_component(_PYTHON_MODULE_SEARCH_PARENT "${_PY_SITE}" DIRECTORY)
-  # Normalize slashes so the value is safe in a C string literal L"..."
   file(TO_CMAKE_PATH "${_PYTHON_MODULE_SEARCH_PARENT}" _PYTHON_MODULE_SEARCH_PARENT)
 endif()
 
-# Extract a representative Python lib path and its dir (used on macOS legacy code)
+# Extract a representative Python lib path and its dir (used for legacy macOS code paths)
 set(_PYTHON_LIB "")
 if(Python_LIBRARIES)
   if(Python_LIBRARIES MATCHES ";")
@@ -156,7 +157,6 @@ endif()
 get_filename_component(_PYTHON_LIBDIR "${_PYTHON_LIB}" DIRECTORY)
 
 # ALWAYS define these macros so sources never see an undefined identifier.
-# We use target_compile_definitions and inject *wide* string literals L"...".
 if(WIN32)
   target_compile_definitions(Core_Python PRIVATE
     "PYTHONPATH=L\"${_PYTHON_MODULE_SEARCH_PARENT}\""
@@ -175,29 +175,25 @@ else()
 endif()
 
 # ====================================================================================
-# Link dependencies
+# Link dependencies (all PRIVATE to avoid leaking third-party includes to dependents)
 # ====================================================================================
-
-# Always link the Python imported target
 target_link_libraries(Core_Python
   PRIVATE
     Python::Python
-    ${SCI_BOOST_LIBRARY}
+    ${SCI_BOOST_LIBRARY}              # keep existing boost meta-lib if your project uses it
     Core_Matlab
     Core_Datatypes
     Core_Datatypes_Legacy_Field
 )
 
-# ------------------------------------------------------------------------------------
+# ====================================================================================
 # Boost.Python handling
-# ------------------------------------------------------------------------------------
-# Strategy:
-#   - On MSVC (Windows): Prefer Boost's MSVC auto-link. DO NOT name 'boost_python...'
-#     explicitly; the headers inject the correct /DEFAULTLIB:libboost_python....
-#   - Provide an opt-in to link explicitly by detecting the actual .lib names built by b2.
-#   - On non-Windows, explicitly link Boost.Python (no auto-link there).
+#   - Recommended on MSVC: turn on explicit linking to tolerate 'lib' prefix naming.
+#   - Otherwise: use MSVC autolink (ensure Boost lib dir is on link path).
+# ====================================================================================
 
-option(SCIRUN_EXPLICIT_BOOST_PYTHON_LINK "Explicitly link Boost.Python on MSVC; otherwise rely on auto-link" OFF)
+# Toggle (pass from superbuild via -DSCIRUN_EXPLICIT_BOOST_PYTHON_LINK=ON)
+option(SCIRUN_EXPLICIT_BOOST_PYTHON_LINK "Explicitly link Boost.Python on MSVC; otherwise rely on autolink" OFF)
 
 # Compute Python major.minor digits for filename patterns
 set(_SCIRUN_PY_M "")
@@ -207,66 +203,82 @@ endif()
 
 if(MSVC)
   if(SCIRUN_EXPLICIT_BOOST_PYTHON_LINK)
-    # Disable autolink for Boost.Python on this target
+    # Disable Boost autolink on this target
     target_compile_definitions(Core_Python PRIVATE BOOST_PYTHON_NO_LIB)
 
-    # Find actual lib files under Boost's lib dir (Debug has '-gd-')
-    set(SCI_BOOST_PYTHON_LIB_DEBUG "")
-    set(SCI_BOOST_PYTHON_LIB_RELEASE "")
+    # The Boost lib directory should be passed from the superbuild:
+    #   -DSCI_BOOST_LIBRARY_DIR=E:/.../Externals/Install/Boost_external/lib
+    if (NOT DEFINED SCI_BOOST_LIBRARY_DIR OR NOT EXISTS "${SCI_BOOST_LIBRARY_DIR}")
+      message(FATAL_ERROR "SCI_BOOST_LIBRARY_DIR is not set or does not exist. Pass it from the superbuild.")
+    endif()
 
-    if(DEFINED SCI_BOOST_LIBRARY_DIR AND EXISTS "${SCI_BOOST_LIBRARY_DIR}")
-      file(GLOB _bp_dbg
-        "${SCI_BOOST_LIBRARY_DIR}/libboost_python${_SCIRUN_PY_M}-vc*-mt-gd-*.lib"
-      )
-      file(GLOB _bp_rel_all
-        "${SCI_BOOST_LIBRARY_DIR}/libboost_python${_SCIRUN_PY_M}-vc*-mt-*.lib"
-      )
-      set(_bp_rel "")
-      foreach(_cand IN LISTS _bp_rel_all)
-        if(NOT _cand MATCHES "-gd-")
-          list(APPEND _bp_rel "${_cand}")
-        endif()
-      endforeach()
+    # Gather candidates for Debug (-gd-) with and without 'lib' prefix
+    file(GLOB _bp_dbg_candidates
+      "${SCI_BOOST_LIBRARY_DIR}/libboost_python${_SCIRUN_PY_M}-vc*-mt-gd-*.lib"
+      "${SCI_BOOST_LIBRARY_DIR}/boost_python${_SCIRUN_PY_M}-vc*-mt-gd-*.lib"
+    )
 
-      if(_bp_dbg)
-        list(SORT _bp_dbg)
-        list(REVERSE _bp_dbg)
-        list(GET _bp_dbg 0 SCI_BOOST_PYTHON_LIB_DEBUG)
+    # Gather candidates for Release (no -gd-) with and without 'lib' prefix
+    file(GLOB _bp_rel_candidates_all
+      "${SCI_BOOST_LIBRARY_DIR}/libboost_python${_SCIRUN_PY_M}-vc*-mt-*.lib"
+      "${SCI_BOOST_LIBRARY_DIR}/boost_python${_SCIRUN_PY_M}-vc*-mt-*.lib"
+    )
+    # Filter out accidental debug files from the release list
+    set(_bp_rel_candidates "")
+    foreach(_cand IN LISTS _bp_rel_candidates_all)
+      if(NOT _cand MATCHES "-gd-")
+        list(APPEND _bp_rel_candidates "${_cand}")
       endif()
-      if(_bp_rel)
-        list(SORT _bp_rel)
-        list(REVERSE _bp_rel)
-        list(GET _bp_rel 0 SCI_BOOST_PYTHON_LIB_RELEASE)
-      endif()
+    endforeach()
+
+    # Pick the most specific candidate (sort + take last)
+    if(_bp_dbg_candidates)
+      list(SORT _bp_dbg_candidates)
+      list(REVERSE _bp_dbg_candidates)
+      list(GET _bp_dbg_candidates 0 SCI_BOOST_PYTHON_LIB_DEBUG)
+    endif()
+    if(_bp_rel_candidates)
+      list(SORT _bp_rel_candidates)
+      list(REVERSE _bp_rel_candidates)
+      list(GET _bp_rel_candidates 0 SCI_BOOST_PYTHON_LIB_RELEASE)
     endif()
 
     if(NOT SCI_BOOST_PYTHON_LIB_DEBUG OR NOT EXISTS "${SCI_BOOST_PYTHON_LIB_DEBUG}")
       message(FATAL_ERROR
-        "Boost.Python (Debug) not found under '${SCI_BOOST_LIBRARY_DIR}'. "
-        "Expected 'libboost_python${_SCIRUN_PY_M}-vc*-mt-gd-*.lib'")
+        "Boost.Python Debug lib not found under '${SCI_BOOST_LIBRARY_DIR}'. "
+        "Looked for libboost_python${_SCIRUN_PY_M}-vc*-mt-gd-*.lib or boost_python${_SCIRUN_PY_M}-vc*-mt-gd-*.lib"
+      )
     endif()
     if(NOT SCI_BOOST_PYTHON_LIB_RELEASE OR NOT EXISTS "${SCI_BOOST_PYTHON_LIB_RELEASE}")
       message(FATAL_ERROR
-        "Boost.Python (Release) not found under '${SCI_BOOST_LIBRARY_DIR}'. "
-        "Expected 'libboost_python${_SCIRUN_PY_M}-vc*-mt-*.lib' (no -gd-)")
+        "Boost.Python Release lib not found under '${SCI_BOOST_LIBRARY_DIR}'. "
+        "Looked for libboost_python${_SCIRUN_PY_M}-vc*-mt-*.lib or boost_python${_SCIRUN_PY_M}-vc*-mt-*.lib"
+      )
     endif()
 
-    # Per-config link of the actual .lib files
+    # Ensure the linker searches that folder
+    target_link_directories(Core_Python PRIVATE "${SCI_BOOST_LIBRARY_DIR}")
+
+    # Link the exact files (per-config)
     target_link_libraries(Core_Python PRIVATE
       debug     "${SCI_BOOST_PYTHON_LIB_DEBUG}"
       optimized "${SCI_BOOST_PYTHON_LIB_RELEASE}"
     )
+
     message(STATUS "[Core/Python] Explicitly linking Boost.Python:")
     message(STATUS "  Debug   : ${SCI_BOOST_PYTHON_LIB_DEBUG}")
     message(STATUS "  Release : ${SCI_BOOST_PYTHON_LIB_RELEASE}")
   else()
-    # Auto-link path: do not add boost_python*.lib explicitly.
-    # Ensure the Boost lib dir is in the search path (top-level handles it).
-    # Avoid defines like BOOST_ALL_NO_LIB / BOOST_PYTHON_NO_LIB here.
-    message(STATUS "[Core/Python] Using MSVC autolink for Boost.Python (recommended).")
+    # Keep autolink, but help the linker find the folder
+    if (DEFINED SCI_BOOST_LIBRARY_DIR AND EXISTS "${SCI_BOOST_LIBRARY_DIR}")
+      target_link_directories(Core_Python PRIVATE "${SCI_BOOST_LIBRARY_DIR}")
+    endif()
+    message(STATUS "[Core/Python] Using MSVC autolink for Boost.Python (ensure lib names match).")
+    # For debugging the exact name autolink requests, uncomment:
+    # target_compile_definitions(Core_Python PRIVATE BOOST_LIB_DIAGNOSTIC)
   endif()
 else()
-  # Non-Windows: explicitly link Boost.Python
+  # Non-Windows: explicitly link Boost.Python by name if available
   set(_bp_names
     "boost_python${_SCIRUN_PY_M}"
     "boost_python3"
@@ -274,7 +286,7 @@ else()
   )
   set(_bp_lib "")
 
-  # Prefer the superbuild lib dir if present
+  # Prefer superbuild lib dir if present
   if(DEFINED SCI_BOOST_LIBRARY_DIR AND EXISTS "${SCI_BOOST_LIBRARY_DIR}")
     find_library(BOOST_PYTHON_LIB
       NAMES ${_bp_names}
@@ -284,7 +296,7 @@ else()
     set(_bp_lib "${BOOST_PYTHON_LIB}")
   endif()
 
-  # Fallback to default search paths if still not found
+  # Fallback to default search paths
   if(NOT _bp_lib)
     find_library(BOOST_PYTHON_LIB NAMES ${_bp_names})
     set(_bp_lib "${BOOST_PYTHON_LIB}")
@@ -300,7 +312,7 @@ else()
   endif()
 endif()
 
-# Debug-only macro (preserve your behavior)
+# Debug-only macro (matches your previous behavior)
 set_target_properties(Core_Python
   PROPERTIES
     COMPILE_DEFINITIONS_DEBUG "BOOST_DEBUG_PYTHON"
