@@ -491,19 +491,99 @@ set(SCIRUN_CACHE_ARGS
 )
 
 # =========================
-# Forward Python values to SCIRun (inner CMake)
+# Forward Python values to SCIRun (inner CMake), version-agnostic
 # =========================
 if(BUILD_WITH_PYTHON)
-  # New (modern) variables for FindPython in SCIRun subdirs
+  # Base paths from your external layout
+  set(_PY_SRC        "${ep_base}/Source/Python_external")
+  set(_PY_PCBUILD    "${_PY_SRC}/PCbuild/amd64")
+  set(_PY_INC        "${_PY_SRC}/Include")
+  set(_PY_PC_INC     "${_PY_SRC}/PC")
+  set(_PY_EXE        "${_PY_PCBUILD}/python.exe")
+
+  # Derive MAJOR.MINOR from the built interpreter
+  set(_PY_MAJ "")
+  set(_PY_MIN "")
+  if(EXISTS "${_PY_EXE}")
+    execute_process(
+      COMMAND "${_PY_EXE}" -c "import sys; print(f'{sys.version_info[0]}.{sys.version_info[1]}')"
+      OUTPUT_VARIABLE _PY_VER_SHORT
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+    )
+    if(_PY_VER_SHORT MATCHES "^([0-9]+)\\.([0-9]+)$")
+      set(_PY_MAJ "${CMAKE_MATCH_1}")
+      set(_PY_MIN "${CMAKE_MATCH_2}")
+    endif()
+  endif()
+
+  # Fallback: if the interpreter didn’t run (first configure), try to read cached values you exported
+  if(NOT _PY_MAJ OR NOT _PY_MIN)
+    if(DEFINED PY_MAJOR AND DEFINED PY_MINOR)
+      set(_PY_MAJ "${PY_MAJOR}")
+      set(_PY_MIN "${PY_MINOR}")
+    endif()
+  endif()
+
+  # Construct the Windows import library names: pythonXY(.lib) and pythonXY_d.lib
+  set(_PY_DIGITS "")
+  if(_PY_MAJ AND _PY_MIN)
+    set(_PY_DIGITS "${_PY_MAJ}${_PY_MIN}")     # e.g. "313"
+  else()
+    # As a last resort, try to detect digits from filename presence in the lib dir
+    # (See Approach B below for a fuller glob)
+    message(STATUS "[Python wiring] Could not determine Python version via interpreter; will try folder scan later.")
+  endif()
+
+  # Resolve actual files in PCbuild/amd64
+  set(_PY_LIB_REL "")
+  set(_PY_LIB_DBG "")
+  if(_PY_DIGITS AND EXISTS "${_PY_PCBUILD}/python${_PY_DIGITS}.lib")
+    set(_PY_LIB_REL "${_PY_PCBUILD}/python${_PY_DIGITS}.lib")
+  endif()
+  if(_PY_DIGITS AND EXISTS "${_PY_PCBUILD}/python${_PY_DIGITS}_d.lib")
+    set(_PY_LIB_DBG "${_PY_PCBUILD}/python${_PY_DIGITS}_d.lib")
+  endif()
+
+  # If still missing, fall back to a glob (see Approach B)
+  if(NOT _PY_LIB_REL OR NOT _PY_LIB_DBG)
+    file(GLOB _py_rel_cand "${_PY_PCBUILD}/python3*.lib")
+    file(GLOB _py_dbg_cand "${_PY_PCBUILD}/python3*_d.lib")
+    list(SORT _py_rel_cand)
+    list(SORT _py_dbg_cand)
+    list(REVERSE _py_rel_cand)
+    list(REVERSE _py_dbg_cand)
+    if(NOT _PY_LIB_REL AND _py_rel_cand)
+      list(GET _py_rel_cand 0 _PY_LIB_REL)
+    endif()
+    if(NOT _PY_LIB_DBG AND _py_dbg_cand)
+      list(GET _py_dbg_cand 0 _PY_LIB_DBG)
+    endif()
+  endif()
+
+  if(NOT (EXISTS "${_PY_LIB_REL}" AND EXISTS "${_PY_LIB_DBG}"))
+    message(WARNING "[Python wiring] Could not resolve both Python import libs under ${_PY_PCBUILD}. "
+                    "REL='${_PY_LIB_REL}' DBG='${_PY_LIB_DBG}'. "
+                    "First configure after a clean may hit this; they will exist after Python_external builds.")
+  endif()
+
+  # Append cache args for SCIRun inner build: no version hard-coded
   list(APPEND SCIRUN_CACHE_ARGS
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
-    "-DPython_EXECUTABLE:FILEPATH=${Python_EXECUTABLE}"
-    "-DPython_INCLUDE_DIRS:PATH=${Python_INCLUDE_DIRS}"
-    "-DPython_LIBRARIES:STRING=${Python_LIBRARIES}"
-    # Mirror for FindPython3 in case inner scripts resolve to that module name
-    "-DPython3_EXECUTABLE:FILEPATH=${Python_EXECUTABLE}"
-    "-DPython3_INCLUDE_DIRS:PATH=${Python_INCLUDE_DIRS}"
-    "-DPython3_LIBRARIES:STRING=${Python_LIBRARIES}"
+    "-DPYTHON_INCLUDE_DIR:PATH=${_PY_INC}"
+    "-DPYTHON_PC_INCLUDE_DIR:PATH=${_PY_PC_INC}"
+    "-DPYTHON_EXECUTABLE:FILEPATH=${_PY_EXE}"
+    "-DPYTHON_RUNTIME_DIR:PATH=${_PY_PCBUILD}"
+    "-DPYTHON_LIBRARY_DEBUG:FILEPATH=${_PY_LIB_DBG}"
+    "-DPYTHON_LIBRARY_RELEASE:FILEPATH=${_PY_LIB_REL}"
+
+    # Optional hints for legacy find modules
+    "-DPython_EXECUTABLE:FILEPATH=${_PY_EXE}"
+    "-DPython_INCLUDE_DIRS:PATH=${_PY_INC};${_PY_PC_INC}"
+    "-DPython3_EXECUTABLE:FILEPATH=${_PY_EXE}"
+    "-DPython3_INCLUDE_DIRS:PATH=${_PY_INC};${_PY_PC_INC}"
+
+    # Boost.Python wiring remains as-is
     "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
     "-DSCIRUN_EXPLICIT_BOOST_PYTHON_LINK:BOOL=ON"
   )
@@ -560,11 +640,47 @@ endif()
 if(TARGET Zlib_external)
   ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
   set(ZLIB_INSTALL_DIR "${INSTALL_DIR}")
+
+  # Existing hints you already pass:
   list(APPEND SCIRUN_CACHE_ARGS
     "-DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}"
     "-DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include"
     "-DZLIB_USE_STATIC_LIBS:BOOL=ON"
   )
+
+  # New: pass the ACTUAL library file (full path). Adjust filename to your build.
+  if(WIN32)
+    # If you built static zlib as zlibstatic.lib, set that; otherwise zlib.lib or zlib1.lib
+    if(EXISTS "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
+    elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib/zlib.lib")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/zlib.lib")
+    elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib/zlib1.lib")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/zlib1.lib")
+    endif()
+  elseif(APPLE)
+    if(EXISTS "${ZLIB_INSTALL_DIR}/lib/libz.a")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/libz.a")
+    elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib/libz.dylib")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/libz.dylib")
+    endif()
+  else() # Linux/Unix
+    if(EXISTS "${ZLIB_INSTALL_DIR}/lib/libz.a")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/libz.a")
+    elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib/libz.so")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/libz.so")
+    elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib64/libz.so")
+      set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib64/libz.so")
+    endif()
+  endif()
+
+  if(DEFINED _zlib_lib AND EXISTS "${_zlib_lib}")
+    list(APPEND SCIRUN_CACHE_ARGS "-DZLIB_LIBRARY:FILEPATH=${_zlib_lib}")
+    message(STATUS "[superbuild] Zlib library: ${_zlib_lib}")
+  else()
+    message(WARNING "[superbuild] Could not resolve ZLIB_LIBRARY at configure time; inner build may still find it via ZLIB_ROOT/CMAKE_PREFIX_PATH.")
+  endif()
+
   if(DEFINED Zlib_DIR)
     list(APPEND SCIRUN_CACHE_ARGS "-DZLIB_DIR:PATH=${Zlib_DIR}")
   else()
@@ -858,6 +974,10 @@ if(TARGET Boost_external)
     DIRS  "${INSTALL_DIR}/include/boost"
   )
   add_dependencies(SCIRun_external Boost_external-stage_boost_headers_copy)
+endif()
+
+if(TARGET Boost_external AND TARGET Python_external)
+  add_dependencies(Boost_external Python_external)
 endif()
 
 # =========================

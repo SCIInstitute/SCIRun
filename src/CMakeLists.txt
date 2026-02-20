@@ -94,6 +94,81 @@ if(WIN32)
   endif()
 endif()
 
+# --------------------------------------------------------------------
+# Imported targets for Zlib and Teem (transitive wiring)
+#   - Prefer config packages if they exist (ZLIB::ZLIB / Teem::teem)
+#   - Otherwise, create imported targets from superbuild paths
+#   - Make Teem::teem depend transitively on Zlib::Zlib
+# --------------------------------------------------------------------
+
+# Normalize/bridge variables for includes used elsewhere
+if(DEFINED ZLIB_INCLUDE_DIR AND NOT DEFINED SCI_ZLIB_INCLUDE)
+  set(SCI_ZLIB_INCLUDE "${ZLIB_INCLUDE_DIR}")
+endif()
+# Already present for Teem: SCI_TEEM_INCLUDE
+
+# 1) Zlib imported target
+if(NOT TARGET ZLIB::ZLIB AND NOT TARGET Zlib::Zlib)
+  # If a package defined ZLIB::ZLIB, prefer it.
+  # (If CONFIG_STANDARD_EXTERNAL found one earlier, the target may already exist.)
+  # Otherwise, build an imported target from explicit paths.
+  if(DEFINED ZLIB_LIBRARY AND EXISTS "${ZLIB_LIBRARY}" AND DEFINED ZLIB_INCLUDE_DIR AND EXISTS "${ZLIB_INCLUDE_DIR}/zlib.h")
+    add_library(Zlib::Zlib UNKNOWN IMPORTED)
+    set_target_properties(Zlib::Zlib PROPERTIES
+      IMPORTED_LOCATION             "${ZLIB_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}"
+    )
+    message(STATUS "[SCIRun] Created imported target Zlib::Zlib from explicit paths.")
+  elseif(TARGET ZLIB::ZLIB)
+    # OK—package provided it
+    add_library(Zlib::Zlib ALIAS ZLIB::ZLIB)
+    message(STATUS "[SCIRun] Using package target ZLIB::ZLIB (aliased to Zlib::Zlib).")
+  else()
+    message(WARNING "[SCIRun] Zlib not fully configured yet (need ZLIB_LIBRARY and ZLIB_INCLUDE_DIR). "
+                    "If you are in a first pass before externals install, this can be expected.")
+  endif()
+endif()
+
+# 2) Teem imported target, transitive to zlib
+if(NOT TARGET Teem::teem)
+  # Prefer a package target if a TeemConfig was found
+  if(TARGET Teem::Teem OR TARGET Teem::teem)
+    # Normalize to Teem::teem
+    if(TARGET Teem::teem)
+      add_library(Teem__real ALIAS Teem::teem)
+    else()
+      add_library(Teem__real ALIAS Teem::Teem)
+    endif()
+    add_library(Teem::teem INTERFACE IMPORTED)
+    if(TARGET Zlib::Zlib)
+      set_target_properties(Teem::teem PROPERTIES INTERFACE_LINK_LIBRARIES "Teem__real;Zlib::Zlib")
+    else()
+      set_target_properties(Teem::teem PROPERTIES INTERFACE_LINK_LIBRARIES "Teem__real")
+    endif()
+    message(STATUS "[SCIRun] Teem package target detected; created Teem::teem wrapper with Zlib transitively.")
+  else()
+    # Create imported from explicit paths
+    if(DEFINED Teem_LIBRARY AND EXISTS "${Teem_LIBRARY}" AND DEFINED Teem_INCLUDE_DIR AND EXISTS "${Teem_INCLUDE_DIR}/teem/ten.h")
+      add_library(Teem::teem UNKNOWN IMPORTED)
+      set_target_properties(Teem::teem PROPERTIES
+        IMPORTED_LOCATION             "${Teem_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Teem_INCLUDE_DIR}"
+      )
+      if(TARGET Zlib::Zlib)
+        set_property(TARGET Teem::teem APPEND PROPERTY
+          INTERFACE_LINK_LIBRARIES "Zlib::Zlib"
+        )
+        message(STATUS "[SCIRun] Created imported target Teem::teem (transitively links Zlib::Zlib).")
+      else()
+        message(WARNING "[SCIRun] Created imported target Teem::teem, but Zlib::Zlib is not available yet.")
+      endif()
+    else()
+      message(WARNING "[SCIRun] Teem not fully configured yet (need Teem_LIBRARY and Teem_INCLUDE_DIR). "
+                      "If you are in a first pass before externals install, this can be expected.")
+    endif()
+  endif()
+endif()
+
 ###############################################################################
 # Don't allow the user to build in the src directory...
 #

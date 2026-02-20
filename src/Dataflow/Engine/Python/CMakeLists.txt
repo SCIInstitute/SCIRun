@@ -115,6 +115,10 @@ if(NOT _SCIRUN_API_PY_OK)
   set(_SCIRUN_API_PY_OK TRUE)
 endif()
 
+if(MSVC)
+  target_compile_definitions(SCIRunPythonAPI PRIVATE BOOST_PYTHON_STATIC_LIB)
+endif()
+
 if(NOT _SCIRUN_API_PY_OK)
   message(FATAL_ERROR "Python (Interpreter + Development) not found; cannot build SCIRunPythonAPI.")
 endif()

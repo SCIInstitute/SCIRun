@@ -255,6 +255,21 @@ ELSE()
 ENDIF()
 
 SET(SCI_PYTHON_USE_FILE ${INSTALL_DIR}/UsePython.cmake)
+# ---- Export Python paths to cache so other externals and SCIRun can consume them ----
+set(PYTHON_INCLUDE_DIR     "${SCI_PYTHON_INCLUDE}"      CACHE PATH     "CPython include dir (contains Python.h)" FORCE)
+set(PYTHON_PC_INCLUDE_DIR  "${SOURCE_DIR}/PC"           CACHE PATH     "CPython PC include dir (contains pyconfig.h)" FORCE)
+set(PYTHON_RUNTIME_DIR     "${SCI_PYTHON_LIBRARY_DIR}"  CACHE PATH     "Folder containing python313[_d].lib/.dll" FORCE)
+set(PYTHON_EXECUTABLE      "${SCI_PYTHON_EXE}"          CACHE FILEPATH "python.exe built by CPython" FORCE)
+set(PYTHON_LIBRARY_RELEASE "${SCI_PYTHON_LIBRARY_RELEASE}" CACHE FILEPATH "Release import lib (python313.lib)" FORCE)
+set(PYTHON_LIBRARY_DEBUG   "${SCI_PYTHON_LIBRARY_DEBUG}"   CACHE FILEPATH "Debug import lib (python313_d.lib)" FORCE)
+
+# Nice for diagnostics
+message(STATUS "[Python_external] PYTHON_INCLUDE_DIR     = ${PYTHON_INCLUDE_DIR}")
+message(STATUS "[Python_external] PYTHON_PC_INCLUDE_DIR  = ${PYTHON_PC_INCLUDE_DIR}")
+message(STATUS "[Python_external] PYTHON_RUNTIME_DIR     = ${PYTHON_RUNTIME_DIR}")
+message(STATUS "[Python_external] PYTHON_EXECUTABLE      = ${PYTHON_EXECUTABLE}")
+message(STATUS "[Python_external] PYTHON_LIBRARY_RELEASE = ${PYTHON_LIBRARY_RELEASE}")
+message(STATUS "[Python_external] PYTHON_LIBRARY_DEBUG   = ${PYTHON_LIBRARY_DEBUG}")
 
 # Python is special case - normally this should be handled in external library repo
 CONFIGURE_FILE(${SUPERBUILD_DIR}/PythonConfig.cmake.in ${INSTALL_DIR}/PythonConfig.cmake @ONLY)

@@ -96,6 +96,30 @@ ExternalProject_Get_Property(Boost_external SOURCE_DIR)
 ExternalProject_Get_Property(Boost_external BINARY_DIR)
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
 
+# Optional Python wiring for Boost.Python
+set(_B2_PY_ARGS "")
+if(BOOST_ENABLE_PYTHON)
+  set(_PY_LIBDIR "")
+  if(DEFINED PYTHON_LIBRARY_DEBUG AND EXISTS "${PYTHON_LIBRARY_DEBUG}")
+    get_filename_component(_PY_LIBDIR "${PYTHON_LIBRARY_DEBUG}" DIRECTORY)
+  elseif(DEFINED PYTHON_LIBRARY_RELEASE AND EXISTS "${PYTHON_LIBRARY_RELEASE}")
+    get_filename_component(_PY_LIBDIR "${PYTHON_LIBRARY_RELEASE}" DIRECTORY)
+  elseif(DEFINED PYTHON_RUNTIME_DIR AND EXISTS "${PYTHON_RUNTIME_DIR}")
+    set(_PY_LIBDIR "${PYTHON_RUNTIME_DIR}")
+  endif()
+
+  if(PYTHON_INCLUDE_DIR AND EXISTS "${PYTHON_INCLUDE_DIR}" AND _PY_LIBDIR AND EXISTS "${_PY_LIBDIR}")
+    list(APPEND _B2_PY_ARGS
+      "python=${PY_MAJOR}.${PY_MINOR}"     # or hardcode 3.13
+      "include=${PYTHON_INCLUDE_DIR}"
+      "library-path=${_PY_LIBDIR}"
+    )
+    message(STATUS "[Boost_ext] Will build Boost.Python against include='${PYTHON_INCLUDE_DIR}', libdir='${_PY_LIBDIR}'")
+  else()
+    message(WARNING "[Boost_ext] BOOST_ENABLE_PYTHON=ON but Python paths are incomplete.")
+  endif()
+endif()
+
 # ========= Cross-platform b2 header staging =========
 # 1) Bootstrap b2
 if(WIN32)
@@ -151,6 +175,7 @@ ExternalProject_Add_Step(Boost_external build_b2_libs
           ${_B2_VARIANTS}
           --layout=versioned
           ${_BOOST_LIBS_B2}
+          ${_B2_PY_ARGS}
           --build-dir=${_B2_BUILD_DIR}
           stage
   WORKING_DIRECTORY ${SOURCE_DIR}
