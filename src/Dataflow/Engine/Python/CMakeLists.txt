@@ -115,13 +115,15 @@ if(NOT _SCIRUN_API_PY_OK)
   set(_SCIRUN_API_PY_OK TRUE)
 endif()
 
+if(NOT _SCIRUN_API_PY_OK)
+  message(FATAL_ERROR "Python (Interpreter + Development) not found; cannot build SCIRunPythonAPI.")
+endif()
+
 if(MSVC)
   target_compile_definitions(SCIRunPythonAPI PRIVATE BOOST_PYTHON_STATIC_LIB)
 endif()
 
-if(NOT _SCIRUN_API_PY_OK)
-  message(FATAL_ERROR "Python (Interpreter + Development) not found; cannot build SCIRunPythonAPI.")
-endif()
+target_compile_definitions(SCIRunPythonAPI PRIVATE BUILD_WITH_PYTHON)
 
 # ====================================================================================
 # Link dependencies
@@ -134,7 +136,7 @@ target_link_libraries(SCIRunPythonAPI
     Core_Thread
     Core_Datatypes_Legacy_Base
     Core_Persistent
-    Core_Python
+    #Core_Python
     Python::Python
     ${SCI_BOOST_LIBRARY}
 )

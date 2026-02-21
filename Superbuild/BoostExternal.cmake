@@ -110,7 +110,6 @@ if(BOOST_ENABLE_PYTHON)
 
   if(PYTHON_INCLUDE_DIR AND EXISTS "${PYTHON_INCLUDE_DIR}" AND _PY_LIBDIR AND EXISTS "${_PY_LIBDIR}")
     list(APPEND _B2_PY_ARGS
-      "python=${PY_MAJOR}.${PY_MINOR}"     # or hardcode 3.13
       "include=${PYTHON_INCLUDE_DIR}"
       "library-path=${_PY_LIBDIR}"
     )
