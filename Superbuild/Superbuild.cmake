@@ -586,6 +586,14 @@ if(BUILD_WITH_PYTHON)
     # Boost.Python wiring remains as-is
     "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
     "-DSCIRUN_EXPLICIT_BOOST_PYTHON_LINK:BOOL=ON"
+
+    # === Strong hints for FindPython to stay inside the superbuild tree ===
+    "-DPython_ROOT_DIR:PATH=${_PY_SRC}"
+    "-DPython3_ROOT_DIR:PATH=${_PY_SRC}"
+    
+    # === Explicit paths used by the module-level override (imported target) ===
+    "-DPY_EXT_LIB_DIR:PATH=${_PY_PCBUILD}"
+    "-DPY_INCLUDE_DIR:PATH=${_PY_INC}"
   )
 endif()
 

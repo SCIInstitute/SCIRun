@@ -56,28 +56,23 @@ SCIRUN_ADD_LIBRARY(SCIRunPythonAPI
 )
 
 # ====================================================================================
-# Cross-platform Python detection
-#   Prefer modern FindPython / FindPython3; fall back to legacy modules if needed.
-#   Result:
-#     - Imported target to link: Python::Python
-#     - Vars: Python_EXECUTABLE, Python_INCLUDE_DIRS, Python_LIBRARIES
+# Cross-platform Python detection with superbuild override (Windows multi-config)
 # ====================================================================================
 
-set(_SCIRUN_API_PY_OK FALSE)
+# Expect these (or similar) to be passed from the superbuild. Adjust names if yours differ:
+#   PY_EXT_LIB_DIR:  e.g., E:/PROJECTS/SCIRun/build/Externals/Source/Python_external/PCbuild/amd64
+#   PY_INCLUDE_DIR:  e.g., E:/PROJECTS/SCIRun/build/Externals/Source/Python_external/Include
+#   PY_EXECUTABLE:   e.g., E:/PROJECTS/SCIRun/build/Externals/Source/Python_external/python.exe (optional)
 
-# 1) Prefer the generic FindPython (Interpreter + Development)
+# Try modern find first (harmless even if we will override later)
+set(_SCIRUN_API_PY_OK FALSE)
 find_package(Python QUIET COMPONENTS Interpreter Development)
 if(Python_Interpreter_FOUND AND Python_Development_FOUND)
   set(_SCIRUN_API_PY_OK TRUE)
-elseif(NOT _SCIRUN_API_PY_OK)
-  # 2) Try Python3 module
+else()
   find_package(Python3 QUIET COMPONENTS Interpreter Development)
   if(Python3_Interpreter_FOUND AND Python3_Development_FOUND)
-    # Normalize into Python_* variable names for consistency
-    set(Python_EXECUTABLE   "${Python3_EXECUTABLE}")
-    set(Python_INCLUDE_DIRS "${Python3_INCLUDE_DIRS}")
-    set(Python_LIBRARIES    "${Python3_LIBRARIES}")
-    # Alias target so we can always link Python::Python
+    # normalize to Python::Python
     if(TARGET Python3::Python AND NOT TARGET Python::Python)
       add_library(Python::Python ALIAS Python3::Python)
     endif()
@@ -85,31 +80,102 @@ elseif(NOT _SCIRUN_API_PY_OK)
   endif()
 endif()
 
-# 3) Legacy fallback path (older CMake or environments without the newer modules)
-if(NOT _SCIRUN_API_PY_OK)
-  find_package(PythonInterp REQUIRED)
-  find_package(PythonLibs REQUIRED)
-  # Normalize var names
-  set(Python_EXECUTABLE   "${PYTHON_EXECUTABLE}")
-  set(Python_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
-  set(Python_LIBRARIES    "${PYTHON_LIBRARIES}")
+# --- Superbuild override on Windows: construct the imported target from explicit paths
+# Accept either the new variables (PY_EXT_LIB_DIR/PY_INCLUDE_DIR) or the legacy ones
+# (PYTHON_LIBRARY_DEBUG/RELEASE, PYTHON_INCLUDE_DIR). Prefer the new ones when present.
 
-  # Provide a compatible imported target so target_link_libraries can always use Python::Python
+if(MSVC)
+  # Derived names for Python 3.13 (adjust as needed)
+  set(_PY_DEBUG_LIB_NAME   "python313_d.lib")
+  set(_PY_RELEASE_LIB_NAME "python313.lib")
+
+  # Prefer new-style
+  set(_SB_LIB_DIR   "${PY_EXT_LIB_DIR}")
+  set(_SB_INC_DIR   "${PY_INCLUDE_DIR}")
+
+  # Fallback to legacy variables if new-style not provided
+  if(NOT _SB_LIB_DIR)
+    # Try to infer from the legacy file paths
+    if(PYTHON_LIBRARY_DEBUG)
+      get_filename_component(_SB_LIB_DIR "${PYTHON_LIBRARY_DEBUG}" DIRECTORY)
+    elseif(PYTHON_LIBRARY_RELEASE)
+      get_filename_component(_SB_LIB_DIR "${PYTHON_LIBRARY_RELEASE}" DIRECTORY)
+    endif()
+  endif()
+
+  if(NOT _SB_INC_DIR)
+    if(PYTHON_INCLUDE_DIR)
+      set(_SB_INC_DIR "${PYTHON_INCLUDE_DIR}")
+    elseif(Python_INCLUDE_DIRS)
+      # FindPython may pass a list; use the first element as base include
+      list(GET Python_INCLUDE_DIRS 0 _SB_INC_DIR)
+    endif()
+  endif()
+
+  # As last resort, try known layout relative to the inner build
+  if(NOT _SB_LIB_DIR)
+    set(_SB_LIB_DIR "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external/PCbuild/amd64")
+  endif()
+  if(NOT _SB_INC_DIR)
+    set(_SB_INC_DIR "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external/Include")
+  endif()
+
+  # Resolve per-config import libraries
+  set(_py_dbg_lib "")
+  set(_py_rel_lib "")
+
+  # If explicit files were provided by superbuild, use them
+  if(PYTHON_LIBRARY_DEBUG AND EXISTS "${PYTHON_LIBRARY_DEBUG}")
+    set(_py_dbg_lib "${PYTHON_LIBRARY_DEBUG}")
+  endif()
+  if(PYTHON_LIBRARY_RELEASE AND EXISTS "${PYTHON_LIBRARY_RELEASE}")
+    set(_py_rel_lib "${PYTHON_LIBRARY_RELEASE}")
+  endif()
+
+  # Otherwise, construct by name under the lib dir
+  if(NOT _py_dbg_lib)
+    set(_cand "${_SB_LIB_DIR}/${_PY_DEBUG_LIB_NAME}")
+    if(EXISTS "${_cand}")
+      set(_py_dbg_lib "${_cand}")
+    endif()
+  endif()
+  if(NOT _py_rel_lib)
+    set(_cand "${_SB_LIB_DIR}/${_PY_RELEASE_LIB_NAME}")
+    if(EXISTS "${_cand}")
+      set(_py_rel_lib "${_cand}")
+    endif()
+  endif()
+
+  # Build/update Python::Python imported target pointing at superbuild libs
   if(NOT TARGET Python::Python)
     add_library(Python::Python UNKNOWN IMPORTED)
+  endif()
+
+  set_target_properties(Python::Python PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${_SB_INC_DIR}"
+  )
+
+  if(EXISTS "${_py_rel_lib}")
     set_target_properties(Python::Python PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES "${Python_INCLUDE_DIRS}"
+      IMPORTED_IMPLIB_RELEASE "${_py_rel_lib}"
     )
-    if(WIN32)
-      # On MSVC, the import library (.lib) is what we link against
-      set_target_properties(Python::Python PROPERTIES
-        IMPORTED_IMPLIB "${Python_LIBRARIES}"
-      )
-    else()
-      set_target_properties(Python::Python PROPERTIES
-        IMPORTED_LOCATION "${Python_LIBRARIES}"
-      )
-    endif()
+  endif()
+
+  if(EXISTS "${_py_dbg_lib}")
+    set_target_properties(Python::Python PROPERTIES
+      IMPORTED_IMPLIB_DEBUG "${_py_dbg_lib}"
+    )
+  endif()
+
+  # Fail only if absolutely nothing was found and no prior package existed
+  if(NOT (EXISTS "${_py_rel_lib}" OR EXISTS "${_py_dbg_lib}" OR TARGET Python3::Python))
+    message(FATAL_ERROR
+      "Python import libraries not found for Windows/MSVC.\n"
+      "Searched:\n  _SB_LIB_DIR='${_SB_LIB_DIR}'\n"
+      "Expected names: ${_PY_RELEASE_LIB_NAME} / ${_PY_DEBUG_LIB_NAME}\n"
+      "Or explicit: PYTHON_LIBRARY_RELEASE='${PYTHON_LIBRARY_RELEASE}', PYTHON_LIBRARY_DEBUG='${PYTHON_LIBRARY_DEBUG}'\n"
+      "Include dir: _SB_INC_DIR='${_SB_INC_DIR}'"
+    )
   endif()
 
   set(_SCIRUN_API_PY_OK TRUE)
@@ -126,17 +192,13 @@ endif()
 target_compile_definitions(SCIRunPythonAPI PRIVATE BUILD_WITH_PYTHON)
 
 # ====================================================================================
-# Link dependencies
+# Link dependencies (Python::Python now guaranteed to point to superbuild libs)
 # ====================================================================================
-
-# Replace legacy ${SCI_PYTHON_LIBRARY} with imported target Python::Python.
-# This pulls the include dir for Python.h and the correct platform library.
 target_link_libraries(SCIRunPythonAPI
   PRIVATE
     Core_Thread
     Core_Datatypes_Legacy_Base
     Core_Persistent
-    #Core_Python
     Python::Python
     ${SCI_BOOST_LIBRARY}
 )

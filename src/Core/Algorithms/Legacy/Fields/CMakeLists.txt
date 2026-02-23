@@ -350,13 +350,53 @@ target_link_libraries(Core_Algorithms_Legacy_Fields
     ${_teem_target}
 )
 
-# If your Teem build uses zlib, add it explicitly (static Teem won’t drag it in automatically)
-if(TARGET Zlib::Zlib)
-  target_link_libraries(Core_Algorithms_Legacy_Fields PRIVATE Zlib::Zlib)
+# ==========================================================
+# Zlib is REQUIRED because Teem's gzio uses it (deflate/inflate/crc32).
+# Use modern imported target; fall back to variables from the superbuild.
+# ==========================================================
+set(_zlib_target "")
+
+# Prefer an existing target if the top-level already created it.
+if(TARGET ZLIB::ZLIB)
+  set(_zlib_target ZLIB::ZLIB)
+else()
+  # Try module find (honors ZLIB_ROOT and CMAKE_PREFIX_PATH).
+  find_package(ZLIB QUIET)
+
+  if(TARGET ZLIB::ZLIB)
+    set(_zlib_target ZLIB::ZLIB)
+  else()
+    # Fallbacks to superbuild-provided variables.
+    # Newer CMake may expose ZLIB_LIBRARIES/ZLIB_INCLUDE_DIRS;
+    # older uses ZLIB_LIBRARY/ZLIB_INCLUDE_DIR.
+    if(ZLIB_LIBRARY AND ZLIB_INCLUDE_DIR)
+      add_library(ZLIB::ZLIB UNKNOWN IMPORTED)
+      set_target_properties(ZLIB::ZLIB PROPERTIES
+        IMPORTED_LOCATION "${ZLIB_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}"
+      )
+      set(_zlib_target ZLIB::ZLIB)
+    elseif(ZLIB_LIBRARIES AND ZLIB_INCLUDE_DIRS)
+      add_library(ZLIB::ZLIB UNKNOWN IMPORTED)
+      set_target_properties(ZLIB::ZLIB PROPERTIES
+        IMPORTED_LOCATION "${ZLIB_LIBRARIES}"
+        INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIRS}"
+      )
+      set(_zlib_target ZLIB::ZLIB)
+    else()
+      message(FATAL_ERROR
+        "Zlib not found. SCIRun needs it to link Teem (gzio).\n"
+        "Provide ZLIB_ROOT or ZLIB_LIBRARY/ZLIB_INCLUDE_DIR from the superbuild.\n"
+        "ZLIB_LIBRARY='${ZLIB_LIBRARY}'  ZLIB_LIBRARIES='${ZLIB_LIBRARIES}'\n"
+        "ZLIB_INCLUDE_DIR='${ZLIB_INCLUDE_DIR}'  ZLIB_INCLUDE_DIRS='${ZLIB_INCLUDE_DIRS}'")
+    endif()
+  endif()
 endif()
+
+# Link zlib unconditionally (Teem uses it)
+target_link_libraries(Core_Algorithms_Legacy_Fields PRIVATE ${_zlib_target})
 
 # Export macro for this DLL, unchanged
 if(BUILD_SHARED_LIBS)
   target_compile_definitions(Core_Algorithms_Legacy_Fields PRIVATE BUILD_Core_Algorithms_Legacy_Fields)
 endif()
-
