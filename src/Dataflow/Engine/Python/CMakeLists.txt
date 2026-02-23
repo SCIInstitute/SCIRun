@@ -30,8 +30,6 @@
 # Dataflow/Engine/Python CMakeLists.txt
 # ==========================================
 
-# Optional: if you want to skip this target when Python support is OFF.
-# Comment this block out if you prefer to always configure it.
 if(NOT BUILD_WITH_PYTHON)
   message(STATUS "[Dataflow/Engine/Python] Skipping SCIRunPythonAPI (BUILD_WITH_PYTHON=OFF)")
   return()
@@ -59,12 +57,13 @@ SCIRUN_ADD_LIBRARY(SCIRunPythonAPI
 # Cross-platform Python detection with superbuild override (Windows multi-config)
 # ====================================================================================
 
-# Expect these (or similar) to be passed from the superbuild. Adjust names if yours differ:
-#   PY_EXT_LIB_DIR:  e.g., E:/PROJECTS/SCIRun/build/Externals/Source/Python_external/PCbuild/amd64
-#   PY_INCLUDE_DIR:  e.g., E:/PROJECTS/SCIRun/build/Externals/Source/Python_external/Include
-#   PY_EXECUTABLE:   e.g., E:/PROJECTS/SCIRun/build/Externals/Source/Python_external/python.exe (optional)
+# Expect these (from superbuild):
+#   PY_EXT_LIB_DIR  -> .../Externals/Source/Python_external/PCbuild/amd64
+#   PY_INCLUDE_DIR  -> .../Externals/Source/Python_external/Include
+#   PYTHON_LIBRARY_DEBUG/RELEASE  (legacy names also accepted)
+#   PYTHON_INCLUDE_DIR            (legacy name also accepted)
 
-# Try modern find first (harmless even if we will override later)
+# Try modern find first (harmless; we may override below)
 set(_SCIRUN_API_PY_OK FALSE)
 find_package(Python QUIET COMPONENTS Interpreter Development)
 if(Python_Interpreter_FOUND AND Python_Development_FOUND)
@@ -72,7 +71,6 @@ if(Python_Interpreter_FOUND AND Python_Development_FOUND)
 else()
   find_package(Python3 QUIET COMPONENTS Interpreter Development)
   if(Python3_Interpreter_FOUND AND Python3_Development_FOUND)
-    # normalize to Python::Python
     if(TARGET Python3::Python AND NOT TARGET Python::Python)
       add_library(Python::Python ALIAS Python3::Python)
     endif()
@@ -80,39 +78,32 @@ else()
   endif()
 endif()
 
-# --- Superbuild override on Windows: construct the imported target from explicit paths
-# Accept either the new variables (PY_EXT_LIB_DIR/PY_INCLUDE_DIR) or the legacy ones
-# (PYTHON_LIBRARY_DEBUG/RELEASE, PYTHON_INCLUDE_DIR). Prefer the new ones when present.
-
+# --- Superbuild override on Windows (force correct import libs per-config) -----------
 if(MSVC)
-  # Derived names for Python 3.13 (adjust as needed)
-  set(_PY_DEBUG_LIB_NAME   "python313_d.lib")
+  set(_PY_DEBUG_LIB_NAME   "python313_d.lib")  # adjust if you switch Python versions
   set(_PY_RELEASE_LIB_NAME "python313.lib")
 
-  # Prefer new-style
-  set(_SB_LIB_DIR   "${PY_EXT_LIB_DIR}")
-  set(_SB_INC_DIR   "${PY_INCLUDE_DIR}")
+  # Prefer new-style vars
+  set(_SB_LIB_DIR "${PY_EXT_LIB_DIR}")
+  set(_SB_INC_DIR "${PY_INCLUDE_DIR}")
 
-  # Fallback to legacy variables if new-style not provided
+  # Fallback to legacy names to infer paths
   if(NOT _SB_LIB_DIR)
-    # Try to infer from the legacy file paths
     if(PYTHON_LIBRARY_DEBUG)
       get_filename_component(_SB_LIB_DIR "${PYTHON_LIBRARY_DEBUG}" DIRECTORY)
     elseif(PYTHON_LIBRARY_RELEASE)
       get_filename_component(_SB_LIB_DIR "${PYTHON_LIBRARY_RELEASE}" DIRECTORY)
     endif()
   endif()
-
   if(NOT _SB_INC_DIR)
     if(PYTHON_INCLUDE_DIR)
       set(_SB_INC_DIR "${PYTHON_INCLUDE_DIR}")
     elseif(Python_INCLUDE_DIRS)
-      # FindPython may pass a list; use the first element as base include
       list(GET Python_INCLUDE_DIRS 0 _SB_INC_DIR)
     endif()
   endif()
 
-  # As last resort, try known layout relative to the inner build
+  # Last-resort defaults relative to inner build
   if(NOT _SB_LIB_DIR)
     set(_SB_LIB_DIR "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external/PCbuild/amd64")
   endif()
@@ -132,7 +123,7 @@ if(MSVC)
     set(_py_rel_lib "${PYTHON_LIBRARY_RELEASE}")
   endif()
 
-  # Otherwise, construct by name under the lib dir
+  # Otherwise, construct by expected names under the lib dir
   if(NOT _py_dbg_lib)
     set(_cand "${_SB_LIB_DIR}/${_PY_DEBUG_LIB_NAME}")
     if(EXISTS "${_cand}")
@@ -146,7 +137,7 @@ if(MSVC)
     endif()
   endif()
 
-  # Build/update Python::Python imported target pointing at superbuild libs
+  # Create or update Python::Python so it always points to superbuild import libs
   if(NOT TARGET Python::Python)
     add_library(Python::Python UNKNOWN IMPORTED)
   endif()
@@ -155,19 +146,21 @@ if(MSVC)
     INTERFACE_INCLUDE_DIRECTORIES "${_SB_INC_DIR}"
   )
 
+  # IMPORTANT on MSVC: use IMPORTED_IMPLIB_* (not IMPORTED_LOCATION_*) for .lib import libs
   if(EXISTS "${_py_rel_lib}")
     set_target_properties(Python::Python PROPERTIES
-      IMPORTED_IMPLIB_RELEASE "${_py_rel_lib}"
+      IMPORTED_IMPLIB_RELEASE       "${_py_rel_lib}"
+      IMPORTED_IMPLIB_RELWITHDEBINFO "${_py_rel_lib}"
+      IMPORTED_IMPLIB_MINSIZEREL    "${_py_rel_lib}"
     )
   endif()
-
   if(EXISTS "${_py_dbg_lib}")
     set_target_properties(Python::Python PROPERTIES
-      IMPORTED_IMPLIB_DEBUG "${_py_dbg_lib}"
+      IMPORTED_IMPLIB_DEBUG         "${_py_dbg_lib}"
     )
   endif()
 
-  # Fail only if absolutely nothing was found and no prior package existed
+  # Fail only if no usable lib was found and no prior package existed
   if(NOT (EXISTS "${_py_rel_lib}" OR EXISTS "${_py_dbg_lib}" OR TARGET Python3::Python))
     message(FATAL_ERROR
       "Python import libraries not found for Windows/MSVC.\n"
@@ -185,6 +178,7 @@ if(NOT _SCIRUN_API_PY_OK)
   message(FATAL_ERROR "Python (Interpreter + Development) not found; cannot build SCIRunPythonAPI.")
 endif()
 
+# This target does not use Boost.Python symbols directly; the define is harmless but optional.
 if(MSVC)
   target_compile_definitions(SCIRunPythonAPI PRIVATE BOOST_PYTHON_STATIC_LIB)
 endif()
@@ -203,15 +197,30 @@ target_link_libraries(SCIRunPythonAPI
     ${SCI_BOOST_LIBRARY}
 )
 
-# ====================================================================================
-# Shared build definitions & Windows .pyd properties (kept from your original)
-# ====================================================================================
+# ------------------------------------------------------------------------------------
+# Debug-only insurance: ignore any autolinked *release* python import lib
+# (e.g., if a 3rd-party .lib contains /DEFAULTLIB:python313.lib directives).
+# ------------------------------------------------------------------------------------
+if(MSVC)
+  # Compute name to ignore (matches CPython 3.13)
+  set(_SCIRUN_PY_RELEASE_NAME "python313.lib")
+  target_link_options(SCIRunPythonAPI PRIVATE
+    $<$<CONFIG:Debug>:/NODEFAULTLIB:${_SCIRUN_PY_RELEASE_NAME}>
+  )
+  # Optional belt-and-suspenders: force defaultlib to the debug import lib we set above
+  # get_target_property(_py_dbg_implib Python::Python IMPORTED_IMPLIB_DEBUG)
+  # if(_py_dbg_implib)
+  #   target_link_options(SCIRunPythonAPI PRIVATE $<$<CONFIG:Debug>:/DEFAULTLIB:${_py_dbg_implib}>)
+  # endif()
+endif()
 
+# ====================================================================================
+# Shared build: Windows .pyd properties (kept)
+# ====================================================================================
 if(BUILD_SHARED_LIBS)
   add_definitions(-DBUILD_SCIRunPythonAPI)
 
   if(WIN32)
-    # Build as a Python extension on Windows: .pyd suffix/prefixes
     set_target_properties(SCIRunPythonAPI
       PROPERTIES
         IMPORT_SUFFIX ".pyd"
@@ -225,13 +234,13 @@ endif()
 # ====================================================================================
 # Tests
 # ====================================================================================
-
 SCIRUN_ADD_TEST_DIR(Tests)
 
 # ====================================================================================
-# Diagnostics (optional but helpful)
+# Diagnostics (show what the imported target is actually using, not Python_LIBRARIES)
 # ====================================================================================
-
-message(STATUS "[SCIRunPythonAPI] Python executable : ${Python_EXECUTABLE}")
-message(STATUS "[SCIRunPythonAPI] Python include(s) : ${Python_INCLUDE_DIRS}")
-message(STATUS "[SCIRunPythonAPI] Python libraries  : ${Python_LIBRARIES}")
+get_target_property(_py_inc  Python::Python INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(_py_dbg  Python::Python IMPORTED_IMPLIB_DEBUG)
+get_target_property(_py_rel  Python::Python IMPORTED_IMPLIB_RELEASE)
+message(STATUS "[SCIRunPythonAPI] Python include(s) : ${_py_inc}")
+message(STATUS "[SCIRunPythonAPI] Python importlib  : Debug='${_py_dbg}'  Release='${_py_rel}'")

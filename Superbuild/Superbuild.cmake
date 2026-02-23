@@ -207,31 +207,6 @@ macro(ADD_EXTERNAL cmake_file external)
   list(APPEND SCIRUN_DEPENDENCIES ${external})
 endmacro()
 
-# =========================
-# Python (superbuild-level detection)
-# =========================
-if(BUILD_WITH_PYTHON)
-  # Prefer modern FindPython module (Interpreter + Development)
-  find_package(Python COMPONENTS Interpreter Development REQUIRED)
-
-  message(STATUS "[superbuild] Python executable: ${Python_EXECUTABLE}")
-  message(STATUS "[superbuild] Python includes  : ${Python_INCLUDE_DIRS}")
-  message(STATUS "[superbuild] Python libraries : ${Python_LIBRARIES}")
-  message(STATUS "[superbuild] Python version   : ${Python_VERSION}")
-
-  # Optionally bias CMake to not scan the Windows registry for a different Python
-  # set(Python_FIND_REGISTRY NEVER)
-
-  # If you want the inner configure to also see this location via CMAKE_PREFIX_PATH
-  # (not required, but harmless), you can append Python's root to prefixes:
-  # Try to infer a plausible root from exec/include path:
-  get_filename_component(_py_exec_dir "${Python_EXECUTABLE}" DIRECTORY)
-  get_filename_component(_py_root     "${_py_exec_dir}" DIRECTORY)
-  if(EXISTS "${_py_root}")
-    sb_prefix_append("${_py_root}")
-  endif()
-endif()
-
 set(SUPERBUILD_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 set(SCIRUN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src CACHE INTERNAL "" FORCE)
 set(SCIRUN_BINARY_DIR ${CMAKE_BINARY_DIR}/SCIRun CACHE INTERNAL "" FORCE)
@@ -594,6 +569,12 @@ if(BUILD_WITH_PYTHON)
     # === Explicit paths used by the module-level override (imported target) ===
     "-DPY_EXT_LIB_DIR:PATH=${_PY_PCBUILD}"
     "-DPY_INCLUDE_DIR:PATH=${_PY_INC}"
+
+    # Bias CMake's FindPython inside the inner build to honor our root and NOT the registry/system
+    "-DPython_FIND_REGISTRY:STRING=NEVER"
+    "-DPython_FIND_STRATEGY:STRING=LOCATION"
+    # Fence typical system install path(s) so they don't creep in via any other find logic
+    "-DCMAKE_IGNORE_PREFIX_PATH:PATH=C:/Program Files/Python313;C:/Program Files (x86)/Python*"
   )
 endif()
 

@@ -26,26 +26,43 @@
 #
 
 # ---- Core/Python CMake ----
+cmake_minimum_required(VERSION 3.16)
 
-cmake_minimum_required(VERSION 3.16)  # adjust if your project requires different
+# --- Guard against system Python being injected via ${Python_LIBRARIES} / ${PYTHON_LIBRARIES}
+unset(Python_LIBRARIES)
+unset(PYTHON_LIBRARIES)
+unset(Python_LIBRARIES CACHE)
+unset(PYTHON_LIBRARIES CACHE)
 
 # --- Sources ---
 set(Core_Python_SRCS
   PythonInterpreter.cc
   PythonDatatypeConverter.cc
 )
-
 set(Core_Python_HEADERS
   PythonInterpreter.h
   PythonDatatypeConverter.h
   share.h
 )
 
+# --- Neutralize any directory-scoped link_libraries() *before* the target is created ---
+get_property(_dir_links_before DIRECTORY PROPERTY LINK_LIBRARIES)
+message(STATUS "[Diag/Core_Python] DIR LINK_LIBRARIES(before)=${_dir_links_before}")
+
+# Clear directory-scoped link libraries for THIS directory (prevents inheriting system Python)
+set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" PROPERTY LINK_LIBRARIES "")
+
+get_property(_dir_links_after DIRECTORY PROPERTY LINK_LIBRARIES)
+message(STATUS "[Diag/Core_Python] DIR LINK_LIBRARIES(after)=${_dir_links_after}")
+
 # Library target (uses project macro from top-level)
 SCIRUN_ADD_LIBRARY(Core_Python
   ${Core_Python_HEADERS}
   ${Core_Python_SRCS}
 )
+
+# --- Also wipe anything that was still captured on the target itself (belt-and-suspenders) ---
+set_target_properties(Core_Python PROPERTIES LINK_LIBRARIES "")
 
 # Preserve original shared define behavior
 if(BUILD_SHARED_LIBS)
@@ -80,6 +97,14 @@ set(_PY_LIB_DBG "")
 set(_PY_LIB_REL "")
 
 # ---- Path-first: use explicit superbuild variables if provided ----
+# Expected (from superbuild):
+#   PYTHON_INCLUDE_DIR       -> .../Python_external/Include
+#   PYTHON_PC_INCLUDE_DIR    -> .../Python_external/PC
+#   PYTHON_LIBRARY_RELEASE   -> .../PCbuild/amd64/python313.lib
+#   PYTHON_LIBRARY_DEBUG     -> .../PCbuild/amd64/python313_d.lib
+#   PYTHON_RUNTIME_DIR       -> .../PCbuild/amd64            (optional)
+#   PYTHON_EXECUTABLE        -> .../PCbuild/amd64/python.exe (optional)
+
 if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE AND PYTHON_INCLUDE_DIR)
   if(NOT EXISTS "${PYTHON_LIBRARY_DEBUG}")
     message(FATAL_ERROR "PYTHON_LIBRARY_DEBUG does not exist: ${PYTHON_LIBRARY_DEBUG}")
@@ -95,28 +120,40 @@ if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE AND PYTHON_INCLUDE_DIR)
   set(_PY_LIB_REL "${PYTHON_LIBRARY_RELEASE}")
 
   # Includes: Include (always), PC (optional on Windows for pyconfig.h)
-  list(APPEND _PY_INCLUDE_DIRS "${PYTHON_INCLUDE_DIR}")
+  set(_PY_INCLUDE_DIRS "${PYTHON_INCLUDE_DIR}")
   if(PYTHON_PC_INCLUDE_DIR AND EXISTS "${PYTHON_PC_INCLUDE_DIR}")
     list(APPEND _PY_INCLUDE_DIRS "${PYTHON_PC_INCLUDE_DIR}")
   endif()
 
-  # Imported target with per-config locations
+  # Create or override the imported target to **force** superbuild Python
   if(NOT TARGET Python::Python)
     add_library(Python::Python UNKNOWN IMPORTED)
+  endif()
+
+  if(MSVC)
+    # On MSVC, link against the import library via IMPORTED_IMPLIB_* (NOT IMPORTED_LOCATION_*)
     set_target_properties(Python::Python PROPERTIES
-      IMPORTED_LOCATION_DEBUG       "${_PY_LIB_DBG}"
-      IMPORTED_LOCATION_RELWITHDEBINFO "${_PY_LIB_REL}"
-      IMPORTED_LOCATION_RELEASE     "${_PY_LIB_REL}"
-      IMPORTED_LOCATION_MINSIZEREL  "${_PY_LIB_REL}"
+      IMPORTED_IMPLIB_DEBUG         "${_PY_LIB_DBG}"
+      IMPORTED_IMPLIB_RELWITHDEBINFO "${_PY_LIB_REL}"
+      IMPORTED_IMPLIB_RELEASE       "${_PY_LIB_REL}"
+      IMPORTED_IMPLIB_MINSIZEREL    "${_PY_LIB_REL}"
       INTERFACE_INCLUDE_DIRECTORIES "${_PY_INCLUDE_DIRS}"
+    )
+  else()
+    # Non-Windows: link directly to the shared/static lib path
+    set_target_properties(Python::Python PROPERTIES
+      IMPORTED_LOCATION_DEBUG         "${_PY_LIB_DBG}"
+      IMPORTED_LOCATION_RELWITHDEBINFO "${_PY_LIB_REL}"
+      IMPORTED_LOCATION_RELEASE       "${_PY_LIB_REL}"
+      IMPORTED_LOCATION_MINSIZEREL    "${_PY_LIB_REL}"
+      INTERFACE_INCLUDE_DIRECTORIES   "${_PY_INCLUDE_DIRS}"
     )
   endif()
 
-  # Provide a best-effort Python_EXECUTABLE for later diagnostics/macros
+  # Provide a best-effort Python_EXECUTABLE for diagnostics/macros
   if(PYTHON_EXECUTABLE AND EXISTS "${PYTHON_EXECUTABLE}")
     set(_PY_EXECUTABLE "${PYTHON_EXECUTABLE}")
   elseif(PYTHON_RUNTIME_DIR AND EXISTS "${PYTHON_RUNTIME_DIR}")
-    # Common MSVC layout: python.exe next to libs in PCbuild/amd64
     if(EXISTS "${PYTHON_RUNTIME_DIR}/python.exe")
       set(_PY_EXECUTABLE "${PYTHON_RUNTIME_DIR}/python.exe")
     endif()
@@ -418,3 +455,11 @@ endif()
 if(_PY_LIB_REL)
   message(STATUS "[Core/Python] PY lib (rel): ${_PY_LIB_REL}")
 endif()
+
+# --- DIAGNOSTICS: show who is adding system Python into Core_Python ---
+get_target_property(_cp_links Core_Python LINK_LIBRARIES)
+get_target_property(_cp_if    Core_Python INTERFACE_LINK_LIBRARIES)
+message(STATUS "[Diag/Core_Python] LINK_LIBRARIES=${_cp_links}")
+message(STATUS "[Diag/Core_Python] INTERFACE_LINK_LIBRARIES=${_cp_if}")
+message(STATUS "[Diag/Core_Python] Python::Python IMPORTED_IMPLIB_DEBUG=$<TARGET_PROPERTY:Python::Python,IMPORTED_IMPLIB_DEBUG>")
+message(STATUS "[Diag/Core_Python] Python::Python IMPORTED_IMPLIB_RELEASE=$<TARGET_PROPERTY:Python::Python,IMPORTED_IMPLIB_RELEASE>")
