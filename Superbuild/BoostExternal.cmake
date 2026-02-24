@@ -39,6 +39,7 @@ set(_BOOST_LIBS
   atomic
   thread
   program_options
+  serialization
 )
 
 # Optional compiled libs (usually OFF)

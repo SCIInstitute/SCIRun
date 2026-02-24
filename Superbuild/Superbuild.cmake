@@ -551,6 +551,8 @@ if(BUILD_WITH_PYTHON)
     "-DPYTHON_RUNTIME_DIR:PATH=${_PY_PCBUILD}"
     "-DPYTHON_LIBRARY_DEBUG:FILEPATH=${_PY_LIB_DBG}"
     "-DPYTHON_LIBRARY_RELEASE:FILEPATH=${_PY_LIB_REL}"
+    "-DPython_LIBRARY_DEBUG:FILEPATH=${_PY_LIB_DBG}"
+    "-DPython_LIBRARY_RELEASE:FILEPATH=${_PY_LIB_REL}"
 
     # Optional hints for legacy find modules
     "-DPython_EXECUTABLE:FILEPATH=${_PY_EXE}"
@@ -840,6 +842,42 @@ if(TARGET Teem_external)
 
   message(STATUS "[superbuild] Teem include: ${INSTALL_DIR}/include")
   message(STATUS "[superbuild] Teem lib dir: ${_teem_lib_dir}")
+endif()
+
+# --- Provide TetGen include/lib hints even if headers aren't 'installed' ---
+if(WITH_TETGEN AND TARGET Tetgen_external)
+  ExternalProject_Get_Property(Tetgen_external INSTALL_DIR)
+  ExternalProject_Get_Property(Tetgen_external SOURCE_DIR)
+
+  # Prefer install/include; otherwise fall back to SOURCE_DIR where tetgen.h usually lives
+  set(_tet_inc "${INSTALL_DIR}/include")
+  if(NOT EXISTS "${_tet_inc}/tetgen.h")
+    set(_tet_inc "${SOURCE_DIR}")
+  endif()
+
+  if(EXISTS "${INSTALL_DIR}/lib64")
+    set(_tet_lib_dir "${INSTALL_DIR}/lib64")
+  else()
+    set(_tet_lib_dir "${INSTALL_DIR}/lib")
+  endif()
+
+  # Pick the actual library file name (tet.lib vs tetgen.lib)
+  set(_tet_lib "")
+  if(EXISTS "${_tet_lib_dir}/tet.lib")
+    set(_tet_lib "${_tet_lib_dir}/tet.lib")
+  elseif(EXISTS "${_tet_lib_dir}/tetgen.lib")
+    set(_tet_lib "${_tet_lib_dir}/tetgen.lib")
+  endif()
+
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DTETGEN_INCLUDE_DIR:PATH=${_tet_inc}"
+    "-DTETGEN_LIB_DIR:PATH=${_tet_lib_dir}"
+  )
+  if(_tet_lib)
+    list(APPEND SCIRUN_CACHE_ARGS "-DTETGEN_LIBRARY:FILEPATH=${_tet_lib}")
+  endif()
+
+  message(STATUS "[superbuild] TetGen include=${_tet_inc} libdir=${_tet_lib_dir} lib=${_tet_lib}")
 endif()
 
 # Compose a single CMAKE_PREFIX_PATH for SCIRun
