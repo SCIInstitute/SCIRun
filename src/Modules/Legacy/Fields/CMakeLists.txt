@@ -260,6 +260,13 @@ target_link_libraries(Modules_Legacy_Fields
 
 # ---- TetGen wiring (include + link + define) ----
 if(WITH_TETGEN)
+  message(STATUS "[Diag/Tetgen/Fields] WITH_TETGEN='${WITH_TETGEN}'")
+  message(STATUS "[Diag/Tetgen/Fields] TETGEN_INCLUDE_DIR='${TETGEN_INCLUDE_DIR}'")
+  message(STATUS "[Diag/Tetgen/Fields] TETGEN_LIB_DIR='${TETGEN_LIB_DIR}'")
+  message(STATUS "[Diag/Tetgen/Fields] TETGEN_LIBRARY='${TETGEN_LIBRARY}'")
+  if(TARGET Tetgen::Tetgen)
+    message(STATUS "[Diag/Tetgen/Fields] TARGET Tetgen::Tetgen is visible here")
+  endif()
   # Add the include directory so 'tetgen.h' is found
   if(DEFINED TETGEN_INCLUDE_DIR AND EXISTS "${TETGEN_INCLUDE_DIR}")
     target_include_directories(Modules_Legacy_Fields PRIVATE "${TETGEN_INCLUDE_DIR}")

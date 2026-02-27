@@ -103,18 +103,30 @@ set(_PY_LIB_DBG "")
 set(_PY_LIB_REL "")
 
 # ---- Path-first: use explicit superbuild variables if provided ----
-if(PYTHON_LIBRARY_DEBUG AND PYTHON_LIBRARY_RELEASE AND PYTHON_INCLUDE_DIR)
-  foreach(_check "${PYTHON_LIBRARY_DEBUG};${PYTHON_LIBRARY_RELEASE};${PYTHON_INCLUDE_DIR}")
-    if(NOT EXISTS "${_check}")
+# Accept include dir + at least one of debug/release libs.
+if(PYTHON_INCLUDE_DIR AND (PYTHON_LIBRARY_DEBUG OR PYTHON_LIBRARY_RELEASE))
+  # Build a proper list of checks; skip empties so foreach doesn't see blank items.
+  set(_py_checks)
+  if(PYTHON_LIBRARY_DEBUG)
+    list(APPEND _py_checks "${PYTHON_LIBRARY_DEBUG}")
+  endif()
+  if(PYTHON_LIBRARY_RELEASE)
+    list(APPEND _py_checks "${PYTHON_LIBRARY_RELEASE}")
+  endif()
+  list(APPEND _py_checks "${PYTHON_INCLUDE_DIR}")
+
+  foreach(_check IN LISTS _py_checks)
+    if(_check AND NOT EXISTS "${_check}")
       message(FATAL_ERROR "Python superbuild hint does not exist: ${_check}")
     endif()
   endforeach()
 
+  # Remember which ones we actually have
   set(_PY_LIB_DBG "${PYTHON_LIBRARY_DEBUG}")
   set(_PY_LIB_REL "${PYTHON_LIBRARY_RELEASE}")
 
   # Includes: Include (always), PC (optional on Windows for pyconfig.h)
-  list(APPEND _PY_INCLUDE_DIRS "${PYTHON_INCLUDE_DIR}")
+  set(_PY_INCLUDE_DIRS "${PYTHON_INCLUDE_DIR}")
   if(PYTHON_PC_INCLUDE_DIR AND EXISTS "${PYTHON_PC_INCLUDE_DIR}")
     list(APPEND _PY_INCLUDE_DIRS "${PYTHON_PC_INCLUDE_DIR}")
   endif()
@@ -161,57 +173,15 @@ if(NOT _SCIRUN_PY_OK)
 endif()
 
 # ====================================================================================
-# Ensure Python::Python imported target exists and points to superbuild import libs
-# Accept both new (PY_EXT_LIB_DIR/PY_INCLUDE_DIR) and legacy vars.
+# Ensure Python::Python imported target exists and is wired for all MSVC configs
 # ====================================================================================
-
-set(_PY_IMPORTED_OK FALSE)
-
-# Prefer explicit include dir hints from superbuild for MSVC usage requirements
-set(_SB_INC_DIR "")
-if(PYTHON_INCLUDE_DIR)
-  set(_SB_INC_DIR "${PYTHON_INCLUDE_DIR}")
-elseif(Python_INCLUDE_DIRS)
-  list(GET Python_INCLUDE_DIRS 0 _SB_INC_DIR)
-endif()
-if(PYTHON_PC_INCLUDE_DIR AND EXISTS "${PYTHON_PC_INCLUDE_DIR}")
-  list(APPEND _PY_INCLUDE_DIRS "${PYTHON_PC_INCLUDE_DIR}")
-endif()
-
-# Derive a lib dir if only file paths were given
-set(_SB_LIB_DIR "")
-if(PYTHON_LIBRARY_DEBUG)
-  get_filename_component(_SB_LIB_DIR "${PYTHON_LIBRARY_DEBUG}" DIRECTORY)
-elseif(PYTHON_LIBRARY_RELEASE)
-  get_filename_component(_SB_LIB_DIR "${PYTHON_LIBRARY_RELEASE}" DIRECTORY)
-elseif(PY_EXT_LIB_DIR)
-  set(_SB_LIB_DIR "${PY_EXT_LIB_DIR}")
-endif()
-
-# Fill missing per-config lib paths if needed
-if(NOT _PY_LIB_DBG AND _SB_LIB_DIR)
-  foreach(_name "python313_d.lib" "python312_d.lib" "python311_d.lib" "python310_d.lib")
-    if(EXISTS "${_SB_LIB_DIR}/${_name}")
-      set(_PY_LIB_DBG "${_SB_LIB_DIR}/${_name}")
-      break()
-    endif()
-  endforeach()
-endif()
-if(NOT _PY_LIB_REL AND _SB_LIB_DIR)
-  foreach(_name "python313.lib" "python312.lib" "python311.lib" "python310.lib")
-    if(EXISTS "${_SB_LIB_DIR}/${_name}")
-      set(_PY_LIB_REL "${_SB_LIB_DIR}/${_name}")
-      break()
-    endif()
-  endforeach()
-endif()
 
 # Create/override the imported target
 if(NOT TARGET Python::Python)
   add_library(Python::Python UNKNOWN IMPORTED)
 endif()
 
-# Always propagate includes via the imported target
+# Prefer explicit include dir hints from superbuild for MSVC usage requirements
 if(_SB_INC_DIR)
   set_target_properties(Python::Python PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${_SB_INC_DIR}"
@@ -223,49 +193,67 @@ elseif(_PY_INCLUDE_DIRS)
   )
 endif()
 
+# ---- MSVC: set config-specific IMPORTED_IMPLIB_* (do NOT guard with EXISTS) ----
 if(MSVC)
-  # --- MSVC: set ONLY IMPORTED_IMPLIB_* (never IMPORTED_LOCATION_*) so link.exe uses .lib, NOT .dll ---
-  if(EXISTS "${_PY_LIB_REL}")
+  # Make sure all common configs are recognized
+  set_target_properties(Python::Python PROPERTIES
+    IMPORTED_CONFIGURATIONS "Debug;Release;RelWithDebInfo;MinSizeRel"
+  )
+
+  # Primary assignment (no EXISTS guards; allow the files to appear by build time)
+  if(_PY_LIB_REL)
     set_target_properties(Python::Python PROPERTIES
       IMPORTED_IMPLIB_RELEASE        "${_PY_LIB_REL}"
       IMPORTED_IMPLIB_RELWITHDEBINFO "${_PY_LIB_REL}"
       IMPORTED_IMPLIB_MINSIZEREL     "${_PY_LIB_REL}"
     )
   endif()
-  if(EXISTS "${_PY_LIB_DBG}")
+  if(_PY_LIB_DBG)
     set_target_properties(Python::Python PROPERTIES
       IMPORTED_IMPLIB_DEBUG          "${_PY_LIB_DBG}"
     )
   endif()
+
+  # Fallbacks: if one variant is missing, map it to the other so VS never sees NOTFOUND
+  if(NOT _PY_LIB_DBG AND _PY_LIB_REL)
+    set_target_properties(Python::Python PROPERTIES
+      IMPORTED_IMPLIB_DEBUG          "${_PY_LIB_REL}"
+      MAP_IMPORTED_CONFIG_DEBUG      "Release;RelWithDebInfo"
+    )
+  endif()
+  if(NOT _PY_LIB_REL AND _PY_LIB_DBG)
+    set_target_properties(Python::Python PROPERTIES
+      IMPORTED_IMPLIB_RELEASE        "${_PY_LIB_DBG}"
+      IMPORTED_IMPLIB_RELWITHDEBINFO "${_PY_LIB_DBG}"
+      IMPORTED_IMPLIB_MINSIZEREL     "${_PY_LIB_DBG}"
+      MAP_IMPORTED_CONFIG_RELEASE    "Debug"
+      MAP_IMPORTED_CONFIG_RELWITHDEBINFO "Debug"
+      MAP_IMPORTED_CONFIG_MINSIZEREL "Debug"
+    )
+  endif()
+
 else()
-  # Non-Windows: point to the real binary (shared/static)
-  if(EXISTS "${_PY_LIB_REL}")
+  # Non-Windows: point to the real binary (shared/static); skip EXISTS guards
+  if(_PY_LIB_REL)
     set_target_properties(Python::Python PROPERTIES
       IMPORTED_LOCATION_RELEASE        "${_PY_LIB_REL}"
       IMPORTED_LOCATION_RELWITHDEBINFO "${_PY_LIB_REL}"
       IMPORTED_LOCATION_MINSIZEREL     "${_PY_LIB_REL}"
     )
   endif()
-  if(EXISTS "${_PY_LIB_DBG}")
+  if(_PY_LIB_DBG)
     set_target_properties(Python::Python PROPERTIES
       IMPORTED_LOCATION_DEBUG          "${_PY_LIB_DBG}"
     )
   endif()
 endif()
 
-# Consider imported OK if target exists now
-if(TARGET Python::Python)
-  set(_PY_IMPORTED_OK TRUE)
-endif()
-
-if(NOT _PY_IMPORTED_OK)
-  message(FATAL_ERROR
-    "Python::Python imported target could not be created for Core_Python.\n"
-    "Checked:\n  PY_EXT_LIB_DIR='${PY_EXT_LIB_DIR}'\n  PYTHON_INCLUDE_DIR='${PYTHON_INCLUDE_DIR}'\n"
-    "  PYTHON_LIBRARY_DEBUG='${PYTHON_LIBRARY_DEBUG}'\n  PYTHON_LIBRARY_RELEASE='${PYTHON_LIBRARY_RELEASE}'\n"
-    "Hint: ensure the superbuild passes these cache args and that Python_external has built import libs."
-  )
-endif()
+# Helpful diagnostics (ensure we actually set something)
+message(STATUS "[Diag/Core_Python] _PY_LIB_DBG='${_PY_LIB_DBG}' _PY_LIB_REL='${_PY_LIB_REL}'")
+get_target_property(_py_implib_dbg Python::Python IMPORTED_IMPLIB_DEBUG)
+get_target_property(_py_implib_rel Python::Python IMPORTED_IMPLIB_RELEASE)
+message(STATUS "[Diag/Core_Python] PY IMPORTED_IMPLIB_DEBUG='${_py_implib_dbg}'")
+message(STATUS "[Diag/Core_Python] PY IMPORTED_IMPLIB_RELEASE='${_py_implib_rel}'")
 
 # ====================================================================================
 # Platform-specific compile definitions (PYTHONPATH, etc.)
@@ -384,11 +372,13 @@ if(MSVC)
       endif()
     endforeach()
     if(_bp_dbg_candidates)
-      list(SORT _bp_dbg_candidates)  list(REVERSE _bp_dbg_candidates)
+      list(SORT _bp_dbg_candidates)
+      list(REVERSE _bp_dbg_candidates)
       list(GET _bp_dbg_candidates 0 SCI_BOOST_PYTHON_LIB_DEBUG)
     endif()
     if(_bp_rel_candidates)
-      list(SORT _bp_rel_candidates)  list(REVERSE _bp_rel_candidates)
+      list(SORT _bp_rel_candidates)
+      list(REVERSE _bp_rel_candidates)
       list(GET _bp_rel_candidates 0 SCI_BOOST_PYTHON_LIB_RELEASE)
     endif()
     if(NOT EXISTS "${SCI_BOOST_PYTHON_LIB_DEBUG}" OR NOT EXISTS "${SCI_BOOST_PYTHON_LIB_RELEASE}")

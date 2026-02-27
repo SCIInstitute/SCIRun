@@ -768,10 +768,36 @@ CONFIG_STANDARD_EXTERNAL(LodePng
 
 # Tetgen (optional)
 if(WITH_TETGEN)
-  CONFIG_STANDARD_EXTERNAL(Tetgen
-    DIR  "${Tetgen_DIR}"
-    CFG  "TetgenConfig.cmake"
-  )
+  # Try package config first (does nothing if no TetgenConfig.cmake in CMAKE_PREFIX_PATH)
+  #CONFIG_STANDARD_EXTERNAL(Tetgen
+  #  DIR  "${Tetgen_DIR}"
+  #  CFG  "TetgenConfig.cmake"
+  #)
+
+  # --- Fallback when Tetgen doesn't export a CMake package ---
+  # Create an imported target from superbuild-provided cache hints.
+  if(NOT TARGET Tetgen::Tetgen)
+    # Heal include dir: if it doesn't contain tetgen.h, try '<dir>/src'
+    set(_TETGEN_INC "${TETGEN_INCLUDE_DIR}")
+    if(_TETGEN_INC AND NOT EXISTS "${_TETGEN_INC}/tetgen.h" AND EXISTS "${_TETGEN_INC}/src/tetgen.h")
+      set(_TETGEN_INC "${_TETGEN_INC}/src")
+    endif()
+
+    # Create imported target if we have a real library file and a valid include dir
+    if(TETGEN_LIBRARY AND EXISTS "${TETGEN_LIBRARY}" AND _TETGEN_INC AND EXISTS "${_TETGEN_INC}/tetgen.h")
+      add_library(Tetgen::Tetgen UNKNOWN IMPORTED)
+      set_target_properties(Tetgen::Tetgen PROPERTIES
+        IMPORTED_LOCATION               "${TETGEN_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES   "${_TETGEN_INC}"
+        # Define TETLIBRARY for all consumers (TetGen's header expects this when used as a lib)
+        INTERFACE_COMPILE_DEFINITIONS   "TETLIBRARY"
+      )
+      message(STATUS "[SCIRun] Created imported target Tetgen::Tetgen (LIB='${TETGEN_LIBRARY}', INC='${_TETGEN_INC}')")
+    else()
+      message(STATUS "[SCIRun] Tetgen package not found and cache hints insufficient yet. "
+                     "TETGEN_LIBRARY='${TETGEN_LIBRARY}', TETGEN_INCLUDE_DIR='${TETGEN_INCLUDE_DIR}'")
+    endif()
+  endif()
 endif()
 
 # GLEW (Windows)

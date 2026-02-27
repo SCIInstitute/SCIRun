@@ -1,4 +1,4 @@
-#  For more information, please see: http://software.sci.utah.edu
+ï»¿#  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
@@ -104,7 +104,7 @@ if (WIN32 AND NOT BUILD_HEADLESS)
   if (NOT Qt_PATH OR NOT IS_DIRECTORY "${Qt_PATH}")
     set(_qt_default "C:/Qt/6.10.1/msvc2022_64")
     if (IS_DIRECTORY "${_qt_default}")
-      message(STATUS "Qt_PATH not set or invalid — defaulting to ${_qt_default}")
+      message(STATUS "Qt_PATH not set or invalid â€” defaulting to ${_qt_default}")
       set(Qt_PATH "${_qt_default}" CACHE PATH "Qt install prefix" FORCE)
     endif()
   endif()
@@ -244,7 +244,7 @@ endif()
 
 if(WITH_TETGEN)
   message(STATUS "Configuring Tetgen under GPL. Disable WITH_TETGEN to skip.")
-  ADD_EXTERNAL(${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external)
+  ADD_EXTERNAL(${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external) # <- lowercase g
 endif()
 
 if(WITH_OSPRAY)
@@ -335,7 +335,7 @@ function(_sb_export_inc_lib pkg target)
     set(_lib "${INSTALL_DIR}/lib")
   endif()
 
-  # Export include dir (unconditionally; path will exist by build time)
+  # Export include dir (unconditionally; path may exist after build)
   set(${pkg}_INCLUDE_DIR "${_inc}" CACHE PATH "${pkg} include dir" FORCE)
   list(APPEND SCIRUN_CACHE_ARGS "-D${pkg}_INCLUDE_DIR:PATH=${${pkg}_INCLUDE_DIR}")
 
@@ -432,8 +432,8 @@ _sb_export_inc_lib(Teem      Teem_external)
 _sb_export_inc_lib(Tny       Tny_external)
 _sb_export_inc_lib(LodePng   LodePng_external)
 _sb_export_inc_lib(Cleaver2  Cleaver2_external)
-_sb_export_inc_lib(SQLite     SQLite_external)
-if(WITH_TETGEN AND TARGET Tetgen_external)
+_sb_export_inc_lib(SQLite    SQLite_external)
+if(WITH_TETGEN AND TARGET Tetgen_external) # <- lowercase g
   _sb_export_inc_lib(Tetgen  Tetgen_external)
 endif()
 if(WIN32 AND TARGET Glew_external)
@@ -441,9 +441,14 @@ if(WIN32 AND TARGET Glew_external)
 endif()
 
 # =========================
-# Build SCIRun cache args
+# Build SCIRun cache args (APPEND, do not reset)
 # =========================
-set(SCIRUN_CACHE_ARGS
+# Initialize once, then append everywhere (avoid wiping earlier appends)
+if(NOT DEFINED SCIRUN_CACHE_ARGS)
+  set(SCIRUN_CACHE_ARGS "")
+endif()
+
+list(APPEND SCIRUN_CACHE_ARGS
   "-DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}"
   "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
   "-DSCIRUN_BINARY_DIR:PATH=${SCIRUN_BINARY_DIR}"
@@ -492,7 +497,6 @@ if(BUILD_WITH_PYTHON)
     endif()
   endif()
 
-  # Fallback: if the interpreter didn’t run (first configure), try to read cached values you exported
   if(NOT _PY_MAJ OR NOT _PY_MIN)
     if(DEFINED PY_MAJOR AND DEFINED PY_MINOR)
       set(_PY_MAJ "${PY_MAJOR}")
@@ -504,10 +508,6 @@ if(BUILD_WITH_PYTHON)
   set(_PY_DIGITS "")
   if(_PY_MAJ AND _PY_MIN)
     set(_PY_DIGITS "${_PY_MAJ}${_PY_MIN}")     # e.g. "313"
-  else()
-    # As a last resort, try to detect digits from filename presence in the lib dir
-    # (See Approach B below for a fuller glob)
-    message(STATUS "[Python wiring] Could not determine Python version via interpreter; will try folder scan later.")
   endif()
 
   # Resolve actual files in PCbuild/amd64
@@ -520,7 +520,6 @@ if(BUILD_WITH_PYTHON)
     set(_PY_LIB_DBG "${_PY_PCBUILD}/python${_PY_DIGITS}_d.lib")
   endif()
 
-  # If still missing, fall back to a glob (see Approach B)
   if(NOT _PY_LIB_REL OR NOT _PY_LIB_DBG)
     file(GLOB _py_rel_cand "${_PY_PCBUILD}/python3*.lib")
     file(GLOB _py_dbg_cand "${_PY_PCBUILD}/python3*_d.lib")
@@ -542,7 +541,6 @@ if(BUILD_WITH_PYTHON)
                     "First configure after a clean may hit this; they will exist after Python_external builds.")
   endif()
 
-  # Append cache args for SCIRun inner build: no version hard-coded
   list(APPEND SCIRUN_CACHE_ARGS
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
     "-DPYTHON_INCLUDE_DIR:PATH=${_PY_INC}"
@@ -554,28 +552,22 @@ if(BUILD_WITH_PYTHON)
     "-DPython_LIBRARY_DEBUG:FILEPATH=${_PY_LIB_DBG}"
     "-DPython_LIBRARY_RELEASE:FILEPATH=${_PY_LIB_REL}"
 
-    # Optional hints for legacy find modules
     "-DPython_EXECUTABLE:FILEPATH=${_PY_EXE}"
     "-DPython_INCLUDE_DIRS:PATH=${_PY_INC};${_PY_PC_INC}"
     "-DPython3_EXECUTABLE:FILEPATH=${_PY_EXE}"
     "-DPython3_INCLUDE_DIRS:PATH=${_PY_INC};${_PY_PC_INC}"
 
-    # Boost.Python wiring remains as-is
     "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
     "-DSCIRUN_EXPLICIT_BOOST_PYTHON_LINK:BOOL=ON"
 
-    # === Strong hints for FindPython to stay inside the superbuild tree ===
     "-DPython_ROOT_DIR:PATH=${_PY_SRC}"
     "-DPython3_ROOT_DIR:PATH=${_PY_SRC}"
-    
-    # === Explicit paths used by the module-level override (imported target) ===
+
     "-DPY_EXT_LIB_DIR:PATH=${_PY_PCBUILD}"
     "-DPY_INCLUDE_DIR:PATH=${_PY_INC}"
 
-    # Bias CMake's FindPython inside the inner build to honor our root and NOT the registry/system
     "-DPython_FIND_REGISTRY:STRING=NEVER"
     "-DPython_FIND_STRATEGY:STRING=LOCATION"
-    # Fence typical system install path(s) so they don't creep in via any other find logic
     "-DCMAKE_IGNORE_PREFIX_PATH:PATH=C:/Program Files/Python313;C:/Program Files (x86)/Python*"
   )
 endif()
@@ -584,42 +576,31 @@ if(WIN32)
   list(APPEND SCIRUN_CACHE_ARGS "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}")
 endif()
 
-# FreeType essential hints (include & lib paths explicitly)
+# FreeType essential hints
 if(TARGET Freetype_external)
   ExternalProject_Get_Property(Freetype_external INSTALL_DIR)
   set(FREETYPE_INSTALL_DIR "${INSTALL_DIR}")
 
-  # Primary include (contains ft2build.h) and the 'freetype2' sub-include
   set(Freetype_INCLUDE_DIR       "${FREETYPE_INSTALL_DIR}/include")
   set(FREETYPE_INCLUDE_DIR2      "${FREETYPE_INSTALL_DIR}/include/freetype2")
-
-  # Library directory (freetype.lib / libfreetype.{a,so,dylib})
-  # If you set CMAKE_INSTALL_LIBDIR=lib in the external, this is stable:
   set(Freetype_LIB_DIR           "${FREETYPE_INSTALL_DIR}/lib")
 
-  # Append cache args consumed by the inner SCIRun configure
   list(APPEND SCIRUN_CACHE_ARGS
     "-DFreetype_INCLUDE_DIR:PATH=${Freetype_INCLUDE_DIR}"
     "-DFREETYPE_INCLUDE_DIR2:PATH=${FREETYPE_INCLUDE_DIR2}"
     "-DFreetype_LIB_DIR:PATH=${Freetype_LIB_DIR}"
   )
 
-  # If the external produced a *Config.cmake, pass its DIR like you do for Zlib.
-  # Prefer an explicit Freetype_DIR if the superbuild has one; else export the common location.
   if(DEFINED Freetype_DIR)
     list(APPEND SCIRUN_CACHE_ARGS "-DFreetype_DIR:PATH=${Freetype_DIR}")
   else()
-    # Helper you already use for Zlib to export a config dir that the inner find_package() can pick up.
-    # Adjust the suffix if your FreeType external installs config files elsewhere.
     _export_config_dir(Freetype Freetype_external "lib/cmake/freetype")
   endif()
 
-  # (Optional) If you also maintain legacy alias variables for consistency with older code:
   set(SCI_FREETYPE_INCLUDE "${Freetype_INCLUDE_DIR}" CACHE PATH "Legacy: FreeType include dir (ft2build.h)" FORCE)
   set(SCI_FREETYPE_INCLUDE2 "${FREETYPE_INCLUDE_DIR2}" CACHE PATH "Legacy: FreeType include dir (freetype2)" FORCE)
   set(SCI_FREETYPE_LIBRARY_DIR "${Freetype_LIB_DIR}" CACHE PATH "Legacy: FreeType library dir" FORCE)
 
-  # And push those legacy names too if you want them available in the inner cache:
   list(APPEND SCIRUN_CACHE_ARGS
     "-DSCI_FREETYPE_INCLUDE:PATH=${SCI_FREETYPE_INCLUDE}"
     "-DSCI_FREETYPE_INCLUDE2:PATH=${SCI_FREETYPE_INCLUDE2}"
@@ -627,21 +608,18 @@ if(TARGET Freetype_external)
   )
 endif()
 
-# Zlib + Boost essential hints (include & lib paths explicitly)
+# Zlib + Boost essential hints
 if(TARGET Zlib_external)
   ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
   set(ZLIB_INSTALL_DIR "${INSTALL_DIR}")
 
-  # Existing hints you already pass:
   list(APPEND SCIRUN_CACHE_ARGS
     "-DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}"
     "-DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include"
     "-DZLIB_USE_STATIC_LIBS:BOOL=ON"
   )
 
-  # New: pass the ACTUAL library file (full path). Adjust filename to your build.
   if(WIN32)
-    # If you built static zlib as zlibstatic.lib, set that; otherwise zlib.lib or zlib1.lib
     if(EXISTS "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
       set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/zlibstatic.lib")
     elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib/zlib.lib")
@@ -655,7 +633,7 @@ if(TARGET Zlib_external)
     elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib/libz.dylib")
       set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/libz.dylib")
     endif()
-  else() # Linux/Unix
+  else()
     if(EXISTS "${ZLIB_INSTALL_DIR}/lib/libz.a")
       set(_zlib_lib "${ZLIB_INSTALL_DIR}/lib/libz.a")
     elseif(EXISTS "${ZLIB_INSTALL_DIR}/lib/libz.so")
@@ -694,33 +672,24 @@ endif()
 # ===== Eigen (special-case exporter to prefer include/eigen3) =====
 if(TARGET Eigen_external)
   ExternalProject_Get_Property(Eigen_external INSTALL_DIR)
-
-  # Prefer the CMake-installed Eigen layout
   set(_eigen_inc "${INSTALL_DIR}/include/eigen3")
   if(NOT EXISTS "${_eigen_inc}/Eigen/Dense")
-    # Legacy fallback when copy-only install was used.
-    # Strongly recommend switching your Eigen external to CMake install.
     set(_eigen_inc "${INSTALL_DIR}/include")
   endif()
 
-  # Pass normalized include to SCIRun (it will also verify 'unsupported' exists)
   list(APPEND SCIRUN_CACHE_ARGS
     "-DEigen_INCLUDE_DIR:PATH=${_eigen_inc}"
     "-DSCIRUN_EIGEN_INCLUDE:PATH=${_eigen_inc}"
   )
-
-  # Ensure SCIRun sees Eigen's prefix in CMAKE_PREFIX_PATH
   sb_prefix_append("${INSTALL_DIR}")
 endif()
 
 # Legacy alias variables (so existing SCIRun CMake picks them up)
-# Normalize LodePng var name if needed
 if(DEFINED LodePng_INCLUDE_DIR AND NOT DEFINED LODEPNG_INCLUDE_DIR)
   set(LODEPNG_INCLUDE_DIR "${LodePng_INCLUDE_DIR}")
 endif()
 
 if(DEFINED Eigen_INCLUDE_DIR)
-  # Stable alias that the inner SCIRun configure can use everywhere.
   set(SCIRUN_EIGEN_INCLUDE "${Eigen_INCLUDE_DIR}" CACHE PATH "Alias: Eigen include dir" FORCE)
   list(APPEND SCIRUN_CACHE_ARGS "-DSCIRUN_EIGEN_INCLUDE:PATH=${SCIRUN_EIGEN_INCLUDE}")
 endif()
@@ -740,7 +709,7 @@ if(DEFINED SQLite_INCLUDE_DIR)
   set(SQLite3_INCLUDE_DIR "${SQLite_INCLUDE_DIR}" CACHE PATH "Alias: SQLite3 include dir" FORCE)
   list(APPEND SCIRUN_CACHE_ARGS "-DSQLite3_INCLUDE_DIR:PATH=${SQLite3_INCLUDE_DIR}")
 endif()
-# ---- Cleaver2 uppercase aliases for inner CMake (legacy/consistent names) ----
+# ---- Cleaver2 uppercase aliases
 if(DEFINED Cleaver2_INCLUDE_DIR)
   list(APPEND SCIRUN_CACHE_ARGS
     "-DCLEAVER2_INCLUDE:PATH=${Cleaver2_INCLUDE_DIR}"
@@ -753,29 +722,23 @@ if(DEFINED Cleaver2_LIB_DIR)
     "-DCLEAVER2_LIB_DIR:PATH=${Cleaver2_LIB_DIR}"
   )
 endif()
-# Library logical name (import lib on Windows will be resolved by consumers)
-list(APPEND SCIRUN_CACHE_ARGS
-  "-DCLEAVER2_LIBRARY:STRING=cleaver2"
-)
-# --- Ensure SQLite hints are present AFTER SCIRUN_CACHE_ARGS is created ---
+list(APPEND SCIRUN_CACHE_ARGS "-DCLEAVER2_LIBRARY:STRING=cleaver2")
+
+# --- Ensure SQLite hints are present AFTER base args ---
 if(TARGET SQLite_external)
   ExternalProject_Get_Property(SQLite_external INSTALL_DIR)
-  # Compute lib dir (lib64 preferred when present)
   if(EXISTS "${INSTALL_DIR}/lib64")
     set(_sqlite_lib_dir "${INSTALL_DIR}/lib64")
   else()
     set(_sqlite_lib_dir "${INSTALL_DIR}/lib")
   endif()
 
-  # Always pass include + lib dir
   list(APPEND SCIRUN_CACHE_ARGS
     "-DSQLite_INCLUDE_DIR:PATH=${INSTALL_DIR}/include"
     "-DSQLite_LIB_DIR:PATH=${_sqlite_lib_dir}"
-    # Alias the include to SQLite3_* for consumers that use that name
     "-DSQLite3_INCLUDE_DIR:PATH=${INSTALL_DIR}/include"
   )
 
-  # Optional: pass the exact library file if it exists (helps consumers)
   if(WIN32)
     set(_sqlite_lib "${_sqlite_lib_dir}/sqlite3.lib")
     if(NOT EXISTS "${_sqlite_lib}" AND EXISTS "${_sqlite_lib_dir}/libsqlite3.lib")
@@ -798,24 +761,21 @@ if(TARGET SQLite_external)
   message(STATUS "[superbuild] SQLite lib dir: ${_sqlite_lib_dir}")
 endif()
 
-# --- Ensure Teem hints are present AFTER SCIRUN_CACHE_ARGS is created ---
+# --- Ensure Teem hints are present AFTER base args ---
 if(TARGET Teem_external)
   ExternalProject_Get_Property(Teem_external INSTALL_DIR)
 
-  # Compute Teem lib dir (prefer lib64 when present)
   if(EXISTS "${INSTALL_DIR}/lib64")
     set(_teem_lib_dir "${INSTALL_DIR}/lib64")
   else()
     set(_teem_lib_dir "${INSTALL_DIR}/lib")
   endif()
 
-  # Always pass include + lib dir
   list(APPEND SCIRUN_CACHE_ARGS
     "-DTeem_INCLUDE_DIR:PATH=${INSTALL_DIR}/include"
     "-DTeem_LIB_DIR:PATH=${_teem_lib_dir}"
   )
 
-  # Optional: pass full library path if present (helps consumers)
   if(WIN32)
     set(_teem_lib "${_teem_lib_dir}/teem.lib")
     if(NOT EXISTS "${_teem_lib}" AND EXISTS "${_teem_lib_dir}/libteem.lib")
@@ -844,40 +804,82 @@ if(TARGET Teem_external)
   message(STATUS "[superbuild] Teem lib dir: ${_teem_lib_dir}")
 endif()
 
-# --- Provide TetGen include/lib hints even if headers aren't 'installed' ---
+# --- Provide Tetgen include/lib hints + actual library file ---
+# Use the actual external target name: Tetgen_external (lowercase g)
 if(WITH_TETGEN AND TARGET Tetgen_external)
   ExternalProject_Get_Property(Tetgen_external INSTALL_DIR)
   ExternalProject_Get_Property(Tetgen_external SOURCE_DIR)
 
-  # Prefer install/include; otherwise fall back to SOURCE_DIR where tetgen.h usually lives
+  # Include dir: prefer install/include, else SOURCE_DIR/src, else SOURCE_DIR
   set(_tet_inc "${INSTALL_DIR}/include")
   if(NOT EXISTS "${_tet_inc}/tetgen.h")
-    set(_tet_inc "${SOURCE_DIR}")
+    if(EXISTS "${SOURCE_DIR}/src/tetgen.h")
+      set(_tet_inc "${SOURCE_DIR}/src")
+    elseif(EXISTS "${SOURCE_DIR}/tetgen.h")
+      set(_tet_inc "${SOURCE_DIR}")
+    endif()
   endif()
 
+  # Library dir candidates
+  set(_tet_lib_dir "")
   if(EXISTS "${INSTALL_DIR}/lib64")
     set(_tet_lib_dir "${INSTALL_DIR}/lib64")
-  else()
+  elseif(EXISTS "${INSTALL_DIR}/lib")
     set(_tet_lib_dir "${INSTALL_DIR}/lib")
   endif()
 
-  # Pick the actual library file name (tet.lib vs tetgen.lib)
+  # Try to locate the actual library file
   set(_tet_lib "")
-  if(EXISTS "${_tet_lib_dir}/tet.lib")
-    set(_tet_lib "${_tet_lib_dir}/tet.lib")
-  elseif(EXISTS "${_tet_lib_dir}/tetgen.lib")
-    set(_tet_lib "${_tet_lib_dir}/tetgen.lib")
+  if(_tet_lib_dir AND EXISTS "${_tet_lib_dir}")
+    set(_tet_names tetgen libtetgen tet tetgen_static tetgen1.6 tet1.6)
+    foreach(_nm IN LISTS _tet_names)
+      if(EXISTS "${_tet_lib_dir}/${_nm}.lib")
+        set(_tet_lib "${_tet_lib_dir}/${_nm}.lib")
+        break()
+      endif()
+    endforeach()
+    if(NOT _tet_lib)
+      file(GLOB _cands
+        "${_tet_lib_dir}/*.lib"
+        "${_tet_lib_dir}/**/tet*.lib"
+        "${_tet_lib_dir}/**/libtet*.lib"
+      )
+      list(SORT _cands)
+      list(LENGTH _cands _n)
+      if(_n GREATER 0)
+        list(GET _cands 0 _tet_lib)
+      endif()
+    endif()
   endif()
 
-  list(APPEND SCIRUN_CACHE_ARGS
-    "-DTETGEN_INCLUDE_DIR:PATH=${_tet_inc}"
-    "-DTETGEN_LIB_DIR:PATH=${_tet_lib_dir}"
-  )
+  # Normalize for cache args
+  if(_tet_inc)
+    file(TO_CMAKE_PATH "${_tet_inc}" _tet_inc_norm)
+  else()
+    set(_tet_inc_norm "")
+  endif()
+  if(_tet_lib_dir)
+    file(TO_CMAKE_PATH "${_tet_lib_dir}" _tet_lib_dir_norm)
+  else()
+    set(_tet_lib_dir_norm "")
+  endif()
   if(_tet_lib)
-    list(APPEND SCIRUN_CACHE_ARGS "-DTETGEN_LIBRARY:FILEPATH=${_tet_lib}")
+    file(TO_CMAKE_PATH "${_tet_lib}" _tet_lib_norm)
+  else()
+    set(_tet_lib_norm "")
   endif()
 
-  message(STATUS "[superbuild] TetGen include=${_tet_inc} libdir=${_tet_lib_dir} lib=${_tet_lib}")
+  # Always pass include/lib dir; pass TETGEN_LIBRARY only if file was found
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DWITH_TETGEN:BOOL=ON"
+    "-DTETGEN_INCLUDE_DIR:PATH=${_tet_inc_norm}"
+    "-DTETGEN_LIB_DIR:PATH=${_tet_lib_dir_norm}"
+  )
+  if(_tet_lib_norm)
+    list(APPEND SCIRUN_CACHE_ARGS "-DTETGEN_LIBRARY:FILEPATH=${_tet_lib_norm}")
+  endif()
+
+  message(STATUS "[superbuild] Tetgen: include=${_tet_inc_norm} libdir=${_tet_lib_dir_norm} lib=${_tet_lib_norm}")
 endif()
 
 # Compose a single CMAKE_PREFIX_PATH for SCIRun
@@ -949,7 +951,6 @@ ExternalProject_Add(SCIRun_external
 # =========================
 # BOOST: header staging (no delete; copy only) + waits
 # =========================
-# Prepare cross-platform commands for b2 bootstrapping and header generation
 if(WIN32)
   set(_B2_BOOTSTRAP_CMD cmd /c bootstrap.bat)
   set(_B2_HEADERS_CMD   cmd /c .\\b2 headers)
@@ -959,7 +960,6 @@ else()
 endif()
 
 if(TARGET Boost_external)
-  # 1) Bootstrap b2
   ExternalProject_Add_Step(Boost_external bootstrap_b2
     COMMAND ${_B2_BOOTSTRAP_CMD}
     WORKING_DIRECTORY <SOURCE_DIR>
@@ -968,7 +968,6 @@ if(TARGET Boost_external)
     COMMENT "Bootstrapping Boost.Build (b2)"
   )
 
-  # 2) Generate the 'boost/' header tree
   ExternalProject_Add_Step(Boost_external stage_headers
     COMMAND ${_B2_HEADERS_CMD}
     WORKING_DIRECTORY <SOURCE_DIR>
@@ -976,7 +975,6 @@ if(TARGET Boost_external)
     COMMENT "Running 'b2 headers' to generate the boost/ header tree"
   )
 
-  # 3) Copy full headers into install/include WITHOUT deleting first
   if(NOT DEFINED _SB_BOOST_HEADERS_COPY_STEP_DEFINED)
     ExternalProject_Add_Step(Boost_external stage_boost_headers_copy
       COMMAND ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/include/boost
@@ -989,10 +987,8 @@ if(TARGET Boost_external)
     set(_SB_BOOST_HEADERS_COPY_STEP_DEFINED TRUE)
   endif()
 
-  # Expose step targets for ordering elsewhere
   ExternalProject_Add_StepTargets(Boost_external stage_headers stage_boost_headers_copy)
 
-  # Gate SCIRun configure on staged headers
   ExternalProject_Get_Property(Boost_external INSTALL_DIR)
   _sb_scirun_wait_for(NAME boost
     FILES
@@ -1070,9 +1066,7 @@ endif()
 # --- Wait for Eigen headers (including unsupported/Tensor) before SCIRun configure ---
 if(TARGET Eigen_external)
   ExternalProject_Get_Property(Eigen_external INSTALL_DIR)
-  set(_eigen_inc "${INSTALL_DIR}/include/eigen3")  # assume modern layout produced by CMake install
-
-  # Do not check EXISTS here—let ExternalProject step handle availability at build time.
+  set(_eigen_inc "${INSTALL_DIR}/include/eigen3")
   _sb_scirun_wait_for(NAME eigen
     FILES
       "${_eigen_inc}/Eigen/Dense"
@@ -1083,15 +1077,11 @@ endif()
 
 # --- Gate SCIRun configure on Cleaver2 headers (vec3.h) ---
 if(TARGET Cleaver2_external)
-  # Expose a phony target for the copy step so we can depend on it
   ExternalProject_Add_StepTargets(Cleaver2_external copy_headers)
-
   ExternalProject_Get_Property(Cleaver2_external INSTALL_DIR)
   _sb_scirun_wait_for(NAME cleaver2
     FILES "${INSTALL_DIR}/include/cleaver2/vec3.h"
     DIRS  "${INSTALL_DIR}/include/cleaver2"
   )
-
-  # Ensure SCIRun waits specifically for the header copy step to complete
   add_dependencies(SCIRun_external Cleaver2_external-copy_headers)
 endif()
