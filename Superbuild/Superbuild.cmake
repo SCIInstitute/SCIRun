@@ -254,6 +254,13 @@ endif()
 # Keep Boost last so we can compute Boost_DIR & legacy hints afterward
 ADD_EXTERNAL(${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external)
 
+# Qwt (Qt plotting) — build only when GUI is enabled
+option(WITH_QWT "Build Qwt external (Qt plotting widgets)" ON)
+if(NOT BUILD_HEADLESS AND WITH_QWT)
+  # Adjust the path if your QwtExternal.cmake lives elsewhere
+  ADD_EXTERNAL(${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external)
+endif()
+
 # Ensure header copy steps run before SCIRun config/build
 if(TARGET Glew_external-copy_headers)
   add_dependencies(SCIRun_external Glew_external-copy_headers)
@@ -398,14 +405,22 @@ if(NOT BUILD_HEADLESS AND TARGET Qwt_external)
     set(QWT_LIBRARY_DIR "${QWT_INSTALL_DIR}/lib")
   endif()
 
+  # (New) Pass fallback include/lib dirs to the inner SCIRun build as cache args,
+  # in case QwtConfig.cmake is not present.
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DQWT_INCLUDE_DIR:PATH=${QWT_INCLUDE_DIR}"
+    "-DQWT_LIBRARY_DIR:PATH=${QWT_LIBRARY_DIR}"
+  )
+
+  # Imported target here is only visible in superbuild scope;
+  # the inner project will use Qwt_DIR or QWT_* vars above.
   add_library(Qwt::Qwt UNKNOWN IMPORTED GLOBAL)
   add_dependencies(Qwt::Qwt Qwt_external)
   set_property(TARGET Qwt::Qwt PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${QWT_INCLUDE_DIR}")
-
   if(WIN32)
     set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_CONFIGURATIONS "Debug;Release")
     set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_LOCATION_RELEASE "${QWT_LIBRARY_DIR}/qwt.lib")
-    set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_LOCATION_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib")
+    set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_LOCATION_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib") # adjust if your build uses qwt_d.lib
   elseif(APPLE)
     set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_LOCATION "${QWT_LIBRARY_DIR}/libqwt.dylib")
   else()
@@ -471,105 +486,94 @@ list(APPEND SCIRUN_CACHE_ARGS
 )
 
 # =========================
-# Forward Python values to SCIRun (inner CMake), version-agnostic
+# Forward Python values to SCIRun (inner CMake), version-agnostic & robust
 # =========================
 if(BUILD_WITH_PYTHON)
-  # Base paths from your external layout
-  set(_PY_SRC        "${ep_base}/Source/Python_external")
-  set(_PY_PCBUILD    "${_PY_SRC}/PCbuild/amd64")
+  # Normalize paths to forward-slash form for CMake cache correctness
+  file(TO_CMAKE_PATH "${ep_base}/Source/Python_external" _PY_SRC)
   set(_PY_INC        "${_PY_SRC}/Include")
   set(_PY_PC_INC     "${_PY_SRC}/PC")
+  set(_PY_PCBUILD    "${_PY_SRC}/PCbuild/amd64")
   set(_PY_EXE        "${_PY_PCBUILD}/python.exe")
 
-  # Derive MAJOR.MINOR from the built interpreter
-  set(_PY_MAJ "")
-  set(_PY_MIN "")
+  # --- Discover import libraries in PCbuild/amd64 ---
+  set(_PY_LIB_REL "")
+  set(_PY_LIB_DBG "")
+
+  # Strategy A: use python.exe to get MAJOR.MINOR -> digits
+  set(_PY_DIGITS "")
   if(EXISTS "${_PY_EXE}")
     execute_process(
-      COMMAND "${_PY_EXE}" -c "import sys; print(f'{sys.version_info[0]}.{sys.version_info[1]}')"
-      OUTPUT_VARIABLE _PY_VER_SHORT
+      COMMAND "${_PY_EXE}" -c "import sys; print(f'{sys.version_info[0]}{sys.version_info[1]}')"
+      OUTPUT_VARIABLE _PY_DIGITS
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_QUIET
     )
-    if(_PY_VER_SHORT MATCHES "^([0-9]+)\\.([0-9]+)$")
-      set(_PY_MAJ "${CMAKE_MATCH_1}")
-      set(_PY_MIN "${CMAKE_MATCH_2}")
+    if(_PY_DIGITS MATCHES "^[0-9][0-9]+$")
+      if(EXISTS "${_PY_PCBUILD}/python${_PY_DIGITS}.lib")
+        set(_PY_LIB_REL "${_PY_PCBUILD}/python${_PY_DIGITS}.lib")
+      endif()
+      if(EXISTS "${_PY_PCBUILD}/python${_PY_DIGITS}_d.lib")
+        set(_PY_LIB_DBG "${_PY_PCBUILD}/python${_PY_DIGITS}_d.lib")
+      endif()
     endif()
   endif()
 
-  if(NOT _PY_MAJ OR NOT _PY_MIN)
-    if(DEFINED PY_MAJOR AND DEFINED PY_MINOR)
-      set(_PY_MAJ "${PY_MAJOR}")
-      set(_PY_MIN "${PY_MINOR}")
-    endif()
-  endif()
-
-  # Construct the Windows import library names: pythonXY(.lib) and pythonXY_d.lib
-  set(_PY_DIGITS "")
-  if(_PY_MAJ AND _PY_MIN)
-    set(_PY_DIGITS "${_PY_MAJ}${_PY_MIN}")     # e.g. "313"
-  endif()
-
-  # Resolve actual files in PCbuild/amd64
-  set(_PY_LIB_REL "")
-  set(_PY_LIB_DBG "")
-  if(_PY_DIGITS AND EXISTS "${_PY_PCBUILD}/python${_PY_DIGITS}.lib")
-    set(_PY_LIB_REL "${_PY_PCBUILD}/python${_PY_DIGITS}.lib")
-  endif()
-  if(_PY_DIGITS AND EXISTS "${_PY_PCBUILD}/python${_PY_DIGITS}_d.lib")
-    set(_PY_LIB_DBG "${_PY_PCBUILD}/python${_PY_DIGITS}_d.lib")
-  endif()
-
+  # Strategy B: scan for the newest python3*.lib if digits not derived or files not found
   if(NOT _PY_LIB_REL OR NOT _PY_LIB_DBG)
-    file(GLOB _py_rel_cand "${_PY_PCBUILD}/python3*.lib")
-    file(GLOB _py_dbg_cand "${_PY_PCBUILD}/python3*_d.lib")
-    list(SORT _py_rel_cand)
-    list(SORT _py_dbg_cand)
-    list(REVERSE _py_rel_cand)
-    list(REVERSE _py_dbg_cand)
-    if(NOT _PY_LIB_REL AND _py_rel_cand)
-      list(GET _py_rel_cand 0 _PY_LIB_REL)
-    endif()
-    if(NOT _PY_LIB_DBG AND _py_dbg_cand)
-      list(GET _py_dbg_cand 0 _PY_LIB_DBG)
+    file(GLOB _py_libs_all "${_PY_PCBUILD}/python3*.lib")
+    if(_py_libs_all)
+      list(SORT _py_libs_all)
+      list(REVERSE _py_libs_all)
+      # Pick best candidates by suffix
+      foreach(_L IN LISTS _py_libs_all)
+        get_filename_component(_bn "${_L}" NAME)
+        if(_bn MATCHES "^python([0-9][0-9][0-9])_d\\.lib$" AND NOT _PY_LIB_DBG)
+          set(_PY_LIB_DBG "${_L}")
+        elseif(_bn MATCHES "^python([0-9][0-9][0-9])\\.lib$" AND NOT _PY_LIB_REL)
+          set(_PY_LIB_REL "${_L}")
+        endif()
+      endforeach()
     endif()
   endif()
 
-  if(NOT (EXISTS "${_PY_LIB_REL}" AND EXISTS "${_PY_LIB_DBG}"))
-    message(WARNING "[Python wiring] Could not resolve both Python import libs under ${_PY_PCBUILD}. "
-                    "REL='${_PY_LIB_REL}' DBG='${_PY_LIB_DBG}'. "
-                    "First configure after a clean may hit this; they will exist after Python_external builds.")
+  # Helpful warning (first configure after clean may run before Python builds)
+  if(NOT (EXISTS "${_PY_LIB_REL}" OR EXISTS "${_PY_LIB_DBG}"))
+    message(WARNING
+      "[Python wiring] No python import libs found yet under ${_PY_PCBUILD}. "
+      "SCIRun configure is set to wait for Python_external build, but if you "
+      "manually run only configure, the files may not exist until Python builds."
+    )
   endif()
 
-  list(APPEND SCIRUN_CACHE_ARGS
+  # --- Build the cache args only with non-empty values ---
+  set(_SC_PY_ARGS
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
     "-DPYTHON_INCLUDE_DIR:PATH=${_PY_INC}"
-    "-DPYTHON_PC_INCLUDE_DIR:PATH=${_PY_PC_INC}"
-    "-DPYTHON_EXECUTABLE:FILEPATH=${_PY_EXE}"
     "-DPYTHON_RUNTIME_DIR:PATH=${_PY_PCBUILD}"
-    "-DPYTHON_LIBRARY_DEBUG:FILEPATH=${_PY_LIB_DBG}"
-    "-DPYTHON_LIBRARY_RELEASE:FILEPATH=${_PY_LIB_REL}"
-    "-DPython_LIBRARY_DEBUG:FILEPATH=${_PY_LIB_DBG}"
-    "-DPython_LIBRARY_RELEASE:FILEPATH=${_PY_LIB_REL}"
-
-    "-DPython_EXECUTABLE:FILEPATH=${_PY_EXE}"
-    "-DPython_INCLUDE_DIRS:PATH=${_PY_INC};${_PY_PC_INC}"
-    "-DPython3_EXECUTABLE:FILEPATH=${_PY_EXE}"
-    "-DPython3_INCLUDE_DIRS:PATH=${_PY_INC};${_PY_PC_INC}"
-
-    "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
-    "-DSCIRUN_EXPLICIT_BOOST_PYTHON_LINK:BOOL=ON"
-
-    "-DPython_ROOT_DIR:PATH=${_PY_SRC}"
-    "-DPython3_ROOT_DIR:PATH=${_PY_SRC}"
-
-    "-DPY_EXT_LIB_DIR:PATH=${_PY_PCBUILD}"
-    "-DPY_INCLUDE_DIR:PATH=${_PY_INC}"
-
     "-DPython_FIND_REGISTRY:STRING=NEVER"
     "-DPython_FIND_STRATEGY:STRING=LOCATION"
-    "-DCMAKE_IGNORE_PREFIX_PATH:PATH=C:/Program Files/Python313;C:/Program Files (x86)/Python*"
+    "-DPython_ROOT_DIR:PATH=${_PY_SRC}"
+    "-DCMAKE_IGNORE_PREFIX_PATH:PATH=C:/Program Files/Python*;C:/Program Files (x86)/Python*"
+    "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
+    "-DSCIRUN_EXPLICIT_BOOST_PYTHON_LINK:BOOL=ON"
   )
+
+  if(EXISTS "${_PY_PC_INC}")
+    list(APPEND _SC_PY_ARGS "-DPYTHON_PC_INCLUDE_DIR:PATH=${_PY_PC_INC}")
+  endif()
+  if(EXISTS "${_PY_EXE}")
+    list(APPEND _SC_PY_ARGS "-DPYTHON_EXECUTABLE:FILEPATH=${_PY_EXE}")
+  endif()
+  if(_PY_LIB_REL)
+    list(APPEND _SC_PY_ARGS "-DPYTHON_LIBRARY_RELEASE:FILEPATH=${_PY_LIB_REL}")
+  endif()
+  if(_PY_LIB_DBG)
+    list(APPEND _SC_PY_ARGS "-DPYTHON_LIBRARY_DEBUG:FILEPATH=${_PY_LIB_DBG}")
+  endif()
+
+  # Append to the inner project cache
+  list(APPEND SCIRUN_CACHE_ARGS ${_SC_PY_ARGS})
 endif()
 
 if(WIN32)
@@ -1000,6 +1004,7 @@ if(TARGET Boost_external)
 endif()
 
 if(TARGET Boost_external AND TARGET Python_external)
+  add_dependencies(SCIRun_external Python_external)
   add_dependencies(Boost_external Python_external)
 endif()
 
@@ -1084,4 +1089,27 @@ if(TARGET Cleaver2_external)
     DIRS  "${INSTALL_DIR}/include/cleaver2"
   )
   add_dependencies(SCIRun_external Cleaver2_external-copy_headers)
+endif()
+
+# --- (NEW) Ensure SCIRun configure waits for Python_external build ---
+if(BUILD_WITH_PYTHON AND TARGET Python_external)
+  if(COMMAND ExternalProject_Add_StepDependencies)
+    ExternalProject_Add_StepDependencies(SCIRun_external configure Python_external)
+    message(STATUS "[superbuild] SCIRun_external: 'configure' will wait on Python_external.")
+  endif()
+
+  # (Optional best-effort) Also wait for presence of python import libs/exe
+  # This makes the configure step defer until the files exist on disk.
+  set(_py_src_dir "${ep_base}/Source/Python_external")
+  set(_py_pcbuild "${_py_src_dir}/PCbuild/amd64")
+  # Gather possible byproducts
+  file(GLOB _py_wait_libs "${_py_pcbuild}/python3*.lib")
+  set(_py_wait_files "${_py_pcbuild}/python.exe")
+  list(APPEND _py_wait_files ${_py_wait_libs})
+  if(_py_wait_files)
+    _sb_scirun_wait_for(NAME python
+      FILES ${_py_wait_files}
+      DIRS  "${_py_pcbuild}"
+    )
+  endif()
 endif()

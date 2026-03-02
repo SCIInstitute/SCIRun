@@ -67,9 +67,6 @@ SCIRUN_ADD_LIBRARY(Core_Python
   ${Core_Python_SRCS}
 )
 
-# (Optional) Belt-and-suspenders wipe in case macro captured anything already
-set_target_properties(Core_Python PROPERTIES LINK_LIBRARIES "")
-
 # Preserve original shared define behavior
 if(BUILD_SHARED_LIBS)
   add_definitions(-DBUILD_Core_Python)
@@ -173,87 +170,72 @@ if(NOT _SCIRUN_PY_OK)
 endif()
 
 # ====================================================================================
-# Ensure Python::Python imported target exists and is wired for all MSVC configs
+# Imported alias target that points directly to the Python import libs on MSVC
+# (Avoids any ambiguity with Python::Python in VS generators)
 # ====================================================================================
 
-# Create/override the imported target
-if(NOT TARGET Python::Python)
-  add_library(Python::Python UNKNOWN IMPORTED)
+# Create or reuse a global imported target for our Python import library
+if(NOT TARGET SCIRunPython)
+  add_library(SCIRunPython STATIC IMPORTED GLOBAL)
 endif()
 
-# Prefer explicit include dir hints from superbuild for MSVC usage requirements
-if(_SB_INC_DIR)
-  set_target_properties(Python::Python PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${_SB_INC_DIR}"
-  )
-elseif(_PY_INCLUDE_DIRS)
+# Provide include dirs for consumers (Core_Python and friends)
+if(_PY_INCLUDE_DIRS)
   list(REMOVE_DUPLICATES _PY_INCLUDE_DIRS)
-  set_target_properties(Python::Python PROPERTIES
+  set_target_properties(SCIRunPython PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${_PY_INCLUDE_DIRS}"
   )
 endif()
 
-# ---- MSVC: set config-specific IMPORTED_IMPLIB_* (do NOT guard with EXISTS) ----
+# Configure config-specific locations to the *import libraries* (.lib) on Windows
+# For non-MSVC platforms, your existing logic will take over (link to the real .so/.dylib)
 if(MSVC)
-  # Make sure all common configs are recognized
-  set_target_properties(Python::Python PROPERTIES
+  # Recognize all common configs
+  set_target_properties(SCIRunPython PROPERTIES
     IMPORTED_CONFIGURATIONS "Debug;Release;RelWithDebInfo;MinSizeRel"
   )
 
-  # Primary assignment (no EXISTS guards; allow the files to appear by build time)
+  # Assign debug/release import libs if they were found
   if(_PY_LIB_REL)
-    set_target_properties(Python::Python PROPERTIES
-      IMPORTED_IMPLIB_RELEASE        "${_PY_LIB_REL}"
-      IMPORTED_IMPLIB_RELWITHDEBINFO "${_PY_LIB_REL}"
-      IMPORTED_IMPLIB_MINSIZEREL     "${_PY_LIB_REL}"
-    )
-  endif()
-  if(_PY_LIB_DBG)
-    set_target_properties(Python::Python PROPERTIES
-      IMPORTED_IMPLIB_DEBUG          "${_PY_LIB_DBG}"
-    )
-  endif()
-
-  # Fallbacks: if one variant is missing, map it to the other so VS never sees NOTFOUND
-  if(NOT _PY_LIB_DBG AND _PY_LIB_REL)
-    set_target_properties(Python::Python PROPERTIES
-      IMPORTED_IMPLIB_DEBUG          "${_PY_LIB_REL}"
-      MAP_IMPORTED_CONFIG_DEBUG      "Release;RelWithDebInfo"
-    )
-  endif()
-  if(NOT _PY_LIB_REL AND _PY_LIB_DBG)
-    set_target_properties(Python::Python PROPERTIES
-      IMPORTED_IMPLIB_RELEASE        "${_PY_LIB_DBG}"
-      IMPORTED_IMPLIB_RELWITHDEBINFO "${_PY_LIB_DBG}"
-      IMPORTED_IMPLIB_MINSIZEREL     "${_PY_LIB_DBG}"
-      MAP_IMPORTED_CONFIG_RELEASE    "Debug"
-      MAP_IMPORTED_CONFIG_RELWITHDEBINFO "Debug"
-      MAP_IMPORTED_CONFIG_MINSIZEREL "Debug"
-    )
-  endif()
-
-else()
-  # Non-Windows: point to the real binary (shared/static); skip EXISTS guards
-  if(_PY_LIB_REL)
-    set_target_properties(Python::Python PROPERTIES
+    set_target_properties(SCIRunPython PROPERTIES
       IMPORTED_LOCATION_RELEASE        "${_PY_LIB_REL}"
       IMPORTED_LOCATION_RELWITHDEBINFO "${_PY_LIB_REL}"
       IMPORTED_LOCATION_MINSIZEREL     "${_PY_LIB_REL}"
     )
   endif()
   if(_PY_LIB_DBG)
-    set_target_properties(Python::Python PROPERTIES
+    set_target_properties(SCIRunPython PROPERTIES
       IMPORTED_LOCATION_DEBUG          "${_PY_LIB_DBG}"
+    )
+  endif()
+
+  # Map missing variants so the generator never sees NOTFOUND
+  if(NOT _PY_LIB_DBG AND _PY_LIB_REL)
+    set_target_properties(SCIRunPython PROPERTIES
+      IMPORTED_LOCATION_DEBUG          "${_PY_LIB_REL}"
+      MAP_IMPORTED_CONFIG_DEBUG        "Release;RelWithDebInfo"
+    )
+  endif()
+  if(NOT _PY_LIB_REL AND _PY_LIB_DBG)
+    set_target_properties(SCIRunPython PROPERTIES
+      IMPORTED_LOCATION_RELEASE        "${_PY_LIB_DBG}"
+      IMPORTED_LOCATION_RELWITHDEBINFO "${_PY_LIB_DBG}"
+      IMPORTED_LOCATION_MINSIZEREL     "${_PY_LIB_DBG}"
+      MAP_IMPORTED_CONFIG_RELEASE      "Debug"
+      MAP_IMPORTED_CONFIG_RELWITHDEBINFO "Debug"
+      MAP_IMPORTED_CONFIG_MINSIZEREL   "Debug"
     )
   endif()
 endif()
 
 # Helpful diagnostics (ensure we actually set something)
 message(STATUS "[Diag/Core_Python] _PY_LIB_DBG='${_PY_LIB_DBG}' _PY_LIB_REL='${_PY_LIB_REL}'")
-get_target_property(_py_implib_dbg Python::Python IMPORTED_IMPLIB_DEBUG)
-get_target_property(_py_implib_rel Python::Python IMPORTED_IMPLIB_RELEASE)
-message(STATUS "[Diag/Core_Python] PY IMPORTED_IMPLIB_DEBUG='${_py_implib_dbg}'")
-message(STATUS "[Diag/Core_Python] PY IMPORTED_IMPLIB_RELEASE='${_py_implib_rel}'")
+
+# For the alias imported target we created
+get_target_property(_py_imp_dbg SCIRunPython IMPORTED_LOCATION_DEBUG)
+get_target_property(_py_imp_rel SCIRunPython IMPORTED_LOCATION_RELEASE)
+message(STATUS "[Diag/Core_Python] SCIRunPython IMPORTED_LOCATION_DEBUG='${_py_imp_dbg}'")
+message(STATUS "[Diag/Core_Python] SCIRunPython IMPORTED_LOCATION_RELEASE='${_py_imp_rel}'")
 
 # ====================================================================================
 # Platform-specific compile definitions (PYTHONPATH, etc.)
@@ -323,7 +305,7 @@ endif()
 # ====================================================================================
 target_link_libraries(Core_Python
   PRIVATE
-    Python::Python
+    SCIRunPython
     SCIRunPythonAPI
     ${SCI_BOOST_LIBRARY}
     Core_Matlab
@@ -411,26 +393,11 @@ endif()
 # Debug-only macro (matches your previous behavior)
 set_target_properties(Core_Python PROPERTIES COMPILE_DEFINITIONS_DEBUG "BOOST_DEBUG_PYTHON")
 
-# ---- TEMP: strip any explicit system Python importlib if it leaked in ----
-get_target_property(_cp_links Core_Python LINK_LIBRARIES)
-if(_cp_links)
-  set(_cleaned "")
-  foreach(_L IN LISTS _cp_links)
-    file(TO_CMAKE_PATH "${_L}" _N)
-    if(_N MATCHES "^C:/Program Files/[^/]*/Python[^/]*/libs/python[0-9]+(_d)?\\.lib$")
-      # skip system python lib
-    else()
-      list(APPEND _cleaned "${_L}")
-    endif()
-  endforeach()
-  set_target_properties(Core_Python PROPERTIES LINK_LIBRARIES "${_cleaned}")
-endif()
-
 # ---- Helpful diagnostics (actual evaluated properties) ----
-get_target_property(_py_implib_dbg Python::Python IMPORTED_IMPLIB_DEBUG)
-get_target_property(_py_implib_rel Python::Python IMPORTED_IMPLIB_RELEASE)
+get_target_property(_py_imp_dbg SCIRunPython IMPORTED_LOCATION_DEBUG)
+get_target_property(_py_imp_rel SCIRunPython IMPORTED_LOCATION_RELEASE)
 get_target_property(_cp_links2     Core_Python     LINK_LIBRARIES)
 
-message(STATUS "[Diag/Core_Python] PY IMPORTED_IMPLIB_DEBUG='${_py_implib_dbg}'")
-message(STATUS "[Diag/Core_Python] PY IMPORTED_IMPLIB_RELEASE='${_py_implib_rel}'")
+message(STATUS "[Diag/Core_Python] SCIRunPython IMPORTED_LOCATION_DEBUG='${_py_imp_dbg}'")
+message(STATUS "[Diag/Core_Python] SCIRunPython IMPORTED_LOCATION_RELEASE='${_py_imp_rel}'")
 message(STATUS "[Diag/Core_Python] LINK_LIBRARIES=${_cp_links2}")

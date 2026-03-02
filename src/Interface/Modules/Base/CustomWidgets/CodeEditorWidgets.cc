@@ -28,6 +28,9 @@
 
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 #include <Modules/Python/PythonInterfaceParser.h>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QRegularExpressionMatchIterator>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Algorithms::Python;
@@ -223,73 +226,110 @@ CodeEditorHighlighter::CodeEditorHighlighter(QTextDocument *parent)
     << "\\bTrue\\b" << "\\bFalse\\b" << "\\bNone\\b";
   for (const auto& pattern : keywordPatterns)
   {
-    rule.pattern = QRegExp(pattern);
+    rule.pattern = QRegularExpression(pattern);
     rule.format = keywordFormat;
     highlightingRules.append(rule);
   }
   classFormat.setFontWeight(QFont::Bold);
   classFormat.setForeground(Qt::darkMagenta);
-  rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+  rule.pattern = QRegularExpression("\\bQ[A-Za-z]+\\b");
   rule.format = classFormat;
   highlightingRules.append(rule);
 
   quotationFormat.setForeground(Qt::darkGreen);
-  rule.pattern = QRegExp("\".*\"");
+  rule.pattern = QRegularExpression("\".*\"");
   rule.format = quotationFormat;
   highlightingRules.append(rule);
 
   functionFormat.setFontItalic(true);
   functionFormat.setForeground(Qt::cyan);
-  rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+  rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
   rule.format = functionFormat;
   highlightingRules.append(rule);
 
   singleLineCommentFormat.setForeground(Qt::yellow);
-  rule.pattern = QRegExp("#[^\n]*");
+  rule.pattern = QRegularExpression("#[^\n]*");
   rule.format = singleLineCommentFormat;
   highlightingRules.append(rule);
 
   multiLineCommentFormat.setForeground(QColor(255,105,180));
 
-  commentStartExpression = QRegExp(matlabDelimiter);
-  commentEndExpression = QRegExp(matlabDelimiter);
+  commentStartExpression = QRegularExpression(matlabDelimiter);
+  commentEndExpression = QRegularExpression(matlabDelimiter);
 }
 
 void CodeEditorHighlighter::highlightBlock(const QString &text)
 {
+  // Keep whatever you do here
   highlightBlockParens(text);
+
+  // --- 1) Per-rule highlighting (QRegularExpression replaces QRegExp) ---
   for (const auto& rule : highlightingRules)
   {
-    QRegExp expression(rule.pattern);
-    int index = expression.indexIn(text);
-    while (index >= 0)
+    // rule.pattern is already a QRegularExpression
+    QRegularExpressionMatchIterator it = rule.pattern.globalMatch(text);
+    while (it.hasNext())
     {
-      int length = expression.matchedLength();
-      setFormat(index, length, rule.format);
-      index = expression.indexIn(text, index + length);
+      const QRegularExpressionMatch m = it.next();
+      if (!m.hasMatch()) continue;
+
+      const int index  = m.capturedStart();
+      const int length = m.capturedLength();
+      if (index >= 0 && length > 0)
+        setFormat(index, length, rule.format);
     }
   }
 
+  // --- 2) Multi-line comments with block states ---
   setCurrentBlockState(0);
+
+  // commentStartExpression/commentEndExpression must be QRegularExpression
+  // e.g., commentStartExpression = QRegularExpression("/\\*");
+  //       commentEndExpression   = QRegularExpression("\\*/");
+
   int startIndex = 0;
   if (previousBlockState() != 1)
-    startIndex = commentStartExpression.indexIn(text);
+  {
+    // First occurrence of start delimiter in this block
+    QRegularExpressionMatch startMatch = commentStartExpression.match(text);
+    startIndex = startMatch.hasMatch() ? startMatch.capturedStart() : -1;
+  }
+  else
+  {
+    // We are *inside* a multi-line comment from the previous block
+    startIndex = 0;
+  }
 
   while (startIndex >= 0)
   {
-    int endIndex = commentEndExpression.indexIn(text, startIndex);
-    int commentLength;
-    if (endIndex == -1)
+    // Search for the end delimiter *after* startIndex
+    QRegularExpressionMatch endMatch =
+        commentEndExpression.match(text, startIndex);
+
+    int commentLength = 0;
+    if (!endMatch.hasMatch())
     {
+      // Not closed in this block: color till end and keep state "inside comment"
       setCurrentBlockState(1);
       commentLength = text.length() - startIndex;
+      setFormat(startIndex, commentLength, multiLineCommentFormat);
+      break; // no more to find in this block
     }
     else
     {
-      commentLength = endIndex - startIndex + commentEndExpression.matchedLength();
+      // Found the end; include the end delimiter
+      const int endIndex  = endMatch.capturedStart();
+      const int endLength = endMatch.capturedLength(); // replaces matchedLength()
+      commentLength = (endIndex - startIndex) + endLength;
+
+      setFormat(startIndex, commentLength, multiLineCommentFormat);
+
+      // Look for next start after this comment
+      const int nextSearchPos = startIndex + commentLength;
+      QRegularExpressionMatch nextStart =
+          commentStartExpression.match(text, nextSearchPos);
+      startIndex = nextStart.hasMatch() ? nextStart.capturedStart() : -1;
     }
-    setFormat(startIndex, commentLength, multiLineCommentFormat);
-    startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
   }
 }
 

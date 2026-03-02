@@ -60,6 +60,33 @@ SCIRUN_ADD_LIBRARY(Modules_Factory
   ${ModuleFactoryImpl_Generated}
 )
 
+# Add Python include dirs so Boost.Python's wrap_python.hpp sees pyconfig.h
+if (BUILD_WITH_PYTHON)
+  set(_PY_INCLUDES "")
+  if (DEFINED PYTHON_INCLUDE_DIR AND EXISTS "${PYTHON_INCLUDE_DIR}")
+    list(APPEND _PY_INCLUDES "${PYTHON_INCLUDE_DIR}")
+  endif()
+  if (DEFINED PYTHON_PC_INCLUDE_DIR AND EXISTS "${PYTHON_PC_INCLUDE_DIR}")
+    list(APPEND _PY_INCLUDES "${PYTHON_PC_INCLUDE_DIR}")
+  endif()
+  if (MSVC AND NOT _PY_INCLUDES)
+    set(_py_src "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external")
+    if (EXISTS "${_py_src}/Include")
+      list(APPEND _PY_INCLUDES "${_py_src}/Include")
+    endif()
+    if (EXISTS "${_py_src}/PC")
+      list(APPEND _PY_INCLUDES "${_py_src}/PC")
+    endif()
+  endif()
+  if (_PY_INCLUDES)
+    list(REMOVE_DUPLICATES _PY_INCLUDES)
+    target_include_directories(Modules_Factory PRIVATE ${_PY_INCLUDES})
+    message(STATUS "[Modules/Factory] Added Python includes: ${_PY_INCLUDES}")
+  else()
+    message(WARNING "[Modules/Factory] Python includes not found at configure time; Boost.Python compilation may fail.")
+  endif()
+endif()
+
 IF(GENERATE_MODULE_FACTORY_CODE AND REGENERATE_MODULE_FACTORY_CODE)
   ADD_CUSTOM_COMMAND(
     TARGET Modules_Factory

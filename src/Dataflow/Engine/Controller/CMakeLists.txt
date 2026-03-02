@@ -26,7 +26,11 @@
 #
 
 
-SET(Engine_Network_SRCS
+# =========================
+# Dataflow/Engine/Network
+# =========================
+
+set(Engine_Network_SRCS
   DynamicPortManager.cc
   NetworkEditorController.cc
   NetworkCommands.cc
@@ -37,7 +41,7 @@ SET(Engine_Network_SRCS
   PythonImpl.cc
 )
 
-SET(Engine_Network_HEADERS
+set(Engine_Network_HEADERS
   ControllerInterfaces.h
   DynamicPortManager.h
   NetworkEditorController.h
@@ -55,7 +59,7 @@ SCIRUN_ADD_LIBRARY(Engine_Network
   ${Engine_Network_SRCS}
 )
 
-SET(Engine_Network_NonPythonDependentLibs
+set(Engine_Network_NonPythonDependentLibs
   Dataflow_Network
   Core_Serialization_Network
   Core_Command
@@ -64,28 +68,74 @@ SET(Engine_Network_NonPythonDependentLibs
   Core_Matlab
 )
 
-IF(BUILD_WITH_PYTHON)
+# --------------------------------------------------------------------
+# Python includes (needed for Boost.Python headers -> pyconfig.h on Win)
+# --------------------------------------------------------------------
+if (BUILD_WITH_PYTHON)
+  set(_PY_INCLUDES "")
 
-  TARGET_LINK_LIBRARIES(Engine_Network
-    ${Engine_Network_NonPythonDependentLibs}
-    SCIRunPythonAPI
-	Core_Python
+  if (DEFINED PYTHON_INCLUDE_DIR AND EXISTS "${PYTHON_INCLUDE_DIR}")
+    list(APPEND _PY_INCLUDES "${PYTHON_INCLUDE_DIR}")
+  endif()
+  if (DEFINED PYTHON_PC_INCLUDE_DIR AND EXISTS "${PYTHON_PC_INCLUDE_DIR}")
+    list(APPEND _PY_INCLUDES "${PYTHON_PC_INCLUDE_DIR}")
+  endif()
+
+  # Fallback to PCbuild layout if cache vars aren’t present
+  if (MSVC AND NOT _PY_INCLUDES)
+    set(_py_src "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external")
+    if (EXISTS "${_py_src}/Include")
+      list(APPEND _PY_INCLUDES "${_py_src}/Include")
+    endif()
+    if (EXISTS "${_py_src}/PC")
+      list(APPEND _PY_INCLUDES "${_py_src}/PC")
+    endif()
+  endif()
+
+  if (_PY_INCLUDES)
+    list(REMOVE_DUPLICATES _PY_INCLUDES)
+    target_include_directories(Engine_Network PRIVATE ${_PY_INCLUDES})
+    message(STATUS "[Engine/Network] Added Python includes: ${_PY_INCLUDES}")
+  else()
+    message(WARNING "[Engine/Network] Python includes not found at configure time; Boost.Python compilation may fail.")
+  endif()
+endif()
+
+# ---------------------------------------------------------
+# Link libraries (use targets, not file paths; keep PRIVATE)
+# ---------------------------------------------------------
+if (BUILD_WITH_PYTHON)
+  target_link_libraries(Engine_Network
+    PRIVATE
+      ${Engine_Network_NonPythonDependentLibs}
+      # Python bits
+      Core_Python         # SCIRun's Python core (brings Python usage + policies)
+      SCIRunPythonAPI     # link to the target; CMake will use the import .lib, not the .pyd
+      SCIRunPython        # ensure the CPython import libs (python313[_d].lib) are available
   )
-
-  INCLUDE_DIRECTORIES(
-    ${PYTHON_INCLUDE_DIR}
+  target_compile_definitions(Engine_Network PRIVATE BOOST_PYTHON_NO_LIB BOOST_PYTHON_STATIC_LIB)
+else()
+  target_link_libraries(Engine_Network
+    PRIVATE
+      ${Engine_Network_NonPythonDependentLibs}
   )
+endif()
 
-ELSE()
-
-  TARGET_LINK_LIBRARIES(Engine_Network
-    ${Engine_Network_NonPythonDependentLibs}
+# -------------------------------------------------------------------------
+# Debug-only: block autolink of release python313.lib (e.g., Boost.Python)
+# -------------------------------------------------------------------------
+if (BUILD_WITH_PYTHON)
+  # If you want to derive digits programmatically, you can, but 313 is fine here.
+  target_link_options(Engine_Network PRIVATE
+    $<$<CONFIG:Debug>:/NODEFAULTLIB:python313.lib>
   )
+endif()
 
-ENDIF()
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Engine_Network)
-ENDIF(BUILD_SHARED_LIBS)
+# -----------------------------------
+# DLL build define (preserve behavior)
+# -----------------------------------
+if (BUILD_SHARED_LIBS)
+  add_definitions(-DBUILD_Engine_Network)
+endif()
 
 SCIRUN_ADD_TEST_DIR(Tests)
