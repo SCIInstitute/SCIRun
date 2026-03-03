@@ -1062,9 +1062,17 @@ endif()
 
 if(NOT BUILD_HEADLESS AND TARGET Qwt_external)
   ExternalProject_Get_Property(Qwt_external INSTALL_DIR)
+  if(NOT INSTALL_DIR)
+    set(INSTALL_DIR "${CMAKE_BINARY_DIR}/Externals/Install/Qwt_external")
+  endif()
+
   _sb_scirun_wait_for(NAME qwt
-    FILES "${INSTALL_DIR}/include/qwt.h"
-    DIRS  "${INSTALL_DIR}/include"
+    FILES
+      "${INSTALL_DIR}/include/qwt/qwt_plot.h"
+      "${INSTALL_DIR}/lib/cmake/Qwt/QwtConfig.cmake"
+    DIRS
+      "${INSTALL_DIR}/include/qwt"
+      "${INSTALL_DIR}/lib"
   )
 endif()
 

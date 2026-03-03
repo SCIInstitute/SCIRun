@@ -808,11 +808,13 @@ if(WIN32)
   )
 endif()
 
-# Qwt (unless headless)
+# Qwt (unless headless) - prefer config packages and fail (outside superbuild) if missing
 if(NOT BUILD_HEADLESS)
   CONFIG_STANDARD_EXTERNAL(Qwt
-    DIR  "${QWT_DIR}"
-    CFG  "QwtConfig.cmake"
+    DIR         "${QWT_DIR}"
+    CFG         "QwtConfig.cmake"
+    CONFIG_ONLY         # prefer config packages
+    REQUIRED            # outside superbuild, error out if missing
   )
 endif()
 
@@ -1232,6 +1234,59 @@ if(SpdLog_INCLUDE_DIR AND EXISTS "${SpdLog_INCLUDE_DIR}/spdlog/spdlog.h")
 endif()
 if(GLM_INCLUDE_DIR AND EXISTS "${GLM_INCLUDE_DIR}/glm/glm.hpp")
   message(STATUS "GLM header OK: ${GLM_INCLUDE_DIR}/glm/glm.hpp")
+endif()
+
+# ---- Qwt normalization + validation (place before _SCIRUN_INCLUDE_DIRS list) ----
+if(NOT BUILD_HEADLESS)
+  # 1) If a config package provided Qwt::Qwt, derive legacy SCI_QWT_INCLUDE from it
+  if(TARGET Qwt::Qwt)
+    get_target_property(_qwt_incs Qwt::Qwt INTERFACE_INCLUDE_DIRECTORIES)
+    set(_qwt_inc_ok "")
+    foreach(_inc IN LISTS _qwt_incs)
+      # Prefer the path that lets '#include <qwt_plot.h>' work directly
+      if(EXISTS "${_inc}/qwt_plot.h")
+        set(_qwt_inc_ok "${_inc}")
+        break()
+      elseif(EXISTS "${_inc}/qwt/qwt_plot.h")
+        # If headers are under include/qwt, set the include root to that subdir
+        set(_qwt_inc_ok "${_inc}/qwt")
+        break()
+      endif()
+    endforeach()
+    if(_qwt_inc_ok)
+      set(SCI_QWT_INCLUDE "${_qwt_inc_ok}" CACHE PATH "Qwt include dir (root for <qwt_plot.h>)" FORCE)
+      message(STATUS "[SCIRun] Qwt include dir set from target: ${SCI_QWT_INCLUDE}")
+    endif()
+  endif()
+
+  # 2) If no target or include yet, auto-derive from known install/prefix paths
+  if(NOT DEFINED SCI_QWT_INCLUDE OR NOT EXISTS "${SCI_QWT_INCLUDE}/qwt_plot.h")
+    # If the superbuild exported QWT_INSTALL_DIR, prefer include/qwt under it
+    if(DEFINED QWT_INSTALL_DIR AND EXISTS "${QWT_INSTALL_DIR}/include/qwt/qwt_plot.h")
+      set(SCI_QWT_INCLUDE "${QWT_INSTALL_DIR}/include/qwt" CACHE PATH "Qwt include dir" FORCE)
+      message(STATUS "[SCIRun] Qwt include dir set from QWT_INSTALL_DIR: ${SCI_QWT_INCLUDE}")
+    else()
+      # Autoprobe from CMAKE_PREFIX_PATH: look for include/qwt/qwt_plot.h
+      _ensure_header(_QWT_INC_CAND "qwt/qwt_plot.h")
+      if(_QWT_INC_CAND AND EXISTS "${_QWT_INC_CAND}/qwt/qwt_plot.h")
+        set(SCI_QWT_INCLUDE "${_QWT_INC_CAND}/qwt" CACHE PATH "Qwt include dir" FORCE)
+        message(STATUS "[SCIRun] Qwt include dir auto-derived: ${SCI_QWT_INCLUDE}")
+      endif()
+      unset(_QWT_INC_CAND)
+    endif()
+  endif()
+
+  # 3) If still no imported target but we have legacy variables, synthesize Qwt::Qwt
+  if(NOT TARGET Qwt::Qwt
+     AND DEFINED SCI_QWT_LIBRARY AND EXISTS "${SCI_QWT_LIBRARY}"
+     AND DEFINED SCI_QWT_INCLUDE AND EXISTS "${SCI_QWT_INCLUDE}/qwt_plot.h")
+    add_library(Qwt::Qwt UNKNOWN IMPORTED)
+    set_target_properties(Qwt::Qwt PROPERTIES
+      IMPORTED_LOCATION             "${SCI_QWT_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES "${SCI_QWT_INCLUDE}"
+    )
+    message(STATUS "[SCIRun] Created imported target Qwt::Qwt from SCI_QWT_* hints.")
+  endif()
 endif()
 
 # ---------- Build include list with guards to avoid stray '/include' ----------
