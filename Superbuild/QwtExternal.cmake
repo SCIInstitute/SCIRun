@@ -1,4 +1,4 @@
-#  For more information, please see: http://software.sci.utah.edu
+﻿#  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
@@ -24,7 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-# QwtExternal.cmake � build Qwt via the internal CMake wrapper (preferred over qmake)
+# QwtExternal.cmake — build Qwt via the internal CMake wrapper (preferred over qmake)
 
 # ----------------------------
 # Single place to pin wrapper tag
@@ -59,37 +59,39 @@ endif()
 
 include(ExternalProject)
 
+# Detect whether we're using a multi-config generator (e.g., Visual Studio)
+get_property(_is_multi GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(_is_multi)
+  # Forward the native config placeholder (e.g., $(Configuration))
+  set(_EP_CFG "${CMAKE_CFG_INTDIR}")
+else()
+  # Single-config (e.g., Ninja/Unix Makefiles) → use CMAKE_BUILD_TYPE (may be empty = default)
+  if(CMAKE_BUILD_TYPE)
+    set(_EP_CFG "${CMAKE_BUILD_TYPE}")
+  else()
+    set(_EP_CFG ".")  # no named config; the placeholder is '.' for single-config
+  endif()
+endif()
+
 ExternalProject_Add(Qwt_external
-  # --------------
-  # Your internal wrapper repo (CMake-based)
-  # --------------
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt-cmake-wrapper.git"
   GIT_TAG        ${qwt_WRAPPER_GIT_TAG}
   GIT_SHALLOW    1
   GIT_PROGRESS   1
-  # NOTE: leave UPDATE_DISCONNECTED OFF for the first successful fetch.
-  # You can re-enable it later to avoid network hits on re-configures.
-  # UPDATE_DISCONNECTED 1
 
   SOURCE_DIR ${_qwt_src}
   BINARY_DIR ${_qwt_bin}
   INSTALL_DIR ${_qwt_inst}
 
-  # ----------------------------
-  # Configure the wrapper (it will fetch & build official Qwt inside)
-  # ----------------------------
   CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX=${_qwt_inst}
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}    # honored for single-config generators
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-    # Pass Qt hints if provided:
     ${_qwt_extra_cmake_args}
 
-  # ----------------------------
-  # MSVC/VS multi-config forwarding (Debug/Release safe)
-  # ----------------------------
-  BUILD_COMMAND   ${CMAKE_COMMAND} --build . --config $<IF:$<CONFIG:>,$<CONFIG>,${CMAKE_BUILD_TYPE}>
-  INSTALL_COMMAND ${CMAKE_COMMAND} --install . --config $<IF:$<CONFIG:>,$<CONFIG>,${CMAKE_BUILD_TYPE}>
+  # IMPORTANT: use the resolved _EP_CFG; for single-config '.' means "no switch"
+  BUILD_COMMAND   ${CMAKE_COMMAND} --build . --config ${_EP_CFG}
+  INSTALL_COMMAND ${CMAKE_COMMAND} --install . --config ${_EP_CFG}
 
   LOG_DOWNLOAD  1
   LOG_UPDATE    1
