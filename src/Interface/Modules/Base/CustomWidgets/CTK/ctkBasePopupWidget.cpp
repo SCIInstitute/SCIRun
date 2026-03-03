@@ -834,3 +834,15 @@ void ctkBasePopupWidget::setEffectGeometry(QRect newGeometry)
   d->PopupPixmapWidget->setGeometry(newGeometry);
   d->PopupPixmapWidget->repaint();
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void ctkBasePopupWidget::enterEvent(QEnterEvent* event)
+{
+  QFrame::enterEvent(event);
+}
+#else
+void ctkBasePopupWidget::enterEvent(QEvent* event)
+{
+  QFrame::enterEvent(event);
+}
+#endif

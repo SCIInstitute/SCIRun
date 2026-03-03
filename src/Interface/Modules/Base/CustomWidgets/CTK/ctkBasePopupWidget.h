@@ -29,6 +29,10 @@
 // CTK includes
 #include <Interface/Modules/Base/share.h>
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  #include <QEnterEvent>  // Needed for QEnterEvent in Qt6
+#endif
+
 class ctkBasePopupWidgetPrivate;
 
 /// \ingroup Widgets
@@ -194,6 +198,12 @@ protected:
   virtual void setBaseWidget(QWidget* baseWidget);
   virtual bool event(QEvent* event);
   virtual void paintEvent(QPaintEvent*);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  void enterEvent(QEnterEvent* event) override;
+#else
+  void enterEvent(QEvent* event) override;
+#endif
 
 protected Q_SLOTS:
   virtual void onEffectFinished();
