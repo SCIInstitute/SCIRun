@@ -948,8 +948,16 @@ function(_sb_scirun_wait_for)
   endif()
 endfunction()
 
-# Force PDB serialization to avoid C1041 under MSVC
+# --- MSVC: force Embedded debug info + exceptions + /FS, per-config ---
 if(MSVC)
+  # Force /Z7 for Debug and RelWithDebInfo so cl.exe writes symbols into .obj (no compile-time PDB contention)
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DCMAKE_CXX_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS"
+    "-DCMAKE_C_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS"
+    "-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS"
+    "-DCMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS"
+  )
+  # (Optional) keep global flags too, but per-config is what really matters.
   list(APPEND SCIRUN_CACHE_ARGS
     "-DCMAKE_CXX_FLAGS:STRING=/EHsc /FS"
     "-DCMAKE_C_FLAGS:STRING=/EHsc /FS"
