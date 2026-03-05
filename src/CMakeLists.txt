@@ -94,6 +94,68 @@ if(WIN32)
   endif()
 endif()
 
+# We will discover Boost.Filesystem and Boost.System libraries and append them to SCI_BOOST_LIBRARY.
+# This is required because BOOST_ALL_NO_LIB disables MSVC autolinking from Boost headers.
+# (Filesystem is a separately compiled Boost lib and typically requires boost_system.) 
+# See: https://www.boost.org/doc/libs/release/libs/filesystem/  (needs linking)
+#      https://stackoverflow.com/a/19944824  (link boost_system too)
+
+if(WIN32 AND DEFINED SCI_BOOST_LIBRARY_DIR AND IS_DIRECTORY "${SCI_BOOST_LIBRARY_DIR}")
+  # Helper: pick first match from a list of patterns
+  function(_pick_first out_var)
+    set(_res "")
+    foreach(_pat IN LISTS ARGN)
+      file(GLOB _cands "${_pat}")
+      if(_cands)
+        list(SORT _cands)
+        list(GET _cands 0 _res)
+        break()
+      endif()
+    endforeach()
+    set(${out_var} "${_res}" PARENT_SCOPE)
+  endfunction()
+
+  # Cover both '-' and '_' separators and version tags; choose first hit.
+  set(_fs_rel_pats
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*-vc*-mt-x64-*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/boost_filesystem*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*.lib")
+  set(_fs_dbg_pats
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*-vc*-mt-gd-x64-*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/boost_filesystem*-gd*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*-gd*.lib")
+
+  set(_sys_rel_pats
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*-vc*-mt-x64-*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/boost_system*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*.lib")
+  set(_sys_dbg_pats
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*-vc*-mt-gd-x64-*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/boost_system*-gd*.lib"
+    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*-gd*.lib")
+
+  _pick_first(BOOST_FS_LIB_RELEASE  ${_fs_rel_pats})
+  _pick_first(BOOST_FS_LIB_DEBUG    ${_fs_dbg_pats})
+  _pick_first(BOOST_SYS_LIB_RELEASE ${_sys_rel_pats})
+  _pick_first(BOOST_SYS_LIB_DEBUG   ${_sys_dbg_pats})
+
+  # Append with config mapping so MSVC picks the right one
+  if(BOOST_FS_LIB_RELEASE OR BOOST_FS_LIB_DEBUG)
+    list(APPEND SCI_BOOST_LIBRARY
+      optimized ${BOOST_FS_LIB_RELEASE} debug ${BOOST_FS_LIB_DEBUG})
+  endif()
+  if(BOOST_SYS_LIB_RELEASE OR BOOST_SYS_LIB_DEBUG)
+    list(APPEND SCI_BOOST_LIBRARY
+      optimized ${BOOST_SYS_LIB_RELEASE} debug ${BOOST_SYS_LIB_DEBUG})
+  endif()
+
+  # Keep in cache if you're caching this across subdirectories
+  set(SCI_BOOST_LIBRARY "${SCI_BOOST_LIBRARY}" CACHE STRING "Aggregate Boost libs" FORCE)
+
+  message(STATUS "[SCIRun] Boost FS: rel='${BOOST_FS_LIB_RELEASE}' dbg='${BOOST_FS_LIB_DEBUG}'")
+  message(STATUS "[SCIRun] Boost SYS: rel='${BOOST_SYS_LIB_RELEASE}' dbg='${BOOST_SYS_LIB_DEBUG}'")
+endif()
+
 # --------------------------------------------------------------------
 # Imported targets for Zlib and Teem (transitive wiring)
 #   - Canonical name: ZLIB::ZLIB (provide Zlib::Zlib alias)

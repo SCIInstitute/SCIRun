@@ -950,17 +950,22 @@ endfunction()
 
 # --- MSVC: force Embedded debug info + exceptions + /FS, per-config ---
 if(MSVC)
-  # Force /Z7 for Debug and RelWithDebInfo so cl.exe writes symbols into .obj (no compile-time PDB contention)
+  # Use the dynamic MSVC runtime (/MD for Release, /MDd for Debug),
+  # which matches Boost libs without the '-s' tag and with '-gd' in Debug.
   list(APPEND SCIRUN_CACHE_ARGS
-    "-DCMAKE_CXX_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS"
-    "-DCMAKE_C_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS"
-    "-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS"
-    "-DCMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS"
+    "-DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreadedDLL$<$<CONFIG:Debug>:Debug>"
   )
-  # (Optional) keep global flags too, but per-config is what really matters.
+  # Per-config flags
   list(APPEND SCIRUN_CACHE_ARGS
-    "-DCMAKE_CXX_FLAGS:STRING=/EHsc /FS"
-    "-DCMAKE_C_FLAGS:STRING=/EHsc /FS"
+    "-DCMAKE_CXX_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
+    "-DCMAKE_C_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
+    "-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
+    "-DCMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
+  )
+  # Global (keep if you want, but per-config is what usually matters)
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DCMAKE_CXX_FLAGS:STRING=/EHsc /FS /D BOOST_ALL_NO_LIB"
+    "-DCMAKE_C_FLAGS:STRING=/EHsc /FS /D BOOST_ALL_NO_LIB"
   )
 endif()
 
