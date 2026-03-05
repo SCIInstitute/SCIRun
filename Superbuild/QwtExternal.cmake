@@ -76,8 +76,11 @@ endif()
 ExternalProject_Add(Qwt_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt-cmake-wrapper.git"
   GIT_TAG        ${qwt_WRAPPER_GIT_TAG}
-  GIT_SHALLOW    1
+
+  # Make cloning robust for pinned tags (turn off shallow during stabilization)
+  GIT_SHALLOW    0         # <-- changed from 1 to 0
   GIT_PROGRESS   1
+  GIT_SUBMODULES ""        # explicit: no submodules
 
   SOURCE_DIR ${_qwt_src}
   BINARY_DIR ${_qwt_bin}
@@ -89,7 +92,9 @@ ExternalProject_Add(Qwt_external
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
     ${_qwt_extra_cmake_args}
 
-  # IMPORTANT: use the resolved _EP_CFG; for single-config '.' means "no switch"
+  # For pinned tags, skip update step entirely to avoid running git in a non-git tree
+  UPDATE_COMMAND ""        # <-- added: prevents Qwt_external-gitupdate.cmake
+
   BUILD_COMMAND   ${CMAKE_COMMAND} --build . --config ${_EP_CFG}
   INSTALL_COMMAND ${CMAKE_COMMAND} --install . --config ${_EP_CFG}
 

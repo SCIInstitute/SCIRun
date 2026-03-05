@@ -713,19 +713,27 @@ if(DEFINED SQLite_INCLUDE_DIR)
   set(SQLite3_INCLUDE_DIR "${SQLite_INCLUDE_DIR}" CACHE PATH "Alias: SQLite3 include dir" FORCE)
   list(APPEND SCIRUN_CACHE_ARGS "-DSQLite3_INCLUDE_DIR:PATH=${SQLite3_INCLUDE_DIR}")
 endif()
-# ---- Cleaver2 uppercase aliases
+
+# ---- Cleaver2 aliases (map to what inner expects)
 if(DEFINED Cleaver2_INCLUDE_DIR)
+  file(TO_CMAKE_PATH "${Cleaver2_INCLUDE_DIR}" _cleaver2_inc_norm)
   list(APPEND SCIRUN_CACHE_ARGS
-    "-DCLEAVER2_INCLUDE:PATH=${Cleaver2_INCLUDE_DIR}"
-    "-DCLEAVER2_INCLUDE_DIR:PATH=${Cleaver2_INCLUDE_DIR}"
+    "-DCLEAVER2_INCLUDE:PATH=${_cleaver2_inc_norm}"
+    "-DCLEAVER2_INCLUDE_DIR:PATH=${_cleaver2_inc_norm}"
+    "-DSCI_CLEAVER2_INCLUDE_DIR:PATH=${_cleaver2_inc_norm}"
   )
 endif()
+
 if(DEFINED Cleaver2_LIB_DIR)
+  file(TO_CMAKE_PATH "${Cleaver2_LIB_DIR}" _cleaver2_libdir_norm)
   list(APPEND SCIRUN_CACHE_ARGS
-    "-DCLEAVER2_LIBRARY_DIR:PATH=${Cleaver2_LIB_DIR}"
-    "-DCLEAVER2_LIB_DIR:PATH=${Cleaver2_LIB_DIR}"
+    "-DCLEAVER2_LIBRARY_DIR:PATH=${_cleaver2_libdir_norm}"      # <-- REQUIRED by inner
+    "-DCLEAVER2_LIB_DIR:PATH=${_cleaver2_libdir_norm}"          # keep existing alias
+    "-DSCI_CLEAVER2_LIBRARY_DIR:PATH=${_cleaver2_libdir_norm}"  # legacy alias
   )
 endif()
+
+# library name (import lib on Windows is cleaver2.lib)
 list(APPEND SCIRUN_CACHE_ARGS "-DCLEAVER2_LIBRARY:STRING=cleaver2")
 
 # --- Ensure SQLite hints are present AFTER base args ---
@@ -939,6 +947,14 @@ function(_sb_scirun_wait_for)
     )
   endif()
 endfunction()
+
+# Force PDB serialization to avoid C1041 under MSVC
+if(MSVC)
+  list(APPEND SCIRUN_CACHE_ARGS
+    "-DCMAKE_CXX_FLAGS:STRING=/EHsc /FS"
+    "-DCMAKE_C_FLAGS:STRING=/EHsc /FS"
+  )
+endif()
 
 # =========================
 # SCIRun ExternalProject
