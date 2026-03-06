@@ -65,13 +65,12 @@ message(STATUS "[SCIRun] Qt_PATH='${Qt_PATH}'")
 message(STATUS "[SCIRun] Boost_DIR='${Boost_DIR}' ; Boost_ROOT='${Boost_ROOT}' ; BOOST_ROOT='${BOOST_ROOT}' ; SCI_BOOST_PREFIX='${SCI_BOOST_PREFIX}'")
 message(STATUS "[SCIRun] ZLIB_ROOT='${ZLIB_ROOT}' ; ZLIB_DIR='${ZLIB_DIR}' ; ZLIB_INCLUDE_DIR='${ZLIB_INCLUDE_DIR}'")
 
-# --- Boost (Windows-only: b2-built libs with MSVC auto-link) ---
-# This expects the external Boost builder to have created:
-#   - ${SCI_BOOST_PREFIX}/include/boost/**           (from `b2 headers` copy)
-#   - ${SCI_BOOST_PREFIX}/lib/libboost_*vc143*.lib   (from b2 with --layout=versioned)
-#
-# It keeps auto-linking ON (do NOT define BOOST_ALL_NO_LIB here).
-# It ensures the linker can find the versioned .lib names injected by Boost headers.
+# --- Boost (Windows-only: b2-built libs from b2/--layout=versioned) ---
+# If SCIRUN_EXPLICIT_BOOST_LINK=ON (from superbuild), we DISABLE MSVC autolink
+# via BOOST_ALL_NO_LIB and link required Boost components explicitly.
+if(SCIRUN_EXPLICIT_BOOST_LINK)
+  add_compile_definitions(BOOST_ALL_NO_LIB)
+endif()
 
 if(WIN32)
   if(DEFINED SCI_BOOST_PREFIX)
@@ -104,13 +103,13 @@ if(WIN32)
   endif()
 endif()
 
-# We will discover Boost.Filesystem and Boost.System libraries and append them to SCI_BOOST_LIBRARY.
-# This is required because BOOST_ALL_NO_LIB disables MSVC autolinking from Boost headers.
-# (Filesystem is a separately compiled Boost lib and typically requires boost_system.) 
-# See: https://www.boost.org/doc/libs/release/libs/filesystem/  (needs linking)
-#      https://stackoverflow.com/a/19944824  (link boost_system too)
+# --------------------------------------------------------------------
+# Boost explicit linking (Windows + SCIRUN_EXPLICIT_BOOST_LINK)
+# - Collect concrete .lib files per component and append to SCI_BOOST_LIBRARY.
+# - Handles Debug (-gd) and Release variants; falls back if one variant missing.
+# --------------------------------------------------------------------
+if(SCIRUN_EXPLICIT_BOOST_LINK AND WIN32 AND DEFINED SCI_BOOST_LIBRARY_DIR AND IS_DIRECTORY "${SCI_BOOST_LIBRARY_DIR}")
 
-if(WIN32 AND DEFINED SCI_BOOST_LIBRARY_DIR AND IS_DIRECTORY "${SCI_BOOST_LIBRARY_DIR}")
   # Helper: pick first match from a list of patterns
   function(_pick_first out_var)
     set(_res "")
@@ -125,45 +124,60 @@ if(WIN32 AND DEFINED SCI_BOOST_LIBRARY_DIR AND IS_DIRECTORY "${SCI_BOOST_LIBRARY
     set(${out_var} "${_res}" PARENT_SCOPE)
   endfunction()
 
-  # Cover both '-' and '_' separators and version tags; choose first hit.
-  set(_fs_rel_pats
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*-vc*-mt-x64-*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/boost_filesystem*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*.lib")
-  set(_fs_dbg_pats
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*-vc*-mt-gd-x64-*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/boost_filesystem*-gd*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_filesystem*-gd*.lib")
+  # Reset the aggregate to avoid duplicates across re-configures
+  set(SCI_BOOST_LIBRARY "" CACHE STRING "Aggregate Boost libs" FORCE)
 
-  set(_sys_rel_pats
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*-vc*-mt-x64-*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/boost_system*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*.lib")
-  set(_sys_dbg_pats
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*-vc*-mt-gd-x64-*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/boost_system*-gd*.lib"
-    "${SCI_BOOST_LIBRARY_DIR}/libboost_system*-gd*.lib")
+  # ---- Generic component adder (release + debug) ----
+  function(_boost_pick_component comp)
+    if(NOT EXISTS "${SCI_BOOST_LIBRARY_DIR}")
+      message(WARNING "[SCIRun] _boost_pick_component: SCI_BOOST_LIBRARY_DIR is invalid.")
+      return()
+    endif()
 
-  _pick_first(BOOST_FS_LIB_RELEASE  ${_fs_rel_pats})
-  _pick_first(BOOST_FS_LIB_DEBUG    ${_fs_dbg_pats})
-  _pick_first(BOOST_SYS_LIB_RELEASE ${_sys_rel_pats})
-  _pick_first(BOOST_SYS_LIB_DEBUG   ${_sys_dbg_pats})
+    # Release candidates (versioned names from b2 --layout=versioned)
+    set(_rel "")
+    _pick_first(_rel
+      "${SCI_BOOST_LIBRARY_DIR}/libboost_${comp}*-vc*-mt-x64-*.lib"    # preferred x64 MSVC layout
+      "${SCI_BOOST_LIBRARY_DIR}/boost_${comp}*.lib"                    # fallback
+      "${SCI_BOOST_LIBRARY_DIR}/libboost_${comp}*.lib")                # fallback
+    # Debug candidates (-gd)
+    set(_dbg "")
+    _pick_first(_dbg
+      "${SCI_BOOST_LIBRARY_DIR}/libboost_${comp}*-vc*-mt-gd-x64-*.lib" # preferred x64 Debug
+      "${SCI_BOOST_LIBRARY_DIR}/boost_${comp}*-gd*.lib"
+      "${SCI_BOOST_LIBRARY_DIR}/libboost_${comp}*-gd*.lib")
 
-  # Append with config mapping so MSVC picks the right one
-  if(BOOST_FS_LIB_RELEASE OR BOOST_FS_LIB_DEBUG)
+    if(NOT _rel AND NOT _dbg)
+      message(WARNING "[SCIRun] Boost component '${comp}' not found under '${SCI_BOOST_LIBRARY_DIR}'")
+      return()
+    endif()
+
+    # If a variant is missing, fall back to the one we have
+    if(NOT _rel AND _dbg)
+      set(_rel "${_dbg}")
+    endif()
+    if(NOT _dbg AND _rel)
+      set(_dbg "${_rel}")
+    endif()
+
+    # Append with config mapping so MSVC picks the right one
     list(APPEND SCI_BOOST_LIBRARY
-      optimized ${BOOST_FS_LIB_RELEASE} debug ${BOOST_FS_LIB_DEBUG})
-  endif()
-  if(BOOST_SYS_LIB_RELEASE OR BOOST_SYS_LIB_DEBUG)
-    list(APPEND SCI_BOOST_LIBRARY
-      optimized ${BOOST_SYS_LIB_RELEASE} debug ${BOOST_SYS_LIB_DEBUG})
-  endif()
+      optimized "${_rel}" debug "${_dbg}")
 
-  # Keep in cache if you're caching this across subdirectories
-  set(SCI_BOOST_LIBRARY "${SCI_BOOST_LIBRARY}" CACHE STRING "Aggregate Boost libs" FORCE)
+    # Save to cache so subdirs see the updated list
+    set(SCI_BOOST_LIBRARY "${SCI_BOOST_LIBRARY}" CACHE STRING "Aggregate Boost libs" FORCE)
+    message(STATUS "[SCIRun] Boost ${comp}: rel='${_rel}' dbg='${_dbg}'")
+  endfunction()
 
-  message(STATUS "[SCIRun] Boost FS: rel='${BOOST_FS_LIB_RELEASE}' dbg='${BOOST_FS_LIB_DEBUG}'")
-  message(STATUS "[SCIRun] Boost SYS: rel='${BOOST_SYS_LIB_RELEASE}' dbg='${BOOST_SYS_LIB_DEBUG}'")
+  # ---- Pick all required components explicitly ----
+  # Filesystem needs System; Thread usually needs System and Atomic.
+  _boost_pick_component(filesystem)
+  _boost_pick_component(system)
+  _boost_pick_component(program_options)
+  _boost_pick_component(thread)
+  _boost_pick_component(atomic)
+  _boost_pick_component(serialization)
+
 endif()
 
 # --------------------------------------------------------------------
@@ -815,7 +829,11 @@ CONFIG_STANDARD_EXTERNAL(Cleaver2
 # Boost — REQUIRED on non-Windows (prefer config package).
 # On Windows with b2-built Boost, skip CONFIG mode: rely on auto-link + link_directories above.
 if(WIN32)
-  message(STATUS "[SCIRun] Boost: using b2-built libraries with MSVC auto-link (no BoostConfig.cmake). Skipping CONFIG package discovery on Windows.")
+  if(SCIRUN_EXPLICIT_BOOST_LINK)
+    message(STATUS "[SCIRun] Boost: explicit component linking (BOOST_ALL_NO_LIB) with b2 versioned libs.")
+  else()
+    message(STATUS "[SCIRun] Boost: MSVC autolink enabled with b2 versioned libs.")
+  endif()
 else()
   CONFIG_STANDARD_EXTERNAL(Boost
     ROOT "${SCI_BOOST_PREFIX}"
@@ -1308,56 +1326,87 @@ if(GLM_INCLUDE_DIR AND EXISTS "${GLM_INCLUDE_DIR}/glm/glm.hpp")
   message(STATUS "GLM header OK: ${GLM_INCLUDE_DIR}/glm/glm.hpp")
 endif()
 
-# ---- Qwt normalization + validation (place before _SCIRUN_INCLUDE_DIRS list) ----
+# ---- Qwt (STATIC) detection + imported target (place before _SCIRUN_INCLUDE_DIRS) ----
 if(NOT BUILD_HEADLESS)
-  # 1) If a config package provided Qwt::Qwt, derive legacy SCI_QWT_INCLUDE from it
-  if(TARGET Qwt::Qwt)
-    get_target_property(_qwt_incs Qwt::Qwt INTERFACE_INCLUDE_DIRECTORIES)
-    set(_qwt_inc_ok "")
-    foreach(_inc IN LISTS _qwt_incs)
-      # Prefer the path that lets '#include <qwt_plot.h>' work directly
-      if(EXISTS "${_inc}/qwt_plot.h")
-        set(_qwt_inc_ok "${_inc}")
-        break()
-      elseif(EXISTS "${_inc}/qwt/qwt_plot.h")
-        # If headers are under include/qwt, set the include root to that subdir
-        set(_qwt_inc_ok "${_inc}/qwt")
-        break()
-      endif()
-    endforeach()
-    if(_qwt_inc_ok)
-      set(SCI_QWT_INCLUDE "${_qwt_inc_ok}" CACHE PATH "Qwt include dir (root for <qwt_plot.h>)" FORCE)
-      message(STATUS "[SCIRun] Qwt include dir set from target: ${SCI_QWT_INCLUDE}")
-    endif()
-  endif()
-
-  # 2) If no target or include yet, auto-derive from known install/prefix paths
+  # 1) Include dir: prefer install/include/qwt so '#include <qwt_plot.h>' works directly
   if(NOT DEFINED SCI_QWT_INCLUDE OR NOT EXISTS "${SCI_QWT_INCLUDE}/qwt_plot.h")
-    # If the superbuild exported QWT_INSTALL_DIR, prefer include/qwt under it
     if(DEFINED QWT_INSTALL_DIR AND EXISTS "${QWT_INSTALL_DIR}/include/qwt/qwt_plot.h")
       set(SCI_QWT_INCLUDE "${QWT_INSTALL_DIR}/include/qwt" CACHE PATH "Qwt include dir" FORCE)
-      message(STATUS "[SCIRun] Qwt include dir set from QWT_INSTALL_DIR: ${SCI_QWT_INCLUDE}")
-    else()
-      # Autoprobe from CMAKE_PREFIX_PATH: look for include/qwt/qwt_plot.h
-      _ensure_header(_QWT_INC_CAND "qwt/qwt_plot.h")
-      if(_QWT_INC_CAND AND EXISTS "${_QWT_INC_CAND}/qwt/qwt_plot.h")
-        set(SCI_QWT_INCLUDE "${_QWT_INC_CAND}/qwt" CACHE PATH "Qwt include dir" FORCE)
-        message(STATUS "[SCIRun] Qwt include dir auto-derived: ${SCI_QWT_INCLUDE}")
+    elseif(DEFINED QWT_INCLUDE_DIR)
+      if(EXISTS "${QWT_INCLUDE_DIR}/qwt/qwt_plot.h")
+        set(SCI_QWT_INCLUDE "${QWT_INCLUDE_DIR}/qwt" CACHE PATH "Qwt include dir" FORCE)
+      elseif(EXISTS "${QWT_INCLUDE_DIR}/qwt_plot.h")
+        set(SCI_QWT_INCLUDE "${QWT_INCLUDE_DIR}" CACHE PATH "Qwt include dir" FORCE)
       endif()
-      unset(_QWT_INC_CAND)
+    else()
+      # Probe from prefix path
+      foreach(_p IN LISTS CMAKE_PREFIX_PATH)
+        if(EXISTS "${_p}/include/qwt/qwt_plot.h")
+          set(SCI_QWT_INCLUDE "${_p}/include/qwt" CACHE PATH "Qwt include dir" FORCE)
+          break()
+        endif()
+      endforeach()
     endif()
   endif()
 
-  # 3) If still no imported target but we have legacy variables, synthesize Qwt::Qwt
+  # 2) Library dir (from superbuild) + locate static libs
+  if(NOT DEFINED QWT_LIBRARY_DIR AND DEFINED QWT_INSTALL_DIR)
+    if(EXISTS "${QWT_INSTALL_DIR}/lib64")
+      set(QWT_LIBRARY_DIR "${QWT_INSTALL_DIR}/lib64")
+    else()
+      set(QWT_LIBRARY_DIR "${QWT_INSTALL_DIR}/lib")
+    endif()
+  endif()
+
+  set(_qwt_rel_lib "")
+  set(_qwt_dbg_lib "")
+  if(DEFINED QWT_LIBRARY_DIR AND IS_DIRECTORY "${QWT_LIBRARY_DIR}")
+    # Typical MSVC names for Qwt static (or single-config import lib when DLLs are absent)
+    file(GLOB _rel_cands "${QWT_LIBRARY_DIR}/qwt.lib"  "${QWT_LIBRARY_DIR}/libqwt.lib")
+    file(GLOB _dbg_cands "${QWT_LIBRARY_DIR}/qwtd.lib" "${QWT_LIBRARY_DIR}/libqwtd.lib")
+    list(SORT _rel_cands)
+    list(SORT _dbg_cands)
+    list(GET _rel_cands 0 _qwt_rel_lib  ERROR_QUIET)
+    list(GET _dbg_cands 0 _qwt_dbg_lib  ERROR_QUIET)
+
+    # If only one variant exists, use it for both configs (common in static-only installs)
+    if(NOT _qwt_rel_lib AND _qwt_dbg_lib)
+      set(_qwt_rel_lib "${_qwt_dbg_lib}")
+    endif()
+    if(NOT _qwt_dbg_lib AND _qwt_rel_lib)
+      set(_qwt_dbg_lib "${_qwt_rel_lib}")
+    endif()
+  endif()
+
+  # 3) Imported STATIC target (preferred)
   if(NOT TARGET Qwt::Qwt
-     AND DEFINED SCI_QWT_LIBRARY AND EXISTS "${SCI_QWT_LIBRARY}"
+     AND ( _qwt_rel_lib OR _qwt_dbg_lib )
      AND DEFINED SCI_QWT_INCLUDE AND EXISTS "${SCI_QWT_INCLUDE}/qwt_plot.h")
-    add_library(Qwt::Qwt UNKNOWN IMPORTED)
-    set_target_properties(Qwt::Qwt PROPERTIES
-      IMPORTED_LOCATION             "${SCI_QWT_LIBRARY}"
-      INTERFACE_INCLUDE_DIRECTORIES "${SCI_QWT_INCLUDE}"
-    )
-    message(STATUS "[SCIRun] Created imported target Qwt::Qwt from SCI_QWT_* hints.")
+
+    add_library(Qwt::Qwt STATIC IMPORTED)
+    set_property(TARGET Qwt::Qwt PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${SCI_QWT_INCLUDE}")
+    if(_qwt_rel_lib)
+      set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_LOCATION_RELEASE "${_qwt_rel_lib}")
+    endif()
+    if(_qwt_dbg_lib)
+      set_property(TARGET Qwt::Qwt PROPERTY IMPORTED_LOCATION_DEBUG   "${_qwt_dbg_lib}")
+    endif()
+
+    # Consumers of static Qwt: do NOT define QWT_DLL; define QWT_STATIC if Qwt headers look for it.
+    target_compile_definitions(Qwt::Qwt INTERFACE QWT_STATIC)
+
+    message(STATUS "[SCIRun] Qwt::Qwt (static): rel='${_qwt_rel_lib}', dbg='${_qwt_dbg_lib}', inc='${SCI_QWT_INCLUDE}'")
+  endif()
+
+  # 4) Legacy variable for modules that still link ${SCI_QWT_LIBRARY}
+  #    Provide an optimized/debug list mapped to the same static libraries.
+  set(SCI_QWT_LIBRARY "" CACHE STRING "Qwt libraries (optimized/debug)" FORCE)
+  if(_qwt_rel_lib OR _qwt_dbg_lib)
+    set(_pair "")
+    if(_qwt_rel_lib) list(APPEND _pair optimized "${_qwt_rel_lib}") endif()
+    if(_qwt_dbg_lib) list(APPEND _pair debug     "${_qwt_dbg_lib}") endif()
+    set(SCI_QWT_LIBRARY "${_pair}" CACHE STRING "Qwt libraries (optimized/debug)" FORCE)
+    unset(_pair)
   endif()
 endif()
 

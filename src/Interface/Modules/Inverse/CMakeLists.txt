@@ -60,8 +60,11 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Inverse
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
-  ${SCI_QWT_LIBRARY}
+  Qwt::Qwt
+  #${SCI_QWT_LIBRARY}
 )
+
+add_compile_definitions(QWT_STATIC)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Inverse)

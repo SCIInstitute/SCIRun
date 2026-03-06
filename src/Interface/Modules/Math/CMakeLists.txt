@@ -135,11 +135,12 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
-  ${SCI_QWT_LIBRARY}
+  Qwt::Qwt
+  #${SCI_QWT_LIBRARY}
   )
 
-
-ADD_DEFINITIONS(-DQWT_DLL)
+add_compile_definitions(QWT_STATIC)
+#ADD_DEFINITIONS(-DQWT_DLL)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Math)

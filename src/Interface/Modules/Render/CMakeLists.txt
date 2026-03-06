@@ -139,8 +139,11 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_FREETYPE_LIBRARY}
   ${SCI_LODEPNG_LIBRARY}
   ${SCI_TNY_LIBRARY}
-  ${SCI_QWT_LIBRARY}
+  Qwt::Qwt
+  #${SCI_QWT_LIBRARY}
 )
+
+add_compile_definitions(QWT_STATIC)
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render ${QT_GRAPHICS_LIBRARIES})
 

@@ -50,7 +50,7 @@ namespace SCIRun
   }
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 #define LOG_FUNC __FUNCSIG__
 #else
 #define LOG_FUNC __PRETTY_FUNCTION__

@@ -555,7 +555,6 @@ if(BUILD_WITH_PYTHON)
     "-DPython_FIND_STRATEGY:STRING=LOCATION"
     "-DPython_ROOT_DIR:PATH=${_PY_SRC}"
     "-DCMAKE_IGNORE_PREFIX_PATH:PATH=C:/Program Files/Python*;C:/Program Files (x86)/Python*"
-    "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
     "-DSCIRUN_EXPLICIT_BOOST_PYTHON_LINK:BOOL=ON"
   )
 
@@ -663,13 +662,12 @@ endif()
 
 if(TARGET Boost_external)
   list(APPEND SCIRUN_CACHE_ARGS
-    "-DBoost_DIR:PATH=${Boost_DIR}"
-    "-DBoost_ROOT:PATH=${SCI_BOOST_PREFIX}"
-    "-DBOOST_ROOT:PATH=${SCI_BOOST_PREFIX}"
     "-DSCI_BOOST_PREFIX:PATH=${SCI_BOOST_PREFIX}"
-    "-DBoost_INCLUDE_DIR:PATH=${SCI_BOOST_PREFIX}/include"
-    "-DBoost_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
-    "-DBoost_NO_SYSTEM_PATHS:BOOL=ON"
+    "-DSCI_BOOST_LIBRARY_DIR:PATH=${SCI_BOOST_LIBRARY_DIR}"
+    # Optional: keep Boost_DIR if you want (SCIRun on Windows skips config mode anyway)
+    "-DBoost_DIR:PATH=${Boost_DIR}"
+    # Explicit linking strategy (Option B): inner CMake will add BOOST_ALL_NO_LIB
+    "-DSCIRUN_EXPLICIT_BOOST_LINK:BOOL=ON"
   )
 endif()
 
@@ -947,27 +945,6 @@ function(_sb_scirun_wait_for)
     )
   endif()
 endfunction()
-
-# --- MSVC: force Embedded debug info + exceptions + /FS, per-config ---
-if(MSVC)
-  # Use the dynamic MSVC runtime (/MD for Release, /MDd for Debug),
-  # which matches Boost libs without the '-s' tag and with '-gd' in Debug.
-  list(APPEND SCIRUN_CACHE_ARGS
-    "-DCMAKE_MSVC_RUNTIME_LIBRARY:STRING=MultiThreadedDLL$<$<CONFIG:Debug>:Debug>"
-  )
-  # Per-config flags
-  list(APPEND SCIRUN_CACHE_ARGS
-    "-DCMAKE_CXX_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
-    "-DCMAKE_C_FLAGS_DEBUG:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
-    "-DCMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
-    "-DCMAKE_C_FLAGS_RELWITHDEBINFO:STRING=/Z7 /EHsc /FS /D BOOST_ALL_NO_LIB"
-  )
-  # Global (keep if you want, but per-config is what usually matters)
-  list(APPEND SCIRUN_CACHE_ARGS
-    "-DCMAKE_CXX_FLAGS:STRING=/EHsc /FS /D BOOST_ALL_NO_LIB"
-    "-DCMAKE_C_FLAGS:STRING=/EHsc /FS /D BOOST_ALL_NO_LIB"
-  )
-endif()
 
 # =========================
 # SCIRun ExternalProject
