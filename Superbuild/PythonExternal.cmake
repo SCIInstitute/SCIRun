@@ -159,6 +159,8 @@ ELSE()
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG        ${python_GIT_TAG}
+    UPDATE_DISCONNECTED 1
+    UPDATE_COMMAND ""
     PATCH_COMMAND  ""
     # Pass platform to build.bat so it generates the right artifacts
     CONFIGURE_COMMAND PCbuild/build.bat -p ${python_WIN32_ARCH}

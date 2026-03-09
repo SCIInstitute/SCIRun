@@ -1,3 +1,5 @@
 
-  configure_file("C:/Users/Yong/Documents/SCIRun/Superbuild/cmake/GLEWConfig.cmake.in"
-                 "C:/Users/Yong/Documents/SCIRun/build/Externals/Install/Glew_external/lib/cmake/GLEW/GLEWConfig.cmake" @ONLY)
+if(NOT EXISTS "${TEMPLATE}")
+  message(FATAL_ERROR "GLEW template not found at: ${TEMPLATE}")
+endif()
+configure_file("${TEMPLATE}" "${OUT_FILE}" @ONLY)
