@@ -1,0 +1,17 @@
+﻿# Auto‑generated GLEWConfig.cmake for SCIRun superbuild
+# This is a STATIC GLEW build
+
+if(NOT TARGET GLEW::GLEW)
+  add_library(GLEW::GLEW STATIC IMPORTED)
+
+  set_target_properties(GLEW::GLEW PROPERTIES
+    IMPORTED_LOCATION             "@GLEW_LIB@"     # expands to Path/lib/glew.lib
+    INTERFACE_INCLUDE_DIRECTORIES "@GLEW_INC@"     # expands to Path/include
+    INTERFACE_COMPILE_DEFINITIONS "GLEW_STATIC"    # static GLEW requires this
+  )
+endif()
+
+set(GLEW_FOUND TRUE)
+set(GLEW_INCLUDE_DIR "@GLEW_INC@")
+set(GLEW_LIBRARY "@GLEW_LIB@")
+set(GLEW_LIBRARIES "@GLEW_LIB@")

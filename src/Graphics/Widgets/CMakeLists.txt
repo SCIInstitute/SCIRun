@@ -69,6 +69,7 @@ TARGET_LINK_LIBRARIES(Graphics_Widgets
   Graphics_Glyphs
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}
+  GLEW::GLEW
   ${SCI_BOOST_LIBRARY}
 )
 

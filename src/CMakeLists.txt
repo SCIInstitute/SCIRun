@@ -899,12 +899,12 @@ if(WITH_TETGEN)
 endif()
 
 # GLEW (Windows)
-if(WIN32)
-  CONFIG_STANDARD_EXTERNAL(GLEW
-    DIR  "${GLEW_DIR}"
-    CFGS "GLEWConfig.cmake;GlewConfig.cmake"
-  )
-endif()
+#if(WIN32)
+#  CONFIG_STANDARD_EXTERNAL(GLEW
+#    DIR  "${GLEW_DIR}"
+#    CFGS "GLEWConfig.cmake;GlewConfig.cmake"
+#  )
+#endif()
 
 # Qwt (unless headless) - prefer config packages and fail (outside superbuild) if missing
 if(NOT BUILD_HEADLESS)
@@ -1211,7 +1211,10 @@ endfunction()
 _ensure_header(GLEW_INCLUDE_DIR      "GL/glew.h")
 _ensure_header(LODEPNG_INCLUDE_DIR   "lodepng/lodepng.h")
 _ensure_header(SQLite3_INCLUDE_DIR   "sqlite3.h")
-_ensure_header(TNY_INCLUDE_DIR       "tny/tny.hpp")
+_ensure_header(TNY_INCLUDE_DIR "tny/tny.h")
+if(NOT TNY_INCLUDE_DIR)
+  _ensure_header(TNY_INCLUDE_DIR "tny/tny.hpp")
+endif()
 _ensure_header(SpdLog_INCLUDE_DIR    "spdlog/spdlog.h")
 _ensure_header(GLM_INCLUDE_DIR       "glm/glm.hpp")
 _ensure_header(SCI_TEEM_INCLUDE "teem/ten.h")

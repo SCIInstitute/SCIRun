@@ -132,13 +132,14 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   Core_Application_Preferences
   Core_Application
   ${OPENGL_LIBRARIES}
+  GLEW::GLEW
   ${QT_OPENGL_LIBRARY}
   ${SCI_SPIRE_LIBRARY}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${SCI_FREETYPE_LIBRARY}
   ${SCI_LODEPNG_LIBRARY}
-  ${SCI_TNY_LIBRARY}
+  Tny::tny
   Qwt::Qwt
   #${SCI_QWT_LIBRARY}
 )

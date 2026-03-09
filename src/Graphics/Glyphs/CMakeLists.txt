@@ -55,6 +55,7 @@ TARGET_LINK_LIBRARIES(Graphics_Glyphs
   Core_Utils
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}
+  GLEW::GLEW
   ${SCI_SPIRE_LIBRARY}
   ${SCI_BOOST_LIBRARY}
 )

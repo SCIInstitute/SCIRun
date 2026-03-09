@@ -455,6 +455,42 @@ if(WIN32 AND TARGET Glew_external)
   _sb_export_inc_lib(GLEW    Glew_external)
 endif()
 
+# --- Install custom GLEWConfig.cmake for SCIRun ---
+if(WIN32 AND TARGET Glew_external)
+  ExternalProject_Get_Property(Glew_external INSTALL_DIR)
+
+  set(_glew_inc "${INSTALL_DIR}/include")
+  set(_glew_lib "")
+
+  # Choose lib folder
+  if(EXISTS "${INSTALL_DIR}/lib/glew.lib")
+    set(_glew_lib "${INSTALL_DIR}/lib/glew.lib")
+  elseif(EXISTS "${INSTALL_DIR}/lib64/glew.lib")
+    set(_glew_lib "${INSTALL_DIR}/lib64/glew.lib")
+  else()
+    message(FATAL_ERROR "[superbuild] Could not find glew.lib in Glew_external install.")
+  endif()
+
+  # Where to place the config
+  set(_glew_cfg_dir "${INSTALL_DIR}/lib/cmake/GLEW")
+  file(MAKE_DIRECTORY "${_glew_cfg_dir}")
+
+  # Configure the exported CMake config file
+  configure_file(
+    "${SUPERBUILD_DIR}/GLEWConfig.cmake.in"
+    "${_glew_cfg_dir}/GLEWConfig.cmake"
+    @ONLY
+  )
+
+  message(STATUS "[superbuild] Installed custom GLEWConfig.cmake at ${_glew_cfg_dir}")
+endif()
+
+# Tell SCIRun where the Tny config lives
+if(TARGET Tny_wrapper_external)
+  set(_TNY_CFG_DIR "${CMAKE_BINARY_DIR}/Externals/Install/Tny_external/lib/cmake/Tny")
+  list(APPEND SCIRUN_CACHE_ARGS "-DTny_DIR:PATH=${_TNY_CFG_DIR}")
+endif()
+
 # =========================
 # Build SCIRun cache args (APPEND, do not reset)
 # =========================
@@ -484,6 +520,10 @@ list(APPEND SCIRUN_CACHE_ARGS
   "-DSCIRUN_QT_MAJOR:STRING=${SCIRUN_QT_MAJOR}"
   "-DQt_PATH:PATH=${Qt_PATH}"
 )
+
+if(WIN32 AND TARGET Glew_external)
+  list(APPEND SCIRUN_CACHE_ARGS "-DGLEW_DIR:PATH=${_glew_cfg_dir}")
+endif()
 
 # =========================
 # Forward Python values to SCIRun (inner CMake), version-agnostic & robust
