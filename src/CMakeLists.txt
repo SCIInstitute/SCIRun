@@ -178,6 +178,14 @@ if(SCIRUN_EXPLICIT_BOOST_LINK AND WIN32 AND DEFINED SCI_BOOST_LIBRARY_DIR AND IS
   _boost_pick_component(atomic)
   _boost_pick_component(serialization)
 
+  # Construct the versioned Boost.Python component name: python313 for Python 3.13
+  set(_py_comp "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+  
+  # Try the versioned component first (common with b2 builds), then fall back to unversioned "python"
+  # We call _boost_pick_component on both; the function tolerates missing libs and will warn if not found.
+  _boost_pick_component("${_py_comp}")
+  _boost_pick_component("python")
+
 endif()
 
 # --------------------------------------------------------------------
@@ -1364,10 +1372,16 @@ if(NOT BUILD_HEADLESS)
     # Typical MSVC names for Qwt static (or single-config import lib when DLLs are absent)
     file(GLOB _rel_cands "${QWT_LIBRARY_DIR}/qwt.lib"  "${QWT_LIBRARY_DIR}/libqwt.lib")
     file(GLOB _dbg_cands "${QWT_LIBRARY_DIR}/qwtd.lib" "${QWT_LIBRARY_DIR}/libqwtd.lib")
-    list(SORT _rel_cands)
-    list(SORT _dbg_cands)
-    list(GET _rel_cands 0 _qwt_rel_lib  ERROR_QUIET)
-    list(GET _dbg_cands 0 _qwt_dbg_lib  ERROR_QUIET)
+
+    if(_rel_cands)
+      list(SORT _rel_cands)
+      list(GET _rel_cands 0 _qwt_rel_lib)  # safe: list is non-empty
+    endif()
+    
+    if(_dbg_cands)
+      list(SORT _dbg_cands)
+      list(GET _dbg_cands 0 _qwt_dbg_lib)  # safe: list is non-empty
+    endif()
 
     # If only one variant exists, use it for both configs (common in static-only installs)
     if(NOT _qwt_rel_lib AND _qwt_dbg_lib)
@@ -1403,8 +1417,12 @@ if(NOT BUILD_HEADLESS)
   set(SCI_QWT_LIBRARY "" CACHE STRING "Qwt libraries (optimized/debug)" FORCE)
   if(_qwt_rel_lib OR _qwt_dbg_lib)
     set(_pair "")
-    if(_qwt_rel_lib) list(APPEND _pair optimized "${_qwt_rel_lib}") endif()
-    if(_qwt_dbg_lib) list(APPEND _pair debug     "${_qwt_dbg_lib}") endif()
+    if(_qwt_rel_lib)
+      list(APPEND _pair optimized "${_qwt_rel_lib}")
+    endif()
+    if(_qwt_dbg_lib)
+      list(APPEND _pair debug     "${_qwt_dbg_lib}")
+    endif()
     set(SCI_QWT_LIBRARY "${_pair}" CACHE STRING "Qwt libraries (optimized/debug)" FORCE)
     unset(_pair)
   endif()
