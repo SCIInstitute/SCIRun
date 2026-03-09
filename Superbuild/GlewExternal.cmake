@@ -33,6 +33,8 @@ set(glew_GIT_TAG "v1.0.1")
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  -DBUILD_SHARED_LIBS=OFF               # ensure static
+  -DGLEW_USE_STATIC_LIBS=ON             # if your fork honors this
 
   # Redirect all outputs so install step is unnecessary for libs
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
@@ -72,32 +74,19 @@ ExternalProject_Add(Glew_external
   CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
   CMAKE_ARGS ${_cmake_args}
-
-  # We skip 'install' to keep the fast redirect flow for libs
-  INSTALL_COMMAND ""
-
-  # After build, ensure headers are available in <INSTALL_DIR>/include
-  # (glew's headers live in <SOURCE_DIR>/include)
-  BUILD_BYPRODUCTS
-    "<INSTALL_DIR>/lib"  # helps order-only deps
-
-  # Add a step to copy headers into Install prefix
-  # (idempotent; safe for multi-config)
-  STEP_TARGETS copy_headers
-  COMMAND ${CMAKE_COMMAND} -E make_directory "<INSTALL_DIR>/include"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${_glew_src}/include" "<INSTALL_DIR>/include"
+  INSTALL_COMMAND ""                      # we redirect outputs
 
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
 )
 
-# Tie the header copy to the build
-add_custom_command(TARGET Glew_external
-  POST_BUILD
+# Copy headers after build (idempotent)
+ExternalProject_Add_Step(Glew_external copy_headers
   COMMAND ${CMAKE_COMMAND} -E make_directory "${_glew_inst}/include"
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${_glew_src}/include" "${_glew_inst}/include"
-  COMMENT "Copying GLEW headers to ${_glew_inst}/include"
+  DEPENDEES build
+  COMMENT "[Glew_external] Copying GLEW headers to ${_glew_inst}/include"
 )
 
 # Export variables for SCIRun
@@ -106,8 +95,31 @@ set(GLEW_INSTALL_DIR ${_glew_inst})
 set(GLEW_INCLUDE     ${GLEW_INSTALL_DIR}/include)
 set(GLEW_LIBRARY_DIR ${GLEW_INSTALL_DIR}/lib)
 
-# Library name on Windows built with CMake is typically 'glew' or 'glew32'.
-# If you’ve standardized your export to 'glew', keep it:
-set(GLEW_LIBRARY     "glew")
+# Pick the actual lib name produced
+set(_glew_lib "")
+if(EXISTS "${GLEW_LIBRARY_DIR}/glew.lib")
+  set(_glew_lib "${GLEW_LIBRARY_DIR}/glew.lib")
+elseif(EXISTS "${GLEW_LIBRARY_DIR}/glew32s.lib")
+  set(_glew_lib "${GLEW_LIBRARY_DIR}/glew32s.lib")
+elseif(EXISTS "${GLEW_LIBRARY_DIR}/glew32.lib")
+  set(_glew_lib "${GLEW_LIBRARY_DIR}/glew32.lib")
+endif()
+
+# Generate a config package for GLEW so SCIRun can find GLEW::GLEW deterministically
+add_custom_target(Glew_export ALL
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${GLEW_INSTALL_DIR}/lib/cmake/GLEW"
+  COMMAND ${CMAKE_COMMAND}
+          -D GLEW_INC:PATH="${GLEW_INCLUDE}"
+          -D GLEW_LIB:PATH="${_glew_lib}"
+          -P "${CMAKE_CURRENT_LIST_DIR}/GlewWriteConfig.cmake"
+  DEPENDS Glew_external copy_headers
+  COMMENT "[Glew_external] Writing GLEWConfig.cmake"
+)
+
+# Helper script to expand template @ONLY
+file(WRITE "${CMAKE_CURRENT_LIST_DIR}/GlewWriteConfig.cmake" "
+  configure_file(\"${SUPERBUILD_DIR}/cmake/GLEWConfig.cmake.in\"
+                 \"${GLEW_INSTALL_DIR}/lib/cmake/GLEW/GLEWConfig.cmake\" @ONLY)
+")
 
 message(STATUS "[Glew_external] INSTALL_DIR=${GLEW_INSTALL_DIR}")

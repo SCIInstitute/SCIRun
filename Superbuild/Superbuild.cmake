@@ -521,8 +521,10 @@ list(APPEND SCIRUN_CACHE_ARGS
   "-DQt_PATH:PATH=${Qt_PATH}"
 )
 
+# Tell SCIRun where to find GLEW config
 if(WIN32 AND TARGET Glew_external)
-  list(APPEND SCIRUN_CACHE_ARGS "-DGLEW_DIR:PATH=${_glew_cfg_dir}")
+  ExternalProject_Get_Property(Glew_external INSTALL_DIR)
+  list(APPEND SCIRUN_CACHE_ARGS "-DGLEW_DIR:PATH=${INSTALL_DIR}/lib/cmake/GLEW")
 endif()
 
 # =========================

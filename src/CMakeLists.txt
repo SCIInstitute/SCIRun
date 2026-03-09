@@ -899,12 +899,12 @@ if(WITH_TETGEN)
 endif()
 
 # GLEW (Windows)
-#if(WIN32)
-#  CONFIG_STANDARD_EXTERNAL(GLEW
-#    DIR  "${GLEW_DIR}"
-#    CFGS "GLEWConfig.cmake;GlewConfig.cmake"
-#  )
-#endif()
+if(WIN32)
+  CONFIG_STANDARD_EXTERNAL(GLEW
+    DIR  "${GLEW_DIR}"
+    CFGS "GLEWConfig.cmake;GlewConfig.cmake"
+  )
+endif()
 
 # Qwt (unless headless) - prefer config packages and fail (outside superbuild) if missing
 if(NOT BUILD_HEADLESS)
@@ -1208,7 +1208,41 @@ endfunction()
 #   Tny:      tny/tny.hpp
 #   Spdlog:   spdlog/spdlog.h
 #   GLM:      glm/glm.hpp
-_ensure_header(GLEW_INCLUDE_DIR      "GL/glew.h")
+# If the package created the imported target, prefer it and sync the include var
+# --- GLEW include discovery (target-first, robust fallback) ---
+set(_SCIRUN_USE_GLEW_TARGET FALSE)
+set(_glew_inc_from_target "")
+
+# 1) If the package created GLEW::GLEW, prefer its include path
+if(TARGET GLEW::GLEW)
+  get_target_property(_glew_inc_from_target GLEW::GLEW INTERFACE_INCLUDE_DIRECTORIES)
+  if(_glew_inc_from_target)
+    list(GET _glew_inc_from_target 0 _glew_inc_from_target)  # first entry if it's a list
+  endif()
+endif()
+
+# 2) If the target had a valid include and the header exists there, use it
+if(_glew_inc_from_target AND EXISTS "${_glew_inc_from_target}/GL/glew.h")
+  set(GLEW_INCLUDE_DIR "${_glew_inc_from_target}" CACHE PATH "GLEW include dir (from imported target)" FORCE)
+  set(_SCIRUN_USE_GLEW_TARGET TRUE)
+else()
+  # 3) Fallback: try to derive from CMAKE_PREFIX_PATH
+  _ensure_header(GLEW_INCLUDE_DIR "GL/glew.h")
+
+  # 4) Last-resort: force the well-known superbuild path
+  if(NOT GLEW_INCLUDE_DIR)
+    set(_sb_glew_inc "${CMAKE_BINARY_DIR}/Externals/Install/Glew_external/include")
+    if(EXISTS "${_sb_glew_inc}/GL/glew.h")
+      set(GLEW_INCLUDE_DIR "${_sb_glew_inc}" CACHE PATH "GLEW include dir (superbuild)" FORCE)
+    endif()
+  endif()
+endif()
+
+message(STATUS "GLEW_INCLUDE_DIR='${GLEW_INCLUDE_DIR}'")
+if(TARGET GLEW::GLEW)
+  message(STATUS "GLEW::GLEW INTERFACE_INCLUDE_DIRECTORIES='${_glew_inc_from_target}'")
+endif()
+
 _ensure_header(LODEPNG_INCLUDE_DIR   "lodepng/lodepng.h")
 _ensure_header(SQLite3_INCLUDE_DIR   "sqlite3.h")
 _ensure_header(TNY_INCLUDE_DIR "tny/tny.h")
