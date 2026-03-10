@@ -1243,6 +1243,61 @@ if(TARGET GLEW::GLEW)
   message(STATUS "GLEW::GLEW INTERFACE_INCLUDE_DIRECTORIES='${_glew_inc_from_target}'")
 endif()
 
+# --- Freetype imported target (robust on Windows) ---
+# 1) Try a config package (superbuild may have installed one)
+find_package(Freetype QUIET CONFIG)
+
+if(NOT TARGET Freetype::Freetype)
+  # 2) Synthesize if config not available
+  if(DEFINED Freetype_LIB_DIR AND IS_DIRECTORY "${Freetype_LIB_DIR}")
+    set(_ft_rel "")
+    set(_ft_dbg "")
+
+    file(GLOB _cand_rel
+      "${Freetype_LIB_DIR}/freetype.lib"     "${Freetype_LIB_DIR}/libfreetype.lib")
+    file(GLOB _cand_dbg
+      "${Freetype_LIB_DIR}/freetyped.lib"    "${Freetype_LIB_DIR}/libfreetyped.lib")
+
+    if(_cand_rel)
+      list(SORT _cand_rel)
+      list(GET _cand_rel 0 _ft_rel)
+    endif()
+    if(_cand_dbg)
+      list(SORT _cand_dbg)
+      list(GET _cand_dbg 0 _ft_dbg)
+    endif()
+
+    if(NOT _ft_rel AND _ft_dbg)
+      set(_ft_rel "${_ft_dbg}")
+    endif()
+    if(NOT _ft_dbg AND _ft_rel)
+      set(_ft_dbg "${_ft_rel}")
+    endif()
+
+    if(_ft_rel OR _ft_dbg)
+      add_library(Freetype::Freetype UNKNOWN IMPORTED)
+      # FreeType expects both roots: ft2build.h and freetype2 headers
+      set_property(TARGET Freetype::Freetype PROPERTY
+        INTERFACE_INCLUDE_DIRECTORIES
+          "${Freetype_INCLUDE_DIR};${FREETYPE_INCLUDE_DIR2}"
+      )
+      if(_ft_rel)
+        set_property(TARGET Freetype::Freetype PROPERTY IMPORTED_LOCATION_RELEASE "${_ft_rel}")
+      endif()
+      if(_ft_dbg)
+        set_property(TARGET Freetype::Freetype PROPERTY IMPORTED_LOCATION_DEBUG   "${_ft_dbg}")
+      endif()
+
+      message(STATUS "[SCIRun] Freetype::Freetype: rel='${_ft_rel}' dbg='${_ft_dbg}' "
+                     "inc1='${Freetype_INCLUDE_DIR}' inc2='${FREETYPE_INCLUDE_DIR2}'")
+    else()
+      message(WARNING "[SCIRun] Could not find freetype{,d}.lib in '${Freetype_LIB_DIR}'")
+    endif()
+  else()
+    message(WARNING "[SCIRun] Freetype_LIB_DIR not set or invalid; cannot synthesize Freetype::Freetype")
+  endif()
+endif()
+
 _ensure_header(LODEPNG_INCLUDE_DIR   "lodepng/lodepng.h")
 _ensure_header(SQLite3_INCLUDE_DIR   "sqlite3.h")
 _ensure_header(TNY_INCLUDE_DIR "tny/tny.h")

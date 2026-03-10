@@ -117,11 +117,13 @@ set(FREETYPE_SOURCE_DIR  ${_freetype_src})
 set(FREETYPE_INSTALL_DIR ${_freetype_inst})
 
 # Public headers for consumers are under source/include
-set(FREETYPE_INCLUDE     ${FREETYPE_SOURCE_DIR}/include)
+set(Freetype_INCLUDE_DIR       "${FREETYPE_INSTALL_DIR}/include"             CACHE PATH "" FORCE)
+set(FREETYPE_INCLUDE_DIR2      "${FREETYPE_INSTALL_DIR}/include/freetype2"   CACHE PATH "" FORCE)
 
 # Libraries land here if you later enable FreeType's install;
 # with INSTALL_COMMAND "" it remains empty, but we keep the var for consistency.
 set(FREETYPE_LIBRARY_DIR ${FREETYPE_INSTALL_DIR}/lib)
+set(Freetype_LIB_DIR           "${FREETYPE_INSTALL_DIR}/lib"                 CACHE PATH "" FORCE)
 
 # Basename (actual file becomes freetype.lib / libfreetype.a / libfreetype.{so,dylib})
 set(FREETYPE_LIBRARY     "freetype")

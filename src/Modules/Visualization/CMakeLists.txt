@@ -77,7 +77,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Graphics_Glyphs
   Graphics_Datatypes
   Graphics_Widgets
-  ${SCI_FREETYPE_LIBRARY}
+  Freetype::Freetype
 )
 
 IF(BUILD_SHARED_LIBS)
