@@ -68,6 +68,8 @@ namespace SCIRun {
 
         #ifndef WITH_TETGEN
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+        #else
+            public: bool isImplementationDisabled() const override { return false; }
         #endif
 
         INPUT_PORT(0, Main, Field);

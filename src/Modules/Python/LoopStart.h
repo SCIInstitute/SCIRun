@@ -76,6 +76,8 @@ namespace SCIRun
         NEW_HELP_WEBPAGE_ONLY
         #ifndef BUILD_WITH_PYTHON
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+        #else
+          public: bool isImplementationDisabled() const override { return false; }
         #endif
       private:
         SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
