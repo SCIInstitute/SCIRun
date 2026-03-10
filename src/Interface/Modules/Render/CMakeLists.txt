@@ -137,7 +137,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_SPIRE_LIBRARY}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
-  ${SCI_FREETYPE_LIBRARY}
+  Freetype::Freetype
   ${SCI_LODEPNG_LIBRARY}
   Tny::tny
   Qwt::Qwt

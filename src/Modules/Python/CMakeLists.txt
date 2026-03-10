@@ -161,7 +161,7 @@ target_link_libraries(Modules_Python
 
 if(BUILD_WITH_PYTHON)
   # Pull in Python headers + import libs (per-config) via the alias
-  target_link_libraries(Modules_Python PRIVATE SCIRunPython Core_Python)
+  target_link_libraries(Modules_Python PRIVATE SCIRunPython Core_Python SCIRunPythonAPI)
 
   # ==================================================================================
   # Boost.Python: disable autolink and link the correct libraries explicitly on MSVC.
