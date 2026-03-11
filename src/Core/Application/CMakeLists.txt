@@ -70,8 +70,10 @@ if (BUILD_WITH_PYTHON)
 endif()
 
 TARGET_LINK_LIBRARIES(Core_Application
+  Core_Command
   Core_CommandLine
   Engine_Network
+  Engine_Scheduler
   Modules_Factory
   Algorithms_Factory
   Dataflow_State
