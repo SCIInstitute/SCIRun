@@ -915,7 +915,7 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
 
     {
       auto file = command.get(Variables::Filename).toFilename();
-      auto stem = QString::fromStdString(file.leaf().stem().string());
+      auto stem = QString::fromStdString(file.filename().stem().string());
       auto dir = QString::fromStdString(file.parent_path().string());
       auto added = toolkitDirectories_.contains(stem);
       if (added && toolkitDirectories_[stem] == dir)

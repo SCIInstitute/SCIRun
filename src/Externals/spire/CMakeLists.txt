@@ -218,7 +218,7 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   )
 
 target_link_libraries(${SCI_SPIRE_LIBRARY}
-  ${SCI_LODEPNG_LIBRARY}
+  LodePNG::lodepng
   Tny::tny
   ${OPENGL_LIBRARIES}
   GLEW::GLEW)

@@ -297,6 +297,34 @@ if(NOT TARGET Teem::teem)
   endif()
 endif()
 
+# --- LodePNG imported target fallback (manual) ---
+# Use the superbuild install paths. Adjust if your layout differs.
+if(NOT TARGET LodePNG::lodepng)
+  set(_LPNG_ROOT "${CMAKE_BINARY_DIR}/../Externals/Install/LodePng_external")
+  set(_LPNG_INC  "${_LPNG_ROOT}/include")
+  set(_LPNG_LIBD "${_LPNG_ROOT}/lib/lodepngd.lib")
+  set(_LPNG_LIBR "${_LPNG_ROOT}/lib/lodepng.lib")
+
+  if(EXISTS "${_LPNG_LIBD}" OR EXISTS "${_LPNG_LIBR}")
+    add_library(LodePNG::lodepng STATIC IMPORTED)
+    set_target_properties(LodePNG::lodepng PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES    "${_LPNG_INC}"
+    )
+    if(EXISTS "${_LPNG_LIBD}")
+      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_DEBUG "${_LPNG_LIBD}")
+    endif()
+    if(EXISTS "${_LPNG_LIBR}")
+      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_RELEASE        "${_LPNG_LIBR}")
+      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_RELWITHDEBINFO "${_LPNG_LIBR}")
+      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_MINSIZEREL     "${_LPNG_LIBR}")
+    endif()
+    message(STATUS "[SCIRun] LodePNG::lodepng imported: inc='${_LPNG_INC}', "
+                   "dbg='${_LPNG_LIBD}', rel='${_LPNG_LIBR}'")
+  else()
+    message(WARNING "[SCIRun] LodePNG libs not found under '${_LPNG_ROOT}/lib'. Build LodePng_external first.")
+  endif()
+endif()
+
 ###############################################################################
 # Don't allow the user to build in the src directory...
 #
@@ -859,9 +887,9 @@ CONFIG_STANDARD_EXTERNAL(Tny
 )
 
 # LodePNG
-CONFIG_STANDARD_EXTERNAL(LodePng
-  DIR  "${LODEPNG_DIR}"
-  CFG  "LodePngConfig.cmake"
+CONFIG_STANDARD_EXTERNAL(LodePNG
+  DIR  "${LodePNG_DIR}"
+  CFGS "LodePNGConfig.cmake"
 )
 
 # Tetgen (optional)

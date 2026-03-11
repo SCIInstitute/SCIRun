@@ -439,13 +439,14 @@ if(BUILD_WITH_PYTHON AND TARGET Python_external)
   _export_config_dir(Python Python_external "<auto>")
 endif()
 
+_export_config_dir(LodePNG LodePng_external "<auto>")
+
 # Include/lib hints (guarded by target existence)
 _sb_export_inc_lib(Freetype  Freetype_external)
 _sb_export_inc_lib(GLM       GLM_external)
 _sb_export_inc_lib(SpdLog    SpdLog_external)
 _sb_export_inc_lib(Teem      Teem_external)
 _sb_export_inc_lib(Tny       Tny_external)
-_sb_export_inc_lib(LodePng   LodePng_external)
 _sb_export_inc_lib(Cleaver2  Cleaver2_external)
 _sb_export_inc_lib(SQLite    SQLite_external)
 if(WITH_TETGEN AND TARGET Tetgen_external) # <- lowercase g
@@ -1077,11 +1078,24 @@ endif()
 
 if(TARGET LodePng_external)
   ExternalProject_Get_Property(LodePng_external INSTALL_DIR)
+
+  set(_lodepng_libdir "")
+  if(EXISTS "${INSTALL_DIR}/lib64")
+    set(_lodepng_libdir "${INSTALL_DIR}/lib64")
+  else()
+    set(_lodepng_libdir "${INSTALL_DIR}/lib")
+  endif()
+
+  # Wait for both header and at least one library (Debug or Release)
+  set(_lp_wait_files
+    "${INSTALL_DIR}/include/lodepng/lodepng.h"
+    "${_lodepng_libdir}/lodepng.lib"
+    "${_lodepng_libdir}/lodepngd.lib"
+  )
+
   _sb_scirun_wait_for(NAME lodepng
-    FILES
-      "${INSTALL_DIR}/include/lodepng/lodepng.h"
-      "${INSTALL_DIR}/include/lodepng.h"
-    DIRS  "${INSTALL_DIR}/include"
+    FILES ${_lp_wait_files}
+    DIRS  "${INSTALL_DIR}/include" "${_lodepng_libdir}"
   )
 endif()
 

@@ -24,22 +24,40 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-
-# LodePngExternal.cmake
+# LodePngExternal.cmake (flat, no subdirs)
 set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
+include(ExternalProject)
 
 ExternalProject_Add(LodePng_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cibc-lodepng.git"
   GIT_TAG "origin/master"
-  PATCH_COMMAND ""
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
 
-  # FIX: use a single copy_directory (NO &&)
+  # Configure: generate a tiny wrapper project with the same VS generator/platform/toolset
+  CONFIGURE_COMMAND
+    ${CMAKE_COMMAND}
+      -D WRAPPER_SOURCE_DIR:PATH=<BINARY_DIR>/lodepng-wrapper-src
+      -D WRAPPER_BUILD_DIR:PATH=<BINARY_DIR>/lodepng-wrapper-build
+      -D WRAPPER_LIST_FILE:PATH=${CMAKE_CURRENT_LIST_DIR}/LodePNGWrapperProject.cmake.in
+      -D LODEPNG_SRC:PATH=<SOURCE_DIR>/lodepng
+      -D CMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>         # still set, but we won't use install()
+      -D CMAKE_GENERATOR:STRING=${CMAKE_GENERATOR}
+      -D CMAKE_GENERATOR_PLATFORM:STRING=${CMAKE_GENERATOR_PLATFORM}
+      -D CMAKE_GENERATOR_TOOLSET:STRING=${CMAKE_GENERATOR_TOOLSET}
+      -P ${CMAKE_CURRENT_LIST_DIR}/LodePNGWrapper_configure.cmake
+
+  # VS is multi-config: per-config build
+  BUILD_COMMAND
+    ${CMAKE_COMMAND} --build "<BINARY_DIR>/lodepng-wrapper-build" --config $(Configuration)
+
+  # ---- IMPORTANT: replace install() with an explicit copy script ----
   INSTALL_COMMAND
-    ${CMAKE_COMMAND} -E copy_directory
-      "<SOURCE_DIR>/lodepng"
-      "${CMAKE_BINARY_DIR}/Externals/Install/LodePng_external/include/lodepng"
+    ${CMAKE_COMMAND}
+      -D WRAPPER_BUILD_DIR:PATH=<BINARY_DIR>/lodepng-wrapper-build
+      -D WRAPPER_SOURCE_DIR:PATH=<SOURCE_DIR>            # repo root (we'll probe header in both layouts)
+      -D LODEPNG_INSTALL_DIR:PATH=<INSTALL_DIR>
+      -D CONFIGURATION:STRING=$(Configuration)
+      -P ${CMAKE_CURRENT_LIST_DIR}/LodePNGWrapper_install.cmake
 
   CMAKE_CACHE_ARGS
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
