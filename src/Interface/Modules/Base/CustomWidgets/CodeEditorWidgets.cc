@@ -46,7 +46,7 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
   updateLineNumberAreaWidth(0);
   highlightCurrentLine();
 
-#ifndef SCIRUN_QT6_ENABLED
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   highlighter_ = new CodeEditorHighlighter(document());
 #endif
 

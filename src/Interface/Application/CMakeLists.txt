@@ -25,8 +25,15 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+# =========================
+# Interface_Application
+# =========================
 
-SET(Interface_Application_SOURCES
+# Allow building the GUI app without Python even if global BUILD_WITH_PYTHON=ON
+# Set to OFF in the superbuild cache to remove all Python linkage from this app.
+option(BUILD_INTERFACE_APPLICATION_WITH_PYTHON "Enable Python console in Interface_Application" ON)
+
+set(Interface_Application_SOURCES
   ClosestPortFinder.cc
   DeveloperConsole.cc
   GuiApplication.cc
@@ -49,7 +56,6 @@ SET(Interface_Application_SOURCES
   NoteEditor.cc
   Port.cc
   PreferencesWindow.cc
-  PythonConsoleWidget.cc
   Settings.cc
   ShortcutsInterface.cc
   TagManagerWindow.cc
@@ -65,7 +71,7 @@ SET(Interface_Application_SOURCES
   ModuleOptionsDialogConfiguration.cc
 )
 
-SET(Interface_Application_HEADERS
+set(Interface_Application_HEADERS
   ClosestPortFinder.h
   DeveloperConsole.h
   GuiApplication.h
@@ -87,7 +93,6 @@ SET(Interface_Application_HEADERS
   Port.h
   PositionProvider.h
   PreferencesWindow.h
-  PythonConsoleWidget.h
   TagManagerWindow.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
@@ -101,7 +106,7 @@ SET(Interface_Application_HEADERS
   ModuleOptionsDialogConfiguration.h
 )
 
-SET(Interface_Application_FORMS
+set(Interface_Application_FORMS
   DeveloperConsole.ui
   Module.ui
   ConnectionStyleWizardPage.ui
@@ -110,9 +115,6 @@ SET(Interface_Application_FORMS
   NoteEditor.ui
   Preferences.ui
   ProvenanceWindow.ui
-  PythonWizardPage.ui
-  PythonWizardCodePage.ui
-  IntWithPythonPage.ui
   SCIRunMainWindow.ui
   ShortcutsInterface.ui
   SubnetEditor.ui
@@ -124,17 +126,34 @@ SET(Interface_Application_FORMS
   StateViewer.ui
 )
 
-SET(Interface_Application_RESOURCES
-scirun5.qrc
+# ---- Python-specific sources/UI (conditionally included) ----
+set(Interface_Application_PY_SOURCES
+  PythonConsoleWidget.cc
+)
+set(Interface_Application_PY_HEADERS
+  PythonConsoleWidget.h
+)
+set(Interface_Application_PY_FORMS
+  PythonWizardPage.ui
+  PythonWizardCodePage.ui
+  IntWithPythonPage.ui
 )
 
-QT_WRAP_UI(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
-QT_WRAP_CPP(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
-QT_ADD_RESOURCES(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
+if (BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
+  list(APPEND Interface_Application_SOURCES ${Interface_Application_PY_SOURCES})
+  list(APPEND Interface_Application_HEADERS ${Interface_Application_PY_HEADERS})
+  list(APPEND Interface_Application_FORMS   ${Interface_Application_PY_FORMS})
+endif()
 
-IF(BUILD_BUNDLE)
-  ADD_DEFINITIONS(-DBUILD_BUNDLE)
-ENDIF()
+set(Interface_Application_RESOURCES scirun5.qrc)
+
+qt_wrap_ui(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
+qt_wrap_cpp(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
+qt_add_resources(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
+
+if (BUILD_BUNDLE)
+  add_definitions(-DBUILD_BUNDLE)
+endif()
 
 SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_SOURCES}
@@ -144,8 +163,8 @@ SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_RESOURCES_RCC}
 )
 
-# Add Python include dirs so Boost.Python's wrap_python.hpp sees pyconfig.h
-if (BUILD_WITH_PYTHON)
+# ---- Add Python include dirs *only if this app builds with Python* ----
+if (BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
   set(_PY_INCLUDES "")
   if (DEFINED PYTHON_INCLUDE_DIR AND EXISTS "${PYTHON_INCLUDE_DIR}")
     list(APPEND _PY_INCLUDES "${PYTHON_INCLUDE_DIR}")
@@ -171,7 +190,8 @@ if (BUILD_WITH_PYTHON)
   endif()
 endif()
 
-SET(NonPythonInterface_ApplicationLinkLibraries
+# ---- Link libraries ----
+set(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
   Core_Serialization_Network_Importer
   Core_Application
@@ -181,36 +201,102 @@ SET(NonPythonInterface_ApplicationLinkLibraries
   Interface_Modules_Base
   Interface_Modules_Factory
   Core_Application_Preferences
-  ${SCI_BOOST_LIBRARY}
+  ${SCI_BOOST_LIBRARY}    # Ensure this doesn't include Boost.Python for this app
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}
 )
 
-IF(BUILD_WITH_PYTHON)
-
-  TARGET_LINK_LIBRARIES(Interface_Application
+if (BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
+  target_link_libraries(Interface_Application
     PUBLIC
       ${NonPythonInterface_ApplicationLinkLibraries}
       Core_Python
       SCIRunPythonAPI
   )
-
-ELSE()
-
-  TARGET_LINK_LIBRARIES(Interface_Application
+else()
+  target_link_libraries(Interface_Application
     PUBLIC
       ${NonPythonInterface_ApplicationLinkLibraries}
   )
+endif()
 
-ENDIF()
+target_link_libraries(Interface_Application PUBLIC ${QT_NETWORK_LIBRARIES})
 
-TARGET_LINK_LIBRARIES(Interface_Application
-  PUBLIC
-    ${QT_NETWORK_LIBRARIES}
-)
+if (BUILD_SHARED_LIBS)
+  add_definitions(-DBUILD_Interface_Application)
+endif()
 
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Interface_Application)
-ENDIF()
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+# -------------------------------------------------------------
+# ---- Force the correct Python import lib per configuration
+#      & ignore wrong defaultlibs (MSVC only), like in Core_ConsoleApplication
+# -------------------------------------------------------------
+if (MSVC AND BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
+  # Neutralize wrong defaultlibs embedded by dependent .libs (e.g., Boost.Python)
+  target_link_options(Interface_Application PRIVATE
+    $<$<CONFIG:Debug>:/NODEFAULTLIB:python313.lib>
+    $<$<CONFIG:Release>:/NODEFAULTLIB:python313_d.lib>
+    $<$<CONFIG:RelWithDebInfo>:/NODEFAULTLIB:python313_d.lib>
+    $<$<CONFIG:MinSizeRel>:/NODEFAULTLIB:python313_d.lib>
+  )
+
+  # Prefer the imported Python target from superbuild helpers
+  if (TARGET SCIRunPython::Python)
+    target_link_libraries(Interface_Application PRIVATE
+      $<$<CONFIG:Debug>:SCIRunPython::Python>
+      $<$<NOT:$<CONFIG:Debug>>:SCIRunPython::Python>
+    )
+  elseif (TARGET Python::Python)
+    target_link_libraries(Interface_Application PRIVATE
+      $<$<CONFIG:Debug>:Python::Python>
+      $<$<NOT:$<CONFIG:Debug>>:Python::Python>
+    )
+  else()
+    # Fallback to explicit path probing for python313[_d].lib within superbuild
+    set(_PY_DBG "")
+    set(_PY_REL "")
+    foreach(dir
+      "${CMAKE_BINARY_DIR}/../Externals/Install/Python_external/libs"
+      "${CMAKE_BINARY_DIR}/../Externals/Install/Python_external/lib"
+      "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external/PCbuild/amd64"
+    )
+      if (EXISTS "${dir}/python313_d.lib" AND NOT _PY_DBG)
+        set(_PY_DBG "${dir}/python313_d.lib")
+      endif()
+      if (EXISTS "${dir}/python313.lib" AND NOT _PY_REL)
+        set(_PY_REL "${dir}/python313.lib")
+      endif()
+    endforeach()
+
+    if (_PY_DBG)
+      target_link_libraries(Interface_Application PRIVATE
+        $<$<CONFIG:Debug>:${_PY_DBG}>
+      )
+      message(STATUS "[Interface/Application] Using ${_PY_DBG} for Debug")
+    else()
+      message(WARNING "[Interface/Application] Could not locate python313_d.lib; Debug link may still fail.")
+    endif()
+
+    if (_PY_REL)
+      target_link_libraries(Interface_Application PRIVATE
+        $<$<NOT:$<CONFIG:Debug>>:${_PY_REL}>
+      )
+      message(STATUS "[Interface/Application] Using ${_PY_REL} for non-Debug")
+    else()
+      message(WARNING "[Interface/Application] Could not locate python313.lib; non-Debug link may fail.")
+    endif()
+  endif()
+endif()
+
+# -------------------------------------------------------------
+# Hard-kill any stray literal python313 libs if they leaked in
+# (e.g., via LINK_LIBRARIES property). This is a safety net.
+# -------------------------------------------------------------
+if (MSVC)
+  get_target_property(_ia_link_libs Interface_Application LINK_LIBRARIES)
+  if (_ia_link_libs)
+    list(FILTER _ia_link_libs EXCLUDE REGEX ".*python313(_d)?\\.lib$")
+    set_property(TARGET Interface_Application PROPERTY LINK_LIBRARIES "${_ia_link_libs}")
+  endif()
+endif()

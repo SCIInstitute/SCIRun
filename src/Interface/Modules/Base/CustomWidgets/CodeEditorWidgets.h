@@ -64,7 +64,7 @@ private Q_SLOTS:
 
 private:
   QWidget* lineNumberArea_;
-#ifndef SCIRUN_QT6_ENABLED
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   class CodeEditorHighlighter* highlighter_ {nullptr};
 #endif
   void createParenthesisSelection(int pos, const QColor& color);
@@ -95,7 +95,7 @@ private:
   CodeEditor *codeEditor;
 };
 
-#ifndef SCIRUN_QT6_ENABLED
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 class CodeEditorHighlighter : public QSyntaxHighlighter
 {
   Q_OBJECT
