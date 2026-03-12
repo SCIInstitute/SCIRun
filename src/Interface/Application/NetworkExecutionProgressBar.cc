@@ -151,22 +151,33 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
   QPainter p(this);
 
   {
-    //done modules: either green (good) or red (errored)
-    //qDebug() << "done modules: green" << status_->finished() << "red" << status_->errored();
-    auto finished = status_->finished();
-    auto errored = status_->errored();
+    // done modules: either green (good) or red (errored)
+    // qDebug() << "done modules: green" << status_->finished() << "red" << status_->errored();
+    const int finished = status_->finished();
+    const int errored = status_->errored();
+    const int doneTotal = finished + errored;
 
-    auto fracFinished = (static_cast<double>(finished) / (finished + errored)) * pos;
+    // Avoid 0/0 => NaN, and keep geometry as ints in [0, pos].
+    int wFinished = 0;
+    if (pos > 0 && doneTotal > 0)
+    {
+      const double frac = static_cast<double>(finished) / static_cast<double>(doneTotal);
+      // Round to reduce visual bias; clamp to [0, pos].
+      wFinished = static_cast<int>(std::round(frac * pos));
+      if (wFinished < 0) wFinished = 0;
+      if (wFinished > pos) wFinished = pos;
+    }
 
     p.setPen(Qt::green);
     p.setBrush(QBrush(Qt::green));
-    p.drawRect(0, 0, std::min((int)fracFinished, pos), height());
+    if (wFinished > 0) p.drawRect(0, 0, wFinished, height());
 
-    if (errored > 0)
+    const int wErrored = pos - wFinished;
+    if (errored > 0 && wErrored > 0)
     {
       p.setPen(Qt::red);
       p.setBrush(QBrush(Qt::red));
-      p.drawRect(fracFinished, 0, pos - fracFinished, height());
+      p.drawRect(wFinished, 0, wErrored, height());
     }
   }
 
@@ -184,26 +195,55 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
 
     if (totalNotDone > 0)
     {
-      auto fracExecuting = (static_cast<double>(executing) / totalNotDone) * leftToFill;
+      if (leftToFill < 0) leftToFill = 0;
+      auto fracExecuting = (static_cast<double>(executing) / static_cast<double>(totalNotDone)) * leftToFill;
       p.setPen(Qt::blue);
       p.setBrush(QBrush(Qt::blue));
-      p.drawRect(pos, 0, fracExecuting, height());
+      {
+        int wExec = static_cast<int>(std::floor(fracExecuting));
+        if (wExec < 0) wExec = 0;
+        if (wExec > leftToFill) wExec = leftToFill;
+        if (wExec > 0)
+          p.drawRect(pos, 0, wExec, height());
+        // reuse wExec below
+        auto fracWaiting = (static_cast<double>(waiting) / static_cast<double>(totalNotDone)) * leftToFill;
+        p.setPen(Qt::lightGray);
+        p.setBrush(QBrush(Qt::lightGray));
+        int wWait = static_cast<int>(std::floor(fracWaiting));
+        if (wWait < 0) wWait = 0;
+        if (wWait > leftToFill - wExec) wWait = leftToFill - wExec;
+        if (wWait > 0)
+          p.drawRect(pos + wExec, 0, wWait, height());
 
-      auto fracWaiting = (static_cast<double>(waiting) / totalNotDone) * leftToFill;
-      p.setPen(Qt::lightGray);
-      p.setBrush(QBrush(Qt::lightGray));
-      p.drawRect(pos + fracExecuting, 0, fracWaiting, height());
+        auto fracUnexecuted = (static_cast<double>(unexecuted) / static_cast<double>(totalNotDone)) * leftToFill;
+        p.setPen(Qt::darkYellow);
+        p.setBrush(QBrush(Qt::darkYellow, Qt::BDiagPattern));
+        int used = wExec + wWait;
+        int wUnex = leftToFill - used;
+        // In case of rounding loss, prefer to fill remaining space rather than leave gaps.
+        if (wUnex < 0) wUnex = 0;
+        if (wUnex > 0)
+          p.drawRect(pos + used, 0, wUnex, height());
+      }
 
-      auto fracUnexecuted = (static_cast<double>(unexecuted) / totalNotDone) * leftToFill;
-      p.setPen(Qt::darkYellow);
-      p.setBrush(QBrush(Qt::darkYellow, Qt::BDiagPattern));
-      p.drawRect(pos + fracExecuting + fracWaiting, 0, fracUnexecuted, height());
+      //auto fracWaiting = (static_cast<double>(waiting) / totalNotDone) * leftToFill;
+      //p.setPen(Qt::lightGray);
+      //p.setBrush(QBrush(Qt::lightGray));
+      //p.drawRect(pos + fracExecuting, 0, fracWaiting, height());
+
+      //auto fracUnexecuted = (static_cast<double>(unexecuted) / totalNotDone) * leftToFill;
+      //p.setPen(Qt::darkYellow);
+      //p.setBrush(QBrush(Qt::darkYellow, Qt::BDiagPattern));
+      //p.drawRect(pos + fracExecuting + fracWaiting, 0, fracUnexecuted, height());
     }
     else
     {
       p.setPen(Qt::lightGray);
       p.setBrush(QBrush(Qt::lightGray));
-      p.drawRect(pos, 0, width(), height());
+      int rem = width() - pos;
+      if (rem < 0) rem = 0;
+      if (rem > 0)
+        p.drawRect(pos, 0, rem, height());
     }
   }
 
