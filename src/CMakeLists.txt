@@ -998,6 +998,21 @@ IF(APPLE)
   MARK_AS_ADVANCED(AWK)
 ENDIF()
 
+# 1) Real interface target
+add_library(SCIRunCompileConfig INTERFACE)
+
+# 2) Namespaced alias (optional, for nice linking syntax)
+add_library(SCIRun::CompileConfig ALIAS SCIRunCompileConfig)
+
+# 3) Put your global compile definitions here
+#    (Use your authoritative Qt selector: SCIRUN_QT_MAJOR is already in your top-level)
+if (SCIRUN_QT_MAJOR STREQUAL "6")
+  target_compile_definitions(SCIRunCompileConfig INTERFACE SCIRUN_QT6_ENABLED)
+endif()
+
+# You also set QT_NO_KEYWORDS globally in a few places—centralize it here:
+target_compile_definitions(SCIRunCompileConfig INTERFACE QT_NO_KEYWORDS)
+
 ########################################################################
 # Configure documentation
 
@@ -1126,10 +1141,6 @@ IF(NOT BUILD_HEADLESS)
 
   add_definitions(-DQT_NO_KEYWORDS)
 
-  if (QT_VERSION_MAJOR EQUAL 6)
-    add_definitions(-DSCIRUN_QT6_ENABLED)
-  endif()
-
   if (QT_VERSION_MAJOR EQUAL 5)
     macro(QT_WRAP_UI arg1 arg2)
       qt5_wrap_ui(${arg1} ${arg2})
@@ -1153,6 +1164,10 @@ IF(NOT BUILD_HEADLESS)
   endif()
 
 ENDIF()
+
+if (QT_VERSION_MAJOR EQUAL 6)
+  add_compile_definitions(SCIRUN_QT6_ENABLED)
+endif()
 
 if (QT_VERSION_MAJOR EQUAL 5 AND Qt5Widgets_VERSION VERSION_LESS 5.13.0)
   add_definitions(-DOLDER_QT_SUPPORT_NEEDED)
@@ -1659,6 +1674,12 @@ ENDMACRO()
 
 MACRO(SCIRUN_ADD_LIBRARY library)
   ADD_LIBRARY(${library} ${ARGN})
+
+  # Attach global compile definitions (Qt6, QT_NO_KEYWORDS, etc.)
+  if (SCIRUN_QT_MAJOR STREQUAL "6")
+    target_compile_definitions(${library} PUBLIC SCIRUN_QT6_ENABLED)
+  endif()
+  target_compile_definitions(${library} PUBLIC QT_NO_KEYWORDS)
 
   if(MSVC)
     # TODO:

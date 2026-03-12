@@ -64,7 +64,9 @@ private Q_SLOTS:
 
 private:
   QWidget* lineNumberArea_;
+#ifndef SCIRUN_QT6_ENABLED
   class CodeEditorHighlighter* highlighter_ {nullptr};
+#endif
   void createParenthesisSelection(int pos, const QColor& color);
   bool matchLeftParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numRightParentheses);
   bool matchRightParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numLeftParentheses);

@@ -134,6 +134,7 @@ FOREACH(app ${APPS})
   IF(BUILD_WITH_PYTHON)
     TARGET_LINK_LIBRARIES(${app}
       Core_Python
+      SCIRunPython
     )
   ENDIF()
 ENDFOREACH()

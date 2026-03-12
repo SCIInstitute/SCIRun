@@ -188,25 +188,29 @@ SET(NonPythonInterface_ApplicationLinkLibraries
 
 IF(BUILD_WITH_PYTHON)
 
-TARGET_LINK_LIBRARIES(Interface_Application
-  ${NonPythonInterface_ApplicationLinkLibraries}
-  Core_Python
-  SCIRunPythonAPI
-)
+  TARGET_LINK_LIBRARIES(Interface_Application
+    PUBLIC
+      ${NonPythonInterface_ApplicationLinkLibraries}
+      Core_Python
+      SCIRunPythonAPI
+  )
 
 ELSE()
 
-TARGET_LINK_LIBRARIES(Interface_Application
-  ${NonPythonInterface_ApplicationLinkLibraries}
-)
+  TARGET_LINK_LIBRARIES(Interface_Application
+    PUBLIC
+      ${NonPythonInterface_ApplicationLinkLibraries}
+  )
 
 ENDIF()
 
 TARGET_LINK_LIBRARIES(Interface_Application
-  ${QT_NETWORK_LIBRARIES})
+  PUBLIC
+    ${QT_NETWORK_LIBRARIES}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Application)
-ENDIF(BUILD_SHARED_LIBS)
+ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
