@@ -48,17 +48,89 @@ jobs:
         name: SCIRunMacInstaller
         path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
 
-    # - name: Deploy
-    #   id: deploy
-    #   if: github.ref == 'refs/heads/master'
-    #   uses: marvinpinto/action-automatic-releases@latest
-    #   with:
-    #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-    #     automatic_release_tag: "dev-mac"
-    #     prerelease: true
-    #     title: "Development Build for Mac"
-    #     files: |
-    #          bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
+  mac-build-gui-26-intel:
+
+    runs-on: macos-26-intel
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      with:
+        version: 6.10.2
+        target: desktop
+        host: mac
+        setup-python: 'true'
+        install-deps: true
+
+    - name: Print out Qt directory
+      run: echo $QT_ROOT_DIR; echo $QT_ROOT_DIR
+
+    - name: make
+      run: ./build.sh -DQt_PATH="${QT_ROOT_DIR}" -DSCIRUN_QT_MIN_VERSION="6.3.1"
+
+    - name: Package
+      working-directory: bin/SCIRun
+      run: |
+        cmake -DBUILD_BUNDLE:BOOL=ON ../../src
+        make -j3
+        make package
+        chmod +x repair_package.sh
+        ./repair_package.sh
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v6
+      with:
+        name: SCIRunMacInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
+
+  mac-build-gui-26:
+
+    runs-on: macos-26
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      with:
+        version: 6.10.2
+        target: desktop
+        host: mac
+        setup-python: 'true'
+        install-deps: true
+
+    - name: Print out Qt directory
+      run: echo $QT_ROOT_DIR; echo $QT_ROOT_DIR
+
+    - name: make
+      run: ./build.sh -DQt_PATH="${QT_ROOT_DIR}" -DSCIRUN_QT_MIN_VERSION="6.3.1"
+
+    - name: Package
+      working-directory: bin/SCIRun
+      run: |
+        cmake -DBUILD_BUNDLE:BOOL=ON ../../src
+        make -j3
+        make package
+        chmod +x repair_package.sh
+        ./repair_package.sh
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v6
+      with:
+        name: SCIRunMacInstaller
+        path: bin/SCIRun/SCIRun-5.0.beta.*-Darwin.pkg
 
   mac-build-gui-nonpython:
 
