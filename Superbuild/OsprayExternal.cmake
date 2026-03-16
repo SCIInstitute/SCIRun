@@ -2,7 +2,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2026 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #

@@ -32,21 +32,25 @@
 
 
 #### Linux
-  - Tested on Ubuntu 16.04 LTS, 18.04 LTS, 22.04 LTS, OpenSUSE Leap 42.1, Arch Linux
+  - Tested on Ubuntu 16.04 LTS, 18.04 LTS, 22.04 LTS, 24.04 LTS, OpenSUSE Leap 42.1, Arch Linux
   - gcc 7+
   - Qt 5.15 or later
     + [Download](https://download.qt.io/archive/qt/) and run the desired Qt 5.x or 6.x installer.  Make sure to turn off other versions and system configurations to save space and build time. 
       Optionally, install Qt through your distro's package manager instead(apt on Ubuntu/Debian, pacman on Arch). 
 
-      To install Qt 5, the command on Ubuntu/Debian is:
+      To install Qt 5, the command on Ubuntu (20.04 LTS or earlier) or Debian is:
       ```
       sudo apt-get install qt5-default
+      ```
+      or, on Ubuntu 22.04 LTS and later
+      ```
+      sudo apt-get install qtbase5-dev libqt5svg5-dev
       ```
       To install Qt 6, the command on Ubuntu/Debian is:
       ```
       sudo apt-get install qt6-base-dev libqt6svg6-dev
       ```
-      The installation directory for the CMake variable `Qt5_DIR`(for Qt5) or `Qt_PATH`(for Qt6) will then be `/usr/lib/x86_64-linux-gnu/cmake/`.
+      The installation directory for the CMake variable `Qt_PATH` will then be `/usr/lib/x86_64-linux-gnu/cmake/`.
 
       To install Qt 5, the command on Arch is:
       ```
@@ -56,7 +60,7 @@
       ```
       sudo pacman -S qt6-base
       ```
-      The installation directory for the CMake variable `Qt5_DIR`(for Qt5) or `Qt_PATH`(for Qt6) will then be `/usr/lib/cmake/`.
+      The installation directory for the CMake variable `Qt_PATH` will then be `/usr/lib/cmake/`.
 
 #### All Platforms
   - [CMake](https://cmake.org/) (platform independent configuring system that is used for generating Makefiles, Visual Studio project files, or Xcode project files)
@@ -97,15 +101,15 @@ If you installed Qt in the default location, it should find Qt automatically.
 
 ### Configuring SCIRun with Qt 5
 
-Building SCIRun with Qt 5 requires additional input. Use the `Qt5_PATH` CMake variable to point to the Qt 5 build location. Look at the Qt install steps above for information about the directory. This can be done through the command line with a command similar to:
+Building SCIRun with Qt 5 requires additional input. Use the `Qt_PATH` CMake variable to point to the Qt 5 build location. Look at the Qt install steps above for information about the directory. This can be done through the command line with a command similar to:
 ```
-cmake -DQt5_PATH=path_to_Qt5_build/ ../Superbuild/
+cmake -DQt_PATH=path_to_Qt5_build/ ../Superbuild/
 ```
 Or they can be set in the CMake GUI or with the `ccmake` function.
 
 The command will be similar to the following:
 ```
-cmake -DQt5_PATH=path_to_Qt5/5.15.1/clang_64/ ../Superbuild/
+cmake -DQt_PATH=path_to_Qt5/5.15.1/clang_64/ ../Superbuild/
 ```
 
 ### Configuring SCIRun with Qt 6
