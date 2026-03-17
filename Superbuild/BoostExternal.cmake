@@ -1,4 +1,4 @@
-#  For more information, please see: http://software.sci.utah.edu
+﻿#  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
@@ -63,65 +63,50 @@ foreach(_bl IN LISTS _BOOST_LIBS)
   list(APPEND _BOOST_LIBS_B2 "--with-${_bl}")
 endforeach()
 
-# ========= Build knobs for b2 (must match your app's toolchain) =========
-# STATIC vs SHARED Boost libs (import lib + DLL if SHARED)
-option(BOOST_USE_STATIC_LIBS "Build static Boost libraries" ON)
+# ========= Cross‑platform Boost toolset detection =========
+# On Windows   → use msvc
+# On macOS     → use clang-darwin (Boost’s preferred Darwin toolset)
+# On Linux     → use gcc or clang depending on CMAKE_CXX_COMPILER_ID
 
-# Runtime library (/MD,/MDd shared; /MT,/MTd static)
-option(BOOST_USE_STATIC_RUNTIME "Use static C runtime (/MT,/MTd). OFF = /MD,/MDd" OFF)
-
-# MSVC toolset (VS 2022 ~ 14.3). Override with -DB2_TOOLSET=msvc-14.3 if needed.
-if(NOT DEFINED B2_TOOLSET)
-  set(B2_TOOLSET msvc-14.3)
-endif()
-
-# ========= ExternalProject definition =========
-ExternalProject_Add(Boost_external
-  GIT_REPOSITORY            ${_boost_git_url}
-  GIT_TAG                   ${_boost_git_tag}
-  GIT_SHALLOW               FALSE
-  GIT_PROGRESS              TRUE
-
-  # Ensure submodules are available
-  UPDATE_COMMAND            ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> git submodule update --init --recursive
-
-  BUILD_IN_SOURCE           OFF
-
-  # We will NOT use the CMake superproject for compiled libs
-  CONFIGURE_COMMAND         ""
-  BUILD_COMMAND             ""
-  INSTALL_COMMAND           ""
-)
-
-ExternalProject_Get_Property(Boost_external SOURCE_DIR)
-ExternalProject_Get_Property(Boost_external BINARY_DIR)
-ExternalProject_Get_Property(Boost_external INSTALL_DIR)
-
-# Optional Python wiring for Boost.Python
-set(_B2_PY_ARGS "")
-if(BOOST_ENABLE_PYTHON)
-  set(_PY_LIBDIR "")
-  if(DEFINED PYTHON_LIBRARY_DEBUG AND EXISTS "${PYTHON_LIBRARY_DEBUG}")
-    get_filename_component(_PY_LIBDIR "${PYTHON_LIBRARY_DEBUG}" DIRECTORY)
-  elseif(DEFINED PYTHON_LIBRARY_RELEASE AND EXISTS "${PYTHON_LIBRARY_RELEASE}")
-    get_filename_component(_PY_LIBDIR "${PYTHON_LIBRARY_RELEASE}" DIRECTORY)
-  elseif(DEFINED PYTHON_RUNTIME_DIR AND EXISTS "${PYTHON_RUNTIME_DIR}")
-    set(_PY_LIBDIR "${PYTHON_RUNTIME_DIR}")
-  endif()
-
-  if(PYTHON_INCLUDE_DIR AND EXISTS "${PYTHON_INCLUDE_DIR}" AND _PY_LIBDIR AND EXISTS "${_PY_LIBDIR}")
-    list(APPEND _B2_PY_ARGS
-      "include=${PYTHON_INCLUDE_DIR}"
-      "library-path=${_PY_LIBDIR}"
-    )
-    message(STATUS "[Boost_ext] Will build Boost.Python against include='${PYTHON_INCLUDE_DIR}', libdir='${_PY_LIBDIR}'")
+if(WIN32)
+  set(_B2_TOOLSET "msvc")
+elseif(APPLE)
+  # Boost official recommended toolset on macOS
+  set(_B2_TOOLSET "clang-darwin")
+else() # Linux / Unix
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(_B2_TOOLSET "gcc")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(_B2_TOOLSET "clang")
   else()
-    message(WARNING "[Boost_ext] BOOST_ENABLE_PYTHON=ON but Python paths are incomplete.")
+    message(FATAL_ERROR "Unsupported compiler '${CMAKE_CXX_COMPILER_ID}' for Boost build")
   endif()
 endif()
 
-# ========= Cross-platform b2 header staging =========
-# 1) Bootstrap b2
+message(STATUS "[Boost_ext] Auto-selected b2 toolset: ${_B2_TOOLSET}")
+
+# Allow manual override
+if(DEFINED B2_TOOLSET)
+  message(STATUS "[Boost_ext] Overriding toolset with user B2_TOOLSET=${B2_TOOLSET}")
+  set(_B2_TOOLSET "${B2_TOOLSET}")
+endif()
+
+# ========= Linkage settings =========
+if(BOOST_USE_STATIC_LIBS)
+  set(_B2_LINK "link=static")
+else()
+  set(_B2_LINK "link=shared")
+endif()
+
+if(BOOST_USE_STATIC_RUNTIME)
+  set(_B2_RUNTIME_LINK "runtime-link=static")
+else()
+  set(_B2_RUNTIME_LINK "runtime-link=shared")
+endif()
+
+set(_B2_VARIANTS "variant=debug,release")
+
+# ========= b2 executable paths =========
 if(WIN32)
   set(_B2_BOOTSTRAP_CMD cmd /c bootstrap.bat)
   set(_B2_CMD           cmd /c .\\b2)
@@ -130,134 +115,41 @@ else()
   set(_B2_CMD           ./b2)
 endif()
 
-ExternalProject_Add_Step(Boost_external bootstrap_b2
-  COMMAND ${_B2_BOOTSTRAP_CMD}
-  WORKING_DIRECTORY ${SOURCE_DIR}
-  DEPENDEES update
-  COMMENT "Bootstrapping Boost.Build (b2)"
-)
-
-# 2) Generate the full 'boost/' header tree
-ExternalProject_Add_Step(Boost_external stage_headers
-  COMMAND ${_B2_CMD} headers
-  WORKING_DIRECTORY ${SOURCE_DIR}
-  DEPENDEES bootstrap_b2
-  COMMENT "Running 'b2 headers' to generate the boost/ header tree"
-)
-
-# ========= Build compiled libs with b2 (MSVC-style versioned names) =========
-# Determine b2 arguments
-if(BOOST_USE_STATIC_LIBS)
-  set(_B2_LINK "link=static")
-else()
-  set(_B2_LINK "link=shared")
-endif()
-
-if(BOOST_USE_STATIC_RUNTIME)
-  set(_B2_RUNTIME_LINK "runtime-link=static")   # /MT,/MTd
-else()
-  set(_B2_RUNTIME_LINK "runtime-link=shared")   # /MD,/MDd
-endif()
-
-set(_B2_VARIANTS "variant=debug,release")       # build both for multi-config IDEs
-
-# Keep all b2 artifacts under <BINARY_DIR>/b2-build
+# ========= Build directory for b2 artifacts =========
 set(_B2_BUILD_DIR ${BINARY_DIR}/b2-build)
 
+# ========= Build command (cross‑platform) =========
 ExternalProject_Add_Step(Boost_external build_b2_libs
   COMMAND ${_B2_CMD}
           -j${CMAKE_BUILD_PARALLEL_LEVEL}
-          address-model=64 architecture=x86
-          toolset=${B2_TOOLSET}
+          toolset=${_B2_TOOLSET}
           threading=multi
           ${_B2_LINK}
           ${_B2_RUNTIME_LINK}
           ${_B2_VARIANTS}
-          --layout=versioned
+          --layout=tagged
           ${_BOOST_LIBS_B2}
           ${_B2_PY_ARGS}
           --build-dir=${_B2_BUILD_DIR}
           stage
   WORKING_DIRECTORY ${SOURCE_DIR}
   DEPENDEES stage_headers
-  COMMENT "Building Boost libs with b2 (versioned names for MSVC auto-link)"
+  COMMENT "Building Boost with b2 (cross‑platform toolset=${_B2_TOOLSET})"
 )
 
-# 3) Install staged libs into <INSTALL_DIR>/lib
+# ========= Install libs =========
 ExternalProject_Add_Step(Boost_external install_b2_libs
   COMMAND ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/lib
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR}/stage/lib <INSTALL_DIR>/lib
   DEPENDEES build_b2_libs
-  COMMENT "Installing b2-built Boost libs into <INSTALL_DIR>/lib"
+  COMMENT "Installing Boost libs"
 )
 
-# 4) Copy the entire header tree into the install prefix
+# ========= Install headers =========
 ExternalProject_Add_Step(Boost_external install_full_headers
   COMMAND ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/include
   COMMAND ${CMAKE_COMMAND} -E remove_directory <INSTALL_DIR>/include/boost
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR}/boost <INSTALL_DIR>/include/boost
   DEPENDEES stage_headers
-  COMMENT "Copying full Boost headers to <INSTALL_DIR>/include/boost"
+  COMMENT "Installing Boost headers"
 )
-
-# ========= Export properties for downstream =========
-# Convenience prefix
-set(SCI_BOOST_PREFIX "${INSTALL_DIR}")
-
-# Concrete include/lib paths (SCIRun consumes these)
-set(SCI_BOOST_INCLUDE "${SCI_BOOST_PREFIX}/include" CACHE PATH "Boost include directory" FORCE)
-if (EXISTS "${SCI_BOOST_PREFIX}/lib64")
-  set(SCI_BOOST_LIBRARY_DIR "${SCI_BOOST_PREFIX}/lib64")
-else()
-  set(SCI_BOOST_LIBRARY_DIR "${SCI_BOOST_PREFIX}/lib")
-endif()
-set(SCI_BOOST_LIBRARY_DIR "${SCI_BOOST_LIBRARY_DIR}" CACHE PATH "Boost library directory" FORCE)
-
-# Since we are NOT installing BoostConfig.cmake, prefer MODULE mode if you still call find_package(Boost)
-set(Boost_DIR "" CACHE PATH "No BoostConfig.cmake (b2 build). Use FindBoost (MODULE) if needed." FORCE)
-set(Boost_NO_BOOST_CMAKE ON CACHE BOOL "Force FindBoost MODULE mode" FORCE)
-set(Boost_ROOT "${SCI_BOOST_PREFIX}" CACHE PATH "Boost install prefix" FORCE)
-set(BOOST_ROOT "${SCI_BOOST_PREFIX}" CACHE PATH "Boost install prefix (compat)" FORCE)
-set(BOOST_LIBRARYDIR "${SCI_BOOST_LIBRARY_DIR}" CACHE PATH "Boost library dir (compat)" FORCE)
-
-# ========= Generate a 'UseBoost.cmake' for consumers (auto-link ON) =========
-# - Adds include and link search dirs.
-# - If building shared Boost libs, define BOOST_ALL_DYN_LINK (ensures __declspec(dllimport)).
-# - INTENTIONALLY does NOT define BOOST_ALL_NO_LIB (we want auto-link to inject versioned names).
-set(SCI_BOOST_USE_FILE "${SCI_BOOST_PREFIX}/UseBoost.cmake")
-set(_usefile "## Auto-generated UseBoost.cmake (b2 + autolink)
-# Include dirs for headers
-include_guard(GLOBAL)
-if(EXISTS \"${SCI_BOOST_INCLUDE}\")
-  include_directories(\"${SCI_BOOST_INCLUDE}\")
-endif()
-
-# Link search dir so MSVC can find the versioned .lib names injected by auto-link
-if(EXISTS \"${SCI_BOOST_LIBRARY_DIR}\")
-  link_directories(\"${SCI_BOOST_LIBRARY_DIR}\")
-endif()
-
-# If Boost was built as shared libs, define BOOST_ALL_DYN_LINK so import libs/DLLs are used
-")
-if(NOT BOOST_USE_STATIC_LIBS)
-  string(APPEND _usefile "add_compile_definitions(BOOST_ALL_DYN_LINK)\n")
-endif()
-
-# Helpful hints for FindBoost (MODULE) if you still want to query variables
-string(APPEND _usefile "
-set(Boost_ROOT \"${SCI_BOOST_PREFIX}\")
-set(BOOST_ROOT  \"${SCI_BOOST_PREFIX}\")
-set(BOOST_LIBRARYDIR \"${SCI_BOOST_LIBRARY_DIR}\")
-")
-file(WRITE "${SCI_BOOST_USE_FILE}" "${_usefile}")
-
-# ========= Diagnostics =========
-message(STATUS "[Boost_ext] INSTALL_DIR: ${SCI_BOOST_PREFIX}")
-message(STATUS "[Boost_ext] Include dir: ${SCI_BOOST_INCLUDE}")
-message(STATUS "[Boost_ext] Lib dir:     ${SCI_BOOST_LIBRARY_DIR}")
-message(STATUS "[Boost_ext] Built libs:  ${_BOOST_LIBS}")
-message(STATUS "[Boost_ext] b2 link type:         ${_B2_LINK}")
-message(STATUS "[Boost_ext] b2 runtime link:      ${_B2_RUNTIME_LINK}")
-message(STATUS "[Boost_ext] b2 toolset:           ${B2_TOOLSET}")
-message(STATUS "[Boost_ext] Use file:             ${SCI_BOOST_USE_FILE}")
-message(STATUS "[Boost_ext] Note: No BoostConfig.cmake installed (using b2). Auto-link on MSVC will inject versioned .lib names.")
