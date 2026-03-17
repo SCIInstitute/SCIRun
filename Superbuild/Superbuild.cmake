@@ -98,8 +98,12 @@ set(SCIRUN_QT_MAJOR "6" CACHE STRING "Qt major version to use (5 or 6)")
 set_property(CACHE SCIRUN_QT_MAJOR PROPERTY STRINGS 5 6)
 set(QT5_MIN_VERSION "5.15.2")
 set(QT6_MIN_VERSION "6.3.0")
-set(Qt_PATH "" CACHE PATH "Qt install prefix (e.g. C:/Qt/6.10.1/msvc2022_64)")
 
+set(Qt_PATH "" CACHE PATH "Qt install prefix (e.g. C:/Qt/6.10.1/msvc2022_64 or /Users/<user>/Qt/6.10.2/macos)")
+
+# -------------------------
+# Default Qt path on Windows
+# -------------------------
 if (WIN32 AND NOT BUILD_HEADLESS)
   if (NOT Qt_PATH OR NOT IS_DIRECTORY "${Qt_PATH}")
     set(_qt_default "C:/Qt/6.10.1/msvc2022_64")
@@ -110,46 +114,77 @@ if (WIN32 AND NOT BUILD_HEADLESS)
   endif()
 endif()
 
-# Validate
+# -------------------------
+# Default Qt path on macOS
+# -------------------------
+if (APPLE AND NOT BUILD_HEADLESS)
+  if (NOT Qt_PATH OR NOT IS_DIRECTORY "${Qt_PATH}")
+    set(_qt_default "/Users/basisunus/Qt/6.10.2/macos")
+    if (IS_DIRECTORY "${_qt_default}")
+      message(STATUS "Qt_PATH not set or invalid — defaulting to ${_qt_default}")
+      set(Qt_PATH "${_qt_default}" CACHE PATH "Qt install prefix" FORCE)
+    endif()
+  endif()
+endif()
+
+# -------------------------
+# Validate Qt_PATH
+# -------------------------
 if (NOT BUILD_HEADLESS)
   if (NOT IS_DIRECTORY "${Qt_PATH}")
     message(FATAL_ERROR
       "Qt_PATH invalid or not set.\n"
-      "Point it to the Qt install prefix with lib/, bin/, and lib/cmake/Qt[56].\n"
-      "Example: C:/Qt/6.10.1/msvc2022_64")
+      "Must point to a Qt install prefix with lib/, bin/, and lib/cmake/QtX.\n"
+      "Examples:\n"
+      "  Windows: C:/Qt/6.10.1/msvc2022_64\n"
+      "  macOS:   /Users/<user>/Qt/6.10.2/macos\n"
+    )
   endif()
 
   file(TO_CMAKE_PATH "${Qt_PATH}" _Qt_PREFIX)
   list(PREPEND CMAKE_PREFIX_PATH "${_Qt_PREFIX}")
   sb_prefix_append("${_Qt_PREFIX}")
 
+  # -------------------------
+  # Qt6
+  # -------------------------
   if (SCIRUN_QT_MAJOR STREQUAL "6")
     set(QT_MIN_VERSION "${QT6_MIN_VERSION}")
     set(Qt6_DIR "${_Qt_PREFIX}/lib/cmake/Qt6")
     if (NOT EXISTS "${Qt6_DIR}/Qt6Config.cmake")
       message(FATAL_ERROR "Qt6Config.cmake not found at '${Qt6_DIR}'")
     endif()
+
     find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
       Core Gui Widgets Network Concurrent PrintSupport Svg OpenGL OpenGLWidgets
       HINTS "${Qt_PATH}"
     )
+
     message(STATUS "[superbuild] Using Qt6_DIR='${Qt6_DIR}'")
+
+  # -------------------------
+  # Qt5
+  # -------------------------
   elseif (SCIRUN_QT_MAJOR STREQUAL "5")
     set(QT_MIN_VERSION "${QT5_MIN_VERSION}")
     set(Qt5_DIR "${_Qt_PREFIX}/lib/cmake/Qt5")
-    if (NOT EXISTS "${Qt5_DIR}/Qt5Config.cmake")
+    if (NOT EXISTS "${Qt5_DIR}/Qt5Config.cmake}")
       message(FATAL_ERROR "Qt5Config.cmake not found at '${Qt5_DIR}'")
     endif()
+
     find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS
       Core Gui Widgets Network Concurrent PrintSupport Svg OpenGL
       HINTS "${Qt_PATH}"
     )
+
     message(STATUS "[superbuild] Using Qt5_DIR='${Qt5_DIR}'")
   else()
     message(FATAL_ERROR "SCIRUN_QT_MAJOR must be '5' or '6'. Got: '${SCIRUN_QT_MAJOR}'")
   endif()
 
-  # Locate qmake (needed by Qwt external)
+  # -------------------------
+  # Locate qmake (needed by Qwt)
+  # -------------------------
   if (SCIRUN_QT_MAJOR STREQUAL "6")
     if (TARGET Qt6::qmake)
       get_target_property(_qmake_path Qt6::qmake LOCATION)
@@ -181,9 +216,11 @@ if (NOT BUILD_HEADLESS)
   if (NOT _qmake_path OR NOT EXISTS "${_qmake_path}")
     message(FATAL_ERROR "Could not locate qmake. Checked: ${_qmake_path}")
   endif()
-  set(QT_QMAKE_EXECUTABLE "${_qmake_path}" CACHE FILEPATH "Path to Qt qmake for building Qwt" FORCE)
-  message(STATUS "QT_QMAKE_EXECUTABLE = ${QT_QMAKE_EXECUTABLE}")
 
+  set(QT_QMAKE_EXECUTABLE "${_qmake_path}" CACHE FILEPATH
+    "Path to Qt qmake for building Qwt" FORCE)
+
+  message(STATUS "QT_QMAKE_EXECUTABLE = ${QT_QMAKE_EXECUTABLE}")
 else()
   add_definitions(-DBUILD_HEADLESS)
 endif()
