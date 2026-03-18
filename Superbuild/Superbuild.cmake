@@ -1116,18 +1116,20 @@ endif()
 if(TARGET LodePng_external)
   ExternalProject_Get_Property(LodePng_external INSTALL_DIR)
 
-  set(_lodepng_libdir "")
+  # Detect lib directory
+  set(_lodepng_libdir "${INSTALL_DIR}/lib")
   if(EXISTS "${INSTALL_DIR}/lib64")
     set(_lodepng_libdir "${INSTALL_DIR}/lib64")
-  else()
-    set(_lodepng_libdir "${INSTALL_DIR}/lib")
   endif()
 
-  # Wait for both header and at least one library (Debug or Release)
+  # Cross‑platform library names
   set(_lp_wait_files
-    "${INSTALL_DIR}/include/lodepng/lodepng.h"
-    "${_lodepng_libdir}/lodepng.lib"
-    "${_lodepng_libdir}/lodepngd.lib"
+    "${INSTALL_DIR}/include/lodepng/lodepng.h"     # header (same everywhere)
+    "${_lodepng_libdir}/liblodepng.a"              # macOS/Linux static
+    "${_lodepng_libdir}/liblodepng.so"             # Linux shared
+    "${_lodepng_libdir}/liblodepng.dylib"          # macOS shared
+    "${_lodepng_libdir}/lodepng.lib"               # Windows
+    "${_lodepng_libdir}/lodepngd.lib"              # Windows Debug
   )
 
   _sb_scirun_wait_for(NAME lodepng
