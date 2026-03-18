@@ -1116,26 +1116,44 @@ endif()
 if(TARGET LodePng_external)
   ExternalProject_Get_Property(LodePng_external INSTALL_DIR)
 
-  # Detect lib directory
+  # Detect lib dir
   set(_lodepng_libdir "${INSTALL_DIR}/lib")
   if(EXISTS "${INSTALL_DIR}/lib64")
     set(_lodepng_libdir "${INSTALL_DIR}/lib64")
   endif()
 
-  # Cross‑platform library names
-  set(_lp_wait_files
-    "${INSTALL_DIR}/include/lodepng/lodepng.h"     # header (same everywhere)
-    "${_lodepng_libdir}/liblodepng.a"              # macOS/Linux static
-    "${_lodepng_libdir}/liblodepng.so"             # Linux shared
-    "${_lodepng_libdir}/liblodepng.dylib"          # macOS shared
-    "${_lodepng_libdir}/lodepng.lib"               # Windows
-    "${_lodepng_libdir}/lodepngd.lib"              # Windows Debug
-  )
+  if(WIN32)
+    # Windows produces .lib and optionally .pdb
+    _sb_scirun_wait_for(NAME lodepng
+      FILES
+        "${INSTALL_DIR}/include/lodepng/lodepng.h"
+        "${_lodepng_libdir}/lodepng.lib"
+        "${_lodepng_libdir}/lodepngd.lib"
+      DIRS
+        "${INSTALL_DIR}/include" "${_lodepng_libdir}"
+    )
 
-  _sb_scirun_wait_for(NAME lodepng
-    FILES ${_lp_wait_files}
-    DIRS  "${INSTALL_DIR}/include" "${_lodepng_libdir}"
-  )
+  elseif(APPLE)
+    # macOS: static lib only (liblodepng.a)
+    _sb_scirun_wait_for(NAME lodepng
+      FILES
+        "${INSTALL_DIR}/include/lodepng/lodepng.h"
+        "${_lodepng_libdir}/liblodepng.a"
+      DIRS
+        "${INSTALL_DIR}/include" "${_lodepng_libdir}"
+    )
+
+  else() # Linux / other Unix
+    # Linux may build static or shared lib
+    _sb_scirun_wait_for(NAME lodepng
+      FILES
+        "${INSTALL_DIR}/include/lodepng/lodepng.h"
+        "${_lodepng_libdir}/liblodepng.a"
+        "${_lodepng_libdir}/liblodepng.so"
+      DIRS
+        "${INSTALL_DIR}/include" "${_lodepng_libdir}"
+    )
+  endif()
 endif()
 
 if(TARGET SQLite_external)
