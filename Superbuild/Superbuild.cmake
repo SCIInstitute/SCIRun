@@ -910,36 +910,39 @@ if(WITH_TETGEN AND TARGET Tetgen_external)
     endif()
   endif()
 
-  # Library dir candidates
-  set(_tet_lib_dir "")
+  # Library directory
   if(EXISTS "${INSTALL_DIR}/lib64")
     set(_tet_lib_dir "${INSTALL_DIR}/lib64")
-  elseif(EXISTS "${INSTALL_DIR}/lib")
+  else()
     set(_tet_lib_dir "${INSTALL_DIR}/lib")
   endif()
 
-  # Try to locate the actual library file
+  # ---- Cross‑platform library detection ----
   set(_tet_lib "")
-  if(_tet_lib_dir AND EXISTS "${_tet_lib_dir}")
-    set(_tet_names tetgen libtetgen tet tetgen_static tetgen1.6 tet1.6)
-    foreach(_nm IN LISTS _tet_names)
-      if(EXISTS "${_tet_lib_dir}/${_nm}.lib")
-        set(_tet_lib "${_tet_lib_dir}/${_nm}.lib")
-        break()
-      endif()
-    endforeach()
-    if(NOT _tet_lib)
-      file(GLOB _cands
-        "${_tet_lib_dir}/*.lib"
-        "${_tet_lib_dir}/**/tet*.lib"
-        "${_tet_lib_dir}/**/libtet*.lib"
-      )
-      list(SORT _cands)
-      list(LENGTH _cands _n)
-      if(_n GREATER 0)
-        list(GET _cands 0 _tet_lib)
-      endif()
-    endif()
+
+  # macOS/Linux static/shared libs
+  file(GLOB _tet_lib_candidates
+    "${_tet_lib_dir}/libtet.a"
+    "${_tet_lib_dir}/libtetgen.a"
+    "${_tet_lib_dir}/libtetgen*.a"
+    "${_tet_lib_dir}/libtet.dylib"
+    "${_tet_lib_dir}/libtetgen.dylib"
+  )
+
+  # Windows import libs
+  file(GLOB _tet_lib_candidates_win
+    "${_tet_lib_dir}/tetgen.lib"
+    "${_tet_lib_dir}/tet.lib"
+    "${_tet_lib_dir}/libtetgen.lib"
+  )
+
+  # Combine lists
+  list(APPEND _tet_lib_candidates ${_tet_lib_candidates_win})
+
+  # Pick first valid candidate
+  list(LENGTH _tet_lib_candidates _n)
+  if(_n GREATER 0)
+    list(GET _tet_lib_candidates 0 _tet_lib)
   endif()
 
   # Normalize for cache args
@@ -948,11 +951,13 @@ if(WITH_TETGEN AND TARGET Tetgen_external)
   else()
     set(_tet_inc_norm "")
   endif()
+
   if(_tet_lib_dir)
     file(TO_CMAKE_PATH "${_tet_lib_dir}" _tet_lib_dir_norm)
   else()
     set(_tet_lib_dir_norm "")
   endif()
+
   if(_tet_lib)
     file(TO_CMAKE_PATH "${_tet_lib}" _tet_lib_norm)
   else()
