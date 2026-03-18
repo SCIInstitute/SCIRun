@@ -1224,11 +1224,22 @@ endif()
 if(TARGET Freetype_external)
   ExternalProject_Get_Property(Freetype_external INSTALL_DIR)
 
-  _sb_scirun_wait_for(NAME freetype
-    FILES
-      "${INSTALL_DIR}/include/ft2build.h"                      # Windows
-      "${INSTALL_DIR}/include/freetype2/ft2build.h"           # macOS/Linux
-      "${INSTALL_DIR}/include/freetype2/freetype/config/ftheader.h"
-    DIRS  "${INSTALL_DIR}/include" "${INSTALL_DIR}/lib"
-  )
+  if(WIN32)
+    # Windows installs flat include layout
+    _sb_scirun_wait_for(NAME freetype
+      FILES
+        "${INSTALL_DIR}/include/ft2build.h"
+      DIRS
+        "${INSTALL_DIR}/include" "${INSTALL_DIR}/lib"
+    )
+  else()
+    # macOS / Linux layout (freetype2/)
+    _sb_scirun_wait_for(NAME freetype
+      FILES
+        "${INSTALL_DIR}/include/freetype2/ft2build.h"
+        "${INSTALL_DIR}/include/freetype2/freetype/config/ftheader.h"
+      DIRS
+        "${INSTALL_DIR}/include" "${INSTALL_DIR}/lib"
+    )
+  endif()
 endif()
