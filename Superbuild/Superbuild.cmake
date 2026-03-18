@@ -477,6 +477,47 @@ if(BUILD_WITH_PYTHON AND TARGET Python_external)
 endif()
 
 _export_config_dir(LodePNG LodePng_external "<auto>")
+if(TARGET LodePng_external)
+  ExternalProject_Get_Property(LodePng_external INSTALL_DIR)
+
+  set(_lp_inc "${INSTALL_DIR}/include")
+  set(_lp_lib "")
+
+  # lib folder
+  if(EXISTS "${INSTALL_DIR}/lib64")
+    set(_lp_libdir "${INSTALL_DIR}/lib64")
+  else()
+    set(_lp_libdir "${INSTALL_DIR}/lib")
+  endif()
+
+  # Cross‑platform library detection
+  if(WIN32)
+    if(EXISTS "${_lp_libdir}/lodepng.lib")
+      set(_lp_lib "${_lp_libdir}/lodepng.lib")
+    elseif(EXISTS "${_lp_libdir}/lodepngd.lib")
+      set(_lp_lib "${_lp_libdir}/lodepngd.lib")
+    endif()
+  elseif(APPLE)
+    if(EXISTS "${_lp_libdir}/liblodepng.a")
+      set(_lp_lib "${_lp_libdir}/liblodepng.a")
+    elseif(EXISTS "${_lp_libdir}/liblodepng.dylib")
+      set(_lp_lib "${_lp_libdir}/liblodepng.dylib")
+    endif()
+  else()
+    if(EXISTS "${_lp_libdir}/liblodepng.so")
+      set(_lp_lib "${_lp_libdir}/liblodepng.so")
+    elseif(EXISTS "${_lp_libdir}/liblodepng.a")
+      set(_lp_lib "${_lp_libdir}/liblodepng.a")
+    endif()
+  endif()
+
+  # Define imported target
+  add_library(LodePNG::lodepng UNKNOWN IMPORTED GLOBAL)
+  set_property(TARGET LodePNG::lodepng PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_lp_inc}")
+  set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION "${_lp_lib}")
+
+  message(STATUS "[superbuild] Created imported target LodePNG::lodepng = ${_lp_lib}")
+endif()
 
 # Include/lib hints (guarded by target existence)
 _sb_export_inc_lib(Freetype  Freetype_external)
@@ -521,6 +562,17 @@ if(WIN32 AND TARGET Glew_external)
   )
 
   message(STATUS "[superbuild] Installed custom GLEWConfig.cmake at ${_glew_cfg_dir}")
+endif()
+if(APPLE AND NOT TARGET GLEW::GLEW)
+  find_package(GLEW REQUIRED)
+
+  add_library(GLEW::GLEW UNKNOWN IMPORTED GLOBAL)
+  set_property(TARGET GLEW::GLEW PROPERTY
+    INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
+  set_property(TARGET GLEW::GLEW PROPERTY
+    IMPORTED_LOCATION "${GLEW_LIBRARIES}")
+
+  message(STATUS "[superbuild] Using system GLEW: ${GLEW_LIBRARIES}")
 endif()
 
 # Tell SCIRun where the Tny config lives
