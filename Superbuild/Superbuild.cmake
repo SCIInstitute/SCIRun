@@ -1226,7 +1226,8 @@ if(TARGET Freetype_external)
 
   _sb_scirun_wait_for(NAME freetype
     FILES
-      "${INSTALL_DIR}/include/ft2build.h"
+      "${INSTALL_DIR}/include/ft2build.h"                      # Windows
+      "${INSTALL_DIR}/include/freetype2/ft2build.h"           # macOS/Linux
       "${INSTALL_DIR}/include/freetype2/freetype/config/ftheader.h"
     DIRS  "${INSTALL_DIR}/include" "${INSTALL_DIR}/lib"
   )
