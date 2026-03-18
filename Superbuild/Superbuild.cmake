@@ -1221,7 +1221,6 @@ endif()
 # --- Cross-platform: Ensure SCIRun configure waits for Python_external build ---
 if(BUILD_WITH_PYTHON AND TARGET Python_external)
 
-  # Make SCIRun_external configure wait for Python_external first
   if(COMMAND ExternalProject_Add_StepDependencies)
     ExternalProject_Add_StepDependencies(SCIRun_external configure Python_external)
     message(STATUS "[superbuild] SCIRun_external: 'configure' will wait on Python_external.")
@@ -1232,7 +1231,7 @@ if(BUILD_WITH_PYTHON AND TARGET Python_external)
 
   if(WIN32)
     # -----------------------------
-    # Windows CPython (PCbuild)
+    # Windows CPython build
     # -----------------------------
     set(_py_pcbuild "${SOURCE_DIR}/PCbuild/amd64")
 
@@ -1249,24 +1248,19 @@ if(BUILD_WITH_PYTHON AND TARGET Python_external)
 
   else()
     # -----------------------------
-    # macOS / Linux CPython (CMake build)
-    # Python DOES NOT install into <INSTALL_DIR>
-    # The built interpreter is in BINARY_DIR
+    # macOS/Linux: CPython via CMake
+    # No install step; all outputs live directly in BINARY_DIR
     # -----------------------------
-    set(_py_bin_dir "${BINARY_DIR}/bin")
-    set(_py_lib_dir "${BINARY_DIR}/lib")
-
-    # python3, python3.x, python3.xm
     file(GLOB _py_wait_bins
-      "${_py_bin_dir}/python3"
-      "${_py_bin_dir}/python3.*"
+      "${BINARY_DIR}/python3"
+      "${BINARY_DIR}/python3.*"
+      "${BINARY_DIR}/python"
     )
 
-    # libpythonX.Y.{a,so,dylib}
     file(GLOB _py_wait_libs
-      "${_py_lib_dir}/libpython*.a"
-      "${_py_lib_dir}/libpython*.so"
-      "${_py_lib_dir}/libpython*.dylib"
+      "${BINARY_DIR}/libpython*.a"
+      "${BINARY_DIR}/libpython*.dylib"
+      "${BINARY_DIR}/libpython*.so"
     )
 
     _sb_scirun_wait_for(NAME python
@@ -1274,8 +1268,7 @@ if(BUILD_WITH_PYTHON AND TARGET Python_external)
         ${_py_wait_bins}
         ${_py_wait_libs}
       DIRS
-        "${_py_bin_dir}"
-        "${_py_lib_dir}"
+        "${BINARY_DIR}"
     )
   endif()
 endif()
