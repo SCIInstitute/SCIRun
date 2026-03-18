@@ -1218,25 +1218,67 @@ if(TARGET Cleaver2_external)
   add_dependencies(SCIRun_external Cleaver2_external-copy_headers)
 endif()
 
-# --- (NEW) Ensure SCIRun configure waits for Python_external build ---
+# --- Cross‑platform: Ensure SCIRun configure waits for Python_external build ---
 if(BUILD_WITH_PYTHON AND TARGET Python_external)
+
+  # Make SCIRun_external configure depend on Python_external finishing configure
   if(COMMAND ExternalProject_Add_StepDependencies)
     ExternalProject_Add_StepDependencies(SCIRun_external configure Python_external)
     message(STATUS "[superbuild] SCIRun_external: 'configure' will wait on Python_external.")
   endif()
 
-  # (Optional best-effort) Also wait for presence of python import libs/exe
-  # This makes the configure step defer until the files exist on disk.
-  set(_py_src_dir "${ep_base}/Source/Python_external")
-  set(_py_pcbuild "${_py_src_dir}/PCbuild/amd64")
-  # Gather possible byproducts
-  file(GLOB _py_wait_libs "${_py_pcbuild}/python3*.lib")
-  set(_py_wait_files "${_py_pcbuild}/python.exe")
-  list(APPEND _py_wait_files ${_py_wait_libs})
-  if(_py_wait_files)
+  ExternalProject_Get_Property(Python_external SOURCE_DIR)
+  ExternalProject_Get_Property(Python_external INSTALL_DIR)
+
+  if(WIN32)
+    # -----------------------------
+    # Windows CPython (MSVC / PCbuild)
+    # -----------------------------
+    set(_py_pcbuild "${SOURCE_DIR}/PCbuild/amd64")
+
+    # python.exe + python3XY.lib
+    file(GLOB _py_wait_libs "${_py_pcbuild}/python3*.lib")
+    set(_py_wait_files
+      "${_py_pcbuild}/python.exe"
+      ${_py_wait_libs}
+    )
+
     _sb_scirun_wait_for(NAME python
       FILES ${_py_wait_files}
       DIRS  "${_py_pcbuild}"
+    )
+
+  else()
+    # -----------------------------
+    # macOS / Linux CPython build
+    # -----------------------------
+    # The CMake build of CPython installs:
+    #   bin/python3, python3.x, python3.xm
+    #   lib/libpython3.x.{a,so,dylib}
+
+    set(_py_bin "${INSTALL_DIR}/bin")
+    set(_py_lib "${INSTALL_DIR}/lib")
+
+    # executables: python3, python3.x, python3.xm
+    file(GLOB _py_wait_bins
+      "${_py_bin}/python3"
+      "${_py_bin}/python3.*"
+    )
+
+    # libraries: .a (static), .so (Linux), .dylib (macOS)
+    file(GLOB _py_wait_libs
+      "${_py_lib}/libpython*.a"
+      "${_py_lib}/libpython*.so"
+      "${_py_lib}/libpython*.dylib"
+    )
+
+    _sb_scirun_wait_for(NAME python
+      FILES
+        ${_py_wait_bins}
+        ${_py_wait_libs}
+      DIRS
+        "${_py_bin}"
+        "${_py_lib}"
     )
   endif()
 endif()
