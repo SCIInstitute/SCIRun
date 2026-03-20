@@ -78,6 +78,8 @@ ExternalProject_Add_Step(Glew_external copy_headers
   COMMENT "[Glew_external] Copying GLEW headers to ${_glew_inst}/include"
 )
 
+ExternalProject_Add_StepTargets(Glew_external copy_headers)
+
 # Resolve the actual library name produced
 set(GLEW_SOURCE_DIR  ${_glew_src})
 set(GLEW_INSTALL_DIR ${_glew_inst})
@@ -109,7 +111,7 @@ add_custom_target(Glew_export ALL
           -D TEMPLATE:PATH="${_template}"
           -D OUT_FILE:PATH="${GLEW_INSTALL_DIR}/lib/cmake/GLEW/GLEWConfig.cmake"
           -P "${CMAKE_CURRENT_LIST_DIR}/GlewWriteConfig.cmake"
-  DEPENDS Glew_external copy_headers
+  DEPENDS Glew_external Glew_external-copy_headers
   COMMENT "[Glew_external] Writing GLEWConfig.cmake"
 )
 
