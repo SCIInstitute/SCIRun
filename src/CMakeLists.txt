@@ -297,31 +297,54 @@ if(NOT TARGET Teem::teem)
   endif()
 endif()
 
-# --- LodePNG imported target fallback (manual) ---
-# Use the superbuild install paths. Adjust if your layout differs.
+# --- LodePNG imported target fallback (manual, cross‑platform) ---
 if(NOT TARGET LodePNG::lodepng)
   set(_LPNG_ROOT "${CMAKE_BINARY_DIR}/../Externals/Install/LodePng_external")
   set(_LPNG_INC  "${_LPNG_ROOT}/include")
-  set(_LPNG_LIBD "${_LPNG_ROOT}/lib/lodepngd.lib")
-  set(_LPNG_LIBR "${_LPNG_ROOT}/lib/lodepng.lib")
+  set(_LPNG_LIBDIR "${_LPNG_ROOT}/lib")
 
-  if(EXISTS "${_LPNG_LIBD}" OR EXISTS "${_LPNG_LIBR}")
-    add_library(LodePNG::lodepng STATIC IMPORTED)
-    set_target_properties(LodePNG::lodepng PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES    "${_LPNG_INC}"
-    )
-    if(EXISTS "${_LPNG_LIBD}")
-      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_DEBUG "${_LPNG_LIBD}")
+  # Cross‑platform library detection
+  set(_LPNG_LIB "")
+
+  if(WIN32)
+    if(EXISTS "${_LPNG_LIBDIR}/lodepngd.lib")
+      set(_LPNG_LIB "${_LPNG_LIBDIR}/lodepngd.lib")
+    elseif(EXISTS "${_LPNG_LIBDIR}/lodepng.lib")
+      set(_LPNG_LIB "${_LPNG_LIBDIR}/lodepng.lib")
     endif()
-    if(EXISTS "${_LPNG_LIBR}")
-      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_RELEASE        "${_LPNG_LIBR}")
-      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_RELWITHDEBINFO "${_LPNG_LIBR}")
-      set_property(TARGET LodePNG::lodepng PROPERTY IMPORTED_LOCATION_MINSIZEREL     "${_LPNG_LIBR}")
+  elseif(APPLE)
+    # macOS: static or shared
+    if(EXISTS "${_LPNG_LIBDIR}/liblodepng.a")
+      set(_LPNG_LIB "${_LPNG_LIBDIR}/liblodepng.a")
+    elseif(EXISTS "${_LPNG_LIBDIR}/liblodepng.dylib")
+      set(_LPNG_LIB "${_LPNG_LIBDIR}/liblodepng.dylib")
     endif()
-    message(STATUS "[SCIRun] LodePNG::lodepng imported: inc='${_LPNG_INC}', "
-                   "dbg='${_LPNG_LIBD}', rel='${_LPNG_LIBR}'")
   else()
-    message(WARNING "[SCIRun] LodePNG libs not found under '${_LPNG_ROOT}/lib'. Build LodePng_external first.")
+    # Linux: static or shared
+    if(EXISTS "${_LPNG_LIBDIR}/liblodepng.a")
+      set(_LPNG_LIB "${_LPNG_LIBDIR}/liblodepng.a")
+    elseif(EXISTS "${_LPNG_LIBDIR}/liblodepng.so")
+      set(_LPNG_LIB "${_LPNG_LIBDIR}/liblodepng.so")
+    endif()
+  endif()
+
+  if(_LPNG_LIB)
+    add_library(LodePNG::lodepng UNKNOWN IMPORTED)
+
+    set_target_properties(LodePNG::lodepng PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${_LPNG_INC}"
+      IMPORTED_LOCATION "${_LPNG_LIB}"
+    )
+
+    message(STATUS
+      "[SCIRun] LodePNG::lodepng imported:"
+      " inc='${_LPNG_INC}', lib='${_LPNG_LIB}'"
+    )
+  else()
+    message(WARNING
+      "[SCIRun] LodePNG not found under '${_LPNG_LIBDIR}'. "
+      "Build LodePng_external first."
+    )
   endif()
 endif()
 
