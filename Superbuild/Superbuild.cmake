@@ -527,25 +527,24 @@ if(APPLE AND TARGET Glew_external)
   set(_glew_inc "${INSTALL_DIR}/include")
   set(_glew_libdir "${INSTALL_DIR}/lib")
 
-  # Accept both libGLEW.* and libglew.*  (uppercase or lowercase)
-  set(_glew_candidates
-    "${_glew_libdir}/libGLEW.a"
-    "${_glew_libdir}/libGLEW.dylib"
-    "${_glew_libdir}/libglew.a"
-    "${_glew_libdir}/libglew.dylib"
+  # Robust: match any case (libGLEW.a / libglew.a / .dylib / versioned)
+  file(GLOB _glew_candidates
+    "${_glew_libdir}/libGLEW*.a"
+    "${_glew_libdir}/libGLEW*.dylib"
+    "${_glew_libdir}/libglew*.a"
+    "${_glew_libdir}/libglew*.dylib"
   )
 
-  unset(_glew_lib)
-  foreach(_f IN LISTS _glew_candidates)
-    if(EXISTS "${_f}")
-      set(_glew_lib "${_f}")
-      break()
-    endif()
-  endforeach()
-
-  if(NOT _glew_lib)
-    message(FATAL_ERROR "[superbuild] Could not locate GLEW library in ${_glew_libdir}")
+  list(LENGTH _glew_candidates _n)
+  if(_n EQUAL 0)
+    message(FATAL_ERROR
+      "[superbuild] No GLEW library found in ${_glew_libdir}. "
+      "Expected libGLEW.a or libglew.a etc."
+    )
   endif()
+
+  # Use the first match
+  list(GET _glew_candidates 0 _glew_lib)
 
   add_library(GLEW::GLEW UNKNOWN IMPORTED GLOBAL)
   set_property(TARGET GLEW::GLEW PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_glew_inc}")
