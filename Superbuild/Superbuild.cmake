@@ -296,17 +296,6 @@ if(NOT BUILD_HEADLESS AND WITH_QWT)
   ADD_EXTERNAL(${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external)
 endif()
 
-# Ensure header copy steps run before SCIRun config/build
-if(TARGET Glew_external-copy_headers)
-  add_dependencies(SCIRun_external Glew_external-copy_headers)
-endif()
-if(TARGET Tny_external-copy_headers)
-  add_dependencies(SCIRun_external Tny_external-copy_headers)
-endif()
-if(TARGET SQLite_external-copy_headers)
-  add_dependencies(SCIRun_external SQLite_external-copy_headers)
-endif()
-
 # =========================
 # Exporters (config dir / include & lib dir)
 # =========================
@@ -1081,6 +1070,17 @@ ExternalProject_Add(SCIRun_external
   CMAKE_CACHE_ARGS ${SCIRUN_CACHE_ARGS}
   INSTALL_COMMAND ""
 )
+
+# Ensure header copy steps run before SCIRun config/build
+if(TARGET Glew_external-copy_headers)
+  add_dependencies(SCIRun_external Glew_external-copy_headers)
+endif()
+if(TARGET Tny_external-copy_headers)
+  add_dependencies(SCIRun_external Tny_external-copy_headers)
+endif()
+if(TARGET SQLite_external-copy_headers)
+  add_dependencies(SCIRun_external SQLite_external-copy_headers)
+endif()
 
 # =========================
 # BOOST: header staging (no delete; copy only) + waits
