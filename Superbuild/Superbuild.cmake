@@ -553,23 +553,28 @@ if(APPLE AND TARGET Glew_external)
   message(STATUS "[superbuild] Created GLEW::GLEW for macOS = ${_glew_lib}")
 endif()
 
-# --- Install custom GLEWConfig.cmake for SCIRun ---
-if(WIN32 AND TARGET Glew_external)
+# --- Install custom GLEWConfig.cmake for SCIRun on ALL platforms ---
+if(TARGET Glew_external)
   ExternalProject_Get_Property(Glew_external INSTALL_DIR)
 
   set(_glew_inc "${INSTALL_DIR}/include")
-  set(_glew_lib "")
+  set(_glew_libdir "${INSTALL_DIR}/lib")
 
-  # Choose lib folder
-  if(EXISTS "${INSTALL_DIR}/lib/glew.lib")
-    set(_glew_lib "${INSTALL_DIR}/lib/glew.lib")
-  elseif(EXISTS "${INSTALL_DIR}/lib64/glew.lib")
-    set(_glew_lib "${INSTALL_DIR}/lib64/glew.lib")
-  else()
-    message(FATAL_ERROR "[superbuild] Could not find glew.lib in Glew_external install.")
+  # Match both uppercase/lowercase and static/shared
+  file(GLOB _glew_candidates
+    "${_glew_libdir}/libGLEW*.a"
+    "${_glew_libdir}/libGLEW*.dylib"
+    "${_glew_libdir}/libglew*.a"
+    "${_glew_libdir}/libglew*.dylib"
+  )
+
+  if(NOT _glew_candidates)
+    message(FATAL_ERROR "[superbuild] Could not locate a GLEW library in ${_glew_libdir}")
   endif()
 
-  # Where to place the config
+  list(GET _glew_candidates 0 _glew_lib)
+
+  # Create config folder
   set(_glew_cfg_dir "${INSTALL_DIR}/lib/cmake/GLEW")
   file(MAKE_DIRECTORY "${_glew_cfg_dir}")
 
@@ -620,7 +625,7 @@ list(APPEND SCIRUN_CACHE_ARGS
 )
 
 # Tell SCIRun where to find GLEW config
-if(WIN32 AND TARGET Glew_external)
+if(TARGET Glew_external)
   ExternalProject_Get_Property(Glew_external INSTALL_DIR)
   list(APPEND SCIRUN_CACHE_ARGS "-DGLEW_DIR:PATH=${INSTALL_DIR}/lib/cmake/GLEW")
 endif()
