@@ -1255,7 +1255,7 @@ endfunction()
 # --- GLEW include discovery (target-first, robust fallback) ---
 set(_SCIRUN_USE_GLEW_TARGET FALSE)
 set(_glew_inc_from_target "")
-
+find_package(GLEW REQUIRED)
 # 1) If the package created GLEW::GLEW, prefer its include path
 if(TARGET GLEW::GLEW)
   get_target_property(_glew_inc_from_target GLEW::GLEW INTERFACE_INCLUDE_DIRECTORIES)
