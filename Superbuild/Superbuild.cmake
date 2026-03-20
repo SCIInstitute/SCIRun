@@ -408,6 +408,9 @@ if(TARGET Boost_external)
   endif()
   sb_prefix_append("${INSTALL_DIR}")
 endif()
+list(APPEND SCIRUN_CACHE_ARGS
+  "-DSCI_BOOST_INCLUDE:PATH=${SCI_BOOST_INCLUDE}"
+)
 
 # =========================
 # Export externals (config or include/lib)
