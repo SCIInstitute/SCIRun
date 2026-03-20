@@ -455,7 +455,7 @@ else()
 endif()
 
 # Prefer config dirs when possible (Windows GLEW sometimes exports one)
-if(WIN32 AND TARGET Glew_external)
+if(TARGET Glew_external)
   _export_config_dir(GLEW Glew_external "<auto>")
 endif()
 
@@ -517,8 +517,27 @@ _sb_export_inc_lib(SQLite    SQLite_external)
 if(WITH_TETGEN AND TARGET Tetgen_external) # <- lowercase g
   _sb_export_inc_lib(Tetgen  Tetgen_external)
 endif()
-if(WIN32 AND TARGET Glew_external)
+if(TARGET Glew_external)
   _sb_export_inc_lib(GLEW    Glew_external)
+endif()
+# macOS GLEW imported target
+if(APPLE AND TARGET Glew_external)
+  ExternalProject_Get_Property(Glew_external INSTALL_DIR)
+
+  set(_glew_inc "${INSTALL_DIR}/include")
+  set(_glew_libdir "${INSTALL_DIR}/lib")
+
+  if(EXISTS "${_glew_libdir}/libGLEW.a")
+    set(_glew_lib "${_glew_libdir}/libGLEW.a")
+  elseif(EXISTS "${_glew_libdir}/libGLEW.dylib")
+    set(_glew_lib "${_glew_libdir}/libGLEW.dylib")
+  endif()
+
+  add_library(GLEW::GLEW UNKNOWN IMPORTED GLOBAL)
+  set_property(TARGET GLEW::GLEW PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${_glew_inc}")
+  set_property(TARGET GLEW::GLEW PROPERTY IMPORTED_LOCATION "${_glew_lib}")
+
+  message(STATUS "[superbuild] Created GLEW::GLEW for macOS = ${_glew_lib}")
 endif()
 
 # --- Install custom GLEWConfig.cmake for SCIRun ---
