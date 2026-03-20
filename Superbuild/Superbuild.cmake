@@ -263,9 +263,7 @@ ADD_EXTERNAL(${SUPERBUILD_DIR}/TnyExternal.cmake      Tny_external)
 ADD_EXTERNAL(${SUPERBUILD_DIR}/LodePngExternal.cmake  LodePng_external)
 ADD_EXTERNAL(${SUPERBUILD_DIR}/Cleaver2External.cmake Cleaver2_external)
 
-if(WIN32)
-  ADD_EXTERNAL(${SUPERBUILD_DIR}/GlewExternal.cmake   Glew_external)
-endif()
+ADD_EXTERNAL(${SUPERBUILD_DIR}/GlewExternal.cmake   Glew_external)
 
 if(BUILD_WITH_PYTHON)
   ADD_EXTERNAL(${SUPERBUILD_DIR}/PythonExternal.cmake Python_external)
@@ -562,17 +560,6 @@ if(WIN32 AND TARGET Glew_external)
   )
 
   message(STATUS "[superbuild] Installed custom GLEWConfig.cmake at ${_glew_cfg_dir}")
-endif()
-if(APPLE AND NOT TARGET GLEW::GLEW)
-  find_package(GLEW REQUIRED)
-
-  add_library(GLEW::GLEW UNKNOWN IMPORTED GLOBAL)
-  set_property(TARGET GLEW::GLEW PROPERTY
-    INTERFACE_INCLUDE_DIRECTORIES "${GLEW_INCLUDE_DIRS}")
-  set_property(TARGET GLEW::GLEW PROPERTY
-    IMPORTED_LOCATION "${GLEW_LIBRARIES}")
-
-  message(STATUS "[superbuild] Using system GLEW: ${GLEW_LIBRARIES}")
 endif()
 
 # Tell SCIRun where the Tny config lives
