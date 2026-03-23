@@ -77,7 +77,8 @@ IF(WIN32)
 ENDIF()
 
 
-SET(boost_GIT_URL "https://github.com/CIBC-Internal/boost.git")
+set(_boost_git_url "https://github.com/CIBC-Internal/boost.git")
+set(_boost_git_tag "v1.90.0")
 
 # TODO: fix install step
 #
@@ -85,8 +86,8 @@ SET(boost_GIT_URL "https://github.com/CIBC-Internal/boost.git")
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
-  GIT_REPOSITORY ${boost_GIT_URL}
-  GIT_TAG ${boost_GIT_TAG}
+  GIT_REPOSITORY ${_boost_git_url}
+  GIT_TAG ${_boost_git_tag}
   BUILD_IN_SOURCE ON
   PATCH_COMMAND ""
   INSTALL_COMMAND ""
