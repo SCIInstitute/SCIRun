@@ -68,8 +68,6 @@ IF(UNIX)
   ADD_DEFINITIONS(-DBOOST_NO_CXX11_ALLOCATOR)
 ENDIF()
 
-SET(boost_GIT_TAG "origin/v1.89.0a")
-
 # TODO: set up 64-bit build detection
 # Boost Jam needs to have 64-bit build explicitly configured
 IF(WIN32)
@@ -90,7 +88,7 @@ ExternalProject_Add(Boost_external
   GIT_TAG ${_boost_git_tag}
   BUILD_IN_SOURCE ON
   PATCH_COMMAND ""
-  INSTALL_COMMAND ""
+  INSTALL_COMMAND ""        # We manage install manually
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
@@ -104,12 +102,70 @@ ExternalProject_Add(Boost_external
 
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
 ExternalProject_Get_Property(Boost_external SOURCE_DIR)
+
+if(WIN32)
+  set(_B2_CMD ${SOURCE_DIR}/b2.exe)
+  set(_B2_BOOTSTRAP_CMD bootstrap.bat)
+else()
+  set(_B2_CMD ${SOURCE_DIR}/b2)
+  set(_B2_BOOTSTRAP_CMD ./bootstrap.sh)
+endif()
+
+# bootstrap b2
+ExternalProject_Add_Step(Boost_external bootstrap_b2
+  COMMAND ${_B2_BOOTSTRAP_CMD}
+  WORKING_DIRECTORY ${SOURCE_DIR}
+  DEPENDEES update
+  COMMENT "Bootstrapping b2"
+)
+
+# Generate Boost symlinked headers
+ExternalProject_Add_Step(Boost_external stage_headers
+  COMMAND ${_B2_CMD} headers
+  WORKING_DIRECTORY ${SOURCE_DIR}
+  DEPENDEES bootstrap_b2
+  COMMENT "Running b2 headers"
+)
+
+# Install full header tree: <INSTALL_DIR>/include/boost/*
+ExternalProject_Add_Step(Boost_external install_full_headers
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${INSTALL_DIR}/include
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${INSTALL_DIR}/include/boost
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR}/boost ${INSTALL_DIR}/include/boost
+  WORKING_DIRECTORY ${SOURCE_DIR}
+  DEPENDEES stage_headers
+  COMMENT "Installing full Boost headers"
+)
+
+# Build required Boost libraries
+ExternalProject_Add_Step(Boost_external build_libs
+  COMMAND ${_B2_CMD}
+          --with-atomic
+          --with-chrono
+          --with-date_time
+          --with-filesystem
+          --with-program_options
+          --with-regex
+          --with-serialization
+          --with-thread
+          $<$<BOOL:${BUILD_WITH_PYTHON}>:--with-python>
+          link=static
+          runtime-link=static
+          variant=release
+          threading=multi
+          cxxflags=-fPIC
+          stage
+  WORKING_DIRECTORY ${SOURCE_DIR}
+  DEPENDEES stage_headers
+  COMMENT "Building Boost static libraries (including Python if enabled)"
+)
+
 SET(SCI_BOOST_INCLUDE ${SOURCE_DIR})
-SET(SCI_BOOST_LIBRARY_DIR ${SOURCE_DIR}/lib)
+SET(SCI_BOOST_LIBRARY_DIR ${SOURCE_DIR}/stage/lib)
 SET(SCI_BOOST_USE_FILE ${INSTALL_DIR}/UseBoost.cmake)
 
 SET(BOOST_PREFIX "boost_")
-SET(THREAD_POSTFIX "-mt")
+SET(THREAD_POSTFIX "")
 
 SET(SCI_BOOST_LIBRARY)
 

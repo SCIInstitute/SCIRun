@@ -24,16 +24,58 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
+
+# Common CMake args
+set(_cmake_args
+  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+
+  # Force output directories so we can skip the install step
+  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
+
+  # Multi-config (VS) subdirs
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
+)
+
+# For single-config generators (Ninja, Makefiles), propagate build type
+if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
+  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+endif()
+
+# Where to build/install inside the superbuild tree
+set(_tetgen_src "${CMAKE_BINARY_DIR}/Externals/Source/Tetgen_external")
+set(_tetgen_bin "${CMAKE_BINARY_DIR}/Externals/Build/Tetgen_external")
+set(_tetgen_inst "${CMAKE_BINARY_DIR}/Externals/Install/Tetgen_external")
+
 ExternalProject_Add(Tetgen_external
-  URL "https://github.com/CIBC-Internal/SCIRunTestData/releases/download/test/tetgen1.5.1-beta1.tar.gz"
-  PATCH_COMMAND ""
-  INSTALL_COMMAND ""
-  CMAKE_CACHE_ARGS
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    #-DTETLIBRARY
+  GIT_REPOSITORY          https://github.com/CIBC-Internal/TetGen.git
+  GIT_TAG                 v1.6.1            # or your tag like v1.6.0-scirun1
+  UPDATE_DISCONNECTED     1                 # speed up: don't ping remote every run
+
+  SOURCE_DIR              ${_tetgen_src}
+  BINARY_DIR              ${_tetgen_bin}
+
+  CMAKE_GENERATOR         "${CMAKE_GENERATOR}"
+  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
+  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
+
+  CMAKE_ARGS              ${_cmake_args}
+
+  # We direct outputs to <INSTALL_DIR>, so a separate "install" step is unnecessary.
+  INSTALL_COMMAND         ""
+
+  LOG_CONFIGURE           1
+  LOG_BUILD               1
+  LOG_INSTALL             1
 )
 
 ExternalProject_Get_Property(Tetgen_external SOURCE_DIR)
