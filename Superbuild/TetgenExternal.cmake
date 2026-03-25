@@ -24,42 +24,37 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+# -------------------------------------------------------
+# TetgenExternal.cmake - unified Windows/macOS/Linux version
+# -------------------------------------------------------
+
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
 
-# Common CMake args
+# Common CMake args for external TetGen
 set(_cmake_args
   -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
-  # Force output directories so we can skip the install step
   -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
   -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
   -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
-
-  # Multi-config (VS) subdirs
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
 )
 
-# For single-config generators (Ninja, Makefiles), propagate build type
+# Handle single‑config (Ninja/Makefiles)
 if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
   list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 endif()
 
-# Where to build/install inside the superbuild tree
-set(_tetgen_src "${CMAKE_BINARY_DIR}/Externals/Source/Tetgen_external")
-set(_tetgen_bin "${CMAKE_BINARY_DIR}/Externals/Build/Tetgen_external")
+# Superbuild paths
+set(_tetgen_src  "${CMAKE_BINARY_DIR}/Externals/Source/Tetgen_external")
+set(_tetgen_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Tetgen_external")
 set(_tetgen_inst "${CMAKE_BINARY_DIR}/Externals/Install/Tetgen_external")
 
 ExternalProject_Add(Tetgen_external
   GIT_REPOSITORY          https://github.com/CIBC-Internal/TetGen.git
-  GIT_TAG                 v1.6.1            # or your tag like v1.6.0-scirun1
-  UPDATE_DISCONNECTED     1                 # speed up: don't ping remote every run
+  GIT_TAG                 v1.6.1
+  UPDATE_DISCONNECTED     1
 
   SOURCE_DIR              ${_tetgen_src}
   BINARY_DIR              ${_tetgen_bin}
@@ -69,27 +64,36 @@ ExternalProject_Add(Tetgen_external
   CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
 
   CMAKE_ARGS              ${_cmake_args}
-
-  # We direct outputs to <INSTALL_DIR>, so a separate "install" step is unnecessary.
-  INSTALL_COMMAND         ""
-
-  LOG_CONFIGURE           1
-  LOG_BUILD               1
-  LOG_INSTALL             1
+  INSTALL_COMMAND         ""     # because we set output dirs directly
 )
 
+# Obtain external project properties
 ExternalProject_Get_Property(Tetgen_external SOURCE_DIR)
 ExternalProject_Get_Property(Tetgen_external BINARY_DIR)
 ExternalProject_Get_Property(Tetgen_external INSTALL_DIR)
-SET(TETGEN_INCLUDE ${SOURCE_DIR})
-SET(TETGEN_LIBRARY_DIR ${BINARY_DIR})
-SET(TETGEN_USE_FILE ${INSTALL_DIR}/UseTetgen.cmake)
-# see Tetgen CMakeLists.txt file
-SET(TETGEN_LIBRARY "tet")
-SET(Tetgen_DIR ${INSTALL_DIR} CACHE PATH "")
 
-# Boost is special case - normally this should be handled in external library repo
-CONFIGURE_FILE(${SUPERBUILD_DIR}/TetgenConfig.cmake.in ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
-CONFIGURE_FILE(${SUPERBUILD_DIR}/UseTetgen.cmake ${TETGEN_USE_FILE} COPYONLY)
+# -------------------------------------------------------
+# Unified exported variables (working on Windows + macOS)
+# -------------------------------------------------------
 
-MESSAGE(STATUS "Tetgen_DIR: ${Tetgen_DIR}")
+set(TETGEN_INSTALL_DIR ${_tetgen_inst})
+set(TETGEN_INCLUDE      ${SOURCE_DIR})
+set(TETGEN_LIBRARY_DIR  ${TETGEN_INSTALL_DIR}/lib)
+set(TETGEN_LIBRARY      "tet")   # matches TetGen’s CMakeLists
+
+# Create config + use scripts for downstream projects
+file(MAKE_DIRECTORY "${TETGEN_INSTALL_DIR}")
+
+set(TETGEN_USE_FILE "${TETGEN_INSTALL_DIR}/UseTetgen.cmake")
+
+configure_file(${SUPERBUILD_DIR}/TetgenConfig.cmake.in
+               ${TETGEN_INSTALL_DIR}/TetgenConfig.cmake @ONLY)
+
+configure_file(${SUPERBUILD_DIR}/UseTetgen.cmake
+               ${TETGEN_USE_FILE} COPYONLY)
+
+# register for find_package(Tetgen CONFIG)
+set(Tetgen_DIR ${TETGEN_INSTALL_DIR} CACHE PATH "")
+
+message(STATUS "[Tetgen_external] INSTALL_DIR=${TETGEN_INSTALL_DIR}")
+message(STATUS "[Tetgen_external] USE_FILE=${TETGEN_USE_FILE}")
