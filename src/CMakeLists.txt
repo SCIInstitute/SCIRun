@@ -253,8 +253,10 @@ IF(WIN32)
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
-  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
-  INCLUDE(${QWT_USE_FILE})
+# QWT variables come directly from superbuild
+  set(SCI_QWT_INCLUDE "${QWT_INCLUDE}")
+  set(SCI_QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}")
+  set(SCI_QWT_LIBRARY     "${QWT_LIBRARY}")
 ENDIF()
 
 ########################################################################
