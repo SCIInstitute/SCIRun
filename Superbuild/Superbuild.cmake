@@ -106,65 +106,96 @@ list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
 
 IF(NOT BUILD_HEADLESS)
 
-  SET(Qt_PATH "" CACHE PATH "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
+  SET(Qt_PATH "" CACHE PATH
+      "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
 
-  # macOS override logic
-  if(APPLE)
+  # ------------------------------------------------------------
+  # Platform-specific Qt auto-detection
+  # ------------------------------------------------------------
+  if(APPLE OR WIN32)
 
     # If user did NOT set Qt_PATH or path is invalid → try auto-detect
     if(NOT Qt_PATH OR NOT IS_DIRECTORY "${Qt_PATH}")
 
-      set(_qt_default "/Users/basisunus/Qt/6.10.2/macos")
+      if(APPLE)
+        set(_qt_default "/Users/basisunus/Qt/6.10.2/macos")
+      elseif(WIN32)
+        set(_qt_default "C:/Qt/6.10.1/msvc2022_64")
+      endif()
 
       if(IS_DIRECTORY "${_qt_default}")
         message(STATUS
           "Qt_PATH not set or invalid — using auto-detected Qt: ${_qt_default}"
         )
 
-        # Set Qt_PATH forcibly
+        # Force-set Qt_PATH
         set(Qt_PATH "${_qt_default}" CACHE PATH "Qt install prefix" FORCE)
 
-        # Auto-update the Qt version from the directory structure
-        # Example: /Users/.../Qt/6.10.2/macos → version=6.10.2
-        get_filename_component(_qt_version "${_qt_default}" NAME)  # = macos
+        # --------------------------------------------------------
+        # Auto-detect Qt version from directory structure
+        #
+        # Examples:
+        #   macOS  : /Users/.../Qt/6.10.2/macos
+        #   Windows: C:/Qt/6.10.1/msvc2022_64
+        # --------------------------------------------------------
         get_filename_component(_qt_parent "${_qt_default}" DIRECTORY)
-        get_filename_component(_qt_version "${_qt_parent}" NAME)   # now = 6.10.2
+        get_filename_component(_qt_version "${_qt_parent}" NAME)
 
-        # Update SCIRUN_QT_MIN_VERSION to match detected version
         set(SCIRUN_QT_MIN_VERSION
             "${_qt_version}"
             CACHE STRING "Qt version" FORCE)
 
-        string(REPLACE "." ";" SCIRUN_QT_MIN_VERSION_LIST ${SCIRUN_QT_MIN_VERSION})
+        string(REPLACE "." ";" SCIRUN_QT_MIN_VERSION_LIST
+               ${SCIRUN_QT_MIN_VERSION})
+
         list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
         list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
         list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
+
       endif()
 
     else()
       message(STATUS "Using user-provided Qt_PATH: ${Qt_PATH}")
     endif()
 
-  endif()  # APPLE
+  endif()  # APPLE OR WIN32
 
-  IF(IS_DIRECTORY ${Qt_PATH})
-    if (${QT_VERSION_MAJOR} STREQUAL "6")
-      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
+  # ------------------------------------------------------------
+  # Qt package discovery
+  # ------------------------------------------------------------
+  IF(IS_DIRECTORY "${Qt_PATH}")
+    if (QT_VERSION_MAJOR STREQUAL "6")
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
+        COMPONENTS
+          DBus DBusTools
+          Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg
+          CoreTools GuiTools WidgetsTools OpenGLWidgets
+        REQUIRED
+        HINTS ${Qt_PATH})
     else()
-      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt_PATH})
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
+        COMPONENTS
+          Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg
+        REQUIRED
+        HINTS ${Qt_PATH})
     endif()
   ELSE()
-    MESSAGE(SEND_ERROR "Set Qt_PATH to directory where Qt is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+    MESSAGE(SEND_ERROR
+      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or enable BUILD_HEADLESS.")
   ENDIF()
 
+  # ------------------------------------------------------------
+  # macOS-only settings
+  # ------------------------------------------------------------
   IF(APPLE)
-    SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
+    SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING
+        "Set macdeployqt output level (0–3)")
     MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
   ENDIF()
+
 ELSE()
   ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF()
-
 
 ###########################################
 # Configure Doxygen documentation

@@ -226,6 +226,7 @@ ExternalProject_Add_Step(Boost_external install_full_headers
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOURCE_DIR}/boost ${INSTALL_DIR}/include/boost
   WORKING_DIRECTORY ${SOURCE_DIR}
   DEPENDEES stage_headers
+  DEPENDERS install
   COMMENT "Installing full Boost headers"
 )
 
