@@ -110,8 +110,9 @@ ELSE()
     CONFIGURE_COMMAND PCbuild/build.bat
     BUILD_IN_SOURCE ON
     BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
-    INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-      <SOURCE_DIR>/PC/pyconfig.h
+    INSTALL_COMMAND "${CMAKE_COMMAND}" -E
+      copy_if_different
+      <SOURCE_DIR>/PCbuild/${python_WIN32_64BIT_DIR}/pyconfig.h
       <SOURCE_DIR>/Include/pyconfig.h
   )
   # build both Release and Debug versions

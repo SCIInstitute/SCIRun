@@ -58,7 +58,6 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network
   Dataflow_Network
   Core_Datatypes
   Dataflow_State
-  ${SCI_BOOST_LIBRARY}
 )
 
 ADD_SUBDIRECTORY(Importer)

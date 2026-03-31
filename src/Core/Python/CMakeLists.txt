@@ -61,7 +61,6 @@ ENDIF()
 
 TARGET_LINK_LIBRARIES(Core_Python
   ${SCI_PYTHON_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
   SCIRunPythonAPI
   Core_Matlab
   Core_Datatypes

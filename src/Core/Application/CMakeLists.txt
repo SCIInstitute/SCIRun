@@ -52,7 +52,6 @@ TARGET_LINK_LIBRARIES(Core_Application
   Core_IEPlugin
   Core_Application_Session
   Core_Application_Preferences
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

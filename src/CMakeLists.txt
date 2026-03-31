@@ -229,7 +229,25 @@ IF(BUILD_WITH_PYTHON)
 ENDIF()
 
 CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
-INCLUDE(${SCI_BOOST_USE_FILE})
+#INCLUDE(${SCI_BOOST_USE_FILE})
+set(_scirun_boost_components
+  atomic
+  chrono
+  filesystem
+  program_options
+  regex
+  serialization
+  thread
+)
+
+if(BUILD_WITH_PYTHON)
+  list(APPEND _scirun_boost_components
+       python${SCI_PYTHON_VERSION_SHORT_WIN32})
+endif()
+
+find_package(Boost CONFIG REQUIRED COMPONENTS
+  ${_scirun_boost_components}
+)
 
 CONFIG_STANDARD_EXTERNAL( Tny TnyConfig.cmake ${TNY_DIR} )
 INCLUDE(${TNY_USE_FILE})

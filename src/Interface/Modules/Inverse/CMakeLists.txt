@@ -58,7 +58,6 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Inverse
 TARGET_LINK_LIBRARIES(Interface_Modules_Inverse
   Modules_Legacy_Inverse
   Interface_Modules_Base
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${SCI_QWT_LIBRARY}
 )

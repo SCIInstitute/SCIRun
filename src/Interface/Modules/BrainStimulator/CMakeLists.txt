@@ -65,7 +65,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_BrainStimulator
   Algorithms_Field
   Modules_BrainStimulator
   Interface_Modules_Base
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 
