@@ -53,6 +53,7 @@ SCIRUN_ADD_LIBRARY(Core_Utils
 )
 
 TARGET_LINK_LIBRARIES(Core_Utils
+  Boost::atomic
 )
 
 IF(BUILD_SHARED_LIBS)

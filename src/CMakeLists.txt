@@ -228,7 +228,7 @@ IF(BUILD_WITH_PYTHON)
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
 
-CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
+#CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
 #INCLUDE(${SCI_BOOST_USE_FILE})
 set(_scirun_boost_components
   atomic
@@ -248,6 +248,18 @@ endif()
 find_package(Boost CONFIG REQUIRED COMPONENTS
   ${_scirun_boost_components}
 )
+get_property(_allTargets GLOBAL PROPERTY TARGETS)
+
+message(STATUS "==== Boost-related targets ====")
+foreach(t ${_allTargets})
+  if(t MATCHES "Boost")
+    message(STATUS "  ${t}")
+  endif()
+endforeach()
+
+message(STATUS "Boost_FOUND = ${Boost_FOUND}")
+message(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 CONFIG_STANDARD_EXTERNAL( Tny TnyConfig.cmake ${TNY_DIR} )
 INCLUDE(${TNY_USE_FILE})

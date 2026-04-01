@@ -40,9 +40,9 @@ SCIRUN_ADD_LIBRARY(Modules_Factory_Generator
   ${Modules_Factory_Generator_SRCS}
 )
 
-#TARGET_LINK_LIBRARIES(Modules_Factory_Generator
-#  ${SCI_BOOST_LIBRARY}
-#)
+TARGET_LINK_LIBRARIES(Modules_Factory_Generator
+  Boost::filesystem
+)
 
 SET_PROPERTY(TARGET Modules_Factory_Generator PROPERTY FOLDER "Modules")
 

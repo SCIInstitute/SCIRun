@@ -99,9 +99,9 @@ ENDIF()
 # ------------------------------------------------------------------------------
 IF(BUILD_WITH_PYTHON)
   SET(BOOST_PYTHON_WITH_FLAG  --with-python)
-  SET(BOOST_PYTHON_EXE_FLAG   python=${SCI_PYTHON_EXE})
-  SET(BOOST_PYTHON_INC_FLAG   include=${SCI_PYTHON_INCLUDE})
-  SET(BOOST_PYTHON_LIB_FLAG   library-path=${SCI_PYTHON_LIBRARY_DIR})
+  #SET(BOOST_PYTHON_EXE_FLAG   python=${SCI_PYTHON_EXE})
+  #SET(BOOST_PYTHON_INC_FLAG   include=${SCI_PYTHON_INCLUDE})
+  #SET(BOOST_PYTHON_LIB_FLAG   library-path=${SCI_PYTHON_LIBRARY_DIR})
   SET(BOOST_PYTHON_VERSION_FLAG python-version=${SCI_PYTHON_VERSION_SHORT})
 ELSE()
   SET(BOOST_PYTHON_WITH_FLAG  --without-python)
@@ -239,6 +239,35 @@ ExternalProject_Add_Step(Boost_external install_full_headers
 # ------------------------------------------------------------------------------
 # Step: Build Boost libraries
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------
+# Common Boost b2 build arguments (used for echo + real build)
+# ------------------------------------------------------------------
+if(WIN32)
+  set(_BOOST_CXXFLAGS "")
+else()
+  set(_BOOST_CXXFLAGS cxxflags=-fPIC)
+endif()
+
+set(_BOOST_B2_ARGS
+  --with-atomic
+  --with-chrono
+  --with-date_time
+  --with-filesystem
+  --with-program_options
+  --with-regex
+  --with-serialization
+  --with-thread
+
+  ${BOOST_PYTHON_WITH_FLAG}
+  ${BOOST_PYTHON_EXTRA_FLAGS}
+
+  link=static
+  runtime-link=static
+  variant=release,debug
+  threading=multi
+  stage
+)
+
 ExternalProject_Add_Step(Boost_external build_libs
   COMMAND ${CMAKE_COMMAND} -E echo "=== B2 PYTHON FLAGS ==="
   COMMAND ${CMAKE_COMMAND} -E echo "${BOOST_PYTHON_WITH_FLAG}"
@@ -249,32 +278,14 @@ ExternalProject_Add_Step(Boost_external build_libs
   COMMAND ${CMAKE_COMMAND} -E echo "SCI_PYTHON_INCLUDE = ${SCI_PYTHON_INCLUDE}"
   COMMAND ${CMAKE_COMMAND} -E echo "SCI_PYTHON_LIBRARY_DIR = ${SCI_PYTHON_LIBRARY_DIR}"
 
-  # Print actual b2 command safely (one line per COMMAND)
   COMMAND ${CMAKE_COMMAND} -E echo "=== B2 FULL CMD ==="
-  COMMAND ${CMAKE_COMMAND} -E echo "${_B2_CMD} --with-atomic --with-chrono --with-date_time --with-filesystem --with-program_options --with-regex --with-serialization --with-thread ${BOOST_PYTHON_WITH_FLAG} '${BOOST_PYTHON_EXE_FLAG}' '${BOOST_PYTHON_INC_FLAG}' '${BOOST_PYTHON_LIB_FLAG}' link=static runtime-link=static variant=release threading=multi cxxflags=-fPIC stage"
+  COMMAND ${CMAKE_COMMAND} -E echo "${_B2_CMD} ${_BOOST_B2_ARGS}"
 
-  # Actual build command
-  COMMAND ${_B2_CMD}
-      --with-atomic
-      --with-chrono
-      --with-date_time
-      --with-filesystem
-      --with-program_options
-      --with-regex
-      --with-serialization
-      --with-thread
-      --with-python
-
-      link=static
-      runtime-link=static
-      variant=release
-      threading=multi
-      cxxflags=-fPIC
-      stage
+  COMMAND ${_B2_CMD} ${_BOOST_B2_ARGS}
 
   WORKING_DIRECTORY ${SOURCE_DIR}
   DEPENDEES stage_headers
-  COMMENT "Building Boost static libraries (including Python if enabled)"
+  COMMENT "Building Boost static libraries (Debug + Release)"
 )
 
 # ------------------------------------------------------------------------------

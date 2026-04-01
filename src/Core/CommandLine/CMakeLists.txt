@@ -40,9 +40,9 @@ SCIRUN_ADD_LIBRARY(Core_CommandLine
   ${Core_CommandLine_SRCS}
 )
 
-#TARGET_LINK_LIBRARIES(Core_CommandLine
-#  ${SCI_BOOST_LIBRARY}
-#)
+TARGET_LINK_LIBRARIES(Core_CommandLine
+  Boost::filesystem
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_CommandLine)
