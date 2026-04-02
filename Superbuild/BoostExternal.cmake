@@ -291,7 +291,7 @@ ExternalProject_Add_Step(Boost_external build_libs
 # ------------------------------------------------------------------------------
 # Export Boost library info
 # ------------------------------------------------------------------------------
-SET(SCI_BOOST_INCLUDE ${SOURCE_DIR})
+SET(SCI_BOOST_INCLUDE ${INSTALL_DIR}/include)
 SET(SCI_BOOST_LIBRARY_DIR ${SOURCE_DIR}/stage/lib)
 #SET(SCI_BOOST_USE_FILE ${INSTALL_DIR}/UseBoost.cmake)
 
