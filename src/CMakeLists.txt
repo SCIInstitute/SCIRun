@@ -228,8 +228,13 @@ IF(BUILD_WITH_PYTHON)
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
 
-#CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
-#INCLUDE(${SCI_BOOST_USE_FILE})
+# Disable Boost MSVC auto-linking globally
+# (prevents Boost headers from injecting -gd / -mt / etc. library names)
+add_compile_definitions(
+  BOOST_ALL_NO_LIB
+  BOOST_FILESYSTEM_NO_LIB
+  BOOST_SYSTEM_NO_LIB
+)
 set(_scirun_boost_components
   atomic
   chrono
@@ -248,11 +253,36 @@ endif()
 find_package(Boost CONFIG REQUIRED COMPONENTS
   ${_scirun_boost_components}
 )
+
+# ---------------------------------------------------------------------------
+# Ensure BOOST_ALL_NO_LIB propagates to EVERY consumer of Boost
+# by attaching it to the imported Boost targets as INTERFACE
+# ---------------------------------------------------------------------------
+foreach(_boost_comp ${_scirun_boost_components})
+  if(TARGET Boost::${_boost_comp})
+    target_compile_definitions(Boost::${_boost_comp}
+      INTERFACE BOOST_ALL_NO_LIB
+    )
+  endif()
+endforeach()
+
+if(TARGET Boost::filesystem)
+  target_compile_definitions(Boost::filesystem
+    INTERFACE
+      BOOST_FILESYSTEM_NO_LIB
+      BOOST_SYSTEM_NO_LIB
+      BOOST_FILESYSTEM_STATIC_LINK
+  )
+endif()
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
 get_property(_allTargets GLOBAL PROPERTY TARGETS)
 
 message(STATUS "==== Boost-related targets ====")
 foreach(t ${_allTargets})
-  if(t MATCHES "Boost")
+  if(t MATCHES "^Boost::")
     message(STATUS "  ${t}")
   endif()
 endforeach()

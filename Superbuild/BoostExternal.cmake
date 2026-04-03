@@ -262,7 +262,7 @@ set(_BOOST_B2_ARGS
   ${BOOST_PYTHON_EXTRA_FLAGS}
 
   link=static
-  runtime-link=static
+  runtime-link=shared
   variant=release,debug
   threading=multi
   stage

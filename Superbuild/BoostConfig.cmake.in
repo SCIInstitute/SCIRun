@@ -25,41 +25,49 @@ function(_scirun_define_boost_target lib)
     INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
   )
 
+  # Detect architecture
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(_boost_arch "x64")
+  else()
+    set(_boost_arch "x32")
+  endif()
+
   set(_release_lib "")
   set(_debug_lib "")
 
   if(WIN32)
-    # Prefer static-CRT Boost if it exists
-    file(GLOB _rel_static
-      "${Boost_LIBRARY_DIR}/libboost_${lib}-*-mt-s-*.lib"
+    # Collect all candidates
+    file(GLOB _all_candidates
+      "${Boost_LIBRARY_DIR}/libboost_${lib}-*.lib"
     )
-    file(GLOB _dbg_static
-      "${Boost_LIBRARY_DIR}/libboost_${lib}-*-mt-sgd-*.lib"
-    )
-  
-    if(_rel_static)
-      list(GET _rel_static 0 _release_lib)
-      if(_dbg_static)
-        list(GET _dbg_static 0 _debug_lib)
-      endif()
-    else()
-      # Fallback to dynamic-CRT Boost
-      file(GLOB _rel_dynamic
-        "${Boost_LIBRARY_DIR}/libboost_${lib}-*-mt-*.lib"
+
+    # Filter by architecture
+    list(FILTER _all_candidates INCLUDE REGEX "-${_boost_arch}-")
+
+    if(NOT _all_candidates)
+      message(FATAL_ERROR
+        "Boost '${lib}' not found for architecture ${_boost_arch}\n"
+        "Directory: ${Boost_LIBRARY_DIR}"
       )
-      file(GLOB _dbg_dynamic
-        "${Boost_LIBRARY_DIR}/libboost_${lib}-*-mt-gd-*.lib"
-      )
-  
-      if(_rel_dynamic)
-        list(GET _rel_dynamic 0 _release_lib)
-      endif()
-      if(_dbg_dynamic)
-        list(GET _dbg_dynamic 0 _debug_lib)
-      endif()
     endif()
+
+    # Debug lib: has -gd-
+    set(_dbg_candidates "${_all_candidates}")
+    list(FILTER _dbg_candidates INCLUDE REGEX "-gd-")
+
+    if(_dbg_candidates)
+      list(GET _dbg_candidates 0 _debug_lib)
+    endif()
+
+    # Release lib: no -gd-
+    set(_rel_candidates "${_all_candidates}")
+    list(FILTER _rel_candidates EXCLUDE REGEX "-gd-")
+
+    if(_rel_candidates)
+      list(GET _rel_candidates 0 _release_lib)
+    endif()
+
   else()
-    # Unix-like platforms (stable naming)
     find_library(_release_lib
       NAMES boost_${lib}
       PATHS "${Boost_LIBRARY_DIR}"
@@ -72,9 +80,8 @@ function(_scirun_define_boost_target lib)
     message(FATAL_ERROR
       "\nBoost library '${lib}' could not be resolved.\n"
       "  Directory: ${Boost_LIBRARY_DIR}\n"
-      "  MSVC runtime: ${CMAKE_MSVC_RUNTIME_LIBRARY}\n"
-      "  Static candidates: ${_rel_static} ${_dbg_static}\n"
-      "  Dynamic candidates: ${_rel_dynamic} ${_dbg_dynamic}\n"
+      "  Architecture: ${_boost_arch}\n"
+      "  Candidates: ${_all_candidates}\n"
     )
   endif()
 

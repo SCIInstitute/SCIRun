@@ -51,6 +51,7 @@ SCIRUN_ADD_LIBRARY(Core_Logging
 
 TARGET_LINK_LIBRARIES(Core_Logging
   Core_Utils
+  Boost::filesystem
 )
 
 IF(BUILD_SHARED_LIBS)
