@@ -24,6 +24,13 @@ function(_scirun_define_boost_target lib)
   set_target_properties(Boost::${lib} PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
   )
+  
+  # If this is Boost.Python, propagate static-link macro
+  if(lib MATCHES "^python")
+    set_target_properties(Boost::${lib} PROPERTIES
+      INTERFACE_COMPILE_DEFINITIONS BOOST_PYTHON_STATIC_LIB
+    )
+  endif()
 
   # Detect architecture
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
