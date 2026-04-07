@@ -127,10 +127,6 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Render
   ${Interface_Modules_Render_SOURCES}
 )
 
-target_include_directories(Interface_Modules_Render
-  ${SCI_QWT_INCLUDE}
-)
-
 TARGET_LINK_LIBRARIES(Interface_Modules_Render
   Interface_Modules_Base
   Core_Application_Preferences

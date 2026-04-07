@@ -55,10 +55,6 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Inverse
   ${Interface_Modules_Inverse_SOURCES}
 )
 
-target_include_directories(Interface_Modules_Inverse
-  ${SCI_QWT_INCLUDE}
-)
-
 TARGET_LINK_LIBRARIES(Interface_Modules_Inverse
   Modules_Legacy_Inverse
   Interface_Modules_Base
