@@ -128,6 +128,10 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Math
   ${Interface_Modules_Math_SOURCES}
 )
 
+target_include_directories(Interface_Modules_Math
+  ${SCI_QWT_INCLUDE}
+)
+
 TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Algorithms_Math
   Modules_Math

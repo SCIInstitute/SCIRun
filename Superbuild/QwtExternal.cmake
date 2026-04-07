@@ -46,6 +46,11 @@ set(_qwt_src  "${CMAKE_BINARY_DIR}/Externals/Source/Qwt_external")
 set(_qwt_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Qwt_external")
 set(_qwt_inst "${CMAKE_BINARY_DIR}/Externals/Install/Qwt_external")
 
+# Qwt install layout
+set(QWT_INSTALL_DIR  "${_qwt_inst}")
+set(QWT_INCLUDE  "${_qwt_inst}/include")
+set(QWT_LIBRARY_DIR  "${_qwt_inst}/lib")
+
 # ----------------------------
 # Qt discovery hints (optional)
 # ----------------------------
@@ -105,16 +110,23 @@ ExternalProject_Add(Qwt_external
   LOG_INSTALL   1
 )
 
-# Exported variables for inner project (diagnostics/hints)
-set(QWT_SOURCE_DIR  ${_qwt_src})
-set(QWT_BUILD_DIR   ${_qwt_bin})
-set(QWT_INSTALL_DIR ${_qwt_inst})
-set(QWT_INCLUDE     "${QWT_INSTALL_DIR}/include/qwt")
-set(QWT_LIBRARY_DIR "${QWT_INSTALL_DIR}/lib")
-# Select library file based on platform
+# ----------------------------
+# Exported Qwt library variables (config-aware)
+# ----------------------------
+
 if(WIN32)
-  # Could be qwt.lib (import lib) or qwt_static.lib depending on build
-  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/qwt.lib")
+  # Qwt wrapper uses qwtd.lib for Debug, qwt.lib for Release
+  set(QWT_LIBRARY_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib")
+  set(QWT_LIBRARY_RELEASE "${QWT_LIBRARY_DIR}/qwt.lib")
+
+  # Generator-expression aware library selection
+  set(QWT_LIBRARY
+    $<$<CONFIG:Debug>:${QWT_LIBRARY_DEBUG}>
+    $<$<CONFIG:Release>:${QWT_LIBRARY_RELEASE}>
+    $<$<CONFIG:RelWithDebInfo>:${QWT_LIBRARY_RELEASE}>
+    $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_RELEASE}>
+  )
+
 elseif(APPLE)
   set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.dylib")
 else()
@@ -122,8 +134,13 @@ else()
 endif()
 
 # Export to SCIRun
-set(QWT_INCLUDE      ${QWT_INCLUDE}      PARENT_SCOPE)
-set(QWT_LIBRARY_DIR  ${QWT_LIBRARY_DIR}  PARENT_SCOPE)
-set(QWT_LIBRARY      ${QWT_LIBRARY}      PARENT_SCOPE)
+# Export to parent (SCIRun superbuild)
+set(QWT_INSTALL_DIR "${QWT_INSTALL_DIR}" PARENT_SCOPE)
+set(QWT_INCLUDE "${QWT_INCLUDE}" PARENT_SCOPE)
+set(QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}" PARENT_SCOPE)
+set(QWT_LIBRARY     "${QWT_LIBRARY}"     PARENT_SCOPE)
+
 message(STATUS "[Qwt_external] WRAPPER_TAG=${qwt_WRAPPER_GIT_TAG} ; QWT_TAG=${qwt_GIT_TAG}")
 message(STATUS "[Qwt_external] INSTALL_DIR=${QWT_INSTALL_DIR}")
+message(STATUS "[Qwt_external] INCLUDE=${QWT_INCLUDE}")
+message(STATUS "[Qwt_external] LIBDIR=${QWT_LIBRARY_DIR}")

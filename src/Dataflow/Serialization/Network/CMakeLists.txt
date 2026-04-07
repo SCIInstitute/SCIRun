@@ -58,6 +58,7 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network
   Dataflow_Network
   Core_Datatypes
   Dataflow_State
+  Boost::serialization
 )
 
 ADD_SUBDIRECTORY(Importer)
