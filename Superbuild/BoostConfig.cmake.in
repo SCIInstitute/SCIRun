@@ -80,16 +80,17 @@ function(_scirun_define_boost_target lib)
       PATHS "${Boost_LIBRARY_DIR}"
       NO_DEFAULT_PATH
     )
-    set(_debug_lib "${_release_lib}")
-  endif()
 
-  if(NOT _release_lib)
-    message(FATAL_ERROR
-      "\nBoost library '${lib}' could not be resolved.\n"
-      "  Directory: ${Boost_LIBRARY_DIR}\n"
-      "  Architecture: ${_boost_arch}\n"
-      "  Candidates: ${_all_candidates}\n"
-    )
+    # Boost.Atomic may be header-only on macOS
+    if(APPLE AND lib STREQUAL "atomic" AND NOT _release_lib)
+      add_library(Boost::atomic INTERFACE IMPORTED)
+      set_target_properties(Boost::atomic PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
+      )
+      return()
+    endif()
+
+    set(_debug_lib "${_release_lib}")
   endif()
 
   set_target_properties(Boost::${lib} PROPERTIES
