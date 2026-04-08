@@ -62,6 +62,12 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Inverse
   ${SCI_QWT_LIBRARY}
 )
 
+if (QT_VERSION_MAJOR EQUAL 6)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Inverse Qt6::Svg)
+elseif(QT_VERSION_MAJOR EQUAL 5)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Inverse Qt5::Svg)
+endif()
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Inverse)
 ENDIF(BUILD_SHARED_LIBS)

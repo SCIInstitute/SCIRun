@@ -317,6 +317,7 @@ IF(NOT BUILD_HEADLESS)
   set(SCI_QWT_INCLUDE "${QWT_INCLUDE}")
   set(SCI_QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}")
   set(SCI_QWT_LIBRARY     "${QWT_LIBRARY}")
+  add_compile_definitions(QWT_STATIC)
 ENDIF()
 
 ########################################################################

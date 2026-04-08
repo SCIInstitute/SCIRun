@@ -137,6 +137,17 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Math
   ${SCI_QWT_LIBRARY}
   )
 
+if (QT_VERSION_MAJOR EQUAL 6)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Math
+    Qt6::Svg
+    Qt6::PrintSupport
+  )
+elseif(QT_VERSION_MAJOR EQUAL 5)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Math
+    Qt5::Svg
+    Qt5::PrintSupport
+  )
+endif()
 
 ADD_DEFINITIONS(-DQWT_DLL)
 
