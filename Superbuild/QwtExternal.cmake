@@ -30,7 +30,7 @@
 # Single place to pin wrapper tag
 # ----------------------------
 # Bump this tag when you cut a new wrapper release (e.g., v0.1.1, v0.2.0)
-set(qwt_WRAPPER_GIT_TAG "v0.1.0")
+set(qwt_WRAPPER_GIT_TAG "v0.1.1")
 
 # Keep the legacy variable for visibility; it's the upstream Qwt tag
 # that your wrapper fetches internally (informational only here).
