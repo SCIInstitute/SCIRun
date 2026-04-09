@@ -128,9 +128,9 @@ if(WIN32)
   )
 
 elseif(APPLE)
-  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.dylib")
+  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.a")
 else()
-  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.so")
+  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.a")
 endif()
 
 # Export to SCIRun
