@@ -90,16 +90,19 @@ function(_scirun_define_boost_target lib)
     endif()
 
   else()
-    # -----------------------------------------------------------------------
-    # macOS / Linux: standard libboost_<component> naming
-    # -----------------------------------------------------------------------
+    # macOS / Linux: Boost may be built static (.a)
+    set(_old_suffixes ${CMAKE_FIND_LIBRARY_SUFFIXES})
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ${CMAKE_FIND_LIBRARY_SUFFIXES})
+
     find_library(_release_lib
-      NAMES boost_${lib}
+      NAMES
+        boost_${lib}
+        boost_${lib}-mt
       PATHS "${Boost_LIBRARY_DIR}"
       NO_DEFAULT_PATH
     )
 
-    # Single-config generators use same lib for debug/release
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ${_old_suffixes})
     set(_debug_lib "${_release_lib}")
   endif()
 
