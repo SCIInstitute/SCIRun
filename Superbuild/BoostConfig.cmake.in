@@ -90,19 +90,23 @@ function(_scirun_define_boost_target lib)
     endif()
 
   else()
-    # macOS / Linux: Boost may be built static (.a)
-    set(_old_suffixes ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" ${CMAKE_FIND_LIBRARY_SUFFIXES})
-
-    find_library(_release_lib
-      NAMES
-        boost_${lib}
-        boost_${lib}-mt
-      PATHS "${Boost_LIBRARY_DIR}"
-      NO_DEFAULT_PATH
+    # macOS / Linux: Boost is built by the superbuild, often static (.a)
+    file(GLOB _all_candidates
+      "${Boost_LIBRARY_DIR}/libboost_${lib}.a"
+      "${Boost_LIBRARY_DIR}/libboost_${lib}-mt.a"
+      "${Boost_LIBRARY_DIR}/libboost_${lib}.dylib"
+      "${Boost_LIBRARY_DIR}/libboost_${lib}-mt.dylib"
     )
 
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ${_old_suffixes})
+    if(NOT _all_candidates)
+      message(FATAL_ERROR
+        "Boost library '${lib}' could not be resolved.\n"
+        "Directory: ${Boost_LIBRARY_DIR}\n"
+        "Platform: ${CMAKE_SYSTEM_NAME}"
+      )
+    endif()
+
+    list(GET _all_candidates 0 _release_lib)
     set(_debug_lib "${_release_lib}")
   endif()
 
