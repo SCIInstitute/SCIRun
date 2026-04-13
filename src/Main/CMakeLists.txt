@@ -76,6 +76,30 @@ ELSEIF(WIN32)
 
   ADD_EXECUTABLE(${APPLICATION_NAME} WIN32 ${SCIRunMain_SOURCES})
 
+  # Windows + MSVC + non-headless: enable Qt runtime for VS debugging
+  IF(WIN32 AND MSVC AND NOT BUILD_HEADLESS)
+  
+    # Detect Qt version (Qt6 preferred, fallback to Qt5)
+    IF(TARGET Qt6::qmake)
+      SET(_qt_qmake_target Qt6::qmake)
+    ELSEIF(TARGET Qt5::qmake)
+      SET(_qt_qmake_target Qt5::qmake)
+    ELSE()
+      SET(_qt_qmake_target "")
+    ENDIF()
+  
+    IF(_qt_qmake_target)
+      get_target_property(_qt_qmake_exe ${_qt_qmake_target} LOCATION)
+      get_filename_component(_qt_bin_dir "${_qt_qmake_exe}" DIRECTORY)
+  
+      set_property(TARGET ${APPLICATION_NAME} PROPERTY
+        VS_DEBUGGER_ENVIRONMENT
+        "PATH=${_qt_bin_dir};%PATH%"
+      )
+    ENDIF()
+  
+  ENDIF()
+
   # TODO: probably need this for Xcode
   IF(WIN32 AND MSVC)
     # TODO: more build types to be supported?
@@ -101,7 +125,7 @@ ELSEIF(WIN32)
      ${SCIRun_BINARY_DIR}/Assets
      ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Assets
     )
-ENDIF()
+  ENDIF()
 
 ELSE()
   ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
