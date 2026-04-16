@@ -81,18 +81,20 @@ SET(_boost_git_url "https://github.com/CIBC-Internal/boost.git")
 SET(_boost_git_tag "v1.90.0")
 
 # ------------------------------------------------------------------------------
-# Compute Python library filename
+# Compute Python library filenames
 # ------------------------------------------------------------------------------
-IF(WIN32)
-  SET(SCI_PYTHON_LIBRARY_FILE
-      ${SCI_PYTHON_LIBRARY_DIR}/${SCI_PYTHON_NAME}.lib)
-ELSEIF(APPLE)
-  SET(SCI_PYTHON_LIBRARY_FILE
-      ${SCI_PYTHON_LIBRARY_DIR}/libpython${SCI_PYTHON_VERSION_SHORT}.dylib)
-ELSE()
-  SET(SCI_PYTHON_LIBRARY_FILE
-      ${SCI_PYTHON_LIBRARY_DIR}/libpython${SCI_PYTHON_VERSION_SHORT}.so)
-ENDIF()
+if(WIN32 AND MSVC)
+  set(SCI_PYTHON_LIBRARY_FILE_RELEASE
+      "${SCI_PYTHON_LIBRARY_RELEASE}")
+  set(SCI_PYTHON_LIBRARY_FILE_DEBUG
+      "${SCI_PYTHON_LIBRARY_DEBUG}")
+elseif(APPLE)
+  set(SCI_PYTHON_LIBRARY_FILE
+      "${SCI_PYTHON_LIBRARY_DIR}/libpython${SCI_PYTHON_VERSION_SHORT}.dylib")
+else()
+  set(SCI_PYTHON_LIBRARY_FILE
+      "${SCI_PYTHON_LIBRARY_DIR}/libpython${SCI_PYTHON_VERSION_SHORT}.so")
+endif()
 
 # ------------------------------------------------------------------------------
 # Compute b2 Python flags (MUST be separate arguments)
@@ -144,7 +146,12 @@ ExternalProject_Add(Boost_external
       -DPython3_ROOT_DIR:PATH=${SCI_PYTHON_ROOT_DIR}
       -DPython3_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}
       -DPython3_INCLUDE_DIR:PATH=${SCI_PYTHON_INCLUDE}
-      -DPython3_LIBRARY:FILEPATH=${SCI_PYTHON_LIBRARY_FILE}
+      if(WIN32 AND MSVC)
+        -DPython3_LIBRARY_DEBUG:FILEPATH=${SCI_PYTHON_LIBRARY_FILE_DEBUG}
+        -DPython3_LIBRARY_RELEASE:FILEPATH=${SCI_PYTHON_LIBRARY_FILE_RELEASE}
+      else()
+        -DPython3_LIBRARY:FILEPATH=${SCI_PYTHON_LIBRARY_FILE}
+      endif()
 
   CMAKE_COMMAND_ENV
       "PYTHONHOME=${SCI_PYTHON_ROOT_DIR}"
@@ -191,9 +198,9 @@ ExternalProject_Add_Step(Boost_external write_project_config
       -DVERSION=${SCI_PYTHON_VERSION_SHORT}
       -DEXE=${SCI_PYTHON_EXE}
       -DINCLUDE=${SCI_PYTHON_INCLUDE}
-      -DLIBDIR=${SCI_PYTHON_LIBRARY_DIR}
+      -DLIB_RELEASE=${SCI_PYTHON_LIBRARY_RELEASE}
+      -DLIB_DEBUG=${SCI_PYTHON_LIBRARY_DEBUG}
       -P ${SUPERBUILD_DIR}/WriteProjectConfigJam.cmake
-
   DEPENDEES bootstrap_b2
   INDEPENDENT 1
 
