@@ -16,7 +16,7 @@ set(Boost_LIBRARY_DIR "@SCI_BOOST_LIBRARY_DIR@")
 # Helper: define Boost imported library target (cross-platform)
 # ---------------------------------------------------------------------------
 function(_scirun_define_boost_target lib)
-  # If Boost (or something else) already created this target, just ensure includes
+  # If Boost already created the target, just ensure includes
   if(TARGET Boost::${lib})
     set_target_properties(Boost::${lib} PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
@@ -56,10 +56,10 @@ function(_scirun_define_boost_target lib)
   set(_release_lib "")
   set(_debug_lib "")
 
+  # -------------------------------------------------------------------------
+  # Windows: SCIRun-built Boost uses tagged .lib names
+  # -------------------------------------------------------------------------
   if(WIN32)
-    # -----------------------------------------------------------------------
-    # Windows: SCIRun-built Boost uses tagged .lib names
-    # -----------------------------------------------------------------------
     file(GLOB _all_candidates
       "${Boost_LIBRARY_DIR}/libboost_${lib}-*.lib"
     )
@@ -73,46 +73,35 @@ function(_scirun_define_boost_target lib)
       )
     endif()
 
-  # -----------------------------------------------------------------------
-  # Select Debug / Release libraries (Windows)
-  # -----------------------------------------------------------------------
-  
-  # Debug candidates
-  set(_dbg_candidates "${_all_candidates}")
-  
-  if(lib MATCHES "^python")
-    # Boost.Python (Windows):
-    #   Debug Python ABI requires:
-    #     - debug CRT  (-gd-)
-    #     - debug Python ('y')
-    list(FILTER _dbg_candidates INCLUDE REGEX "python.*y-.*-gd-")
-  else()
-    # Non-Python Boost libraries:
-    #   Debug = debug CRT only
-    list(FILTER _dbg_candidates INCLUDE REGEX "-gd-")
-  endif()
-  
-  if(_dbg_candidates)
-    list(GET _dbg_candidates 0 _debug_lib)
-  endif()
-  
-  # Release candidates
-  set(_rel_candidates "${_all_candidates}")
-  
-  # Exclude debug CRT
-  list(FILTER _rel_candidates EXCLUDE REGEX "-gd-")
-  
-  if(lib MATCHES "^python")
-    # Boost.Python release must NOT use debug Python ('y')
-    list(FILTER _rel_candidates EXCLUDE REGEX "python.*y-")
-  endif()
-  
-  if(_rel_candidates)
-    list(GET _rel_candidates 0 _release_lib)
-  endif()
+    # -----------------------------------------------------------------------
+    # ABI-aware Debug / Release selection (Boost 1.8+)
+    #
+    # Rules:
+    #   - Debug libraries contain '-g'
+    #   - Release libraries do NOT contain '-g'
+    #   - 'y' means Python enabled and may appear in BOTH
+    # -----------------------------------------------------------------------
 
+    # Debug candidates
+    set(_dbg_candidates "${_all_candidates}")
+    list(FILTER _dbg_candidates INCLUDE REGEX "-g")
+
+    if(_dbg_candidates)
+      list(GET _dbg_candidates 0 _debug_lib)
+    endif()
+
+    # Release candidates
+    set(_rel_candidates "${_all_candidates}")
+    list(FILTER _rel_candidates EXCLUDE REGEX "-g")
+
+    if(_rel_candidates)
+      list(GET _rel_candidates 0 _release_lib)
+    endif()
+
+  # -------------------------------------------------------------------------
+  # macOS / Linux
+  # -------------------------------------------------------------------------
   else()
-    # macOS / Linux: Boost is built by the superbuild, often static (.a)
     file(GLOB _all_candidates
       "${Boost_LIBRARY_DIR}/libboost_${lib}.a"
       "${Boost_LIBRARY_DIR}/libboost_${lib}-mt.a"
@@ -132,18 +121,20 @@ function(_scirun_define_boost_target lib)
     set(_debug_lib "${_release_lib}")
   endif()
 
-  if(NOT _release_lib)
+  # -------------------------------------------------------------------------
+  # Fail fast if resolution failed
+  # -------------------------------------------------------------------------
+  if(NOT _release_lib OR NOT _debug_lib)
     message(FATAL_ERROR
-      "Boost library '${lib}' could not be resolved.\n"
-      "Directory: ${Boost_LIBRARY_DIR}\n"
-      "Platform: ${CMAKE_SYSTEM_NAME}"
+      "Boost library '${lib}' could not be resolved for both configurations.\n"
+      "All candidates:\n  ${_all_candidates}"
     )
   endif()
 
   set_target_properties(Boost::${lib} PROPERTIES
     IMPORTED_CONFIGURATIONS "Release;Debug"
     IMPORTED_LOCATION_RELEASE "${_release_lib}"
-    IMPORTED_LOCATION_DEBUG "${_debug_lib}"
+    IMPORTED_LOCATION_DEBUG   "${_debug_lib}"
   )
 endfunction()
 
