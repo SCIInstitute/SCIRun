@@ -73,21 +73,43 @@ function(_scirun_define_boost_target lib)
       )
     endif()
 
-    # Debug library: contains -gd-
-    set(_dbg_candidates "${_all_candidates}")
+  # -----------------------------------------------------------------------
+  # Select Debug / Release libraries (Windows)
+  # -----------------------------------------------------------------------
+  
+  # Debug candidates
+  set(_dbg_candidates "${_all_candidates}")
+  
+  if(lib MATCHES "^python")
+    # Boost.Python (Windows):
+    #   Debug Python ABI requires:
+    #     - debug CRT  (-gd-)
+    #     - debug Python ('y')
+    list(FILTER _dbg_candidates INCLUDE REGEX "python.*y-.*-gd-")
+  else()
+    # Non-Python Boost libraries:
+    #   Debug = debug CRT only
     list(FILTER _dbg_candidates INCLUDE REGEX "-gd-")
-
-    if(_dbg_candidates)
-      list(GET _dbg_candidates 0 _debug_lib)
-    endif()
-
-    # Release library: does NOT contain -gd-
-    set(_rel_candidates "${_all_candidates}")
-    list(FILTER _rel_candidates EXCLUDE REGEX "-gd-")
-
-    if(_rel_candidates)
-      list(GET _rel_candidates 0 _release_lib)
-    endif()
+  endif()
+  
+  if(_dbg_candidates)
+    list(GET _dbg_candidates 0 _debug_lib)
+  endif()
+  
+  # Release candidates
+  set(_rel_candidates "${_all_candidates}")
+  
+  # Exclude debug CRT
+  list(FILTER _rel_candidates EXCLUDE REGEX "-gd-")
+  
+  if(lib MATCHES "^python")
+    # Boost.Python release must NOT use debug Python ('y')
+    list(FILTER _rel_candidates EXCLUDE REGEX "python.*y-")
+  endif()
+  
+  if(_rel_candidates)
+    list(GET _rel_candidates 0 _release_lib)
+  endif()
 
   else()
     # macOS / Linux: Boost is built by the superbuild, often static (.a)

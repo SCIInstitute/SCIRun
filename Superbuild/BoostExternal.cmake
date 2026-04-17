@@ -254,6 +254,14 @@ if(WIN32)
 else()
   set(_BOOST_CXXFLAGS cxxflags=-fPIC)
 endif()
+# ------------------------------------------------------------------
+# Boost.Python debug ABI (Windows requires this for python313_d + 'y')
+# ------------------------------------------------------------------
+if(WIN32 AND MSVC AND BUILD_WITH_PYTHON)
+  set(BOOST_PYTHON_DEBUGGING_FLAG python-debugging=on)
+else()
+  set(BOOST_PYTHON_DEBUGGING_FLAG "")
+endif()
 
 set(_BOOST_B2_ARGS
   --with-atomic
@@ -266,7 +274,7 @@ set(_BOOST_B2_ARGS
   --with-thread
 
   ${BOOST_PYTHON_WITH_FLAG}
-  ${BOOST_PYTHON_EXTRA_FLAGS}
+  ${BOOST_PYTHON_DEBUGGING_FLAG}
 
   link=static
   runtime-link=shared
