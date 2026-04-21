@@ -27,11 +27,12 @@
 
 
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+
+#include <boost/filesystem/directory.hpp>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <boost/filesystem/operations.hpp>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/filesystem.hpp>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
@@ -60,31 +61,19 @@ namespace
     return fullBasePath;
   }
 
-
   fs::path diffPath(const fs::path& basePath, const fs::path& newPath)
   {
-    // Make sure base has a trailing separator (by your rule)
-    const fs::path fullBasePath = addSlash(basePath);
-
-    fs::path tmpPath = newPath;
-    fs::path diffpath; // will accumulate the relative pieces without extension
-
-    // Build the relative (stem-only) path from newPath up to fullBasePath
+    auto fullBasePath = addSlash(basePath);
+    auto tmpPath = newPath;
+    fs::path diffpath;
     while (addSlash(tmpPath) != fullBasePath)
     {
-      // Prepend stem (filename without extension) to diffpath
       diffpath = tmpPath.stem() / diffpath;
       tmpPath = tmpPath.parent_path();
     }
 
-    // Take the last component (currently stem-only) and replace its extension
-    fs::path filename = diffpath.filename();                  // e.g. "foo"
-    filename.replace_extension(newPath.extension());          // becomes "foo.ext"
-
-    // Move diffpath to its parent and append the updated filename
-    diffpath.remove_filename();                               // modern replacement for remove_leaf()
-    diffpath /= filename;
-
+    auto filename = diffpath.filename().string() + newPath.extension().string();
+    diffpath.remove_filename() /= filename;
     return diffpath;
   }
 }

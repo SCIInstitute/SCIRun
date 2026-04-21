@@ -428,23 +428,13 @@ void ctkPopupWidget::leaveEvent(QEvent* event)
 }
 
 // --------------------------------------------------------------------------
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-void ctkPopupWidget::enterEvent(QEnterEvent* event)
+void ctkPopupWidget::enterEvent(Q_ENTER_EVENT_CLASS* event)
 {
   Q_D(ctkPopupWidget);
   //qDebug() << __FUNCTION__ << __LINE__ << layout()->itemAt(0)->widget();
   QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
   this->Superclass::enterEvent(event);
 }
-#else
-void ctkPopupWidget::enterEvent(QEvent* event)
-{
-  Q_D(ctkPopupWidget);
-  //qDebug() << __FUNCTION__ << __LINE__ << layout()->itemAt(0)->widget();
-  QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
-  this->Superclass::enterEvent(event);
-}
-#endif
 
 // --------------------------------------------------------------------------
 bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)

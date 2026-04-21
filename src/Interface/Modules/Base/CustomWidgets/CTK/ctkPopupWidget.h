@@ -25,10 +25,6 @@
 #include "ctkBasePopupWidget.h"
 #include <Interface/qt_include.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-  #include <QEnterEvent>  // Ensure this is included for Qt6
-#endif
-
 class ctkPopupWidgetPrivate;
 
 /// \ingroup Widgets
@@ -118,12 +114,7 @@ public:
 
 protected:
   void leaveEvent(QEvent* event) override;
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-  void enterEvent(QEnterEvent* event) override;
-#else
-  void enterEvent(QEvent* event) override;
-#endif
+  void enterEvent(Q_ENTER_EVENT_CLASS* event) override;
   bool eventFilter(QObject* obj, QEvent* event) override;
 
   /// Widget the popup is attached to. It opens right under \a baseWidget

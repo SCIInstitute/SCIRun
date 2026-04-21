@@ -128,18 +128,33 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Math
   ${Interface_Modules_Math_SOURCES}
 )
 
+#target_compile_definitions(Interface_Modules_Math
+#  PRIVATE
+#    QWT_STATIC
+#    QWT_NO_DLL
+#)
+
 TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Algorithms_Math
   Modules_Math
   Modules_Legacy_Math
   Interface_Modules_Base
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
-  Qwt::Qwt
-  #${SCI_QWT_LIBRARY}
+  ${SCI_QWT_LIBRARY}
   )
 
-add_compile_definitions(QWT_STATIC)
+if (QT_VERSION_MAJOR EQUAL 6)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Math
+    Qt6::Svg
+    Qt6::PrintSupport
+  )
+elseif(QT_VERSION_MAJOR EQUAL 5)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Math
+    Qt5::Svg
+    Qt5::PrintSupport
+  )
+endif()
+
 #ADD_DEFINITIONS(-DQWT_DLL)
 
 IF(BUILD_SHARED_LIBS)

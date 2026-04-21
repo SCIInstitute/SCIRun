@@ -31,7 +31,6 @@
 
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/share.h>
-#include <QRegularExpression>
 
 namespace SCIRun {
 namespace Gui {
@@ -64,9 +63,7 @@ private Q_SLOTS:
 
 private:
   QWidget* lineNumberArea_;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   class CodeEditorHighlighter* highlighter_ {nullptr};
-#endif
   void createParenthesisSelection(int pos, const QColor& color);
   bool matchLeftParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numRightParentheses);
   bool matchRightParenthesis(const MatchingPair& type, QTextBlock currentBlock, int index, int numLeftParentheses);
@@ -95,7 +92,7 @@ private:
   CodeEditor *codeEditor;
 };
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef SCIRUN_QT6_ENABLED
 class CodeEditorHighlighter : public QSyntaxHighlighter
 {
   Q_OBJECT
@@ -109,13 +106,13 @@ protected:
 private:
   struct HighlightingRule
   {
-    QRegularExpression pattern;
+    QRegExp pattern;
     QTextCharFormat format;
   };
   QVector<HighlightingRule> highlightingRules;
 
-  QRegularExpression commentStartExpression;
-  QRegularExpression commentEndExpression;
+  QRegExp commentStartExpression;
+  QRegExp commentEndExpression;
 
   QTextCharFormat keywordFormat;
   QTextCharFormat classFormat;

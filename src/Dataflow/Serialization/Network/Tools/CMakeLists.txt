@@ -38,5 +38,4 @@ ADD_EXECUTABLE(bundle_toolkit
 
 TARGET_LINK_LIBRARIES(bundle_toolkit
   Core_Serialization_Network
-  ${SCI_BOOST_LIBRARY}
 )

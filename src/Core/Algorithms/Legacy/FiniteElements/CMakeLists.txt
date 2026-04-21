@@ -65,6 +65,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_FiniteElements
 #  Core_Persistent
 #  Core_Basis
    Core_Datatypes_Legacy_Field
+#  ${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

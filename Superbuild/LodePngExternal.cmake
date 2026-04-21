@@ -24,50 +24,20 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-# LodePngExternal.cmake (flat, no subdirs)
-set_property(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-include(ExternalProject)
-
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(LodePng_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cibc-lodepng.git"
   GIT_TAG "origin/master"
-
-  # Configure: generate a tiny wrapper project with the same VS generator/platform/toolset
-  CONFIGURE_COMMAND
-    ${CMAKE_COMMAND}
-      -D WRAPPER_SOURCE_DIR:PATH=<BINARY_DIR>/lodepng-wrapper-src
-      -D WRAPPER_BUILD_DIR:PATH=<BINARY_DIR>/lodepng-wrapper-build
-      -D WRAPPER_LIST_FILE:PATH=${CMAKE_CURRENT_LIST_DIR}/LodePNGWrapperProject.cmake.in
-      -D LODEPNG_SRC:PATH=<SOURCE_DIR>/lodepng
-      -D CMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>         # still set, but we won't use install()
-      -D CMAKE_GENERATOR:STRING=${CMAKE_GENERATOR}
-      -D CMAKE_GENERATOR_PLATFORM:STRING=${CMAKE_GENERATOR_PLATFORM}
-      -D CMAKE_GENERATOR_TOOLSET:STRING=${CMAKE_GENERATOR_TOOLSET}
-      -P ${CMAKE_CURRENT_LIST_DIR}/LodePNGWrapper_configure.cmake
-
-  # VS is multi-config: per-config build
-  BUILD_COMMAND
-    ${CMAKE_COMMAND} --build "<BINARY_DIR>/lodepng-wrapper-build" --config $(Configuration)
-
-  # ---- IMPORTANT: replace install() with an explicit copy script ----
-  INSTALL_COMMAND
-    ${CMAKE_COMMAND}
-      -D WRAPPER_BUILD_DIR:PATH=<BINARY_DIR>/lodepng-wrapper-build
-      -D WRAPPER_SOURCE_DIR:PATH=<SOURCE_DIR>            # repo root (we'll probe header in both layouts)
-      -D LODEPNG_INSTALL_DIR:PATH=<INSTALL_DIR>
-      -D CONFIGURATION:STRING=$(Configuration)
-      -P ${CMAKE_CURRENT_LIST_DIR}/LodePNGWrapper_install.cmake
-
+  INSTALL_COMMAND ""
   CMAKE_CACHE_ARGS
-    -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-
-  LOG_CONFIGURE 1
-  LOG_BUILD 1
-  LOG_INSTALL 1
+	-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
 )
 
-ExternalProject_Get_Property(LodePng_external INSTALL_DIR)
-message(STATUS "[LodePng_external] INSTALL_DIR=${INSTALL_DIR}")
+ExternalProject_Get_Property(LodePng_external BINARY_DIR)
+SET(LODEPNG_DIR ${BINARY_DIR})
+
+MESSAGE(STATUS "LODEPNG_DIR: ${LODEPNG_DIR}")

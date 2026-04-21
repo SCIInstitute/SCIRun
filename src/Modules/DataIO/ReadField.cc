@@ -99,5 +99,5 @@ ReadField::execute()
 
 bool ReadField::useCustomImporter(const std::string& filename) const
 {
-  return boost::filesystem::path(filename).extension() != ".fld";
+  return boost::filesystem::path(filename).extension().string() != ".fld";
 }

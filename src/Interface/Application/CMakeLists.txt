@@ -25,15 +25,8 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# =========================
-# Interface_Application
-# =========================
 
-# Allow building the GUI app without Python even if global BUILD_WITH_PYTHON=ON
-# Set to OFF in the superbuild cache to remove all Python linkage from this app.
-option(BUILD_INTERFACE_APPLICATION_WITH_PYTHON "Enable Python console in Interface_Application" ON)
-
-set(Interface_Application_SOURCES
+SET(Interface_Application_SOURCES
   ClosestPortFinder.cc
   DeveloperConsole.cc
   GuiApplication.cc
@@ -56,6 +49,7 @@ set(Interface_Application_SOURCES
   NoteEditor.cc
   Port.cc
   PreferencesWindow.cc
+  PythonConsoleWidget.cc
   Settings.cc
   ShortcutsInterface.cc
   TagManagerWindow.cc
@@ -71,7 +65,7 @@ set(Interface_Application_SOURCES
   ModuleOptionsDialogConfiguration.cc
 )
 
-set(Interface_Application_HEADERS
+SET(Interface_Application_HEADERS
   ClosestPortFinder.h
   DeveloperConsole.h
   GuiApplication.h
@@ -93,6 +87,7 @@ set(Interface_Application_HEADERS
   Port.h
   PositionProvider.h
   PreferencesWindow.h
+  PythonConsoleWidget.h
   TagManagerWindow.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
@@ -106,7 +101,7 @@ set(Interface_Application_HEADERS
   ModuleOptionsDialogConfiguration.h
 )
 
-set(Interface_Application_FORMS
+SET(Interface_Application_FORMS
   DeveloperConsole.ui
   Module.ui
   ConnectionStyleWizardPage.ui
@@ -115,6 +110,9 @@ set(Interface_Application_FORMS
   NoteEditor.ui
   Preferences.ui
   ProvenanceWindow.ui
+  PythonWizardPage.ui
+  PythonWizardCodePage.ui
+  IntWithPythonPage.ui
   SCIRunMainWindow.ui
   ShortcutsInterface.ui
   SubnetEditor.ui
@@ -126,34 +124,17 @@ set(Interface_Application_FORMS
   StateViewer.ui
 )
 
-# ---- Python-specific sources/UI (conditionally included) ----
-set(Interface_Application_PY_SOURCES
-  PythonConsoleWidget.cc
-)
-set(Interface_Application_PY_HEADERS
-  PythonConsoleWidget.h
-)
-set(Interface_Application_PY_FORMS
-  PythonWizardPage.ui
-  PythonWizardCodePage.ui
-  IntWithPythonPage.ui
+SET(Interface_Application_RESOURCES
+scirun5.qrc
 )
 
-if (BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
-  list(APPEND Interface_Application_SOURCES ${Interface_Application_PY_SOURCES})
-  list(APPEND Interface_Application_HEADERS ${Interface_Application_PY_HEADERS})
-  list(APPEND Interface_Application_FORMS   ${Interface_Application_PY_FORMS})
-endif()
+QT_WRAP_UI(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
+QT_WRAP_CPP(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
+QT_ADD_RESOURCES(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
 
-set(Interface_Application_RESOURCES scirun5.qrc)
-
-qt_wrap_ui(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
-qt_wrap_cpp(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
-qt_add_resources(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
-
-if (BUILD_BUNDLE)
-  add_definitions(-DBUILD_BUNDLE)
-endif()
+IF(BUILD_BUNDLE)
+  ADD_DEFINITIONS(-DBUILD_BUNDLE)
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_SOURCES}
@@ -163,35 +144,7 @@ SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_RESOURCES_RCC}
 )
 
-# ---- Add Python include dirs *only if this app builds with Python* ----
-if (BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
-  set(_PY_INCLUDES "")
-  if (DEFINED PYTHON_INCLUDE_DIR AND EXISTS "${PYTHON_INCLUDE_DIR}")
-    list(APPEND _PY_INCLUDES "${PYTHON_INCLUDE_DIR}")
-  endif()
-  if (DEFINED PYTHON_PC_INCLUDE_DIR AND EXISTS "${PYTHON_PC_INCLUDE_DIR}")
-    list(APPEND _PY_INCLUDES "${PYTHON_PC_INCLUDE_DIR}")
-  endif()
-  if (MSVC AND NOT _PY_INCLUDES)
-    set(_py_src "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external")
-    if (EXISTS "${_py_src}/Include")
-      list(APPEND _PY_INCLUDES "${_py_src}/Include")
-    endif()
-    if (EXISTS "${_py_src}/PC")
-      list(APPEND _PY_INCLUDES "${_py_src}/PC")
-    endif()
-  endif()
-  if (_PY_INCLUDES)
-    list(REMOVE_DUPLICATES _PY_INCLUDES)
-    target_include_directories(Interface_Application PRIVATE ${_PY_INCLUDES})
-    message(STATUS "[Interface/Application] Added Python includes: ${_PY_INCLUDES}")
-  else()
-    message(WARNING "[Interface/Application] Python includes not found at configure time; Boost.Python compilation may fail.")
-  endif()
-endif()
-
-# ---- Link libraries ----
-set(NonPythonInterface_ApplicationLinkLibraries
+SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
   Core_Serialization_Network_Importer
   Core_Application
@@ -201,102 +154,31 @@ set(NonPythonInterface_ApplicationLinkLibraries
   Interface_Modules_Base
   Interface_Modules_Factory
   Core_Application_Preferences
-  ${SCI_BOOST_LIBRARY}    # Ensure this doesn't include Boost.Python for this app
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}
 )
 
-if (BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
-  target_link_libraries(Interface_Application
-    PUBLIC
-      ${NonPythonInterface_ApplicationLinkLibraries}
-      Core_Python
-      SCIRunPythonAPI
-  )
-else()
-  target_link_libraries(Interface_Application
-    PUBLIC
-      ${NonPythonInterface_ApplicationLinkLibraries}
-  )
-endif()
+IF(BUILD_WITH_PYTHON)
 
-target_link_libraries(Interface_Application PUBLIC ${QT_NETWORK_LIBRARIES})
+TARGET_LINK_LIBRARIES(Interface_Application
+  ${NonPythonInterface_ApplicationLinkLibraries}
+  Core_Python
+  SCIRunPythonAPI
+)
 
-if (BUILD_SHARED_LIBS)
-  add_definitions(-DBUILD_Interface_Application)
-endif()
+ELSE()
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+TARGET_LINK_LIBRARIES(Interface_Application
+  ${NonPythonInterface_ApplicationLinkLibraries}
+)
 
-# -------------------------------------------------------------
-# ---- Force the correct Python import lib per configuration
-#      & ignore wrong defaultlibs (MSVC only), like in Core_ConsoleApplication
-# -------------------------------------------------------------
-if (MSVC AND BUILD_WITH_PYTHON AND BUILD_INTERFACE_APPLICATION_WITH_PYTHON)
-  # Neutralize wrong defaultlibs embedded by dependent .libs (e.g., Boost.Python)
-  target_link_options(Interface_Application PRIVATE
-    $<$<CONFIG:Debug>:/NODEFAULTLIB:python313.lib>
-    $<$<CONFIG:Release>:/NODEFAULTLIB:python313_d.lib>
-    $<$<CONFIG:RelWithDebInfo>:/NODEFAULTLIB:python313_d.lib>
-    $<$<CONFIG:MinSizeRel>:/NODEFAULTLIB:python313_d.lib>
-  )
+ENDIF()
 
-  # Prefer the imported Python target from superbuild helpers
-  if (TARGET SCIRunPython::Python)
-    target_link_libraries(Interface_Application PRIVATE
-      $<$<CONFIG:Debug>:SCIRunPython::Python>
-      $<$<NOT:$<CONFIG:Debug>>:SCIRunPython::Python>
-    )
-  elseif (TARGET Python::Python)
-    target_link_libraries(Interface_Application PRIVATE
-      $<$<CONFIG:Debug>:Python::Python>
-      $<$<NOT:$<CONFIG:Debug>>:Python::Python>
-    )
-  else()
-    # Fallback to explicit path probing for python313[_d].lib within superbuild
-    set(_PY_DBG "")
-    set(_PY_REL "")
-    foreach(dir
-      "${CMAKE_BINARY_DIR}/../Externals/Install/Python_external/libs"
-      "${CMAKE_BINARY_DIR}/../Externals/Install/Python_external/lib"
-      "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external/PCbuild/amd64"
-    )
-      if (EXISTS "${dir}/python313_d.lib" AND NOT _PY_DBG)
-        set(_PY_DBG "${dir}/python313_d.lib")
-      endif()
-      if (EXISTS "${dir}/python313.lib" AND NOT _PY_REL)
-        set(_PY_REL "${dir}/python313.lib")
-      endif()
-    endforeach()
+TARGET_LINK_LIBRARIES(Interface_Application
+  ${QT_NETWORK_LIBRARIES})
 
-    if (_PY_DBG)
-      target_link_libraries(Interface_Application PRIVATE
-        $<$<CONFIG:Debug>:${_PY_DBG}>
-      )
-      message(STATUS "[Interface/Application] Using ${_PY_DBG} for Debug")
-    else()
-      message(WARNING "[Interface/Application] Could not locate python313_d.lib; Debug link may still fail.")
-    endif()
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Application)
+ENDIF(BUILD_SHARED_LIBS)
 
-    if (_PY_REL)
-      target_link_libraries(Interface_Application PRIVATE
-        $<$<NOT:$<CONFIG:Debug>>:${_PY_REL}>
-      )
-      message(STATUS "[Interface/Application] Using ${_PY_REL} for non-Debug")
-    else()
-      message(WARNING "[Interface/Application] Could not locate python313.lib; non-Debug link may fail.")
-    endif()
-  endif()
-endif()
-
-# -------------------------------------------------------------
-# Hard-kill any stray literal python313 libs if they leaked in
-# (e.g., via LINK_LIBRARIES property). This is a safety net.
-# -------------------------------------------------------------
-if (MSVC)
-  get_target_property(_ia_link_libs Interface_Application LINK_LIBRARIES)
-  if (_ia_link_libs)
-    list(FILTER _ia_link_libs EXCLUDE REGEX ".*python313(_d)?\\.lib$")
-    set_property(TARGET Interface_Application PROPERTY LINK_LIBRARIES "${_ia_link_libs}")
-  endif()
-endif()
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

@@ -1,4 +1,4 @@
-﻿#  For more information, please see: http://software.sci.utah.edu
+#  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
@@ -24,97 +24,28 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET(teem_GIT_TAG "origin/adjust-png")
+SET(teem_DEPENDENCIES "Zlib_external")
 
-# TeemExternal.cmake — wire Teem to the installed zlib
-
-set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
-
-set(teem_GIT_TAG "v1.11.1")
-set(teem_DEPENDENCIES Zlib_external)
-
-# Superbuild directories
-set(_teem_src  "${CMAKE_BINARY_DIR}/Externals/Source/Teem_external")
-set(_teem_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Teem_external")
-set(_teem_inst "${CMAKE_BINARY_DIR}/Externals/Install/Teem_external")
-
-# Teem CMake args
-set(_cmake_args
-  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
-  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-
-  # Make Teem find our installed zlib
-  -DCMAKE_PREFIX_PATH=${ZLIB_INSTALL_DIR}
-  -DZLIB_ROOT=${ZLIB_INSTALL_DIR}
-  -DZLIB_INCLUDE_DIR=${ZLIB_INSTALL_DIR}/include
-  -DZLIB_USE_STATIC_LIBS=ON
-
-  # Keep optional deps minimal for now
-  -DTeem_ZLIB=ON
-  -DTeem_PNG=OFF
-  -DTeem_BZIP2=OFF
-  -DTeem_FFTW=OFF
-)
-
-if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
-  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-endif()
-
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Teem_external
   DEPENDS ${teem_DEPENDENCIES}
-
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/teem.git"
-  GIT_TAG        ${teem_GIT_TAG}
-  UPDATE_DISCONNECTED 1
-
-  SOURCE_DIR ${_teem_src}
-  BINARY_DIR ${_teem_bin}
-  INSTALL_DIR ${_teem_inst}   # ensure install goes to Externals/Install/Teem_external
-
-  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
-  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
-  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
-
-  CMAKE_ARGS
-    ${_cmake_args}
-
+  GIT_REPOSITORY "https://github.com/SCIInstitute/teem.git"
+  GIT_TAG ${teem_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-
     -DZlib_DIR:PATH=${Zlib_DIR}
-    -DCMAKE_PREFIX_PATH:PATH=${ZLIB_INSTALL_DIR}
-    -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}
-    -DZLIB_INCLUDE_DIR:PATH=${ZLIB_INSTALL_DIR}/include
-    -DZLIB_USE_STATIC_LIBS:BOOL=ON
-
-    -DTeem_ZLIB:BOOL=ON
-    -DTeem_PNG:BOOL=OFF
-    -DTeem_BZIP2:BOOL=OFF
-    -DTeem_FFTW:BOOL=OFF
-
-  LOG_CONFIGURE 1
-  LOG_BUILD     1
-  LOG_INSTALL   1
+    -DTeem_USE_NRRD_INTERNALS:BOOL=ON
 )
 
-ExternalProject_Add_Step(Teem_external wait_for_zlib
-  COMMAND ${CMAKE_COMMAND} -E echo "Waiting for zlib artifacts..."
-  DEPENDEES download
-  DEPENDERS configure
-  DEPENDS
-    "${ZLIB_INSTALL_DIR}/include/zlib.h"
-    "${ZLIB_INSTALL_DIR}/lib"
-)
+ExternalProject_Get_Property(Teem_external BINARY_DIR)
+SET(Teem_DIR ${BINARY_DIR} CACHE PATH "")
 
-# Export variables for SCIRun (consumer side)
-set(TEEM_SOURCE_DIR  ${_teem_src})
-set(TEEM_INSTALL_DIR ${_teem_inst})
-
-# After enabling install, point includes to the installed headers
-set(TEEM_INCLUDE     ${TEEM_INSTALL_DIR}/include)
-set(TEEM_LIBRARY_DIR ${TEEM_INSTALL_DIR}/lib)
-set(TEEM_LIBRARY     "teem")
-
-message(STATUS "[Teem_external] INSTALL_DIR=${TEEM_INSTALL_DIR}")
+MESSAGE(STATUS "Teem_DIR: ${Teem_DIR}")

@@ -60,7 +60,6 @@ TARGET_LINK_LIBRARIES(Modules_Fields
   Graphics_Datatypes
   Graphics_Widgets
   ${OPENGL_LIBRARIES}
-  GLEW::GLEW
 )
 
 IF(BUILD_SHARED_LIBS)

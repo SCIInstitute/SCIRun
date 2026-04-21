@@ -26,17 +26,7 @@
 #
 
 
-# ==========================================
-# Interface/Modules/Python CMakeLists.txt
-# ==========================================
-
-# Only build this UI module when Python support is enabled
-if(NOT BUILD_WITH_PYTHON)
-  message(STATUS "[Interface/Modules/Python] Skipping (BUILD_WITH_PYTHON=OFF)")
-  return()
-endif()
-
-set(Interface_Modules_Python_FORMS
+SET(Interface_Modules_Python_FORMS
   PythonObjectForwarder.ui
   InterfaceWithPython.ui
   ModuleStateModifierTester.ui
@@ -46,7 +36,7 @@ set(Interface_Modules_Python_FORMS
   CompositeModule.ui
 )
 
-set(Interface_Modules_Python_HEADERS
+SET(Interface_Modules_Python_HEADERS
   PythonObjectForwarderDialog.h
   InterfaceWithPythonDialog.h
   ModuleStateModifierTesterDialog.h
@@ -57,7 +47,7 @@ set(Interface_Modules_Python_HEADERS
   share.h
 )
 
-set(Interface_Modules_Python_SOURCES
+SET(Interface_Modules_Python_SOURCES
   PythonObjectForwarderDialog.cc
   InterfaceWithPythonDialog.cc
   ModuleStateModifierTesterDialog.cc
@@ -67,13 +57,9 @@ set(Interface_Modules_Python_SOURCES
   CompositeModuleDialog.cc
 )
 
-# ---- Qt UI/MOC generation ----
-# Top-level already sets SCIRUN_QT_MAJOR and finds Qt5/Qt6 + defines
-# helper macros QT_WRAP_UI / QT_WRAP_CPP accordingly.
 QT_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS "${Interface_Modules_Python_FORMS}")
-QT_WRAP_CPP(Interface_Modules_Python_HEADERS_MOC  "${Interface_Modules_Python_HEADERS}")
+QT_WRAP_CPP(Interface_Modules_Python_HEADERS_MOC "${Interface_Modules_Python_HEADERS}")
 
-# ---- Library target ----
 SCIRUN_ADD_LIBRARY(Interface_Modules_Python
   ${Interface_Modules_Python_HEADERS}
   ${Interface_Modules_Python_FORMS_HEADERS}
@@ -81,24 +67,15 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Python
   ${Interface_Modules_Python_SOURCES}
 )
 
-if(BUILD_SHARED_LIBS)
-  add_definitions(-DBUILD_Interface_Modules_Python)
-endif()
-
-# ---- Include current binary dir for generated moc/ui headers ----
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-# ---- Link dependencies ----
-# No direct Python headers here; Python is pulled in by Modules_Python.
-# Qt variables are set by the top-level (Qt5 or Qt6).
-target_link_libraries(Interface_Modules_Python
-  PRIVATE
-    Modules_Python
-    Modules_Basic
-    Interface_Modules_Base
-    ${SCI_BOOST_LIBRARY}
-    ${QT_LIBRARIES}
+TARGET_LINK_LIBRARIES(Interface_Modules_Python
+  Modules_Python
+  Modules_Basic
+  Interface_Modules_Base
+  ${QT_LIBRARIES}
 )
 
-# Optional: nice status line during configure
-message(STATUS "[Interface/Modules/Python] Configured (Qt ${QT_VERSION_MAJOR}, BUILD_WITH_PYTHON=ON)")
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Python)
+ENDIF(BUILD_SHARED_LIBS)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

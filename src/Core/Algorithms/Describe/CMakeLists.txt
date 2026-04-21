@@ -43,10 +43,8 @@ SCIRUN_ADD_LIBRARY(Algorithms_Describe
 TARGET_LINK_LIBRARIES(Algorithms_Describe
   Core_Datatypes
   Core_Datatypes_Legacy_Field
-  Core_Datatypes_Legacy_Bundle
   Algorithms_Field
   Algorithms_Math
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

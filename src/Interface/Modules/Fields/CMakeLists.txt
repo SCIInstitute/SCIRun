@@ -213,12 +213,10 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Fields
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Fields
   Algorithms_Field
-  Core_Algorithms_Legacy_Fields
   Modules_Fields
   Interface_Modules_Base
   Modules_Legacy_Fields
   Modules_Basic
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 

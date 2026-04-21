@@ -76,6 +76,30 @@ ELSEIF(WIN32)
 
   ADD_EXECUTABLE(${APPLICATION_NAME} WIN32 ${SCIRunMain_SOURCES})
 
+  # Windows + MSVC + non-headless: enable Qt runtime for VS debugging
+  IF(WIN32 AND MSVC AND NOT BUILD_HEADLESS)
+  
+    # Detect Qt version (Qt6 preferred, fallback to Qt5)
+    IF(TARGET Qt6::qmake)
+      SET(_qt_qmake_target Qt6::qmake)
+    ELSEIF(TARGET Qt5::qmake)
+      SET(_qt_qmake_target Qt5::qmake)
+    ELSE()
+      SET(_qt_qmake_target "")
+    ENDIF()
+  
+    IF(_qt_qmake_target)
+      get_target_property(_qt_qmake_exe ${_qt_qmake_target} LOCATION)
+      get_filename_component(_qt_bin_dir "${_qt_qmake_exe}" DIRECTORY)
+  
+      set_property(TARGET ${APPLICATION_NAME} PROPERTY
+        VS_DEBUGGER_ENVIRONMENT
+        "PATH=${_qt_bin_dir};%PATH%"
+      )
+    ENDIF()
+  
+  ENDIF()
+
   # TODO: probably need this for Xcode
   IF(WIN32 AND MSVC)
     # TODO: more build types to be supported?
@@ -101,7 +125,7 @@ ELSEIF(WIN32)
      ${SCIRun_BINARY_DIR}/Assets
      ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Assets
     )
-ENDIF()
+  ENDIF()
 
 ELSE()
   ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
@@ -118,96 +142,127 @@ ENDIF()
 
 FOREACH(app ${APPS})
   TARGET_LINK_LIBRARIES(${app}
-    PRIVATE
     Core_Util_Legacy
   )
 
   IF(BUILD_HEADLESS)
     TARGET_LINK_LIBRARIES(${app}
-      PRIVATE
       Core_ConsoleApplication
     )
   ELSE()
     TARGET_LINK_LIBRARIES(${app}
-      PRIVATE
       Interface_Application
     )
   ENDIF()
 
-  # ---- Only add Python linkage when requested ----
   IF(BUILD_WITH_PYTHON)
     TARGET_LINK_LIBRARIES(${app}
-      PRIVATE
       Core_Python
-      SCIRunPython
-      SCIRunPythonAPI
     )
-
-    # ---- MSVC: Neutralize wrong defaultlibs and force correct python import lib ----
-    if (MSVC)
-      # Ignore the wrong defaultlib per configuration
-      target_link_options(${app} PRIVATE
-        $<$<CONFIG:Debug>:/NODEFAULTLIB:python313.lib>
-        $<$<CONFIG:Release>:/NODEFAULTLIB:python313_d.lib>
-        $<$<CONFIG:RelWithDebInfo>:/NODEFAULTLIB:python313_d.lib>
-        $<$<CONFIG:MinSizeRel>:/NODEFAULTLIB:python313_d.lib>
-      )
-
-      # Prefer imported python target from superbuild/helpers
-      if (TARGET SCIRunPython::Python)
-        target_link_libraries(${app} PRIVATE
-          $<$<CONFIG:Debug>:SCIRunPython::Python>
-          $<$<NOT:$<CONFIG:Debug>>:SCIRunPython::Python>
-        )
-      elseif (TARGET Python::Python)
-        target_link_libraries(${app} PRIVATE
-          $<$<CONFIG:Debug>:Python::Python>
-          $<$<NOT:$<CONFIG:Debug>>:Python::Python>
-        )
-      else()
-        # Fallback: probe superbuild locations for python313[_d].lib
-        set(_PY_DBG "")
-        set(_PY_REL "")
-        foreach(dir
-          "${CMAKE_BINARY_DIR}/../Externals/Install/Python_external/libs"
-          "${CMAKE_BINARY_DIR}/../Externals/Install/Python_external/lib"
-          "${CMAKE_BINARY_DIR}/../Externals/Source/Python_external/PCbuild/amd64"
-        )
-          if (EXISTS "${dir}/python313_d.lib" AND NOT _PY_DBG)
-            set(_PY_DBG "${dir}/python313_d.lib")
-          endif()
-          if (EXISTS "${dir}/python313.lib" AND NOT _PY_REL)
-            set(_PY_REL "${dir}/python313.lib")
-          endif()
-        endforeach()
-
-        if (_PY_DBG)
-          target_link_libraries(${app} PRIVATE
-            $<$<CONFIG:Debug>:${_PY_DBG}>
-          )
-          message(STATUS "[${app}] Using ${_PY_DBG} for Debug")
-        else()
-          message(WARNING "[${app}] Could not locate python313_d.lib; Debug link may still fail.")
-        endif()
-
-        if (_PY_REL)
-          target_link_libraries(${app} PRIVATE
-            $<$<NOT:$<CONFIG:Debug>>:${_PY_REL}>
-          )
-          message(STATUS "[${app}] Using ${_PY_REL} for non-Debug")
-        else()
-          message(WARNING "[${app}] Could not locate python313.lib; non-Debug link may fail.")
-        endif()
-      endif()
-
-      # Safety net: strip any literal python313 libs that leaked in via LINK_LIBRARIES
-      get_target_property(_app_link_libs ${app} LINK_LIBRARIES)
-      if (_app_link_libs)
-        list(FILTER _app_link_libs EXCLUDE REGEX ".*python313(_d)?\\.lib$")
-        set_property(TARGET ${app} PROPERTY LINK_LIBRARIES "${_app_link_libs}")
-      endif()
-    endif() # MSVC
-  ENDIF()   # BUILD_WITH_PYTHON
+  ENDIF()
 ENDFOREACH()
+
+
+IF(APPLE)
+  IF(${CMAKE_GENERATOR} MATCHES "Xcode")
+    SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib/$<CONFIGURATION>)
+  ELSE()
+    SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib)
+  ENDIF()
+ENDIF()
+
+
+IF(APPLE)
+
+ELSE()
+  IF(WIN32)
+    IF(BUILD_WITH_PYTHON)
+      # TODO: change $<CONFIGURATION> to $<CONFIG> when upgrading to cmake 3
+      # TODO: copy python dll
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} ARGS -E make_directory $<CONFIGURATION>/${PYTHON_MODULE_SEARCH_PATH}
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_MODULE_LIBRARY_PATH} $<CONFIGURATION>/${PYTHON_MODULE_SEARCH_PATH}
+        WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+    ENDIF()
+
+  	IF(NOT BUILD_HEADLESS)
+      # Note: installer is created from Release build only!
+	    GET_TARGET_PROPERTY(QTCORENAME Qt${QT_VERSION_MAJOR}::Core LOCATION)
+	    GET_TARGET_PROPERTY(QTGUINAME Qt${QT_VERSION_MAJOR}::Gui LOCATION)
+	    GET_TARGET_PROPERTY(QTOPENGLNAME Qt${QT_VERSION_MAJOR}::OpenGL LOCATION)
+      if (QT_VERSION_MAJOR VERSION_GREATER 5)
+        GET_TARGET_PROPERTY(QTOPENGLWIDGETSNAME Qt${QT_VERSION_MAJOR}::OpenGLWidgets LOCATION)
+      endif()
+	    GET_TARGET_PROPERTY(QTWIDGETSNAME Qt${QT_VERSION_MAJOR}::Widgets LOCATION)
+	    GET_TARGET_PROPERTY(QTNETWORKNAME Qt${QT_VERSION_MAJOR}::Network LOCATION)
+      GET_TARGET_PROPERTY(QTCONCURRENTNAME Qt${QT_VERSION_MAJOR}::Concurrent LOCATION)
+      GET_TARGET_PROPERTY(QTSVGNAME Qt${QT_VERSION_MAJOR}::Svg LOCATION)
+      GET_TARGET_PROPERTY(QTPRINTSUPPORTNAME Qt${QT_VERSION_MAJOR}::PrintSupport LOCATION)
+    ENDIF()
+      INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION bin)
+  	IF(NOT BUILD_HEADLESS)
+	    INSTALL(PROGRAMS
+	      ${QTCORENAME}
+          ${QTGUINAME}
+          ${QTOPENGLNAME}
+          ${QTNETWORKNAME}
+		  ${QTWIDGETSNAME}
+		  ${QTCONCURRENTNAME}
+		  ${QTSVGNAME}
+		  ${QTPRINTSUPPORTNAME}
+		  DESTINATION bin)
+      if (QT_VERSION_MAJOR VERSION_GREATER 5)
+        INSTALL(PROGRAMS
+            ${QTOPENGLWIDGETSNAME}
+  		  DESTINATION bin)
+      endif()
+		  INSTALL(PROGRAMS "${SCI_QWT_LIBRARY_DIR}/Release/${SCI_QWT_LIBRARY}.dll" DESTINATION bin CONFIGURATIONS Release)
+		  INSTALL(PROGRAMS "${Qt_PATH}/plugins/platforms/qwindows.dll" DESTINATION bin/platforms CONFIGURATIONS Release)
+  	ENDIF()
+      IF(BUILD_WITH_PYTHON)
+        INSTALL(PROGRAMS
+          ${SCI_PYTHON_DLL_PATH}
+          DESTINATION bin)
+        INSTALL(DIRECTORY "${SCI_PYTHON_MODULE_LIBRARY_PATH}/" DESTINATION bin/${PYTHON_MODULE_SEARCH_PATH})
+      ENDIF()
+
+      IF(BUILD_WITH_PYTHON)
+        INSTALL(PROGRAMS
+          ${SCI_PYTHON_DLL_PATH}
+          DESTINATION bin)
+        INSTALL(DIRECTORY "${SCI_PYTHON_MODULE_LIBRARY_PATH}/" DESTINATION bin/${PYTHON_MODULE_SEARCH_PATH})
+      ENDIF()
+
+      INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
+      INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
+      INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Fonts" DESTINATION bin USE_SOURCE_PERMISSIONS)
+  ELSE()
+    IF(BUILD_HEADLESS)
+      MESSAGE(STATUS "Building headless SCIRun")
+    ENDIF()
+
+    IF(BUILD_WITH_PYTHON)
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${PYTHON_MODULE_SEARCH_PATH}
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}
+        WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      IF(SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH AND EXISTS ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH})
+        ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+          POST_BUILD
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory  ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}
+          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      ENDIF()
+    ENDIF()
+  ENDIF()
+ENDIF()
+
+SET(NETWORKS_DESTINATION_DIR  "./SCIRunNetworks")
+
+# TODO: be careful of SCIRun network file extension
+# TODO: refactor when networks are reorganized
+INSTALL(DIRECTORY "${SCIRun_SOURCE_DIR}/ExampleNets/regression" DESTINATION ${NETWORKS_DESTINATION_DIR}
+  USE_SOURCE_PERMISSIONS FILES_MATCHING PATTERN "*.srn5")
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

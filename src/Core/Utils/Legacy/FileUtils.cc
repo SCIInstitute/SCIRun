@@ -52,7 +52,6 @@
 #include <Core/Utils/Legacy/sci_system.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 
-#include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 
 #include <sci_debug.h>
@@ -443,57 +442,24 @@ convertToWindowsPath( std::string & unixPath )
   }
 }
 
-
 int copyFile(const bfs::path& src, const bfs::path& dest)
 {
   int code = -1;
   try
   {
     bsys::error_code ec;
-
-    // Ensure destination directory exists
-    if (!dest.parent_path().empty())
-    {
-      bfs::create_directories(dest.parent_path(), ec);
-      ec.clear();
-    }
-
-    // If src and dest are the same, nothing to do
-    if (bfs::exists(src) && bfs::exists(dest))
-    {
-      bsys::error_code eqec;
-      if (bfs::equivalent(src, dest, eqec))
-      {
-        return 0;
-      }
-    }
-
-    // Emulate "overwrite": remove destination if present
-    if (bfs::exists(dest))
-    {
-      bfs::remove(dest, ec);
-      ec.clear();
-    }
-
-    // Copy without options
-    bfs::copy_file(src, dest, ec);
+    bfs::copy_file(src, dest, bfs::copy_options::overwrite_existing, ec);
     code = ec.value();
-
-#if defined(_DEBUG) || !defined(NDEBUG)
+#if DEBUG
     if (code != bsys::errc::success)
     {
       std::cerr << "error " << ec.value() << ": " << ec.message() << std::endl;
     }
 #endif
   }
-  catch (const std::exception& e)
-  {
-    std::cerr << "Error copying " << src.string() << " to " << dest.string()
-              << ": " << e.what() << std::endl;
-  }
   catch (...)
   {
-    std::cerr << "Error copying " << src.string() << " to " << dest.string() << std::endl;
+    std::cerr << "Error copying " << src.c_str() << " to " << dest.c_str() << std::endl;
   }
   return code;
 }

@@ -232,60 +232,33 @@ IF(WITH_TETGEN)
   ADD_DEFINITIONS(-DWITH_TETGEN)
 ENDIF()
 
-# Create the target (unchanged)
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
   ${Modules_Legacy_Fields_HEADERS}
   ${Modules_Legacy_Fields_SRCS}
 )
 
-# ---- Convert to keyword signature and keep all links here ----
-target_link_libraries(Modules_Legacy_Fields
-  PRIVATE
-    Dataflow_Network
-    # TODO: remove
-    Core_Serialization_Network
-    Core_Algorithms_Legacy_Fields
-    Algorithms_Base
-    Core_Basis
-    Core_Datatypes
-    Core_Datatypes_Legacy_Bundle
-    Core_Exceptions_Legacy
-    Core_Geometry_Primitives
-    Core_Math
-    Core_Parser
-    Core_Util_Legacy
-    Graphics_Widgets
-    Graphics_Datatypes
+TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
+  Dataflow_Network
+  #TODO: remove
+  Core_Serialization_Network
+  Core_Algorithms_Legacy_Fields
+  Algorithms_Base
+  Core_Basis
+  Core_Datatypes
+  Core_Datatypes_Legacy_Bundle
+  Core_Exceptions_Legacy
+  Core_Geometry_Primitives
+  Core_Math
+  Core_Parser
+  Core_Util_Legacy
+  Graphics_Widgets
+  Graphics_Datatypes
 )
 
-# ---- TetGen wiring (include + link + define) ----
-if(WITH_TETGEN)
-  message(STATUS "[Diag/Tetgen/Fields] WITH_TETGEN='${WITH_TETGEN}'")
-  message(STATUS "[Diag/Tetgen/Fields] TETGEN_INCLUDE_DIR='${TETGEN_INCLUDE_DIR}'")
-  message(STATUS "[Diag/Tetgen/Fields] TETGEN_LIB_DIR='${TETGEN_LIB_DIR}'")
-  message(STATUS "[Diag/Tetgen/Fields] TETGEN_LIBRARY='${TETGEN_LIBRARY}'")
-  if(TARGET Tetgen::Tetgen)
-    message(STATUS "[Diag/Tetgen/Fields] TARGET Tetgen::Tetgen is visible here")
-  endif()
-  # Add the include directory so 'tetgen.h' is found
-  if(DEFINED TETGEN_INCLUDE_DIR AND EXISTS "${TETGEN_INCLUDE_DIR}")
-    target_include_directories(Modules_Legacy_Fields PRIVATE "${TETGEN_INCLUDE_DIR}")
-  else()
-    message(FATAL_ERROR "WITH_TETGEN=ON but TETGEN_INCLUDE_DIR is not set or does not exist.")
-  endif()
+IF(WITH_TETGEN)
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields ${TETGEN_LIBRARY})
+ENDIF()
 
-  # Link the TetGen library passed from superbuild
-  if(DEFINED TETGEN_LIBRARY AND EXISTS "${TETGEN_LIBRARY}")
-    target_link_libraries(Modules_Legacy_Fields PRIVATE "${TETGEN_LIBRARY}")
-  else()
-    message(FATAL_ERROR "WITH_TETGEN=ON but TETGEN_LIBRARY is not set or does not exist.")
-  endif()
-
-  # Define TETLIBRARY when consuming TetGen as a library
-  target_compile_definitions(Modules_Legacy_Fields PRIVATE TETLIBRARY)
-endif()
-
-# Shared library define (unchanged)
-if(BUILD_SHARED_LIBS)
-  add_definitions(-DBUILD_Modules_Legacy_Fields)
-endif()
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Fields)
+ENDIF()

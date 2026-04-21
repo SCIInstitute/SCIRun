@@ -218,10 +218,9 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   )
 
 target_link_libraries(${SCI_SPIRE_LIBRARY}
-  LodePNG::lodepng
-  Tny::tny
-  ${OPENGL_LIBRARIES}
-  GLEW::GLEW)
+  ${SCI_LODEPNG_LIBRARY}
+  ${SCI_TNY_LIBRARY}
+  ${OPENGL_LIBRARIES})
 
 IF(WIN32)
   target_link_libraries(${SCI_SPIRE_LIBRARY} ${SCI_GLEW_LIBRARY})

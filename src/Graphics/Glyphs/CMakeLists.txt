@@ -52,12 +52,9 @@ TARGET_LINK_LIBRARIES(Graphics_Glyphs
   Core_Math
   Core_Datatypes
   Core_Geometry_Primitives
-  Core_Utils
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}
-  GLEW::GLEW
   ${SCI_SPIRE_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

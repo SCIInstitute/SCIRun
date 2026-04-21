@@ -31,7 +31,7 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(DEFAULT_PYTHON_VERSION "3.13.1")
 
 set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
-set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.6.7 3.7.9 3.8.12 3.9.10 3.10.2)
+set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.10.16 3.11.11 3.12.8 3.13.1)
 
 string(REPLACE "." ";" USER_PYTHON_VERSION_LIST ${USER_PYTHON_VERSION})
 list(GET USER_PYTHON_VERSION_LIST 0 USER_PYTHON_VERSION_MAJOR)
@@ -102,95 +102,25 @@ IF(UNIX)
 	WORKING_DIRECTORY <INSTALL_DIR>
     )
   ENDIF()
-
-# --- Windows path (MSVC) ---
 ELSE()
-  # 64-bit build only (keeps your original assumptions)
-  set(python_WIN32_ARCH "x64")
-  set(python_WIN32_64BIT_DIR "/amd64")
-  set(python_ABIFLAG_PYDEBUG "_d")
-
-  # Helper script to resolve and copy pyconfig.h in a version-robust way
-  # We embed a small -P script rather than relying on shell tricks.
-  set(_copy_pyconfig_cmake "${CMAKE_CURRENT_BINARY_DIR}/CopyPyConfig.cmake")
-  file(WRITE "${_copy_pyconfig_cmake}" [=[
-    # CopyPyConfig.cmake
-    # Inputs:
-    #   _SRC  : CPython source root
-    #   _DST  : Destination include directory (expects Include/)
-    #   _PYEXE: Built python.exe to query sysconfig (optional if legacy fallback used)
-
-    if(NOT DEFINED _SRC OR NOT DEFINED _DST)
-      message(FATAL_ERROR "CopyPyConfig.cmake: _SRC and _DST must be defined.")
-    endif()
-
-    file(MAKE_DIRECTORY "${_DST}")
-
-    # 1) Legacy fallback (works for older trees/tags if file exists)
-    if(EXISTS "${_SRC}/PC/pyconfig.h")
-      message(STATUS "[Python_external] Using legacy PC/pyconfig.h")
-      file(COPY "${_SRC}/PC/pyconfig.h" DESTINATION "${_DST}")
-      return()
-    endif()
-
-    # 2) Preferred: ask the built interpreter where pyconfig.h is
-    if(NOT DEFINED _PYEXE OR NOT EXISTS "${_PYEXE}")
-      message(FATAL_ERROR
-        "CopyPyConfig.cmake: Built python.exe not found at '${_PYEXE}'.\n"
-        "Cannot query sysconfig.get_config_h_filename(); please check the build output under PCbuild.")
-    endif()
-
-    execute_process(
-      COMMAND "${_PYEXE}" -c "import sysconfig, sys; print(sysconfig.get_config_h_filename())"
-      OUTPUT_VARIABLE _CFG
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_QUIET
-    )
-
-    if(NOT _CFG OR NOT EXISTS "${_CFG}")
-      message(FATAL_ERROR
-        "CopyPyConfig.cmake: sysconfig.get_config_h_filename() returned '${_CFG}', which does not exist.")
-    endif()
-
-    message(STATUS "[Python_external] Copying pyconfig.h from: ${_CFG}")
-    file(COPY "${_CFG}" DESTINATION "${_DST}")
-  ]=])
-
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
-    GIT_TAG        ${python_GIT_TAG}
-    UPDATE_DISCONNECTED 1
-    UPDATE_COMMAND ""
-    PATCH_COMMAND  ""
-    # Pass platform to build.bat so it generates the right artifacts
-    CONFIGURE_COMMAND PCbuild/build.bat -p ${python_WIN32_ARCH}
+    GIT_TAG ${python_GIT_TAG}
+    PATCH_COMMAND ""
+    CONFIGURE_COMMAND PCbuild/build.bat
     BUILD_IN_SOURCE ON
-
-    # Build Release first (keeps your logic)
-    BUILD_COMMAND
-      ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo
-        /property:Configuration=Release
-        /property:Platform=${python_WIN32_ARCH}
-
-    # INSTALL_COMMAND: robust pyconfig.h copy
-    # - Prefer sysconfig.get_config_h_filename() from the built interpreter
-    # - Fallback to legacy PC/pyconfig.h if present
-    INSTALL_COMMAND
-      "${CMAKE_COMMAND}"
-        -D_SRC=<SOURCE_DIR>
-        -D_DST=<SOURCE_DIR>/Include
-        -D_PYEXE=<SOURCE_DIR>/PCbuild${python_WIN32_64BIT_DIR}/python.exe
-        -P "${_copy_pyconfig_cmake}"
+    BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
+    INSTALL_COMMAND "${CMAKE_COMMAND}" -E
+      copy_if_different
+      <SOURCE_DIR>/PCbuild/${python_WIN32_64BIT_DIR}/pyconfig.h
+      <SOURCE_DIR>/Include/pyconfig.h
   )
-
-  # Also build Debug (as you had), and ensure it happens before "install"
+  # build both Release and Debug versions
   ExternalProject_Add_Step(Python_external debug_build
-    COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo
-              /property:Configuration=Debug
-              /property:Platform=${python_WIN32_ARCH}
-    DEPENDEES build
-    DEPENDERS install
-    WORKING_DIRECTORY <SOURCE_DIR>
+    COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH}
+      DEPENDEES build
+      DEPENDERS install
+      WORKING_DIRECTORY <SOURCE_DIR>
   )
 ENDIF()
 
@@ -202,22 +132,24 @@ SET(SCI_PYTHON_MODULE_PARENT_PATH lib)
 IF(UNIX)
   SET(SCI_PYTHON_NAME python${SCI_PYTHON_VERSION_SHORT})
   IF(APPLE)
-    # TODO: check Xcode IDE builds...
-
     SET(SCI_PYTHON_FRAMEWORK ${INSTALL_DIR}/Python.framework)
     SET(SCI_PYTHON_ROOT_DIR ${SCI_PYTHON_FRAMEWORK}/Versions/${SCI_PYTHON_VERSION_SHORT})
     SET(SCI_PYTHON_INCLUDE ${SCI_PYTHON_ROOT_DIR}/Headers)
     SET(SCI_PYTHON_LIBRARY_DIR ${SCI_PYTHON_ROOT_DIR}/lib)
     SET(SCI_PYTHON_LINK_LIBRARY_DIRS ${SCI_PYTHON_LIBRARY_DIR})
-    SET(SCI_PYTHON_EXE ${SCI_PYTHON_ROOT_DIR}/bin/${SCI_PYTHON_NAME})
-    SET(SCI_PYTHON_LIBRARY ${SCI_PYTHON_NAME})
 
-    # required by interpreter interface
+    # Boost.Build requires python3, NOT python3.x inside frameworks
+    SET(SCI_PYTHON_EXE ${SCI_PYTHON_ROOT_DIR}/bin/python3)
+
+    # Keep SCI_PYTHON_LIBRARY as the module name (python3.11 works here)
+    SET(SCI_PYTHON_LIBRARY python${SCI_PYTHON_VERSION_SHORT})
+
     IF(BUILD_HEADLESS)
-      SET(PYTHON_MODULE_SEARCH_PATH Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
+      SET(PYTHON_MODULE_SEARCH_PATH Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_LIBRARY} CACHE INTERNAL "Python modules." FORCE)
     ELSE()
-      SET(PYTHON_MODULE_SEARCH_PATH Frameworks/Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
+      SET(PYTHON_MODULE_SEARCH_PATH Frameworks/Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_LIBRARY} CACHE INTERNAL "Python modules." FORCE)
     ENDIF()
+
     SET(SCI_PYTHON_FRAMEWORK_ARCHIVE ${INSTALL_DIR}/${python_FRAMEWORK_ARCHIVE})
   ELSE()
     SET(SCI_PYTHON_ROOT_DIR ${INSTALL_DIR})
@@ -257,21 +189,6 @@ ELSE()
 ENDIF()
 
 SET(SCI_PYTHON_USE_FILE ${INSTALL_DIR}/UsePython.cmake)
-# ---- Export Python paths to cache so other externals and SCIRun can consume them ----
-set(PYTHON_INCLUDE_DIR     "${SCI_PYTHON_INCLUDE}"      CACHE PATH     "CPython include dir (contains Python.h)" FORCE)
-set(PYTHON_PC_INCLUDE_DIR  "${SOURCE_DIR}/PC"           CACHE PATH     "CPython PC include dir (contains pyconfig.h)" FORCE)
-set(PYTHON_RUNTIME_DIR     "${SCI_PYTHON_LIBRARY_DIR}"  CACHE PATH     "Folder containing python313[_d].lib/.dll" FORCE)
-set(PYTHON_EXECUTABLE      "${SCI_PYTHON_EXE}"          CACHE FILEPATH "python.exe built by CPython" FORCE)
-set(PYTHON_LIBRARY_RELEASE "${SCI_PYTHON_LIBRARY_RELEASE}" CACHE FILEPATH "Release import lib (python313.lib)" FORCE)
-set(PYTHON_LIBRARY_DEBUG   "${SCI_PYTHON_LIBRARY_DEBUG}"   CACHE FILEPATH "Debug import lib (python313_d.lib)" FORCE)
-
-# Nice for diagnostics
-message(STATUS "[Python_external] PYTHON_INCLUDE_DIR     = ${PYTHON_INCLUDE_DIR}")
-message(STATUS "[Python_external] PYTHON_PC_INCLUDE_DIR  = ${PYTHON_PC_INCLUDE_DIR}")
-message(STATUS "[Python_external] PYTHON_RUNTIME_DIR     = ${PYTHON_RUNTIME_DIR}")
-message(STATUS "[Python_external] PYTHON_EXECUTABLE      = ${PYTHON_EXECUTABLE}")
-message(STATUS "[Python_external] PYTHON_LIBRARY_RELEASE = ${PYTHON_LIBRARY_RELEASE}")
-message(STATUS "[Python_external] PYTHON_LIBRARY_DEBUG   = ${PYTHON_LIBRARY_DEBUG}")
 
 # Python is special case - normally this should be handled in external library repo
 CONFIGURE_FILE(${SUPERBUILD_DIR}/PythonConfig.cmake.in ${INSTALL_DIR}/PythonConfig.cmake @ONLY)

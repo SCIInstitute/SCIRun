@@ -41,14 +41,14 @@ SCIRUN_ADD_LIBRARY(Modules_Factory_Generator
 )
 
 TARGET_LINK_LIBRARIES(Modules_Factory_Generator
-  ${SCI_BOOST_LIBRARY}
+  Boost::filesystem
 )
 
 SET_PROPERTY(TARGET Modules_Factory_Generator PROPERTY FOLDER "Modules")
 
 IF(GENERATE_MODULE_FACTORY_CODE)
   ADD_EXECUTABLE(MakeModuleFactory MakeModuleFactory.h MakeModuleFactory.cc)
-  TARGET_LINK_LIBRARIES(MakeModuleFactory Modules_Factory_Generator ${SCI_BOOST_LIBRARY})
+  TARGET_LINK_LIBRARIES(MakeModuleFactory Modules_Factory_Generator)
   SET_PROPERTY(TARGET MakeModuleFactory PROPERTY FOLDER "Modules")
 ENDIF()
 

@@ -24,83 +24,24 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-# Cleaver2External.cmake (corrected + aligned with TetGen pattern)
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET(cleaver2_GIT_TAG "origin/scirun-5.0.0-beta")
 
-set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
-
-# Version tag for Cleaver2
-set(cleaver2_GIT_TAG "v2.0.1")   # or your new tag like v2.0.1-scirun1
-
-# Common CMake args
-set(_cmake_args
-  -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE}
-  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-
-  # Redirect all outputs so install step is unnecessary
-  -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=<INSTALL_DIR>/bin
-
-  # Multi-config (VS)
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/lib
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/lib
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG=<INSTALL_DIR>/bin
-  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=<INSTALL_DIR>/bin
-)
-
-# Single-config generators
-if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
-  list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
-endif()
-
-# Superbuild directories
-set(_cleaver2_src  "${CMAKE_BINARY_DIR}/Externals/Source/Cleaver2_external")
-set(_cleaver2_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Cleaver2_external")
-set(_cleaver2_inst "${CMAKE_BINARY_DIR}/Externals/Install/Cleaver2_external")
-
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Cleaver2_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Cleaver2Library.git"
-  GIT_TAG        ${cleaver2_GIT_TAG}
-  UPDATE_DISCONNECTED 1
-
-  SOURCE_DIR ${_cleaver2_src}
-  BINARY_DIR ${_cleaver2_bin}
-
-  CMAKE_GENERATOR          "${CMAKE_GENERATOR}"
-  CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM}"
-  CMAKE_GENERATOR_TOOLSET  "${CMAKE_GENERATOR_TOOLSET}"
-
-  CMAKE_ARGS ${_cmake_args}
-
-  # Outputs already redirected -> skip install
+  GIT_TAG ${cleaver2_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
   INSTALL_COMMAND ""
-  
-  LOG_CONFIGURE 1
-  LOG_BUILD     1
-  LOG_INSTALL   1
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
 )
 
-# After build, copy headers from the source tree into the install/include tree
-ExternalProject_Add_Step(Cleaver2_external copy_headers
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${_cleaver2_inst}/include/cleaver2"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${_cleaver2_src}/src/lib/cleaver2"
-          "${_cleaver2_inst}/include/cleaver2"
-  DEPENDEES build
-  ALWAYS 1
-  COMMENT "Copying Cleaver2 headers to ${_cleaver2_inst}/include/cleaver2"
-)
+ExternalProject_Get_Property(Cleaver2_external BINARY_DIR)
+SET(CLEAVER2_DIR ${BINARY_DIR} CACHE PATH "")
 
-# Export properties for SCIRun
-ExternalProject_Get_Property(Cleaver2_external SOURCE_DIR)
-set(CLEAVER2_SOURCE_DIR ${SOURCE_DIR})
-
-set(CLEAVER2_INSTALL_DIR ${_cleaver2_inst})
-set(CLEAVER2_INCLUDE     ${CLEAVER2_SOURCE_DIR}/src)   # Cleaver2 headers live in src/
-set(CLEAVER2_LIBRARY_DIR ${CLEAVER2_INSTALL_DIR}/lib)
-set(CLEAVER2_LIBRARY     "cleaver2")                   # matches add_library(cleaver2 ...)
-
-message(STATUS "[Cleaver2_external] INSTALL_DIR=${CLEAVER2_INSTALL_DIR}")
+MESSAGE(STATUS "CLEAVER2_DIR: ${CLEAVER2_DIR}")
