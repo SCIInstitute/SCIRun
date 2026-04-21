@@ -121,6 +121,58 @@ endif()
 # ------------------------------------------------------------------------------
 # ExternalProject_Add: Boost
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Compute Python-related CMake cache arguments for Boost
+# ------------------------------------------------------------------------------
+if(BUILD_WITH_PYTHON)
+  if(WIN32 AND MSVC)
+    set(_BOOST_PYTHON_CACHE_ARGS
+      -DPython3_FIND_FRAMEWORK:STRING=NEVER
+      -DPython3_FIND_STRATEGY:STRING=LOCATION
+      -DPython3_FIND_REQUIRED:BOOL=ON
+      -DPython3_ROOT_DIR:PATH=${SCI_PYTHON_ROOT_DIR}
+      -DPython3_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}
+      -DPython3_INCLUDE_DIR:PATH=${SCI_PYTHON_INCLUDE}
+      -DPython3_LIBRARY_DEBUG:FILEPATH=${SCI_PYTHON_LIBRARY_FILE_DEBUG}
+      -DPython3_LIBRARY_RELEASE:FILEPATH=${SCI_PYTHON_LIBRARY_FILE_RELEASE}
+    )
+  else()
+    set(_BOOST_PYTHON_CACHE_ARGS
+      -DPython3_FIND_FRAMEWORK:STRING=NEVER
+      -DPython3_FIND_STRATEGY:STRING=LOCATION
+      -DPython3_FIND_REQUIRED:BOOL=ON
+      -DPython3_ROOT_DIR:PATH=${SCI_PYTHON_ROOT_DIR}
+      -DPython3_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}
+      -DPython3_INCLUDE_DIR:PATH=${SCI_PYTHON_INCLUDE}
+      -DPython3_LIBRARY:FILEPATH=${SCI_PYTHON_LIBRARY_FILE}
+    )
+  endif()
+else()
+  # Python completely disabled: do not expose Python in any form
+  set(_BOOST_PYTHON_CACHE_ARGS
+    -DPython3_FIND_REQUIRED:BOOL=OFF
+  )
+endif()
+
+# ------------------------------------------------------------------------------
+# Compute Python-related environment variables for Boost/b2
+# ------------------------------------------------------------------------------
+if(BUILD_WITH_PYTHON)
+  set(_BOOST_PYTHON_ENV
+    "PYTHONHOME=${SCI_PYTHON_ROOT_DIR}"
+    "PYTHONPATH="
+    "PATH=${SCI_PYTHON_ROOT_DIR}/bin:${_SCIRUN_ENV_PATH_CMAKE}"
+  )
+else()
+  set(_BOOST_PYTHON_ENV
+    "PYTHONPATH="
+    "PATH=${_SCIRUN_ENV_PATH_CMAKE}"
+  )
+endif()
+
+# ------------------------------------------------------------------------------
+# ExternalProject_Add: Boost
+# ------------------------------------------------------------------------------
 ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
   GIT_REPOSITORY ${_boost_git_url}
@@ -130,38 +182,20 @@ ExternalProject_Add(Boost_external
   INSTALL_COMMAND ""
 
   CMAKE_CACHE_ARGS
-      -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-      -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-      -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
 
-      # ---------- Python ON/OFF controlled by SCIRun option ----------
-      -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
-      #-DBOOST_ENABLE_PYTHON:BOOL=${BUILD_WITH_PYTHON}
+    # ---------- Python strictly controlled by SCIRun option ----------
+    -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
 
-      # ---------- FORCE FindPython3 to use SCIRun Python, not Xcode ----------
-      -DPython3_FIND_FRAMEWORK:STRING=NEVER
-      -DPython3_FIND_STRATEGY:STRING=LOCATION
-      -DPython3_FIND_REQUIRED:BOOL=${BUILD_WITH_PYTHON}
-      -DPython3_ROOT_DIR:PATH=${SCI_PYTHON_ROOT_DIR}
-      -DPython3_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}
-      -DPython3_INCLUDE_DIR:PATH=${SCI_PYTHON_INCLUDE}
-      if(WIN32 AND MSVC)
-        -DPython3_LIBRARY_DEBUG:FILEPATH=${SCI_PYTHON_LIBRARY_FILE_DEBUG}
-        -DPython3_LIBRARY_RELEASE:FILEPATH=${SCI_PYTHON_LIBRARY_FILE_RELEASE}
-      else()
-        -DPython3_LIBRARY:FILEPATH=${SCI_PYTHON_LIBRARY_FILE}
-      endif()
+    ${_BOOST_PYTHON_CACHE_ARGS}
 
   CMAKE_COMMAND_ENV
-      "PYTHONHOME=${SCI_PYTHON_ROOT_DIR}"
-      "PYTHONPATH="
-      "PATH=${SCI_PYTHON_ROOT_DIR}/bin:${_SCIRUN_ENV_PATH_CMAKE}"
-      "CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY=FALSE"
-      "CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH=FALSE"
-      "CMAKE_FIND_FRAMEWORK=NEVER"
-      "Python3_FIND_FRAMEWORK=NEVER"
-      "Python3_FIND_STRATEGY=LOCATION"
+    ${_BOOST_PYTHON_ENV}
+    "CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY=FALSE"
+    "CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH=FALSE"
 )
 
 # ------------------------------------------------------------------------------
@@ -192,20 +226,27 @@ ExternalProject_Add_Step(Boost_external bootstrap_b2
 # --------------------------------------------------------------
 # Step: write project-config.jam (AFTER bootstrap)
 # --------------------------------------------------------------
-ExternalProject_Add_Step(Boost_external write_project_config
-  COMMAND ${CMAKE_COMMAND}
-      -DOUTPUT_FILE=${SOURCE_DIR}/project-config.jam
-      -DVERSION=${SCI_PYTHON_VERSION_SHORT}
-      -DEXE=${SCI_PYTHON_EXE}
-      -DINCLUDE=${SCI_PYTHON_INCLUDE}
-      -DLIB_RELEASE=${SCI_PYTHON_LIBRARY_RELEASE}
-      -DLIB_DEBUG=${SCI_PYTHON_LIBRARY_DEBUG}
-      -P ${SUPERBUILD_DIR}/WriteProjectConfigJam.cmake
-  DEPENDEES bootstrap_b2
-  INDEPENDENT 1
-
-  COMMENT "Overwriting project-config.jam with Python toolset AFTER bootstrap"
-)
+if(BUILD_WITH_PYTHON)
+  ExternalProject_Add_Step(Boost_external write_project_config
+    COMMAND ${CMAKE_COMMAND}
+        -DOUTPUT_FILE=${SOURCE_DIR}/project-config.jam
+        -DVERSION=${SCI_PYTHON_VERSION_SHORT}
+        -DEXE=${SCI_PYTHON_EXE}
+        -DINCLUDE=${SCI_PYTHON_INCLUDE}
+        -DLIB_RELEASE=${SCI_PYTHON_LIBRARY_RELEASE}
+        -DLIB_DEBUG=${SCI_PYTHON_LIBRARY_DEBUG}
+        -P ${SUPERBUILD_DIR}/WriteProjectConfigJam.cmake
+    DEPENDEES bootstrap_b2
+    INDEPENDENT 1
+    COMMENT "Overwriting project-config.jam with Python toolset AFTER bootstrap"
+  )
+else()
+  ExternalProject_Add_Step(Boost_external write_project_config
+    COMMAND ${CMAKE_COMMAND} -E echo "Python disabled: project-config.jam not modified"
+    DEPENDEES bootstrap_b2
+    INDEPENDENT 1
+  )
+endif()
 
 # --------------------------------------------------------------
 # Step: verify project-config.jam
