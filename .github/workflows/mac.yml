@@ -11,6 +11,7 @@ jobs:
     with:
       runner: macOS-latest
       qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: true
       artifact-name: SCIRunMacInstaller
@@ -27,6 +28,7 @@ jobs:
     with:
       runner: macOS-latest
       qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: false
       artifact-name: SCIRunMacNPInstaller
@@ -36,6 +38,7 @@ jobs:
     with:
       runner: macOS-latest
       qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
       variant: gui
       with-ospray: true
       artifact-name: SCIRunMacOsprayInstaller
