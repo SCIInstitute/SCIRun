@@ -12,6 +12,10 @@ on:
       qt-path:
         required: false
         type: string
+      prepare-packages:
+        required: false
+        type: boolean
+        default: false
       variant:
         required: true
         type: string
@@ -50,6 +54,12 @@ jobs:
 
       - name: Print Qt dir
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
+
+      - name: Prepare (linux)
+        if: ${{ startsWith(inputs.runner, 'ubuntu') || inputs.prepare-packages }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev || true
 
       - name: Build
         run: |
