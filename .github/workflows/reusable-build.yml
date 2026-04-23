@@ -1,0 +1,92 @@
+name: Reusable build
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+      qt-version:
+        required: false
+        type: string
+      variant:
+        required: true
+        type: string
+      build-with-python:
+        required: false
+        type: boolean
+        default: true
+      with-ospray:
+        required: false
+        type: boolean
+        default: false
+      build-testing:
+        required: false
+        type: boolean
+        default: false
+      artifact-name:
+        required: false
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Qt (if requested)
+        if: ${{ inputs.qt-version != '' }}
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ inputs.qt-version }}
+          setup-python: 'true'
+          install-deps: true
+
+      - name: Print Qt dir
+        run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
+
+      - name: Build
+        run: |
+          set -eux
+          CMD=(./build.sh)
+          # Variant-specific flags
+          if [ "${{ inputs.variant }}" = "gui" ]; then
+            CMD+=("-DQt_PATH=\"${QT_ROOT_DIR}\"")
+          fi
+          if [ "${{ inputs.variant }}" = "headless" ]; then
+            CMD+=("-DBUILD_HEADLESS:BOOL=ON")
+          fi
+          if [ "${{ inputs.build-with-python }}" = "false" ]; then
+            CMD+=("-DBUILD_WITH_PYTHON=OFF")
+          fi
+          if [ "${{ inputs.with-ospray }}" = "true" ]; then
+            CMD+=("-DWITH_OSPRAY:BOOL=ON")
+          fi
+          if [ "${{ inputs.build-testing }}" = "true" ]; then
+            CMD+=("-DBUILD_TESTING:BOOL=ON")
+          fi
+          # Join and run
+          echo "Running: ${CMD[*]}"
+          eval "${CMD[*]}"
+
+      - name: Package (optional)
+        if: ${{ inputs.artifact-name != '' }}
+        run: |
+          set -eux
+          cmake -DBUILD_BUNDLE:BOOL=ON ../../src || true
+          make -j3 || true
+          make package || true
+
+      - name: Upload installer (optional)
+        if: ${{ inputs.artifact-name != '' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: |
+            bin/SCIRun/**
