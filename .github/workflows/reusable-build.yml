@@ -9,6 +9,9 @@ on:
       qt-version:
         required: false
         type: string
+      qt-path:
+        required: false
+        type: string
       variant:
         required: true
         type: string
@@ -54,7 +57,23 @@ jobs:
           CMD=(./build.sh)
           # Variant-specific flags
           if [ "${{ inputs.variant }}" = "gui" ]; then
-            CMD+=("-DQt_PATH=\"${QT_ROOT_DIR}\"")
+            if [ "${{ inputs.qt-version }}" != "" ]; then
+              CMD+=("-DQt_PATH=\"${QT_ROOT_DIR}\"")
+            elif [ "${{ inputs.qt-path }}" != "" ]; then
+              CMD+=("-DQt_PATH=\"${{ inputs.qt-path }}\"")
+            else
+              # try to auto-detect on Debian/Ubuntu runners
+              if command -v dpkg >/dev/null 2>&1; then
+                QT_DET=$(dpkg -L qtbase5-dev 2>/dev/null | head -n 1 || true)
+                if [ "${QT_DET}" != "" ]; then
+                  CMD+=("-DQt_PATH=\"${QT_DET}\"")
+                else
+                  echo "Warning: qtbase5-dev files not found via dpkg"
+                fi
+              else
+                echo "No Qt path provided and qt-version empty; proceeding without explicit Qt path"
+              fi
+            fi
           fi
           if [ "${{ inputs.variant }}" = "headless" ]; then
             CMD+=("-DBUILD_HEADLESS:BOOL=ON")
