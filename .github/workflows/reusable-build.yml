@@ -125,37 +125,55 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $cmd = './build.sh'
-          $args = @()
+
+          # Build arguments for cmake
+          $cmakeArgs = @()
+
+          # Prefer Ninja if available to match other runners
+          if (Get-Command ninja -ErrorAction SilentlyContinue) {
+            $cmakeArgs += '-G'
+            $cmakeArgs += 'Ninja'
+          }
+
           if ('${{ inputs.variant }}' -eq 'gui') {
             if ('${{ inputs.qt-version }}' -ne '') {
               $qtPath = $env:QT_ROOT_DIR
               if (-not $qtPath) { $qtPath = $env:Qt5_Dir }
               if (-not $qtPath) { $qtPath = $env:Qt6_Dir }
-              if ($qtPath) { $args += "-DQt_PATH=\"$qtPath\"" } else { Write-Host "Warning: Qt installer ran but QT path not found in env" }
+              if ($qtPath) { $cmakeArgs += "-DQt_PATH=$qtPath" } else { Write-Host "Warning: Qt installer ran but QT path not found in env" }
+
               if ('${{ inputs.scirun-qt-min-version }}' -ne '') {
-                $args += "-DSCIRUN_QT_MIN_VERSION=\"${{ inputs.scirun-qt-min-version }}\""
+                $cmakeArgs += "-DSCIRUN_QT_MIN_VERSION=${{ inputs.scirun-qt-min-version }}"
               } else {
-                if ('${{ inputs.qt-version }}' -like '6.*') { $args += "-DSCIRUN_QT_MIN_VERSION=\"6.3.1\"" }
-                elseif ('${{ inputs.qt-version }}' -like '5.*') { $args += "-DSCIRUN_QT_MIN_VERSION=\"5.15.2\"" }
+                if ('${{ inputs.qt-version }}' -like '6.*') { $cmakeArgs += "-DSCIRUN_QT_MIN_VERSION=6.3.1" }
+                elseif ('${{ inputs.qt-version }}' -like '5.*') { $cmakeArgs += "-DSCIRUN_QT_MIN_VERSION=5.15.2" }
               }
             } elseif ('${{ inputs.qt-path }}' -ne '') {
-              $args += "-DQt_PATH=\"${{ inputs.qt-path }}\""
+              $cmakeArgs += "-DQt_PATH=${{ inputs.qt-path }}"
             } else {
               Write-Host "No Qt path provided and qt-version empty; proceeding without explicit Qt path"
             }
           }
-          if ('${{ inputs.variant }}' -eq 'headless') { $args += "-DBUILD_HEADLESS:BOOL=ON" }
-          if ('${{ inputs.build-with-python }}' -eq 'false') { $args += "-DBUILD_WITH_PYTHON=OFF" }
-          if ('${{ inputs.with-ospray }}' -eq 'true') { $args += "-DWITH_OSPRAY:BOOL=ON" }
-          if ('${{ inputs.build-testing }}' -eq 'true') { $args += "-DBUILD_TESTING:BOOL=ON" }
 
-          $joined = $cmd + ' ' + ($args -join ' ')
-          $bashPaths = @('C:\\Program Files\\Git\\bin\\bash.exe','C:\\Program Files\\Git\\usr\\bin\\bash.exe','C:\\msys64\\usr\\bin\\bash.exe')
-          $bash = $bashPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $bash) { Write-Error "Bash not found on this Windows runner; cannot run build.sh. Install Git for Windows or adjust workflow to use native Windows build." }
-          Write-Host "Running via bash: $joined"
-          & $bash -lc $joined
+          if ('${{ inputs.variant }}' -eq 'headless') { $cmakeArgs += "-DBUILD_HEADLESS:BOOL=ON" }
+          if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DBUILD_WITH_PYTHON=OFF" }
+          if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
+          if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
+
+          # Prepare build directory
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          Push-Location build
+
+          # Run CMake configure
+          $cmakeCommand = @('cmake') + $cmakeArgs + @('-S','..','-B','.')
+          Write-Host "Configuring: $($cmakeCommand -join ' ')"
+          & $cmakeCommand[0] @cmakeCommand[1..($cmakeCommand.Length - 1)]
+
+          # Build (Release) using cmake --build
+          Write-Host "Building with cmake --build . --config Release --parallel"
+          & cmake --build . --config Release --parallel
+
+          Pop-Location
 
       - name: Package (optional)
         if: ${{ inputs.artifact-name != '' }} && runner.os != 'Windows'
