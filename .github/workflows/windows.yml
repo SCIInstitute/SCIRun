@@ -10,7 +10,7 @@ on:
 
 jobs:
   windows-build-headless:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
 
@@ -85,7 +85,7 @@ jobs:
       run: cmake --build . --target RUN_TESTS --config Release
 
   windows-build-gui-qt5:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
 
@@ -133,7 +133,7 @@ jobs:
         path: bin/SCIRun/SCIRun-5.0.*.exe
 
   windows-build-gui-qt6:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
 
@@ -181,7 +181,7 @@ jobs:
         path: bin/SCIRun/SCIRun-5.0.*.exe
 
   windows-build-gui-python:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
 
@@ -237,7 +237,7 @@ jobs:
     #          bin/SCIRun/SCIRun-5.0.beta.*-win64.exe
 
   windows-build-gui-python-ospray:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
 
@@ -297,7 +297,7 @@ jobs:
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     matrix:
-  #       os: [windows-2022, windows-2019]
+  #       os: [windows-2022, windows-2022]
   #       qt: ["5.15.2", "6.3.1"]
   #       hl: ["ON", "OFF"]
   #       py: ["ON", "OFF"]
