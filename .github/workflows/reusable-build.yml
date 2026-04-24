@@ -165,9 +165,10 @@ jobs:
           Push-Location build
 
           # Run CMake configure
-          $cmakeCommand = @('cmake') + $cmakeArgs + @('-S','..','-B','.')
-          Write-Host "Configuring: $($cmakeCommand -join ' ')"
-          & $cmakeCommand[0] @cmakeCommand[1..($cmakeCommand.Length - 1)]
+          $cmakeExe = 'cmake'
+          $cmakeArgsFull = $cmakeArgs + @('-S','..','-B','.')
+          Write-Host "Configuring: $cmakeExe $($cmakeArgsFull -join ' ')"
+          & $cmakeExe @cmakeArgsFull
 
           # Build (Release) using cmake --build
           Write-Host "Building with cmake --build . --config Release --parallel"
