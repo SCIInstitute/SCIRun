@@ -12,14 +12,14 @@ jobs:
   windows-headless:
     uses: ./.github/workflows/reusable-build.yml
     with:
-      runner: windows-2019
+      runner: windows-2022
       variant: headless
       build-testing: true
 
   windows-gui-qt5:
     uses: ./.github/workflows/reusable-build.yml
     with:
-      runner: windows-2019
+      runner: windows-2022
       qt-version: '5.15.2'
       variant: gui
       build-with-python: false
@@ -28,7 +28,7 @@ jobs:
   windows-gui-qt6:
     uses: ./.github/workflows/reusable-build.yml
     with:
-      runner: windows-2019
+      runner: windows-2022
       qt-version: '6.3.*'
       variant: gui
       build-with-python: false
@@ -37,7 +37,7 @@ jobs:
   windows-gui-python:
     uses: ./.github/workflows/reusable-build.yml
     with:
-      runner: windows-2019
+      runner: windows-2022
       qt-version: '5.15.2'
       variant: gui
       build-with-python: true
