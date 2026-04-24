@@ -129,10 +129,26 @@ jobs:
           # Build arguments for cmake
           $cmakeArgs = @()
 
-          # Prefer Ninja if available to match other runners
-          if (Get-Command ninja -ErrorAction SilentlyContinue) {
+          # Prefer Visual Studio generator on Windows to ensure MSVC flags are used
+          # Use 'Ninja' only if explicitly needed and cl.exe is already on PATH.
+          if (Get-Command cl.exe -ErrorAction SilentlyContinue) {
+            # cl.exe present — prefer Ninja to match other runners
+            if (Get-Command ninja -ErrorAction SilentlyContinue) {
+              $cmakeArgs += '-G'
+              $cmakeArgs += 'Ninja'
+            } else {
+              # Fall back to Visual Studio generator
+              $cmakeArgs += '-G'
+              $cmakeArgs += 'Visual Studio 17 2022'
+              $cmakeArgs += '-A'
+              $cmakeArgs += 'x64'
+            }
+          } else {
+            # Ensure MSVC generator so CMake emits MSVC-style flags
             $cmakeArgs += '-G'
-            $cmakeArgs += 'Ninja'
+            $cmakeArgs += 'Visual Studio 17 2022'
+            $cmakeArgs += '-A'
+            $cmakeArgs += 'x64'
           }
 
           if ('${{ inputs.variant }}' -eq 'gui') {
