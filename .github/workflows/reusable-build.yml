@@ -64,7 +64,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev || true
 
-      - name: Build
+      - name: Build (Linux/macOS)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           set -eux
@@ -119,8 +120,45 @@ jobs:
           echo "Running: ${CMD[*]}"
           eval "${CMD[*]}"
 
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $cmd = './build.sh'
+          $args = @()
+          if ('${{ inputs.variant }}' -eq 'gui') {
+            if ('${{ inputs.qt-version }}' -ne '') {
+              $qtPath = $env:QT_ROOT_DIR
+              if (-not $qtPath) { $qtPath = $env:Qt5_Dir }
+              if (-not $qtPath) { $qtPath = $env:Qt6_Dir }
+              if ($qtPath) { $args += "-DQt_PATH=\"$qtPath\"" } else { Write-Host "Warning: Qt installer ran but QT path not found in env" }
+              if ('${{ inputs.scirun-qt-min-version }}' -ne '') {
+                $args += "-DSCIRUN_QT_MIN_VERSION=\"${{ inputs.scirun-qt-min-version }}\""
+              } else {
+                if ('${{ inputs.qt-version }}' -like '6.*') { $args += "-DSCIRUN_QT_MIN_VERSION=\"6.3.1\"" }
+                elseif ('${{ inputs.qt-version }}' -like '5.*') { $args += "-DSCIRUN_QT_MIN_VERSION=\"5.15.2\"" }
+              }
+            } elseif ('${{ inputs.qt-path }}' -ne '') {
+              $args += "-DQt_PATH=\"${{ inputs.qt-path }}\""
+            } else {
+              Write-Host "No Qt path provided and qt-version empty; proceeding without explicit Qt path"
+            }
+          }
+          if ('${{ inputs.variant }}' -eq 'headless') { $args += "-DBUILD_HEADLESS:BOOL=ON" }
+          if ('${{ inputs.build-with-python }}' -eq 'false') { $args += "-DBUILD_WITH_PYTHON=OFF" }
+          if ('${{ inputs.with-ospray }}' -eq 'true') { $args += "-DWITH_OSPRAY:BOOL=ON" }
+          if ('${{ inputs.build-testing }}' -eq 'true') { $args += "-DBUILD_TESTING:BOOL=ON" }
+
+          $joined = $cmd + ' ' + ($args -join ' ')
+          $bashPaths = @('C:\\Program Files\\Git\\bin\\bash.exe','C:\\Program Files\\Git\\usr\\bin\\bash.exe','C:\\msys64\\usr\\bin\\bash.exe')
+          $bash = $bashPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $bash) { Write-Error "Bash not found on this Windows runner; cannot run build.sh. Install Git for Windows or adjust workflow to use native Windows build." }
+          Write-Host "Running via bash: $joined"
+          & $bash -lc $joined
+
       - name: Package (optional)
-        if: ${{ inputs.artifact-name != '' }}
+        if: ${{ inputs.artifact-name != '' }} && runner.os != 'Windows'
         shell: bash
         run: |
           set -eux
