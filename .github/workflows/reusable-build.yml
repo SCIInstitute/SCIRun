@@ -166,7 +166,7 @@ jobs:
 
           # Run CMake configure
           $cmakeExe = 'cmake'
-          $cmakeArgsFull = $cmakeArgs + @('-S','..','-B','.')
+          $cmakeArgsFull = $cmakeArgs + @('-S','../Superbuild','-B','.')
           Write-Host "Configuring: $cmakeExe $($cmakeArgsFull -join ' ')"
           & $cmakeExe @cmakeArgsFull
 
