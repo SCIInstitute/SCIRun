@@ -65,6 +65,7 @@ jobs:
           sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev || true
 
       - name: Build
+        shell: bash
         run: |
           set -eux
           CMD=(./build.sh)
@@ -120,6 +121,7 @@ jobs:
 
       - name: Package (optional)
         if: ${{ inputs.artifact-name != '' }}
+        shell: bash
         run: |
           set -eux
           cmake -DBUILD_BUNDLE:BOOL=ON ../../src || true
