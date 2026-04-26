@@ -65,7 +65,7 @@ jobs:
           sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev || true
 
       - name: Build (Linux/macOS)
-        if: runner.os != 'Windows'
+        if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
           set -eux
@@ -121,7 +121,7 @@ jobs:
           eval "${CMD[*]}"
 
       - name: Build (Windows)
-        if: runner.os == 'Windows'
+        if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -177,7 +177,7 @@ jobs:
           Pop-Location
 
       - name: Package (optional - Unix/macOS)
-        if: ${{ inputs.artifact-name != '' }} && runner.os != 'Windows'
+        if: ${{ inputs.artifact-name != '' && runner.os != 'Windows' }}
         shell: bash
         run: |
           set -eux
@@ -206,7 +206,7 @@ jobs:
           fi
 
       - name: Package (optional - Windows)
-        if: ${{ inputs.artifact-name != '' }} && runner.os == 'Windows'
+        if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
         shell: cmd
         run: |
           if exist build\SCIRun (
