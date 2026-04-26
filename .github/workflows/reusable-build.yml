@@ -176,7 +176,7 @@ jobs:
 
           Pop-Location
 
-      - name: Package (optional - Unix/macOS)
+      - name: Package (optional)
         if: ${{ inputs.artifact-name != '' }} && runner.os != 'Windows'
         shell: bash
         run: |
@@ -185,16 +185,6 @@ jobs:
           make -j3 || true
           make package || true
 
-      - name: Package (optional - Windows)
-        if: ${{ inputs.artifact-name != '' }} && runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          Push-Location build
-          Write-Host "Running CMake package target"
-          & cmake --build . --config Release --target package || Write-Host "Package target failed or produced no packages"
-          Pop-Location
-
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}
         uses: actions/upload-artifact@v6
@@ -202,10 +192,3 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: |
             bin/SCIRun/**
-            build/_CPack_Packages/**
-            build/**/*.exe
-            build/**/*.msi
-            build/**/*.zip
-            build/*.exe
-            build/*.msi
-            build/*.zip
