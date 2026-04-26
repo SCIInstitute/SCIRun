@@ -176,7 +176,7 @@ jobs:
 
           Pop-Location
 
-      - name: Package (optional)
+      - name: Package (optional - Unix/macOS)
         if: ${{ inputs.artifact-name != '' }} && runner.os != 'Windows'
         shell: bash
         run: |
@@ -184,6 +184,25 @@ jobs:
           cmake -DBUILD_BUNDLE:BOOL=ON ../../src || true
           make -j3 || true
           make package || true
+          # Repair package script (present in older mac workflow)
+          if [ -f bin/SCIRun/repair_package.sh ]; then
+            chmod +x bin/SCIRun/repair_package.sh || true
+            ./bin/SCIRun/repair_package.sh || true
+          fi
+
+      - name: Package (optional - Windows)
+        if: ${{ inputs.artifact-name != '' }} && runner.os == 'Windows'
+        shell: cmd
+        run: |
+          if exist build\SCIRun (
+            pushd build\SCIRun
+            cmake --build . --config Release --target package || echo Package target failed or produced no packages
+            popd
+          ) else (
+            pushd build
+            cmake --build . --config Release --target package || echo Package target failed or produced no packages
+            popd
+          )
 
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}
@@ -192,3 +211,9 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: |
             bin/SCIRun/**
+            bin/SCIRun/SCIRun-*-Darwin.pkg
+            bin/SCIRun/SCIRun-*-win64.exe
+            build/_CPack_Packages/**
+            build/**/*.exe
+            build/**/*.msi
+            build/**/*.zip
