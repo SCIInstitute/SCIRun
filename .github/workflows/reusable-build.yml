@@ -181,13 +181,28 @@ jobs:
         shell: bash
         run: |
           set -eux
-          cmake -DBUILD_BUNDLE:BOOL=ON ../../src || true
-          make -j3 || true
-          make package || true
-          # Repair package script (present in older mac workflow)
-          if [ -f bin/SCIRun/repair_package.sh ]; then
-            chmod +x bin/SCIRun/repair_package.sh || true
-            ./bin/SCIRun/repair_package.sh || true
+          if [ -d bin/SCIRun ]; then
+            pushd bin/SCIRun
+            cmake -DBUILD_BUNDLE:BOOL=ON ../../src || true
+            make -j3 || true
+            make package || true
+            # Repair package script (present in older mac workflow)
+            if [ -f repair_package.sh ]; then
+              chmod +x repair_package.sh || true
+              ./repair_package.sh || true
+            fi
+            popd
+          else
+            echo "bin/SCIRun not found; attempting in bin"
+            if [ -d bin ]; then
+              pushd bin
+              cmake -DBUILD_BUNDLE:BOOL=ON ../src || true
+              make -j3 || true
+              make package || true
+              popd
+            else
+              echo "No packaging directory found; skipping package step"
+            fi
           fi
 
       - name: Package (optional - Windows)
