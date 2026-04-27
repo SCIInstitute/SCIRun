@@ -25,7 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(ospray_GIT_TAG "scirun-ospray-v3.2.0-1")
+SET(ospray_GIT_TAG "v2.10.1")
 
 set(ospray_DEPENDENCIES)
 LIST(APPEND ospray_DEPENDENCIES GLM_external)
