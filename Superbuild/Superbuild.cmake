@@ -30,6 +30,32 @@ SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
 
 ###########################################
+# Force superbuild Python, prevent system Python binding
+###########################################
+
+if(BUILD_WITH_PYTHON)
+
+  # This is where PythonExternal.cmake will install Python
+  set(_SB_PYTHON_PREFIX "${ep_base}/Python_external")
+
+  # Prevent CMake from picking up /usr/bin/python3.x
+  set(Python3_FIND_SYSTEM_ONLY OFF CACHE BOOL "" FORCE)
+  set(Python3_FIND_REGISTRY NEVER CACHE STRING "" FORCE)
+  set(Python3_FIND_UNVERSIONED_NAMES NEVER CACHE STRING "" FORCE)
+  set(Python3_FIND_STRATEGY LOCATION CACHE STRING "" FORCE)
+
+  # Predeclare Python location (even before it exists)
+  set(Python3_ROOT_DIR "${_SB_PYTHON_PREFIX}" CACHE PATH "" FORCE)
+
+  # These stop FindPython / FindPython3 from falling back
+  set(Python_ROOT_DIR "${_SB_PYTHON_PREFIX}" CACHE PATH "" FORCE)
+
+  # Do NOT set Python3_EXECUTABLE yet — it doesn't exist during first configure
+  # We only block system discovery here.
+
+endif()
+
+###########################################
 # Set default CMAKE_BUILD_TYPE
 # if empty for Unix Makefile builds
 IF(CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
@@ -112,15 +138,16 @@ IF(NOT BUILD_HEADLESS)
   # ------------------------------------------------------------
   # Platform-specific Qt auto-detection
   # ------------------------------------------------------------
-  if(APPLE OR WIN32)
+  if(APPLE OR WIN32 OR (UNIX AND NOT APPLE))
 
-    # If user did NOT set Qt_PATH or path is invalid → try auto-detect
     if(NOT Qt_PATH OR NOT IS_DIRECTORY "${Qt_PATH}")
 
       if(APPLE)
         set(_qt_default "/Users/basisunus/Qt/6.10.2/macos")
       elseif(WIN32)
         set(_qt_default "C:/Qt/6.10.1/msvc2022_64")
+      elseif(UNIX)
+        set(_qt_default "$ENV{HOME}/Qt/6.11.0/gcc_64")
       endif()
 
       if(IS_DIRECTORY "${_qt_default}")
@@ -128,16 +155,9 @@ IF(NOT BUILD_HEADLESS)
           "Qt_PATH not set or invalid — using auto-detected Qt: ${_qt_default}"
         )
 
-        # Force-set Qt_PATH
         set(Qt_PATH "${_qt_default}" CACHE PATH "Qt install prefix" FORCE)
 
-        # --------------------------------------------------------
-        # Auto-detect Qt version from directory structure
-        #
-        # Examples:
-        #   macOS  : /Users/.../Qt/6.10.2/macos
-        #   Windows: C:/Qt/6.10.1/msvc2022_64
-        # --------------------------------------------------------
+        # Auto-detect Qt version from path
         get_filename_component(_qt_parent "${_qt_default}" DIRECTORY)
         get_filename_component(_qt_version "${_qt_parent}" NAME)
 
@@ -146,19 +166,18 @@ IF(NOT BUILD_HEADLESS)
             CACHE STRING "Qt version" FORCE)
 
         string(REPLACE "." ";" SCIRUN_QT_MIN_VERSION_LIST
-               ${SCIRUN_QT_MIN_VERSION})
+              ${SCIRUN_QT_MIN_VERSION})
 
         list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
         list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
         list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
 
       endif()
-
     else()
       message(STATUS "Using user-provided Qt_PATH: ${Qt_PATH}")
     endif()
 
-  endif()  # APPLE OR WIN32
+  endif()
 
   # ------------------------------------------------------------
   # Qt package discovery
