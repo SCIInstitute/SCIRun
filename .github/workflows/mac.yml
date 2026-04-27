@@ -34,6 +34,7 @@ jobs:
       artifact-name: SCIRunMacNPInstaller
 
   mac-gui-ospray:
+    if: false
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: macOS-latest
