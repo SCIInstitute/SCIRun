@@ -34,11 +34,20 @@ jobs:
       build-with-python: false
       artifact-name: SCIRunWindowsInstaller_qt6
 
-  windows-gui-python:
+  windows-gui-python-qt5:
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
       qt-version: '5.15.2'
       variant: gui
       build-with-python: true
-      artifact-name: SCIRunWindowsPythonInstaller
+      artifact-name: SCIRunWindowsPythonInstaller_qt5
+
+  windows-gui-python-qt6:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2022
+      qt-version: '6.3.*'
+      variant: gui
+      build-with-python: true
+      artifact-name: SCIRunWindowsPythonInstaller_qt6
