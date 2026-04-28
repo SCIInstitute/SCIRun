@@ -226,3 +226,8 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: |
             bin/SCIRun/SCIRun-*-Darwin.pkg
+            bin/SCIRun/SCIRun-*-win64.exe
+            build/_CPack_Packages/**
+            build/**/*.exe
+            build/**/*.msi
+            build/**/*.zip
