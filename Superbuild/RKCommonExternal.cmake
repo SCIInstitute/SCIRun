@@ -44,4 +44,3 @@ ExternalProject_Add(rkcommon_external
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DBUILD_TESTING:BOOL=OFF
 )
-``
