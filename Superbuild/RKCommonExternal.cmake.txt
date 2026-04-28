@@ -24,41 +24,24 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(ospray_GIT_TAG "v2.10.1")
+# Superbuild/RKCommonExternal.cmake
 
-set(ospray_DEPENDENCIES)
-set(ospray_DEPENDENCIES)
-LIST(APPEND ospray_DEPENDENCIES
-  GLM_external
-  rkcommon_external
-)
+SET_PROPERTY(DIRECTORY PROPERTY EP_BASE ${ep_base})
 
-ExternalProject_Get_Property(rkcommon_external INSTALL_DIR)
-SET(RKCOMMON_INSTALL_DIR ${INSTALL_DIR})
+SET(rkcommon_GIT_REPOSITORY
+  "https://github.com/ospray/rkcommon.git")
+SET(rkcommon_GIT_TAG "v1.11.0")
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
-ExternalProject_Add(Ospray_external
-  DEPENDS ${ospray_DEPENDENCIES}
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
-  GIT_TAG ${ospray_GIT_TAG}
+ExternalProject_Add(rkcommon_external
+  GIT_REPOSITORY ${rkcommon_GIT_REPOSITORY}
+  GIT_TAG        ${rkcommon_GIT_TAG}
 
-  GIT_SUBMODULES ""
-  GIT_SUBMODULES_RECURSE OFF
+  UPDATE_COMMAND ""
+  PATCH_COMMAND  ""
 
   CMAKE_CACHE_ARGS
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
-    -DBUILD_ISA_AVX512:BOOL=OFF
-
-    -Drkcommon_DIR:PATH=${RKCOMMON_INSTALL_DIR}/lib/cmake/rkcommon
-    -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
+    -DBUILD_TESTING:BOOL=OFF
 )
-
-ExternalProject_Get_Property(Ospray_external BINARY_DIR)
-SET(OSPRAY_BUILD_DIR ${BINARY_DIR} CACHE PATH "")
-
-MESSAGE(STATUS "OSPRAY_BUILD_DIR: ${OSPRAY_BUILD_DIR}")
+``

@@ -281,7 +281,8 @@ IF(WITH_TETGEN)
 ENDIF()
 
 IF(WITH_OSPRAY)
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
+  INCLUDE(${SUPERBUILD_DIR}/RKCommonExternal.cmake)
+  ADD_EXTERNAL(${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external)
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
