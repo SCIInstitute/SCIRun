@@ -1,0 +1,24 @@
+diff --git a/kernels/subdiv/bezier_curve.h b/kernels/subdiv/bezier_curve.h
+index a5adad5cc..40a0f29ee 100644
+--- a/kernels/subdiv/bezier_curve.h
++++ b/kernels/subdiv/bezier_curve.h
+@@ -134,8 +134,17 @@ namespace embree
+         return merge(BBox<V>(v0),BBox<V>(v1),BBox<V>(v2));
+       }
+       
+-      friend embree_ostream operator<<(embree_ostream cout, const QuadraticBezierCurve& a) {
+-        return cout << "QuadraticBezierCurve ( (" << a.u.lower << ", " << a.u.upper << "), " << a.v0 << ", " << a.v1 << ", " << a.v2 << ")";
++      friend embree_ostream operator<<(embree_ostream cout,
++                                      const QuadraticBezierCurve& a)
++      {
++      #if defined(__APPLE__)
++        (void)a;
++        return cout;
++      #else
++        return cout << "QuadraticBezierCurve ( ("
++                    << a.u.lower << ", " << a.u.upper << "), "
++                    << a.v0 << ", " << a.v1 << ", " << a.v2 << ")";
++      #endif
+       }
+     };
+   

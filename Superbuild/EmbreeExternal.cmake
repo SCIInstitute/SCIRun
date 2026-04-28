@@ -24,30 +24,36 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-# Superbuild/RKCommonExternal.cmake
+# Superbuild/EmbreeExternal.cmake
 
 SET_PROPERTY(DIRECTORY PROPERTY EP_BASE ${ep_base})
 
-SET(rkcommon_GIT_REPOSITORY
-  "https://github.com/ospray/rkcommon.git")
-SET(rkcommon_GIT_TAG "v1.11.0")
+set(EMBREE_GIT_REPOSITORY https://github.com/embree/embree.git)
+set(EMBREE_GIT_TAG v3.13.4)  # >= 4.0.0, stable
 
-ExternalProject_Get_Property(TBB_external INSTALL_DIR)
-set(TBB_INSTALL_DIR ${INSTALL_DIR})
-
-ExternalProject_Add(rkcommon_external
+ExternalProject_Add(Embree_external
   DEPENDS TBB_external
-  GIT_REPOSITORY https://github.com/ospray/rkcommon.git
-  GIT_TAG v1.11.0
+
+  GIT_REPOSITORY ${EMBREE_GIT_REPOSITORY}
+  GIT_TAG        ${EMBREE_GIT_TAG}
 
   UPDATE_COMMAND ""
-  PATCH_COMMAND ""
+  PATCH_COMMAND
+    ${CMAKE_COMMAND} -E echo "Patching Embree for macOS Clang" &&
+    git apply ${SUPERBUILD_DIR}/patches/embree-macos-bezier-fix.patch
+
 
   CMAKE_CACHE_ARGS
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DBUILD_TESTING:BOOL=OFF
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
+
+    -DEMBREE_TUTORIALS:BOOL=OFF
+    -DEMBREE_EXAMPLES:BOOL=OFF
+    -DEMBREE_TESTING:BOOL=OFF
+    -DEMBREE_ISPC_SUPPORT:BOOL=OFF
+    -DEMBREE_GEOMETRY_CURVE:BOOL=OFF
+    -DEMBREE_GEOMETRY_SUBDIVISION:BOOL=OFF
+
     -DTBB_ROOT:PATH=${TBB_INSTALL_DIR}
 )

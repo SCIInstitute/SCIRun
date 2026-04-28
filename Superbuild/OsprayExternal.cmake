@@ -32,10 +32,17 @@ set(ospray_DEPENDENCIES)
 LIST(APPEND ospray_DEPENDENCIES
   GLM_external
   rkcommon_external
+  Embree_external
 )
 
 ExternalProject_Get_Property(rkcommon_external INSTALL_DIR)
-SET(RKCOMMON_INSTALL_DIR ${INSTALL_DIR})
+set(RKCOMMON_INSTALL_DIR ${INSTALL_DIR})
+
+ExternalProject_Get_Property(TBB_external INSTALL_DIR)
+set(TBB_INSTALL_DIR ${INSTALL_DIR})
+
+ExternalProject_Get_Property(Embree_external INSTALL_DIR)
+set(EMBREE_INSTALL_DIR ${INSTALL_DIR})
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
@@ -53,8 +60,10 @@ ExternalProject_Add(Ospray_external
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
     -DBUILD_ISA_AVX512:BOOL=OFF
-
-    -Drkcommon_DIR:PATH=${RKCOMMON_INSTALL_DIR}/lib/cmake/rkcommon
+    -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
+    -Drkcommon_DIR:PATH=${RKCOMMON_INSTALL_DIR}/lib/cmake/rkcommon-1.11.0
+    -DTBB_ROOT:PATH=${TBB_INSTALL_DIR}
+    -Dembree_DIR:PATH=${EMBREE_INSTALL_DIR}/lib/cmake/embree-3.13.4
     -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
 )
 

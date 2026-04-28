@@ -24,21 +24,16 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-# Superbuild/RKCommonExternal.cmake
+# Superbuild/TBBExternal.cmake
 
 SET_PROPERTY(DIRECTORY PROPERTY EP_BASE ${ep_base})
 
-SET(rkcommon_GIT_REPOSITORY
-  "https://github.com/ospray/rkcommon.git")
-SET(rkcommon_GIT_TAG "v1.11.0")
+set(TBB_GIT_REPOSITORY "https://github.com/oneapi-src/oneTBB.git")
+set(TBB_GIT_TAG "v2021.11.0")  # Known-compatible with rkcommon 1.11
 
-ExternalProject_Get_Property(TBB_external INSTALL_DIR)
-set(TBB_INSTALL_DIR ${INSTALL_DIR})
-
-ExternalProject_Add(rkcommon_external
-  DEPENDS TBB_external
-  GIT_REPOSITORY https://github.com/ospray/rkcommon.git
-  GIT_TAG v1.11.0
+ExternalProject_Add(TBB_external
+  GIT_REPOSITORY ${TBB_GIT_REPOSITORY}
+  GIT_TAG        ${TBB_GIT_TAG}
 
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
@@ -46,8 +41,7 @@ ExternalProject_Add(rkcommon_external
   CMAKE_CACHE_ARGS
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DBUILD_TESTING:BOOL=OFF
+    -DTBB_TEST:BOOL=OFF
+    -DTBB_STRICT:BOOL=OFF
     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
-    -DTBB_ROOT:PATH=${TBB_INSTALL_DIR}
 )
