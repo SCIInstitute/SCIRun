@@ -51,6 +51,9 @@ ExternalProject_Add(Ospray_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
   GIT_TAG ${ospray_GIT_TAG}
 
+  PATCH_COMMAND
+  git apply ${SUPERBUILD_DIR}/patches/ospray-macos-allow-embree3.patch
+  
   GIT_SUBMODULES ""
   GIT_SUBMODULES_RECURSE OFF
 

@@ -1,0 +1,31 @@
+diff --git a/cmake/ospray_macros.cmake b/cmake/ospray_macros.cmake
+index f581f3ecf..d93c00f1d 100644
+--- a/cmake/ospray_macros.cmake
++++ b/cmake/ospray_macros.cmake
+@@ -422,12 +422,20 @@ macro(ospray_find_embree EMBREE_VERSION_REQUIRED FIND_AS_DEPENDENCY)
+     find_package(embree ${EMBREE_VERSION_REQUIRED})
+   endif()
+   if (NOT embree_FOUND)
+-    message(FATAL_ERROR
+-            "We did not find Embree installed on your system. OSPRay requires"
+-            " an Embree installation >= v${EMBREE_VERSION_REQUIRED}, please"
+-            " download and extract Embree (or compile Embree from source), then"
+-            " set the 'embree_DIR' variable to the installation (or build)"
+-            " directory.")
++    if (APPLE)
++      message(WARNING
++              "Using Embree < v${EMBREE_VERSION_REQUIRED} on macOS. "
++              "OSPRay upstream requires Embree >= v${EMBREE_VERSION_REQUIRED}, "
++              "but Embree 4.x is unstable with Apple Clang. "
++              "Proceeding with the provided Embree installation.")
++    else()
++      message(FATAL_ERROR
++              "We did not find Embree installed on your system. OSPRay requires"
++              " an Embree installation >= v${EMBREE_VERSION_REQUIRED}, please"
++              " download and extract Embree (or compile Embree from source), then"
++              " set the 'embree_DIR' variable to the installation (or build)"
++              " directory.")
++    endif()
+   endif()
+   # Get Embree CPU info
+   get_target_property(EMBREE_INCLUDE_DIRS embree
