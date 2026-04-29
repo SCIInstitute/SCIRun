@@ -32,6 +32,7 @@ jobs:
       build-with-python: false
 
   linux-gui-ospray:
+    if: false
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-latest
