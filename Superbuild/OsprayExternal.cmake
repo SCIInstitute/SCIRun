@@ -64,6 +64,7 @@ ExternalProject_Add(Ospray_external
     -Drkcommon_DIR:PATH=${RKCOMMON_INSTALL_DIR}/lib/cmake/rkcommon-1.11.0
     -DTBB_ROOT:PATH=${TBB_INSTALL_DIR}
     -Dembree_DIR:PATH=${EMBREE_INSTALL_DIR}/lib/cmake/embree-3.13.4
+    -DEMBREE_VERSION_REQUIRED:STRING=3.13.0
     -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
 )
 

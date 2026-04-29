@@ -39,8 +39,8 @@ ExternalProject_Add(Embree_external
 
   UPDATE_COMMAND ""
   PATCH_COMMAND
-    ${CMAKE_COMMAND} -E echo "Patching Embree for macOS Clang" &&
-    git apply ${SUPERBUILD_DIR}/patches/embree-macos-bezier-fix.patch
+  git apply ${SUPERBUILD_DIR}/patches/embree-macos-disable-debug-streams.patch
+
 
 
   CMAKE_CACHE_ARGS
@@ -54,6 +54,7 @@ ExternalProject_Add(Embree_external
     -DEMBREE_ISPC_SUPPORT:BOOL=OFF
     -DEMBREE_GEOMETRY_CURVE:BOOL=OFF
     -DEMBREE_GEOMETRY_SUBDIVISION:BOOL=OFF
+    -DCMAKE_CXX_FLAGS=-DEMBREE_DISABLE_STREAM
 
     -DTBB_ROOT:PATH=${TBB_INSTALL_DIR}
 )
