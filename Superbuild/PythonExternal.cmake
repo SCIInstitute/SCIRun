@@ -67,6 +67,7 @@ IF(UNIX)
   SET(python_CONFIGURE_FLAGS
     "--prefix=<INSTALL_DIR>"
     "--with-ensurepip=no"
+    "LDFLAGS=-Wl,-rpath,'$$ORIGIN/../lib'"
   )
   IF(APPLE)
     # framework contains *.dylib
