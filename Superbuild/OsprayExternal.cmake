@@ -52,8 +52,8 @@ ExternalProject_Add(Ospray_external
   GIT_TAG ${ospray_GIT_TAG}
 
   PATCH_COMMAND
-  git apply ${SUPERBUILD_DIR}/patches/ospray-macos-allow-embree3.patch
-  
+  git apply ${SUPERBUILD_DIR}/patches/ospray-macos-embree-policy.patch
+
   GIT_SUBMODULES ""
   GIT_SUBMODULES_RECURSE OFF
 
@@ -68,6 +68,7 @@ ExternalProject_Add(Ospray_external
     -DTBB_ROOT:PATH=${TBB_INSTALL_DIR}
     -Dembree_DIR:PATH=${EMBREE_INSTALL_DIR}/lib/cmake/embree-3.13.4
     -DEMBREE_VERSION_REQUIRED:STRING=3.13.0
+    -DOSPRAY_ENABLE_ISPC:BOOL=OFF
     -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
 )
 
