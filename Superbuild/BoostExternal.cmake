@@ -305,6 +305,8 @@ else()
 endif()
 
 set(_BOOST_B2_ARGS
+  ${_BOOST_CXXFLAGS}
+
   --with-atomic
   --with-chrono
   --with-date_time
