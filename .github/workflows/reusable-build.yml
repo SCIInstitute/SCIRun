@@ -1,0 +1,230 @@
+name: Reusable build
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+      qt-version:
+        required: false
+        type: string
+      qt-path:
+        required: false
+        type: string
+      scirun-qt-min-version:
+        required: false
+        type: string
+      prepare-packages:
+        required: false
+        type: boolean
+        default: false
+      variant:
+        required: true
+        type: string
+      build-with-python:
+        required: false
+        type: boolean
+        default: true
+      with-ospray:
+        required: false
+        type: boolean
+        default: false
+      build-testing:
+        required: false
+        type: boolean
+        default: false
+      artifact-name:
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Qt (if requested)
+        if: ${{ inputs.qt-version != '' }}
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ inputs.qt-version }}
+          setup-python: 'true'
+          install-deps: true
+
+      - name: Print Qt dir
+        run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
+
+      - name: Prepare (linux)
+        if: ${{ startsWith(inputs.runner, 'ubuntu') || inputs.prepare-packages }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev || true
+
+      - name: Build (Linux/macOS)
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          set -eux
+          CMD=(./build.sh)
+          # Variant-specific flags
+          if [ "${{ inputs.variant }}" = "gui" ]; then
+            # Pass Qt path (from installer or explicit), and set SCIRUN_QT_MIN_VERSION appropriately
+            if [ "${{ inputs.qt-version }}" != "" ]; then
+              CMD+=("-DQt_PATH=\"${QT_ROOT_DIR}\"")
+            elif [ "${{ inputs.qt-path }}" != "" ]; then
+              CMD+=("-DQt_PATH=\"${{ inputs.qt-path }}\"")
+            else
+              # try to auto-detect on Debian/Ubuntu runners
+              if command -v dpkg >/dev/null 2>&1; then
+                QT_DET=$(dpkg -L qtbase5-dev 2>/dev/null | head -n 1 || true)
+                if [ "${QT_DET}" != "" ]; then
+                  CMD+=("-DQt_PATH=\"${QT_DET}\"")
+                else
+                  echo "Warning: qtbase5-dev files not found via dpkg"
+                fi
+              else
+                echo "No Qt path provided and qt-version empty; proceeding without explicit Qt path"
+              fi
+            fi
+
+            # Determine SCIRUN_QT_MIN_VERSION
+            if [ "${{ inputs.scirun-qt-min-version }}" != "" ]; then
+              CMD+=("-DSCIRUN_QT_MIN_VERSION=\"${{ inputs.scirun-qt-min-version }}\"")
+            else
+              if [ "${{ inputs.qt-version }}" != "" ]; then
+                case "${{ inputs.qt-version }}" in
+                  6.*) CMD+=("-DSCIRUN_QT_MIN_VERSION=\"6.3.1\"") ;;
+                  5.*) CMD+=("-DSCIRUN_QT_MIN_VERSION=\"5.15.2\"") ;;
+                  *) echo "Unknown qt-version format, not setting SCIRUN_QT_MIN_VERSION" ;;
+                esac
+              fi
+            fi
+          fi
+          if [ "${{ inputs.variant }}" = "headless" ]; then
+            CMD+=("-DBUILD_HEADLESS:BOOL=ON")
+          fi
+          if [ "${{ inputs.build-with-python }}" = "false" ]; then
+            CMD+=("-DBUILD_WITH_PYTHON=OFF")
+          fi
+          if [ "${{ inputs.with-ospray }}" = "true" ]; then
+            CMD+=("-DWITH_OSPRAY:BOOL=ON")
+          fi
+          if [ "${{ inputs.build-testing }}" = "true" ]; then
+            CMD+=("-DBUILD_TESTING:BOOL=ON")
+          fi
+          # Join and run
+          echo "Running: ${CMD[*]}"
+          eval "${CMD[*]}"
+
+      - name: Build (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          # Build arguments for cmake
+          $cmakeArgs = @()
+
+          # Always use Visual Studio generator on Windows to ensure MSVC flags are used
+          $cmakeArgs += '-G'
+          $cmakeArgs += 'Visual Studio 17 2022'
+          $cmakeArgs += '-A'
+          $cmakeArgs += 'x64'
+
+          if ('${{ inputs.variant }}' -eq 'gui') {
+            if ('${{ inputs.qt-version }}' -ne '') {
+              $qtPath = $env:QT_ROOT_DIR
+              if (-not $qtPath) { $qtPath = $env:Qt5_Dir }
+              if (-not $qtPath) { $qtPath = $env:Qt6_Dir }
+              if ($qtPath) { $cmakeArgs += "-DQt_PATH=$qtPath" } else { Write-Host "Warning: Qt installer ran but QT path not found in env" }
+
+              if ('${{ inputs.scirun-qt-min-version }}' -ne '') {
+                $cmakeArgs += "-DSCIRUN_QT_MIN_VERSION=${{ inputs.scirun-qt-min-version }}"
+              } else {
+                if ('${{ inputs.qt-version }}' -like '6.*') { $cmakeArgs += "-DSCIRUN_QT_MIN_VERSION=6.3.1" }
+                elseif ('${{ inputs.qt-version }}' -like '5.*') { $cmakeArgs += "-DSCIRUN_QT_MIN_VERSION=5.15.2" }
+              }
+            } elseif ('${{ inputs.qt-path }}' -ne '') {
+              $cmakeArgs += "-DQt_PATH=${{ inputs.qt-path }}"
+            } else {
+              Write-Host "No Qt path provided and qt-version empty; proceeding without explicit Qt path"
+            }
+          }
+
+          if ('${{ inputs.variant }}' -eq 'headless') { $cmakeArgs += "-DBUILD_HEADLESS:BOOL=ON" }
+          if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DBUILD_WITH_PYTHON=OFF" }
+          if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
+          if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
+
+          # Prepare build directory
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          Push-Location build
+
+          # Run CMake configure
+          $cmakeExe = 'cmake'
+          $cmakeArgsFull = $cmakeArgs + @('-S','../Superbuild','-B','.')
+          Write-Host "Configuring: $cmakeExe $($cmakeArgsFull -join ' ')"
+          & $cmakeExe @cmakeArgsFull
+
+          # Build (Release) using cmake --build
+          Write-Host "Building with cmake --build . --config Release --parallel"
+          & cmake --build . --config Release --parallel
+
+          Pop-Location
+
+      - name: Package (optional - Unix/macOS)
+        if: ${{ inputs.artifact-name != '' && runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          set -eux
+          if [ -d bin/SCIRun ]; then
+            pushd bin/SCIRun
+            cmake -DBUILD_BUNDLE:BOOL=ON ../../src || true
+            make -j3 || true
+            make package || true
+            # Repair package script (present in older mac workflow)
+            if [ -f repair_package.sh ]; then
+              chmod +x repair_package.sh || true
+              ./repair_package.sh || true
+            fi
+            popd
+          else
+            echo "bin/SCIRun not found; attempting in bin"
+            if [ -d bin ]; then
+              pushd bin
+              cmake -DBUILD_BUNDLE:BOOL=ON ../src || true
+              make -j3 || true
+              make package || true
+              popd
+            else
+              echo "No packaging directory found; skipping package step"
+            fi
+          fi
+
+      - name: Package (optional - Windows)
+        if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
+        shell: cmd
+        run: |
+          if exist build\SCIRun (
+            pushd build\SCIRun
+            cmake --build . --config Release --target package || echo Package target failed or produced no packages
+            popd
+          ) else (
+            pushd build
+            cmake --build . --config Release --target package || echo Package target failed or produced no packages
+            popd
+          )
+
+      - name: Upload installer (optional)
+        if: ${{ inputs.artifact-name != '' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: |
+            bin/SCIRun/SCIRun-*-Darwin.pkg
+            bin/SCIRun/SCIRun-*-win64.exe
+            build/**/*.msi
