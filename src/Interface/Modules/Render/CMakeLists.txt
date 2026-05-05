@@ -142,11 +142,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render ${QT_GRAPHICS_LIBRARIES})
-if (QT_VERSION_MAJOR EQUAL 6)
-  TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt6::Svg)
-elseif(QT_VERSION_MAJOR EQUAL 5)
-  TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt5::Svg)
-endif()
+TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt::Svg)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)
