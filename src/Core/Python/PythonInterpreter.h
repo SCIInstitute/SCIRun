@@ -116,6 +116,7 @@ public:
 private:
 	friend class ::PythonStdIO;
 	PythonInterpreterPrivateHandle private_;
+    PyThreadState* main_thread_state_;
 
 public:
 	// ESCAPEQUOTES:
