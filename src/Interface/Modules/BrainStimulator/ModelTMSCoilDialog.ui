@@ -83,7 +83,7 @@
    <item row="2" column="0" colspan="2">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Current (dI/dt)[A/s]:</string>
+      <string>Current (dI/dt)[A/µs (10^6 A/s)]:</string>
      </property>
     </widget>
    </item>
