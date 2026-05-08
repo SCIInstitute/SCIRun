@@ -134,7 +134,7 @@ namespace Core {
       this->thread_condition_variable_.wait(lock);
 
       // Abort reading if an interrupt signal has been received.
-      if (PyErr_CheckSignals() != 0) break;
+      //if (PyErr_CheckSignals() != 0) break;
 
       if (bytes <= 0)
       {
@@ -383,8 +383,6 @@ void PythonInterpreter::initialize_eventhandler(bool needsSpecialPythonPathTreat
     Py_ExitStatusException(status);
   }
 
-  this->main_thread_state_ = PyEval_SaveThread();
-
   PRINT_PY_INIT_DEBUG(8);
 
 #else
@@ -456,45 +454,51 @@ void PythonInterpreter::initialize_eventhandler(bool needsSpecialPythonPathTreat
   PRINT_PY_INIT_DEBUG(8);
 #endif  // PY_VERSION_HEX >= 0x03080000
 
-  PyRun_SimpleString(
-      "from codeop import CommandCompiler\n"
-      "__internal_compiler = CommandCompiler()\n");
+  auto gstate = PyGILState_Ensure();
 
-  boost::python::object main_module = boost::python::import("__main__");
-  boost::python::object main_namespace = main_module.attr("__dict__");
-  this->private_->compiler_ = main_namespace["__internal_compiler"];
-  this->private_->globals_ = main_namespace;
+  {
+    PyRun_SimpleString(
+        "from codeop import CommandCompiler\n"
+        "__internal_compiler = CommandCompiler()\n");
 
-  PyRun_SimpleString(
-      "import sys\n"
-      "try:\n"
-      "\tsys.ps1\n"
-      "except AttributeError:\n"
-      "\tsys.ps1 = \">>> \"\n"
-      "try:\n"
-      "\tsys.ps2\n"
-      "except AttributeError:\n"
-      "\tsys.ps2 = \"... \"\n");
+    boost::python::object main_module = boost::python::import("__main__");
+    boost::python::object main_namespace = main_module.attr("__dict__");
+    this->private_->compiler_ = main_namespace["__internal_compiler"];
+    this->private_->globals_ = main_namespace;
 
-  boost::python::object sys_module = main_namespace["sys"];
-  boost::python::object sys_namespace = sys_module.attr("__dict__");
-  this->private_->prompt1_ = boost::python::extract<std::string>(sys_namespace["ps1"]);
-  this->private_->prompt2_ = boost::python::extract<std::string>(sys_namespace["ps2"]);
+    PyRun_SimpleString(
+        "import sys\n"
+        "try:\n"
+        "\tsys.ps1\n"
+        "except AttributeError:\n"
+        "\tsys.ps1 = \">>> \"\n"
+        "try:\n"
+        "\tsys.ps2\n"
+        "except AttributeError:\n"
+        "\tsys.ps2 = \"... \"\n");
 
-  PyRun_SimpleString(
-      "import interpreter\n"
-      "__term_io = interpreter.terminalio()\n"
-      "__term_err = interpreter.terminalerr()\n"
-      "import sys\n"
-      "sys.stdin = __term_io\n"
-      "sys.stdout = __term_io\n"
-      "sys.stderr = __term_err\n"
-      "import atexit\n"
-      "def quit_gracefully():\n"
-      "\tprint('Goodbye!')\n"
-      "atexit.register(quit_gracefully)\n");
+    boost::python::object sys_module = main_namespace["sys"];
+    boost::python::object sys_namespace = sys_module.attr("__dict__");
+    this->private_->prompt1_ = boost::python::extract<std::string>(sys_namespace["ps1"]);
+    this->private_->prompt2_ = boost::python::extract<std::string>(sys_namespace["ps2"]);
 
-  PyRun_SimpleString("del (interpreter, __internal_compiler, __term_io, __term_err)\n");
+    PyRun_SimpleString(
+        "import interpreter\n"
+        "__term_io = interpreter.terminalio()\n"
+        "__term_err = interpreter.terminalerr()\n"
+        "import sys\n"
+        "sys.stdin = __term_io\n"
+        "sys.stdout = __term_io\n"
+        "sys.stderr = __term_err\n"
+        "import atexit\n"
+        "def quit_gracefully():\n"
+        "\tprint('Goodbye!')\n"
+        "atexit.register(quit_gracefully)\n");
+
+    PyRun_SimpleString("del (interpreter, __internal_compiler, __term_io, __term_err)\n");
+  }
+
+  PyGILState_Release(gstate);
 
   this->private_->initialized_ = true;
   PRINT_PY_INIT_DEBUG(999);
@@ -554,8 +558,32 @@ void setPythonArgv(const std::vector<std::string>& argv)
     argsOffset = scriptFlag2 - argv.begin() + 1;
   }
 
-  PySys_SetArgv(wideArgvPtrs.size() - argsOffset, &wideArgvPtrs[argsOffset]);
+  //PySys_SetArgv(wideArgvPtrs.size() - argsOffset, &wideArgvPtrs[argsOffset]);
 }
+}
+
+void PythonInterpreter::set_python_argv(const std::vector<std::string>& argv)
+{
+  auto wideArgv = wideArgvFromArgv(argv);
+  auto wideArgvPtrs = wideArgvPtrsFromWideArgv(wideArgv);
+
+  int argsOffset = 0;
+  auto scriptFlag1 = std::find(argv.begin(), argv.end(), "-s");
+  auto scriptFlag2 = std::find(argv.begin(), argv.end(), "--script");
+  if (scriptFlag1 != argv.end())
+  {
+    argsOffset = scriptFlag1 - argv.begin() + 1;
+  }
+  else if (scriptFlag2 != argv.end())
+  {
+    argsOffset = scriptFlag2 - argv.begin() + 1;
+  }
+
+  auto gstate = PyGILState_Ensure();
+
+  PySys_SetArgv(wideArgvPtrs.size() - argsOffset, &wideArgvPtrs[argsOffset]);
+
+  PyGILState_Release(gstate);
 }
 
 void PythonInterpreter::initialize(bool needProgramName, const std::string& commandLine, const boost::filesystem::path& libPath)
@@ -571,7 +599,7 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
 
   initialize_eventhandler(needsSpecialPythonPathTreatment(commandLine), libPath);
 
-  setPythonArgv(argv);
+  set_python_argv(argv);
 
   {
     auto out = [](const std::string& s) {
@@ -587,7 +615,9 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
 
 void PythonInterpreter::print_banner()
 {
+  auto gstate = PyGILState_Ensure();
   PyRun_SimpleString("print('Python %s on %s' % (sys.version, sys.platform))\n");
+  PyGILState_Release(gstate);
   this->prompt_signal_(this->private_->prompt1_);
 }
 
@@ -616,63 +646,66 @@ bool PythonInterpreter::run_string(const std::string& command)
     this->private_->command_buffer_ += command;
   }
 
+  std::cout << "Thread ID: " << std::this_thread::get_id() << std::endl;
   // ENTER PYTHON (GIL)
-  PyEval_RestoreThread(this->main_thread_state_);
+  auto gstate = PyGILState_Ensure();
 
-  // Compile the statement in the buffer
-  boost::python::object code_obj;
-
-  // Clear any previous Python errors.
-  PyErr_Clear();
-
-  try
   {
-    code_obj = this->private_->compiler_(this->private_->command_buffer_);
-  }
-  catch (...)
-  {}
+    // Compile the statement in the buffer
+    boost::python::object code_obj;
 
-  // If an error happened during compilation, print the error message
-  if (PyErr_Occurred())
-  {
-    PyErr_Print();
-  }
-  // If compilation succeeded and the code object is not Py_None
-  else if (code_obj)
-  {
+    // Clear any previous Python errors.
+    PyErr_Clear();
+
     try
     {
-      auto result = PyEval_EvalCode(code_obj.ptr(), this->private_->globals_.ptr(), nullptr);
-      Py_XDECREF(result);
+      code_obj = this->private_->compiler_(this->private_->command_buffer_);
     }
     catch (...)
     {}
 
+    // If an error happened during compilation, print the error message
     if (PyErr_Occurred())
     {
-      if (PyErr_ExceptionMatches(PyExc_EOFError))
+      PyErr_Print();
+    }
+    // If compilation succeeded and the code object is not Py_None
+    else if (code_obj)
+    {
+      try
       {
-        this->error_signal_("\nKeyboardInterrupt\n");
-        PyErr_Clear();
-
-        // EXIT PYTHON before return
-        this->main_thread_state_ = PyEval_SaveThread();
-        return false;
+        auto result = PyEval_EvalCode(code_obj.ptr(), this->private_->globals_.ptr(), nullptr);
+        Py_XDECREF(result);
       }
-      else
+      catch (...)
+      {}
+
+      if (PyErr_Occurred())
       {
-        PyErr_Print();
+        if (PyErr_ExceptionMatches(PyExc_EOFError))
+        {
+          this->error_signal_("\nKeyboardInterrupt\n");
+          PyErr_Clear();
+
+          // EXIT PYTHON before return
+          PyGILState_Release(gstate);
+          return false;
+        }
+        else
+        {
+          PyErr_Print();
+        }
       }
     }
-  }
-  // If the code object is Py_None, prompt for more input
-  else
-  {
-    this->prompt_signal_(this->private_->prompt2_);
+    // If the code object is Py_None, prompt for more input
+    else
+    {
+      this->prompt_signal_(this->private_->prompt2_);
+    }
   }
 
   // EXIT PYTHON
-  this->main_thread_state_ = PyEval_SaveThread();
+  PyGILState_Release(gstate);
 
   this->private_->command_buffer_.clear();
   this->prompt_signal_(this->private_->prompt1_);
@@ -695,7 +728,7 @@ void PythonInterpreter::run_script(const std::string& script)
   // this->output_signal_( "Running script ...\n" );
 
   // ENTER PYTHON (GIL)
-  PyEval_RestoreThread(this->main_thread_state_);
+  auto gstate = PyGILState_Ensure();
 
   // Clear any previous Python errors.
   PyErr_Clear();
@@ -727,7 +760,7 @@ void PythonInterpreter::run_script(const std::string& script)
   }
 
   // EXIT PYTHON
-  this->main_thread_state_ = PyEval_SaveThread();
+  PyGILState_Release(gstate);
 
   this->private_->command_buffer_.clear();
   this->prompt_signal_(this->private_->prompt1_);
@@ -746,7 +779,7 @@ bool PythonInterpreter::run_file(const std::string& file_name)
   const char* file = file_name.c_str();
 
   // ENTER PYTHON (GIL)
-  PyEval_RestoreThread(this->main_thread_state_);
+  auto gstate = PyGILState_Ensure();
 
   PyObject* obj = Py_BuildValue("s", file);
   FILE* fp2 = _Py_fopen_obj(obj, "r+");
@@ -754,14 +787,14 @@ bool PythonInterpreter::run_file(const std::string& file_name)
   {
     PyRun_SimpleFile(fp2, file);
     // EXIT PYTHON
-    this->main_thread_state_ = PyEval_SaveThread();
+    PyGILState_Release(gstate);
     return true;
   }
   else
   {
     this->error_signal_("Could not load python file: " + file_name);
     // EXIT PYTHON
-    this->main_thread_state_ = PyEval_SaveThread();
+    PyGILState_Release(gstate);
     return false;
   }
 }
@@ -769,7 +802,7 @@ bool PythonInterpreter::run_file(const std::string& file_name)
 void PythonInterpreter::interrupt()
 {
   // ENTER PYTHON (GIL)
-  PyEval_RestoreThread(this->main_thread_state_);
+  auto gstate = PyGILState_Ensure();
 
   if (PyErr_CheckSignals() != 0)
   {
@@ -779,7 +812,7 @@ void PythonInterpreter::interrupt()
   }
 
   // EXIT PYTHON
-  this->main_thread_state_ = PyEval_SaveThread();
+  PyGILState_Release(gstate);
 }
 
 void PythonInterpreter::start_terminal()
