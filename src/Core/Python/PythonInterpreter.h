@@ -72,6 +72,8 @@ private:
 	/// class. It initializes the python interpreter.
   void initialize_eventhandler(bool needsSpecialPythonPathTreatment, const boost::filesystem::path& libPath);
 
+  void set_python_argv(const std::vector<std::string>& argv);
+
 public:
   // INITIALIZE:
   /// Initialize the python interpreter with extra modules.
@@ -116,7 +118,6 @@ public:
 private:
 	friend class ::PythonStdIO;
 	PythonInterpreterPrivateHandle private_;
-    PyThreadState* main_thread_state_;
 
 public:
 	// ESCAPEQUOTES:
