@@ -1,4 +1,4 @@
-# SolveBioSavart
+# SolveBiotSavart
 
 Calculation of magnetic field through a given domain mesh with a TMS coil geometry.  
 
