@@ -646,7 +646,6 @@ bool PythonInterpreter::run_string(const std::string& command)
     this->private_->command_buffer_ += command;
   }
 
-  std::cout << "Thread ID: " << std::this_thread::get_id() << std::endl;
   // ENTER PYTHON (GIL)
   auto gstate = PyGILState_Ensure();
 
