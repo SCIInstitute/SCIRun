@@ -383,6 +383,8 @@ void PythonInterpreter::initialize_eventhandler(bool needsSpecialPythonPathTreat
     Py_ExitStatusException(status);
   }
 
+  PyEval_SaveThread();
+
   PRINT_PY_INIT_DEBUG(8);
 
 #else
@@ -732,29 +734,31 @@ void PythonInterpreter::run_script(const std::string& script)
   // Clear any previous Python errors.
   PyErr_Clear();
 
-  // Compile the script
-  boost::python::object code_obj;
-  try
   {
-    code_obj = this->private_->compiler_(script, "<script>", "exec");
-  }
-  catch (...)
-  {}
+    // Compile the script
+    boost::python::object code_obj;
+    try
+    {
+      code_obj = this->private_->compiler_(script, "<script>", "exec");
+    }
+    catch (...)
+    {}
 
-  // If an error happened during compilation, print the error message
-  if (PyErr_Occurred())
-  {
-    PyErr_Print();
-  }
-  // If compilation succeeded and the code object is not Py_None
-  else if (code_obj)
-  {
-    boost::python::dict local_var;
-    PyObject* result = PyEval_EvalCode(code_obj.ptr(), this->private_->globals_.ptr(), local_var.ptr());
-    Py_XDECREF(result);
+    // If an error happened during compilation, print the error message
     if (PyErr_Occurred())
     {
       PyErr_Print();
+    }
+    // If compilation succeeded and the code object is not Py_None
+    else if (code_obj)
+    {
+      boost::python::dict local_var;
+      PyObject* result = PyEval_EvalCode(code_obj.ptr(), this->private_->globals_.ptr(), local_var.ptr());
+      Py_XDECREF(result);
+      if (PyErr_Occurred())
+      {
+        PyErr_Print();
+      }
     }
   }
 
