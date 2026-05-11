@@ -1214,6 +1214,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     void SRInterface::addTextToEntity(uint64_t entityID, const SpireText& text)
     {
       if (text.name.empty()) return;
+      if (text.width == 0 || text.height == 0 || text.bitmap.empty()) return;
       std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
       std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
       if (!textureMan) return;
