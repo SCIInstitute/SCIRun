@@ -60,6 +60,23 @@ namespace Core {
   class PythonInterpreterPrivate : public Lockable
   {
    public:
+    ~PythonInterpreterPrivate()
+    {
+      if (!initialized_) return;
+
+      PyGILState_STATE gil = PyGILState_Ensure();
+
+      try
+      {
+        compiler_ = boost::python::object();  // release
+        globals_ = boost::python::object();
+      }
+      catch (...)
+      {
+      }
+
+      PyGILState_Release(gil);
+    }
     typedef std::pair<std::string, PyObject* (*)(void)> module_entry_type;
     typedef std::list<module_entry_type> module_list_type;
 
