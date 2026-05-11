@@ -232,7 +232,7 @@ PythonInterpreter::PythonInterpreter() : private_(new PythonInterpreterPrivate)
 PythonInterpreter::~PythonInterpreter()
 {
   // NOTE: Boost.Python requires that we don't call Py_Finalize
-  // Py_Finalize();
+  Py_Finalize();
 }
 
 // #define PRINT_PY_INIT_DEBUG(n) std::cout << "ev " << (n) << std::endl;

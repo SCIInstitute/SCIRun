@@ -70,6 +70,15 @@ namespace
   class PyDatatypeString : public PyDatatype
   {
   public:
+    ~PyDatatypeString()
+    {
+      if (Py_IsInitialized())
+      {
+        PyGILState_STATE gil = PyGILState_Ensure();
+        str_ = py::object();  // release under GIL
+        PyGILState_Release(gil);
+      }
+    }
     explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying), str_(convertStringToPython(underlying))
     {
     }
