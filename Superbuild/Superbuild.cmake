@@ -368,7 +368,7 @@ ENDIF()
 
 IF(WITH_VTK)
   LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DVTK_DIR:PATH=${VTK_INSTALL_DIR}/lib/cmake/vtk-9.6"
+    "-DVTK_External_Dir:PATH=${VTK_INSTALL_DIR}"
   )
 ENDIF()
 

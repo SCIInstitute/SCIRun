@@ -307,6 +307,18 @@ IF(WITH_OSPRAY)
   find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
 ENDIF()
 
+IF(WITH_VTK)
+  set(VTK_DIR ${VTK_External_Dir}/lib/cmake/vtk-9.6)
+  find_package(VTK REQUIRED COMPONENTS
+    CommonCore
+    RenderingCore
+    RenderingOpenGL2
+    FiltersCore
+    IOImage
+    HINTS ${VTK_DIR}
+  )
+ENDIF()
+
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
@@ -391,6 +403,11 @@ ENDIF()
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
   SET(OSPRAY_LIBRARIES ospray)
+ENDIF()
+
+# Configure VTK
+IF(WITH_VTK)
+  add_definitions(-DWITH_VTK)
 ENDIF()
 
 ########################################################################
