@@ -106,6 +106,10 @@ OPTION(WITH_OSPRAY "Build Ospray." OFF)
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
 ###########################################
+# Configure vtk
+OPTION(WITH_VTK "build VTK" ON)
+
+###########################################
 # Configure Windows executable to run with
 # or without the console
 
@@ -294,6 +298,10 @@ ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
+IF(WITH_VTK)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+ENDIF()
+
 ###########################################
 # Download external data sources
 OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
@@ -320,6 +328,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
     "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
+    "-DWITH_VTK:BOOL=${WITH_VTK}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DEigen_DIR:PATH=${Eigen_DIR}"
@@ -354,6 +363,12 @@ ENDIF()
 IF(WITH_OSPRAY)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DOspray_External_Dir:PATH=${OSPRAY_BUILD_DIR}"
+  )
+ENDIF()
+
+IF(WITH_VTK)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DVTK_DIR:PATH=${VTK_INSTALL_DIR}/lib/cmake/vtk-9.6"
   )
 ENDIF()
 
