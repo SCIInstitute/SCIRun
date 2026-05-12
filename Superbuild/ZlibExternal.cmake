@@ -32,9 +32,15 @@ SET(zlib_GIT_TAG "origin/1.3.1")
 ExternalProject_Add(Zlib_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/zlib.git"
   GIT_TAG ${zlib_GIT_TAG}
-  PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
+
+  INSTALL_DIR ${ep_base}/Install/zlib
+
+  INSTALL_COMMAND
+    ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/lib
+    COMMAND ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/include
+    COMMAND ${CMAKE_COMMAND} -E copy <BINARY_DIR>/Release/zlib.lib <INSTALL_DIR>/lib
+    COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/zlib.h <INSTALL_DIR>/include
+
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}

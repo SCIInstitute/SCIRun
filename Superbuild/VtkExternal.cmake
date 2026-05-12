@@ -30,18 +30,11 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 set(vtk_GIT_TAG "v9.6.1")
 
 # ---- Dependencies ----
-set(vtk_DEPENDENCIES)
-LIST(APPEND vtk_DEPENDENCIES
-  LibPNG_external
-  Zlib_external
-)
+set(vtk_DEPENDENCIES "Zlib_external")
 
 # ---- Pull dependency install dirs ----
 ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
 set(ZLIB_INSTALL_DIR ${INSTALL_DIR})
-
-ExternalProject_Get_Property(LibPNG_external INSTALL_DIR)
-set(LIBPNG_INSTALL_DIR ${INSTALL_DIR})
 
 # ---- ExternalProject ----
 ExternalProject_Add(VTK_external
@@ -68,11 +61,9 @@ ExternalProject_Add(VTK_external
 
     # ---- External dependency control ----
     -DVTK_MODULE_USE_EXTERNAL_VTK_zlib:BOOL=ON
-    -DVTK_MODULE_USE_EXTERNAL_VTK_png:BOOL=ON
 
     # ---- Help VTK locate them (minimal first pass) ----
-    -DZLIB_ROOT:PATH=${ZLIB_INSTALL_DIR}
-    -DPNG_ROOT:PATH=${LIBPNG_INSTALL_DIR}
+    -DZLIB_ROOT=${ZLIB_INSTALL_DIR}
 
     # ---- Wrapping ----
     -DVTK_WRAP_PYTHON:BOOL=OFF
