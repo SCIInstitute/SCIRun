@@ -30,11 +30,11 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 set(vtk_GIT_TAG "v9.6.1")
 
 # ---- Dependencies ----
-set(vtk_DEPENDENCIES "Zlib_external")
+#set(vtk_DEPENDENCIES "Zlib_external")
 
 # ---- Pull dependency install dirs ----
-ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
-set(ZLIB_INSTALL_DIR ${INSTALL_DIR})
+#ExternalProject_Get_Property(Zlib_external INSTALL_DIR)
+#set(ZLIB_INSTALL_DIR ${INSTALL_DIR})
 
 # ---- ExternalProject ----
 ExternalProject_Add(VTK_external
@@ -60,16 +60,14 @@ ExternalProject_Add(VTK_external
     -DVTK_GROUP_ENABLE_IO:STRING=WANT
 
     # ---- External dependency control ----
-    -DVTK_MODULE_USE_EXTERNAL_VTK_zlib:BOOL=ON
+    #-DVTK_MODULE_USE_EXTERNAL_VTK_zlib:BOOL=ON
 
     # ---- Help VTK locate them (minimal first pass) ----
     # headers
-    -DZLIB_INCLUDE_DIR:PATH=${ZLIB_SOURCE_DIR}
+    #-DZLIB_INCLUDE_DIR:STRING=${ZLIB_SOURCE_DIR}\;${ZLIB_BINARY_DIR}
 
     # library (platform-aware)
-    -DZLIB_LIBRARY:FILEPATH=
-    "$<$<PLATFORM_ID:Windows>:${ZLIB_BINARY_DIR}/$<CONFIG>/z.lib>
-     $<$<NOT:$<PLATFORM_ID:Windows>>:${ZLIB_BINARY_DIR}/libz.a>"
+    #-DZLIB_LIBRARY:FILEPATH=$<$<PLATFORM_ID:Windows>:${ZLIB_BINARY_DIR}/$<CONFIG>/z.lib>$<$<NOT:$<PLATFORM_ID:Windows>>:${ZLIB_BINARY_DIR}/libz.a>
 
     # ---- Wrapping ----
     -DVTK_WRAP_PYTHON:BOOL=OFF
