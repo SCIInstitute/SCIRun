@@ -33,13 +33,7 @@ ExternalProject_Add(Zlib_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/zlib.git"
   GIT_TAG ${zlib_GIT_TAG}
 
-  INSTALL_DIR ${ep_base}/Install/zlib
-
-  INSTALL_COMMAND
-    ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/lib
-    COMMAND ${CMAKE_COMMAND} -E make_directory <INSTALL_DIR>/include
-    COMMAND ${CMAKE_COMMAND} -E copy <BINARY_DIR>/Release/zlib.lib <INSTALL_DIR>/lib
-    COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/zlib.h <INSTALL_DIR>/include
+  INSTALL_COMMAND ""
 
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
@@ -48,6 +42,10 @@ ExternalProject_Add(Zlib_external
 )
 
 ExternalProject_Get_Property(Zlib_external BINARY_DIR)
+ExternalProject_Get_Property(Zlib_external SOURCE_DIR)
+
 SET(Zlib_DIR ${BINARY_DIR} CACHE PATH "")
+set(ZLIB_BINARY_DIR ${BINARY_DIR})
+set(ZLIB_SOURCE_DIR ${SOURCE_DIR})
 
 MESSAGE(STATUS "Zlib_DIR: ${Zlib_DIR}")

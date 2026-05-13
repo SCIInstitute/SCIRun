@@ -63,7 +63,13 @@ ExternalProject_Add(VTK_external
     -DVTK_MODULE_USE_EXTERNAL_VTK_zlib:BOOL=ON
 
     # ---- Help VTK locate them (minimal first pass) ----
-    -DZLIB_ROOT=${ZLIB_INSTALL_DIR}
+    # headers
+    -DZLIB_INCLUDE_DIR:PATH=${ZLIB_SOURCE_DIR}
+
+    # library (platform-aware)
+    -DZLIB_LIBRARY:FILEPATH=
+    "$<$<PLATFORM_ID:Windows>:${ZLIB_BINARY_DIR}/$<CONFIG>/z.lib>
+     $<$<NOT:$<PLATFORM_ID:Windows>>:${ZLIB_BINARY_DIR}/libz.a>"
 
     # ---- Wrapping ----
     -DVTK_WRAP_PYTHON:BOOL=OFF
