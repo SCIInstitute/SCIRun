@@ -314,7 +314,8 @@ IF(WITH_VTK)
     RenderingCore
     RenderingOpenGL2
     FiltersCore
-    IOImage
+    FiltersSources
+    InteractionStyle
     HINTS ${VTK_DIR}
   )
 ENDIF()

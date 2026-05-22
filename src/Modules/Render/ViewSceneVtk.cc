@@ -26,142 +26,93 @@
 */
 
 
-#include <es-log/trace-log.h>
-#include <Modules/Render/OsprayViewer.h>
-#include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/Color.h>
-#include <Core/Logging/Log.h>
+#include <Modules/Render/ViewSceneVtk.h>
 
+#include <vtkSmartPointer.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkSphereSource.h>
+#include <vtkCubeSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkAxesActor.h>
 
 using namespace SCIRun::Modules::Render;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Thread;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms::Render;
 
-MODULE_INFO_DEF(OsprayViewer, Render, SCIRun)
+MODULE_INFO_DEF(ViewSceneVtk, Render, SCIRun)
 
-ALGORITHM_PARAMETER_DEF(Render, ShowPlane);
-ALGORITHM_PARAMETER_DEF(Render, AutoRotationRate);
-ALGORITHM_PARAMETER_DEF(Render, RendererChoice);
-ALGORITHM_PARAMETER_DEF(Render, SeparateModelPerObject);
-ALGORITHM_PARAMETER_DEF(Render, ShowShadows);
-ALGORITHM_PARAMETER_DEF(Render, ShowFrameRate);
-ALGORITHM_PARAMETER_DEF(Render, ShowRenderAnnotations);
-ALGORITHM_PARAMETER_DEF(Render, SubsampleDuringInteraction);
-ALGORITHM_PARAMETER_DEF(Render, SamplesPerPixel);
-ALGORITHM_PARAMETER_DEF(Render, AOSamples);
-ALGORITHM_PARAMETER_DEF(Render, ViewerHeight);
-ALGORITHM_PARAMETER_DEF(Render, ViewerWidth);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewAtX);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewAtY);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewAtZ);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewFromX);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewFromY);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewFromZ);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewUpX);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewUpY);
-ALGORITHM_PARAMETER_DEF(Render, CameraViewUpZ);
-ALGORITHM_PARAMETER_DEF(Render, FrameWriterFilename);
-ALGORITHM_PARAMETER_DEF(Render, BackgroundColor);
-ALGORITHM_PARAMETER_DEF(Render, ShowAmbientLight);
-ALGORITHM_PARAMETER_DEF(Render, AmbientLightColor);
-ALGORITHM_PARAMETER_DEF(Render, AmbientLightIntensity);
-ALGORITHM_PARAMETER_DEF(Render, ShowDirectionalLight);
-ALGORITHM_PARAMETER_DEF(Render, DirectionalLightColor);
-ALGORITHM_PARAMETER_DEF(Render, DirectionalLightIntensity);
-ALGORITHM_PARAMETER_DEF(Render, DirectionalLightAzimuth);
-ALGORITHM_PARAMETER_DEF(Render, DirectionalLightElevation);
-ALGORITHM_PARAMETER_DEF(Render, ShowProbe);
-ALGORITHM_PARAMETER_DEF(Render, ProbeX);
-ALGORITHM_PARAMETER_DEF(Render, ProbeY);
-ALGORITHM_PARAMETER_DEF(Render, ProbeZ);
-ALGORITHM_PARAMETER_DEF(Render, InvertZoom);
-ALGORITHM_PARAMETER_DEF(Render, ZoomSpeed);
+ViewSceneVtk::ViewSceneVtk() : ModuleWithAsyncDynamicPorts(staticInfo_, true) {}
 
-OsprayViewer::OsprayViewer() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
+void ViewSceneVtk::setStateDefaults()
 {
-  RENDERER_LOG_FUNCTION_SCOPE;
-  INITIALIZE_PORT(GeneralGeom);
+  // keep empty for now (we don't need SCIRun params for testing)
 }
 
-void OsprayViewer::setStateDefaults()
+void ViewSceneVtk::execute()
 {
-  auto state = get_state();
-  state->setValue(Parameters::ShowPlane, true);
-  state->setValue(Parameters::AutoRotationRate, 0.025);
-  state->setValue(Parameters::RendererChoice, std::string("scivis"));
-  state->setValue(Parameters::SeparateModelPerObject, false);
-  state->setValue(Parameters::ShowShadows, true);
-  state->setValue(Parameters::ShowFrameRate, false);
-  state->setValue(Parameters::ShowRenderAnnotations, false);
-  state->setValue(Parameters::SubsampleDuringInteraction, false);
-  state->setValue(Parameters::SamplesPerPixel, 1);
-  state->setValue(Parameters::AOSamples, 1);
-  state->setValue(Parameters::ViewerHeight, 600);
-  state->setValue(Parameters::ViewerWidth, 800);
-  state->setValue(Parameters::CameraViewAtX, 0.0);
-  state->setValue(Parameters::CameraViewAtY, 0.0);
-  state->setValue(Parameters::CameraViewAtZ, 0.0);
-  state->setValue(Parameters::CameraViewFromX, 10.0);
-  state->setValue(Parameters::CameraViewFromY, 10.0);
-  state->setValue(Parameters::CameraViewFromZ, 0.0);
-  state->setValue(Parameters::CameraViewUpX, 0.0);
-  state->setValue(Parameters::CameraViewUpY, 0.0);
-  state->setValue(Parameters::CameraViewUpZ, 1.0);
-  state->setValue(Parameters::FrameWriterFilename, std::string("frames.png"));
-  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
-  state->setValue(Parameters::ShowAmbientLight, true);
-  state->setValue(Parameters::AmbientLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(Parameters::AmbientLightIntensity, 0.1);
-  state->setValue(Parameters::ShowDirectionalLight, true);
-  state->setValue(Parameters::DirectionalLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(Parameters::DirectionalLightIntensity, 1.0);
-  state->setValue(Parameters::DirectionalLightAzimuth, 80);
-  state->setValue(Parameters::DirectionalLightElevation, 65);
-  state->setValue(Parameters::ShowProbe, false);
-  state->setValue(Parameters::ProbeX, 0.0);
-  state->setValue(Parameters::ProbeY, 0.0);
-  state->setValue(Parameters::ProbeZ, 0.0);
-  state->setValue(Parameters::InvertZoom, false);
-  state->setValue(Parameters::ZoomSpeed, 1.0);
+  renderTestScene();
 }
 
-void OsprayViewer::portRemovedSlotImpl(const PortId&)
+void ViewSceneVtk::renderTestScene()
 {
-  sendCompositeGeometry();
-}
+  // ----------------------------
+  // Renderer / Window
+  // ----------------------------
+  auto renderer = vtkSmartPointer<vtkRenderer>::New();
+  renderer->SetBackground(0.1, 0.2, 0.3);
 
-void OsprayViewer::asyncExecute(const PortId&, DatatypeHandle data)
-{
-  auto geom = std::dynamic_pointer_cast<OsprayGeometryObject>(data);
-  if (!geom)
-  {
-    error("Logical error: not a geometry object on OsprayViewer");
-    return;
-  }
+  auto renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+  renderWindow->AddRenderer(renderer);
+  renderWindow->SetSize(800, 600);
 
-  sendCompositeGeometry();
-}
+  auto interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+  interactor->SetRenderWindow(renderWindow);
 
-void OsprayViewer::execute()
-{
-#ifndef WITH_OSPRAY
-  error("Must compile WITH_OSPRAY to enable this module.");
-#endif
-}
+  // ----------------------------
+  // Sphere
+  // ----------------------------
+  auto sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+  sphereSource->SetCenter(0.0, 0.0, 0.0);
+  sphereSource->SetRadius(1.0);
 
-void OsprayViewer::sendCompositeGeometry()
-{
-  auto allGeom = getValidDynamicInputs(GeneralGeom);
-  //logWarning("allGeom size {}", allGeom.size());
-  if (!allGeom.empty())
-  {
-    //logWarning("flattened size {}", flattened.size());
-    OsprayGeometryObjectHandle composite(new CompositeOsprayGeometryObject(allGeom));
-    //logWarning("composite ptr {}", composite.get());
-    get_state()->setTransientValue(Parameters::GeomData, composite, true);
-  }
+  auto sphereMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  sphereMapper->SetInputConnection(sphereSource->GetOutputPort());
+
+  auto sphereActor = vtkSmartPointer<vtkActor>::New();
+  sphereActor->SetMapper(sphereMapper);
+  sphereActor->GetProperty()->SetColor(1.0, 0.0, 0.0);  // red
+
+  // ----------------------------
+  // Cube
+  // ----------------------------
+  auto cubeSource = vtkSmartPointer<vtkCubeSource>::New();
+  cubeSource->SetCenter(2.0, 0.0, 0.0);
+
+  auto cubeMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  cubeMapper->SetInputConnection(cubeSource->GetOutputPort());
+
+  auto cubeActor = vtkSmartPointer<vtkActor>::New();
+  cubeActor->SetMapper(cubeMapper);
+  cubeActor->GetProperty()->SetColor(0.0, 1.0, 0.0);  // green
+
+  // ----------------------------
+  // Axes
+  // ----------------------------
+  auto axes = vtkSmartPointer<vtkAxesActor>::New();
+  axes->SetTotalLength(3.0, 3.0, 3.0);
+
+  // ----------------------------
+  // Add to renderer
+  // ----------------------------
+  renderer->AddActor(sphereActor);
+  renderer->AddActor(cubeActor);
+  renderer->AddActor(axes);
+
+  // ----------------------------
+  // Render
+  // ----------------------------
+  renderWindow->Render();
+  interactor->Start();
 }

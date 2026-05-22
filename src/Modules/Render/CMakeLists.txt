@@ -50,9 +50,20 @@ TARGET_LINK_LIBRARIES(Modules_Render
   Core_Application_Preferences
 )
 
-target_link_libraries(Modules_Render
-  PRIVATE
-	VTK::CommonCore
+target_link_libraries(Modules_Render PRIVATE
+  VTK::CommonCore
+  VTK::FiltersSources
+  VTK::FiltersCore
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  VTK::InteractionStyle
+)
+
+vtk_module_autoinit(
+  TARGETS Modules_Render
+  MODULES
+    VTK::RenderingOpenGL2
+    VTK::InteractionStyle
 )
 
 IF(BUILD_SHARED_LIBS)
