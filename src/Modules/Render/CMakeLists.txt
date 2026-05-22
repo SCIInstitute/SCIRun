@@ -29,11 +29,13 @@
 SET(Modules_Render_SRCS
   ViewScene.cc
   OsprayViewer.cc
+  ViewSceneVtk.cc
 )
 
 SET(Modules_Render_HEADERS
   ViewScene.h
-  OsprayViewer.cc
+  OsprayViewer.h
+  ViewSceneVtk.h
   share.h
 )
 
@@ -46,6 +48,11 @@ TARGET_LINK_LIBRARIES(Modules_Render
   Dataflow_Network
   Core_Datatypes
   Core_Application_Preferences
+)
+
+target_link_libraries(Modules_Render
+  PRIVATE
+	VTK::CommonCore
 )
 
 IF(BUILD_SHARED_LIBS)
