@@ -48,9 +48,6 @@ TARGET_LINK_LIBRARIES(Modules_Render
   Dataflow_Network
   Core_Datatypes
   Core_Application_Preferences
-)
-
-target_link_libraries(Modules_Render PRIVATE
   VTK::CommonCore
   VTK::FiltersSources
   VTK::FiltersCore
