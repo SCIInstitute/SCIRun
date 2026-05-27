@@ -120,6 +120,23 @@ ELSEIF(WIN32)
     ENDIF()
 
     # ------------------------
+    # VTK (if enabled)
+    # ------------------------
+    if(WITH_VTK)
+      get_filename_component(_vtk_cmake_dir ${VTK_DIR} ABSOLUTE)
+      get_filename_component(_vtk_install_dir "${_vtk_cmake_dir}/../../.." ABSOLUTE)
+      set(_vtk_bin_dir "${_vtk_install_dir}/bin")
+
+      if(EXISTS "${_vtk_bin_dir}")
+        if(_vs_path)
+          set(_vs_path "${_vs_path};${_vtk_bin_dir}")
+        else()
+          set(_vs_path "${_vtk_bin_dir}")
+        endif()
+      endif()
+    endif()
+
+    # ------------------------
     # Apply to Visual Studio
     # ------------------------
     if(_vs_path)

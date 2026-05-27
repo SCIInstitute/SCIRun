@@ -26,8 +26,6 @@
 */
 
 
-#include <Modules/Render/ViewSceneVtk.h>
-
 #include <vtkSmartPointer.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -39,11 +37,20 @@
 #include <vtkProperty.h>
 #include <vtkAxesActor.h>
 
+#include <es-log/trace-log.h>
+#include <Modules/Render/ViewSceneVtk.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/Logging/Log.h>
+
 using namespace SCIRun::Modules::Render;
 
 MODULE_INFO_DEF(ViewSceneVtk, Render, SCIRun)
 
-ViewSceneVtk::ViewSceneVtk() : ModuleWithAsyncDynamicPorts(staticInfo_, true) {}
+ViewSceneVtk::ViewSceneVtk() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
+{
+  RENDERER_LOG_FUNCTION_SCOPE;
+  //INITIALIZE_PORT(GeneralGeom);
+}
 
 void ViewSceneVtk::setStateDefaults()
 {

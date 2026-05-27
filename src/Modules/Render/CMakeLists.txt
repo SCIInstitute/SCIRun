@@ -53,6 +53,7 @@ TARGET_LINK_LIBRARIES(Modules_Render
   VTK::FiltersCore
   VTK::RenderingCore
   VTK::RenderingOpenGL2
+  VTK::RenderingAnnotation
   VTK::InteractionStyle
 )
 
