@@ -1,0 +1,441 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+
+#include <Interface/Modules/Render/ViewSceneVtkDialog.h>
+#include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
+#include <boost/algorithm/string/predicate.hpp>
+
+#ifdef WITH_VTK
+//#include <ospray/ospray.h>
+
+#include <Modules/Render/ViewScene.h>
+#include "Modules/Render/ViewSceneVtk.h"
+//#include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
+//#include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
+//#include "Interface/Modules/Render/ViewOspraySceneConfig.h"
+
+#include <Core/Datatypes/Feedback.h>
+#include "Core/Datatypes/Color.h"
+#include "Core/Logging/Log.h"
+#endif
+
+using namespace SCIRun;
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+  #ifdef WITH_VTK
+using namespace SCIRun::Core::Algorithms::Render;
+#endif
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Render;
+
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
+ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent)
+  : ModuleDialogGeneric(state, parent)
+{
+  #ifdef WITH_VTK
+  statusBar_ = new QStatusBar(this);
+
+  //renderer_ = new OSPRayRenderer();
+  //viewer_ = new QOSPRayWidget(parent, renderer_);
+
+  state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
+  connect(this, &ViewSceneVtkDialog::newGeometryValueForwarder, this, &ViewSceneVtkDialog::newGeometryValue);
+
+  //setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  addConfigurationDialog();
+  addToolBar();
+  setMinimumSize(200, 200);
+
+  statusBar_->setMaximumHeight(20);
+  //osprayLayout->addWidget(viewer_);
+
+/* addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
+  addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
+  addCheckBoxManager(configDialog_->renderAnnotationsCheckBox_, Parameters::ShowRenderAnnotations);
+  addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
+  addCheckBoxManager(configDialog_->showFrameRateCheckBox_, Parameters::ShowFrameRate);
+  addCheckBoxManager(configDialog_->separateModelPerObjectCheckBox_, Parameters::SeparateModelPerObject);
+  addCheckBoxManager(configDialog_->ambientVisibleCheckBox_, Parameters::ShowAmbientLight);
+  addCheckBoxManager(configDialog_->directionalVisibleCheckBox_, Parameters::ShowDirectionalLight);
+  addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
+  addDoubleSpinBoxManager(configDialog_->cameraViewAtXDoubleSpinBox_, Parameters::CameraViewAtX);
+  addDoubleSpinBoxManager(configDialog_->cameraViewAtYDoubleSpinBox_, Parameters::CameraViewAtY);
+  addDoubleSpinBoxManager(configDialog_->cameraViewAtZDoubleSpinBox_, Parameters::CameraViewAtZ);
+  addDoubleSpinBoxManager(configDialog_->cameraViewFromXDoubleSpinBox_, Parameters::CameraViewFromX);
+  addDoubleSpinBoxManager(configDialog_->cameraViewFromYDoubleSpinBox_, Parameters::CameraViewFromY);
+  addDoubleSpinBoxManager(configDialog_->cameraViewFromZDoubleSpinBox_, Parameters::CameraViewFromZ);
+  addDoubleSpinBoxManager(configDialog_->cameraViewUpXDoubleSpinBox_, Parameters::CameraViewUpX);
+  addDoubleSpinBoxManager(configDialog_->cameraViewUpYDoubleSpinBox_, Parameters::CameraViewUpY);
+  addDoubleSpinBoxManager(configDialog_->cameraViewUpZDoubleSpinBox_, Parameters::CameraViewUpZ);
+  addDoubleSpinBoxManager(configDialog_->directionalLightIntensityDoubleSpinBox_, Parameters::DirectionalLightIntensity);
+  addDoubleSpinBoxManager(configDialog_->ambientLightIntensityDoubleSpinBox_, Parameters::AmbientLightIntensity);
+
+  addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
+  addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
+  addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
+
+  connect(configDialog_->viewerHeightSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &ViewSceneVtkDialog::setHeight);
+  connect(configDialog_->viewerWidthSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &ViewSceneVtkDialog::setWidth);
+
+  connect(configDialog_->cameraViewAtXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewAtYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewAtZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewFromZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+  connect(configDialog_->cameraViewUpZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
+
+  connect(configDialog_->ambientLightColorRDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
+  connect(configDialog_->ambientLightColorGDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
+  connect(configDialog_->ambientLightColorBDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
+  connect(configDialog_->directionalLightColorRDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
+  connect(configDialog_->directionalLightColorGDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
+  connect(configDialog_->directionalLightColorBDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
+*/
+  //float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+  //float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+  //uint32_t ind[3] = { 0, 1, 2};
+
+  #endif
+}
+
+ViewSceneVtkDialog::~ViewSceneVtkDialog()
+{
+#ifdef WITH_VTK
+  //delete viewer_;
+  //delete renderer_;
+#endif
+}
+
+void ViewSceneVtkDialog::newGeometryValue()
+{
+#ifdef WITH_VTK
+
+  //auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  //if (!geomDataTransient || geomDataTransient->empty()) return;
+
+  //auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
+  //if (!geom) return;
+
+  //auto compGeom = std::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+
+  ////TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
+  //renderer_->updateGeometries(compGeom.get()->objects());
+#endif
+}
+
+void ViewSceneVtkDialog::setHeight(int h)
+{
+  parentWidget()->resize(width(), h);
+}
+
+void ViewSceneVtkDialog::setWidth(int w)
+{
+  parentWidget()->resize(w, height());
+}
+
+void ViewSceneVtkDialog::addToolBar()
+{
+  toolBar_ = new QToolBar(this);
+  WidgetStyleMixin::toolbarStyle(toolBar_);
+
+  addConfigurationButton();
+  addAutoViewButton();
+  addAutoRotateButton();
+  addTimestepButtons();
+  addScreenshotButton();
+
+  //osprayLayout->addWidget(toolBar_);
+
+  addControlLockButton();
+}
+
+void ViewSceneVtkDialog::adjustToolbar(double factor)
+{
+  if (toolBar_)
+    adjustToolbarForHighResolution(toolBar_, factor);
+}
+
+void ViewSceneVtkDialog::addConfigurationButton()
+{
+  auto configurationButton = new QPushButton();
+  configurationButton->setToolTip("Open/Close Configuration Menu");
+  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  configurationButton->setShortcut(Qt::Key_F5);
+  connect(configurationButton, &QPushButton::clicked, this, &ViewSceneVtkDialog::configButtonClicked);
+  addToolbarButton(configurationButton);
+}
+
+void ViewSceneVtkDialog::configButtonClicked()
+{
+#ifdef WITH_VTK
+  //configDialog_->setVisible(!configDialog_->isVisible());
+#endif
+}
+
+void ViewSceneVtkDialog::addConfigurationDialog()
+{
+#ifdef WITH_VTK
+  //auto name = windowTitle() + " Configuration";
+  //configDialog_ = new ViewOspraySceneConfigDialog(name, this);
+#endif
+}
+
+void ViewSceneVtkDialog::addToolbarButton(QPushButton* button)
+{
+  button->setFixedSize(35,35);
+  button->setIconSize(QSize(25,25));
+  toolBar_->addWidget(button);
+}
+
+void ViewSceneVtkDialog::addAutoViewButton()
+{
+  autoViewButton_ = new QPushButton(this);
+
+  autoViewButton_->setToolTip("Auto View");
+  autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  autoViewButton_->setShortcut(Qt::Key_0);
+  connect(autoViewButton_, &QPushButton::clicked, this, &ViewSceneVtkDialog::autoViewClicked);
+  addToolbarButton(autoViewButton_);
+}
+
+void ViewSceneVtkDialog::addAutoRotateButton()
+{
+  autoRotateButton_ = new QPushButton(this);
+  autoRotateButton_->setToolTip("Auto Rotate");
+  autoRotateButton_->setCheckable(true);
+  autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate.png"));
+  //autoRotateButton->setShortcut(Qt::Key_0);
+  connect(autoRotateButton_, &QPushButton::clicked, this, &ViewSceneVtkDialog::autoRotateClicked);
+  addToolbarButton(autoRotateButton_);
+}
+
+void ViewSceneVtkDialog::addTimestepButtons()
+{
+  auto nextTimestep = new QPushButton(this);
+  nextTimestep->setText("Next");
+  nextTimestep->setToolTip("Next timestep");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  //autoRotateButton->setShortcut(Qt::Key_0);
+  connect(nextTimestep, &QPushButton::clicked, this, &ViewSceneVtkDialog::nextTimestepClicked);
+  addToolbarButton(nextTimestep);
+
+  playTimestepsButton_ = new QPushButton(this);
+  playTimestepsButton_->setText("Play");
+  playTimestepsButton_->setToolTip("Play timesteps");
+  playTimestepsButton_->setCheckable(true);
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  //autoRotateButton->setShortcut(Qt::Key_0);
+  connect(playTimestepsButton_, &QPushButton::clicked, this, &ViewSceneVtkDialog::playTimestepsClicked);
+  addToolbarButton(playTimestepsButton_);
+}
+
+void ViewSceneVtkDialog::addScreenshotButton()
+{
+  auto screenshotButton = new QPushButton(this);
+  screenshotButton->setToolTip("Take screenshot");
+  screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
+  screenshotButton->setShortcut(Qt::Key_F12);
+  connect(screenshotButton, &QPushButton::clicked, this, &ViewSceneVtkDialog::screenshotClicked);
+  addToolbarButton(screenshotButton);
+}
+
+void ViewSceneVtkDialog::addViewBarButton()
+{
+  auto viewBarBtn = new QPushButton();
+  viewBarBtn->setToolTip("Show View Options");
+  viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
+  //connect(viewBarBtn, &QPushButton::clicked, this, &ViewSceneVtkDialog::viewBarButtonClicked);
+  addToolbarButton(viewBarBtn);
+}
+
+void ViewSceneVtkDialog::addControlLockButton()
+{
+  controlLock_ = new QPushButton();
+
+  //TODO
+  controlLock_->setDisabled(true);
+}
+
+void ViewSceneVtkDialog::toggleLockColor(bool locked)
+{
+  QString color = locked ? "red" : "rgb(66,66,69)";
+  controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
+  //autoViewButton_->setDisabled(locked);
+}
+
+void ViewSceneVtkDialog::autoRotateClicked()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+void ViewSceneVtkDialog::autoViewClicked()
+{
+#ifdef WITH_VTK
+  //renderer_->autoView();
+#endif
+}
+
+void ViewSceneVtkDialog::screenshotClicked()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+void ViewSceneVtkDialog::nextTimestepClicked()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+void ViewSceneVtkDialog::playTimestepsClicked()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+void ViewSceneVtkDialog::setViewportCamera()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+float ViewSceneVtkDialog::getFloat(const Name& name) const
+{
+#ifdef WITH_VTK
+  return static_cast<float>(state_->getValue(name).toDouble());
+#endif
+  return 0;
+}
+
+void ViewSceneVtkDialog::setCameraWidgets()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+void ViewSceneVtkDialog::setLightColor()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+void ViewSceneVtkDialog::setBGColor()
+{
+#ifdef WITH_VTK
+
+#endif
+}
+
+
+void ViewSceneVtkDialog::pullSpecial()
+{
+  #ifdef WITH_VTK
+  auto ambient = colorFromState(Parameters::AmbientLightColor);
+  /* configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
+  configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
+  configDialog_->ambientLightColorBDoubleSpinBox_->setValue(ambient.blueF());
+
+  auto directional = colorFromState(Parameters::DirectionalLightColor);
+  configDialog_->directionalLightColorRDoubleSpinBox_->setValue(directional.redF());
+  configDialog_->directionalLightColorGDoubleSpinBox_->setValue(directional.greenF());
+  configDialog_->directionalLightColorBDoubleSpinBox_->setValue(directional.blueF());*/
+  #endif
+}
+
+void ViewSceneVtkDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
+{
+#ifdef WITH_VTK
+  //int xWindow = xIn - viewer_->pos().x();
+  //int yWindow = yIn - viewer_->pos().y();
+
+  //xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
+  //yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
+#endif
+}
+
+MouseButton ViewSceneVtkDialog::getRenderButton(QMouseEvent* event)
+{
+#ifdef WITH_VTK
+  auto btn = MouseButton::NONE;
+  if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
+  else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
+  else if (event->buttons() & Qt::MiddleButton)   btn = MouseButton::MIDDLE;
+  return btn;
+#endif
+  return MouseButton::NONE;
+}
+
+void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
+{
+  #ifdef WITH_VTK
+  float xSS, ySS;
+  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+
+  //renderer_->mousePress(xSS, ySS, getRenderButton(event));
+  #endif
+}
+
+void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
+{
+  #ifdef WITH_VTK
+  float xSS, ySS;
+  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+
+  //renderer_->mouseMove(xSS, ySS, getRenderButton(event));
+  #endif
+}
+
+void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+#ifdef WITH_VTK
+  //renderer_->mouseRelease();
+#endif
+}
+
+void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
+{
+  #ifdef WITH_VTK
+  //renderer_->mouseWheel(event->angleDelta().y());
+  #endif
+}

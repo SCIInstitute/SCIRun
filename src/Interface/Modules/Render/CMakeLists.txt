@@ -51,6 +51,7 @@ SET(Interface_Modules_Render_FORMS
   DevControls.ui
   LightControls.ui
   ViewAxisChooser.ui
+  ViewSceneVtk.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
@@ -63,6 +64,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   GLContextPlatformCompatibility.h
   Screenshot.h
   OsprayViewerDialog.h
+  ViewSceneVtkDialog.h
 )
 
 SET(Interface_Modules_Render_HEADERS_NO_MOC
@@ -100,6 +102,7 @@ SET(Interface_Modules_Render_SOURCES
   Screenshot.cc
   OsprayViewerDialog.cc
   ViewOspraySceneConfig.cc
+  ViewSceneVtkDialog.cc
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc
