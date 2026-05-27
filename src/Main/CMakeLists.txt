@@ -77,25 +77,58 @@ ELSEIF(WIN32)
   ADD_EXECUTABLE(${APPLICATION_NAME} WIN32 ${SCIRunMain_SOURCES})
 
   # Windows + MSVC + non-headless: enable Qt runtime for VS debugging
-  IF(WIN32 AND MSVC AND NOT BUILD_HEADLESS)
+  IF(WIN32 AND MSVC)
+
+    set(_vs_path "")
+
+    # ------------------------
+    # Qt (only if GUI enabled)
+    # ------------------------
+    IF(NOT BUILD_HEADLESS)
+      if(TARGET Qt::qmake)
+        set(_qt_qmake_target Qt::qmake)
+      else()
+        set(_qt_qmake_target "")
+      endif()
+
+      if(_qt_qmake_target)
+        get_target_property(_qt_qmake_exe ${_qt_qmake_target} LOCATION)
+        get_filename_component(_qt_bin_dir "${_qt_qmake_exe}" DIRECTORY)
   
-    # Detect Qt version (Qt6 preferred, fallback to Qt5)
-    if(TARGET Qt::qmake)
-      set(_qt_qmake_target Qt::qmake)
-    else()
-      set(_qt_qmake_target "")
-    endif()
+        if(_qt_bin_dir)
+          set(_vs_path "${_qt_bin_dir}")
+        endif()
+      endif()
+    ENDIF()
+
+    # ------------------------
+    # Python (only if enabled)
+    # ------------------------
+    IF(BUILD_WITH_PYTHON)
+      # Use release DLL path by default
+      get_filename_component(_python_bin_dir
+        ${SCI_PYTHON_DLL_PATH}
+        DIRECTORY)
   
-    IF(_qt_qmake_target)
-      get_target_property(_qt_qmake_exe ${_qt_qmake_target} LOCATION)
-      get_filename_component(_qt_bin_dir "${_qt_qmake_exe}" DIRECTORY)
-  
+      if(_python_bin_dir)
+        if(_vs_path)
+          set(_vs_path "${_vs_path};${_python_bin_dir}")
+        else()
+          set(_vs_path "${_python_bin_dir}")
+        endif()
+      endif()
+    ENDIF()
+
+    # ------------------------
+    # Apply to Visual Studio
+    # ------------------------
+    if(_vs_path)
       set_property(TARGET ${APPLICATION_NAME} PROPERTY
         VS_DEBUGGER_ENVIRONMENT
-        "PATH=${_qt_bin_dir};%PATH%"
+        "PATH=${_vs_path};%PATH%"
       )
-    ENDIF()
-  
+    endif()
+
   ENDIF()
 
   # TODO: probably need this for Xcode
@@ -173,87 +206,117 @@ ENDIF()
 IF(APPLE)
 
 ELSE()
+
   IF(WIN32)
+
+    # ------------------------
+    # Python
+    # ------------------------
     IF(BUILD_WITH_PYTHON)
-      # TODO: change $<CONFIGURATION> to $<CONFIG> when upgrading to cmake 3
-      # TODO: copy python dll
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} ARGS -E make_directory $<CONFIGURATION>/${PYTHON_MODULE_SEARCH_PATH}
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_MODULE_LIBRARY_PATH} $<CONFIGURATION>/${PYTHON_MODULE_SEARCH_PATH}
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<CONFIGURATION>/Lib
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${SCI_PYTHON_MODULE_LIBRARY_PATH}
+                $<CONFIGURATION>/Lib
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
     ENDIF()
 
-  	IF(NOT BUILD_HEADLESS)
-      # Note: installer is created from Release build only!
-	    GET_TARGET_PROPERTY(QTCORENAME Qt${QT_VERSION_MAJOR}::Core LOCATION)
-	    GET_TARGET_PROPERTY(QTGUINAME Qt${QT_VERSION_MAJOR}::Gui LOCATION)
-	    GET_TARGET_PROPERTY(QTOPENGLNAME Qt${QT_VERSION_MAJOR}::OpenGL LOCATION)
+    # ------------------------
+    # Qt install
+    # ------------------------
+    IF(NOT BUILD_HEADLESS)
+      GET_TARGET_PROPERTY(QTCORENAME Qt${QT_VERSION_MAJOR}::Core LOCATION)
+      GET_TARGET_PROPERTY(QTGUINAME Qt${QT_VERSION_MAJOR}::Gui LOCATION)
+      GET_TARGET_PROPERTY(QTOPENGLNAME Qt${QT_VERSION_MAJOR}::OpenGL LOCATION)
+
       if (QT_VERSION_MAJOR VERSION_GREATER 5)
         GET_TARGET_PROPERTY(QTOPENGLWIDGETSNAME Qt${QT_VERSION_MAJOR}::OpenGLWidgets LOCATION)
       endif()
-	    GET_TARGET_PROPERTY(QTWIDGETSNAME Qt${QT_VERSION_MAJOR}::Widgets LOCATION)
-	    GET_TARGET_PROPERTY(QTNETWORKNAME Qt${QT_VERSION_MAJOR}::Network LOCATION)
+
+      GET_TARGET_PROPERTY(QTWIDGETSNAME Qt${QT_VERSION_MAJOR}::Widgets LOCATION)
+      GET_TARGET_PROPERTY(QTNETWORKNAME Qt${QT_VERSION_MAJOR}::Network LOCATION)
       GET_TARGET_PROPERTY(QTCONCURRENTNAME Qt${QT_VERSION_MAJOR}::Concurrent LOCATION)
       GET_TARGET_PROPERTY(QTSVGNAME Qt${QT_VERSION_MAJOR}::Svg LOCATION)
       GET_TARGET_PROPERTY(QTPRINTSUPPORTNAME Qt${QT_VERSION_MAJOR}::PrintSupport LOCATION)
     ENDIF()
-      INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION bin)
-  	IF(NOT BUILD_HEADLESS)
-	    INSTALL(PROGRAMS
-	      ${QTCORENAME}
-          ${QTGUINAME}
-          ${QTOPENGLNAME}
-          ${QTNETWORKNAME}
-		  ${QTWIDGETSNAME}
-		  ${QTCONCURRENTNAME}
-		  ${QTSVGNAME}
-		  ${QTPRINTSUPPORTNAME}
-		  DESTINATION bin)
+
+    INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION bin)
+
+    IF(NOT BUILD_HEADLESS)
+      INSTALL(PROGRAMS
+        ${QTCORENAME}
+        ${QTGUINAME}
+        ${QTOPENGLNAME}
+        ${QTNETWORKNAME}
+        ${QTWIDGETSNAME}
+        ${QTCONCURRENTNAME}
+        ${QTSVGNAME}
+        ${QTPRINTSUPPORTNAME}
+        DESTINATION bin)
+
       if (QT_VERSION_MAJOR VERSION_GREATER 5)
         INSTALL(PROGRAMS
-            ${QTOPENGLWIDGETSNAME}
-  		  DESTINATION bin)
+          ${QTOPENGLWIDGETSNAME}
+          DESTINATION bin)
       endif()
-		  #INSTALL(PROGRAMS "${SCI_QWT_LIBRARY_DIR}/Release/${SCI_QWT_LIBRARY}.dll" DESTINATION bin CONFIGURATIONS Release)
-		  INSTALL(PROGRAMS "${Qt_PATH}/plugins/platforms/qwindows.dll" DESTINATION bin/platforms CONFIGURATIONS Release)
-  	ENDIF()
-      IF(BUILD_WITH_PYTHON)
-        INSTALL(PROGRAMS
-          ${SCI_PYTHON_DLL_PATH}
-          DESTINATION bin)
-        INSTALL(DIRECTORY "${SCI_PYTHON_MODULE_LIBRARY_PATH}/" DESTINATION bin/${PYTHON_MODULE_SEARCH_PATH})
-      ENDIF()
 
-      IF(BUILD_WITH_PYTHON)
-        INSTALL(PROGRAMS
-          ${SCI_PYTHON_DLL_PATH}
-          DESTINATION bin)
-        INSTALL(DIRECTORY "${SCI_PYTHON_MODULE_LIBRARY_PATH}/" DESTINATION bin/${PYTHON_MODULE_SEARCH_PATH})
-      ENDIF()
+      INSTALL(PROGRAMS
+        "${Qt_PATH}/plugins/platforms/qwindows.dll"
+        DESTINATION bin/platforms
+        CONFIGURATIONS Release)
+    ENDIF()
 
-      INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
-      INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
-      INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Fonts" DESTINATION bin USE_SOURCE_PERMISSIONS)
-  ELSE()
+    # ------------------------
+    # Python install
+    # ------------------------
+    IF(BUILD_WITH_PYTHON)
+      INSTALL(PROGRAMS
+        ${SCI_PYTHON_DLL_PATH}
+        DESTINATION bin)
+
+      INSTALL(DIRECTORY
+        "${SCI_PYTHON_MODULE_LIBRARY_PATH}/"
+        DESTINATION bin/Lib)
+    ENDIF()
+
+    # ------------------------
+    # Resources
+    # ------------------------
+    INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
+    INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
+    INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Fonts" DESTINATION bin USE_SOURCE_PERMISSIONS)
+
+  ELSE()  # Linux / non-Windows
+
     IF(BUILD_HEADLESS)
       MESSAGE(STATUS "Building headless SCIRun")
     ENDIF()
 
+    # ------------------------
+    # Python install
+    # ------------------------
     IF(BUILD_WITH_PYTHON)
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${PYTHON_MODULE_SEARCH_PATH}
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Lib
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${SCI_PYTHON_MODULE_LIBRARY_PATH}
+                ${CMAKE_BINARY_DIR}/Lib
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+
       IF(SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH AND EXISTS ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH})
         ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
           POST_BUILD
-          COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory  ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}
+          COMMAND ${CMAKE_COMMAND} -E copy_directory
+                  ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH}
+                  ${CMAKE_BINARY_DIR}/Lib
           WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
       ENDIF()
     ENDIF()
+
   ENDIF()
+
 ENDIF()
 
 SET(NETWORKS_DESTINATION_DIR  "./SCIRunNetworks")
