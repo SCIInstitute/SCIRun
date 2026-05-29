@@ -371,8 +371,8 @@ void ViewSceneVtkDialog::setBGColor()
 void ViewSceneVtkDialog::pullSpecial()
 {
   #ifdef WITH_VTK
-  auto ambient = colorFromState(Parameters::AmbientLightColor);
-  /* configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
+  /*auto ambient = colorFromState(Parameters::AmbientLightColor);
+  configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
   configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
   configDialog_->ambientLightColorBDoubleSpinBox_->setValue(ambient.blueF());
 
