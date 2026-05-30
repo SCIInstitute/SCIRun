@@ -28,7 +28,6 @@
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
@@ -42,7 +41,6 @@ using namespace boost::assign;
 void ModuleDialogFactory::addDialogsToMakerMap2()
 {
   insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
     ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
     ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
     ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)

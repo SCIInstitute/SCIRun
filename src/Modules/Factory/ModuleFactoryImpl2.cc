@@ -34,7 +34,6 @@
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
@@ -56,7 +55,6 @@ using namespace SCIRun::Modules::Visualization;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
-  addModuleDesc<ElectrodeCoilSetup>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
   addModuleDesc<SetConductivitiesToMesh>("SetConductivitiesToMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
   addModuleDesc<GenerateROIStatistics>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");
   addModuleDesc<SetupTDCS>("SetupTDCS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");

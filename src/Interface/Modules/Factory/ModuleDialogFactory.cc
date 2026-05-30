@@ -33,8 +33,6 @@
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
 #include <Interface/Modules/DataIO/ReadNrrdDialog.h>
 #include <Interface/Modules/DataIO/WriteFieldDialog.h>
-#include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
-#include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraGeneralDialog.h>
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
@@ -104,8 +102,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
     ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
     ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
-    ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
-    ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
     ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)

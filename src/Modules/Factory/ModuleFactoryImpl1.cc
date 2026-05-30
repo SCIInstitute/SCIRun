@@ -64,8 +64,6 @@
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Math/EvaluateLinearAlgebraBinary.h>
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/SolveLinearSystem.h>
@@ -102,10 +100,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
   addModuleDesc<ReportFieldInfo>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
 
-  addModuleDesc<EvaluateLinearAlgebraUnary>("EvaluateLinearAlgebraUnary", "Math", "SCIRun",
-      "Partially functional, needs GUI work.", "...");
-  addModuleDesc<EvaluateLinearAlgebraBinary>("EvaluateLinearAlgebraBinary", "Math", "SCIRun",
-      "Partially functional, needs GUI work.", "...");
   addModuleDesc<SolveLinearSystem>(
       "SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
   addModuleDesc<NetworkNotes>(
