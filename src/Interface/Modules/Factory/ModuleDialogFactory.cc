@@ -50,8 +50,6 @@
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h>
-#include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
-#include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithTetGenDialog.h>
 #include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
@@ -127,8 +125,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
-    ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
-    ADD_MODULE_DIALOG(GeneratePointSamplesFromFieldOrWidget, GeneratePointSamplesFromFieldOrWidgetDialog)
     ADD_MODULE_DIALOG(GetSliceFromStructuredFieldByIndices, GetSliceFromStructuredFieldByIndicesDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)

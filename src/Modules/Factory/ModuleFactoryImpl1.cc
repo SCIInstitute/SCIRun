@@ -41,8 +41,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
-#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
@@ -135,8 +133,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences", "ChangeFieldData",
       "SCIRun", "...", "In progress--Computation is incorrect");
 
-  addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
-  addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
 
   addModuleDesc<SimulationStreamingReaderBase>("...", "...");
 }
