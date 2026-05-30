@@ -2,7 +2,7 @@
   "module": {
     "name": "CalculateSignedDistanceToField",
     "namespace": "Fields",
-    "status": "Real ported module",
+    "status": "Second real ported module",
     "description": "...",
     "header": "Modules/Legacy/Fields/CalculateSignedDistanceToField.h"
   },
