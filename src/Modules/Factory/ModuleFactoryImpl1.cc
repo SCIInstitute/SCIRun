@@ -75,8 +75,6 @@
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
-#include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
-#include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/CollectMatrices.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
@@ -103,8 +101,6 @@ using namespace SCIRun::Modules::Bundles;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Modules::FiniteElements;
-using namespace SCIRun::Modules::Forward;
 
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
@@ -162,9 +158,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
-  addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun",
-      "In progress: main path through code works", "Generates stiffness matrix ");
-  addModuleDesc<BuildBEMatrix>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");

@@ -38,8 +38,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(BuildFEMatrix, FiniteElements, SCIRun)
+
 BuildFEMatrix::BuildFEMatrix()
-  : Module(ModuleLookupInfo("BuildFEMatrix", "FiniteElements", "SCIRun"), false)
+  : Module(staticInfo_, false)
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     gui_use_basis_(get_ctx()->subVar("use-basis"), 0),
     gui_force_symmetry_(get_ctx()->subVar("force-symmetry"), 0),

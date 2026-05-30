@@ -74,8 +74,6 @@
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
-#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
-#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
@@ -91,7 +89,6 @@
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
@@ -131,7 +128,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryAlgorithm)
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryAlgorithm)
       ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo)
-      ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)
       ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(GetMatrixSlice, GetMatrixSliceAlgo)
@@ -151,7 +147,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(MapFieldDataOntoElements, MapFieldDataOntoElemsAlgo)
       ADD_MODULE_ALGORITHM(ClipFieldByFunction, ClipMeshBySelectionAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationAlgo)
-      ADD_MODULE_ALGORITHM(BuildFEVolRHS, BuildFEVolRHSAlgo)
 			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)

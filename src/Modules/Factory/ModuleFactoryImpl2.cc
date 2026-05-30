@@ -43,7 +43,6 @@
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
 #include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
-#include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
 #include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
 #include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
@@ -81,7 +80,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<MapFieldDataFromElemToNode>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<ConvertMatrixType>("ConvertMatrixType", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromNodeToElem>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
