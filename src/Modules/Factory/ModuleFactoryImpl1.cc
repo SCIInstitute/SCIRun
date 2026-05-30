@@ -41,9 +41,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
-#include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
-#include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
@@ -105,12 +102,9 @@ void ModuleDescriptionLookup::addEssentialModules()
       "SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>(
       "SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
-  addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
-  addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "JoinFields",
+    "namespace": "Fields",
+    "status": "Real ported module: Many bugs and UI logic issues",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/JoinFields.h"
+  },
+  "algorithm": {
+    "name": "JoinFieldsAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h"
+  },
+  "UI": {
+    "name": "JoinFieldsDialog",
+    "header": "Interface/Modules/Fields/JoinFieldsDialog.h"
+  }
+}

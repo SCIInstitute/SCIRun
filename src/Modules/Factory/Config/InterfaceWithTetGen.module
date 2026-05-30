@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "InterfaceWithTetGen",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/InterfaceWithTetGen.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "InterfaceWithTetGenDialog",
+    "header": "Interface/Modules/Fields/InterfaceWithTetGenDialog.h"
+  }
+}
