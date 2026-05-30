@@ -29,7 +29,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
-#include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
@@ -40,7 +39,6 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Factory;
-using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::BrainStimulator;
@@ -48,14 +46,12 @@ using namespace SCIRun::Modules::Visualization;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
-  addModuleDesc<SetConductivitiesToMesh>("SetConductivitiesToMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
   addModuleDesc<SetupTDCS>("SetupTDCS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");
 }
 
 void ModuleDescriptionLookup::addMoreModules()
 {
   addModuleDesc<SetFieldData>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<SelectSubMatrix>("SelectSubMatrix", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
   addModuleDesc<ShowString>("in progress--needs testing", "...");
 }

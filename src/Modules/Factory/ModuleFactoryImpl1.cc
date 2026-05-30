@@ -39,7 +39,6 @@
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
@@ -85,7 +84,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SolveMinNormLeastSqSystem>(
       "SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
-  addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 
 

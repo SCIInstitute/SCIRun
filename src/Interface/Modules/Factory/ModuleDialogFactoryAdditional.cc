@@ -27,7 +27,6 @@
 
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <boost/assign.hpp>
 
@@ -38,7 +37,6 @@ using namespace boost::assign;
 void ModuleDialogFactory::addDialogsToMakerMap2()
 {
   insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
     ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
   ;
 }
