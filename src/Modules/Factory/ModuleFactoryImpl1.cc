@@ -65,7 +65,6 @@
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
-#include <Modules/Legacy/Math/ComputeSVD.h>
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
@@ -152,7 +151,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals", "ChangeMesh", "SCIRun", "...", "...");
-  addModuleDesc<ComputeSVD>("ComputeSVD", "Math", "SCIRun", "...", "...");
 
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
