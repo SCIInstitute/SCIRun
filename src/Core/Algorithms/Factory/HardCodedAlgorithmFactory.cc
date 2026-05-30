@@ -28,8 +28,6 @@
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
-#include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 //#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
@@ -41,7 +39,6 @@
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <boost/functional/factory.hpp>
 #include <boost/assign.hpp>
@@ -69,12 +66,9 @@ void HardCodedAlgorithmFactory::addToMakerMap()
     insert(factoryMap_)
       ADD_MODULE_ALGORITHM(SolveLinearSystem, SolveLinearSystemAlgo)
       ADD_MODULE_ALGORITHM(SetupTDCS, SetupTDCSAlgorithm)
-      ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
       ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
-      ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(TransformMeshWithTransform, TransformMeshWithTransformAlgo)
-      ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
      ;

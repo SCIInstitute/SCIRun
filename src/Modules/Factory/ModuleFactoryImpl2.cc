@@ -27,7 +27,6 @@
 
 
 #include <Modules/Factory/ModuleDescriptionLookup.h>
-#include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
@@ -51,7 +50,6 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
 
 void ModuleDescriptionLookup::addMoreModules()
 {
-  addModuleDesc<SetFieldData>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
   addModuleDesc<ShowString>("in progress--needs testing", "...");
 }

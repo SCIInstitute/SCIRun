@@ -37,11 +37,9 @@
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
-#include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
-#include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
@@ -84,10 +82,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
-    ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
-    ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)

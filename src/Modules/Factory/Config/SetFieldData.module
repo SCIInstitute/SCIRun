@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SetFieldData",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/SetFieldData.h"
+  },
+  "algorithm": {
+    "name": "SetFieldDataAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h"
+  },
+  "UI": {
+    "name": "SetFieldDataDialog",
+    "header": "Interface/Modules/Fields/SetFieldDataDialog.h"
+  }
+}

@@ -39,8 +39,6 @@
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
-#include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
@@ -79,12 +77,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
-  addModuleDesc<SetFieldNodes>(
-      "SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>(
       "SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
-  addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 
 
   addModuleDesc<TransformMeshWithTransform>("...", "...");
