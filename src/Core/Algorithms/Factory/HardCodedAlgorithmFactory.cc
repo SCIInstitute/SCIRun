@@ -32,7 +32,6 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
@@ -56,7 +55,6 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/TransformMeshWithTransform.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
 #include <Core/Algorithms/Legacy/Fields/SampleField/GeneratePointSamplesFromField.h>
 #include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
@@ -67,7 +65,6 @@
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
-#include <Core/Algorithms/Math/BuildNoiseColumnMatrix.h>
 #include <Core/Algorithms/Math/ComputeSVD.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/Field/RefineTetMeshLocallyAlgorithm.h>
@@ -121,7 +118,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
       ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
-			ADD_MODULE_ALGORITHM(BuildMatrixOfSurfaceNormals, BuildMatrixOfSurfaceNormalsAlgo)
       ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
       ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
@@ -152,8 +148,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
 	    ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
       ADD_MODULE_ALGORITHM(GeneratePointSamplesFromFieldOrWidget,GeneratePointSamplesFromFieldAlgo)
-	    ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
-      ADD_MODULE_ALGORITHM(BuildMappingMatrix, BuildMappingMatrixAlgo)
 	    ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
 	    ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
 		  ADD_MODULE_ALGORITHM(ConvertMatrixToString, ConvertMatrixToStringAlgo)

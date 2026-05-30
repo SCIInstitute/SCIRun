@@ -45,8 +45,6 @@
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Converters/ConvertMatrixToString.h>
-#include <Modules/Legacy/Fields/BuildMappingMatrix.h>
-#include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateFieldData5.h>
@@ -75,7 +73,6 @@
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
-#include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/CollectMatrices.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
@@ -170,11 +167,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
   addModuleDesc<RefineMesh>("RefineMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
-  addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
-  addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals", "ChangeMesh", "SCIRun", "...", "...");
-  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
   addModuleDesc<ComputeSVD>("ComputeSVD", "Math", "SCIRun", "...", "...");
 
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");

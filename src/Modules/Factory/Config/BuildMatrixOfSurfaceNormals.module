@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildMatrixOfSurfaceNormals",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h"
+  },
+  "algorithm": {
+    "name": "BuildMatrixOfSurfaceNormalsAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
