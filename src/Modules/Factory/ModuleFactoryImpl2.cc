@@ -30,7 +30,6 @@
 #include <Modules/Fields/RefineTetMeshLocally.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
-#include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
@@ -46,7 +45,6 @@
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
 #include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
-#include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 #include <Modules/Math/ComputePCA.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/GeometryBuffer.h>
@@ -70,7 +68,6 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
 
 void ModuleDescriptionLookup::addMoreModules()
 {
-  addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
 	addModuleDesc<ConvertFieldBasis>("ConvertFieldBasis", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldData>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldData>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
@@ -83,7 +80,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ExtractIsosurface>("...","...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
-  addModuleDesc<ClipVolumeByIsovalue>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
   addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
   addModuleDesc<ShowString>("in progress--needs testing", "...");
   addModuleDesc<GeometryBuffer>("in progress--needs testing", "...");
