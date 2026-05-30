@@ -36,7 +36,6 @@
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
-#include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
@@ -117,11 +116,9 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
-	    ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
       ADD_MODULE_ALGORITHM(GeneratePointSamplesFromFieldOrWidget,GeneratePointSamplesFromFieldAlgo)
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
-      ADD_MODULE_ALGORITHM(ExtractIsosurface, ExtractSimpleIsosurfaceAlgo)
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(RefineTetMeshLocally, RefineTetMeshLocallyAlgorithm)
      ;

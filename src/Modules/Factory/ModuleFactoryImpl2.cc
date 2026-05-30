@@ -67,9 +67,8 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<SelectSubMatrix>("SelectSubMatrix", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromElemToNode>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromNodeToElem>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
-  addModuleDesc<ExtractIsosurface>("...","...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
+  addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
   addModuleDesc<ShowString>("in progress--needs testing", "...");
   addModuleDesc<GeometryBuffer>("in progress--needs testing", "...");

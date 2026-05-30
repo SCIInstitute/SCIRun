@@ -51,7 +51,6 @@
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h>
 #include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
-#include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithTetGenDialog.h>
@@ -129,12 +128,10 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
-    ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromFieldOrWidget, GeneratePointSamplesFromFieldOrWidgetDialog)
     ADD_MODULE_DIALOG(GetSliceFromStructuredFieldByIndices, GetSliceFromStructuredFieldByIndicesDialog)
-    ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
-    ADD_MODULE_DIALOG(ExtractIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
+    ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
     ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
     ADD_MODULE_DIALOG(RefineTetMeshLocally, RefineTetMeshLocallyDialog)
   ;

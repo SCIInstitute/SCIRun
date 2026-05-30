@@ -41,8 +41,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
-#include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
@@ -129,7 +127,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<RefineMesh>("RefineMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
-  addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals", "ChangeMesh", "SCIRun", "...", "...");
 
 
   addModuleDesc<TransformMeshWithTransform>("...", "...");
@@ -138,7 +135,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences", "ChangeFieldData",
       "SCIRun", "...", "In progress--Computation is incorrect");
 
-  addModuleDesc<GeneratePointSamplesFromField>("Real ported module", "in progress");
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
 

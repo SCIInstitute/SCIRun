@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ExtractIsosurface",
+    "namespace": "Fields",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ExtractSimpleIsosurface.h"
+  },
+  "algorithm": {
+    "name": "ExtractSimpleIsosurfaceAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h"
+  },
+  "UI": {
+    "name": "ExtractSimpleIsosurfaceDialog",
+    "header": "Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h"
+  }
+}
