@@ -43,7 +43,6 @@
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
 #include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
-#include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
@@ -75,7 +74,6 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
 
 void ModuleDescriptionLookup::addMoreModules()
 {
-  addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
 	addModuleDesc<ConvertFieldBasis>("ConvertFieldBasis", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldData>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");

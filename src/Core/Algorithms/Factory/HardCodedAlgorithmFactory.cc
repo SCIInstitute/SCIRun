@@ -40,7 +40,6 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
-#include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
@@ -61,7 +60,6 @@
 #include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
 #include <Core/Algorithms/Legacy/Fields/SampleField/GeneratePointSamplesFromField.h>
 #include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
-#include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
@@ -120,7 +118,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(CalculateSignedDistanceToField, CalculateSignedDistanceFieldAlgo)
       ADD_MODULE_ALGORITHM(CalculateGradients, CalculateGradientsAlgo)
       ADD_MODULE_ALGORITHM(ConvertQuadSurfToTriSurf, ConvertMeshToTriSurfMeshAlgo)
-      ADD_MODULE_ALGORITHM(AlignMeshBoundingBoxes, AlignMeshBoundingBoxesAlgo)
       ADD_MODULE_ALGORITHM(GetFieldNodes, GetMeshNodesAlgo)     /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
       ADD_MODULE_ALGORITHM(ElectrodeCoilSetup, ElectrodeCoilSetupAlgorithm)
       ADD_MODULE_ALGORITHM(SetConductivitiesToMesh, SetConductivitiesToMeshAlgorithm)
@@ -134,7 +131,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryAlgorithm)
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryAlgorithm)
-      ADD_MODULE_ALGORITHM(AddKnownsToLinearSystem, AddKnownsToLinearSystemAlgo)
       ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo)
       ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)
       ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
