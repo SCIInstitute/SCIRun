@@ -39,7 +39,6 @@
 #include <Modules/DataIO/WriteField.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
-#include <Modules/Fields/EditMeshBoundingBox.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
@@ -71,9 +70,7 @@
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Render/ViewScene.h>
-#include <Modules/String/CreateString.h>
 #include <Modules/String/NetworkNotes.h>
-#include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
 #include <Modules/Visualization/ShowFieldGlyphs.h>
@@ -82,13 +79,13 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Modules::StringProcessing;
+using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::Math;
 
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
-using namespace SCIRun::Modules::StringProcessing;
-using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
 
 void ModuleDescriptionLookup::addEssentialModules()
@@ -111,8 +108,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "Partially functional, needs GUI work.", "...");
   addModuleDesc<SolveLinearSystem>(
       "SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
-  addModuleDesc<CreateString>(
-      "CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
   addModuleDesc<NetworkNotes>(
       "NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
 
@@ -127,7 +122,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>(
       "SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
@@ -143,7 +137,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals", "ChangeMesh", "SCIRun", "...", "...");
 
-  addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
 
   addModuleDesc<TransformMeshWithTransform>("...", "...");
   addModuleDesc<ShowColorMap>(
