@@ -30,7 +30,6 @@
 #include <Modules/Basic/LoggingTester.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
 #include <Modules/Basic/PortFeedbackTestModules.h>
-#include <Modules/Basic/PrintDatatype.h>
 #include <Modules/Basic/ReceiveComplexScalar.h>
 #include <Modules/Basic/SendComplexScalar.h>
 #include <Modules/Basic/SimulationReaderBaseModule.h>
@@ -41,7 +40,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
 #include <Modules/Legacy/Fields/RefineMesh.h>
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
@@ -80,7 +78,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
   addModuleDesc<WriteField>(
       "WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
-  addModuleDesc<PrintDatatype>("PrintDatatype", "String", "SCIRun", "...", "...");
   addModuleDesc<ReportMatrixInfo>(
       "ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
   addModuleDesc<ReportFieldInfo>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
@@ -97,7 +94,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
-  addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<RefineMesh>("RefineMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
