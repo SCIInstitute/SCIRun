@@ -41,8 +41,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
-#include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
 #include <Modules/Legacy/Fields/RefineMesh.h>
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
@@ -57,7 +55,6 @@
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Render/ViewScene.h>
-#include <Modules/String/NetworkNotes.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
 #include <Modules/Visualization/ShowFieldGlyphs.h>
@@ -66,7 +63,6 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Bundles;
-using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::Math;
@@ -91,8 +87,6 @@ void ModuleDescriptionLookup::addEssentialModules()
 
   addModuleDesc<SolveLinearSystem>(
       "SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
-  addModuleDesc<NetworkNotes>(
-      "NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
 
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
@@ -104,8 +98,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
-  addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
-  addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
   addModuleDesc<RefineMesh>("RefineMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");

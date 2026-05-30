@@ -38,7 +38,6 @@
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
-#include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
@@ -49,8 +48,6 @@
 #include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
@@ -94,7 +91,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
-    ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)
     ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
     ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
     ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
@@ -106,8 +102,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
-    ADD_MODULE_DIALOG(MapFieldDataOntoElements, MapFieldDataOntoElemsDialog)
-    ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
     ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
