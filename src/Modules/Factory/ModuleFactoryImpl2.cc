@@ -30,7 +30,6 @@
 #include <Modules/Fields/RefineTetMeshLocally.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
-#include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
@@ -58,7 +57,6 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
 
 void ModuleDescriptionLookup::addMoreModules()
 {
-  addModuleDesc<GetFieldData>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldData>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<SelectSubMatrix>("SelectSubMatrix", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromElemToNode>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "Real ported module", "...");

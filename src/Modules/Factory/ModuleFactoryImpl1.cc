@@ -41,7 +41,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
@@ -59,7 +58,6 @@
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Math/GetMatrixSlice.h>
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Render/ViewScene.h>
@@ -103,8 +101,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
-  addModuleDesc<GetFieldNodes>(
-      "GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldNodes>(
       "SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>(
@@ -118,7 +114,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
-  addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
   addModuleDesc<RefineMesh>("RefineMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");

@@ -38,7 +38,6 @@
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
-#include <Interface/Modules/Math/GetMatrixSliceDialog.h>
 #include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
@@ -110,7 +109,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
     ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
     ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
-    ADD_MODULE_DIALOG(GetMatrixSlice, GetMatrixSliceDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)

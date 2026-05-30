@@ -33,10 +33,8 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
-#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 //#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
@@ -50,7 +48,6 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
-#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/Field/RefineTetMeshLocallyAlgorithm.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
@@ -85,7 +82,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
   {
     insert(factoryMap_)
       ADD_MODULE_ALGORITHM(SolveLinearSystem, SolveLinearSystemAlgo)
-      ADD_MODULE_ALGORITHM(GetFieldNodes, GetMeshNodesAlgo)     /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
       ADD_MODULE_ALGORITHM(SetConductivitiesToMesh, SetConductivitiesToMeshAlgorithm)
       ADD_MODULE_ALGORITHM(SetupTDCS, SetupTDCSAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
@@ -93,9 +89,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
       ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
-      ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
-      ADD_MODULE_ALGORITHM(GetMatrixSlice, GetMatrixSliceAlgo)
       ADD_MODULE_ALGORITHM(JoinFields, JoinFieldsAlgo)
       ADD_MODULE_ALGORITHM(SelectSubMatrix, SelectSubMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemAlgo)
