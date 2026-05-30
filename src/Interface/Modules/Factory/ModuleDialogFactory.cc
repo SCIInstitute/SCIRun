@@ -38,7 +38,6 @@
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
-#include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
@@ -49,7 +48,6 @@
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
-#include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h>
@@ -98,14 +96,11 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
-    ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
-    ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
-    ADD_MODULE_DIALOG(RefineTetMeshLocally, RefineTetMeshLocallyDialog)
   ;
 }
 

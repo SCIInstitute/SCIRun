@@ -44,7 +44,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(RefineMesh, ChangeFieldData, SCIRun)
+MODULE_INFO_DEF(RefineMesh, ChangeMesh, SCIRun)
 
 RefineMesh::RefineMesh() : Module(staticInfo_)
 {

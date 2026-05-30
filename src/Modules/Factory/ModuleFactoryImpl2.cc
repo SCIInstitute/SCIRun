@@ -27,7 +27,6 @@
 
 
 #include <Modules/Factory/ModuleDescriptionLookup.h>
-#include <Modules/Fields/RefineTetMeshLocally.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
@@ -58,6 +57,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<SetFieldData>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<SelectSubMatrix>("SelectSubMatrix", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
-  addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
   addModuleDesc<ShowString>("in progress--needs testing", "...");
 }

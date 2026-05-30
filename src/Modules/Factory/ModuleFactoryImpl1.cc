@@ -40,8 +40,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/RefineMesh.h>
-#include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
@@ -94,7 +92,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
-  addModuleDesc<RefineMesh>("RefineMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
 
@@ -102,8 +99,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<TransformMeshWithTransform>("...", "...");
   addModuleDesc<ShowColorMap>(
       "ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
-  addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences", "ChangeFieldData",
-      "SCIRun", "...", "In progress--Computation is incorrect");
 
 
   addModuleDesc<SimulationStreamingReaderBase>("...", "...");

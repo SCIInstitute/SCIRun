@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "RegisterWithCorrespondences",
+    "namespace": "Fields",
+    "status": "...",
+    "description": "In progress--Computation is incorrect",
+    "header": "Modules/Legacy/Fields/RegisterWithCorrespondences.h"
+  },
+  "algorithm": {
+    "name": "RegisterWithCorrespondencesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h"
+  },
+  "UI": {
+    "name": "RegisterWithCorrespondencesDialog",
+    "header": "Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h"
+  }
+}

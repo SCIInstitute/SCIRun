@@ -29,7 +29,6 @@
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 //#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
@@ -37,12 +36,10 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/TransformMeshWithTransform.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
-#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
-#include <Core/Algorithms/Field/RefineTetMeshLocallyAlgorithm.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
@@ -86,13 +83,9 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(SelectSubMatrix, SelectSubMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(ResampleRegularMesh, ResampleRegularMeshAlgo)
       ADD_MODULE_ALGORITHM(TransformMeshWithTransform, TransformMeshWithTransformAlgo)
-			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
-	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
-	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
-      ADD_MODULE_ALGORITHM(RefineTetMeshLocally, RefineTetMeshLocallyAlgorithm)
      ;
   }
 }
