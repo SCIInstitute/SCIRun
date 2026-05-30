@@ -33,8 +33,6 @@
 #include <Modules/Basic/PrintDatatype.h>
 #include <Modules/Basic/ReceiveComplexScalar.h>
 #include <Modules/Basic/SendComplexScalar.h>
-#include <Modules/Basic/CompositeModuleWithStaticPorts.h>
-#include <Modules/Basic/CompositeModuleWithTypedStaticPorts.h>
 #include <Modules/Basic/SimulationReaderBaseModule.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
@@ -67,7 +65,6 @@
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
-#include <Modules/Legacy/Math/CollectMatrices.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
@@ -88,9 +85,9 @@
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
+using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Bundles;
 using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 
 using namespace SCIRun::Modules::DataIO;
@@ -171,10 +168,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromField>("Real ported module", "in progress");
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
-  addModuleDesc<CollectMatrices>("Real ported module", "...");
-
-  addModuleDesc<CompositeModuleWithStaticPorts>("...", "...");
-  addModuleDesc<CompositeModuleWithTypedStaticPorts>("...", "...");
 
   addModuleDesc<SimulationStreamingReaderBase>("...", "...");
 }

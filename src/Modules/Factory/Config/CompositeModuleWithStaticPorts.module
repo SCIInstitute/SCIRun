@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CompositeModuleWithStaticPorts",
+    "namespace": "Basic",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Basic/CompositeModuleWithStaticPorts.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CompositeModuleDialog",
+    "header": "Interface/Modules/Python/CompositeModuleDialog.h"
+  }
+}
