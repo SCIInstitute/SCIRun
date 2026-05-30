@@ -45,8 +45,6 @@
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Converters/ConvertMatrixToString.h>
-#include <Modules/Legacy/Fields/CalculateDistanceToField.h>
-#include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateFieldData5.h>
 #include <Modules/Legacy/Fields/CalculateGradients.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
@@ -158,8 +156,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");
-  addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
-  addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
   addModuleDesc<ClipFieldByFunction>("In progress", "...");

@@ -44,7 +44,6 @@
 #include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
-#include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
 #include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
@@ -60,7 +59,6 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Modules::Inverse;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
@@ -82,7 +80,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<MapFieldDataFromNodeToElem>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
-  addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
   addModuleDesc<ExtractIsosurface>("...","...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");

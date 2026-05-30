@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildSurfaceLaplacianMatrix",
+    "namespace": "Inverse",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
