@@ -27,11 +27,8 @@
 
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
@@ -90,14 +87,11 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(SelectSubMatrix, SelectSubMatrixAlgorithm)
-      ADD_MODULE_ALGORITHM(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemAlgo)
-      ADD_MODULE_ALGORITHM(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeAlgo)
       ADD_MODULE_ALGORITHM(ResampleRegularMesh, ResampleRegularMeshAlgo)
       ADD_MODULE_ALGORITHM(TransformMeshWithTransform, TransformMeshWithTransformAlgo)
       ADD_MODULE_ALGORITHM(ProjectPointsOntoMesh, ProjectPointsOntoMeshAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataOntoNodes, MapFieldDataOntoNodesAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataOntoElements, MapFieldDataOntoElemsAlgo)
-      ADD_MODULE_ALGORITHM(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationAlgo)
 			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)

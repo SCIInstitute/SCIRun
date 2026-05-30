@@ -41,7 +41,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
@@ -107,7 +106,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
-  addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<RefineMesh>("RefineMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");

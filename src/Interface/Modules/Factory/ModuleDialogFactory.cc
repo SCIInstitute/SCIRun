@@ -45,15 +45,12 @@
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
@@ -105,15 +102,12 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
     ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
-    ADD_MODULE_DIALOG(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeDialog)
-    ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoElements, MapFieldDataOntoElemsDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
-    ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
     ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
