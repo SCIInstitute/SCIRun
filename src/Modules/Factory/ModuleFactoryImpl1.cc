@@ -38,17 +38,14 @@
 #include <Modules/DataIO/WriteField.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
-#include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
-#include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
@@ -76,9 +73,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
   addModuleDesc<WriteField>(
       "WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
-  addModuleDesc<ReportMatrixInfo>(
-      "ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-  addModuleDesc<ReportFieldInfo>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
 
   addModuleDesc<SolveLinearSystem>(
       "SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
@@ -93,7 +87,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
-  addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
 
 
   addModuleDesc<TransformMeshWithTransform>("...", "...");

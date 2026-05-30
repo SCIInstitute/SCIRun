@@ -34,13 +34,10 @@
 #include <Interface/Modules/DataIO/ReadNrrdDialog.h>
 #include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraGeneralDialog.h>
-#include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
-#include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
-#include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
@@ -87,8 +84,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
-    ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
-    ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
@@ -96,7 +91,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
-    ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)

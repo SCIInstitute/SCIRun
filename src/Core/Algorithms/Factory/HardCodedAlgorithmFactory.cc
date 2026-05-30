@@ -37,9 +37,7 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/TransformMeshWithTransform.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
-#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
@@ -75,8 +73,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(SetConductivitiesToMesh, SetConductivitiesToMeshAlgorithm)
       ADD_MODULE_ALGORITHM(SetupTDCS, SetupTDCSAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
-      ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
-      ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
       ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
