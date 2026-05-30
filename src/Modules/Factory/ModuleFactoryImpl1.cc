@@ -26,7 +26,6 @@
 */
 
 #include <Modules/Basic/AsyncPortTestModule.h>
-#include <Modules/Basic/AsyncStreamingTestModule.h>
 #include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Basic/LoggingTester.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
@@ -204,7 +203,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CompositeModuleWithStaticPorts>("...", "...");
   addModuleDesc<CompositeModuleWithTypedStaticPorts>("...", "...");
 
-  addModuleDesc<AsyncStreamingTest>("...", "...");
   addModuleDesc<SimulationStreamingReaderBase>("...", "...");
 }
 
