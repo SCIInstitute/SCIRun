@@ -37,11 +37,9 @@
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraGeneralDialog.h>
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
-#include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
-#include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/NetworkNotesDialog.h>
@@ -113,7 +111,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
-    ADD_MODULE_DIALOG(CreateMatrix, CreateMatrixDialog)
     ADD_MODULE_DIALOG(CreateString, CreateStringDialog)
     ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)
     ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
@@ -127,7 +124,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
     ADD_MODULE_DIALOG(GetMatrixSlice, GetMatrixSliceDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeDialog)
-    ADD_MODULE_DIALOG(ConvertMatrixType, ConvertMatrixTypeDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)

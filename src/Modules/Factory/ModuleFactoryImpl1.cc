@@ -42,7 +42,6 @@
 #include <Modules/Fields/EditMeshBoundingBox.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
@@ -66,7 +65,6 @@
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/GetMatrixSlice.h>
@@ -111,8 +109,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "Partially functional, needs GUI work.", "...");
   addModuleDesc<EvaluateLinearAlgebraBinary>("EvaluateLinearAlgebraBinary", "Math", "SCIRun",
       "Partially functional, needs GUI work.", "...");
-  addModuleDesc<CreateMatrix>(
-      "CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
   addModuleDesc<SolveLinearSystem>(
       "SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
   addModuleDesc<CreateString>(
@@ -125,8 +121,6 @@ void ModuleDescriptionLookup::addEssentialModules()
 
   addModuleDesc<GetFieldBoundary>(
       "GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
-  addModuleDesc<ConvertQuadSurfToTriSurf>(
-      "ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldNodes>(
       "GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldNodes>(
