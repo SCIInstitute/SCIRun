@@ -49,7 +49,6 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/TransformMeshWithTransform.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
 #include <Core/Algorithms/Legacy/Fields/SampleField/GeneratePointSamplesFromField.h>
 #include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
@@ -70,7 +69,6 @@
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
-#include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <boost/functional/factory.hpp>
 #include <boost/assign.hpp>
@@ -81,7 +79,6 @@ using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Core::Algorithms::Converters;
 using namespace boost::assign;
 
 /// @todo: add unit test
@@ -132,9 +129,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
 	    ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
       ADD_MODULE_ALGORITHM(GeneratePointSamplesFromFieldOrWidget,GeneratePointSamplesFromFieldAlgo)
-	    ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
-		  ADD_MODULE_ALGORITHM(ConvertMatrixToString, ConvertMatrixToStringAlgo)
-      ADD_MODULE_ALGORITHM(ConvertHexVolToTetVol, ConvertMeshToTetVolMeshAlgo)
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(ExtractIsosurface, ExtractSimpleIsosurfaceAlgo)

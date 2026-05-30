@@ -70,7 +70,6 @@
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
-#include <Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h>
 #include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
@@ -147,7 +146,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromFieldOrWidget, GeneratePointSamplesFromFieldOrWidgetDialog)
     ADD_MODULE_DIALOG(GetSliceFromStructuredFieldByIndices, GetSliceFromStructuredFieldByIndicesDialog)
-    ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
     ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
     ADD_MODULE_DIALOG(ExtractIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)

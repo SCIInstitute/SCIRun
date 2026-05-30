@@ -42,8 +42,6 @@
 #include <Modules/Fields/EditMeshBoundingBox.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Converters/ConvertMatrixToString.h>
-#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
@@ -94,7 +92,6 @@ using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
-using namespace SCIRun::Modules::Converters;
 
 void ModuleDescriptionLookup::addEssentialModules()
 {
@@ -153,13 +150,10 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals", "ChangeMesh", "SCIRun", "...", "...");
 
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
-  addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
 
   addModuleDesc<TransformMeshWithTransform>("...", "...");
   addModuleDesc<ShowColorMap>(
       "ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
-  addModuleDesc<ConvertMatrixToString>(
-      "ConvertMatrixToString", "Converters", "SCIRun", "...", "...");
   addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences", "ChangeFieldData",
       "SCIRun", "...", "In progress--Computation is incorrect");
 

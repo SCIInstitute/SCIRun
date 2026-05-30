@@ -42,7 +42,6 @@
 #include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
-#include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/GeometryBuffer.h>
@@ -73,7 +72,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ConvertMatrixType>("ConvertMatrixType", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromNodeToElem>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
-  addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<ExtractIsosurface>("...","...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
   addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
