@@ -33,9 +33,6 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
-#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
-#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
@@ -108,8 +105,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
     insert(factoryMap_)
       ADD_MODULE_ALGORITHM(GetFieldBoundary, GetFieldBoundaryAlgo)
       ADD_MODULE_ALGORITHM(SolveLinearSystem, SolveLinearSystemAlgo)
-      ADD_MODULE_ALGORITHM(CalculateSignedDistanceToField, CalculateSignedDistanceFieldAlgo)
-      ADD_MODULE_ALGORITHM(CalculateGradients, CalculateGradientsAlgo)
       ADD_MODULE_ALGORITHM(ConvertQuadSurfToTriSurf, ConvertMeshToTriSurfMeshAlgo)
       ADD_MODULE_ALGORITHM(GetFieldNodes, GetMeshNodesAlgo)     /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
       ADD_MODULE_ALGORITHM(ElectrodeCoilSetup, ElectrodeCoilSetupAlgorithm)

@@ -60,7 +60,6 @@
 #include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
-#include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithTetGenDialog.h>
 #include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
@@ -129,7 +128,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
-    ADD_MODULE_DIALOG(CalculateFieldData, CalculateFieldDataDialog)
     ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
     ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
     ADD_MODULE_DIALOG(GetMatrixSlice, GetMatrixSliceDialog)

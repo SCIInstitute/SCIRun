@@ -45,9 +45,6 @@
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Converters/ConvertMatrixToString.h>
-#include <Modules/Legacy/Fields/CalculateFieldData5.h>
-#include <Modules/Legacy/Fields/CalculateGradients.h>
-#include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
@@ -136,10 +133,6 @@ void ModuleDescriptionLookup::addEssentialModules()
 
   addModuleDesc<GetFieldBoundary>(
       "GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
-  addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData",
-      "SCIRun", "Second real ported module", "...");
-  addModuleDesc<CalculateGradients>(
-      "CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<ConvertQuadSurfToTriSurf>(
       "ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldNodes>(
@@ -151,7 +144,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
-  addModuleDesc<CalculateFieldData>("Real ported module", "...");
   addModuleDesc<SwapFieldDataWithMatrixEntries>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");

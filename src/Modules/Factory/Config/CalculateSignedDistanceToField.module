@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateSignedDistanceToField",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/CalculateSignedDistanceToField.h"
+  },
+  "algorithm": {
+    "name": "CalculateSignedDistanceFieldAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
