@@ -41,7 +41,6 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
@@ -104,8 +103,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
-  addModuleDesc<GetFieldBoundary>(
-      "GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
   addModuleDesc<GetFieldNodes>(
       "GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldNodes>(

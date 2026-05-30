@@ -38,10 +38,8 @@
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
-#include <Modules/Legacy/Visualization/GenerateStreamLines.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Modules/Visualization/ShowString.h>
-#include <Modules/Visualization/GeometryBuffer.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -66,8 +64,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<MapFieldDataFromElemToNode>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromNodeToElem>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
-  addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
   addModuleDesc<ShowString>("in progress--needs testing", "...");
-  addModuleDesc<GeometryBuffer>("in progress--needs testing", "...");
 }

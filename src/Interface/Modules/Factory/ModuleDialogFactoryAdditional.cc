@@ -29,8 +29,6 @@
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-#include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
-#include <Interface/Modules/Visualization/GeometryBufferDialog.h>
 #include <boost/assign.hpp>
 
 using namespace SCIRun::Gui;
@@ -42,7 +40,5 @@ void ModuleDialogFactory::addDialogsToMakerMap2()
   insert(dialogMakerMap_)
     ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
     ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
-    ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
-    ADD_MODULE_DIALOG(GeometryBuffer, GeometryBufferDialog)
   ;
 }
