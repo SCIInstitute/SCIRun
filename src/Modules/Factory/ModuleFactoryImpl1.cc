@@ -79,7 +79,6 @@
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
-#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
 #include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/CollectMatrices.h>
@@ -87,7 +86,6 @@
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Math/AppendMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
@@ -100,7 +98,6 @@
 #include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
-#include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/ShowFieldGlyphs.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -111,7 +108,7 @@ using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::Forward;
-using namespace SCIRun::Modules::Inverse;
+
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
@@ -132,7 +129,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ReportMatrixInfo>(
       "ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
   addModuleDesc<ReportFieldInfo>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
-  addModuleDesc<AppendMatrix>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
+
   addModuleDesc<EvaluateLinearAlgebraUnary>("EvaluateLinearAlgebraUnary", "Math", "SCIRun",
       "Partially functional, needs GUI work.", "...");
   addModuleDesc<EvaluateLinearAlgebraBinary>("EvaluateLinearAlgebraBinary", "Math", "SCIRun",
@@ -145,7 +142,7 @@ void ModuleDescriptionLookup::addEssentialModules()
       "CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
   addModuleDesc<NetworkNotes>(
       "NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
-  addModuleDesc<ShowField>("Some basic options available, still work in progress.", "...");
+
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
@@ -195,7 +192,7 @@ void ModuleDescriptionLookup::addEssentialModules()
 
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
-  addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
+
   addModuleDesc<TransformMeshWithTransform>("...", "...");
   addModuleDesc<ShowColorMap>(
       "ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");

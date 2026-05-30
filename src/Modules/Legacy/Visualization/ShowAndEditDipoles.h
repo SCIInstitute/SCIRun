@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Modules/Visualization/VisualizationParameters.h>
 #include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
@@ -37,7 +38,6 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Visualization {
-        ALGORITHM_PARAMETER_DECL(FieldName);
         ALGORITHM_PARAMETER_DECL(WidgetScaleFactor);
         ALGORITHM_PARAMETER_DECL(Sizing);
         ALGORITHM_PARAMETER_DECL(ShowLastAsVector);

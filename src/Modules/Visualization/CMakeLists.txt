@@ -47,6 +47,7 @@ SET(Modules_Visualization_SRCS
 SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
   ShowField.h
+  VisualizationParameters.h
   ShowFieldGlyphs.h
   ShowFieldGlyphsPortHandler.h
   ShowString.h
