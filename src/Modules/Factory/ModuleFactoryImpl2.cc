@@ -45,7 +45,6 @@ using namespace SCIRun::Modules::Visualization;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
-  addModuleDesc<SetupTDCS>("SetupTDCS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");
 }
 
 void ModuleDescriptionLookup::addMoreModules()

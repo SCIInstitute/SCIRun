@@ -37,6 +37,5 @@ using namespace boost::assign;
 void ModuleDialogFactory::addDialogsToMakerMap2()
 {
   insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
   ;
 }

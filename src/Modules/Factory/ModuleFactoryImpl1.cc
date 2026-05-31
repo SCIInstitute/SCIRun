@@ -46,8 +46,6 @@
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
-#include <Modules/Visualization/ShowColorMapModule.h>
-#include <Modules/Visualization/ShowFieldGlyphs.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
@@ -74,7 +72,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SolveLinearSystem>(
       "SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
 
-  addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
   addModuleDesc<SolveMinNormLeastSqSystem>(
@@ -83,8 +80,6 @@ void ModuleDescriptionLookup::addEssentialModules()
 
 
   addModuleDesc<TransformMeshWithTransform>("...", "...");
-  addModuleDesc<ShowColorMap>(
-      "ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
 
 
   addModuleDesc<SimulationStreamingReaderBase>("...", "...");

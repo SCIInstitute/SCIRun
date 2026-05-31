@@ -42,8 +42,6 @@
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
-#include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
-#include <Interface/Modules/Visualization/ShowColorMapDialog.h>
 #include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
@@ -79,14 +77,12 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
     ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
-    ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
-    ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
   ;
 }
 
