@@ -39,14 +39,12 @@
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
 
@@ -62,7 +60,6 @@ void ModuleDescriptionLookup::addEssentialModules()
       "WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
 
 
-  addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
 
 
