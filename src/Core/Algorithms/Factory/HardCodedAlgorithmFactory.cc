@@ -31,9 +31,6 @@
 //#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
-#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <boost/functional/factory.hpp>
@@ -41,7 +38,6 @@
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace boost::assign;
 
@@ -58,8 +54,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
   if (factoryMap_.empty())
   {
     insert(factoryMap_)
-      ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
-      ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
      ;
   }

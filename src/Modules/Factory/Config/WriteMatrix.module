@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "WriteMatrix",
+    "namespace": "DataIO",
+    "status": "Functional, outputs text files or binary .mat only.",
+    "description": "...",
+    "header": "Modules/DataIO/WriteMatrix.h"
+  },
+  "algorithm": {
+    "name": "WriteMatrixAlgorithm",
+    "namespace": "DataIO",
+    "header": "Core/Algorithms/DataIO/WriteMatrix.h"
+  },
+  "UI": {
+    "name": "WriteMatrixDialog",
+    "header": "Interface/Modules/DataIO/WriteMatrixDialog.h"
+  }
+}

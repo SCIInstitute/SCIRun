@@ -32,32 +32,18 @@
 #include <Modules/Basic/PortFeedbackTestModules.h>
 #include <Modules/Basic/ReceiveComplexScalar.h>
 #include <Modules/Basic/SendComplexScalar.h>
-#include <Modules/DataIO/ReadField.h>
-#include <Modules/DataIO/ReadMatrixClassic.h>
-#include <Modules/DataIO/WriteField.h>
-#include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Modules::Matlab::DataIO;
 
 
 void ModuleDescriptionLookup::addEssentialModules()
 {
-  addModuleDesc<ReadMatrix>("ReadMatrix", "DataIO", "SCIRun", "Redo of ReadMatrix", "...");
-  addModuleDesc<WriteMatrix>("WriteMatrix", "DataIO", "SCIRun",
-      "Functional, outputs text files or binary .mat only.", "...");
-  addModuleDesc<ReadField>(
-      "ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-  addModuleDesc<WriteField>(
-      "WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
 
 
 

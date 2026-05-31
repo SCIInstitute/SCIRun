@@ -28,11 +28,7 @@
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/Base/ModuleDialogBasic.h>
-#include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
-#include <Interface/Modules/DataIO/WriteMatrixDialog.h>
-#include <Interface/Modules/DataIO/ReadFieldDialog.h>
 #include <Interface/Modules/DataIO/ReadNrrdDialog.h>
-#include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraGeneralDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
@@ -68,10 +64,6 @@ ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse,
 void ModuleDialogFactory::addDialogsToMakerMap1()
 {
   insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixClassicDialog)
-    ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
-    ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
-    ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
