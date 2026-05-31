@@ -32,7 +32,6 @@
 #include <Modules/Basic/PortFeedbackTestModules.h>
 #include <Modules/Basic/ReceiveComplexScalar.h>
 #include <Modules/Basic/SendComplexScalar.h>
-#include <Modules/Basic/SimulationReaderBaseModule.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteField.h>
@@ -43,7 +42,6 @@
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/CreateTestingArrow.h>
 
@@ -69,8 +67,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<WriteField>(
       "WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
 
-  addModuleDesc<SolveLinearSystem>(
-      "SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
 
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
@@ -82,7 +78,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<TransformMeshWithTransform>("...", "...");
 
 
-  addModuleDesc<SimulationStreamingReaderBase>("...", "...");
 }
 
 void ModuleDescriptionLookup::addTestingModules()

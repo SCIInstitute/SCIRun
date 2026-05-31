@@ -33,7 +33,6 @@
 #include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
-#include <Modules/Visualization/ShowString.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -41,7 +40,6 @@ using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::BrainStimulator;
-using namespace SCIRun::Modules::Visualization;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
@@ -50,5 +48,4 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
 void ModuleDescriptionLookup::addMoreModules()
 {
   addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
-  addModuleDesc<ShowString>("in progress--needs testing", "...");
 }
