@@ -63,6 +63,16 @@ SET(Modules_Visualization_HEADERS
   share.h
 )
 
+if(WITH_VTK)
+  list(APPEND Modules_Visualization_SRCS
+	ShowFieldVtk.cc
+  )
+
+  list(APPEND Modules_Visualization_HEADERS
+    ShowFieldVtk.h
+  )
+endif()
+
 SCIRUN_ADD_LIBRARY(Modules_Visualization
   ${Modules_Visualization_HEADERS}
   ${Modules_Visualization_SRCS}
@@ -79,6 +89,14 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Graphics_Widgets
   ${SCI_FREETYPE_LIBRARY}
 )
+
+if (WITH_VTK)
+  TARGET_LINK_LIBRARIES(Modules_Visualization
+  VTK::CommonCore
+  VTK::FiltersSources
+  VTK::FiltersCore
+  )
+endif()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Visualization)
