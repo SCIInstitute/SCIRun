@@ -59,10 +59,6 @@ namespace SCIRun::Modules
   template <size_t N> FixedString(const char (&)[N]) -> FixedString<N>;
 
   // -------------------------------------------------------------------------
-  // PortTypeName — maps a port tag struct to its datatype string.
-  // Dynamic/async wrappers forward to the underlying base tag.
-  // -------------------------------------------------------------------------
-  // -------------------------------------------------------------------------
   // IsDynamic — detects DynamicPortTag / AsyncDynamicPortTag wrappers so that
   // PortSpec can infer the dynamic flag from the tag type automatically.
   // -------------------------------------------------------------------------
@@ -70,13 +66,24 @@ namespace SCIRun::Modules
   template <typename B>   struct IsDynamic<DynamicPortTag<B>>      : std::true_type {};
   template <typename B>   struct IsDynamic<AsyncDynamicPortTag<B>> : std::true_type {};
 
+  // -------------------------------------------------------------------------
+  // PortTypeName — maps a port tag to its wire-format datatype string.
+  // TagDataType  — maps a port tag to its C++ class (for getRequiredInput_ etc.).
+  // Both are populated by DECLARE_PORT_TYPE below.
+  // Dynamic/async wrappers forward to the underlying base tag for both traits.
+  // -------------------------------------------------------------------------
   template <typename Tag> struct PortTypeName;
+  template <typename Tag> struct TagDataType;
 
   template <typename Base>
   struct PortTypeName<DynamicPortTag<Base>> : PortTypeName<Base> {};
-
   template <typename Base>
   struct PortTypeName<AsyncDynamicPortTag<Base>> : PortTypeName<Base> {};
+
+  template <typename Base>
+  struct TagDataType<DynamicPortTag<Base>>      : TagDataType<Base> {};
+  template <typename Base>
+  struct TagDataType<AsyncDynamicPortTag<Base>> : TagDataType<Base> {};
 
   // -------------------------------------------------------------------------
   // PortSpec — a single port description: name (compile-time string),
@@ -101,31 +108,62 @@ namespace SCIRun::Modules
   using Dynamic = PortSpec<Spec::nameStr, typename Spec::tag, true>;
 
   // Per-type aliases — the intended public API.
-  // Dynamic ports: add true as the second template argument, e.g. FieldPort<"Inputs", true>.
-// Declares PortTypeName<TypeNamePortTag> and the TypeNamePort<"Name"> alias
-// from a single token, e.g. DECLARE_PORT_TYPE(Matrix) produces:
-//   PortTypeName<MatrixPortTag>::value == "Matrix"
-//   template <FixedString Name, bool Dynamic = false> using MatrixPort = ...
-#define DECLARE_PORT_TYPE(TypeName) \
+  // Dynamic ports: use Dynamic<MatrixPort<"Name">> or MatrixPort<"Name", true>.
+  //
+  // DECLARE_PORT_TYPE(TagPrefix [, CppType]) generates:
+  //   PortTypeName<TagPrefixPortTag>::value  == "TagPrefix"  (wire-format string)
+  //   TagDataType<TagPrefixPortTag>::type    == Core::Datatypes::CppType
+  //   TagPrefixPort<"Name">                  (alias template)
+  //
+  // One-argument form: CppType defaults to TagPrefix (covers most cases).
+  // Two-argument form: use when the C++ class name differs from the tag prefix
+  //   (Geometry→GeometryObject, OsprayGeometry→OsprayGeometryObject, Nrrd→NrrdDataType).
+#define DECLARE_PORT_TYPE_IMPL(TypeName, CppType) \
   template <> struct PortTypeName<TypeName##PortTag> \
     { static constexpr const char* value = #TypeName; }; \
+  template <> struct TagDataType<TypeName##PortTag> \
+    { using type = Core::Datatypes::CppType; }; \
   template <FixedString Name, bool Dynamic = false> \
   using TypeName##Port = PortSpec<Name, TypeName##PortTag, Dynamic>
+
+#define DECLARE_PORT_TYPE_1(TypeName)            DECLARE_PORT_TYPE_IMPL(TypeName, TypeName)
+#define DECLARE_PORT_TYPE_2(TypeName, CppType)   DECLARE_PORT_TYPE_IMPL(TypeName, CppType)
+#define DECLARE_PORT_TYPE_PICK(_1, _2, WHICH, ...) WHICH
+#define DECLARE_PORT_TYPE(...) \
+  DECLARE_PORT_TYPE_PICK(__VA_ARGS__, DECLARE_PORT_TYPE_2, DECLARE_PORT_TYPE_1)(__VA_ARGS__)
 
   DECLARE_PORT_TYPE(Matrix);
   DECLARE_PORT_TYPE(ComplexMatrix);
   DECLARE_PORT_TYPE(Scalar);
   DECLARE_PORT_TYPE(String);
   DECLARE_PORT_TYPE(Field);
-  DECLARE_PORT_TYPE(Geometry);
-  DECLARE_PORT_TYPE(OsprayGeometry);
+  DECLARE_PORT_TYPE(Geometry,       GeometryObject);
+  DECLARE_PORT_TYPE(OsprayGeometry, OsprayGeometryObject);
   DECLARE_PORT_TYPE(ColorMap);
   DECLARE_PORT_TYPE(Bundle);
-  DECLARE_PORT_TYPE(Nrrd);
+  DECLARE_PORT_TYPE(Nrrd,           NrrdDataType);
   DECLARE_PORT_TYPE(Datatype);
   DECLARE_PORT_TYPE(MetadataObject);
 
 #undef DECLARE_PORT_TYPE
+#undef DECLARE_PORT_TYPE_PICK
+#undef DECLARE_PORT_TYPE_1
+#undef DECLARE_PORT_TYPE_2
+#undef DECLARE_PORT_TYPE_IMPL
+
+  // -------------------------------------------------------------------------
+  // FindSpec<Name, Specs...> — compile-time lookup of a PortSpec by name.
+  // Returns the matching spec type, or void if not found.
+  // -------------------------------------------------------------------------
+  template <FixedString Name, typename... Specs> struct FindSpec;
+  template <FixedString Name>
+  struct FindSpec<Name> { using type = void; };
+  template <FixedString Name, typename First, typename... Rest>
+  struct FindSpec<Name, First, Rest...> {
+    using type = std::conditional_t<(First::name == Name.view()),
+                                    First,
+                                    typename FindSpec<Name, Rest...>::type>;
+  };
 
   // -------------------------------------------------------------------------
   // HasInputPorts<Specs...> — variadic replacement for Has1InputPort through
@@ -136,6 +174,11 @@ namespace SCIRun::Modules
   //
   // Both provide the same NumIPorts/NumOPorts enum and inputPortDescription()
   // / outputPortDescription() static methods as the old templates.
+  //
+  // HasInputPorts additionally provides compile-time lookup by name:
+  //   inputPortIndex<FixedString{"Matrix"}>()  → constexpr size_t index
+  //   InputDataType<FixedString{"Matrix"}>     → C++ type (e.g. Core::Datatypes::Matrix)
+  // These are used by the getRequiredInput_ / getOptionalInput_ macros.
   // -------------------------------------------------------------------------
   template <typename... Specs>
   struct HasInputPorts : NumInputPorts<sizeof...(Specs)>
@@ -159,6 +202,19 @@ namespace SCIRun::Modules
     {
       return makeDescriptions(std::index_sequence_for<Specs...>{});
     }
+
+    template <FixedString Name>
+    static constexpr size_t inputPortIndex()
+    {
+      size_t result = size_t(-1), i = 0;
+      ([&]{ if (Specs::name == Name.view()) result = i; ++i; }(), ...);
+      return result;
+    }
+
+    template <FixedString Name>
+    using InputDataType = typename TagDataType<
+      typename FindSpec<Name, Specs...>::type::tag
+    >::type;
   };
 
   template <typename... Specs>
@@ -186,6 +242,40 @@ namespace SCIRun::Modules
   };
 
 } // namespace SCIRun::Modules
+
+// -----------------------------------------------------------------------------
+// getRequiredInput_(portName)  — typed, index-safe replacement for
+//   getRequiredInput(PortNameMember)
+//
+// getOptionalInput_(portName)  — replacement for getOptionalInput(PortNameMember)
+//
+// Both macros require the enclosing class to inherit from HasInputPorts<...>
+// with a spec whose name matches the argument.  The port's C++ datatype and
+// index are looked up at compile time; a misspelled name is a compile error.
+//
+// Usage (inside execute() or any member of a HasInputPorts<...> subclass):
+//   auto mat   = getRequiredInput_(Matrix);   // shared_ptr<Core::Datatypes::Matrix>
+//   auto field = getOptionalInput_(InputField); // optional<shared_ptr<...>>
+// -----------------------------------------------------------------------------
+#define getRequiredInput_(name) \
+  [this]() { \
+    using Self_ = std::remove_pointer_t<decltype(this)>; \
+    constexpr auto portName_ = SCIRun::Modules::FixedString{#name}; \
+    using DataType_ = typename Self_::template InputDataType<portName_>; \
+    constexpr size_t idx_ = Self_::template inputPortIndex<portName_>(); \
+    return this->template getRequiredInputAtIndex<DataType_>( \
+      SCIRun::Dataflow::Networks::PortId(idx_, #name)); \
+  }()
+
+#define getOptionalInput_(name) \
+  [this]() { \
+    using Self_ = std::remove_pointer_t<decltype(this)>; \
+    constexpr auto portName_ = SCIRun::Modules::FixedString{#name}; \
+    using DataType_ = typename Self_::template InputDataType<portName_>; \
+    constexpr size_t idx_ = Self_::template inputPortIndex<portName_>(); \
+    return this->template getOptionalInputAtIndex<DataType_>( \
+      SCIRun::Dataflow::Networks::PortId(idx_, #name)); \
+  }()
 
 /*
   ============================================================================
@@ -275,9 +365,30 @@ namespace SCIRun::Modules
     - inputPort{N}Name() static methods  → generated by the old INPUT_PORT macro;
                                            IPortDescriber no longer calls them
                                            once the module uses HasInputPorts
+    - INPUT_PORT / OUTPUT_PORT macros    → can be removed once execute() is also
+                                           converted to use getRequiredInput_ below
+    - StaticPortName member variables    → same; only needed for old-style access
 
-  What stays:
-    - INPUT_PORT / OUTPUT_PORT macros    → still needed for StaticPortName members
+  What stays (until execute() is also converted):
+    - INPUT_PORT / OUTPUT_PORT macros    → still needed if execute() still calls
+                                           getRequiredInput(Matrix) old style
+
+  ============================================================================
+  getRequiredInput_ / getOptionalInput_ — replacing getRequiredInput(Member)
+  ============================================================================
+  Once the module uses HasInputPorts<...>, the execute() body can use these
+  macros instead of getRequiredInput(PortNameMember).  The port's C++ type and
+  index are resolved at compile time; a misspelled name is a compile error.
+
+    // Old style — requires StaticPortName member + INITIALIZE_PORT:
+    auto mat = getRequiredInput(Matrix);
+
+    // New style — only requires HasInputPorts<MatrixPort<"Matrix">, ...>:
+    auto mat = getRequiredInput_(Matrix);
+
+  Once execute() is converted, INPUT_PORT / OUTPUT_PORT and INITIALIZE_PORT
+  are all gone.  A fully converted module header has only the HasInputPorts /
+  HasOutputPorts base classes and no other port boilerplate.
 
   ============================================================================
   Port spec styles — all of these are equivalent for a dynamic Field port:
