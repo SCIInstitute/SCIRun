@@ -239,6 +239,19 @@ namespace SCIRun::Modules
     {
       return makeDescriptions(std::index_sequence_for<Specs...>{});
     }
+
+    template <FixedString Name>
+    static constexpr size_t outputPortIndex()
+    {
+      size_t result = size_t(-1), i = 0;
+      ([&]{ if (Specs::name == Name.view()) result = i; ++i; }(), ...);
+      return result;
+    }
+
+    template <FixedString Name>
+    using OutputDataType = typename TagDataType<
+      typename FindSpec<Name, Specs...>::type::tag
+    >::type;
   };
 
 } // namespace SCIRun::Modules
@@ -275,6 +288,30 @@ namespace SCIRun::Modules
     constexpr size_t idx_ = Self_::template inputPortIndex<portName_>(); \
     return this->template getOptionalInputAtIndex<DataType_>( \
       SCIRun::Dataflow::Networks::PortId(idx_, #name)); \
+  }()
+
+// -----------------------------------------------------------------------------
+// sendOutput_(portName, data)  — typed replacement for sendOutput(PortNameMember, data).
+//
+// Requires the enclosing class to inherit from HasOutputPorts<...> with a spec
+// whose name matches the argument.  The port's C++ datatype and index are
+// resolved at compile time.  A static_assert enforces that the data type is
+// compatible with the declared port type, matching the check in sendOutput().
+//
+// Usage:
+//   sendOutput_(SceneGraph, geomHandle);
+// -----------------------------------------------------------------------------
+#define sendOutput_(name, data) \
+  [this, &data]() { \
+    using Self_ = std::remove_pointer_t<decltype(this)>; \
+    constexpr auto portName_ = SCIRun::Modules::FixedString{#name}; \
+    using PortType_ = typename Self_::template OutputDataType<portName_>; \
+    using DataType_ = typename std::remove_reference_t<decltype(data)>::element_type; \
+    static_assert(std::is_base_of_v<PortType_, DataType_>, \
+      "sendOutput_: data type is not compatible with declared port type"); \
+    constexpr size_t idx_ = Self_::template outputPortIndex<portName_>(); \
+    this->send_output_handle( \
+      SCIRun::Dataflow::Networks::PortId(idx_, #name), data); \
   }()
 
 /*
@@ -369,9 +406,9 @@ namespace SCIRun::Modules
                                            converted to use getRequiredInput_ below
     - StaticPortName member variables    → same; only needed for old-style access
 
-  What stays (until execute() is also converted):
-    - INPUT_PORT / OUTPUT_PORT macros    → still needed if execute() still calls
-                                           getRequiredInput(Matrix) old style
+  What stays:
+    - Nothing — a fully converted module has only the HasInputPorts /
+      HasOutputPorts base classes and the macros in execute()
 
   ============================================================================
   getRequiredInput_ / getOptionalInput_ — replacing getRequiredInput(Member)
@@ -387,8 +424,9 @@ namespace SCIRun::Modules
     auto mat = getRequiredInput_(Matrix);
 
   Once execute() is converted, INPUT_PORT / OUTPUT_PORT and INITIALIZE_PORT
-  are all gone.  A fully converted module header has only the HasInputPorts /
-  HasOutputPorts base classes and no other port boilerplate.
+  are all gone.  A fully converted module has only the HasInputPorts /
+  HasOutputPorts base classes in the header, and getRequiredInput_() /
+  sendOutput_() in execute() — no other port boilerplate anywhere.
 
   ============================================================================
   Port spec styles — all of these are equivalent for a dynamic Field port:

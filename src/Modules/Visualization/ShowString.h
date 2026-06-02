@@ -67,7 +67,6 @@ namespace Visualization {
     ShowString();
     void execute() override;
     void setStateDefaults() override;
-    OUTPUT_PORT(0, RenderedString, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
   private:
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
