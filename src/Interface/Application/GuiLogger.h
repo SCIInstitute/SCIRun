@@ -49,7 +49,7 @@ namespace Gui {
   {
     auto log = GuiLog::Instance().get();
     if (log)
-      log->debug(fmt, args...);
+      log->debug(fmt::runtime(fmt), args...);
   }
 
   template <class... T>
@@ -57,7 +57,7 @@ namespace Gui {
   {
     auto log = GuiLog::Instance().get();
     if (log)
-      log->critical(fmt, args...);
+      log->critical(fmt::runtime(fmt), args...);
   }
 
   class GuiLogger : boost::noncopyable

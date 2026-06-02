@@ -58,7 +58,6 @@ MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
 
 ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(makeShared<TextBuilder>())
 {
-  INITIALIZE_PORT(String);
   INITIALIZE_PORT(RenderedString);
 }
 
@@ -81,7 +80,7 @@ void ShowString::setStateDefaults()
 
 void ShowString::execute()
 {
-  auto str = getRequiredInput(String);
+  auto str = getRequiredInput_(String);
 
   if (needToExecute() || needReexecute_)
   {

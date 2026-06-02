@@ -345,191 +345,90 @@ namespace Modules
 
 struct DummyPortName : Dataflow::Networks::StaticPortName<Core::Datatypes::Datatype, 999> {};
 
-  /// @todo: make metafunc for Input/Output
+  // Detects whether a module uses the new-style no-arg HasInputPorts /
+  // HasOutputPorts (variadic) interface vs. the old named-arg interface.
+  // Used by IPortDescriber / OPortDescriber to stay compatible with both.
+  template <typename T>
+  concept HasVariadicInputPorts = requires { T::inputPortDescription(); };
 
+  template <typename T>
+  concept HasVariadicOutputPorts = requires { T::outputPortDescription(); };
+
+  // Index-to-name helpers for old-style modules.
+  // Each maps a compile-time index to the corresponding inputPortNName() /
+  // outputPortNName() static method.  Only instantiated for old-style modules
+  // (the if constexpr in IPortDescriber/OPortDescriber discards these for
+  // new-style HasInputPorts/HasOutputPorts modules).
+  template <size_t I, class ModuleType>
+  std::string oldStyleInputPortName()
+  {
+    if constexpr      (I == 0) return ModuleType::inputPort0Name();
+    else if constexpr (I == 1) return ModuleType::inputPort1Name();
+    else if constexpr (I == 2) return ModuleType::inputPort2Name();
+    else if constexpr (I == 3) return ModuleType::inputPort3Name();
+    else if constexpr (I == 4) return ModuleType::inputPort4Name();
+    else if constexpr (I == 5) return ModuleType::inputPort5Name();
+    else if constexpr (I == 6) return ModuleType::inputPort6Name();
+    else if constexpr (I == 7) return ModuleType::inputPort7Name();
+    else if constexpr (I == 8) return ModuleType::inputPort8Name();
+  }
+
+  template <size_t I, class ModuleType>
+  std::string oldStyleOutputPortName()
+  {
+    if constexpr      (I == 0) return ModuleType::outputPort0Name();
+    else if constexpr (I == 1) return ModuleType::outputPort1Name();
+    else if constexpr (I == 2) return ModuleType::outputPort2Name();
+    else if constexpr (I == 3) return ModuleType::outputPort3Name();
+    else if constexpr (I == 4) return ModuleType::outputPort4Name();
+    else if constexpr (I == 5) return ModuleType::outputPort5Name();
+    else if constexpr (I == 6) return ModuleType::outputPort6Name();
+    else if constexpr (I == 7) return ModuleType::outputPort7Name();
+    else if constexpr (I == 8) return ModuleType::outputPort8Name();
+  }
+
+  // IPortDescriber — dispatches to no-arg inputPortDescription() for new-style
+  // modules (HasInputPorts<...>), or reconstructs the named-arg call for old-style.
   template <size_t numPorts, class ModuleType>
   struct IPortDescriber
   {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs();
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<0, ModuleType>
-  {
+  private:
+    template <size_t... Is>
+    static std::vector<Dataflow::Networks::InputPortDescription> impl(std::index_sequence<Is...>)
+    {
+      if constexpr (sizeof...(Is) == 0)
+        return {};
+      else if constexpr (HasVariadicInputPorts<ModuleType>)
+        return ModuleType::inputPortDescription();
+      else
+        return ModuleType::inputPortDescription(oldStyleInputPortName<Is, ModuleType>()...);
+    }
+  public:
     static std::vector<Dataflow::Networks::InputPortDescription> inputs()
     {
-      return {};
+      return impl(std::make_index_sequence<numPorts>{});
     }
   };
 
-  template <class ModuleType>
-  struct IPortDescriber<1, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<2, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<3, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<4, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<5, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<6, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name(), ModuleType::inputPort5Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<7, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name(), ModuleType::inputPort5Name(), ModuleType::inputPort6Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<8, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name(), ModuleType::inputPort5Name(), ModuleType::inputPort6Name(), ModuleType::inputPort7Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct IPortDescriber<9, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::InputPortDescription> inputs()
-    {
-      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name(), ModuleType::inputPort5Name(), ModuleType::inputPort6Name(), ModuleType::inputPort7Name(), ModuleType::inputPort8Name());
-    }
-  };
-
+  // OPortDescriber — same pattern for outputs.
   template <size_t numPorts, class ModuleType>
   struct OPortDescriber
   {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
+  private:
+    template <size_t... Is>
+    static std::vector<Dataflow::Networks::OutputPortDescription> impl(std::index_sequence<Is...>)
     {
-      return {};
+      if constexpr (sizeof...(Is) == 0)
+        return {};
+      else if constexpr (HasVariadicOutputPorts<ModuleType>)
+        return ModuleType::outputPortDescription();
+      else
+        return ModuleType::outputPortDescription(oldStyleOutputPortName<Is, ModuleType>()...);
     }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<1, ModuleType>
-  {
+  public:
     static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
     {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<2, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<3, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<4, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<5, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<6, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<7, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name(), ModuleType::outputPort6Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<8, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name(), ModuleType::outputPort6Name(), ModuleType::outputPort7Name());
-    }
-  };
-
-  template <class ModuleType>
-  struct OPortDescriber<9, ModuleType>
-  {
-    static std::vector<Dataflow::Networks::OutputPortDescription> outputs()
-    {
-      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name(), ModuleType::outputPort6Name(), ModuleType::outputPort7Name(), ModuleType::outputPort8Name());
+      return impl(std::make_index_sequence<numPorts>{});
     }
   };
 
