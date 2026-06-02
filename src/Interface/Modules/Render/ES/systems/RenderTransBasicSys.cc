@@ -460,9 +460,11 @@ private:
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
 
-    // bind textures
+    // bind textures — skip glid==0 (not yet uploaded); binding null texture
+    // while a sampler2D uniform is active triggers a macOS GL driver warning.
     for (const ren::Texture& tex : textures)
     {
+      if (tex.glid == 0) continue;
       GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
       GL(glBindTexture(tex.textureType, tex.glid));
     }
@@ -616,9 +618,10 @@ private:
       GL(glDisable(GL_BLEND));
     }
 
-    // unbind textures
+    // unbind textures — mirror the glid==0 skip from bind above
     for (const ren::Texture& tex : textures)
     {
+      if (tex.glid == 0) continue;
       GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
       GL(glBindTexture(tex.textureType, 0));
     }
