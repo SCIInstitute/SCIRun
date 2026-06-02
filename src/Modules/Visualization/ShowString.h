@@ -67,7 +67,7 @@ namespace Visualization {
     ShowString();
     void execute() override;
     void setStateDefaults() override;
-    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI, ShowString, Visualization, SCIRun)
   private:
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
     std::tuple<double, double> getTextPosition();

@@ -54,7 +54,6 @@ ALGORITHM_PARAMETER_DEF(Visualization, FixedVertical);
 ALGORITHM_PARAMETER_DEF(Visualization, CoordinateHorizontal);
 ALGORITHM_PARAMETER_DEF(Visualization, CoordinateVertical);
 
-MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
 
 ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(makeShared<TextBuilder>())
 {
