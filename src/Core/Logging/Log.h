@@ -121,7 +121,7 @@ namespace SCIRun
   {
     auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
     if (log)
-      log->debug(fmt, args...);
+      log->debug(fmt::runtime(fmt), args...);
   }
 
   inline void LOG_DEBUG(const std::string& str)
@@ -136,7 +136,7 @@ namespace SCIRun
   {
     auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
     if (log)
-      log->trace(fmt, args...);
+      log->trace(fmt::runtime(fmt), args...);
   }
 
   template <class... T>
@@ -144,7 +144,7 @@ namespace SCIRun
   {
     auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
     if (log)
-      log->info(fmt, args...);
+      log->info(fmt::runtime(fmt), args...);
   }
 
   template <class... T>
@@ -152,7 +152,7 @@ namespace SCIRun
   {
     auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
     if (log)
-      log->warn(fmt, args...);
+      log->warn(fmt::runtime(fmt), args...);
   }
 
   template <class... T>
@@ -160,7 +160,7 @@ namespace SCIRun
   {
     auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
     if (log)
-      log->error(fmt, args...);
+      log->error(fmt::runtime(fmt), args...);
   }
 
   template <class... T>
@@ -168,7 +168,7 @@ namespace SCIRun
   {
     auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
     if (log)
-      log->critical(fmt, args...);
+      log->critical(fmt::runtime(fmt), args...);
   }
 
   #define DEBUG_LOG_LINE_INFO LOG_DEBUG("Debugging info: file {} line {} function {}", __FILE__, __LINE__, LOG_FUNC);
