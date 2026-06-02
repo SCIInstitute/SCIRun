@@ -34,6 +34,16 @@ SET(Algorithms_Visualization_HEADERS
   OsprayDataAlgorithm.h
 )
 
+if (WITH_VTK)
+  list(APPEND Algorithms_Visualization_SRCS
+	VtkDataAlgorithm.cc
+  )
+
+  list(APPEND Algorithms_Visualization_HEADERS
+	VtkDataAlgorithm.h
+  )
+endif()
+
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
   ${Algorithms_Visualization_HEADERS}
   ${Algorithms_Visualization_SRCS}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ShowFieldVtk",
+    "namespace": "Visualization",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Visualization/ShowFieldVtk.h"
+  },
+  "algorithm": {
+    "name": "VtkDataAlgorithm",
+    "namespace": "Visualization",
+    "header": "Core/Algorithms/Visualization/VtkDataAlgorithm.h"
+  },
+  "UI": {
+    "name": "ShowFieldVtkDialog",
+    "header": "Interface/Modules/Visualization/ShowFieldVtkDialog.h"
+  }
+}

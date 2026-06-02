@@ -26,7 +26,7 @@
 */
 
 
-#include <Modules/Visualization/ShowFieldWithOspray.h>
+#include <Modules/Visualization/ShowFieldVtk.h>
 #include <Core/Algorithms/Visualization/OsprayDataAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Geometry.h>
@@ -40,12 +40,12 @@ using namespace Modules::Visualization;
 using namespace Core;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
-using namespace OsprayVisualization;
+//using namespace OsprayVisualization;
 using namespace Datatypes;
 
-MODULE_INFO_DEF(ShowFieldWithOspray, Visualization, SCIRun)
+MODULE_INFO_DEF(ShowFieldVtk, Visualization, SCIRun)
 
-void ShowFieldWithOspray::setStateDefaults()
+void ShowFieldVtk::setStateDefaults()
 {
   setStateDoubleFromAlgo(Parameters::DefaultColorR);
   setStateDoubleFromAlgo(Parameters::DefaultColorG);
@@ -57,7 +57,7 @@ void ShowFieldWithOspray::setStateDefaults()
   setStateIntFromAlgo(Parameters::ModuleID);
 }
 
-ShowFieldWithOspray::ShowFieldWithOspray() : Module(staticInfo_)
+ShowFieldVtk::ShowFieldVtk() : Module(staticInfo_)
 {
 
   INITIALIZE_PORT(Field);
@@ -68,7 +68,7 @@ ShowFieldWithOspray::ShowFieldWithOspray() : Module(staticInfo_)
   id = ++lastMoudleID;
 }
 
-void ShowFieldWithOspray::execute()
+void ShowFieldVtk::execute()
 {
   auto field = getRequiredInput(Field);
   auto colorMap = getOptionalInput(ColorMapObject);

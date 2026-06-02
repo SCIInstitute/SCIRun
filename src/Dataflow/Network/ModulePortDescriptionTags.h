@@ -53,6 +53,7 @@ namespace Modules
   struct SCISHARE FieldPortTag {};
   struct SCISHARE OsprayGeometryPortTag {};
   struct SCISHARE GeometryPortTag {};
+  struct SCISHARE GeometryVtkPortTag{};
   struct SCISHARE ColorMapPortTag {};
   struct SCISHARE BundlePortTag {};
   struct SCISHARE NrrdPortTag {};

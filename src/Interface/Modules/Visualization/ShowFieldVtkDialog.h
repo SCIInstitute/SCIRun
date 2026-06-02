@@ -26,36 +26,28 @@
 */
 
 
-#ifndef MODULES_VISUALIZATION_SHOWFIELDVTK_H
-#define MODULES_VISUALIZATION_SHOWFIELDVTK_H
+#ifndef INTERFACE_MODULES_ShowFieldVtkDIALOG_H
+#define INTERFACE_MODULES_ShowFieldVtkDIALOG_H
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
+#include "Interface/Modules/Visualization/ui_ShowFieldVtk.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
+namespace Gui {
 
-      class SCISHARE ShowFieldVtk : public Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-          public Has1OutputPort<GeometryVtkPortTag>
-      {
-      public:
-        ShowFieldVtk();
-        void execute() override;
-        void setStateDefaults() override;
+class SCISHARE ShowFieldVtkDialog : public ModuleDialogGeneric,
+	public Ui::ShowFieldVtk
+{
+	Q_OBJECT
 
-        INPUT_PORT(0, Field, Field);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
-        OUTPUT_PORT(0, SceneGraph, GeometryVtkPortTag);
+public:
+  ShowFieldVtkDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
 
-        uint32_t id;
-
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
-      };
-    }
-  }
+}
 }
 
 #endif
