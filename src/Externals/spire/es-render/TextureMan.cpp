@@ -475,7 +475,7 @@ namespace ren {
           }
 
           glTexImage2D(GL_TEXTURE_2D, static_cast<GLint>(i + 1),
-            static_cast<GLint>(glColorType),
+            internalColorType,  // sized format, consistent with base level
             static_cast<GLint>(decodedWidth),
             static_cast<GLint>(decodedHeight),
             0, glColorType, GL_UNSIGNED_BYTE, decodedImage);
