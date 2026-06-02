@@ -161,9 +161,12 @@ namespace ren {
       GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
       glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE,
+      // GL_LUMINANCE is not available in OpenGL Core Profile (3.1+, required on macOS).
+      // GL_R8/GL_RED is the correct single-channel replacement.  Shaders sample .x
+      // which maps to .r, so no shader changes are needed.
+      GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_R8,
         textureWidth, textureHeight, 0,
-        GL_LUMINANCE, GL_UNSIGNED_BYTE, (const GLvoid*)(&(bitmap[0]))));
+        GL_RED, GL_UNSIGNED_BYTE, (const GLvoid*)(&(bitmap[0]))));
       glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
       // Simply update mGLToName and mNameToGL. The fulfillment system will
@@ -184,8 +187,8 @@ namespace ren {
     tex.textureWidth = textureWidth;
     tex.textureHeight = textureHeight;
     tex.textureDepth = 1;
-    tex.internalFormat = GL_LUMINANCE;
-    tex.format = GL_LUMINANCE;
+    tex.internalFormat = GL_R8;
+    tex.format = GL_RED;
     tex.type = GL_UNSIGNED_BYTE;
     tex.filter = GL_LINEAR;
     return tex;
