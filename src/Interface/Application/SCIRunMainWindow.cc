@@ -370,7 +370,7 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 SCIRunMainWindow::~SCIRunMainWindow()
 {
   commandConverter_.reset();
-  networkEditor_->disconnect();
+  networkEditor_->blockSignals(true);  // suppress callbacks during teardown without disconnecting Qt's internal destroyed() signal
   networkEditor_->setNetworkEditorController(nullptr);
   networkEditor_->clear();
   Application::Instance().shutdown();
