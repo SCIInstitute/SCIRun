@@ -1255,8 +1255,8 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       const auto component = contTex->getComponent(entityID);
 
       if (!component.first)
-        renTexture = textureMan->createTexture(assetName, GL_RGBA, texture.width, texture.height,
-          GL_RGBA,  GL_UNSIGNED_BYTE, texture.bitmap);
+        renTexture = textureMan->createTexture(assetName, GL_RGBA8, texture.width, texture.height,
+          GL_RGBA, GL_UNSIGNED_BYTE, texture.bitmap);
       else
         renTexture = *component.first;
 
@@ -1325,7 +1325,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
         GL(glPixelStorei(GL_UNPACK_ROW_LENGTH, w));
         GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
         GL(glTexImage2D(GL_TEXTURE_2D, 0,
-          GL_RGBA,
+          GL_RGBA8,  // sized internal format required by Core Profile
           GLsizei(w), GLsizei(h), 0,
           GL_RGBA,
           GL_UNSIGNED_BYTE, (GLvoid*)&font[0]));

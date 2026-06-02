@@ -336,7 +336,7 @@ namespace ren {
       GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
 
       GL(glTexImage2D(GL_TEXTURE_2D, 0,
-        GL_RGBA,
+        GL_RGBA8,  // sized internal format required by Core Profile
         static_cast<GLsizei>(width), static_cast<GLsizei>(height),
         0, GL_RGBA,
         GL_UNSIGNED_BYTE, image));
@@ -421,9 +421,11 @@ namespace ren {
         glColorType = GL_RGB;
       }
 
-      /// \todo Need more appropriate calculation of the color type
+      // Use sized internal formats; unsized base formats (GL_RGBA, GL_RGB)
+      // are not valid internal formats in Core Profile.
+      GLint internalColorType = (glColorType == GL_RGBA) ? GL_RGBA8 : GL_RGB8;
       GL(glTexImage2D(GL_TEXTURE_2D, 0,
-        static_cast<GLint>(glColorType),
+        internalColorType,
         static_cast<GLsizei>(width), static_cast<GLsizei>(height),
         0, glColorType,
         GL_UNSIGNED_BYTE, decodedImage));

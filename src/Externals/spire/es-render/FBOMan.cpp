@@ -79,8 +79,10 @@ namespace ren {
       ren::FBO::TextureData texData;
       texData.att = GL_COLOR_ATTACHMENT0;
       texData.texName = "FBO:Texture:Integer";
+      // Use sized internal formats — unsized (GL_RGBA, GL_DEPTH_COMPONENT) are
+      // not valid in OpenGL Core Profile and produce "unloadable" warnings on macOS.
       ren::Texture tex = textureMan->createTexture(
-        texData.texName, npixelx, npixely, GL_RGBA,
+        texData.texName, npixelx, npixely, GL_RGBA8,
         GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST);
       uint64_t entityID = getEntityIDForName(texData.texName);
       core.addComponent(entityID, tex);
@@ -89,7 +91,7 @@ namespace ren {
       texData.att = GL_DEPTH_ATTACHMENT;
       texData.texName = "FBO:Texture:Depth";
       tex = textureMan->createTexture(
-        texData.texName, npixelx, npixely, GL_DEPTH_COMPONENT,
+        texData.texName, npixelx, npixely, GL_DEPTH_COMPONENT32F,
         GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST);
       entityID = getEntityIDForName(texData.texName);
       core.addComponent(entityID, tex);
