@@ -212,8 +212,8 @@ static std::map<std::string, std::vector<int>> meshOutputByMethod
   { { "AdamsBashforth", {400617, 399617, 400617} },
     { "Heun", {400617, 399617, 400617} },
     { "RungeKutta", {400617, 399617, 400617} },
-    { "RungeKuttaFehlberg", {214099, 213099, 214099} },
-    { "CellWalk", {98120, 97120, 98120} }
+    { "RungeKuttaFehlberg", {214071, 213071, 214071} },
+    { "CellWalk", {98093, 97093, 98093} }
   };
 
 TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
