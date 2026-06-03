@@ -177,6 +177,7 @@ jobs:
           if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DBUILD_WITH_PYTHON=OFF" }
           if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
+          if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
 
           # Prepare build directory
           New-Item -ItemType Directory -Force -Path build | Out-Null
@@ -237,7 +238,7 @@ jobs:
             popd
           )
 
-      - name: Run unit tests
+      - name: Run unit tests (Unix)
         if: ${{ inputs.run-unit-tests && runner.os != 'Windows' }}
         working-directory: bin/SCIRun
         run: |
@@ -245,7 +246,7 @@ jobs:
             2>&1 | tee /tmp/unit-test-results.txt
         continue-on-error: true
 
-      - name: Run regression tests
+      - name: Run regression tests (Unix)
         if: ${{ inputs.run-regression-tests && runner.os != 'Windows' }}
         working-directory: bin/SCIRun
         run: |
@@ -253,15 +254,43 @@ jobs:
             2>&1 | tee /tmp/regression-test-results.txt
         continue-on-error: true
 
-      - name: Upload test logs
-        if: ${{ inputs.run-unit-tests || inputs.run-regression-tests }}
+      - name: Run unit tests (Windows)
+        if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
+        working-directory: build/SCIRun
+        shell: pwsh
+        run: |
+          ctest --output-on-failure -j4 -C Release -E "\.Test\.ExampleNetwork\." `
+            2>&1 | Tee-Object -FilePath C:\unit-test-results.txt
+        continue-on-error: true
+
+      - name: Run regression tests (Windows)
+        if: ${{ inputs.run-regression-tests && runner.os == 'Windows' }}
+        working-directory: build/SCIRun
+        shell: pwsh
+        run: |
+          ctest --output-on-failure -j1 -C Release -R "\.Test\.ExampleNetwork\." `
+            2>&1 | Tee-Object -FilePath C:\regression-test-results.txt
+        continue-on-error: true
+
+      - name: Upload test logs (Unix)
+        if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os != 'Windows' }}
         uses: actions/upload-artifact@v6
         with:
-          name: test-results-${{ inputs.variant }}
+          name: test-results-${{ runner.os }}-${{ inputs.variant }}
           path: |
             /tmp/unit-test-results.txt
             /tmp/regression-test-results.txt
             bin/SCIRun/Testing/Temporary/LastTest.log
+
+      - name: Upload test logs (Windows)
+        if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ runner.os }}-${{ inputs.variant }}
+          path: |
+            C:\unit-test-results.txt
+            C:\regression-test-results.txt
+            build\SCIRun\Testing\Temporary\LastTest.log
 
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}

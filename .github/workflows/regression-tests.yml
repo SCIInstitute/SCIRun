@@ -18,3 +18,24 @@ jobs:
       build-testing: true
       run-unit-tests: true
       run-regression-tests: true
+
+  mac-gui-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
+
+  windows-headless-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-latest
+      variant: headless
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
