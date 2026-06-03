@@ -34,6 +34,7 @@
 #ifndef Q_MOC_RUN
 #include <Core/Utils/SmartPointers.h>
 #include <boost/bimap.hpp>
+#include <boost/signals2/connection.hpp>
 #include <deque>
 #include <atomic>
 #include <Interface/Application/Note.h>
@@ -311,7 +312,7 @@ private:
   void updateProgrammablePorts();
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
-  bool deleting_;
+  std::atomic<bool> deleting_;
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
   bool isViewScene_; //TODO: lots of special logic around this case.
@@ -323,6 +324,8 @@ private:
 
   SharedPointer<class ConnectionFactory> connectionFactory_;
   SharedPointer<class ClosestPortFinder> closestPortFinder_;
+  boost::signals2::scoped_connection executeSelfRequestConnection_;
+  boost::signals2::scoped_connection executeEndsConnection_;
   QString* currentExecuteIcon_ {nullptr};
 
   friend class ::PortBuilder;

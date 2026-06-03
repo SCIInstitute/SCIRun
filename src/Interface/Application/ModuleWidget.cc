@@ -29,6 +29,7 @@
 #include "ui_Module.h"
 #include <iostream>
 #include <QtConcurrent>
+#include <QPointer>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
@@ -377,17 +378,17 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
   updateProgrammablePorts();
 
   connect(this, &ModuleWidget::backgroundColorUpdated, this, &ModuleWidget::updateBackgroundColor);
-  theModule_->executionState().connectExecutionStateChanged([this](int state) { (void)QtConcurrent::run(
-      [this, state] { updateBackgroundColorForModuleState(state); }); });
+  theModule_->executionState().connectExecutionStateChanged([weakThis = QPointer<ModuleWidget>(this)](int state) {
+    if (weakThis) (void)QtConcurrent::run([weakThis, state] { if (weakThis) weakThis->updateBackgroundColorForModuleState(state); }); });
 
-  theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
+  executeSelfRequestConnection_ = theModule_->connectExecuteSelfRequest([weakThis = QPointer<ModuleWidget>(this)](bool upstream) { if (weakThis) weakThis->executeAgain(upstream); });
   connect(this, &ModuleWidget::executeAgain, this, &ModuleWidget::executeTriggeredProgrammatically);
 
   Preferences::Instance().modulesAreDockable.connectValueChanged([this](bool d) { adjustDockState(d); });
 
   connect(actionsMenu_->getAction("Destroy"), &QAction::triggered, this, &ModuleWidget::deleteMeLater);
 
-  connectExecuteEnds([this] (double, const ModuleId&) { executeEnds(); });
+  executeEndsConnection_ = connectExecuteEnds([weakThis = QPointer<ModuleWidget>(this)] (double, const ModuleId&) { if (weakThis) weakThis->executeEnds(); });
   connect(this, &ModuleWidget::executeEnds, this, &ModuleWidget::changeExecuteButtonToPlay);
   connect(this, &ModuleWidget::signalExecuteButtonIconChangeToStop, this, &ModuleWidget::changeExecuteButtonToStop);
   connect(this, &ModuleWidget::dynamicPortChanged, this, &ModuleWidget::updateDialogForDynamicPortChange);

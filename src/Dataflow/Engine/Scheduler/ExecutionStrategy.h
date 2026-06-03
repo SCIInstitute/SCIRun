@@ -114,6 +114,7 @@ namespace Engine {
     typedef DynamicExecutor::WorkQueue<ExecutionContextHandle> ExecutionContextQueue;
     ExecutionContextQueue contexts_;
     ThreadPtr executionLaunchThread_;
+    std::future<int> currentExecutionFuture_;
     
     Core::Thread::ConditionVariable somethingToExecute_;
     boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...
