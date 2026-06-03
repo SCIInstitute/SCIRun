@@ -700,10 +700,11 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::maxi(const std::vector<double>& 
     }
   }
 
+  const double epsilon = maximum * 1e-10;
   int count = 0;
   for (int i = 0; i < number_edges; i++)
   {
-    if (maximum == input_vec[i])
+    if (std::fabs(maximum - input_vec[i]) <= epsilon)
     {
       result[count++] = i;
     }
