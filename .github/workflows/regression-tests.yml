@@ -11,76 +11,10 @@ on:
 
 jobs:
   linux-headless-regression:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-
-    steps:
-      - name: Checkout SCIRun
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Checkout SCIRunTestData
-        uses: actions/checkout@v6
-        with:
-          repository: CIBC-Internal/SCIRunTestData
-          path: SCIRunTestData
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa \
-            ninja-build libglu1-mesa-dev \
-            xorg-dev
-
-      - name: Build headless with testing
-        shell: bash
-        run: |
-          set -eux
-          ./build.sh \
-            -DBUILD_HEADLESS:BOOL=ON \
-            -DBUILD_TESTING:BOOL=ON \
-            -DSCIRUN_TEST_RESOURCE_DIR="${GITHUB_WORKSPACE}/SCIRunTestData"
-
-      - name: Run unit tests
-        working-directory: bin/SCIRun
-        run: |
-          ctest \
-            --output-on-failure \
-            -j4 \
-            -E "\.Test\.ExampleNetwork\." \
-            2>&1 | tee /tmp/unit-test-results.txt
-        continue-on-error: true
-
-      - name: Run regression tests
-        working-directory: bin/SCIRun
-        run: |
-          ctest \
-            --output-on-failure \
-            -j1 \
-            -R "\.Test\.ExampleNetwork\." \
-            2>&1 | tee /tmp/regression-test-results.txt
-        continue-on-error: true
-
-      - name: Report test summary
-        if: always()
-        run: |
-          echo "=== Unit test results ==="
-          tail -5 /tmp/unit-test-results.txt || true
-          echo ""
-          echo "=== Regression test results ==="
-          tail -10 /tmp/regression-test-results.txt || true
-          echo ""
-          echo "=== Failed regression tests ==="
-          grep "FAILED" /tmp/regression-test-results.txt || echo "(none)"
-
-      - name: Upload test logs
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: regression-test-results
-          path: |
-            /tmp/unit-test-results.txt
-            /tmp/regression-test-results.txt
-            bin/SCIRun/Testing/Temporary/LastTest.log
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      variant: headless
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true

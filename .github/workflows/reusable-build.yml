@@ -34,6 +34,14 @@ on:
         required: false
         type: boolean
         default: false
+      run-unit-tests:
+        required: false
+        type: boolean
+        default: false
+      run-regression-tests:
+        required: false
+        type: boolean
+        default: false
       artifact-name:
         required: false
         type: string
@@ -57,6 +65,13 @@ jobs:
 
       - name: Print Qt dir
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
+
+      - name: Checkout SCIRunTestData
+        if: ${{ inputs.run-regression-tests }}
+        uses: actions/checkout@v6
+        with:
+          repository: CIBC-Internal/SCIRunTestData
+          path: SCIRunTestData
 
       - name: Prepare (linux)
         if: ${{ startsWith(inputs.runner, 'ubuntu') || inputs.prepare-packages }}
@@ -115,6 +130,9 @@ jobs:
           fi
           if [ "${{ inputs.build-testing }}" = "true" ]; then
             CMD+=("-DBUILD_TESTING:BOOL=ON")
+          fi
+          if [ "${{ inputs.run-regression-tests }}" = "true" ]; then
+            CMD+=("-DSCIRUN_TEST_RESOURCE_DIR=${GITHUB_WORKSPACE}/SCIRunTestData")
           fi
           # Join and run
           echo "Running: ${CMD[*]}"
@@ -218,6 +236,32 @@ jobs:
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           )
+
+      - name: Run unit tests
+        if: ${{ inputs.run-unit-tests && runner.os != 'Windows' }}
+        working-directory: bin/SCIRun
+        run: |
+          ctest --output-on-failure -j4 -E "\.Test\.ExampleNetwork\." \
+            2>&1 | tee /tmp/unit-test-results.txt
+        continue-on-error: true
+
+      - name: Run regression tests
+        if: ${{ inputs.run-regression-tests && runner.os != 'Windows' }}
+        working-directory: bin/SCIRun
+        run: |
+          ctest --output-on-failure -j1 -R "\.Test\.ExampleNetwork\." \
+            2>&1 | tee /tmp/regression-test-results.txt
+        continue-on-error: true
+
+      - name: Upload test logs
+        if: ${{ inputs.run-unit-tests || inputs.run-regression-tests }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ inputs.variant }}
+          path: |
+            /tmp/unit-test-results.txt
+            /tmp/regression-test-results.txt
+            bin/SCIRun/Testing/Temporary/LastTest.log
 
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}
