@@ -48,7 +48,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, Field, Field);
         INPUT_PORT(1, ColorMapObject, ColorMap);
-        OUTPUT_PORT(0, SceneGraph, GeometryVtkPortTag);
+        OUTPUT_PORT(0, SceneGraph, VtkGeometryObject);
 
         uint32_t id;
 

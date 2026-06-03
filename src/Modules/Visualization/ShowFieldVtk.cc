@@ -27,7 +27,7 @@
 
 
 #include <Modules/Visualization/ShowFieldVtk.h>
-#include <Core/Algorithms/Visualization/OsprayDataAlgorithm.h>
+#include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/ColorMap.h>
@@ -40,7 +40,7 @@ using namespace Modules::Visualization;
 using namespace Core;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
-//using namespace OsprayVisualization;
+using namespace VtkVisualization;
 using namespace Datatypes;
 
 MODULE_INFO_DEF(ShowFieldVtk, Visualization, SCIRun)
