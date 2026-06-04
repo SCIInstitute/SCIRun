@@ -1211,6 +1211,13 @@ QDialog* ModuleWidget::dialog()
 
 void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 {
+  // This slot is connected to the dock's topLevelChanged signal inside
+  // configDockable(), which can fire (via setFloating) before makeOptionsDialog
+  // assigns dockable_. Bail out until the member is set; configDockable handles
+  // the initial show/float itself.
+  if (!dockable_)
+    return;
+
   if (isFloating)
   {
     dockable_->setWindowFlags(Qt::Window);
