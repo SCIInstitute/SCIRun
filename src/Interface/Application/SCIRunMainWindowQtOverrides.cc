@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <cstdlib>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
@@ -65,6 +66,15 @@ void SCIRunMainWindow::exitApplication(int code)
   if (Application::Instance().parameters()->saveViewSceneScreenshotsOnQuit())
   { networkEditor_->saveImages(); }
   returnCode_ = code;
+  // In regression mode, use quick_exit to avoid hangs/crashes in async teardown
+  // paths where streaming execution threads outlive the GUI objects (e.g. the
+  // async streaming test networks). The exit code is still propagated to CTest.
+  // ViewScene test stability is handled separately by offscreen rendering, so
+  // this no longer affects renderer test fidelity.
+  if (Application::Instance().parameters()->isRegressionMode())
+  {
+    std::quick_exit(code);
+  }
   close();
   qApp->exit(code);
 }
