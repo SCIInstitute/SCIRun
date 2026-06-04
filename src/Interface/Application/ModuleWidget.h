@@ -284,7 +284,11 @@ private:
   QString name_;
 
   ModuleDialogManager dialogManager_;
-  ModuleDialogDockWidget* dockable_;
+  // Must be null-initialized: updateDockWidgetProperties() can fire (via the
+  // dock's topLevelChanged signal in configDockable) before makeOptionsDialog
+  // assigns this, and that slot null-checks dockable_. An uninitialized pointer
+  // holds garbage that passes the null check and segfaults under setWindowFlags.
+  ModuleDialogDockWidget* dockable_{nullptr};
   bool firstTimeShown_{ true };
   static QList<QPoint> positions_;
   void makeOptionsDialog();

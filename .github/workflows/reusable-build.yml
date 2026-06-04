@@ -250,7 +250,7 @@ jobs:
         if: ${{ inputs.run-regression-tests && runner.os != 'Windows' }}
         working-directory: bin/SCIRun
         run: |
-          ctest --output-on-failure --timeout 300 -j1 -R "\.Test\.ExampleNetwork\." \
+          ctest --output-on-failure --timeout 300 -j3 -R "\.Test\.ExampleNetwork\." \
             2>&1 | tee /tmp/regression-test-results.txt
         continue-on-error: true
 
@@ -268,7 +268,7 @@ jobs:
         working-directory: build/SCIRun
         shell: pwsh
         run: |
-          ctest --output-on-failure --timeout 300 -j1 -C Release -R "\.Test\.ExampleNetwork\." `
+          ctest --output-on-failure --timeout 300 -j3 -C Release -R "\.Test\.ExampleNetwork\." `
             2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE\regression-test-results.txt"
         continue-on-error: true
 
