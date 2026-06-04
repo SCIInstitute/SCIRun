@@ -82,7 +82,15 @@ SCIRunMainWindow::SCIRunMainWindow()
   startup_ = true;
 
   QCoreApplication::setOrganizationName("SCI:CIBC Software");
-  QCoreApplication::setApplicationName("SCIRun5");
+  // In regression mode, isolate QSettings per process: concurrent test
+  // processes otherwise share one settings file, and reading a half-written
+  // plist (favorites, window geometry) during startup can crash in the
+  // module-selector tree restore. A fresh per-process store is also more
+  // deterministic for tests.
+  if (Application::Instance().parameters()->isRegressionMode())
+    QCoreApplication::setApplicationName(QString("SCIRun5_regression_%1").arg(QCoreApplication::applicationPid()));
+  else
+    QCoreApplication::setApplicationName("SCIRun5");
 
   setAttribute(Qt::WA_DeleteOnClose);
 
