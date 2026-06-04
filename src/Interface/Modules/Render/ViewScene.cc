@@ -37,6 +37,7 @@
 #include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Interface/Modules/Render/GLWidget.h>
+#include <Interface/Modules/Render/OffscreenGLRenderer.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
@@ -157,7 +158,8 @@ namespace Gui {
   class ViewSceneDialogImpl
   {
   public:
-    GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
+    GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context (null in offscreen mode).
+    std::unique_ptr<OffscreenGLRenderer>  offscreenRenderer_;                       ///< Used instead of mGLWidget in regression mode.
     Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
     QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
     QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
@@ -389,19 +391,28 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setupScaleBar();
 
-  impl_->mGLWidget = new GLWidget(parentWidget());
-  QSurfaceFormat format;
-  format.setDepthBufferSize(24);
-  format.setProfile(QSurfaceFormat::CoreProfile);
-  format.setVersion(2, 1);
-  impl_->mGLWidget->setFormat(format);
+  if (Application::Instance().parameters()->isRegressionMode())
+  {
+    impl_->offscreenRenderer_ = std::make_unique<OffscreenGLRenderer>(800, 600);
+    impl_->mSpire = impl_->offscreenRenderer_->renderer();
+  }
+  else
+  {
+    impl_->mGLWidget = new GLWidget(parentWidget());
+    QSurfaceFormat format;
+    format.setDepthBufferSize(24);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setVersion(2, 1);
+    impl_->mGLWidget->setFormat(format);
 
-  connect(impl_->mGLWidget, &GLWidget::fatalError, this, &ViewSceneDialog::fatalError);
-  connect(impl_->mGLWidget, &GLWidget::finishedFrame, this, &ViewSceneDialog::frameFinished);
+    connect(impl_->mGLWidget, &GLWidget::fatalError, this, &ViewSceneDialog::fatalError);
+    connect(impl_->mGLWidget, &GLWidget::finishedFrame, this, &ViewSceneDialog::frameFinished);
+
+    impl_->mSpire = RendererWeakPtr(impl_->mGLWidget->getSpire());
+  }
+
   connect(this, &ViewSceneDialog::mousePressSignalForGeometryObjectFeedback,
           this, &ViewSceneDialog::sendGeometryFeedbackToState);
-
-  impl_->mSpire = RendererWeakPtr(impl_->mGLWidget->getSpire());
 
   //Set background Color
   const auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
@@ -452,7 +463,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     impl_->toolbarHolder_ = new QMainWindow;
-    impl_->toolbarHolder_->setCentralWidget(impl_->mGLWidget);
+    impl_->toolbarHolder_->setCentralWidget(impl_->mGLWidget ? static_cast<QWidget*>(impl_->mGLWidget) : new QWidget);
 
     impl_->toolBar1_ = new QToolBar;
     impl_->toolBar1_->setMovable(true);
@@ -1184,7 +1195,9 @@ void ViewSceneDialog::updateModifiedGeometries()
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
   newGeometryValue(false, false);
-  if (impl_->mGLWidget->isVisible() && impl_->mGLWidget->isValid())
+  if (impl_->offscreenRenderer_)
+    frameFinished();
+  else if (impl_->mGLWidget->isVisible() && impl_->mGLWidget->isValid())
     impl_->mGLWidget->requestFrame();
   else
     unblockExecution();
@@ -1206,9 +1219,14 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   if (!spire)
     return;
 
-  if (!impl_->mGLWidget->isValid())
-    return;
-  spire->setContext(impl_->mGLWidget->context());
+  if (impl_->offscreenRenderer_)
+    spire->setContext(impl_->offscreenRenderer_->context());
+  else
+  {
+    if (!impl_->mGLWidget->isValid())
+      return;
+    spire->setContext(impl_->mGLWidget->context());
+  }
 
   if (forceAllObjectsToUpdate)
     spire->removeAllGeomObjects();
@@ -1386,7 +1404,8 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   // future. Kept for future reference.
   //glLayout->removeWidget(impl_->mGLWidget);
 
-  impl_->mGLWidget->close();
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->close();
   ModuleDialogGeneric::closeEvent(evt);
 }
 
@@ -1770,41 +1789,50 @@ void ViewSceneDialog::toggleLockColor(bool locked)
 
 void ViewSceneDialog::lockRotationToggled()
 {
-  impl_->mGLWidget->setLockRotation(impl_->lockRotation_->isChecked());
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->setLockRotation(impl_->lockRotation_->isChecked());
   toggleLockColor(impl_->lockRotation_->isChecked() || impl_->lockPan_->isChecked() || impl_->lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockPanningToggled()
 {
-  impl_->mGLWidget->setLockPanning(impl_->lockPan_->isChecked());
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->setLockPanning(impl_->lockPan_->isChecked());
   toggleLockColor(impl_->lockRotation_->isChecked() || impl_->lockPan_->isChecked() || impl_->lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockZoomToggled()
 {
-  impl_->mGLWidget->setLockZoom(impl_->lockZoom_->isChecked());
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->setLockZoom(impl_->lockZoom_->isChecked());
   toggleLockColor(impl_->lockRotation_->isChecked() || impl_->lockPan_->isChecked() || impl_->lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockAllTriggered()
 {
   impl_->lockRotation_->setChecked(true);
-  impl_->mGLWidget->setLockRotation(true);
   impl_->lockPan_->setChecked(true);
-  impl_->mGLWidget->setLockPanning(true);
   impl_->lockZoom_->setChecked(true);
-  impl_->mGLWidget->setLockZoom(true);
+  if (impl_->mGLWidget)
+  {
+    impl_->mGLWidget->setLockRotation(true);
+    impl_->mGLWidget->setLockPanning(true);
+    impl_->mGLWidget->setLockZoom(true);
+  }
   toggleLockColor(true);
 }
 
 void ViewSceneDialog::unlockAllTriggered()
 {
   impl_->lockRotation_->setChecked(false);
-  impl_->mGLWidget->setLockRotation(false);
   impl_->lockPan_->setChecked(false);
-  impl_->mGLWidget->setLockPanning(false);
   impl_->lockZoom_->setChecked(false);
-  impl_->mGLWidget->setLockZoom(false);
+  if (impl_->mGLWidget)
+  {
+    impl_->mGLWidget->setLockRotation(false);
+    impl_->mGLWidget->setLockPanning(false);
+    impl_->mGLWidget->setLockZoom(false);
+  }
   toggleLockColor(false);
 }
 
@@ -2859,6 +2887,13 @@ void ViewSceneDialog::sendBugReport()
 
 void ViewSceneDialog::takeScreenshot()
 {
+  if (impl_->offscreenRenderer_)
+  {
+    if (!impl_->screenshotTaker_)
+      impl_->screenshotTaker_ = new Screenshot(nullptr, this);
+    impl_->screenshotTaker_->setImage(impl_->offscreenRenderer_->renderToImage());
+    return;
+  }
   if (!impl_->screenshotTaker_)
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
   impl_->screenshotTaker_->takeScreenshot();

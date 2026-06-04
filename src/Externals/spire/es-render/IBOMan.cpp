@@ -71,6 +71,11 @@ GLuint IBOMan::addInMemoryIBO(void* iboData, size_t iboDataSize, GLenum primMode
   GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(iboDataSize),
                   iboData, GL_STATIC_DRAW));
 
+  // A freshly generated buffer name is guaranteed by GL to be unused. If we
+  // still hold a record for this id it is stale (the buffer was deleted outside
+  // IBOMan's bookkeeping and GL recycled the name). insert() would silently
+  // keep the stale primitive data, so erase first to force the new values in.
+  mIBOData.erase(glid);
   mIBOData.insert(std::make_pair(glid, IBOData(assetName, primMode, primType, numPrims)));
 
   return glid;
