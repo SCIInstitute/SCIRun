@@ -101,7 +101,24 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
-    ADD_TEST(".Test.ExampleNetwork.${srn_name}_srn" ${EXE_LOC} -E ${srn} --no_splash --regression 30 -d ${SCIRUN_TEST_RESOURCE_DIR})
+    SET(test_name ".Test.ExampleNetwork.${srn_name}_srn")
+    # In-app regression timeout (seconds). 60 gives the heaviest networks
+    # headroom when the machine is under parallel load; genuine hangs are still
+    # bounded by the ctest --timeout passed in CI.
+    ADD_TEST("${test_name}" ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
+
+    # Networks that instantiate a ViewScene render through an offscreen GL
+    # context in regression mode. macOS serializes GPU command submission
+    # across contexts, so running several ViewScene networks concurrently can
+    # slow rendering enough to trip the in-app regression timeout. Give these
+    # tests a shared RESOURCE_LOCK so CTest never schedules two of them at once,
+    # while CPU-only tests still parallelize freely.
+    FILE(READ "${srn}" srn_contents)
+    STRING(FIND "${srn_contents}" "ViewScene" srn_viewscene_pos)
+    IF(NOT srn_viewscene_pos EQUAL -1)
+      SET_TESTS_PROPERTIES("${test_name}" PROPERTIES RESOURCE_LOCK gpu)
+    ENDIF()
+    UNSET(srn_contents)
   ENDFOREACH()
 
 ENDIF()
