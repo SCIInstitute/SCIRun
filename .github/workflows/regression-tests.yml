@@ -39,3 +39,14 @@ jobs:
       build-testing: true
       run-unit-tests: true
       run-regression-tests: true
+
+  mac-coverage:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      build-testing: true
+      coverage: true

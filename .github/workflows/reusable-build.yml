@@ -42,6 +42,10 @@ on:
         required: false
         type: boolean
         default: false
+      coverage:
+        required: false
+        type: boolean
+        default: false
       artifact-name:
         required: false
         type: string
@@ -67,7 +71,7 @@ jobs:
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
 
       - name: Checkout SCIRunTestData
-        if: ${{ inputs.run-regression-tests }}
+        if: ${{ inputs.run-regression-tests || inputs.coverage }}
         uses: actions/checkout@v6
         with:
           repository: CIBC-Internal/SCIRunTestData
@@ -131,8 +135,12 @@ jobs:
           if [ "${{ inputs.build-testing }}" = "true" ]; then
             CMD+=("-DBUILD_TESTING:BOOL=ON")
           fi
-          if [ "${{ inputs.run-regression-tests }}" = "true" ]; then
+          if [ "${{ inputs.run-regression-tests }}" = "true" ] || [ "${{ inputs.coverage }}" = "true" ]; then
             CMD+=("-DSCIRUN_TEST_RESOURCE_DIR=${GITHUB_WORKSPACE}/SCIRunTestData")
+          fi
+          if [ "${{ inputs.coverage }}" = "true" ]; then
+            # Debug build + Clang source-based coverage instrumentation.
+            CMD+=("--debug" "-DENABLE_COVERAGE:BOOL=ON")
           fi
           # Join and run
           echo "Running: ${CMD[*]}"
@@ -302,6 +310,29 @@ jobs:
             unit-test-results.txt
             regression-test-results.txt
             build/SCIRun/Testing/Temporary/LastTest.log
+
+      - name: Run tests + coverage report (macOS)
+        if: ${{ inputs.coverage && runner.os == 'macOS' }}
+        run: |
+          # scripts/coverage.sh runs ctest with per-process profiling, merges
+          # with llvm-profdata, and writes a text summary + HTML via llvm-cov.
+          # No -R filter: cover both unit and regression tests.
+          ./scripts/coverage.sh bin/SCIRun -- -j3 --timeout 300
+        continue-on-error: true
+
+      - name: Clean up per-process regression settings (coverage)
+        if: ${{ inputs.coverage && runner.os == 'macOS' }}
+        run: rm -f "$HOME"/Library/Preferences/com.sci-cibc-software.SCIRun5_regression_*.plist 2>/dev/null || true
+        continue-on-error: true
+
+      - name: Upload coverage report
+        if: ${{ inputs.coverage && runner.os == 'macOS' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-report-${{ runner.os }}
+          path: |
+            bin/SCIRun/coverage/summary.txt
+            bin/SCIRun/coverage/html
 
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}
