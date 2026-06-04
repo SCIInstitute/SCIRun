@@ -27,6 +27,7 @@
 
 
 #include <es-log/trace-log.h>
+#include <QSettings>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
@@ -81,16 +82,33 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   startup_ = true;
 
-  QCoreApplication::setOrganizationName("SCI:CIBC Software");
+  const QString organization("SCI:CIBC Software");
+  const QString defaultAppName("SCIRun5");
+  QCoreApplication::setOrganizationName(organization);
   // In regression mode, isolate QSettings per process: concurrent test
   // processes otherwise share one settings file, and reading a half-written
   // plist (favorites, window geometry) during startup can crash in the
-  // module-selector tree restore. A fresh per-process store is also more
-  // deterministic for tests.
+  // module-selector tree restore. Seed the per-process store from the shared
+  // default store so regression runs see the developer's real settings (and
+  // look consistent run to run) while only ever *writing* to their own file.
+  // Reading the stable shared store concurrently is safe; only concurrent
+  // writes caused the original race.
   if (Application::Instance().parameters()->isRegressionMode())
-    QCoreApplication::setApplicationName(QString("SCIRun5_regression_%1").arg(QCoreApplication::applicationPid()));
+  {
+    const QString regressionAppName = QString("%1_regression_%2").arg(defaultAppName).arg(QCoreApplication::applicationPid());
+    {
+      QSettings source(QSettings::NativeFormat, QSettings::UserScope, organization, defaultAppName);
+      QSettings dest(QSettings::NativeFormat, QSettings::UserScope, organization, regressionAppName);
+      dest.clear(); // a recycled pid may have left a stale store
+      const auto keys = source.allKeys();
+      for (const auto& key : keys)
+        dest.setValue(key, source.value(key));
+      dest.sync();
+    }
+    QCoreApplication::setApplicationName(regressionAppName);
+  }
   else
-    QCoreApplication::setApplicationName("SCIRun5");
+    QCoreApplication::setApplicationName(defaultAppName);
 
   setAttribute(Qt::WA_DeleteOnClose);
 
