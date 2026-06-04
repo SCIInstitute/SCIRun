@@ -81,23 +81,30 @@ namespace Core {
 namespace Modules {
   namespace Render {
 
-    class SCISHARE ViewSceneVtk : public Dataflow::Networks::ModuleWithAsyncDynamicPorts, public HasNoInputPorts, public HasNoOutputPorts
+    class SCISHARE ViewSceneVtk : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
+        public Has1InputPort<AsyncDynamicPortTag<GeometryVtkPortTag>>,
+        public HasNoOutputPorts
     {
      public:
       ViewSceneVtk();
       void asyncExecute(const Dataflow::Networks::PortId&, Core::Datatypes::DatatypeHandle) override {}
       void setStateDefaults() override;
 
-      // INPUT_PORT_DYNAMIC(0, GeneralGeom, OsprayGeometryObject);
+      INPUT_PORT_DYNAMIC(0, GeneralGeom, VtkGeometryObject);
       void execute() override;
 
       MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+
+#ifndef WITH_VTK
+      DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+#endif
 
      protected:
       void portRemovedSlotImpl(const Dataflow::Networks::PortId&) override {}
 
      private:
       void renderTestScene();
+      void sendCompositeGeometry();
     };
 
   }

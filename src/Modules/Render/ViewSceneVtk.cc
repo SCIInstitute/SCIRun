@@ -94,17 +94,89 @@ MODULE_INFO_DEF(ViewSceneVtk, Render, SCIRun)
 ViewSceneVtk::ViewSceneVtk() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   RENDERER_LOG_FUNCTION_SCOPE;
-  //INITIALIZE_PORT(GeneralGeom);
+  INITIALIZE_PORT(GeneralGeom);
 }
 
 void ViewSceneVtk::setStateDefaults()
 {
-  // keep empty for now (we don't need SCIRun params for testing)
+  auto state = get_state();
+  state->setValue(Parameters::ShowPlane, true);
+  state->setValue(Parameters::AutoRotationRate, 0.025);
+  state->setValue(Parameters::RendererChoice, std::string("scivis"));
+  state->setValue(Parameters::SeparateModelPerObject, false);
+  state->setValue(Parameters::ShowShadows, true);
+  state->setValue(Parameters::ShowFrameRate, false);
+  state->setValue(Parameters::ShowRenderAnnotations, false);
+  state->setValue(Parameters::SubsampleDuringInteraction, false);
+  state->setValue(Parameters::SamplesPerPixel, 1);
+  state->setValue(Parameters::AOSamples, 1);
+  state->setValue(Parameters::ViewerHeight, 600);
+  state->setValue(Parameters::ViewerWidth, 800);
+  state->setValue(Parameters::CameraViewAtX, 0.0);
+  state->setValue(Parameters::CameraViewAtY, 0.0);
+  state->setValue(Parameters::CameraViewAtZ, 0.0);
+  state->setValue(Parameters::CameraViewFromX, 10.0);
+  state->setValue(Parameters::CameraViewFromY, 10.0);
+  state->setValue(Parameters::CameraViewFromZ, 0.0);
+  state->setValue(Parameters::CameraViewUpX, 0.0);
+  state->setValue(Parameters::CameraViewUpY, 0.0);
+  state->setValue(Parameters::CameraViewUpZ, 1.0);
+  state->setValue(Parameters::FrameWriterFilename, std::string("frames.png"));
+  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::ShowAmbientLight, true);
+  state->setValue(Parameters::AmbientLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::AmbientLightIntensity, 0.1);
+  state->setValue(Parameters::ShowDirectionalLight, true);
+  state->setValue(Parameters::DirectionalLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::DirectionalLightIntensity, 1.0);
+  state->setValue(Parameters::DirectionalLightAzimuth, 80);
+  state->setValue(Parameters::DirectionalLightElevation, 65);
+  state->setValue(Parameters::ShowProbe, false);
+  state->setValue(Parameters::ProbeX, 0.0);
+  state->setValue(Parameters::ProbeY, 0.0);
+  state->setValue(Parameters::ProbeZ, 0.0);
+  state->setValue(Parameters::InvertZoom, false);
+  state->setValue(Parameters::ZoomSpeed, 1.0);
+}
+
+void ViewSceneVtk::portRemovedSlotImpl(const PortId&)
+{
+  sendCompositeGeometry();
+}
+
+void ViewSceneVtk::asyncExecute(const PortId&, DatatypeHandle data)
+{
+  if (!data) return;
+
+  auto geom = std::dynamic_pointer_cast<VtkGeometryObject>(data);
+  if (!geom)
+  {
+    error("Logical error: not a geometry object on ViewSceneVtk");
+    return;
+  }
+
+  sendCompositeGeometry();
 }
 
 void ViewSceneVtk::execute()
 {
-  renderTestScene();
+#ifndef WITH_VTK
+  error("Must compile WITH_VTK to enable this module.");
+  return;
+#endif
+}
+
+void ViewSceneVtk::sendCompositeGeometry()
+{
+  auto allGeom = getValidDynamicInputs(GeneralGeom);
+  // logWarning("allGeom size {}", allGeom.size());
+  if (!allGeom.empty())
+  {
+    // logWarning("flattened size {}", flattened.size());
+    VtkGeometryObjectHandle composite(new CompositeVtkGeometryObject(allGeom));
+    // logWarning("composite ptr {}", composite.get());
+    get_state()->setTransientValue(Parameters::GeomData, composite, true);
+  }
 }
 
 void ViewSceneVtk::renderTestScene()
