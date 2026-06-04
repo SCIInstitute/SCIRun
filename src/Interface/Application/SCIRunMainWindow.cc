@@ -104,6 +104,10 @@ SCIRunMainWindow::SCIRunMainWindow()
       for (const auto& key : keys)
         dest.setValue(key, source.value(key));
       dest.sync();
+      // Note: these per-process stores are cleaned up after the run by
+      // scripts/run-regression-tests.sh (and the CI regression step). In-process
+      // deletion on exit is unreliable on macOS because cfprefsd owns the plist
+      // and recreates it after the process exits.
     }
     QCoreApplication::setApplicationName(regressionAppName);
   }
