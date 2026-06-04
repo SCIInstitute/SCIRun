@@ -2861,7 +2861,6 @@ void ViewSceneDialog::takeScreenshot()
 {
   if (!impl_->screenshotTaker_)
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
-
   impl_->screenshotTaker_->takeScreenshot();
 }
 
