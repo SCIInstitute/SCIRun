@@ -28,17 +28,17 @@
 
 #include <Interface/Modules/Math/PlotDialog.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <qwt_plot_marker.h>
-#include <qwt_plot_curve.h>
-#include <qwt_legend.h>
-#include <qwt_legend_label.h>
-#include <qwt_point_data.h>
-#include <qwt_plot_panner.h>
-#include <qwt_plot_magnifier.h>
-#include <qwt_text.h>
-#include <qwt_symbol.h>
-#include <qwt_math.h>
-#include <qwt_plot_renderer.h>
+#include <qwt/qwt_plot_marker.h>
+#include <qwt/qwt_plot_curve.h>
+#include <qwt/qwt_legend.h>
+#include <qwt/qwt_legend_label.h>
+#include <qwt/qwt_point_data.h>
+#include <qwt/qwt_plot_panner.h>
+#include <qwt/qwt_plot_magnifier.h>
+#include <qwt/qwt_text.h>
+#include <qwt/qwt_symbol.h>
+#include <qwt/qwt_math.h>
+#include <qwt/qwt_plot_renderer.h>
 #ifndef Q_MOC_RUN
 #include <Core/Utils/StringUtil.h>
 #endif

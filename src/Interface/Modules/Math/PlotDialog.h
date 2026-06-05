@@ -30,8 +30,8 @@
 #define INTERFACE_MODULES_MATH_PLOTDIALOG_H
 
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <qwt_plot.h>
-#include <qwt_plot_canvas.h>
+#include <qwt/qwt_plot.h>
+#include <qwt/qwt_plot_canvas.h>
 #include <Interface/Modules/Math/share.h>
 
 class QwtPlotMarker;

@@ -105,13 +105,23 @@ namespace SCIRun
       class SCISHARE DatatypePythonExtractor
       {
       public:
-        virtual ~DatatypePythonExtractor() {}
+        virtual ~DatatypePythonExtractor()
+        {
+            PyGILState_STATE gil = PyGILState_Ensure();
+            try
+            {
+              object_ = boost::python::object();  // release
+            }
+            catch (...)
+            {}
+            PyGILState_Release(gil);
+        }
         explicit DatatypePythonExtractor(const boost::python::object& object) : object_(object) {}
         virtual bool check() const = 0;
         virtual Datatypes::DatatypeHandle operator()() const = 0;
         virtual std::string label() const = 0;
       protected:
-        const boost::python::object& object_;
+        boost::python::object object_;
       };
 
       class SCISHARE DenseMatrixExtractor : public DatatypePythonExtractor

@@ -228,8 +228,68 @@ IF(BUILD_WITH_PYTHON)
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
 
-CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
-INCLUDE(${SCI_BOOST_USE_FILE})
+# Disable Boost MSVC auto-linking globally
+# (prevents Boost headers from injecting -gd / -mt / etc. library names)
+add_compile_definitions(
+  BOOST_ALL_NO_LIB
+  BOOST_FILESYSTEM_NO_LIB
+  BOOST_SYSTEM_NO_LIB
+)
+set(_scirun_boost_components
+  atomic
+  chrono
+  filesystem
+  program_options
+  regex
+  serialization
+  thread
+)
+
+if(BUILD_WITH_PYTHON)
+  list(APPEND _scirun_boost_components
+       python${SCI_PYTHON_VERSION_SHORT_WIN32})
+endif()
+
+find_package(Boost CONFIG REQUIRED COMPONENTS
+  ${_scirun_boost_components}
+)
+
+# ---------------------------------------------------------------------------
+# Ensure BOOST_ALL_NO_LIB propagates to EVERY consumer of Boost
+# by attaching it to the imported Boost targets as INTERFACE
+# ---------------------------------------------------------------------------
+foreach(_boost_comp ${_scirun_boost_components})
+  if(TARGET Boost::${_boost_comp})
+    target_compile_definitions(Boost::${_boost_comp}
+      INTERFACE BOOST_ALL_NO_LIB
+    )
+  endif()
+endforeach()
+
+if(TARGET Boost::filesystem)
+  target_compile_definitions(Boost::filesystem
+    INTERFACE
+      BOOST_FILESYSTEM_NO_LIB
+      BOOST_SYSTEM_NO_LIB
+      BOOST_FILESYSTEM_STATIC_LINK
+  )
+endif()
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+get_property(_allTargets GLOBAL PROPERTY TARGETS)
+
+message(STATUS "==== Boost-related targets ====")
+foreach(t ${_allTargets})
+  if(t MATCHES "^Boost::")
+    message(STATUS "  ${t}")
+  endif()
+endforeach()
+
+message(STATUS "Boost_FOUND = ${Boost_FOUND}")
+message(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 CONFIG_STANDARD_EXTERNAL( Tny TnyConfig.cmake ${TNY_DIR} )
 INCLUDE(${TNY_USE_FILE})
@@ -253,8 +313,10 @@ IF(WIN32)
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
-  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
-  INCLUDE(${QWT_USE_FILE})
+# QWT variables come directly from superbuild
+  set(SCI_QWT_INCLUDE "${QWT_INCLUDE}")
+  set(SCI_QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}")
+  set(SCI_QWT_LIBRARY     "${QWT_LIBRARY}")
 ENDIF()
 
 ########################################################################
@@ -511,7 +573,7 @@ INCLUDE_DIRECTORIES(
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
+#INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 

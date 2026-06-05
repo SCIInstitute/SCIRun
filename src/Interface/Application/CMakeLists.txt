@@ -154,7 +154,6 @@ SET(NonPythonInterface_ApplicationLinkLibraries
   Interface_Modules_Base
   Interface_Modules_Factory
   Core_Application_Preferences
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}
 )

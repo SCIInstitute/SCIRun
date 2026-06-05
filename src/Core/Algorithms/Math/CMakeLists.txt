@@ -87,7 +87,6 @@ TARGET_LINK_LIBRARIES(Algorithms_Math
   Core_Thread
   Algorithms_Base
   Core_Parser
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

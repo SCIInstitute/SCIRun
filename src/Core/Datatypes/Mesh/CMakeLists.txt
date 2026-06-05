@@ -51,7 +51,6 @@ TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh
   Core_Basis
   Core_Utils
   Core_Util_Legacy
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
