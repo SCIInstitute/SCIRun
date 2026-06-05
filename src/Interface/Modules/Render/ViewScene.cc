@@ -798,7 +798,10 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::ToggleClipping,  Qt::Key_C, Qt::NoModifier,
       "Toggle Clipping",   "C",       "Switch clipping on/off", nullptr },
     { Id::ToggleFog,       Qt::Key_D, Qt::NoModifier,
-      "Toggle Fog",        "D",       "Switch fog on/off", nullptr },
+      "Toggle Fog",        "D",       "Switch fog on/off",
+      [](ViewSceneDialog* d) {
+        d->setFogOn(!d->state_->getValue(Parameters::FogOn).toBool());
+      } },
     { Id::FlatShading,     Qt::Key_F, Qt::NoModifier,
       "Flat Shading",      "F",       "Switch flat shading on/off", nullptr },
     { Id::OpenHelp,        Qt::Key_I, Qt::NoModifier,
