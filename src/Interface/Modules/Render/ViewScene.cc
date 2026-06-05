@@ -811,7 +811,13 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       "Open Help",         "I",       "Open this help window",
       [](ViewSceneDialog* d) { d->showShortcutsDialog(); } },
     { Id::ViewLocking,     Qt::Key_L, Qt::NoModifier,
-      "View Locking",      "L",       "Switch view locking on/off", nullptr },
+      "View Locking",      "L",       "Switch view locking on/off",
+      [](ViewSceneDialog* d) {
+        const bool anyLocked = d->impl_->lockRotation_->isChecked() ||
+                               d->impl_->lockPan_->isChecked()      ||
+                               d->impl_->lockZoom_->isChecked();
+        if (anyLocked) d->unlockAllTriggered(); else d->lockAllTriggered();
+      } },
     { Id::ToggleLighting,  Qt::Key_K, Qt::NoModifier,
       "Toggle Lighting",   "K",       "Switch lighting on/off",
       [](ViewSceneDialog* d) {
