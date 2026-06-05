@@ -813,7 +813,12 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::ViewLocking,     Qt::Key_L, Qt::NoModifier,
       "View Locking",      "L",       "Switch view locking on/off", nullptr },
     { Id::ToggleLighting,  Qt::Key_K, Qt::NoModifier,
-      "Toggle Lighting",   "K",       "Switch lighting on/off", nullptr },
+      "Toggle Lighting",   "K",       "Switch lighting on/off",
+      [](ViewSceneDialog* d) {
+        const bool newState = !d->state_->getValue(Parameters::HeadLightOn).toBool();
+        for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
+          d->toggleLight(i, newState);
+      } },
     { Id::OrientationIcon, Qt::Key_O, Qt::NoModifier,
       "Orientation Icon",  "O",       "Switch orientation icon on/off",
       [](ViewSceneDialog* d) {
