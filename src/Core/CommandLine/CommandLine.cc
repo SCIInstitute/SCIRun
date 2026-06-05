@@ -53,6 +53,7 @@ public:
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
       ("datadir,d", po::value<std::string>(), "scirun data directory")
+      ("image-dir", po::value<std::string>(), "output directory for ViewScene images saved with --save-images (deterministic names in regression mode)")
       ("regression,r", po::value<int>(), "regression test a network")
       //("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("most-recent,1", "load the most recently used file")
@@ -191,11 +192,13 @@ public:
     std::vector<std::string>&& inputFiles,
     const std::optional<boost::filesystem::path>& pythonScriptFile,
     const std::optional<boost::filesystem::path>& dataDirectory,
+    const std::optional<boost::filesystem::path>& imageOutputDirectory,
     const std::optional<std::string>& networkToImport,
     DeveloperParametersPtr devParams,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
     inputFiles_(inputFiles), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory),
+    imageOutputDirectory_(imageOutputDirectory),
     networkToImport_(networkToImport),
     devParams_(devParams),
     flags_(flags)
@@ -214,6 +217,11 @@ public:
   std::optional<boost::filesystem::path> dataDirectory() const override
   {
     return dataDirectory_;
+  }
+
+  std::optional<boost::filesystem::path> imageOutputDirectory() const override
+  {
+    return imageOutputDirectory_;
   }
 
   std::optional<std::string> importNetworkFile() const override
@@ -301,6 +309,7 @@ private:
   std::vector<std::string> inputFiles_;
   std::optional<boost::filesystem::path> pythonScriptFile_;
   std::optional<boost::filesystem::path> dataDirectory_;
+  std::optional<boost::filesystem::path> imageOutputDirectory_;
   std::optional<std::string> networkToImport_;
   DeveloperParametersPtr devParams_;
   Flags flags_;
@@ -347,6 +356,11 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     {
       dataDirectory = boost::filesystem::path(parsed["datadir"].as<std::string>());
     }
+    auto imageOutputDirectory = std::optional<boost::filesystem::path>();
+    if (parsed.count("image-dir") != 0 && !parsed["image-dir"].empty() && !parsed["image-dir"].defaulted())
+    {
+      imageOutputDirectory = boost::filesystem::path(parsed["image-dir"].as<std::string>());
+    }
     auto importNetworkFile = std::optional<std::string>();
     if (parsed.count("import") != 0 && !parsed["import"].empty() && !parsed["import"].defaulted())
     {
@@ -358,6 +372,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       std::move(inputFiles),
       pythonScriptFile,
       dataDirectory,
+      imageOutputDirectory,
       importNetworkFile,
       makeShared<DeveloperParametersImpl>(
         parseOptionalArg<std::string>(parsed, "threadMode"),

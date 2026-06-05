@@ -29,7 +29,7 @@
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
 #include <Core/Utils/CurrentFileName.h>
-#include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
@@ -2834,14 +2834,27 @@ void ViewSceneDialog::autoSaveScreenshot()
   if (Application::Instance().parameters()->isRegressionMode())
   {
     // Deterministic, golden-image-ready name: <dir>/<network>.<module>.png,
-    // keyed to the loaded network file (no wall-clock timestamp). Default the
-    // directory to the current working dir when the screenshot pref is unset.
+    // keyed to the loaded network file (no wall-clock timestamp). The output
+    // directory comes from --image-dir when given, else the screenshot pref,
+    // else the current working directory.
+    const auto imageDir = Application::Instance().parameters()->imageOutputDirectory();
+    if (imageDir)
+      dir = QString::fromStdString(imageDir->string());
     if (dir.isEmpty())
       dir = ".";
+    boost::filesystem::create_directories(dir.toStdString());
     const auto network = QString::fromStdString(
       boost::filesystem::path(Core::getCurrentFileName()).stem().string());
     const auto file = QString("%1/%2.%3.png").arg(dir).arg(network).arg(moduleName);
-    saveScreenshot(file, false);
+
+    // Save the frame already captured during the run (each frameFinished calls
+    // takeScreenshot). Do NOT re-render here: this runs at exit, and a fresh
+    // offscreen doFrame at teardown crashes inside the GL geometry draw for
+    // networks with real geometry. Only render if nothing was captured yet.
+    if (!impl_->screenshotTaker_)
+      takeScreenshot();
+    if (impl_->screenshotTaker_)
+      impl_->screenshotTaker_->saveScreenshot(file);
     return;
   }
 

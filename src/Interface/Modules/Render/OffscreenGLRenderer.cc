@@ -115,10 +115,14 @@ QImage OffscreenGLRenderer::renderToImage()
   context_->makeCurrent(surface_);
   fbo_->bind();
 
-  // Force shader promises to resolve by using a short delta time (same trick
-  // GLWidget::paintGL uses when frameRequested_ is true).
+  // TODO(golden-images): real VBO/IBO geometry (RenderBasicSys -> glDrawElements)
+  // crashes in this offscreen context once shaders are ready and it actually
+  // draws — likely a GL profile/VAO mismatch versus the QOpenGLWidget context.
+  // Until that's fixed we render only a couple of frames (geometry shaders are
+  // usually not ready yet, so the scene is background + axes); this keeps the
+  // existing regression tests stable but produces blank geometry. See branch
+  // notes / issue.
   spire_->doFrame(0.2);
-  // A second frame ensures all deferred passes have actually executed.
   spire_->doFrame(0.2);
 
   QImage img = fbo_->toImage();
