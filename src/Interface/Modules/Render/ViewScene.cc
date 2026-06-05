@@ -236,6 +236,7 @@ namespace Gui {
 
     std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
     QDialog*                                          shortcutsDialog_    {nullptr};
+    QTableWidget*                                     shortcutsTable_     {nullptr};
 
     std::unique_ptr<Core::GeometryIDGenerator> gid_;
     std::string name_;
@@ -872,6 +873,8 @@ void ViewSceneDialog::showShortcutsDialog()
     Ui::ViewSceneShortcuts shortcutsUi;
     shortcutsUi.setupUi(impl_->shortcutsDialog_);
     auto* table = shortcutsUi.tableWidget;
+    impl_->shortcutsTable_ = table;
+    table->installEventFilter(this);
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table->setRowCount(static_cast<int>(numShortcuts));
 
@@ -1836,11 +1839,11 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
 
 bool ViewSceneDialog::eventFilter(QObject* obj, QEvent* event)
 {
-  if (obj == impl_->shortcutsDialog_ && event->type() == QEvent::KeyPress)
+  if (event->type() == QEvent::KeyPress &&
+      (obj == impl_->shortcutsDialog_ || obj == impl_->shortcutsTable_))
   {
-    auto* ke = static_cast<QKeyEvent*>(event);
-    if (dispatchShortcutKey(ke))
-      return true;  // consumed — don't pass to dialog
+    if (dispatchShortcutKey(static_cast<QKeyEvent*>(event)))
+      return true;  // shortcut fired — consume so dialog doesn't also handle it
   }
   return ModuleDialogGeneric::eventFilter(obj, event);
 }
