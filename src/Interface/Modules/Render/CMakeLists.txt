@@ -162,3 +162,11 @@ IF(WITH_OSPRAY)
     ospray::ospray
   )
 ENDIF()
+
+IF(WITH_VTK)
+  ADD_SUBDIRECTORY(Vtk)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Render
+    Interface_Modules_Render_Vtk
+    VTK::CommonCore
+  )
+ENDIF()

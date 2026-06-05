@@ -87,7 +87,7 @@ namespace Modules {
     {
      public:
       ViewSceneVtk();
-      void asyncExecute(const Dataflow::Networks::PortId&, Core::Datatypes::DatatypeHandle) override {}
+      void asyncExecute(const Dataflow::Networks::PortId&, Core::Datatypes::DatatypeHandle) override;
       void setStateDefaults() override;
 
       INPUT_PORT_DYNAMIC(0, GeneralGeom, VtkGeometryObject);
@@ -100,7 +100,7 @@ namespace Modules {
 #endif
 
      protected:
-      void portRemovedSlotImpl(const Dataflow::Networks::PortId&) override {}
+      void portRemovedSlotImpl(const Dataflow::Networks::PortId&) override;
 
      private:
       void renderTestScene();
