@@ -786,13 +786,50 @@ void ViewSceneDialog::showShortcutsDialog()
     Ui::ViewSceneShortcuts shortcutsUi;
     shortcutsUi.setupUi(impl_->shortcutsDialog_);
     auto* table = shortcutsUi.tableWidget;
-    // Gray out shortcuts whose underlying feature is not yet implemented
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    // Action names for every row; used to fill cells missing from the .ui
+    static const std::array<const char*, 20> actionNames = {
+      "Axis Views",         // 0:  1-8
+      "Autoview",           // 1:  0
+      "Autoview (no scale)",// 2:  Ctrl+0
+      "Snap to Axis",       // 3:  X
+      "Copy View",          // 4:  Ctrl+1-9
+      "Set Home",           // 5:  Ctrl+H
+      "Home",               // 6:  H
+      "Toggle Axes",        // 7:  A
+      "Bounding Box",       // 8:  B
+      "Toggle Clipping",    // 9:  C
+      "Toggle Fog",         // 10: D
+      "Flat Shading",       // 11: F
+      "Open Help",          // 12: I
+      "View Locking",       // 13: L
+      "Toggle Lighting",    // 14: K
+      "Orientation Icon",   // 15: O
+      "Orthographic",       // 16: P
+      "Stereo",             // 17: S
+      "Backculling",        // 18: U
+      "Wireframe",          // 19: W
+    };
+    for (int row = 0; row < table->rowCount(); ++row)
+    {
+      if (!table->item(row, 0))
+        table->setItem(row, 0, new QTableWidgetItem(actionNames[row]));
+    }
+
+    // Gray out shortcuts whose underlying feature is not yet implemented.
+    // Populate action names first so newly created col-0 items get grayed too.
+    // Use the palette's disabled text color so it works on both light and dark themes.
+    const QColor disabledColor = table->palette().color(QPalette::Disabled, QPalette::Text);
     for (int row : {0, 2, 3, 4, 5, 6, 8, 11, 16, 17, 18, 19})
     {
       for (int col = 0; col < table->columnCount(); ++col)
       {
         if (auto* item = table->item(row, col))
-          item->setForeground(Qt::gray);
+        {
+          item->setForeground(disabledColor);
+          item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+        }
       }
     }
     table->resizeColumnsToContents();
