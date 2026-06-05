@@ -868,6 +868,7 @@ void ViewSceneDialog::showShortcutsDialog()
   if (!impl_->shortcutsDialog_)
   {
     impl_->shortcutsDialog_ = new QDialog(this);
+    impl_->shortcutsDialog_->installEventFilter(this);
     Ui::ViewSceneShortcuts shortcutsUi;
     shortcutsUi.setupUi(impl_->shortcutsDialog_);
     auto* table = shortcutsUi.tableWidget;
@@ -1806,6 +1807,21 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
   }
 }
 
+bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
+{
+  const auto key  = static_cast<Qt::Key>(event->key());
+  const auto mods = event->modifiers() & ~Qt::KeypadModifier;
+  for (const auto& sc : shortcutTable())
+  {
+    if (sc.key == key && sc.modifiers == mods && sc.action)
+    {
+      sc.action(this);
+      return true;
+    }
+  }
+  return false;
+}
+
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
 {
   // Shift is handled separately — it affects cursor state, not a command shortcut.
@@ -1815,17 +1831,18 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
     updateCursor();
     return;
   }
+  dispatchShortcutKey(event);
+}
 
-  const auto key  = static_cast<Qt::Key>(event->key());
-  const auto mods = event->modifiers() & ~Qt::KeypadModifier; // ignore numpad modifier
-  for (const auto& sc : shortcutTable())
+bool ViewSceneDialog::eventFilter(QObject* obj, QEvent* event)
+{
+  if (obj == impl_->shortcutsDialog_ && event->type() == QEvent::KeyPress)
   {
-    if (sc.key == key && sc.modifiers == mods && sc.action)
-    {
-      sc.action(this);
-      return;
-    }
+    auto* ke = static_cast<QKeyEvent*>(event);
+    if (dispatchShortcutKey(ke))
+      return true;  // consumed — don't pass to dialog
   }
+  return ModuleDialogGeneric::eventFilter(obj, event);
 }
 
 void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)

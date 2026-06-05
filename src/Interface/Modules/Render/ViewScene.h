@@ -234,6 +234,7 @@ namespace SCIRun {
     protected:
       //---------------- Initialization ------------------------------------------------------------
       void pullSpecial() override;
+      bool eventFilter(QObject* obj, QEvent* event) override;
 
       void newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated);
       void updateAllGeometries();
@@ -280,6 +281,7 @@ namespace SCIRun {
       void addObjectSelectionButton();
       void addShortcutsHelpButton();
       static const ShortcutTable& shortcutTable();
+      bool dispatchShortcutKey(QKeyEvent* event);
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();
