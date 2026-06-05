@@ -796,7 +796,10 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::BoundingBox,     Qt::Key_B, Qt::NoModifier,
       "Bounding Box",      "B",       "Switch bounding box mode on/off", nullptr },
     { Id::ToggleClipping,  Qt::Key_C, Qt::NoModifier,
-      "Toggle Clipping",   "C",       "Switch clipping on/off", nullptr },
+      "Toggle Clipping",   "C",       "Switch clipping on/off",
+      [](ViewSceneDialog* d) {
+        d->setClippingPlaneVisible(!d->impl_->clippingPlaneManager_->active().visible);
+      } },
     { Id::ToggleFog,       Qt::Key_D, Qt::NoModifier,
       "Toggle Fog",        "D",       "Switch fog on/off",
       [](ViewSceneDialog* d) {
