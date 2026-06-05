@@ -769,6 +769,58 @@ void ViewSceneDialog::addAutoViewButton()
   addToolbarButton(impl_->autoViewButton_, Qt::TopToolBarArea);
 }
 
+const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
+{
+  using Id = ShortcutDef::Id;
+  // Lambdas take ViewSceneDialog* so they can call any slot on the instance.
+  // Protected access is fine here because this is a member function of ViewSceneDialog.
+  static const ShortcutTable table = {{
+    { Id::AxisViews,       Qt::Key_1, Qt::NoModifier,
+      "Axis Views",        "1-8",     "Preprogrammed views aligning the view with the X, Y, or Z-axis", nullptr },
+    { Id::Autoview,        Qt::Key_0, Qt::NoModifier,
+      "Autoview",          "0",       "Find a view that shows all the data",
+      [](ViewSceneDialog* d) { d->autoViewClicked(); } },
+    { Id::AutoviewNoScale, Qt::Key_0, Qt::ControlModifier,
+      "Autoview (no scale)", "Ctrl+0","Reset the eye so the data is centered", nullptr },
+    { Id::SnapToAxis,      Qt::Key_X, Qt::NoModifier,
+      "Snap to Axis",      "X",       "Snap to the closest axis-aligned view", nullptr },
+    { Id::CopyView,        Qt::Key_1, Qt::ControlModifier,
+      "Copy View",         "Ctrl+1-9","Copy view from Viewer Window 1-9", nullptr },
+    { Id::SetHome,         Qt::Key_H, Qt::ControlModifier,
+      "Set Home",          "Ctrl+H",  "Store the current view", nullptr },
+    { Id::GotoHome,        Qt::Key_H, Qt::NoModifier,
+      "Home",              "H",       "Go back to the stored view", nullptr },
+    { Id::ToggleAxes,      Qt::Key_A, Qt::NoModifier,
+      "Toggle Axes",       "A",       "Switch axes on/off", nullptr },
+    { Id::BoundingBox,     Qt::Key_B, Qt::NoModifier,
+      "Bounding Box",      "B",       "Switch bounding box mode on/off", nullptr },
+    { Id::ToggleClipping,  Qt::Key_C, Qt::NoModifier,
+      "Toggle Clipping",   "C",       "Switch clipping on/off", nullptr },
+    { Id::ToggleFog,       Qt::Key_D, Qt::NoModifier,
+      "Toggle Fog",        "D",       "Switch fog on/off", nullptr },
+    { Id::FlatShading,     Qt::Key_F, Qt::NoModifier,
+      "Flat Shading",      "F",       "Switch flat shading on/off", nullptr },
+    { Id::OpenHelp,        Qt::Key_I, Qt::NoModifier,
+      "Open Help",         "I",       "Open this help window",
+      [](ViewSceneDialog* d) { d->showShortcutsDialog(); } },
+    { Id::ViewLocking,     Qt::Key_L, Qt::NoModifier,
+      "View Locking",      "L",       "Switch view locking on/off", nullptr },
+    { Id::ToggleLighting,  Qt::Key_K, Qt::NoModifier,
+      "Toggle Lighting",   "K",       "Switch lighting on/off", nullptr },
+    { Id::OrientationIcon, Qt::Key_O, Qt::NoModifier,
+      "Orientation Icon",  "O",       "Switch orientation icon on/off", nullptr },
+    { Id::Orthographic,    Qt::Key_P, Qt::NoModifier,
+      "Orthographic",      "P",       "Switch orthographic projection on/off", nullptr },
+    { Id::Stereo,          Qt::Key_S, Qt::NoModifier,
+      "Stereo",            "S",       "Switch stereo mode on/off", nullptr },
+    { Id::Backculling,     Qt::Key_U, Qt::NoModifier,
+      "Backculling",       "U",       "Switch backculling on/off", nullptr },
+    { Id::Wireframe,       Qt::Key_W, Qt::NoModifier,
+      "Wireframe",         "W",       "Switch wire frame on/off", nullptr },
+  }};
+  return table;
+}
+
 void ViewSceneDialog::addShortcutsHelpButton()
 {
   auto* helpButton = new QPushButton(this);
@@ -787,53 +839,27 @@ void ViewSceneDialog::showShortcutsDialog()
     shortcutsUi.setupUi(impl_->shortcutsDialog_);
     auto* table = shortcutsUi.tableWidget;
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setRowCount(static_cast<int>(numShortcuts));
 
-    // Action names for every row; used to fill cells missing from the .ui
-    static const std::array<const char*, 20> actionNames = {
-      "Axis Views",         // 0:  1-8
-      "Autoview",           // 1:  0
-      "Autoview (no scale)",// 2:  Ctrl+0
-      "Snap to Axis",       // 3:  X
-      "Copy View",          // 4:  Ctrl+1-9
-      "Set Home",           // 5:  Ctrl+H
-      "Home",               // 6:  H
-      "Toggle Axes",        // 7:  A
-      "Bounding Box",       // 8:  B
-      "Toggle Clipping",    // 9:  C
-      "Toggle Fog",         // 10: D
-      "Flat Shading",       // 11: F
-      "Open Help",          // 12: I
-      "View Locking",       // 13: L
-      "Toggle Lighting",    // 14: K
-      "Orientation Icon",   // 15: O
-      "Orthographic",       // 16: P
-      "Stereo",             // 17: S
-      "Backculling",        // 18: U
-      "Wireframe",          // 19: W
-    };
-    for (int row = 0; row < table->rowCount(); ++row)
-    {
-      if (!table->item(row, 0))
-        table->setItem(row, 0, new QTableWidgetItem(actionNames[row]));
-    }
-
-    // Gray out shortcuts whose underlying feature is not yet implemented.
-    // Populate action names first so newly created col-0 items get grayed too.
-    // Use the palette's disabled text color so it works on both light and dark themes.
     const QColor disabledColor = table->palette().color(QPalette::Disabled, QPalette::Text);
-    // Row 1  = 0 (Autoview)  — implemented
-    // Row 12 = I (Help)      — implemented
-    // Everything else is grayed until the shortcut is wired up
-    for (int row : {0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19})
+    int row = 0;
+    for (const auto& sc : shortcutTable())
     {
-      for (int col = 0; col < table->columnCount(); ++col)
+      auto* nameItem     = new QTableWidgetItem(sc.actionName);
+      auto* shortcutItem = new QTableWidgetItem(sc.shortcutDisplay);
+      auto* descItem     = new QTableWidgetItem(sc.description);
+      table->setItem(row, 0, nameItem);
+      table->setItem(row, 1, shortcutItem);
+      table->setItem(row, 2, descItem);
+      if (!sc.isImplemented())
       {
-        if (auto* item = table->item(row, col))
+        for (auto* item : {nameItem, shortcutItem, descItem})
         {
           item->setForeground(disabledColor);
           item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         }
       }
+      ++row;
     }
     table->resizeColumnsToContents();
   }
@@ -1742,16 +1768,23 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
 
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
 {
-  switch (event->key())
+  // Shift is handled separately — it affects cursor state, not a command shortcut.
+  if (event->key() == Qt::Key_Shift)
   {
-  case Qt::Key_Shift:
     impl_->shiftdown_ = true;
     updateCursor();
-    break;
-  case Qt::Key_I:
-    showShortcutsDialog();
-    break;
-  default: ;
+    return;
+  }
+
+  const auto key  = static_cast<Qt::Key>(event->key());
+  const auto mods = event->modifiers() & ~Qt::KeypadModifier; // ignore numpad modifier
+  for (const auto& sc : shortcutTable())
+  {
+    if (sc.key == key && sc.modifiers == mods && sc.action)
+    {
+      sc.action(this);
+      return;
+    }
   }
 }
 
