@@ -875,6 +875,13 @@ void ViewSceneDialog::showShortcutsDialog()
       ++row;
     }
     table->resizeColumnsToContents();
+    table->setToolTip("Double-click a row to perform that action");
+    connect(table, &QTableWidget::cellDoubleClicked, [this](int row, int /*col*/)
+    {
+      const auto& sc = shortcutTable()[static_cast<std::size_t>(row)];
+      if (sc.action)
+        sc.action(this);
+    });
   }
   impl_->shortcutsDialog_->show();
   impl_->shortcutsDialog_->raise();
