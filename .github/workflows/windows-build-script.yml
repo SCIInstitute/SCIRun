@@ -1,0 +1,20 @@
+name: windows-build-script
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+
+jobs:
+  windows-headless:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build (headless)
+        shell: pwsh
+        run: .\build.ps1 -Headless -InstallPrereqs
