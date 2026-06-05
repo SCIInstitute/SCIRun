@@ -64,8 +64,8 @@ void SCIRunMainWindow::exitApplication(int code)
 {
   if (Application::Instance().parameters()->saveViewSceneScreenshotsOnQuit())
   { networkEditor_->saveImages(); }
-  returnCode_ = code;
   close();
+  returnCode_ = code;
   qApp->exit(code);
 }
 
