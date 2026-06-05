@@ -821,7 +821,10 @@ void ViewSceneDialog::showShortcutsDialog()
     // Populate action names first so newly created col-0 items get grayed too.
     // Use the palette's disabled text color so it works on both light and dark themes.
     const QColor disabledColor = table->palette().color(QPalette::Disabled, QPalette::Text);
-    for (int row : {0, 2, 3, 4, 5, 6, 8, 11, 16, 17, 18, 19})
+    // Row 1  = 0 (Autoview)  — implemented
+    // Row 12 = I (Help)      — implemented
+    // Everything else is grayed until the shortcut is wired up
+    for (int row : {0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19})
     {
       for (int col = 0; col < table->columnCount(); ++col)
       {
