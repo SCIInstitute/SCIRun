@@ -186,6 +186,9 @@ namespace SCIRun {
       void setFogStartValue(double value);
       void setFogEndValue(double value);
 
+      //---------------- Help ----------------------------------------------------------------------
+      void showShortcutsDialog();
+
       //---------------- Misc. ---------------------------------------------------------------------
       void assignBackgroundColor();
       void setTransparencySortTypeContinuous(bool index);
@@ -245,6 +248,7 @@ namespace SCIRun {
       void addDeveloperControlButton();
       void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addObjectSelectionButton();
+      void addShortcutsHelpButton();
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();

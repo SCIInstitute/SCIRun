@@ -567,6 +567,7 @@ void ViewSceneDialog::addToolBar()
   addControlLockButton();
   addScreenshotButton();
   addAutoRotateButton();
+  addShortcutsHelpButton();
 
   //TODO: render toolbar members
   addColorOptionsButton();
@@ -766,6 +767,39 @@ void ViewSceneDialog::addAutoViewButton()
   impl_->autoViewButton_->setShortcut(Qt::Key_0);
   connect(impl_->autoViewButton_, &QPushButton::clicked, this, &ViewSceneDialog::autoViewClicked);
   addToolbarButton(impl_->autoViewButton_, Qt::TopToolBarArea);
+}
+
+void ViewSceneDialog::addShortcutsHelpButton()
+{
+  auto* helpButton = new QPushButton(this);
+  helpButton->setToolTip("Keyboard Shortcuts (I)");
+  helpButton->setIcon(style()->standardIcon(QStyle::SP_MessageBoxQuestion));
+  connect(helpButton, &QPushButton::clicked, this, &ViewSceneDialog::showShortcutsDialog);
+  addToolbarButton(helpButton, Qt::TopToolBarArea);
+}
+
+void ViewSceneDialog::showShortcutsDialog()
+{
+  if (!impl_->shortcutsDialog_)
+  {
+    impl_->shortcutsDialog_ = new QDialog(this);
+    Ui::ViewSceneShortcuts shortcutsUi;
+    shortcutsUi.setupUi(impl_->shortcutsDialog_);
+    auto* table = shortcutsUi.tableWidget;
+    // Gray out shortcuts whose underlying feature is not yet implemented
+    for (int row : {0, 2, 3, 4, 5, 6, 8, 11, 16, 17, 18, 19})
+    {
+      for (int col = 0; col < table->columnCount(); ++col)
+      {
+        if (auto* item = table->item(row, col))
+          item->setForeground(Qt::gray);
+      }
+    }
+    table->resizeColumnsToContents();
+  }
+  impl_->shortcutsDialog_->show();
+  impl_->shortcutsDialog_->raise();
+  impl_->shortcutsDialog_->activateWindow();
 }
 
 void ViewSceneDialog::addScreenshotButton()
@@ -1675,27 +1709,7 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
     updateCursor();
     break;
   case Qt::Key_I:
-    {
-      if (!impl_->shortcutsDialog_)
-      {
-        impl_->shortcutsDialog_ = new QDialog(this);
-        Ui::ViewSceneShortcuts shortcutsUi;
-        shortcutsUi.setupUi(impl_->shortcutsDialog_);
-        // Gray out unimplemented shortcuts: S (stereo, row 17) and U (backculling, row 18)
-        auto* table = shortcutsUi.tableWidget;
-        for (int row : {17, 18})
-        {
-          for (int col = 0; col < table->columnCount(); ++col)
-          {
-            if (auto* item = table->item(row, col))
-              item->setForeground(Qt::gray);
-          }
-        }
-      }
-      impl_->shortcutsDialog_->show();
-      impl_->shortcutsDialog_->raise();
-      impl_->shortcutsDialog_->activateWindow();
-    }
+    showShortcutsDialog();
     break;
   default: ;
   }
