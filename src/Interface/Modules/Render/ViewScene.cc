@@ -809,7 +809,10 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::ToggleLighting,  Qt::Key_K, Qt::NoModifier,
       "Toggle Lighting",   "K",       "Switch lighting on/off", nullptr },
     { Id::OrientationIcon, Qt::Key_O, Qt::NoModifier,
-      "Orientation Icon",  "O",       "Switch orientation icon on/off", nullptr },
+      "Orientation Icon",  "O",       "Switch orientation icon on/off",
+      [](ViewSceneDialog* d) {
+        d->showOrientationChecked(!d->state_->getValue(Parameters::AxesVisible).toBool());
+      } },
     { Id::Orthographic,    Qt::Key_P, Qt::NoModifier,
       "Orthographic",      "P",       "Switch orthographic projection on/off", nullptr },
     { Id::Stereo,          Qt::Key_S, Qt::NoModifier,
