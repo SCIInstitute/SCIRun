@@ -234,6 +234,7 @@ namespace Gui {
     QPushButton* toolBar3Position_ {nullptr};
 
     std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
+    QDialog*                                          shortcutsDialog_    {nullptr};
 
     std::unique_ptr<Core::GeometryIDGenerator> gid_;
     std::string name_;
@@ -1672,6 +1673,29 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
   case Qt::Key_Shift:
     impl_->shiftdown_ = true;
     updateCursor();
+    break;
+  case Qt::Key_I:
+    {
+      if (!impl_->shortcutsDialog_)
+      {
+        impl_->shortcutsDialog_ = new QDialog(this);
+        Ui::ViewSceneShortcuts shortcutsUi;
+        shortcutsUi.setupUi(impl_->shortcutsDialog_);
+        // Gray out unimplemented shortcuts: S (stereo, row 17) and U (backculling, row 18)
+        auto* table = shortcutsUi.tableWidget;
+        for (int row : {17, 18})
+        {
+          for (int col = 0; col < table->columnCount(); ++col)
+          {
+            if (auto* item = table->item(row, col))
+              item->setForeground(Qt::gray);
+          }
+        }
+      }
+      impl_->shortcutsDialog_->show();
+      impl_->shortcutsDialog_->raise();
+      impl_->shortcutsDialog_->activateWindow();
+    }
     break;
   default: ;
   }
