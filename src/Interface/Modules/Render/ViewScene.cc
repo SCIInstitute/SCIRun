@@ -48,6 +48,7 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 #include <es-log/trace-log.h>
 #include <QOpenGLContext>
+#include <QPainter>
 #include <gl-platform/GLPlatform.hpp>
 
 using namespace SCIRun;
@@ -825,7 +826,19 @@ void ViewSceneDialog::addShortcutsHelpButton()
 {
   auto* helpButton = new QPushButton(this);
   helpButton->setToolTip("Keyboard Shortcuts (I)");
-  helpButton->setIcon(style()->standardIcon(QStyle::SP_MessageBoxQuestion));
+  {
+    // Draw a white "?" on a transparent pixmap to match the dark toolbar icon style
+    QPixmap px(24, 24);
+    px.fill(Qt::transparent);
+    QPainter p(&px);
+    p.setPen(Qt::white);
+    QFont f = p.font();
+    f.setBold(true);
+    f.setPixelSize(18);
+    p.setFont(f);
+    p.drawText(px.rect(), Qt::AlignCenter, "?");
+    helpButton->setIcon(QIcon(px));
+  }
   connect(helpButton, &QPushButton::clicked, this, &ViewSceneDialog::showShortcutsDialog);
   addToolbarButton(helpButton, Qt::TopToolBarArea);
 }
