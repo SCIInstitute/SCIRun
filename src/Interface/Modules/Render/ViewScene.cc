@@ -28,6 +28,8 @@
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
+#include <Core/Utils/CurrentFileName.h>
+#include <boost/filesystem/path.hpp>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
@@ -2826,10 +2828,27 @@ void ViewSceneDialog::saveScreenshot(QString fileName, bool notify)
 
 void ViewSceneDialog::autoSaveScreenshot()
 {
+  const auto moduleName = QString::fromStdString(getName()).replace(':', '-');
+  auto dir = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString());
+
+  if (Application::Instance().parameters()->isRegressionMode())
+  {
+    // Deterministic, golden-image-ready name: <dir>/<network>.<module>.png,
+    // keyed to the loaded network file (no wall-clock timestamp). Default the
+    // directory to the current working dir when the screenshot pref is unset.
+    if (dir.isEmpty())
+      dir = ".";
+    const auto network = QString::fromStdString(
+      boost::filesystem::path(Core::getCurrentFileName()).stem().string());
+    const auto file = QString("%1/%2.%3.png").arg(dir).arg(network).arg(moduleName);
+    saveScreenshot(file, false);
+    return;
+  }
+
   QThread::sleep(1);
-  const auto file = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
+  const auto file = dir +
                     QString("/%1_%2.png")
-                    .arg(QString::fromStdString(getName()).replace(':', '-'))
+                    .arg(moduleName)
                     .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
   saveScreenshot(file, false);
