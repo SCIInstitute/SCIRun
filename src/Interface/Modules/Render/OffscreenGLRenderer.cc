@@ -25,9 +25,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+// glew (via gl-platform) must be included before any header that pulls in
+// <gl.h> — notably the Qt OpenGL headers below — or MSVC errors with
+// "gl.h included before glew.h".
+#include <gl-platform/GLPlatform.hpp>
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+#include <QOpenGLFramebufferObject>
+#include <QSurfaceFormat>
 #include <Interface/Modules/Render/OffscreenGLRenderer.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
-#include <gl-platform/GLPlatform.hpp>
 #include <Core/Logging/Log.h>
 
 namespace SCIRun {

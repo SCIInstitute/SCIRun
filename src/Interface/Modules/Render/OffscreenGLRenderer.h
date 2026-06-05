@@ -28,12 +28,18 @@
 #ifndef INTERFACE_MODULES_RENDER_OFFSCREENGLRENDERER_H
 #define INTERFACE_MODULES_RENDER_OFFSCREENGLRENDERER_H
 
+// Only QImage is needed in this header (returned by value). The OpenGL Qt
+// classes are used as pointer members, so forward-declare them rather than
+// including their headers here: on Windows those headers pull in <gl.h>, and
+// if that lands before glew.h (included via gl-platform in the .cc) MSVC fails
+// with "gl.h included before glew.h".
 #include <QImage>
-#include <QOffscreenSurface>
-#include <QOpenGLContext>
-#include <QOpenGLFramebufferObject>
 #include <Interface/Modules/Render/ES/RendererInterfaceFwd.h>
 #include <Interface/Modules/Render/share.h>
+
+class QOffscreenSurface;
+class QOpenGLContext;
+class QOpenGLFramebufferObject;
 
 namespace SCIRun {
 namespace Gui {
