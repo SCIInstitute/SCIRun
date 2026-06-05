@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    SCIRun Windows build script — configure and build SCIRun using CMake and Visual Studio.
+    SCIRun Windows build script -- configure and build SCIRun using CMake and Visual Studio.
 
 .DESCRIPTION
     Walks through the full SCIRun build pipeline on Windows, optionally downloading
@@ -140,7 +140,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# ── Constants ─────────────────────────────────────────────────────────────────
+# --- Constants ---
 
 $MIN_CMAKE_VERSION   = [Version]"3.20.0"
 $DL_CMAKE_VERSION    = "3.31.4"
@@ -153,7 +153,7 @@ $script:cmakeBin    = "cmake"
 $script:vsGenerator = ""
 $script:qtFoundPath = ""
 
-# ── Console helpers ────────────────────────────────────────────────────────────
+# --- Console helpers ---
 
 function Write-Banner {
     $bar = "=" * 70
@@ -211,12 +211,12 @@ function Invoke-Download([string]$url, [string]$dest, [string]$label) {
     }
 }
 
-function Refresh-Path {
+function Sync-EnvPath {
     $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" +
                 [System.Environment]::GetEnvironmentVariable("PATH", "User")
 }
 
-# ── Prerequisite detection ─────────────────────────────────────────────────────
+# --- Prerequisite detection ---
 
 function Get-CMakeBin {
     if ($CMakePath -ne "" -and (Test-Path $CMakePath)) { return $CMakePath }
@@ -235,7 +235,7 @@ function Get-CMakeVersion([string]$bin) {
     try {
         $line = & $bin --version 2>&1 | Select-Object -First 1
         if ($line -match "(\d+\.\d+\.\d+)") { return [Version]$Matches[1] }
-    } catch {}
+    } catch { return $null }
     return $null
 }
 
@@ -298,13 +298,13 @@ function Get-PythonBin {
             try {
                 $ver = & $p.Source --version 2>&1
                 if ($ver -match "Python 3\.") { return $p.Source }
-            } catch {}
+            } catch { continue }
         }
     }
     return $null
 }
 
-# ── Installation helpers ───────────────────────────────────────────────────────
+# --- Installation helpers ---
 
 function Install-GitIfMissing {
     Write-Step "Checking Git..."
@@ -320,7 +320,7 @@ function Install-GitIfMissing {
     $winget = Get-Command winget -ErrorAction SilentlyContinue
     if ($winget -and (Confirm-Install "Install Git via winget (recommended)?")) {
         & winget install --id Git.Git --silent --accept-package-agreements --accept-source-agreements
-        Refresh-Path
+        Sync-EnvPath
         if (Get-GitBin) { Write-OK "Git installed."; return }
         Write-Warn "winget install succeeded but git is not yet on PATH. Continuing..."
         return
@@ -328,12 +328,12 @@ function Install-GitIfMissing {
 
     if (Confirm-Install "Download and install Git for Windows directly?") {
         $tmp = "$env:TEMP\git-setup.exe"
-        Invoke-Download $DL_GIT_URL $tmp "Git for Windows"
+        Invoke-Download -url $DL_GIT_URL -dest $tmp -label "Git for Windows"
         Write-Info "Running Git installer (silent)..."
         $p = Start-Process $tmp `
             -ArgumentList "/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /COMPONENTS=icons,ext\reg\shellhere,assoc,assoc_sh" `
             -Wait -PassThru
-        Refresh-Path
+        Sync-EnvPath
         if ($p.ExitCode -eq 0 -and (Get-GitBin)) { Write-OK "Git installed."; return }
         Exit-WithError "Git installer finished with code $($p.ExitCode).`n    Install manually: https://git-scm.com/download/win"
     }
@@ -367,7 +367,7 @@ function Install-CMakeIfMissing {
     }
 
     $msi = "$env:TEMP\cmake-setup.msi"
-    Invoke-Download $DL_CMAKE_URL $msi "CMake $DL_CMAKE_VERSION"
+    Invoke-Download -url $DL_CMAKE_URL -dest $msi -label "CMake $DL_CMAKE_VERSION"
     Write-Info "Installing CMake (a UAC prompt may appear)..."
     $p = Start-Process msiexec.exe `
         -ArgumentList "/i `"$msi`" /quiet /norestart ADD_CMAKE_TO_PATH=System" `
@@ -375,7 +375,7 @@ function Install-CMakeIfMissing {
     if ($p.ExitCode -ne 0) {
         Exit-WithError "CMake MSI install failed (code $($p.ExitCode)).`n    Try running this script as Administrator, or install manually: $DL_CMAKE_URL"
     }
-    Refresh-Path
+    Sync-EnvPath
 
     $bin = Get-CMakeBin
     if (-not $bin) {
@@ -413,14 +413,14 @@ function Install-VSIfMissing {
     }
 
     $installer = "$env:TEMP\vs_buildtools.exe"
-    Invoke-Download $DL_VS_BUILDTOOLS_URL $installer "VS 2022 Build Tools"
+    Invoke-Download -url $DL_VS_BUILDTOOLS_URL -dest $installer -label "VS 2022 Build Tools"
 
     Write-Info "Launching VS Build Tools installer (this will take 15-30 minutes)..."
     Write-Info "A separate progress window will show download/install status."
 
     # Workloads:
-    #   VCTools         — core C++ compiler and build tools
-    #   Windows11SDK    — Windows SDK headers/libs
+    #   VCTools         -- core C++ compiler and build tools
+    #   Windows11SDK    -- Windows SDK headers/libs
     #   --includeRecommended picks up ATL, CMake integration, etc.
     $vsArgs = "--quiet --wait --norestart " +
               "--add Microsoft.VisualStudio.Workload.VCTools " +
@@ -477,12 +477,12 @@ function Install-QtIfMissing {
     # Ensure Python 3 is available
     $python = Get-PythonBin
     if (-not $python) {
-        Write-Warn "Python 3 not found — needed to run aqtinstall."
+        Write-Warn "Python 3 not found -- needed to run aqtinstall."
         $winget = Get-Command winget -ErrorAction SilentlyContinue
         if ($winget -and (Confirm-Install "Install Python 3.11 via winget?")) {
             & winget install --id Python.Python.3.11 --silent `
                 --accept-package-agreements --accept-source-agreements
-            Refresh-Path
+            Sync-EnvPath
             $python = Get-PythonBin
         }
     }
@@ -525,7 +525,7 @@ function Install-QtIfMissing {
     $script:qtFoundPath = $expected
 }
 
-# ── CMake configure ────────────────────────────────────────────────────────────
+# --- CMake configure ---
 
 function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildType) {
     Write-Step "Configuring SCIRun Superbuild with CMake..."
@@ -535,7 +535,7 @@ function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildT
         New-Item -ItemType Directory -Path $buildDir | Out-Null
     }
 
-    $args = @(
+    $cmakeParams = @(
         "$sourceDir\Superbuild",
         "-G", $script:vsGenerator,
         "-A", "x64",
@@ -548,21 +548,21 @@ function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildT
     )
 
     if (-not $Headless -and $script:qtFoundPath -ne "") {
-        $args += "-DQt_PATH:PATH=$($script:qtFoundPath)"
+        $cmakeParams += "-DQt_PATH:PATH=$($script:qtFoundPath)"
     }
 
     if ($CMakeArgs -ne "") {
         # Split on spaces but respect quoted segments
         $extra = $CMakeArgs -split '\s+(?=(?:[^"]*"[^"]*")*[^"]*$)'
-        $args += $extra
+        $cmakeParams += $extra
     }
 
-    Write-Info "cmake $args"
+    Write-Info "cmake $cmakeParams"
     Write-Host ""
 
     Push-Location $buildDir
     try {
-        & $script:cmakeBin @args
+        & $script:cmakeBin @cmakeParams
     } finally {
         Pop-Location
     }
@@ -574,24 +574,24 @@ function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildT
     Write-OK "CMake configuration succeeded."
 }
 
-# ── Build ──────────────────────────────────────────────────────────────────────
+# --- Build ---
 
 function Invoke-Build([string]$buildDir, [string]$buildType, [int]$jobs) {
     Write-Step "Building SCIRun (this takes 30-90 minutes on first build)..."
     Write-Info "Build type: $buildType | Parallel jobs: $jobs"
     Write-Host ""
 
-    $args = @(
+    $buildParams = @(
         "--build", $buildDir,
         "--config", $buildType,
         "--parallel", "$jobs"
     )
-    if ($BuildVerbose) { $args += "--verbose" }
+    if ($BuildVerbose) { $buildParams += "--verbose" }
 
-    Write-Info "cmake $args"
+    Write-Info "cmake $buildParams"
     Write-Host ""
 
-    & $script:cmakeBin @args
+    & $script:cmakeBin @buildParams
     if ($LASTEXITCODE -ne 0) {
         Exit-WithError "Build failed (exit $LASTEXITCODE).`n`n    Common causes:`n    - Compiler errors: look for 'error C' lines above`n    - Not enough disk space: need ~15 GB free`n    - Out of memory: try -Jobs 2 to reduce parallelism`n    - Antivirus interference: try temporarily disabling real-time protection`n    - Network errors during dependency downloads: rerun to resume"
     }
@@ -599,9 +599,9 @@ function Invoke-Build([string]$buildDir, [string]$buildType, [int]$jobs) {
     Write-OK "Build succeeded."
 }
 
-# ── Post-build DLL deployment ──────────────────────────────────────────────────
+# --- Post-build DLL deployment ---
 
-function Copy-RuntimeDLLs([string]$buildDir, [string]$buildType) {
+function Copy-RuntimeDLL([string]$buildDir, [string]$buildType) {
     if ($Headless) { return }
 
     Write-Step "Deploying runtime DLLs..."
@@ -613,7 +613,7 @@ function Copy-RuntimeDLLs([string]$buildDir, [string]$buildType) {
         return
     }
 
-    # Prefer windeployqt — it resolves the full transitive Qt dependency graph.
+    # Prefer windeployqt -- it resolves the full transitive Qt dependency graph.
     if ($script:qtFoundPath -ne "") {
         $wdq = "$($script:qtFoundPath)\bin\windeployqt.exe"
         if (Test-Path $wdq) {
@@ -627,7 +627,7 @@ function Copy-RuntimeDLLs([string]$buildDir, [string]$buildType) {
                     Write-Warn "windeployqt returned $LASTEXITCODE. Qt DLLs may be incomplete."
                 }
             } else {
-                Write-Warn "SCIRun.exe not found at $exe — skipping windeployqt."
+                Write-Warn "SCIRun.exe not found at $exe -- skipping windeployqt."
             }
         } else {
             # Manual fallback: copy known Qt DLLs and the platforms plugin
@@ -647,7 +647,7 @@ function Copy-RuntimeDLLs([string]$buildDir, [string]$buildType) {
                 }
             }
 
-            # Qt platform plugin (qwindows.dll) — required at startup
+            # Qt platform plugin (qwindows.dll) -- required at startup
             $platformsDst = "$outputDir\platforms"
             if (-not (Test-Path $platformsDst)) {
                 New-Item -ItemType Directory -Path $platformsDst | Out-Null
@@ -667,7 +667,7 @@ function Copy-RuntimeDLLs([string]$buildDir, [string]$buildType) {
         Write-OK "Copied qwt.dll"
     }
 
-    # Python DLL — version varies, search with a wildcard
+    # Python DLL -- version varies, search with a wildcard
     $pythonDlls = Get-ChildItem "$buildDir\Externals\Source\Python_external\PCbuild\amd64\python3*.dll" `
                     -ErrorAction SilentlyContinue
     foreach ($pdll in $pythonDlls) {
@@ -678,7 +678,7 @@ function Copy-RuntimeDLLs([string]$buildDir, [string]$buildType) {
     Write-OK "DLL deployment complete."
 }
 
-# ── Entry point ────────────────────────────────────────────────────────────────
+# --- Entry point ---
 
 Write-Banner
 
@@ -710,6 +710,9 @@ if ($BuildDir -ne "") {
     $resolvedBuildDir = Join-Path $sourceDir "bin"
 }
 
+if ($Debug -and $Release) {
+    Exit-WithError "Cannot specify both -Debug and -Release. Omit both for the default Release build."
+}
 $buildType = if ($Debug) { "Debug" } else { "Release" }
 
 # Resolve Qt version: -Qt6 / -Qt5 switches override -QtVersion; default is Qt 5.15.2
@@ -741,7 +744,7 @@ Write-Host "  Source dir   : $sourceDir" -ForegroundColor White
 Write-Host "  Build dir    : $resolvedBuildDir" -ForegroundColor White
 Write-Host "  Build type   : $buildType" -ForegroundColor White
 Write-Host "  Parallel jobs: $numJobs" -ForegroundColor White
-Write-Host "  Qt version   : $QtVersion$(if ($Headless) {' (N/A — headless build)'})" -ForegroundColor White
+Write-Host "  Qt version   : $QtVersion$(if ($Headless) {' (N/A -- headless build)'})" -ForegroundColor White
 Write-Host "  Headless     : $Headless" -ForegroundColor White
 Write-Host "  With Tetgen  : $WithTetgen" -ForegroundColor White
 Write-Host ""
@@ -796,9 +799,9 @@ Write-Host ""
 Write-Host "  All prerequisites satisfied. Starting build..." -ForegroundColor Green
 
 # Configure, build, deploy
-Invoke-Configure $resolvedBuildDir $sourceDir $buildType
-Invoke-Build     $resolvedBuildDir $buildType $numJobs
-Copy-RuntimeDLLs $resolvedBuildDir $buildType
+Invoke-Configure -buildDir $resolvedBuildDir -sourceDir $sourceDir -buildType $buildType
+Invoke-Build     -buildDir $resolvedBuildDir -buildType $buildType -jobs $numJobs
+Copy-RuntimeDLL  -buildDir $resolvedBuildDir -buildType $buildType
 
 # Done
 $bar = "=" * 70
