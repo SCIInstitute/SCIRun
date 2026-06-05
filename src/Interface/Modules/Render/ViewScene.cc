@@ -237,6 +237,7 @@ namespace Gui {
     std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
     QDialog*                                          shortcutsDialog_    {nullptr};
     QTableWidget*                                     shortcutsTable_     {nullptr};
+    std::optional<QPoint>                             shortcutsDialogPos_ {};
 
     std::unique_ptr<Core::GeometryIDGenerator> gid_;
     std::string name_;
@@ -906,6 +907,10 @@ void ViewSceneDialog::showShortcutsDialog()
       if (sc.action)
         sc.action(this);
     });
+    // Default position: top-right of the ViewScene window to minimise overlap.
+    // Use saved position if the user has moved it previously this session.
+    const QPoint defaultPos = mapToGlobal(QPoint(width(), 0));
+    impl_->shortcutsDialog_->move(impl_->shortcutsDialogPos_.value_or(defaultPos));
   }
   impl_->shortcutsDialog_->show();
   impl_->shortcutsDialog_->raise();
@@ -1839,6 +1844,14 @@ void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
 
 bool ViewSceneDialog::eventFilter(QObject* obj, QEvent* event)
 {
+  if (obj == impl_->shortcutsDialog_)
+  {
+    if (event->type() == QEvent::Move)
+    {
+      impl_->shortcutsDialogPos_ = impl_->shortcutsDialog_->pos();
+      return false;
+    }
+  }
   if (event->type() == QEvent::KeyPress &&
       (obj == impl_->shortcutsDialog_ || obj == impl_->shortcutsTable_))
   {
