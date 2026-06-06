@@ -893,6 +893,18 @@ void Module::setAlgoListFromState(const AlgorithmParameterName& name)
   algo().set(name, get_state()->getValue(name).toVector());
 }
 
+void Module::copyAlgoToState(std::initializer_list<AlgorithmParameterName> names)
+{
+  for (const auto& name : names)
+    get_state()->setValue(name, algo().get(name).value());
+}
+
+void Module::copyStateToAlgo(std::initializer_list<AlgorithmParameterName> names)
+{
+  for (const auto& name : names)
+    algo().set(name, get_state()->getValue(name).value());
+}
+
 ModuleExecutionState& Module::executionState()
 {
   return *impl_->executionState_;

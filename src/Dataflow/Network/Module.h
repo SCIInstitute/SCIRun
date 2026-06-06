@@ -184,6 +184,8 @@ namespace Networks {
     void setAlgoStringFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoOptionFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoListFromState(const Core::Algorithms::AlgorithmParameterName& name);
+    void copyAlgoToState(std::initializer_list<Core::Algorithms::AlgorithmParameterName> names);
+    void copyStateToAlgo(std::initializer_list<Core::Algorithms::AlgorithmParameterName> names);
     //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
     virtual void postStateChangeInternalSignalHookup();
 
