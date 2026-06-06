@@ -779,7 +779,8 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
   // Protected access is fine here because this is a member function of ViewSceneDialog.
   static const ShortcutTable table = {{
     { Id::AxisViews,       Qt::Key_1, Qt::NoModifier,
-      "Axis Views",        "1-8",     "Preprogrammed views aligning the view with the X, Y, or Z-axis", nullptr },
+      "Axis Views",        "1-6",     "Preprogrammed views aligning the view with the X, Y, or Z-axis",
+      [](ViewSceneDialog* d) { d->setAxisView(1); } },
     { Id::Autoview,        Qt::Key_0, Qt::NoModifier,
       "Autoview",          "0",       "Find a view that shows all the data",
       [](ViewSceneDialog* d) { d->autoViewClicked(); } },
@@ -1819,6 +1820,15 @@ bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
 {
   const auto key  = static_cast<Qt::Key>(event->key());
   const auto mods = event->modifiers() & ~Qt::KeypadModifier;
+
+  // Keys 1-6 (no modifier) → axis-aligned views; handled as a range so the
+  // table only needs one representative entry for the help dialog.
+  if (mods == Qt::NoModifier && key >= Qt::Key_1 && key <= Qt::Key_6)
+  {
+    setAxisView(key - Qt::Key_0);   // Qt::Key_1 - Qt::Key_0 == 1, etc.
+    return true;
+  }
+
   for (const auto& sc : shortcutTable())
   {
     if (sc.key == key && sc.modifiers == mods && sc.action)
@@ -1897,6 +1907,24 @@ void ViewSceneDialog::updateCursor()
 //--------------------------------------------------------------------------------------------------
 //---------------- Camera --------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
+
+void ViewSceneDialog::setAxisView(int n)
+{
+  // Maps key 1-6 to the six cardinal axis-aligned views with sensible up vectors.
+  static const std::pair<glm::vec3, glm::vec3> views[6] = {
+    { V( 1, 0, 0), V( 0, 1, 0) },   // 1: +X  (Y up)
+    { V(-1, 0, 0), V( 0, 1, 0) },   // 2: -X  (Y up)
+    { V( 0, 1, 0), V( 0, 0, 1) },   // 3: +Y  (Z up)
+    { V( 0,-1, 0), V( 0, 0, 1) },   // 4: -Y  (Z up)
+    { V( 0, 0, 1), V( 0, 1, 0) },   // 5: +Z  (Y up)
+    { V( 0, 0,-1), V( 0, 1, 0) },   // 6: -Z  (Y up)
+  };
+  if (n < 1 || n > 6) return;
+  auto spire = impl_->mSpire.lock();
+  if (!spire) return;
+  spire->setView(views[n - 1].first, views[n - 1].second);
+  pushCameraState();
+}
 
 void ViewSceneDialog::snapToViewAxis()
 {
