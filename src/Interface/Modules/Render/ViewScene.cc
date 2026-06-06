@@ -796,6 +796,10 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::SnapToAxis,      Qt::Key_X, Qt::NoModifier,
       "Snap to Axis",      "X",       "Snap to the nearest axis-aligned view",
       [](ViewSceneDialog* d) { d->setClosestAxisView(); } },
+    // TODO: Copy View (Ctrl+1-9) — enumerate all live ViewSceneDialog instances via
+    // ViewSceneManager, let user pick by index, then call spire->setCameraDistance/
+    // setCameraLookAt/setCameraRotation with values from the chosen window's spire.
+    // Blocked on: ViewSceneManager exposing an ordered list of active ViewScenes.
     { Id::CopyView,        Qt::Key_1, Qt::ControlModifier,
       "Copy View",         "Ctrl+1-9","Copy view from Viewer Window 1-9", nullptr },
     { Id::SetHome,         Qt::Key_H, Qt::AltModifier,
@@ -821,8 +825,16 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
         spire->setCameraRotation(hv.rotation);
         d->pushCameraState();
       } },
+    // TODO: Toggle World Axes (A) — v4 rendered a large XYZ triad at the true world
+    // origin. v5 has no equivalent. Needs: a new GeometryObject that draws axis lines
+    // (or glyphs) at (0,0,0), a Parameters::WorldAxesVisible state entry, and wiring
+    // through newGeometryValue. The corner orientation icon (O) is a separate feature.
     { Id::ToggleAxes,      Qt::Key_A, Qt::NoModifier,
       "Toggle Axes",       "A",       "Switch axes on/off", nullptr },
+    // TODO: Bounding Box (B) — Parameters::ShowBBox exists but is commented out throughout
+    // the renderer. Needs: re-enabling ShowBBox, computing the combined scene AABB in
+    // SRInterface, building a wire-frame box GeometryObject each frame it's on, and
+    // a toggleBoundingBox() slot here similar to showOrientationChecked().
     { Id::BoundingBox,     Qt::Key_B, Qt::NoModifier,
       "Bounding Box",      "B",       "Switch bounding box mode on/off", nullptr },
     { Id::ToggleClipping,  Qt::Key_C, Qt::NoModifier,
@@ -835,6 +847,10 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       [](ViewSceneDialog* d) {
         d->setFogOn(!d->state_->getValue(Parameters::FogOn).toBool());
       } },
+    // TODO: Flat Shading (F) — no flat-shading mode in the v5 renderer. Needs: a uniform
+    // flag in the object/phong shaders to use face normals (or a flat-shading shader
+    // variant), a StaticRenderMode or per-pass uniform, SRInterface::setFlatShading(bool),
+    // and a Parameters::FlatShading state entry with a toggleFlatShading() slot.
     { Id::FlatShading,     Qt::Key_F, Qt::NoModifier,
       "Flat Shading",      "F",       "Switch flat shading on/off", nullptr },
     { Id::OpenHelp,        Qt::Key_I, Qt::NoModifier,
@@ -860,12 +876,29 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       [](ViewSceneDialog* d) {
         d->showOrientationChecked(!d->state_->getValue(Parameters::AxesVisible).toBool());
       } },
+    // TODO: Orthographic (P) — SRCamera/SRInterface only expose perspective projection.
+    // Needs: SRInterface::setOrthographic(bool) that swaps between glm::perspective and
+    // a glm::ortho sized to the current view frustum width at the lookAt distance,
+    // SRCamera::setAsPerspective already exists — add setAsOrthographic() alongside it,
+    // and a Parameters::OrthographicMode state entry with a toggleOrthographic() slot.
     { Id::Orthographic,    Qt::Key_P, Qt::NoModifier,
       "Orthographic",      "P",       "Switch orthographic projection on/off", nullptr },
+    // TODO: Stereo (S) — not implemented in v5. Needs: a stereo rendering mode in
+    // SRInterface (side-by-side or anaglyph), likely a second render pass with a
+    // laterally offset camera, SRInterface::setStereo(bool), and a
+    // Parameters::StereoMode state entry. Significant renderer work.
     { Id::Stereo,          Qt::Key_S, Qt::NoModifier,
       "Stereo",            "S",       "Switch stereo mode on/off", nullptr },
+    // TODO: Backculling (U) — no back-face cull toggle in v5. Needs: SRInterface::
+    // setBackfaceCulling(bool) that calls glEnable/glDisable(GL_CULL_FACE) + glCullFace
+    // (GL_BACK) in the render loop (or a StaticGLState flag), a Parameters::BackfaceCulling
+    // state entry, and a toggleBackfaceCulling() slot.
     { Id::Backculling,     Qt::Key_U, Qt::NoModifier,
       "Backculling",       "U",       "Switch backculling on/off", nullptr },
+    // TODO: Wireframe (W) — no wireframe mode in v5. Needs: SRInterface::setWireframe(bool)
+    // using glPolygonMode(GL_FRONT_AND_BACK, GL_LINE/GL_FILL) (desktop GL only; for ES
+    // compatibility a geometry-shader or line-drawing pass may be needed instead),
+    // a Parameters::WireframeMode state entry, and a toggleWireframe() slot.
     { Id::Wireframe,       Qt::Key_W, Qt::NoModifier,
       "Wireframe",         "W",       "Switch wire frame on/off", nullptr },
   }};
@@ -905,33 +938,33 @@ void ViewSceneDialog::showShortcutsDialog()
     impl_->shortcutsTable_ = table;
     table->installEventFilter(this);
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    table->setRowCount(static_cast<int>(numShortcuts));
 
-    const QColor disabledColor = table->palette().color(QPalette::Disabled, QPalette::Text);
+    // Only show implemented shortcuts; unimplemented ones are hidden pending
+    // their own feature work (see TODO comments in shortcutTable()).
     int row = 0;
-    for (const auto& sc : shortcutTable())
+    for (int idx = 0; idx < static_cast<int>(numShortcuts); ++idx)
     {
+      const auto& sc = shortcutTable()[static_cast<std::size_t>(idx)];
+      if (!sc.isImplemented()) continue;
+      table->insertRow(row);
       auto* nameItem     = new QTableWidgetItem(sc.actionName);
       auto* shortcutItem = new QTableWidgetItem(sc.shortcutDisplay);
       auto* descItem     = new QTableWidgetItem(sc.description);
+      // Store the original table index so the double-click handler can find it.
+      nameItem->setData(Qt::UserRole, idx);
       table->setItem(row, 0, nameItem);
       table->setItem(row, 1, shortcutItem);
       table->setItem(row, 2, descItem);
-      if (!sc.isImplemented())
-      {
-        for (auto* item : {nameItem, shortcutItem, descItem})
-        {
-          item->setForeground(disabledColor);
-          item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
-        }
-      }
       ++row;
     }
     table->resizeColumnsToContents();
     table->setToolTip("Double-click a row to perform that action");
     connect(table, &QTableWidget::cellDoubleClicked, [this](int row, int /*col*/)
     {
-      const auto& sc = shortcutTable()[static_cast<std::size_t>(row)];
+      const auto* nameItem = impl_->shortcutsTable_->item(row, 0);
+      if (!nameItem) return;
+      const int idx = nameItem->data(Qt::UserRole).toInt();
+      const auto& sc = shortcutTable()[static_cast<std::size_t>(idx)];
       if (sc.action)
         sc.action(this);
     });
