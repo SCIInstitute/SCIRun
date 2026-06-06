@@ -971,9 +971,11 @@ void ViewSceneDialog::showShortcutsDialog()
       if (sc.action)
         sc.action(this);
     });
-    // Shrink the dialog to exactly fit the table + button box, then lock it.
+    // Size the dialog to fit the content, plus padding so the last row is
+    // fully visible without scrolling (Windows chrome also needs extra room).
     impl_->shortcutsDialog_->adjustSize();
-    impl_->shortcutsDialog_->setFixedSize(impl_->shortcutsDialog_->size());
+    const QSize padded = impl_->shortcutsDialog_->size() + QSize(40, 60);
+    impl_->shortcutsDialog_->setFixedSize(padded);
 
     // Default position: top-right of the ViewScene window to minimise overlap.
     // Use saved position if the user has moved it previously this session.
