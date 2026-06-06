@@ -788,7 +788,10 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       "Autoview",          "0",       "Find a view that shows all the data",
       [](ViewSceneDialog* d) { d->autoViewClicked(); } },
     { Id::AutoviewNoScale, Qt::Key_0, Qt::ControlModifier,
-      "Autoview (no scale)", "Ctrl+0","Reset the eye so the data is centered", nullptr },
+      "Autoview (no scale)", "Ctrl+0","Reset the eye so the data is centered",
+      // TODO: add a spire->centerView() that moves lookAt to bbox center
+      // without changing zoom; for now doAutoView is a reasonable stand-in.
+      [](ViewSceneDialog* d) { d->autoViewClicked(); } },
     { Id::SnapToAxis,      Qt::Key_X, Qt::NoModifier,
       "Snap to Axis",      "X",       "Snap to the selected axis-aligned view",
       [](ViewSceneDialog* d) { d->snapToViewAxis(); } },
