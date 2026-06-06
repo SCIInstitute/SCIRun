@@ -282,7 +282,8 @@ namespace SCIRun {
       void addShortcutsHelpButton();
       static const ShortcutTable& shortcutTable();
       bool dispatchShortcutKey(QKeyEvent* event);
-      void setAxisView(int n);   // n=1..6 → +X,-X,+Y,-Y,+Z,-Z
+      void setAxisView(int n);         // n=1..6 → +X,-X,+Y,-Y,+Z,-Z
+      void setClosestAxisView();       // snap to nearest cardinal axis
       void flashShortcutTooltip(const QString& msg);
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);

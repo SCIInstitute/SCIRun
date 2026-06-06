@@ -794,8 +794,8 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       // without changing zoom; for now doAutoView is a reasonable stand-in.
       [](ViewSceneDialog* d) { d->autoViewClicked(); } },
     { Id::SnapToAxis,      Qt::Key_X, Qt::NoModifier,
-      "Snap to Axis",      "X",       "Snap to the selected axis-aligned view",
-      [](ViewSceneDialog* d) { d->snapToViewAxis(); } },
+      "Snap to Axis",      "X",       "Snap to the nearest axis-aligned view",
+      [](ViewSceneDialog* d) { d->setClosestAxisView(); } },
     { Id::CopyView,        Qt::Key_1, Qt::ControlModifier,
       "Copy View",         "Ctrl+1-9","Copy view from Viewer Window 1-9", nullptr },
     { Id::SetHome,         Qt::Key_H, Qt::AltModifier,
@@ -1959,6 +1959,49 @@ void ViewSceneDialog::setAxisView(int n)
   auto spire = impl_->mSpire.lock();
   if (!spire) return;
   spire->setView(views[n - 1].first, views[n - 1].second);
+  pushCameraState();
+}
+
+void ViewSceneDialog::setClosestAxisView()
+{
+  auto spire = impl_->mSpire.lock();
+  if (!spire) return;
+
+  // The camera rotation quaternion is from glm::lookAt (world→camera).
+  // Transposing its mat3 gives the camera axes in world space:
+  //   Rt[0] = right,  Rt[1] = up,  Rt[2] = -forward  (all in world coords)
+  const glm::mat3 Rt = glm::transpose(glm::mat3_cast(spire->getCameraRotation()));
+  const glm::vec3 viewDir = -Rt[2];   // current look direction (world space)
+  const glm::vec3 upDir   =  Rt[1];   // current up direction  (world space)
+
+  static const glm::vec3 axes[6] = {
+    { 1, 0, 0}, {-1, 0, 0},
+    { 0, 1, 0}, { 0,-1, 0},
+    { 0, 0, 1}, { 0, 0,-1},
+  };
+
+  // Find the cardinal axis closest to the current view direction.
+  int bestView = 0;
+  float bestViewDot = -2.f;
+  for (int i = 0; i < 6; ++i)
+  {
+    float d = glm::dot(viewDir, axes[i]);
+    if (d > bestViewDot) { bestViewDot = d; bestView = i; }
+  }
+  const glm::vec3 view = axes[bestView];
+
+  // Find the cardinal axis closest to the current up direction that is
+  // perpendicular to the chosen view axis.
+  int bestUp = 0;
+  float bestUpDot = -2.f;
+  for (int i = 0; i < 6; ++i)
+  {
+    if (std::abs(glm::dot(view, axes[i])) > 0.5f) continue; // skip parallel/anti-parallel
+    float d = glm::dot(upDir, axes[i]);
+    if (d > bestUpDot) { bestUpDot = d; bestUp = i; }
+  }
+
+  spire->setView(view, axes[bestUp]);
   pushCameraState();
 }
 
