@@ -797,8 +797,8 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       [](ViewSceneDialog* d) { d->snapToViewAxis(); } },
     { Id::CopyView,        Qt::Key_1, Qt::ControlModifier,
       "Copy View",         "Ctrl+1-9","Copy view from Viewer Window 1-9", nullptr },
-    { Id::SetHome,         Qt::Key_H, Qt::ControlModifier,
-      "Set Home",          "Ctrl+H",  "Store the current view",
+    { Id::SetHome,         Qt::Key_H, Qt::AltModifier,
+      "Set Home",          "Alt+H",   "Store the current view",
       [](ViewSceneDialog* d) {
         auto spire = d->impl_->mSpire.lock();
         if (!spire) return;
