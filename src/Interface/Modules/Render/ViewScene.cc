@@ -209,6 +209,9 @@ namespace Gui {
                                                                          {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                          {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
 
+    struct HomeCamera { float distance; glm::vec3 lookAt; glm::quat rotation; };
+    std::optional<HomeCamera> homeView_;
+
     std::optional<QPoint> savedPos_;
     QColor                                bgColor_                      {};
     ScaleBarData                              scaleBar_                     {};
@@ -792,9 +795,28 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::CopyView,        Qt::Key_1, Qt::ControlModifier,
       "Copy View",         "Ctrl+1-9","Copy view from Viewer Window 1-9", nullptr },
     { Id::SetHome,         Qt::Key_H, Qt::ControlModifier,
-      "Set Home",          "Ctrl+H",  "Store the current view", nullptr },
+      "Set Home",          "Ctrl+H",  "Store the current view",
+      [](ViewSceneDialog* d) {
+        auto spire = d->impl_->mSpire.lock();
+        if (!spire) return;
+        d->impl_->homeView_ = ViewSceneDialogImpl::HomeCamera{
+          spire->getCameraDistance(),
+          spire->getCameraLookAt(),
+          spire->getCameraRotation()
+        };
+      } },
     { Id::GotoHome,        Qt::Key_H, Qt::NoModifier,
-      "Home",              "H",       "Go back to the stored view", nullptr },
+      "Home",              "H",       "Go back to the stored view",
+      [](ViewSceneDialog* d) {
+        if (!d->impl_->homeView_) return;
+        auto spire = d->impl_->mSpire.lock();
+        if (!spire) return;
+        const auto& hv = *d->impl_->homeView_;
+        spire->setCameraDistance(hv.distance);
+        spire->setCameraLookAt(hv.lookAt);
+        spire->setCameraRotation(hv.rotation);
+        d->pushCameraState();
+      } },
     { Id::ToggleAxes,      Qt::Key_A, Qt::NoModifier,
       "Toggle Axes",       "A",       "Switch axes on/off", nullptr },
     { Id::BoundingBox,     Qt::Key_B, Qt::NoModifier,
