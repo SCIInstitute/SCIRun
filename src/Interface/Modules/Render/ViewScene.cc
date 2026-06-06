@@ -958,6 +958,9 @@ void ViewSceneDialog::showShortcutsDialog()
       ++row;
     }
     table->resizeColumnsToContents();
+    table->resizeRowsToContents();
+    // Let the table report its exact content size so the dialog can fit it.
+    table->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     table->setToolTip("Double-click a row to perform that action");
     connect(table, &QTableWidget::cellDoubleClicked, [this](int row, int /*col*/)
     {
@@ -968,6 +971,10 @@ void ViewSceneDialog::showShortcutsDialog()
       if (sc.action)
         sc.action(this);
     });
+    // Shrink the dialog to exactly fit the table + button box, then lock it.
+    impl_->shortcutsDialog_->adjustSize();
+    impl_->shortcutsDialog_->setFixedSize(impl_->shortcutsDialog_->size());
+
     // Default position: top-right of the ViewScene window to minimise overlap.
     // Use saved position if the user has moved it previously this session.
     const QPoint defaultPos = mapToGlobal(QPoint(width(), 0));
