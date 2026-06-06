@@ -283,6 +283,7 @@ namespace SCIRun {
       static const ShortcutTable& shortcutTable();
       bool dispatchShortcutKey(QKeyEvent* event);
       void setAxisView(int n);   // n=1..6 → +X,-X,+Y,-Y,+Z,-Z
+      void flashShortcutTooltip(const QString& msg);
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();

@@ -808,8 +808,6 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
           spire->getCameraLookAt(),
           spire->getCameraRotation()
         };
-        QToolTip::showText(d->mapToGlobal(QPoint(d->width() / 2, 32)),
-                           "Home view set", d, {}, 1500);
       } },
     { Id::GotoHome,        Qt::Key_H, Qt::NoModifier,
       "Home",              "H",       "Go back to the stored view",
@@ -1845,6 +1843,11 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
   }
 }
 
+void ViewSceneDialog::flashShortcutTooltip(const QString& msg)
+{
+  QToolTip::showText(mapToGlobal(QPoint(width() / 2, 32)), msg, this, {}, 1500);
+}
+
 bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
 {
   const auto key  = static_cast<Qt::Key>(event->key());
@@ -1854,7 +1857,10 @@ bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
   // table only needs one representative entry for the help dialog.
   if (mods == Qt::NoModifier && key >= Qt::Key_1 && key <= Qt::Key_6)
   {
-    setAxisView(key - Qt::Key_0);   // Qt::Key_1 - Qt::Key_0 == 1, etc.
+    static const char* const axisNames[] = {"+X","-X","+Y","-Y","+Z","-Z"};
+    const int n = key - Qt::Key_0;
+    setAxisView(n);
+    flashShortcutTooltip(QString("%1 View").arg(axisNames[n - 1]));
     return true;
   }
 
@@ -1863,6 +1869,7 @@ bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
     if (sc.key == key && sc.modifiers == mods && sc.action)
     {
       sc.action(this);
+      flashShortcutTooltip(sc.actionName);
       return true;
     }
   }
