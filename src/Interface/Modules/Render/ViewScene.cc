@@ -771,7 +771,7 @@ void ViewSceneDialog::addAutoViewButton()
   impl_->autoViewButton_ = new QPushButton(this);
   impl_->autoViewButton_->setToolTip("Auto View");
   impl_->autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
-  impl_->autoViewButton_->setShortcut(Qt::Key_0);
+  // Key_0 is handled by dispatchShortcutKey (shows tooltip); don't duplicate with setShortcut.
   connect(impl_->autoViewButton_, &QPushButton::clicked, this, &ViewSceneDialog::autoViewClicked);
   addToolbarButton(impl_->autoViewButton_, Qt::TopToolBarArea);
 }
