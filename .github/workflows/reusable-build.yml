@@ -260,7 +260,7 @@ jobs:
         shell: pwsh
         run: |
           ctest --output-on-failure -j4 -C Release -E "\.Test\.ExampleNetwork\." `
-            2>&1 | Tee-Object -FilePath C:\unit-test-results.txt
+            2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE\unit-test-results.txt"
         continue-on-error: true
 
       - name: Run regression tests (Windows)
@@ -269,7 +269,7 @@ jobs:
         shell: pwsh
         run: |
           ctest --output-on-failure -j1 -C Release -R "\.Test\.ExampleNetwork\." `
-            2>&1 | Tee-Object -FilePath C:\regression-test-results.txt
+            2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE\regression-test-results.txt"
         continue-on-error: true
 
       - name: Upload test logs (Unix)
@@ -277,6 +277,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ runner.os }}-${{ inputs.variant }}
+          if-no-files-found: ignore
           path: |
             /tmp/unit-test-results.txt
             /tmp/regression-test-results.txt
@@ -287,10 +288,11 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ runner.os }}-${{ inputs.variant }}
+          if-no-files-found: ignore
           path: |
-            C:\unit-test-results.txt
-            C:\regression-test-results.txt
-            build\SCIRun\Testing\Temporary\LastTest.log
+            unit-test-results.txt
+            regression-test-results.txt
+            build/SCIRun/Testing/Temporary/LastTest.log
 
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}
