@@ -49,6 +49,7 @@
 #include <es-log/trace-log.h>
 #include <QOpenGLContext>
 #include <QPainter>
+#include <QToolTip>
 #include <gl-platform/GLPlatform.hpp>
 
 using namespace SCIRun;
@@ -787,8 +788,8 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::Autoview,        Qt::Key_0, Qt::NoModifier,
       "Autoview",          "0",       "Find a view that shows all the data",
       [](ViewSceneDialog* d) { d->autoViewClicked(); } },
-    { Id::AutoviewNoScale, Qt::Key_0, Qt::ControlModifier,
-      "Autoview (no scale)", "Ctrl+0","Reset the eye so the data is centered",
+    { Id::AutoviewNoScale, Qt::Key_0, Qt::AltModifier,
+      "Autoview (no scale)", "Alt+0", "Reset the eye so the data is centered",
       // TODO: add a spire->centerView() that moves lookAt to bbox center
       // without changing zoom; for now doAutoView is a reasonable stand-in.
       [](ViewSceneDialog* d) { d->autoViewClicked(); } },
@@ -807,6 +808,8 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
           spire->getCameraLookAt(),
           spire->getCameraRotation()
         };
+        QToolTip::showText(d->mapToGlobal(QPoint(d->width() / 2, 32)),
+                           "Home view set", d, {}, 1500);
       } },
     { Id::GotoHome,        Qt::Key_H, Qt::NoModifier,
       "Home",              "H",       "Go back to the stored view",
