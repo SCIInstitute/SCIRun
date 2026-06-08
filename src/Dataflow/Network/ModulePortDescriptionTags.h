@@ -323,6 +323,7 @@ namespace Modules
   PORT_SPEC(Field);
   PORT_SPEC(Geometry);
   PORT_SPEC(OsprayGeometry);
+  PORT_SPEC(GeometryVtk);
   PORT_SPEC(ColorMap);
   PORT_SPEC(Bundle);
   PORT_SPEC(Nrrd);
