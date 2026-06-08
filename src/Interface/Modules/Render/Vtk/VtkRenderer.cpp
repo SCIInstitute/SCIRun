@@ -25,6 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <vtkSmartPointer.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkSphereSource.h>
+#include <vtkCubeSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkAxesActor.h>
+
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
 
@@ -73,6 +84,7 @@ VtkRenderer::~VtkRenderer()
 //Rendering-----------------------------------------------------------------------------------------
 void VtkRenderer::renderFrame()
 {
+  renderTestScene();
   //if(framesAccumulated == 0)
   //  parentCamera_ = camera_->getOSPCamera();
   //if(framesAccumulated < 64)
@@ -324,6 +336,68 @@ void VtkRenderer::setLightsAsObject()
   //for (auto light : lights_)
   //  ospRelease(light);
   //ospCommit(world_);
+}
+
+void VtkRenderer::renderTestScene()
+{
+  // ----------------------------
+  // Renderer / Window
+  // ----------------------------
+   auto renderer = vtkSmartPointer<vtkRenderer>::New();
+   renderer->SetBackground(0.1, 0.2, 0.3);
+
+   auto renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+   renderWindow->AddRenderer(renderer);
+   renderWindow->SetSize(800, 600);
+
+   auto interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+   interactor->SetRenderWindow(renderWindow);
+
+  // ----------------------------
+  // Sphere
+  // ----------------------------
+   auto sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+   sphereSource->SetCenter(0.0, 0.0, 0.0);
+   sphereSource->SetRadius(1.0);
+
+   auto sphereMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+   sphereMapper->SetInputConnection(sphereSource->GetOutputPort());
+
+   auto sphereActor = vtkSmartPointer<vtkActor>::New();
+   sphereActor->SetMapper(sphereMapper);
+   sphereActor->GetProperty()->SetColor(1.0, 0.0, 0.0);  // red
+
+  // ----------------------------
+  // Cube
+  // ----------------------------
+   auto cubeSource = vtkSmartPointer<vtkCubeSource>::New();
+   cubeSource->SetCenter(2.0, 0.0, 0.0);
+
+   auto cubeMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+   cubeMapper->SetInputConnection(cubeSource->GetOutputPort());
+
+   auto cubeActor = vtkSmartPointer<vtkActor>::New();
+   cubeActor->SetMapper(cubeMapper);
+   cubeActor->GetProperty()->SetColor(0.0, 1.0, 0.0);  // green
+
+  // ----------------------------
+  // Axes
+  // ----------------------------
+   auto axes = vtkSmartPointer<vtkAxesActor>::New();
+   axes->SetTotalLength(3.0, 3.0, 3.0);
+
+  // ----------------------------
+  // Add to renderer
+  // ----------------------------
+   renderer->AddActor(sphereActor);
+   renderer->AddActor(cubeActor);
+   renderer->AddActor(axes);
+
+  // ----------------------------
+  // Render
+  // ----------------------------
+   renderWindow->Render();
+   interactor->Start();
 }
 
 #endif

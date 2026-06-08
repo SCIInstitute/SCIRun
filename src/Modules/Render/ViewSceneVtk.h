@@ -103,7 +103,6 @@ namespace Modules {
       void portRemovedSlotImpl(const Dataflow::Networks::PortId&) override;
 
      private:
-      void renderTestScene();
       void sendCompositeGeometry();
     };
 

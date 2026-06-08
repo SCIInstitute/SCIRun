@@ -100,6 +100,8 @@ private:
 
 
   //OSPGroup group_ {nullptr};
+
+  void renderTestScene();
 };
 
 }}
