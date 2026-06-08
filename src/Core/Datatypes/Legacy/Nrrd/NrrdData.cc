@@ -47,6 +47,38 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Geometry;
 
+static void ioNrrdData(Piostream& stream, Nrrd* nrrd_, int size)
+{
+  switch(nrrd_->type)
+  {
+  case nrrdTypeChar:
+    { char *ptr = static_cast<char *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeUChar:
+    { unsigned char *ptr = static_cast<unsigned char *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeShort:
+    { short *ptr = static_cast<short *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeUShort:
+    { unsigned short *ptr = static_cast<unsigned short *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeInt:
+    { int *ptr = static_cast<int *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeUInt:
+    { unsigned int *ptr = static_cast<unsigned int *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeLLong:
+    { long long *ptr = static_cast<long long *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeULLong:
+    { unsigned long long *ptr = static_cast<unsigned long long *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeFloat:
+    { float *ptr = static_cast<float *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeDouble:
+    { double *ptr = static_cast<double *>(nrrd_->data); for (int p=0; p<size; p++) stream.io(ptr[p]); } break;
+  case nrrdTypeBlock:
+    { char *ptr = static_cast<char *>(nrrd_->data); for (unsigned int p=0; p<(unsigned int)(size*nrrd_->blockSize); p++) stream.io(ptr[p]); } break;
+  default:
+    NrrdData::unlock_teem();
+    THROW_INVALID_ARGUMENT("Unknown nrrd string type");
+  }
+}
+
 
 Persistent *
 NrrdData::maker()
@@ -362,86 +394,7 @@ void NrrdData::io(Piostream& stream)
       stream.begin_cheap_delim();
       int size;
       stream.io(size);
-
-      // Ugly but necessary:
-      // big switch statement going over every type of the nrrd structure
-      switch(nrrd_->type)
-      {
-      case nrrdTypeChar:
-        {
-          char *ptr = static_cast<char *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeUChar:
-        {
-          unsigned char *ptr = static_cast<unsigned char *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeShort:
-        {
-          short *ptr = static_cast<short *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeUShort:
-        {
-          unsigned short *ptr = static_cast<unsigned short *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeInt:
-        {
-          int *ptr = static_cast<int *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeUInt:
-        {
-          unsigned short *ptr = static_cast<unsigned short *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeLLong:
-        {
-          long long *ptr = static_cast<long long *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeULLong:
-        {
-          // Currently PIO does not support unsigned long long
-          // Need to fix this bug in the Persistent.h
-          long long *ptr = static_cast<long long *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeFloat:
-        {
-          float *ptr = static_cast<float *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeDouble:
-        {
-          double *ptr = static_cast<double *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeBlock:
-        {
-          char *ptr = static_cast<char *>(nrrd_->data);
-          for (unsigned int p=0; p < (size*nrrd_->blockSize); p ++)
-            stream.io(ptr[p]);
-        }
-        break;
-      default:
-        // We should not get here, but it outputs a statement in case
-        // we reach this one due to some other bug elsewhere
-        NrrdData::unlock_teem();
-        THROW_INVALID_ARGUMENT("Unknown nrrd string type");
-      }
+      ioNrrdData(stream, nrrd_, size);
       stream.end_cheap_delim();
       stream.end_cheap_delim();
     }
@@ -581,79 +534,7 @@ void NrrdData::io(Piostream& stream)
 
       stream.begin_cheap_delim();
       stream.io(size);
-      switch(nrrd_->type)
-      {
-      case nrrdTypeChar:
-        {
-          char *ptr = static_cast<char *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeUChar:
-        {
-          unsigned char *ptr = static_cast<unsigned char *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeShort:
-        {
-          short *ptr = static_cast<short *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeUShort:
-        {
-          unsigned short *ptr = static_cast<unsigned short *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeInt:
-        {
-          int *ptr = static_cast<int *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeUInt:
-        {
-          unsigned short *ptr = static_cast<unsigned short *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeLLong:
-        {
-          long long *ptr = static_cast<long long *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeULLong:
-        {
-          unsigned long long *ptr = static_cast<unsigned long long *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeFloat:
-        {
-          float *ptr = static_cast<float *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeDouble:
-        {
-          double *ptr = static_cast<double *>(nrrd_->data);
-          for (int p=0; p <size; p ++) stream.io(ptr[p]);
-        }
-        break;
-      case nrrdTypeBlock:
-        {
-          char *ptr = static_cast<char *>(nrrd_->data);
-          for (unsigned int p=0; p < (size*nrrd_->blockSize); p ++)
-            stream.io(ptr[p]);
-        }
-        break;
-      default:
-        NrrdData::unlock_teem();
-        THROW_INVALID_ARGUMENT("Unknown nrrd string type");
-      }
+      ioNrrdData(stream, nrrd_, size);
       stream.end_cheap_delim();
       stream.end_cheap_delim();
     }
