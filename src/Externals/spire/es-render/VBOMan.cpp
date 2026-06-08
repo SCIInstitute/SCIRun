@@ -134,6 +134,15 @@ GLuint VBOMan::addInMemoryVBO(void* vboData, size_t vboDataSize,
   GL(glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vboDataSize),
                   vboData, GL_STATIC_DRAW));
 
+  // A freshly generated buffer name is guaranteed by GL to be unused. If we
+  // still hold a record for this id, it is stale: the underlying buffer was
+  // deleted outside VBOMan's bookkeeping (font rendering and the IBO manager
+  // call glGenBuffers/glDeleteBuffers directly and share GL's single
+  // buffer-name namespace) and GL has now recycled the name. Drop the stale
+  // entry so addVBOAttributes inserts the correct attributes instead of
+  // throwing on a mismatch.
+  mVBOData.erase(glid);
+
   addVBOAttributes(glid, attribs, assetName);
 
   return glid;
