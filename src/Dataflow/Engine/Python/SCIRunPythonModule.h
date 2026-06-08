@@ -63,6 +63,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("hideUI", &PyModule::hideUI)
     .def("__getattr__", &PyModule::getattr)
     .def("__setattr__", &PyModule::setattr)
+    .def("__str__", &PyModule::id)
     ;
 
   boost::python::class_<PyDatatype, SharedPointer<PyDatatype>, boost::noncopyable>("SCIRun::PyDatatype", boost::python::no_init)
