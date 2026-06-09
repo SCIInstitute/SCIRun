@@ -25,10 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <vtkSmartPointer.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
+
 #include <vtkSphereSource.h>
 #include <vtkCubeSource.h>
 #include <vtkPolyDataMapper.h>
@@ -341,63 +340,64 @@ void VtkRenderer::setLightsAsObject()
 void VtkRenderer::renderTestScene()
 {
   // ----------------------------
-  // Renderer / Window
+  // One-time initialization
   // ----------------------------
-   auto renderer = vtkSmartPointer<vtkRenderer>::New();
-   renderer->SetBackground(0.1, 0.2, 0.3);
+  if (!initialized_)
+  {
+    renderWindow_ = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
 
-   auto renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
-   renderWindow->AddRenderer(renderer);
-   renderWindow->SetSize(800, 600);
+    renderer_ = vtkSmartPointer<vtkRenderer>::New();
+    renderer_->SetBackground(0.1, 0.2, 0.3);
 
-   auto interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-   interactor->SetRenderWindow(renderWindow);
+    renderWindow_->AddRenderer(renderer_);
+
+    // ----------------------------
+    // Sphere
+    // ----------------------------
+    auto sphereSource = vtkSmartPointer<vtkSphereSource>::New();
+    sphereSource->SetCenter(0.0, 0.0, 0.0);
+    sphereSource->SetRadius(1.0);
+
+    auto sphereMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    sphereMapper->SetInputConnection(sphereSource->GetOutputPort());
+
+    auto sphereActor = vtkSmartPointer<vtkActor>::New();
+    sphereActor->SetMapper(sphereMapper);
+    sphereActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
+
+    // ----------------------------
+    // Cube
+    // ----------------------------
+    auto cubeSource = vtkSmartPointer<vtkCubeSource>::New();
+    cubeSource->SetCenter(2.0, 0.0, 0.0);
+
+    auto cubeMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    cubeMapper->SetInputConnection(cubeSource->GetOutputPort());
+
+    auto cubeActor = vtkSmartPointer<vtkActor>::New();
+    cubeActor->SetMapper(cubeMapper);
+    cubeActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
+
+    // ----------------------------
+    // Axes
+    // ----------------------------
+    auto axes = vtkSmartPointer<vtkAxesActor>::New();
+    axes->SetTotalLength(3.0, 3.0, 3.0);
+
+    // ----------------------------
+    // Add actors
+    // ----------------------------
+    renderer_->AddActor(sphereActor);
+    renderer_->AddActor(cubeActor);
+    renderer_->AddActor(axes);
+
+    initialized_ = true;
+  }
 
   // ----------------------------
-  // Sphere
+  // Per-frame render call
   // ----------------------------
-   auto sphereSource = vtkSmartPointer<vtkSphereSource>::New();
-   sphereSource->SetCenter(0.0, 0.0, 0.0);
-   sphereSource->SetRadius(1.0);
-
-   auto sphereMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-   sphereMapper->SetInputConnection(sphereSource->GetOutputPort());
-
-   auto sphereActor = vtkSmartPointer<vtkActor>::New();
-   sphereActor->SetMapper(sphereMapper);
-   sphereActor->GetProperty()->SetColor(1.0, 0.0, 0.0);  // red
-
-  // ----------------------------
-  // Cube
-  // ----------------------------
-   auto cubeSource = vtkSmartPointer<vtkCubeSource>::New();
-   cubeSource->SetCenter(2.0, 0.0, 0.0);
-
-   auto cubeMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-   cubeMapper->SetInputConnection(cubeSource->GetOutputPort());
-
-   auto cubeActor = vtkSmartPointer<vtkActor>::New();
-   cubeActor->SetMapper(cubeMapper);
-   cubeActor->GetProperty()->SetColor(0.0, 1.0, 0.0);  // green
-
-  // ----------------------------
-  // Axes
-  // ----------------------------
-   auto axes = vtkSmartPointer<vtkAxesActor>::New();
-   axes->SetTotalLength(3.0, 3.0, 3.0);
-
-  // ----------------------------
-  // Add to renderer
-  // ----------------------------
-   renderer->AddActor(sphereActor);
-   renderer->AddActor(cubeActor);
-   renderer->AddActor(axes);
-
-  // ----------------------------
-  // Render
-  // ----------------------------
-   renderWindow->Render();
-   interactor->Start();
+  renderWindow_->Render();
 }
 
 #endif
