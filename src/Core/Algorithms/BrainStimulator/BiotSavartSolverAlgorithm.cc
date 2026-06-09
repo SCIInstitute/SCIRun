@@ -331,12 +331,12 @@ class PieceWiseKernel : public KernelBase
               //! it might cause numerical stability issues with respect to the cross-product
               if (Rn < 0.00001) { algo_->warning("coil<->model distance approaching zero!"); }
               //! Biot-Savart Magnetic Field
-              F += 1.0e-7 * Cross(Rxyz, dLxyz) * (absCurrent / (Rn * Rn * Rn));
+              F += mag_permitivity * Cross(Rxyz, dLxyz) * (absCurrent / (Rn * Rn * Rn));
             }
             else if (typeOut_ == 2)
             {
               //! Biot-Savart Magnetic Vector Potential Field
-              F += 1.0e-7 * dLxyz * (absCurrent / (Rn));
+              F += mag_permitivity * dLxyz * (absCurrent / (Rn));
             }
           }
         }
@@ -427,6 +427,9 @@ class VolumetricKernel : public KernelBase
   void ParallelKernel(int proc_num)
   {
     assert(proc_num >= 0);
+    
+    // vacuum magnetic permitivity constant: µ_0/(4·π)
+    const double mag_permitivity = 1.0e-7; // T·m/A,  N/A^2, H/m
 
     int cnt = 0;
     Point modelNode;
@@ -535,6 +538,9 @@ class DipolesKernel : public KernelBase
   void ParallelKernel(int proc_num)
   {
     assert(proc_num >= 0);
+    
+    // vacuum magnetic permitivity constant: µ_0/(4·π)
+    const double mag_permitivity = 1.0e-7; // T·m/A,  N/A^2, H/m
 
     int cnt = 0;
     Point modelNode;
@@ -566,13 +572,13 @@ class DipolesKernel : public KernelBase
           if (typeOut_ == 1)
           {
             //! Biot-Savart Magnetic Field
-            F += 1.0e-7 * (3 * R * Dot(dipoleMoment, R) / (Rl * Rl * Rl * Rl * Rl) -
+            F += mag_permitivity * (3 * R * Dot(dipoleMoment, R) / (Rl * Rl * Rl * Rl * Rl) -
                               dipoleMoment / (Rl * Rl * Rl));
           }
           if (typeOut_ == 2)
           {
             //! Biot-Savart Magnetic Vector Potential Field
-            F += 1.0e-7 * Cross(dipoleMoment, R) / (Rl * Rl * Rl);
+            F += mag_permitivity * Cross(dipoleMoment, R) / (Rl * Rl * Rl);
           }
         }
 
