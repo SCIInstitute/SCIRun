@@ -65,6 +65,9 @@ private:
   bool radial_basis_func(VMesh* Cors, VMesh* points, Datatypes::DenseMatrixHandle& Smat)  const;
   bool make_new_points(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
   bool make_new_pointsA(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
+  bool computeAndCenterCors(VMesh* icors1, VMesh* icors2, VMesh* imesh,
+    double& sumx, double& sumy, double& sumz,
+    double& sumx2, double& sumy2, double& sumz2) const;
 };
 
 }}}}
