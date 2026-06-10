@@ -117,10 +117,8 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
   uint32_t vboSize = sizeof(float) * 7 * static_cast<uint32_t>(points.size());
 
-  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
-    new spire::VarBuffer(iboSize));
-  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
-    new spire::VarBuffer(vboSize));
+  auto iboBufferSPtr = std::make_shared<spire::VarBuffer>(iboSize);
+  auto vboBufferSPtr = std::make_shared<spire::VarBuffer>(vboSize);
 
   spire::VarBuffer* iboBuffer = iboBufferSPtr.get();
   spire::VarBuffer* vboBuffer = vboBufferSPtr.get();

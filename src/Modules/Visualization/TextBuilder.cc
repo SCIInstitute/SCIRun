@@ -203,10 +203,8 @@ void TextBuilder::printString(const std::string& oneline,
     uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
     uint32_t vboSize = sizeof(float) * 5 * static_cast<uint32_t>(points.size());
 
-    std::shared_ptr<spire::VarBuffer> iboBufferSPtr2(
-      new spire::VarBuffer(vboSize));
-    std::shared_ptr<spire::VarBuffer> vboBufferSPtr2(
-      new spire::VarBuffer(iboSize));
+    auto iboBufferSPtr2 = std::make_shared<spire::VarBuffer>(vboSize);
+    auto vboBufferSPtr2 = std::make_shared<spire::VarBuffer>(iboSize);
 
     spire::VarBuffer* iboBuffer2 = iboBufferSPtr2.get();
     spire::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();

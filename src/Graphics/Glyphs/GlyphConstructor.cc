@@ -149,8 +149,8 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
       size_t vboSize = static_cast<size_t>(pointsInThisPass) * numAttributes * sizeof(float);
       size_t iboSize = static_cast<size_t>(pointsInThisPass) * sizeof(uint32_t);
-      std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
-      std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+      auto iboBufferSPtr = std::make_shared<spire::VarBuffer>(iboSize);
+      auto vboBufferSPtr = std::make_shared<spire::VarBuffer>(vboSize);
       auto iboBuffer = iboBufferSPtr.get();
       auto vboBuffer = vboBufferSPtr.get();
 

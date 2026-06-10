@@ -570,8 +570,8 @@ void GeometryBuilder::renderFacesLinear(
     // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
     size_t iboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(uint32_t) * (numNodesPerFace - 2) * 3);
     size_t vboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(float) * numNodesPerFace * numAttributes);
-    std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
-    std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+    auto iboBufferSPtr = std::make_shared<spire::VarBuffer>(iboSize);
+    auto vboBufferSPtr = std::make_shared<spire::VarBuffer>(vboSize);
     auto iboBuffer = iboBufferSPtr.get();
     auto vboBuffer = vboBufferSPtr.get();
 
