@@ -96,6 +96,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   RefineMesh/RefineMeshTetVolAlgoV.h
   RefineMesh/RefineMeshTriSurfAlgoV.h
   RefineMesh/EdgePairHash.h
+  RefineMesh/RefineMeshCommon.h
   StreamLines/StreamLineIntegrators.h
   StreamLines/GenerateStreamLines.h
   RegisterWithCorrespondences.h
