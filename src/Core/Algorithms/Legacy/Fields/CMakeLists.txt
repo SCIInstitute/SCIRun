@@ -68,6 +68,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/MapFieldDataFromNodeToElem.h
   Mapping/MapFieldDataOntoNodes.h
   Mapping/MapFieldDataOntoElems.h
+  Mapping/MappingCommon.h
   Mapping/MappingDataSource.h
   Mapping/MapFieldDataFromSourceToDestination.h
   ResampleMesh/ResampleRegularMesh.h
