@@ -64,20 +64,20 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   #ifdef WITH_VTK
   statusBar_ = new QStatusBar(this);
 
-  //renderer_ = new OSPRayRenderer();
-  //viewer_ = new QOSPRayWidget(parent, renderer_);
+  renderer_ = new VtkRenderer();
+  viewer_ = new VtkQWidget(parent, renderer_);
 
   state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, &ViewSceneVtkDialog::newGeometryValueForwarder, this, &ViewSceneVtkDialog::newGeometryValue);
 
-  //setupUi(this);
+  setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   addConfigurationDialog();
   addToolBar();
   setMinimumSize(200, 200);
 
   statusBar_->setMaximumHeight(20);
-  //osprayLayout->addWidget(viewer_);
+  vtkLayout->addWidget(viewer_);
 
 /* addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
   addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
@@ -134,8 +134,8 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
 ViewSceneVtkDialog::~ViewSceneVtkDialog()
 {
 #ifdef WITH_VTK
-  //delete viewer_;
-  //delete renderer_;
+  delete viewer_;
+  delete renderer_;
 #endif
 }
 
@@ -143,16 +143,16 @@ void ViewSceneVtkDialog::newGeometryValue()
 {
 #ifdef WITH_VTK
 
-  //auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  //if (!geomDataTransient || geomDataTransient->empty()) return;
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  if (!geomDataTransient || geomDataTransient->empty()) return;
 
-  //auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
-  //if (!geom) return;
+  auto geom = transient_value_cast<VtkGeometryObjectHandle>(geomDataTransient);
+  if (!geom) return;
 
-  //auto compGeom = std::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+  auto compGeom = std::dynamic_pointer_cast<CompositeVtkGeometryObject>(geom);
 
-  ////TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
-  //renderer_->updateGeometries(compGeom.get()->objects());
+  //TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
+  renderer_->updateGeometries(compGeom.get()->objects());
 #endif
 }
 
@@ -306,7 +306,7 @@ void ViewSceneVtkDialog::autoRotateClicked()
 void ViewSceneVtkDialog::autoViewClicked()
 {
 #ifdef WITH_VTK
-  //renderer_->autoView();
+  renderer_->autoView();
 #endif
 }
 
@@ -386,11 +386,11 @@ void ViewSceneVtkDialog::pullSpecial()
 void ViewSceneVtkDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
 {
 #ifdef WITH_VTK
-  //int xWindow = xIn - viewer_->pos().x();
-  //int yWindow = yIn - viewer_->pos().y();
+  int xWindow = xIn - viewer_->pos().x();
+  int yWindow = yIn - viewer_->pos().y();
 
-  //xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
-  //yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
+  xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
+  yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
 #endif
 }
 

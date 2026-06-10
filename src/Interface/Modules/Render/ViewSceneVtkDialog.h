@@ -33,8 +33,8 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-//#include <Interface/Modules/Render/Ospray/OSPRayRenderer.h>
-//#include <Interface/Modules/Render/Ospray/QOSPRayWidget.h>
+#include <Interface/Modules/Render/Vtk/VtkRenderer.h>
+#include <Interface/Modules/Render/Vtk/VtkQWidget.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Interface/Modules/Render/share.h>
@@ -47,7 +47,7 @@ namespace Gui {
 
 //class ViewSceneVtkConfigDialog;
 
-class SCISHARE ViewSceneVtkDialog : public ModuleDialogGeneric//, public Ui::OsprayViewer
+class SCISHARE ViewSceneVtkDialog : public ModuleDialogGeneric, public Ui::ViewSceneVtk
 {
   Q_OBJECT;
 
@@ -101,9 +101,9 @@ private:
 
   float getFloat(const Core::Algorithms::Name& name) const;
 
-  //Render::QOSPRayWidget* viewer_ {nullptr};
+  Render::VtkQWidget* viewer_ {nullptr};
 
-  //Render::ViewSceneVtk* renderer_{nullptr};
+  Render::VtkRenderer* renderer_{nullptr};
 
   QStatusBar* statusBar_ {nullptr};
   QToolBar* toolBar_ {nullptr};

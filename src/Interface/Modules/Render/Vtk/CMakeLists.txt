@@ -1,15 +1,20 @@
 SET(SRCS ${SRCS}
-  VtkRenderer.cpp
+  VtkQWidget.cc
+  VtkRenderer.cc
 )
 
 SET(MOC_HEADERS
+  VtkQWidget.h
   VtkRenderer.h
   share.h
 )
 
+QT_WRAP_CPP(MOC_OUTFILES "${MOC_HEADERS}")
+
 SCIRUN_ADD_LIBRARY(Interface_Modules_Render_Vtk
   ${SRCS}
   ${MOC_HEADERS}
+  ${MOC_OUTFILES}
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render_Vtk
