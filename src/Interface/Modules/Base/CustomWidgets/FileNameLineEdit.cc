@@ -31,8 +31,6 @@
 #include <QMimeData>
 #include <QUrl>
 
-using namespace SCIRun::Gui;
-
 FileNameLineEdit::FileNameLineEdit(QWidget* parent)
   : QLineEdit(parent)
 {

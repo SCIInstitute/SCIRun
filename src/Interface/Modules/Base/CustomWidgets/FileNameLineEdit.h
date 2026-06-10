@@ -31,9 +31,8 @@
 #include <QLineEdit>
 #include <Interface/Modules/Base/share.h>
 
-namespace SCIRun {
-namespace Gui {
-
+// Note: intentionally in the global namespace so that uic-generated code
+// (which cannot qualify custom widget names) can construct this class directly.
 class SCISHARE FileNameLineEdit : public QLineEdit
 {
   Q_OBJECT
@@ -44,7 +43,5 @@ protected:
   void dragEnterEvent(QDragEnterEvent* event) override;
   void dropEvent(QDropEvent* event) override;
 };
-
-}}
 
 #endif
