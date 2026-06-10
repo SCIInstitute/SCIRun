@@ -222,6 +222,17 @@ void ShowField::execute()
   }
 }
 
+namespace
+{
+  ColorRGB getNormalizedDefaultColor(const ModuleStateHandle& state)
+  {
+    ColorRGB color(state->getValue(DefaultMeshColor).toString());
+    if (color.r() > 1.0 || color.g() > 1.0 || color.b() > 1.0)
+      return ColorRGB(color.r() / 255., color.g() / 255., color.b() / 255.);
+    return color;
+  }
+}
+
 RenderState GeometryBuilder::getNodeRenderState(
   std::optional<SharedPointer<ColorMap>> colorMap)
 {
@@ -234,15 +245,7 @@ RenderState GeometryBuilder::getNodeRenderState(
 
   renState.set(RenderState::ActionFlags::USE_SPHERE, state_->getValue(NodeAsSpheres).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-                           renState.defaultColor.g() > 1.0 ||
-                           renState.defaultColor.b() > 1.0)?
-                                ColorRGB(
-                                renState.defaultColor.r() / 255.,
-                                renState.defaultColor.g() / 255.,
-                                renState.defaultColor.b() / 255.)
-                            :   renState.defaultColor;
+  renState.defaultColor = getNormalizedDefaultColor(state_);
 
   if (colorMap && useColorMap)
   {
@@ -271,15 +274,7 @@ RenderState GeometryBuilder::getEdgeRenderState(std::optional<SharedPointer<Colo
   renState.set(RenderState::ActionFlags::USE_TRANSPARENT_EDGES, state_->getValue(EdgeTransparency).toBool());
   renState.set(RenderState::ActionFlags::USE_CYLINDER, state_->getValue(EdgesAsCylinders).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-                           renState.defaultColor.g() > 1.0 ||
-                           renState.defaultColor.b() > 1.0)?
-                                ColorRGB(
-                                renState.defaultColor.r() / 255.,
-                                renState.defaultColor.g() / 255.,
-                                renState.defaultColor.b() / 255.)
-                            :   renState.defaultColor;
+  renState.defaultColor = getNormalizedDefaultColor(state_);
 
   edgeTransparencyValue_ = static_cast<float>(state_->getValue(EdgeTransparencyValue).toDouble());
 
@@ -310,15 +305,7 @@ RenderState GeometryBuilder::getFaceRenderState(std::optional<SharedPointer<Colo
   renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, state_->getValue(FaceTransparency).toBool());
   renState.set(RenderState::ActionFlags::USE_FACE_NORMALS, state_->getValue(UseFaceNormals).toBool());
 
-  renState.defaultColor = ColorRGB(state_->getValue(DefaultMeshColor).toString());
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-                           renState.defaultColor.g() > 1.0 ||
-                           renState.defaultColor.b() > 1.0)?
-                                ColorRGB(
-                                renState.defaultColor.r() / 255.,
-                                renState.defaultColor.g() / 255.,
-                                renState.defaultColor.b() / 255.)
-                            :   renState.defaultColor;
+  renState.defaultColor = getNormalizedDefaultColor(state_);
 
   faceTransparencyValue_ = static_cast<float>(state_->getValue(FaceTransparencyValue).toDouble());
 
