@@ -1289,6 +1289,28 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
   const double m21 = M[2][1];
   const double m22 = M[2][2];
 
+  // Tensor rotation helper: reads 6 symmetric tensor components from dataptr at
+  // offset a, applies the 3x3 rotation matrix M, returns the rotated Tensor.
+  auto computeTensor = [&](size_t a) -> Tensor {
+    const double d1 = static_cast<double>(dataptr[a+t1]);
+    const double d2 = static_cast<double>(dataptr[a+t2]);
+    const double d3 = static_cast<double>(dataptr[a+t3]);
+    const double d4 = static_cast<double>(dataptr[a+t4]);
+    const double d5 = static_cast<double>(dataptr[a+t5]);
+    const double d6 = static_cast<double>(dataptr[a+t6]);
+    const double y0 = (d1*m00+d2*m01+d3*m02);
+    const double y1 = (d2*m00+d4*m01+d5*m02);
+    const double y2 = (d3*m00+d5*m01+d6*m02);
+    const double y3 = (d1*m10+d2*m11+d3*m12);
+    const double y4 = (d2*m10+d4*m11+d5*m12);
+    const double y5 = (d3*m10+d5*m11+d6*m12);
+    const double y6 = (d1*m20+d2*m21+d3*m22);
+    const double y7 = (d2*m20+d4*m21+d5*m22);
+    const double y8 = (d3*m20+d5*m21+d6*m22);
+    return Tensor(m00*y0+m01*y1+m02*y2,m10*y0+m11*y1+m12*y2,m20*y0+m21*y1+m22*y2,
+                  m10*y3+m11*y4+m12*y5,m20*y3+m21*y4+m22*y5,m20*y6+m21*y7+m22*y8);
+  };
+
   // Build a 2d Image
   if (rdim == 1)
   {
@@ -1307,25 +1329,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
 
       for (size_t x = 0; x < space_size[0]; x += space_offset[0])
       {
-        const double d1 = static_cast<double>(dataptr[x+t1]);
-        const double d2 = static_cast<double>(dataptr[x+t2]);
-        const double d3 = static_cast<double>(dataptr[x+t3]);
-        const double d4 = static_cast<double>(dataptr[x+t4]);
-        const double d5 = static_cast<double>(dataptr[x+t5]);
-        const double d6 = static_cast<double>(dataptr[x+t6]);
-        const double y0 = (d1*m00+d2*m01+d3*m02);
-        const double y1 = (d2*m00+d4*m01+d5*m02);
-        const double y2 = (d3*m00+d5*m01+d6*m02);
-        const double y3 = (d1*m10+d2*m11+d3*m12);
-        const double y4 = (d2*m10+d4*m11+d5*m12);
-        const double y5 = (d3*m10+d5*m11+d6*m12);
-        const double y6 = (d1*m20+d2*m21+d3*m22);
-        const double y7 = (d2*m20+d4*m21+d5*m22);
-        const double y8 = (d3*m20+d5*m21+d6*m22);
-
-        Tensor t(m00*y0+m01*y1+m02*y2,m10*y0+m11*y1+m12*y2,m20*y0+m21*y1+m22*y2,
-                 m10*y3+m11*y4+m12*y5,m20*y3+m21*y4+m22*y5,m20*y6+m21*y7+m22*y8);
-        vfield->set_value(t,*it);
+        vfield->set_value(computeTensor(x), *it);
         ++it;
       }
 
@@ -1351,25 +1355,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
 
       for (size_t x = 0; x < space_size[0]; x += space_offset[0])
       {
-        const double d1 = static_cast<double>(dataptr[x+t1]);
-        const double d2 = static_cast<double>(dataptr[x+t2]);
-        const double d3 = static_cast<double>(dataptr[x+t3]);
-        const double d4 = static_cast<double>(dataptr[x+t4]);
-        const double d5 = static_cast<double>(dataptr[x+t5]);
-        const double d6 = static_cast<double>(dataptr[x+t6]);
-        const double y0 = (d1*m00+d2*m01+d3*m02);
-        const double y1 = (d2*m00+d4*m01+d5*m02);
-        const double y2 = (d3*m00+d5*m01+d6*m02);
-        const double y3 = (d1*m10+d2*m11+d3*m12);
-        const double y4 = (d2*m10+d4*m11+d5*m12);
-        const double y5 = (d3*m10+d5*m11+d6*m12);
-        const double y6 = (d1*m20+d2*m21+d3*m22);
-        const double y7 = (d2*m20+d4*m21+d5*m22);
-        const double y8 = (d3*m20+d5*m21+d6*m22);
-
-        Tensor t(m00*y0+m01*y1+m02*y2,m10*y0+m11*y1+m12*y2,m20*y0+m21*y1+m22*y2,
-                 m10*y3+m11*y4+m12*y5,m20*y3+m21*y4+m22*y5,m20*y6+m21*y7+m22*y8);
-        vfield->set_value(t,*it);
+        vfield->set_value(computeTensor(x), *it);
         ++it;
       }
 
@@ -1405,26 +1391,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
       {
         for (size_t x = 0; x < space_size[0]; x += space_offset[0])
         {
-          size_t a = x + y;
-          const double d1 = static_cast<double>(dataptr[a+t1]);
-          const double d2 = static_cast<double>(dataptr[a+t2]);
-          const double d3 = static_cast<double>(dataptr[a+t3]);
-          const double d4 = static_cast<double>(dataptr[a+t4]);
-          const double d5 = static_cast<double>(dataptr[a+t5]);
-          const double d6 = static_cast<double>(dataptr[a+t6]);
-          const double y0 = (d1*m00+d2*m01+d3*m02);
-          const double y1 = (d2*m00+d4*m01+d5*m02);
-          const double y2 = (d3*m00+d5*m01+d6*m02);
-          const double y3 = (d1*m10+d2*m11+d3*m12);
-          const double y4 = (d2*m10+d4*m11+d5*m12);
-          const double y5 = (d3*m10+d5*m11+d6*m12);
-          const double y6 = (d1*m20+d2*m21+d3*m22);
-          const double y7 = (d2*m20+d4*m21+d5*m22);
-          const double y8 = (d3*m20+d5*m21+d6*m22);
-
-          Tensor t(m00*y0+m01*y1+m02*y2,m10*y0+m11*y1+m12*y2,m20*y0+m21*y1+m22*y2,
-                   m10*y3+m11*y4+m12*y5,m20*y3+m21*y4+m22*y5,m20*y6+m21*y7+m22*y8);
-          vfield->set_value(t,*it);
+          vfield->set_value(computeTensor(x + y), *it);
           ++it;
         }
       }
@@ -1453,26 +1420,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
       {
         for (size_t x = 0; x < space_size[0]; x += space_offset[0])
         {
-          size_t a = x + y;
-          const double d1 = static_cast<double>(dataptr[a+t1]);
-          const double d2 = static_cast<double>(dataptr[a+t2]);
-          const double d3 = static_cast<double>(dataptr[a+t3]);
-          const double d4 = static_cast<double>(dataptr[a+t4]);
-          const double d5 = static_cast<double>(dataptr[a+t5]);
-          const double d6 = static_cast<double>(dataptr[a+t6]);
-          const double y0 = (d1*m00+d2*m01+d3*m02);
-          const double y1 = (d2*m00+d4*m01+d5*m02);
-          const double y2 = (d3*m00+d5*m01+d6*m02);
-          const double y3 = (d1*m10+d2*m11+d3*m12);
-          const double y4 = (d2*m10+d4*m11+d5*m12);
-          const double y5 = (d3*m10+d5*m11+d6*m12);
-          const double y6 = (d1*m20+d2*m21+d3*m22);
-          const double y7 = (d2*m20+d4*m21+d5*m22);
-          const double y8 = (d3*m20+d5*m21+d6*m22);
-
-          Tensor t(m00*y0+m01*y1+m02*y2,m10*y0+m11*y1+m12*y2,m20*y0+m21*y1+m22*y2,
-                   m10*y3+m11*y4+m12*y5,m20*y3+m21*y4+m22*y5,m20*y6+m21*y7+m22*y8);
-          vfield->set_value(t,*it);
+          vfield->set_value(computeTensor(x + y), *it);
           ++it;
         }
       }
@@ -1511,26 +1459,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
         {
           for (size_t x = 0; x < space_size[0]; x += space_offset[0])
           {
-            size_t a = x + y + z;
-            const double d1 = static_cast<double>(dataptr[a+t1]);
-            const double d2 = static_cast<double>(dataptr[a+t2]);
-            const double d3 = static_cast<double>(dataptr[a+t3]);
-            const double d4 = static_cast<double>(dataptr[a+t4]);
-            const double d5 = static_cast<double>(dataptr[a+t5]);
-            const double d6 = static_cast<double>(dataptr[a+t6]);
-            const double y0 = (d1*m00+d2*m01+d3*m02);
-            const double y1 = (d2*m00+d4*m01+d5*m02);
-            const double y2 = (d3*m00+d5*m01+d6*m02);
-            const double y3 = (d1*m10+d2*m11+d3*m12);
-            const double y4 = (d2*m10+d4*m11+d5*m12);
-            const double y5 = (d3*m10+d5*m11+d6*m12);
-            const double y6 = (d1*m20+d2*m21+d3*m22);
-            const double y7 = (d2*m20+d4*m21+d5*m22);
-            const double y8 = (d3*m20+d5*m21+d6*m22);
-
-            Tensor t(m00*y0+m01*y1+m02*y2,m10*y0+m11*y1+m12*y2,m20*y0+m21*y1+m22*y2,
-                     m10*y3+m11*y4+m12*y5,m20*y3+m21*y4+m22*y5,m20*y6+m21*y7+m22*y8);
-            vfield->set_value(t,*it);
+            vfield->set_value(computeTensor(x + y + z), *it);
             ++it;
           }
         }
@@ -1562,26 +1491,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
         {
           for (size_t x = 0; x < space_size[0]; x += space_offset[0])
           {
-            size_t a = x + y + z;
-            const double d1 = static_cast<double>(dataptr[a+t1]);
-            const double d2 = static_cast<double>(dataptr[a+t2]);
-            const double d3 = static_cast<double>(dataptr[a+t3]);
-            const double d4 = static_cast<double>(dataptr[a+t4]);
-            const double d5 = static_cast<double>(dataptr[a+t5]);
-            const double d6 = static_cast<double>(dataptr[a+t6]);
-            const double y0 = (d1*m00+d2*m01+d3*m02);
-            const double y1 = (d2*m00+d4*m01+d5*m02);
-            const double y2 = (d3*m00+d5*m01+d6*m02);
-            const double y3 = (d1*m10+d2*m11+d3*m12);
-            const double y4 = (d2*m10+d4*m11+d5*m12);
-            const double y5 = (d3*m10+d5*m11+d6*m12);
-            const double y6 = (d1*m20+d2*m21+d3*m22);
-            const double y7 = (d2*m20+d4*m21+d5*m22);
-            const double y8 = (d3*m20+d5*m21+d6*m22);
-
-            Tensor t(m00*y0+m01*y1+m02*y2,m10*y0+m11*y1+m12*y2,m20*y0+m21*y1+m22*y2,
-                     m10*y3+m11*y4+m12*y5,m20*y3+m21*y4+m22*y5,m20*y6+m21*y7+m22*y8);
-            vfield->set_value(t,*it);
+            vfield->set_value(computeTensor(x + y + z), *it);
             ++it;
           }
         }
