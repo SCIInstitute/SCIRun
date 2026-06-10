@@ -37,6 +37,8 @@
 // The array type differs (raw pointer vs std::vector), so CCArray is templated.
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Geometry/Point.h>
@@ -131,6 +133,110 @@ void fillSingleDestinationMapping(
       if (proc == 0) { cnt++; if (cnt == 200) { cnt = 0; algo->update_progress_max(idx, end); } }
     }
   }
+}
+
+/// Shared validation and output-field setup for MapFieldDataOntoElems and
+/// MapFieldDataOntoNodes. Called after the caller has set the basis order on
+/// fo (make_constantdata / make_lineardata). Returns false (and logs an error)
+/// on any invalid combination; on success creates output and returns true.
+inline bool configureOutputField(
+    FieldHandle source,
+    FieldHandle destination,
+    FieldHandle weights,
+    const FieldInformation& fi,
+    FieldInformation& fo,
+    const std::string& quantity,
+    const std::string& mappingModel,
+    FieldHandle& output,
+    const AlgorithmBase* algo)
+{
+  if (weights)
+  {
+    FieldInformation wfi(weights);
+    if (mappingModel == "closestnodedata")
+    {
+      if (!wfi.is_lineardata())
+      {
+        algo->error("Closest node data only works for weights data located at the nodes.");
+        return false;
+      }
+    }
+    if (wfi.is_nodata())
+    {
+      algo->error("No data in weights field.");
+      return false;
+    }
+  }
+
+  // Make sure output equals quantity to be computed
+  if (quantity == "value")
+  {
+    fo.set_data_type(fi.get_data_type());
+  }
+  else if (quantity == "gradient")
+  {
+    if (!fi.is_scalar())
+    {
+      algo->error("Gradient can only be calculated on a scalar field.");
+      return false;
+    }
+    fo.make_vector();
+  }
+  else if (quantity == "gradientnorm")
+  {
+    if (!fi.is_scalar())
+    {
+      algo->error("Gradient can only be calculated on a scalar field.");
+      return false;
+    }
+    fo.make_double();
+  }
+  else if (quantity == "flux")
+  {
+    if (!fi.is_scalar())
+    {
+      algo->error("Flux can only be calculated on a scalar field.");
+      return false;
+    }
+    if (!fo.is_surface())
+    {
+      algo->error("Flux can only be computed for surfaces meshes as destination");
+      return false;
+    }
+    fo.make_double();
+  }
+
+  // Incorporate the weights and alter the datatype to reflect that
+  if (weights)
+  {
+    FieldInformation wfi(weights);
+    if ((!wfi.is_tensor()) && (!wfi.is_scalar()))
+    {
+      algo->error("Weights field needs to be a scalar or a tensor.");
+      return false;
+    }
+    if (fo.is_scalar() && wfi.is_tensor())
+    {
+      fo.make_tensor();
+    }
+    if (fo.is_tensor() && wfi.is_tensor())
+    {
+      algo->error("Weights and source field cannot be both tensor data.");
+      return false;
+    }
+  }
+
+  // Create new output field
+  output = CreateField(fo, destination->mesh());
+  output->vfield()->resize_values();
+
+  if (!output)
+  {
+    algo->error("Could not allocate output field");
+    return false;
+  }
+
+  return true;
 }
 
 }}}} // namespace SCIRun::Core::Algorithms::Fields
