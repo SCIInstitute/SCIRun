@@ -865,6 +865,17 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
     }
   }
 
+  // Vector rotation helper: reads 3 components from dataptr at offset a,
+  // applies the 3x3 rotation matrix M, returns the rotated Vector.
+  auto computeVector = [&](size_t a) -> Vector {
+    const double v1 = static_cast<double>(dataptr[a]);
+    const double v2 = static_cast<double>(dataptr[a+vector_offset]);
+    const double v3 = static_cast<double>(dataptr[a+2*vector_offset]);
+    return Vector(M[0][0]*v1+M[0][1]*v2+M[0][2]*v3,
+                  M[1][0]*v1+M[1][1]*v2+M[1][2]*v3,
+                  M[2][0]*v1+M[2][1]*v2+M[2][2]*v3);
+  };
+
   // Build a 2d Image
   if (rdim == 1)
   {
@@ -883,11 +894,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
 
       for (size_t x=0; x<space_size[0]; x+= space_offset[0])
       {
-        const double v1 = static_cast<double>(dataptr[x]);
-        const double v2 = static_cast<double>(dataptr[x+vector_offset]);
-        const double v3 = static_cast<double>(dataptr[x+2*vector_offset]);
-        Vector v(M[0][0]*v1+M[0][1]*v2+M[0][2]*v3,M[1][0]*v1+M[1][1]*v2+M[1][2]*v3,M[2][0]*v1+M[2][1]*v2+M[2][2]*v3);
-        vfield->set_value(v,*it);
+        vfield->set_value(computeVector(x), *it);
         ++it;
       }
 
@@ -913,11 +920,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
 
       for (size_t x=0; x<space_size[0]; x+= space_offset[0])
       {
-        const double v1 = static_cast<double>(dataptr[x]);
-        const double v2 = static_cast<double>(dataptr[x+vector_offset]);
-        const double v3 = static_cast<double>(dataptr[x+2*vector_offset]);
-        Vector v(M[0][0]*v1+M[0][1]*v2+M[0][2]*v3,M[1][0]*v1+M[1][1]*v2+M[1][2]*v3,M[2][0]*v1+M[2][1]*v2+M[2][2]*v3);
-        vfield->set_value(v,*it);
+        vfield->set_value(computeVector(x), *it);
         ++it;
       }
 
@@ -954,12 +957,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
       {
         for (size_t x=0; x<space_size[0]; x+= space_offset[0])
         {
-          size_t a = x+y;
-          const double v1 = static_cast<double>(dataptr[a]);
-          const double v2 = static_cast<double>(dataptr[a+vector_offset]);
-          const double v3 = static_cast<double>(dataptr[a+2*vector_offset]);
-          Vector v(M[0][0]*v1+M[0][1]*v2+M[0][2]*v3,M[1][0]*v1+M[1][1]*v2+M[1][2]*v3,M[2][0]*v1+M[2][1]*v2+M[2][2]*v3);
-          vfield->set_value(v,*it);
+          vfield->set_value(computeVector(x+y), *it);
           ++it;
         }
       }
@@ -988,12 +986,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
       {
         for (size_t x=0; x<space_size[0]; x+= space_offset[0])
         {
-          size_t a = x+y;
-          const double v1 = static_cast<double>(dataptr[a]);
-          const double v2 = static_cast<double>(dataptr[a+vector_offset]);
-          const double v3 = static_cast<double>(dataptr[a+2*vector_offset]);
-          Vector v(M[0][0]*v1+M[0][1]*v2+M[0][2]*v3,M[1][0]*v1+M[1][1]*v2+M[1][2]*v3,M[2][0]*v1+M[2][1]*v2+M[2][2]*v3);
-          vfield->set_value(v,*it);
+          vfield->set_value(computeVector(x+y), *it);
           ++it;
         }
       }
@@ -1032,12 +1025,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
         {
           for (size_t x = 0; x < space_size[0]; x += space_offset[0])
           {
-            size_t a = x+y+z;
-            const double v1 = static_cast<double>(dataptr[a]);
-            const double v2 = static_cast<double>(dataptr[a+vector_offset]);
-            const double v3 = static_cast<double>(dataptr[a+2*vector_offset]);
-            Vector v(M[0][0]*v1+M[0][1]*v2+M[0][2]*v3,M[1][0]*v1+M[1][1]*v2+M[1][2]*v3,M[2][0]*v1+M[2][1]*v2+M[2][2]*v3);
-            vfield->set_value(v,*it);
+            vfield->set_value(computeVector(x+y+z), *it);
             ++it;
           }
         }
@@ -1069,12 +1057,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
         {
           for (size_t x = 0; x < space_size[0]; x += space_offset[0])
           {
-            size_t a = x+y+z;
-            const double v1 = static_cast<double>(dataptr[a]);
-            const double v2 = static_cast<double>(dataptr[a+vector_offset]);
-            const double v3 = static_cast<double>(dataptr[a+2*vector_offset]);
-            Vector v(M[0][0]*v1+M[0][1]*v2+M[0][2]*v3,M[1][0]*v1+M[1][1]*v2+M[1][2]*v3,M[2][0]*v1+M[2][1]*v2+M[2][2]*v3);
-            vfield->set_value(v,*it);
+            vfield->set_value(computeVector(x+y+z), *it);
             ++it;
           }
         }
