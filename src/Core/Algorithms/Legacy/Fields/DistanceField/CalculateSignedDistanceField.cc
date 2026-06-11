@@ -63,252 +63,48 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
       if (ofield->basis_order() == 0)
       {
-        VMesh::Elem::index_type fidx, fidx_n;
-        VMesh::Node::array_type nodes;
-        VMesh::DElem::array_type delems;
-        Vector n, k;
-        Point n0,n1,n2;
+        VMesh::Elem::index_type fidx;
         VMesh::index_type start, end;
         range(proc,nproc,start,end,num_values);
 
         for (VMesh::Elem::index_type idx = start; idx < end; idx++)
         {
-
-          Point p, p1, p2;
+          Point p, p2;
           imesh->get_center(p,idx);
-
           objmesh->find_closest_elem(val,p2,fidx,p);
-          objmesh->get_nodes(nodes,fidx);
-          objmesh->get_center(n0,nodes[0]);
-          objmesh->get_center(n1,nodes[1]);
-          objmesh->get_center(n2,nodes[2]);
-
-          n = Cross(Vector(n1-n0),Vector(n2-n1));
-          k = Vector(p-p2); k.normalize();
-
-          double angle = Dot(n,k);
-          if (angle < -epsilon)
-          {
-            val = -val;
-          }
-          else if (angle > epsilon)
-          {
-          }
-          else
-          {
-            // trouble
-            if (val != 0.0)
-            {
-               objmesh->get_delems(delems,fidx);
-               double mindist = std::numeric_limits<double>::max();
-               double dist;
-               int edgeidx = 0;
-               for (size_t r=0; r<delems.size();r++)
-               {
-                 objmesh->get_nodes(nodes,delems[r]);
-                 objmesh->get_center(p1,nodes[0]);
-                 objmesh->get_center(p2,nodes[1]);
-
-                if (Dot(Vector(p-p2),Vector(p2-p1)) >= 0.0)
-                {
-                  Vector v = Vector(p-p2);
-                  dist  = Dot(v,v);
-                }
-                else if (Dot(Vector(p-p1),Vector(p1-p2)) >= 0.0)
-                {
-                  Vector v = Vector(p-p1);
-                  dist = Dot(v,v);
-                }
-                else
-                {
-                  Vector v1 = Vector(p1-p2);
-                  Vector v = Vector(p-p2)-v1*(Dot(Vector(p-p2),v1)/Dot(v1,v1));
-                  dist = Dot(v,v);
-                }
-
-                if (dist < mindist) { mindist = dist; edgeidx = r;}
-              }
-              objmesh->get_neighbor(fidx_n,fidx,delems[edgeidx]);
-              objmesh->get_nodes(nodes,fidx);
-              objmesh->get_center(n0,nodes[0]);
-              objmesh->get_center(n1,nodes[1]);
-              objmesh->get_center(n2,nodes[2]);
-              n = Cross(Vector(n1-n0),Vector(n2-n1));
-              k = Vector(p-p2);
-              k.normalize();
-              angle = Dot(n,k);
-              if (angle < 0) val = -(val);
-            }
-          }
-
+          applySignCorrection(val, p, p2, fidx, epsilon);
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
       else if (ofield->basis_order() == 1)
       {
-        VMesh::Elem::index_type fidx, fidx_n;
-        VMesh::Node::array_type nodes;
-        VMesh::DElem::array_type delems;
-
-        Vector n, k;
-        Point n0,n1,n2;
+        VMesh::Elem::index_type fidx;
         VMesh::index_type start, end;
         range(proc,nproc,start,end,num_values);
 
         for (VMesh::Node::index_type idx =start; idx <end; idx++)
         {
-
-          Point p, p1, p2;
+          Point p, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,fidx,p);
-
-          objmesh->get_nodes(nodes,fidx);
-          objmesh->get_center(n0,nodes[0]);
-          objmesh->get_center(n1,nodes[1]);
-          objmesh->get_center(n2,nodes[2]);
-          n = Cross(Vector(n1-n0),Vector(n2-n1));
-          k = Vector(p-p2);
-          k.normalize();
-          double angle = Dot(n,k);
-          if (angle < -epsilon)
-          {
-            val = -val;
-          }
-          else if (angle > epsilon)
-          {
-          }
-          else
-          {
-            // trouble
-            if (val != 0.0)
-            {
-               objmesh->get_delems(delems,fidx);
-               double mindist = std::numeric_limits<double>::max();
-               double dist;
-               int edgeidx = 0;
-               for (size_t r=0; r<delems.size();r++)
-               {
-                 objmesh->get_nodes(nodes,delems[r]);
-                 objmesh->get_center(p1,nodes[0]);
-                 objmesh->get_center(p2,nodes[1]);
-
-                if (Dot(Vector(p-p2),Vector(p2-p1)) >= 0.0)
-                {
-                  Vector v = Vector(p-p2);
-                  dist  = Dot(v,v);
-                }
-                else if (Dot(Vector(p-p1),Vector(p1-p2)) >= 0.0)
-                {
-                  Vector v = Vector(p-p1);
-                  dist = Dot(v,v);
-                }
-                else
-                {
-                  Vector v1 = Vector(p1-p2);
-                  Vector v = Vector(p-p2)-v1*(Dot(Vector(p-p2),v1)/Dot(v1,v1));
-                  dist = Dot(v,v);
-                }
-
-                if (dist < mindist) { mindist = dist; edgeidx = r;}
-              }
-              objmesh->get_neighbor(fidx_n,fidx,delems[edgeidx]);
-              objmesh->get_nodes(nodes,fidx);
-              objmesh->get_center(n0,nodes[0]);
-              objmesh->get_center(n1,nodes[1]);
-              objmesh->get_center(n2,nodes[2]);
-              n = Cross(Vector(n1-n0),Vector(n2-n1));
-              k = Vector(p-p2);
-              k.normalize();
-              angle = Dot(n,k);
-              if (angle < 0.0) val = -(val);
-            }
-          }
-
+          applySignCorrection(val, p, p2, fidx, epsilon);
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
       else if (ofield->basis_order() > 1)
       {
-        VMesh::Elem::index_type fidx, fidx_n;
-        VMesh::Node::array_type nodes;
-        VMesh::DElem::array_type delems;
-
-        Vector n, k;
-        Point n0,n1,n2;
+        VMesh::Elem::index_type fidx;
         VMesh::index_type start, end;
         range(proc,nproc,start,end,num_evalues);
 
         for (VMesh::ENode::index_type idx=start; idx < end; idx++)
         {
-
-          Point p, p1, p2;
+          Point p, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,fidx,p);
-
-          objmesh->get_nodes(nodes,fidx);
-          objmesh->get_center(n0,nodes[0]);
-          objmesh->get_center(n1,nodes[1]);
-          objmesh->get_center(n2,nodes[2]);
-          n = Cross(Vector(n1-n0),Vector(n2-n1));
-          k = Vector(p-p2);
-          k.normalize();
-          double angle = Dot(n,k);
-          if (angle < -epsilon)
-          {
-            val = -val;
-          }
-          else if (angle > epsilon)
-          {
-          }
-          else
-          {
-            // trouble
-            if (val != 0.0)
-            {
-               objmesh->get_delems(delems,fidx);
-               double mindist = std::numeric_limits<double>::max();
-               double dist;
-               int edgeidx = 0;
-               for (size_t r=0; r<delems.size();r++)
-               {
-                 objmesh->get_nodes(nodes,delems[r]);
-                 objmesh->get_center(p1,nodes[0]);
-                 objmesh->get_center(p2,nodes[1]);
-
-                if (Dot(Vector(p-p2),Vector(p2-p1)) >= 0.0)
-                {
-                  Vector v = Vector(p-p2);
-                  dist  = Dot(v,v);
-                }
-                else if (Dot(Vector(p-p1),Vector(p1-p2)) >= 0.0)
-                {
-                  Vector v = Vector(p-p1);
-                  dist = Dot(v,v);
-                }
-                else
-                {
-                  Vector v1 = Vector(p1-p2);
-                  Vector v = Vector(p-p2)-v1*(Dot(Vector(p-p2),v1)/Dot(v1,v1));
-                  dist = Dot(v,v);
-                }
-
-                if (dist < mindist) { mindist = dist; edgeidx = r;}
-              }
-              objmesh->get_neighbor(fidx_n,fidx,delems[edgeidx]);
-              objmesh->get_nodes(nodes,fidx);
-              objmesh->get_center(n0,nodes[0]);
-              objmesh->get_center(n1,nodes[1]);
-              objmesh->get_center(n2,nodes[2]);
-              n = Cross(Vector(n1-n0),Vector(n2-n1));
-              k = Vector(p-p2);
-              k.normalize();
-              angle = Dot(n,k);
-              if (angle < 0.0) val = -(val);
-            }
-          }
-
+          applySignCorrection(val, p, p2, fidx, epsilon);
           ofield->set_evalue(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -326,86 +122,17 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
       if (ofield->basis_order() == 0)
       {
-        VMesh::Elem::index_type fidx, fidx_n;
-        VMesh::Node::array_type nodes;
-        VMesh::DElem::array_type delems;
+        VMesh::Elem::index_type fidx;
         VMesh::coords_type coords;
-
-        Vector n, k;
-        Point n0,n1,n2;
         VMesh::index_type start, end;
         range(proc,nproc,start,end,num_values);
 
         for (VMesh::Elem::index_type idx = start; idx < end; idx++)
         {
-
-          Point p, p1, p2;
+          Point p, p2;
           imesh->get_center(p,idx);
-
           objmesh->find_closest_elem(val,p2,coords,fidx,p);
-          objmesh->get_nodes(nodes,fidx);
-          objmesh->get_center(n0,nodes[0]);
-          objmesh->get_center(n1,nodes[1]);
-          objmesh->get_center(n2,nodes[2]);
-
-          n = Cross(Vector(n1-n0),Vector(n2-n1));
-          k = Vector(p-p2); k.normalize();
-
-          double angle = Dot(n,k);
-          if (angle < -epsilon)
-          {
-            val = -val;
-          }
-          else if (angle > epsilon)
-          {
-          }
-          else
-          {
-            // trouble
-            if (val != 0.0)
-            {
-               objmesh->get_delems(delems,fidx);
-               double mindist = std::numeric_limits<double>::max();
-               double dist;
-               int edgeidx = 0;
-               for (size_t r=0; r<delems.size();r++)
-               {
-                 objmesh->get_nodes(nodes,delems[r]);
-                 objmesh->get_center(p1,nodes[0]);
-                 objmesh->get_center(p2,nodes[1]);
-
-                if (Dot(Vector(p-p2),Vector(p2-p1)) >= 0.0)
-                {
-                  Vector v = Vector(p-p2);
-                  dist  = Dot(v,v);
-                }
-                else if (Dot(Vector(p-p1),Vector(p1-p2)) >= 0.0)
-                {
-                  Vector v = Vector(p-p1);
-                  dist = Dot(v,v);
-                }
-                else
-                {
-                  Vector v1 = Vector(p1-p2);
-                  Vector v = Vector(p-p2)-v1*(Dot(Vector(p-p2),v1)/Dot(v1,v1));
-                  dist = Dot(v,v);
-                }
-
-                if (dist < mindist) { mindist = dist; edgeidx = r;}
-              }
-              objmesh->get_neighbor(fidx_n,fidx,delems[edgeidx]);
-              objmesh->get_nodes(nodes,fidx);
-              objmesh->get_center(n0,nodes[0]);
-              objmesh->get_center(n1,nodes[1]);
-              objmesh->get_center(n2,nodes[2]);
-              n = Cross(Vector(n1-n0),Vector(n2-n1));
-              k = Vector(p-p2);
-              k.normalize();
-              angle = Dot(n,k);
-              if (angle < 0) val = -(val);
-            }
-          }
-
+          applySignCorrection(val, p, p2, fidx, epsilon);
           ofield->set_value(val,idx);
           if (objfield->is_scalar())
           {
@@ -534,85 +261,17 @@ class CalculateSignedDistanceFieldP : public Interruptible
       }
       else if (ofield->basis_order() > 1)
       {
-        VMesh::Elem::index_type fidx, fidx_n;
-        VMesh::Node::array_type nodes;
-        VMesh::DElem::array_type delems;
+        VMesh::Elem::index_type fidx;
         VMesh::coords_type coords;
-
-        Vector n, k;
-        Point n0,n1,n2;
         VMesh::index_type start, end;
         range(proc,nproc,start,end,num_evalues);
 
         for (VMesh::ENode::index_type idx=start; idx < end; idx++)
         {
-
-          Point p, p1, p2;
+          Point p, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,coords,fidx,p);
-
-          objmesh->get_nodes(nodes,fidx);
-          objmesh->get_center(n0,nodes[0]);
-          objmesh->get_center(n1,nodes[1]);
-          objmesh->get_center(n2,nodes[2]);
-          n = Cross(Vector(n1-n0),Vector(n2-n1));
-          k = Vector(p-p2);
-          k.normalize();
-          double angle = Dot(n,k);
-          if (angle < -epsilon)
-          {
-            val = -val;
-          }
-          else if (angle > epsilon)
-          {
-          }
-          else
-          {
-            // trouble
-            if (val != 0.0)
-            {
-               objmesh->get_delems(delems,fidx);
-               double mindist = std::numeric_limits<double>::max();
-               double dist;
-               int edgeidx = 0;
-               for (size_t r=0; r<delems.size();r++)
-               {
-                 objmesh->get_nodes(nodes,delems[r]);
-                 objmesh->get_center(p1,nodes[0]);
-                 objmesh->get_center(p2,nodes[1]);
-
-                if (Dot(Vector(p-p2),Vector(p2-p1)) >= 0.0)
-                {
-                  Vector v = Vector(p-p2);
-                  dist  = Dot(v,v);
-                }
-                else if (Dot(Vector(p-p1),Vector(p1-p2)) >= 0.0)
-                {
-                  Vector v = Vector(p-p1);
-                  dist = Dot(v,v);
-                }
-                else
-                {
-                  Vector v1 = Vector(p1-p2);
-                  Vector v = Vector(p-p2)-v1*(Dot(Vector(p-p2),v1)/Dot(v1,v1));
-                  dist = Dot(v,v);
-                }
-
-                if (dist < mindist) { mindist = dist; edgeidx = r;}
-              }
-              objmesh->get_neighbor(fidx_n,fidx,delems[edgeidx]);
-              objmesh->get_nodes(nodes,fidx);
-              objmesh->get_center(n0,nodes[0]);
-              objmesh->get_center(n1,nodes[1]);
-              objmesh->get_center(n2,nodes[2]);
-              n = Cross(Vector(n1-n0),Vector(n2-n1));
-              k = Vector(p-p2);
-              k.normalize();
-              angle = Dot(n,k);
-              if (angle < 0.0) val = -(val);
-            }
-          }
-
+          applySignCorrection(val, p, p2, fidx, epsilon);
           ofield->set_evalue(val,idx);
           if (objfield->is_scalar())
           {
@@ -637,6 +296,83 @@ class CalculateSignedDistanceFieldP : public Interruptible
       }
     }
 
+
+    // Determine and apply sign correction to val based on which side of the
+    // object surface point p lies on. p2 is the closest point on the surface
+    // (output of find_closest_elem); it may be modified internally when
+    // resolving boundary-edge ambiguity.
+    void applySignCorrection(double& val, const Point& p, Point p2,
+        VMesh::Elem::index_type fidx, double epsilon)
+    {
+      VMesh::Elem::index_type fidx_n;
+      VMesh::Node::array_type nodes;
+      VMesh::DElem::array_type delems;
+      Vector n, k;
+      Point n0, n1, n2, p1;
+
+      objmesh->get_nodes(nodes,fidx);
+      objmesh->get_center(n0,nodes[0]);
+      objmesh->get_center(n1,nodes[1]);
+      objmesh->get_center(n2,nodes[2]);
+
+      n = Cross(Vector(n1-n0),Vector(n2-n1));
+      k = Vector(p-p2); k.normalize();
+
+      double angle = Dot(n,k);
+      if (angle < -epsilon)
+      {
+        val = -val;
+      }
+      else if (angle > epsilon)
+      {
+      }
+      else
+      {
+        // trouble
+        if (val != 0.0)
+        {
+           objmesh->get_delems(delems,fidx);
+           double mindist = std::numeric_limits<double>::max();
+           double dist;
+           int edgeidx = 0;
+           for (size_t r=0; r<delems.size();r++)
+           {
+             objmesh->get_nodes(nodes,delems[r]);
+             objmesh->get_center(p1,nodes[0]);
+             objmesh->get_center(p2,nodes[1]);
+
+            if (Dot(Vector(p-p2),Vector(p2-p1)) >= 0.0)
+            {
+              Vector v = Vector(p-p2);
+              dist  = Dot(v,v);
+            }
+            else if (Dot(Vector(p-p1),Vector(p1-p2)) >= 0.0)
+            {
+              Vector v = Vector(p-p1);
+              dist = Dot(v,v);
+            }
+            else
+            {
+              Vector v1 = Vector(p1-p2);
+              Vector v = Vector(p-p2)-v1*(Dot(Vector(p-p2),v1)/Dot(v1,v1));
+              dist = Dot(v,v);
+            }
+
+            if (dist < mindist) { mindist = dist; edgeidx = r;}
+          }
+          objmesh->get_neighbor(fidx_n,fidx,delems[edgeidx]);
+          objmesh->get_nodes(nodes,fidx);
+          objmesh->get_center(n0,nodes[0]);
+          objmesh->get_center(n1,nodes[1]);
+          objmesh->get_center(n2,nodes[2]);
+          n = Cross(Vector(n1-n0),Vector(n2-n1));
+          k = Vector(p-p2);
+          k.normalize();
+          angle = Dot(n,k);
+          if (angle < 0.0) val = -(val);
+        }
+      }
+    }
 
     void range(int proc, int nproc,
                VMesh::index_type& start, VMesh::index_type& end,
