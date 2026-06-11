@@ -254,6 +254,57 @@ static void computeNrrdSpatialParams(const Nrrd* nrrd, size_t dim, int vecdim,
   }
 }
 
+// Populate per-axis size, min, and max vectors from the nrrd axis metadata,
+// taking spacing and datalocation into account when no explicit max is stored.
+static void computeNrrdAxisBounds(
+    const Nrrd* nrrd, size_t dim, const std::string& datalocation,
+    std::vector<double>& min, std::vector<double>& max, std::vector<int>& size)
+{
+  for (size_t p = 0; p < dim; p++)
+  {
+    size[p] = nrrd->axis[p].size;
+
+    if (airExists(nrrd->axis[p].min))
+    {
+      min[p] = nrrd->axis[p].min;
+    }
+    else
+    {
+      min[p] = 0.0;
+    }
+
+    if (airExists(nrrd->axis[p].max))
+    {
+      max[p] = nrrd->axis[p].max;
+    }
+    else
+    {
+      if (airExists(nrrd->axis[p].spacing))
+      {
+        if (datalocation == "Node")
+        {
+          max[p] = min[p] + nrrd->axis[p].spacing * (size[p]-1);
+        }
+        else
+        {
+          max[p] = min[p] + nrrd->axis[p].spacing * size[p];
+        }
+      }
+      else
+      {
+        if (datalocation == "Node")
+        {
+          max[p] = min[p] + static_cast<double>(size[p]-1);
+        }
+        else
+        {
+          max[p] = min[p] + static_cast<double>(size[p]);
+        }
+      }
+    }
+  }
+}
+
 
 class NrrdToFieldAlgoT {
 public:
@@ -293,50 +344,7 @@ bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHa
   // Assume size of 4th+ dimension is 1.  Checked elsewhere.
   std::vector<double> min(dim), max(dim);
   std::vector<int> size(dim);
-
-  for (size_t p = 0; p < dim; p++)
-  {
-    size[p] = nrrd->axis[p].size;
-
-    if (airExists(nrrd->axis[p].min))
-    {
-      min[p] = nrrd->axis[p].min;
-    }
-    else
-    {
-      min[p] = 0.0;
-    }
-
-    if (airExists(nrrd->axis[p].max))
-    {
-      max[p] = nrrd->axis[p].max;
-    }
-    else
-    {
-      if (airExists(nrrd->axis[p].spacing))
-      {
-        if (datalocation == "Node")
-        {
-          max[p] = min[p] + nrrd->axis[p].spacing * (size[p]-1);
-        }
-        else
-        {
-          max[p] = min[p] + nrrd->axis[p].spacing * size[p];
-        }
-      }
-      else // assume spacing = 1
-      {
-        if (datalocation == "Node")
-        {
-          max[p] = min[p] + static_cast<double>(size[p]-1);
-        }
-        else
-        {
-          max[p] = min[p] + static_cast<double>(size[p]);
-        }
-      }
-    }
-  }
+  computeNrrdAxisBounds(nrrd, dim, datalocation, min, max, size);
 
   Transform tf;
   tf.load_identity();
@@ -764,50 +772,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
   size_t dim = nrrd->dim;
   std::vector<double> min(dim), max(dim);
   std::vector<int> size(dim);
-
-  for (size_t p=0; p<dim; p++)
-  {
-    size[p] = nrrd->axis[p].size;
-
-    if (airExists(nrrd->axis[p].min))
-    {
-      min[p] = nrrd->axis[p].min;
-    }
-    else
-    {
-      min[p] = 0.0;
-    }
-
-    if (airExists(nrrd->axis[p].max))
-    {
-      max[p] = nrrd->axis[p].max;
-    }
-    else
-    {
-      if (airExists(nrrd->axis[p].spacing))
-      {
-        if (datalocation == "Node")
-        {
-          max[p] = min[p] + nrrd->axis[p].spacing * (size[p]-1);
-        }
-        else
-        {
-          max[p] = min[p] + nrrd->axis[p].spacing * size[p];
-        }
-      }
-      else
-      {
-        if (datalocation == "Node")
-        {
-          max[p] = min[p] + static_cast<double>(size[p]-1);
-        }
-        else
-        {
-          max[p] = min[p] + static_cast<double>(size[p]);
-        }
-      }
-    }
-  }
+  computeNrrdAxisBounds(nrrd, dim, datalocation, min, max, size);
 
   if (vecdim == -1)
   {
@@ -1106,50 +1071,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
   size_t dim = nrrd->dim;
   std::vector<double> min(dim), max(dim);
   std::vector<int> size(dim);
-
-  for (size_t p=0; p<dim; p++)
-  {
-    size[p] = nrrd->axis[p].size;
-
-    if (airExists(nrrd->axis[p].min))
-    {
-      min[p] = nrrd->axis[p].min;
-    }
-    else
-    {
-      min[p] = 0.0;
-    }
-
-    if (airExists(nrrd->axis[p].max))
-    {
-      max[p] = nrrd->axis[p].max;
-    }
-    else
-    {
-      if (airExists(nrrd->axis[p].spacing))
-      {
-        if (datalocation == "Node")
-        {
-          max[p] = min[p] + nrrd->axis[p].spacing * (size[p]-1);
-        }
-        else
-        {
-          max[p] = min[p] + nrrd->axis[p].spacing * size[p];
-        }
-      }
-      else
-      {
-        if (datalocation == "Node")
-        {
-          max[p] = min[p] + static_cast<double>(size[p]-1);
-        }
-        else
-        {
-          max[p] = min[p] + static_cast<double>(size[p]);
-        }
-      }
-    }
-  }
+  computeNrrdAxisBounds(nrrd, dim, datalocation, min, max, size);
 
   if (vecdim == -1)
   {
