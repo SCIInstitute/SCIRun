@@ -33,7 +33,9 @@
 
 #ifdef WITH_VTK
 #include <vtkSmartPointer.h>
-//#include <ospray/ospray.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkRenderer.h>
+// #include <ospray/ospray.h>
 //#include <ospray/ospray_util.h>
 
 //#include "OSPRayDataManager.h"
@@ -43,9 +45,6 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
 #include <glm/glm.hpp>
-
-class vtkRenderer;
-class vtkGenericOpenGLRenderWindow;
 
 namespace SCIRun { namespace Render {
 

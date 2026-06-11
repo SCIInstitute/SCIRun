@@ -25,9 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <vtkGenericOpenGLRenderWindow.h>
-#include <vtkRenderer.h>
-
 #include <vtkSphereSource.h>
 #include <vtkCubeSource.h>
 #include <vtkPolyDataMapper.h>
