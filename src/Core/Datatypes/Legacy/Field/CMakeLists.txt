@@ -38,6 +38,7 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   FieldVIndex.h
   FieldVIterator.h
   GenericField.h
+  GenericVolMeshMethods.h
   HexVolMesh.h
   ImageMesh.h
   LatVolMesh.h

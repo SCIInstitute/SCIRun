@@ -50,6 +50,7 @@
 
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
+#include <Core/Datatypes/Legacy/Field/GenericVolMeshMethods.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
@@ -410,8 +411,10 @@ public:
   bool unsynchronize(mask_type mask) override;
   bool clear_synchronization();
 
-  /// Get the basis class.
-  Basis& get_basis() { return basis_; }
+  /// Common topology-traversal methods (get_basis, to_index, get_nodes, …,
+  /// get_delems, pwl_approx_edge, pwl_approx_face) — shared with other
+  /// volumetric mesh types via GenericVolMeshMethods.h.
+  SCIRUN_VOL_MESH_TOPOLOGY_METHODS(Basis)
 
   /// begin/end iterators
   void begin(typename Node::iterator &) const;
@@ -429,122 +432,6 @@ public:
   void size(typename Edge::size_type &) const;
   void size(typename Face::size_type &) const;
   void size(typename Cell::size_type &) const;
-
-  /// These are here to convert indices to unsigned int
-  /// counters. Some how the decision was made to use multi
-  /// dimensional indices in some fields, these functions
-  /// should deal with different pointer types.
-  /// Use the virtual interface to avoid all this non sense.
-  void to_index(typename Node::index_type &index, index_type i) const
-    { index = i; }
-  void to_index(typename Edge::index_type &index, index_type i) const
-    { index = i; }
-  void to_index(typename Face::index_type &index, index_type i) const
-    { index = i; }
-  void to_index(typename Cell::index_type &index, index_type i) const
-    { index = i; }
-
-  /// Get the child topology elements of the given topology
-  void get_nodes(typename Node::array_type &array,
-                 typename Node::index_type idx) const
-    { array.resize(1); array[0]= idx; }
-  void get_nodes(typename Node::array_type &array,
-                 typename Edge::index_type idx) const
-    { get_nodes_from_edge(array,idx); }
-  void get_nodes(typename Node::array_type &array,
-                 typename Face::index_type idx) const
-    { get_nodes_from_face(array,idx); }
-  void get_nodes(typename Node::array_type &array,
-                 typename Cell::index_type idx) const
-    { get_nodes_from_cell(array,idx); }
-
-  void get_edges(typename Edge::array_type &array,
-                 typename Node::index_type idx) const
-    { get_edges_from_node(array,idx); }
-  void get_edges(typename Edge::array_type &array,
-                 typename Edge::index_type idx) const
-    { array.resize(1); array[0]= idx; }
-  void get_edges(typename Edge::array_type &array,
-                 typename Face::index_type idx) const
-    { get_edges_from_face(array,idx); }
-  void get_edges(typename Edge::array_type &array,
-                 typename Cell::index_type idx) const
-    { get_edges_from_cell(array,idx); }
-
-  void get_faces(typename Face::array_type &array,
-                 typename Node::index_type idx) const
-    { get_faces_from_node(array,idx);  }
-  void get_faces(typename Face::array_type &array,
-                 typename Edge::index_type idx) const
-    { get_faces_from_edge(array,idx);  }
-
-  void get_faces(typename Face::array_type &array,
-                 typename Face::index_type idx) const
-    { array.resize(1); array[0]= idx; }
-  void get_faces(typename Face::array_type &array,
-                 typename Cell::index_type idx) const
-    { get_faces_from_cell(array,idx); }
-
-  void get_cells(typename Cell::array_type &array,
-                 typename Node::index_type idx) const
-    { get_cells_from_node(array,idx); }
-  void get_cells(typename Cell::array_type &array,
-                 typename Edge::index_type idx) const
-    { get_cells_from_edge(array,idx); }
-  void get_cells(typename Cell::array_type &array,
-                 typename Face::index_type idx) const
-    { get_cells_from_face(array,idx); }
-  void get_cells(typename Cell::array_type &array,
-                 typename Cell::index_type idx) const
-    { array.resize(1); array[0]= idx; }
-
-  void get_elems(typename Elem::array_type &array,
-                 typename Node::index_type idx) const
-    { get_cells_from_node(array,idx); }
-  void get_elems(typename Elem::array_type &array,
-                 typename Edge::index_type idx) const
-    { get_cells_from_edge(array,idx); }
-  void get_elems(typename Elem::array_type &array,
-                 typename Face::index_type idx) const
-    { get_cells_from_face(array,idx); }
-  void get_elems(typename Elem::array_type &array,
-                 typename Cell::index_type idx) const
-    { array.resize(1); array[0]= idx; }
-
-  void get_delems(typename DElem::array_type &array,
-                  typename Node::index_type idx) const
-    { get_faces_from_node(array,idx); }
-  void get_delems(typename DElem::array_type &array,
-                  typename Edge::index_type idx) const
-    { get_faces_from_edge(array,idx); }
-  void get_delems(typename DElem::array_type &array,
-                  typename Face::index_type idx) const
-    { array.resize(1); array[0]= idx; }
-  void get_delems(typename DElem::array_type &array,
-                  typename Cell::index_type idx) const
-    { get_faces_from_cell(array,idx); }
-
-  /// Generate the list of points that make up a sufficiently accurate
-  /// piecewise linear approximation of an edge.
-  template<class VECTOR, class INDEX>
-  void pwl_approx_edge(std::vector<VECTOR > &coords,
-                       INDEX,
-                       unsigned which_edge,
-                       unsigned div_per_unit) const
-  {
-    basis_.approx_edge(which_edge, div_per_unit, coords);
-  }
-
-  /// Generate the list of points that make up a sufficiently accurate
-  /// piecewise linear approximation of an face.
-  template<class VECTOR, class INDEX>
-  void pwl_approx_face(std::vector<std::vector<VECTOR > > &coords,
-                       INDEX,
-                       unsigned which_face,
-                       unsigned div_per_unit) const
-  {
-    basis_.approx_face(which_face, div_per_unit, coords);
-  }
 
   /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &result, typename Node::index_type idx) const
