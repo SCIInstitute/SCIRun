@@ -36,6 +36,7 @@ SET(Core_Basis_HEADERS
   CrvQuadraticLgn.h
   HexSamplingSchemes.h
   HexTricubicHmtScaleFactors.h
+  HexTricubicHmtScaleFactorsCommon.h
   Locate.h
   NoData.h
   PntSamplingSchemes.h
