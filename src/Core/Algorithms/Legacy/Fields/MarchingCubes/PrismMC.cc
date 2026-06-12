@@ -288,26 +288,3 @@ FieldHandle PrismMC::get_field(double value)
   return (trisurf_handle_);
 }
 
-VMesh::Node::index_type PrismMC::find_or_add_edgepoint(index_type u0,
-                               index_type u1,
-                               double d0, const Point &p)
-{
-  if (d0 < 0.0) { u1 = -1; }
-  if (d0 > 1.0) { u0 = -1; }
-  edgepair_t np;
-
-  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
-  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  const edge_hash_type::iterator loc = edge_map_.find(np);
-
-  if (loc == edge_map_.end())
-  {
-    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
-    edge_map_[np] = nodeindex;
-    return (nodeindex);
-  }
-  else
-  {
-    return ((*loc).second);
-  }
-}
