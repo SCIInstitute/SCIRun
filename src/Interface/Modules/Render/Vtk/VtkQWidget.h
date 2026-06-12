@@ -28,14 +28,14 @@
 #pragma once
 
 #include <Interface/qt_include.h>
-#include <QOpenGLWidget>
+#include <QWidget.h>
 #include <Interface/Modules/Render/Vtk/share.h>
 
 namespace SCIRun { namespace Render {
 
 class VtkRenderer;
 
-class SCISHARE VtkQWidget : public QOpenGLWidget
+class SCISHARE VtkQWidget : public QWidget
 {
 Q_OBJECT
 

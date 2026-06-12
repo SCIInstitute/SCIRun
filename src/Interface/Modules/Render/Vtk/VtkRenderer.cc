@@ -32,6 +32,8 @@
 #include <vtkProperty.h>
 #include <vtkAxesActor.h>
 #include <vtkWindowToImageFilter.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkPNGWriter.h>
 
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
@@ -77,6 +79,7 @@ VtkRenderer::~VtkRenderer()
 void VtkRenderer::renderFrame()
 {
   renderTestScene();
+  //testOffscreen();
 }
 
 
@@ -152,16 +155,11 @@ void VtkRenderer::renderTestScene()
 {
   if (!initialized_)
   {
-    renderWindow_ = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-    renderWindow_->SetReadyForRendering(true);
-
+    renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
     renderer_ = vtkSmartPointer<vtkRenderer>::New();
     renderWindow_->AddRenderer(renderer_);
 
-    renderer_->SetBackground(1.0, 1.0, 0.0);
-
     auto sphere = vtkSmartPointer<vtkSphereSource>::New();
-
     auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     mapper->SetInputConnection(sphere->GetOutputPort());
 
@@ -169,29 +167,62 @@ void VtkRenderer::renderTestScene()
     actor->SetMapper(mapper);
 
     renderer_->AddActor(actor);
-
+    renderer_->SetBackground(0.1, 0.2, 0.4);
     renderer_->ResetCamera();
-    renderer_->ResetCameraClippingRange();
+
+    renderWindow_->SetWindowName("VTK Test Window");
+    renderWindow_->SetSize(800, 600);
 
     initialized_ = true;
   }
 
-  GLint vp[4];
-  glGetIntegerv(GL_VIEWPORT, vp);
-
-  int width = vp[2];
-  int height = vp[3];
-
-  if (width <= 0 || height <= 0) return;
-
-  glViewport(0, 0, width, height);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  renderWindow_->SetSize(width, height);
+  // This will create and show the VTK window
   renderWindow_->Render();
+}
 
-  glClearColor(1, 0, 1, 1);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void VtkRenderer::testOffscreen()
+{
+  auto renWin = vtkSmartPointer<vtkRenderWindow>::New();
+  renWin->SetOffScreenRendering(1);  // KEY
+  renWin->SetSize(512, 512);
+
+  auto ren = vtkSmartPointer<vtkRenderer>::New();
+  renWin->AddRenderer(ren);
+
+  auto sphere = vtkSmartPointer<vtkSphereSource>::New();
+
+  auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  mapper->SetInputConnection(sphere->GetOutputPort());
+
+  auto actor = vtkSmartPointer<vtkActor>::New();
+  actor->SetMapper(mapper);
+
+  ren->AddActor(actor);
+  ren->SetBackground(1.0, 1.0, 0.0);
+
+  renWin->Render();
+
+  // ---- Read pixels ----
+  auto w2i = vtkSmartPointer<vtkWindowToImageFilter>::New();
+  w2i->SetInput(renWin);
+  w2i->Update();
+
+  // Option A: dump to PNG (sanity check)
+  auto writer = vtkSmartPointer<vtkPNGWriter>::New();
+  writer->SetFileName("vtk_test.png");
+  writer->SetInputConnection(w2i->GetOutputPort());
+  writer->Write();
+
+  // Option B: raw memory access
+  vtkImageData* image = w2i->GetOutput();
+  int dims[3];
+  image->GetDimensions(dims);
+
+  unsigned char* pixels = static_cast<unsigned char*>(image->GetScalarPointer());
+
+  // quick sanity check
+  printf("Image %d x %d\n", dims[0], dims[1]);
+  printf("First pixel RGB: %d %d %d\n", pixels[0], pixels[1], pixels[2]);
 }
 
 #endif

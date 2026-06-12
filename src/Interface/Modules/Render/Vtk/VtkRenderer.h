@@ -33,7 +33,7 @@
 
 #ifdef WITH_VTK
 #include <vtkSmartPointer.h>
-#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 // #include <ospray/ospray.h>
 //#include <ospray/ospray_util.h>
@@ -105,10 +105,11 @@ private:
   //OSPGroup group_ {nullptr};
 
   void renderTestScene();
+  void testOffscreen();
 
   bool initialized_ = false;
   vtkSmartPointer<vtkRenderer> renderer_;
-  vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow_;
+  vtkSmartPointer<vtkRenderWindow> renderWindow_;
 };
 
 }}
