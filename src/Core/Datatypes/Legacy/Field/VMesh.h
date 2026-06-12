@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
 #include <Core/Datatypes/Legacy/Field/FieldVIterator.h>
+#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 
 #include <Core/GeometryPrimitives/SearchGridT.h>
 

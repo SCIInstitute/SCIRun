@@ -41,7 +41,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Geometry/Point.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 namespace SCIRun { namespace Core { namespace Algorithms { namespace Fields {
 

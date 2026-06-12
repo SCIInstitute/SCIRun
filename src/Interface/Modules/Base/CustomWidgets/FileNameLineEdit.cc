@@ -31,8 +31,6 @@
 #include <QMimeData>
 #include <QUrl>
 
-using namespace SCIRun::Gui;
-
 FileNameLineEdit::FileNameLineEdit(QWidget* parent)
   : QLineEdit(parent)
 {
@@ -53,6 +51,6 @@ void FileNameLineEdit::dropEvent(QDropEvent* event)
   if (!urls.isEmpty())
   {
     setText(urls.first().toLocalFile());
-    emit editingFinished();
+    Q_EMIT editingFinished();
   }
 }

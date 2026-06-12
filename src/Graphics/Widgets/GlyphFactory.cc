@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun;
 using namespace Core::Geometry;
 using namespace Core::Datatypes;
+using namespace Graphics;
 using namespace Graphics::Datatypes;
 
 std::string RealGlyphFactory::sphere(SphereParameters params, WidgetBase& widget) const
