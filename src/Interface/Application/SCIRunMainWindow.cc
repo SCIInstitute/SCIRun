@@ -27,6 +27,7 @@
 
 
 #include <es-log/trace-log.h>
+#include <QSettings>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
@@ -81,8 +82,37 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   startup_ = true;
 
-  QCoreApplication::setOrganizationName("SCI:CIBC Software");
-  QCoreApplication::setApplicationName("SCIRun5");
+  const QString organization("SCI:CIBC Software");
+  const QString defaultAppName("SCIRun5");
+  QCoreApplication::setOrganizationName(organization);
+  // In regression mode, isolate QSettings per process: concurrent test
+  // processes otherwise share one settings file, and reading a half-written
+  // plist (favorites, window geometry) during startup can crash in the
+  // module-selector tree restore. Seed the per-process store from the shared
+  // default store so regression runs see the developer's real settings (and
+  // look consistent run to run) while only ever *writing* to their own file.
+  // Reading the stable shared store concurrently is safe; only concurrent
+  // writes caused the original race.
+  if (Application::Instance().parameters()->isRegressionMode())
+  {
+    const QString regressionAppName = QString("%1_regression_%2").arg(defaultAppName).arg(QCoreApplication::applicationPid());
+    {
+      QSettings source(QSettings::NativeFormat, QSettings::UserScope, organization, defaultAppName);
+      QSettings dest(QSettings::NativeFormat, QSettings::UserScope, organization, regressionAppName);
+      dest.clear(); // a recycled pid may have left a stale store
+      const auto keys = source.allKeys();
+      for (const auto& key : keys)
+        dest.setValue(key, source.value(key));
+      dest.sync();
+      // Note: these per-process stores are cleaned up after the run by
+      // scripts/run-regression-tests.sh (and the CI regression step). In-process
+      // deletion on exit is unreliable on macOS because cfprefsd owns the plist
+      // and recreates it after the process exits.
+    }
+    QCoreApplication::setApplicationName(regressionAppName);
+  }
+  else
+    QCoreApplication::setApplicationName(defaultAppName);
 
   setAttribute(Qt::WA_DeleteOnClose);
 

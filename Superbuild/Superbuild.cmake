@@ -86,6 +86,10 @@ ENDIF()
 OPTION(BUILD_TESTING "Build with tests." OFF)
 
 ###########################################
+# Configure code coverage (forwarded to the inner SCIRun build)
+OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
+
+###########################################
 # Configure compilation database generation
 OPTION(GENERATE_COMPILATION_DATABASE "Generate Compilation Database." ON)
 
@@ -310,6 +314,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DSCIRUN_BINARY_DIR:PATH=${SCIRUN_BINARY_DIR}"
     "-DSCIRUN_BITS:STRING=${SCIRUN_BITS}"
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
+    "-DENABLE_COVERAGE:BOOL=${ENABLE_COVERAGE}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
     "-DQT_VERSION_MAJOR:STRING=${QT_VERSION_MAJOR}"
