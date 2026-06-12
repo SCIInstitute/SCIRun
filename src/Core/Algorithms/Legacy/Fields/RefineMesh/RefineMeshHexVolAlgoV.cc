@@ -664,6 +664,76 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
       refined->add_elem(nnodes);
     };
 
+    // Shared Top Center + Top Back hex section used by pattern==4 and pattern==8.
+    auto addTopCenterBackHexes = [&](const int* ro,
+        VMesh::Node::index_type i06node,
+        VMesh::Node::index_type i17node,
+        VMesh::Node::index_type i24node,
+        VMesh::Node::index_type i35node)
+    {
+      // Top Center
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 3,ivalues,basis_order);
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 0,ivalues,basis_order);
+      nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 7,ivalues,basis_order);
+      nnodes[5] = i06node;
+      nnodes[6] = i35node;
+      nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 4,ivalues,basis_order);
+      refined->add_elem(nnodes);
+
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
+      nnodes[4] = i06node;
+      nnodes[5] = i17node;
+      nnodes[6] = i24node;
+      nnodes[7] = i35node;
+      refined->add_elem(nnodes);
+
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 2,ivalues,basis_order);
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 1,ivalues,basis_order);
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
+      nnodes[4] = i17node;
+      nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 6,ivalues,basis_order);
+      nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 5,ivalues,basis_order);
+      nnodes[7] = i24node;
+      refined->add_elem(nnodes);
+
+      // Top Back
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 3, 0,ivalues,basis_order);
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 3, 2,ivalues,basis_order);
+      nnodes[3] = onodes[ro[3]];
+      nnodes[4] = lookup_convex(refined, emap, onodes, ro, 3, 4,ivalues,basis_order);
+      nnodes[5] = i35node;
+      nnodes[6] = lookup_convex(refined, emap, onodes, ro, 3, 6,ivalues,basis_order);
+      nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 7,ivalues,basis_order);
+      refined->add_elem(nnodes);
+
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 3,ivalues,basis_order);
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 2,ivalues,basis_order);
+      nnodes[4] = i35node;
+      nnodes[5] = i24node;
+      nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 7,ivalues,basis_order);
+      nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 6,ivalues,basis_order);
+      refined->add_elem(nnodes);
+
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 2, 1,ivalues,basis_order);
+      nnodes[2] = onodes[ro[2]];
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 2, 3,ivalues,basis_order);
+      nnodes[4] = i24node;
+      nnodes[5] = lookup_convex(refined, emap, onodes, ro, 2, 5,ivalues,basis_order);
+      nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 6,ivalues,basis_order);
+      nnodes[7] = lookup_convex(refined, emap, onodes, ro, 2, 7,ivalues,basis_order);
+      refined->add_elem(nnodes);
+    };
+
     while (bi != ei)
     {
 				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; this->update_progress_max(loopcnt,sz);  }
@@ -906,67 +976,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
         nnodes[7] = i17node;
         refined->add_elem(nnodes);
 
-        // Top Center
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 3,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 0,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 7,ivalues,basis_order);
-        nnodes[5] = i06node;
-        nnodes[6] = i35node;
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 4,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[4] = i06node;
-        nnodes[5] = i17node;
-        nnodes[6] = i24node;
-        nnodes[7] = i35node;
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 2,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 1,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[4] = i17node;
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 6,ivalues,basis_order);
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 5,ivalues,basis_order);
-        nnodes[7] = i24node;
-        refined->add_elem(nnodes);
-
-        // Top Back
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 3, 0,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 3, 2,ivalues,basis_order);
-        nnodes[3] = onodes[ro[3]];
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 3, 4,ivalues,basis_order);
-        nnodes[5] = i35node;
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 3, 6,ivalues,basis_order);
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 7,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 3,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 2,ivalues,basis_order);
-        nnodes[4] = i35node;
-        nnodes[5] = i24node;
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 7,ivalues,basis_order);
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 6,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 2, 1,ivalues,basis_order);
-        nnodes[2] = onodes[ro[2]];
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 2, 3,ivalues,basis_order);
-        nnodes[4] = i24node;
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 2, 5,ivalues,basis_order);
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 6,ivalues,basis_order);
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 2, 7,ivalues,basis_order);
-        refined->add_elem(nnodes);
+        addTopCenterBackHexes(ro, i06node, i17node, i24node, i35node);
 
         // Front
         nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 4,ivalues,basis_order);
@@ -1124,67 +1134,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
        VMesh::Node::index_type i60node, i71node;
        addLeadingEdgeHexes(ro, i06node, i17node, i60node, i71node);
 
-        // Top Center
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 3,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 0,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 7,ivalues,basis_order);
-        nnodes[5] = i06node;
-        nnodes[6] = i35node;
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 4,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[4] = i06node;
-        nnodes[5] = i17node;
-        nnodes[6] = i24node;
-        nnodes[7] = i35node;
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 2,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 1,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[4] = i17node;
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 6,ivalues,basis_order);
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 5,ivalues,basis_order);
-        nnodes[7] = i24node;
-        refined->add_elem(nnodes);
-
-        // Top Back
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 3, 0,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 3, 2,ivalues,basis_order);
-        nnodes[3] = onodes[ro[3]];
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 3, 4,ivalues,basis_order);
-        nnodes[5] = i35node;
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 3, 6,ivalues,basis_order);
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 7,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 3, 1,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 2, 3,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 3, 2,ivalues,basis_order);
-        nnodes[4] = i35node;
-        nnodes[5] = i24node;
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 7,ivalues,basis_order);
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 3, 6,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 2, 0,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 2, 1,ivalues,basis_order);
-        nnodes[2] = onodes[ro[2]];
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 2, 3,ivalues,basis_order);
-        nnodes[4] = i24node;
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 2, 5,ivalues,basis_order);
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 2, 6,ivalues,basis_order);
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 2, 7,ivalues,basis_order);
-        refined->add_elem(nnodes);
+        addTopCenterBackHexes(ro, i06node, i17node, i24node, i35node);
 
         // Front
         nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 4,ivalues,basis_order);
