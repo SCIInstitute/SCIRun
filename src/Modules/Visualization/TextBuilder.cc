@@ -228,11 +228,11 @@ void TextBuilder::printString(const std::string& oneline,
     // Construct VBO.
     std::string shader = "Shaders/TextBuilder";
     std::vector<SpireVBO::AttributeData> attribs;
-    attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-    attribs.push_back(SpireVBO::AttributeData("aTexCoord", 2 * sizeof(float)));
+    attribs.emplace_back("aPos", 3 * sizeof(float));
+    attribs.emplace_back("aTexCoord", 2 * sizeof(float));
     std::vector<SpireSubPass::Uniform> uniforms;
-    uniforms.push_back(SpireSubPass::Uniform("uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0)));
-    uniforms.push_back(SpireSubPass::Uniform("uColor", color_));
+    uniforms.emplace_back("uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0));
+    uniforms.emplace_back("uColor", color_);
     auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
       numVBOElements, BBox(Point{}, Point{}), true);
 

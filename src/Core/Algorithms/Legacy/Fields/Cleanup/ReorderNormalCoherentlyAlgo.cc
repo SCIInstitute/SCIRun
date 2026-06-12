@@ -200,7 +200,7 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     for (j = 0; j < noOfV; j++)
     {
       k=(j+1)%noOfV;
-      edges.insert(std::make_pair(elem[i][j], elem[i][k]));
+      edges.emplace(elem[i][j], elem[i][k]);
     }
     outputVMesh->add_elem(nodesFromFace);
 

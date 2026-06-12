@@ -144,15 +144,15 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   // Construct VBO.
   std::string shader = "Shaders/ColorMapLegend";
   std::vector<SpireVBO::AttributeData> attribs;
-  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+  attribs.emplace_back("aPos", 3 * sizeof(float));
+  attribs.emplace_back("aColor", 4 * sizeof(float));
   std::vector<SpireSubPass::Uniform> uniforms;
 
   double xTrans, yTrans;
   std::tie(xTrans, yTrans) = getTextPosition();
 
-  uniforms.push_back(SpireSubPass::Uniform("uXTranslate", xTrans));
-  uniforms.push_back(SpireSubPass::Uniform("uYTranslate", yTrans));
+  uniforms.emplace_back("uXTranslate", xTrans);
+  uniforms.emplace_back("uYTranslate", yTrans);
 
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, BBox(Point{}, Point{}), true);
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
