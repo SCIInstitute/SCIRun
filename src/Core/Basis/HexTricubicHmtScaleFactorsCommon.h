@@ -32,12 +32,97 @@
 // and HexTricubicHmtScaleFactorsEdges.h.
 //
 // Both classes perform identical scaled-Hermite evaluation once the per-node
-// scale factors sx[8]/sy[8]/sz[8] have been assembled.  The two helpers below
-// hold the shared body so neither class has to duplicate it.
+// scale factors sx[8]/sy[8]/sz[8] have been assembled.  The helpers below
+// hold the shared body so neither class duplicates it.
 
 namespace SCIRun {
 namespace Core {
 namespace Basis {
+
+/// Per-node scaled derivative coefficients used by both interpolate() and
+/// derivate().  Computed once from basis coefficients and scale factors.
+template <class T>
+struct HexScaledBasisCoeffs {
+  T dx[8], dy[8], dz[8], dxy[8], dyz[8], dxz[8], dxyz[8];
+};
+
+/// Compute the 7 × 8 = 56 scaled derivative coefficients.
+/// coeff[nodeIdx][k] are the stored Hermite derivative coefficients;
+/// sx/sy/sz are the per-node scale factors assembled by the caller.
+template <class T, class ElemData, class DerivsCoeff>
+inline HexScaledBasisCoeffs<T> computeHexScaledBasisCoeffs(
+    const ElemData& cd,
+    const DerivsCoeff& coeff,
+    const double (&sx)[8], const double (&sy)[8], const double (&sz)[8])
+{
+  HexScaledBasisCoeffs<T> sd;
+
+  sd.dx[0]=coeff[cd.node0_index()][0]*sx[0];
+  sd.dx[1]=coeff[cd.node1_index()][0]*sx[1];
+  sd.dx[2]=coeff[cd.node2_index()][0]*sx[2];
+  sd.dx[3]=coeff[cd.node3_index()][0]*sx[3];
+  sd.dx[4]=coeff[cd.node4_index()][0]*sx[4];
+  sd.dx[5]=coeff[cd.node5_index()][0]*sx[5];
+  sd.dx[6]=coeff[cd.node6_index()][0]*sx[6];
+  sd.dx[7]=coeff[cd.node7_index()][0]*sx[7];
+
+  sd.dy[0]=coeff[cd.node0_index()][1]*sy[0];
+  sd.dy[1]=coeff[cd.node1_index()][1]*sy[1];
+  sd.dy[2]=coeff[cd.node2_index()][1]*sy[2];
+  sd.dy[3]=coeff[cd.node3_index()][1]*sy[3];
+  sd.dy[4]=coeff[cd.node4_index()][1]*sy[4];
+  sd.dy[5]=coeff[cd.node5_index()][1]*sy[5];
+  sd.dy[6]=coeff[cd.node6_index()][1]*sy[6];
+  sd.dy[7]=coeff[cd.node7_index()][1]*sy[7];
+
+  sd.dz[0]=coeff[cd.node0_index()][2]*sz[0];
+  sd.dz[1]=coeff[cd.node1_index()][2]*sz[1];
+  sd.dz[2]=coeff[cd.node2_index()][2]*sz[2];
+  sd.dz[3]=coeff[cd.node3_index()][2]*sz[3];
+  sd.dz[4]=coeff[cd.node4_index()][2]*sz[4];
+  sd.dz[5]=coeff[cd.node5_index()][2]*sz[5];
+  sd.dz[6]=coeff[cd.node6_index()][2]*sz[6];
+  sd.dz[7]=coeff[cd.node7_index()][2]*sz[7];
+
+  sd.dxy[0]=coeff[cd.node0_index()][3]*sx[0]*sy[0];
+  sd.dxy[1]=coeff[cd.node1_index()][3]*sx[1]*sy[1];
+  sd.dxy[2]=coeff[cd.node2_index()][3]*sx[2]*sy[2];
+  sd.dxy[3]=coeff[cd.node3_index()][3]*sx[3]*sy[3];
+  sd.dxy[4]=coeff[cd.node4_index()][3]*sx[4]*sy[4];
+  sd.dxy[5]=coeff[cd.node5_index()][3]*sx[5]*sy[5];
+  sd.dxy[6]=coeff[cd.node6_index()][3]*sx[6]*sy[6];
+  sd.dxy[7]=coeff[cd.node7_index()][3]*sx[7]*sy[7];
+
+  sd.dyz[0]=coeff[cd.node0_index()][4]*sy[0]*sz[0];
+  sd.dyz[1]=coeff[cd.node1_index()][4]*sy[1]*sz[1];
+  sd.dyz[2]=coeff[cd.node2_index()][4]*sy[2]*sz[2];
+  sd.dyz[3]=coeff[cd.node3_index()][4]*sy[3]*sz[3];
+  sd.dyz[4]=coeff[cd.node4_index()][4]*sy[4]*sz[4];
+  sd.dyz[5]=coeff[cd.node5_index()][4]*sy[5]*sz[5];
+  sd.dyz[6]=coeff[cd.node6_index()][4]*sy[6]*sz[6];
+  sd.dyz[7]=coeff[cd.node7_index()][4]*sy[7]*sz[7];
+
+  sd.dxz[0]=coeff[cd.node0_index()][5]*sx[0]*sz[0];
+  sd.dxz[1]=coeff[cd.node1_index()][5]*sx[1]*sz[1];
+  sd.dxz[2]=coeff[cd.node2_index()][5]*sx[2]*sz[2];
+  sd.dxz[3]=coeff[cd.node3_index()][5]*sx[3]*sz[3];
+  sd.dxz[4]=coeff[cd.node4_index()][5]*sx[4]*sz[4];
+  sd.dxz[5]=coeff[cd.node5_index()][5]*sx[5]*sz[5];
+  sd.dxz[6]=coeff[cd.node6_index()][5]*sx[6]*sz[6];
+  sd.dxz[7]=coeff[cd.node7_index()][5]*sx[7]*sz[7];
+
+  sd.dxyz[0]=coeff[cd.node0_index()][6]*sx[0]*sy[0]*sz[0];
+  sd.dxyz[1]=coeff[cd.node1_index()][6]*sx[1]*sy[1]*sz[1];
+  sd.dxyz[2]=coeff[cd.node2_index()][6]*sx[2]*sy[2]*sz[2];
+  sd.dxyz[3]=coeff[cd.node3_index()][6]*sx[3]*sy[3]*sz[3];
+  sd.dxyz[4]=coeff[cd.node4_index()][6]*sx[4]*sy[4]*sz[4];
+  sd.dxyz[5]=coeff[cd.node5_index()][6]*sx[5]*sy[5]*sz[5];
+  sd.dxyz[6]=coeff[cd.node6_index()][6]*sx[6]*sy[6]*sz[6];
+  sd.dxyz[7]=coeff[cd.node7_index()][6]*sx[7]*sy[7]*sz[7];
+
+  return sd;
+}
+
 
 /// Evaluate the 64-term scaled tricubic Hermite weighted sum for interpolate().
 ///
@@ -54,134 +139,74 @@ inline T hexScaledBasisInterpolate(
     const DerivsCoeff& coeff,
     const double (&sx)[8], const double (&sy)[8], const double (&sz)[8])
 {
-  const T sdx0=coeff[cd.node0_index()][0]*sx[0];
-  const T sdx1=coeff[cd.node1_index()][0]*sx[1];
-  const T sdx2=coeff[cd.node2_index()][0]*sx[2];
-  const T sdx3=coeff[cd.node3_index()][0]*sx[3];
-  const T sdx4=coeff[cd.node4_index()][0]*sx[4];
-  const T sdx5=coeff[cd.node5_index()][0]*sx[5];
-  const T sdx6=coeff[cd.node6_index()][0]*sx[6];
-  const T sdx7=coeff[cd.node7_index()][0]*sx[7];
-
-  const T sdy0=coeff[cd.node0_index()][1]*sy[0];
-  const T sdy1=coeff[cd.node1_index()][1]*sy[1];
-  const T sdy2=coeff[cd.node2_index()][1]*sy[2];
-  const T sdy3=coeff[cd.node3_index()][1]*sy[3];
-  const T sdy4=coeff[cd.node4_index()][1]*sy[4];
-  const T sdy5=coeff[cd.node5_index()][1]*sy[5];
-  const T sdy6=coeff[cd.node6_index()][1]*sy[6];
-  const T sdy7=coeff[cd.node7_index()][1]*sy[7];
-
-  const T sdz0=coeff[cd.node0_index()][2]*sz[0];
-  const T sdz1=coeff[cd.node1_index()][2]*sz[1];
-  const T sdz2=coeff[cd.node2_index()][2]*sz[2];
-  const T sdz3=coeff[cd.node3_index()][2]*sz[3];
-  const T sdz4=coeff[cd.node4_index()][2]*sz[4];
-  const T sdz5=coeff[cd.node5_index()][2]*sz[5];
-  const T sdz6=coeff[cd.node6_index()][2]*sz[6];
-  const T sdz7=coeff[cd.node7_index()][2]*sz[7];
-
-  const T sdxy0=coeff[cd.node0_index()][3]*sx[0]*sy[0];
-  const T sdxy1=coeff[cd.node1_index()][3]*sx[1]*sy[1];
-  const T sdxy2=coeff[cd.node2_index()][3]*sx[2]*sy[2];
-  const T sdxy3=coeff[cd.node3_index()][3]*sx[3]*sy[3];
-  const T sdxy4=coeff[cd.node4_index()][3]*sx[4]*sy[4];
-  const T sdxy5=coeff[cd.node5_index()][3]*sx[5]*sy[5];
-  const T sdxy6=coeff[cd.node6_index()][3]*sx[6]*sy[6];
-  const T sdxy7=coeff[cd.node7_index()][3]*sx[7]*sy[7];
-
-  const T sdyz0=coeff[cd.node0_index()][4]*sy[0]*sz[0];
-  const T sdyz1=coeff[cd.node1_index()][4]*sy[1]*sz[1];
-  const T sdyz2=coeff[cd.node2_index()][4]*sy[2]*sz[2];
-  const T sdyz3=coeff[cd.node3_index()][4]*sy[3]*sz[3];
-  const T sdyz4=coeff[cd.node4_index()][4]*sy[4]*sz[4];
-  const T sdyz5=coeff[cd.node5_index()][4]*sy[5]*sz[5];
-  const T sdyz6=coeff[cd.node6_index()][4]*sy[6]*sz[6];
-  const T sdyz7=coeff[cd.node7_index()][4]*sy[7]*sz[7];
-
-  const T sdxz0=coeff[cd.node0_index()][5]*sx[0]*sz[0];
-  const T sdxz1=coeff[cd.node1_index()][5]*sx[1]*sz[1];
-  const T sdxz2=coeff[cd.node2_index()][5]*sx[2]*sz[2];
-  const T sdxz3=coeff[cd.node3_index()][5]*sx[3]*sz[3];
-  const T sdxz4=coeff[cd.node4_index()][5]*sx[4]*sz[4];
-  const T sdxz5=coeff[cd.node5_index()][5]*sx[5]*sz[5];
-  const T sdxz6=coeff[cd.node6_index()][5]*sx[6]*sz[6];
-  const T sdxz7=coeff[cd.node7_index()][5]*sx[7]*sz[7];
-
-  const T sdxyz0=coeff[cd.node0_index()][6]*sx[0]*sy[0]*sz[0];
-  const T sdxyz1=coeff[cd.node1_index()][6]*sx[1]*sy[1]*sz[1];
-  const T sdxyz2=coeff[cd.node2_index()][6]*sx[2]*sy[2]*sz[2];
-  const T sdxyz3=coeff[cd.node3_index()][6]*sx[3]*sy[3]*sz[3];
-  const T sdxyz4=coeff[cd.node4_index()][6]*sx[4]*sy[4]*sz[4];
-  const T sdxyz5=coeff[cd.node5_index()][6]*sx[5]*sy[5]*sz[5];
-  const T sdxyz6=coeff[cd.node6_index()][6]*sx[6]*sy[6]*sz[6];
-  const T sdxyz7=coeff[cd.node7_index()][6]*sx[7]*sy[7]*sz[7];
+  const HexScaledBasisCoeffs<T> sd =
+      computeHexScaledBasisCoeffs<T>(cd, coeff, sx, sy, sz);
 
   return (T)(
-       w[0]  * cd.node0()+
-       w[1]  * sdx0   +
-       w[2]  * sdy0   +
-       w[3]  * sdz0   +
-       w[4]  * sdxy0  +
-       w[5]  * sdyz0  +
-       w[6]  * sdxz0  +
-       w[7]  * sdxyz0 +
-       w[8]  * cd.node1()+
-       w[9]  * sdx1   +
-       w[10] * sdy1   +
-       w[11] * sdz1   +
-       w[12] * sdxy1  +
-       w[13] * sdyz1  +
-       w[14] * sdxz1  +
-       w[15] * sdxyz1 +
-       w[16] * cd.node2()+
-       w[17] * sdx2   +
-       w[18] * sdy2   +
-       w[19] * sdz2   +
-       w[20] * sdxy2  +
-       w[21] * sdyz2  +
-       w[22] * sdxz2  +
-       w[23] * sdxyz2 +
-       w[24] * cd.node3()+
-       w[25] * sdx3   +
-       w[26] * sdy3   +
-       w[27] * sdz3   +
-       w[28] * sdxy3  +
-       w[29] * sdyz3  +
-       w[30] * sdxz3  +
-       w[31] * sdxyz3 +
-       w[32] * cd.node4()+
-       w[33] * sdx4   +
-       w[34] * sdy4   +
-       w[35] * sdz4   +
-       w[36] * sdxy4  +
-       w[37] * sdyz4  +
-       w[38] * sdxz4  +
-       w[39] * sdxyz4 +
-       w[40] * cd.node5()+
-       w[41] * sdx5   +
-       w[42] * sdy5   +
-       w[43] * sdz5   +
-       w[44] * sdxy5  +
-       w[45] * sdyz5  +
-       w[46] * sdxz5  +
-       w[47] * sdxyz5 +
-       w[48] * cd.node6()+
-       w[49] * sdx6   +
-       w[50] * sdy6   +
-       w[51] * sdz6   +
-       w[52] * sdxy6  +
-       w[53] * sdyz6  +
-       w[54] * sdxz6  +
-       w[55] * sdxyz6 +
-       w[56] * cd.node7()+
-       w[57] * sdx7   +
-       w[58] * sdy7   +
-       w[59] * sdz7   +
-       w[60] * sdxy7  +
-       w[61] * sdyz7  +
-       w[62] * sdxz7  +
-       w[63] * sdxyz7);
+       w[0]  * cd.node0()  +
+       w[1]  * sd.dx[0]   +
+       w[2]  * sd.dy[0]   +
+       w[3]  * sd.dz[0]   +
+       w[4]  * sd.dxy[0]  +
+       w[5]  * sd.dyz[0]  +
+       w[6]  * sd.dxz[0]  +
+       w[7]  * sd.dxyz[0] +
+       w[8]  * cd.node1()  +
+       w[9]  * sd.dx[1]   +
+       w[10] * sd.dy[1]   +
+       w[11] * sd.dz[1]   +
+       w[12] * sd.dxy[1]  +
+       w[13] * sd.dyz[1]  +
+       w[14] * sd.dxz[1]  +
+       w[15] * sd.dxyz[1] +
+       w[16] * cd.node2()  +
+       w[17] * sd.dx[2]   +
+       w[18] * sd.dy[2]   +
+       w[19] * sd.dz[2]   +
+       w[20] * sd.dxy[2]  +
+       w[21] * sd.dyz[2]  +
+       w[22] * sd.dxz[2]  +
+       w[23] * sd.dxyz[2] +
+       w[24] * cd.node3()  +
+       w[25] * sd.dx[3]   +
+       w[26] * sd.dy[3]   +
+       w[27] * sd.dz[3]   +
+       w[28] * sd.dxy[3]  +
+       w[29] * sd.dyz[3]  +
+       w[30] * sd.dxz[3]  +
+       w[31] * sd.dxyz[3] +
+       w[32] * cd.node4()  +
+       w[33] * sd.dx[4]   +
+       w[34] * sd.dy[4]   +
+       w[35] * sd.dz[4]   +
+       w[36] * sd.dxy[4]  +
+       w[37] * sd.dyz[4]  +
+       w[38] * sd.dxz[4]  +
+       w[39] * sd.dxyz[4] +
+       w[40] * cd.node5()  +
+       w[41] * sd.dx[5]   +
+       w[42] * sd.dy[5]   +
+       w[43] * sd.dz[5]   +
+       w[44] * sd.dxy[5]  +
+       w[45] * sd.dyz[5]  +
+       w[46] * sd.dxz[5]  +
+       w[47] * sd.dxyz[5] +
+       w[48] * cd.node6()  +
+       w[49] * sd.dx[6]   +
+       w[50] * sd.dy[6]   +
+       w[51] * sd.dz[6]   +
+       w[52] * sd.dxy[6]  +
+       w[53] * sd.dyz[6]  +
+       w[54] * sd.dxz[6]  +
+       w[55] * sd.dxyz[6] +
+       w[56] * cd.node7()  +
+       w[57] * sd.dx[7]   +
+       w[58] * sd.dy[7]   +
+       w[59] * sd.dz[7]   +
+       w[60] * sd.dxy[7]  +
+       w[61] * sd.dyz[7]  +
+       w[62] * sd.dxz[7]  +
+       w[63] * sd.dxyz[7]);
 }
 
 
@@ -204,266 +229,206 @@ inline void hexScaledBasisDerivate(
     const double (&sx)[8], const double (&sy)[8], const double (&sz)[8],
     VECTOR2& result)
 {
-  const T sdx0=coeff[cd.node0_index()][0]*sx[0];
-  const T sdx1=coeff[cd.node1_index()][0]*sx[1];
-  const T sdx2=coeff[cd.node2_index()][0]*sx[2];
-  const T sdx3=coeff[cd.node3_index()][0]*sx[3];
-  const T sdx4=coeff[cd.node4_index()][0]*sx[4];
-  const T sdx5=coeff[cd.node5_index()][0]*sx[5];
-  const T sdx6=coeff[cd.node6_index()][0]*sx[6];
-  const T sdx7=coeff[cd.node7_index()][0]*sx[7];
-
-  const T sdy0=coeff[cd.node0_index()][1]*sy[0];
-  const T sdy1=coeff[cd.node1_index()][1]*sy[1];
-  const T sdy2=coeff[cd.node2_index()][1]*sy[2];
-  const T sdy3=coeff[cd.node3_index()][1]*sy[3];
-  const T sdy4=coeff[cd.node4_index()][1]*sy[4];
-  const T sdy5=coeff[cd.node5_index()][1]*sy[5];
-  const T sdy6=coeff[cd.node6_index()][1]*sy[6];
-  const T sdy7=coeff[cd.node7_index()][1]*sy[7];
-
-  const T sdz0=coeff[cd.node0_index()][2]*sz[0];
-  const T sdz1=coeff[cd.node1_index()][2]*sz[1];
-  const T sdz2=coeff[cd.node2_index()][2]*sz[2];
-  const T sdz3=coeff[cd.node3_index()][2]*sz[3];
-  const T sdz4=coeff[cd.node4_index()][2]*sz[4];
-  const T sdz5=coeff[cd.node5_index()][2]*sz[5];
-  const T sdz6=coeff[cd.node6_index()][2]*sz[6];
-  const T sdz7=coeff[cd.node7_index()][2]*sz[7];
-
-  const T sdxy0=coeff[cd.node0_index()][3]*sx[0]*sy[0];
-  const T sdxy1=coeff[cd.node1_index()][3]*sx[1]*sy[1];
-  const T sdxy2=coeff[cd.node2_index()][3]*sx[2]*sy[2];
-  const T sdxy3=coeff[cd.node3_index()][3]*sx[3]*sy[3];
-  const T sdxy4=coeff[cd.node4_index()][3]*sx[4]*sy[4];
-  const T sdxy5=coeff[cd.node5_index()][3]*sx[5]*sy[5];
-  const T sdxy6=coeff[cd.node6_index()][3]*sx[6]*sy[6];
-  const T sdxy7=coeff[cd.node7_index()][3]*sx[7]*sy[7];
-
-  const T sdyz0=coeff[cd.node0_index()][4]*sy[0]*sz[0];
-  const T sdyz1=coeff[cd.node1_index()][4]*sy[1]*sz[1];
-  const T sdyz2=coeff[cd.node2_index()][4]*sy[2]*sz[2];
-  const T sdyz3=coeff[cd.node3_index()][4]*sy[3]*sz[3];
-  const T sdyz4=coeff[cd.node4_index()][4]*sy[4]*sz[4];
-  const T sdyz5=coeff[cd.node5_index()][4]*sy[5]*sz[5];
-  const T sdyz6=coeff[cd.node6_index()][4]*sy[6]*sz[6];
-  const T sdyz7=coeff[cd.node7_index()][4]*sy[7]*sz[7];
-
-  const T sdxz0=coeff[cd.node0_index()][5]*sx[0]*sz[0];
-  const T sdxz1=coeff[cd.node1_index()][5]*sx[1]*sz[1];
-  const T sdxz2=coeff[cd.node2_index()][5]*sx[2]*sz[2];
-  const T sdxz3=coeff[cd.node3_index()][5]*sx[3]*sz[3];
-  const T sdxz4=coeff[cd.node4_index()][5]*sx[4]*sz[4];
-  const T sdxz5=coeff[cd.node5_index()][5]*sx[5]*sz[5];
-  const T sdxz6=coeff[cd.node6_index()][5]*sx[6]*sz[6];
-  const T sdxz7=coeff[cd.node7_index()][5]*sx[7]*sz[7];
-
-  const T sdxyz0=coeff[cd.node0_index()][6]*sx[0]*sy[0]*sz[0];
-  const T sdxyz1=coeff[cd.node1_index()][6]*sx[1]*sy[1]*sz[1];
-  const T sdxyz2=coeff[cd.node2_index()][6]*sx[2]*sy[2]*sz[2];
-  const T sdxyz3=coeff[cd.node3_index()][6]*sx[3]*sy[3]*sz[3];
-  const T sdxyz4=coeff[cd.node4_index()][6]*sx[4]*sy[4]*sz[4];
-  const T sdxyz5=coeff[cd.node5_index()][6]*sx[5]*sy[5]*sz[5];
-  const T sdxyz6=coeff[cd.node6_index()][6]*sx[6]*sy[6]*sz[6];
-  const T sdxyz7=coeff[cd.node7_index()][6]*sx[7]*sy[7]*sz[7];
+  const HexScaledBasisCoeffs<T> sd =
+      computeHexScaledBasisCoeffs<T>(cd, coeff, sx, sy, sz);
 
   result[0]=
     static_cast<typename VECTOR2::value_type>(6*(-1 + x)*x*y12*(1 + 2*y)*z12*(1 + 2*z)*cd.node0()
-	+(1 - 4*x + 3*x2)*y12*(1 + 2*y)*z12*(1 + 2*z)*sdx0
-	+6*(-1 + x)*x*y12*y*z12*(1 + 2*z)*sdy0
-	+6*(-1 + x)*x*y12*(1 + 2*y)*z12*z*sdz0
-	+(1 - 4*x + 3*x2)*y12*y*z12*(1 + 2*z)*sdxy0
-	+6*(-1 + x)*x*y12*y*z12*z*sdyz0
-	+(1 - 4*x + 3*x2)*y12*(1 + 2*y)*z12*z*sdxz0
-	+(1 - 4*x + 3*x2)*y12*y*z12*z*sdxyz0
+	+(1 - 4*x + 3*x2)*y12*(1 + 2*y)*z12*(1 + 2*z)*sd.dx[0]
+	+6*(-1 + x)*x*y12*y*z12*(1 + 2*z)*sd.dy[0]
+	+6*(-1 + x)*x*y12*(1 + 2*y)*z12*z*sd.dz[0]
+	+(1 - 4*x + 3*x2)*y12*y*z12*(1 + 2*z)*sd.dxy[0]
+	+6*(-1 + x)*x*y12*y*z12*z*sd.dyz[0]
+	+(1 - 4*x + 3*x2)*y12*(1 + 2*y)*z12*z*sd.dxz[0]
+	+(1 - 4*x + 3*x2)*y12*y*z12*z*sd.dxyz[0]
 	-6*(-1 + x)*x*y12*(1 + 2*y)*z12*(1 + 2*z)*cd.node1()
-	+x*(-2 + 3*x)*y12*(1 + 2*y)*z12*(1 + 2*z)*sdx1
-	-6*(-1 + x)*x*y12*y*z12*(1 + 2*z)*sdy1
-	-6*(-1 + x)*x*y12*(1 + 2*y)*z12*z*sdz1
-	+x*(-2 + 3*x)*y12*y*z12*(1 + 2*z)*sdxy1
-	-6*(-1 + x)*x*y12*y*z12*z*sdyz1
-	+x*(-2 + 3*x)*y12*(1 + 2*y)*z12*z*sdxz1
-	+x*(-2 + 3*x)*y12*y*z12*z*sdxyz1
+	+x*(-2 + 3*x)*y12*(1 + 2*y)*z12*(1 + 2*z)*sd.dx[1]
+	-6*(-1 + x)*x*y12*y*z12*(1 + 2*z)*sd.dy[1]
+	-6*(-1 + x)*x*y12*(1 + 2*y)*z12*z*sd.dz[1]
+	+x*(-2 + 3*x)*y12*y*z12*(1 + 2*z)*sd.dxy[1]
+	-6*(-1 + x)*x*y12*y*z12*z*sd.dyz[1]
+	+x*(-2 + 3*x)*y12*(1 + 2*y)*z12*z*sd.dxz[1]
+	+x*(-2 + 3*x)*y12*y*z12*z*sd.dxyz[1]
 	+6*(-1 + x)*x*y2*(-3 + 2*y)*z12*(1 + 2*z)*cd.node2()
-	-(x*(-2 + 3*x)*y2*(-3 + 2*y)*z12*(1 + 2*z))*sdx2
-	-6*(-1 + x)*x*(-1 + y)*y2*z12*(1 + 2*z)*sdy2
-	+6*(-1 + x)*x*y2*(-3 + 2*y)*z12*z*sdz2
-	+x*(-2 + 3*x)*(-1 + y)*y2*z12*(1 + 2*z)*sdxy2
-	-6*(-1 + x)*x*(-1 + y)*y2*z12*z*sdyz2
-	-(x*(-2 + 3*x)*y2*(-3 + 2*y)*z12*z)*sdxz2
-	+x*(-2 + 3*x)*(-1 + y)*y2*z12*z*sdxyz2
+	-(x*(-2 + 3*x)*y2*(-3 + 2*y)*z12*(1 + 2*z))*sd.dx[2]
+	-6*(-1 + x)*x*(-1 + y)*y2*z12*(1 + 2*z)*sd.dy[2]
+	+6*(-1 + x)*x*y2*(-3 + 2*y)*z12*z*sd.dz[2]
+	+x*(-2 + 3*x)*(-1 + y)*y2*z12*(1 + 2*z)*sd.dxy[2]
+	-6*(-1 + x)*x*(-1 + y)*y2*z12*z*sd.dyz[2]
+	-(x*(-2 + 3*x)*y2*(-3 + 2*y)*z12*z)*sd.dxz[2]
+	+x*(-2 + 3*x)*(-1 + y)*y2*z12*z*sd.dxyz[2]
 	-6*(-1 + x)*x*y2*(-3 + 2*y)*z12*(1 + 2*z)*cd.node3()
-	-((1 - 4*x + 3*x2)*y2*(-3 + 2*y)*z12*(1 + 2*z))*sdx3
-	+6*(-1 + x)*x*(-1 + y)*y2*z12*(1 + 2*z)*sdy3
-	-6*(-1 + x)*x*y2*(-3 + 2*y)*z12*z*sdz3
-	+(1 - 4*x + 3*x2)*(-1 + y)*y2*z12*(1 + 2*z)*sdxy3
-	+6*(-1 + x)*x*(-1 + y)*y2*z12*z*sdyz3
-	-((1 - 4*x + 3*x2)*y2*(-3 + 2*y)*z12*z)*sdxz3
-	+(1 - 4*x + 3*x2)*(-1 + y)*y2*z12*z*sdxyz3
+	-((1 - 4*x + 3*x2)*y2*(-3 + 2*y)*z12*(1 + 2*z))*sd.dx[3]
+	+6*(-1 + x)*x*(-1 + y)*y2*z12*(1 + 2*z)*sd.dy[3]
+	-6*(-1 + x)*x*y2*(-3 + 2*y)*z12*z*sd.dz[3]
+	+(1 - 4*x + 3*x2)*(-1 + y)*y2*z12*(1 + 2*z)*sd.dxy[3]
+	+6*(-1 + x)*x*(-1 + y)*y2*z12*z*sd.dyz[3]
+	-((1 - 4*x + 3*x2)*y2*(-3 + 2*y)*z12*z)*sd.dxz[3]
+	+(1 - 4*x + 3*x2)*(-1 + y)*y2*z12*z*sd.dxyz[3]
 	-6*(-1 + x)*x*y12*(1 + 2*y)*z2*(-3 + 2*z)*cd.node4()
-	-((1 - 4*x + 3*x2)*y12*(1 + 2*y)*z2*(-3 + 2*z))*sdx4
-	-6*(-1 + x)*x*y12*y*z2*(-3 + 2*z)*sdy4
-	+6*(-1 + x)*x*y12*(1 + 2*y)*(-1 + z)*z2*sdz4
-	-((1 - 4*x + 3*x2)*y12*y*z2*(-3 + 2*z))*sdxy4
-	+6*(-1 + x)*x*y12*y*(-1 + z)*z2*sdyz4
-	+(1 - 4*x + 3*x2)*y12*(1 + 2*y)*(-1 + z)*z2*sdxz4
-	+(1 - 4*x + 3*x2)*y12*y*(-1 + z)*z2*sdxyz4
+	-((1 - 4*x + 3*x2)*y12*(1 + 2*y)*z2*(-3 + 2*z))*sd.dx[4]
+	-6*(-1 + x)*x*y12*y*z2*(-3 + 2*z)*sd.dy[4]
+	+6*(-1 + x)*x*y12*(1 + 2*y)*(-1 + z)*z2*sd.dz[4]
+	-((1 - 4*x + 3*x2)*y12*y*z2*(-3 + 2*z))*sd.dxy[4]
+	+6*(-1 + x)*x*y12*y*(-1 + z)*z2*sd.dyz[4]
+	+(1 - 4*x + 3*x2)*y12*(1 + 2*y)*(-1 + z)*z2*sd.dxz[4]
+	+(1 - 4*x + 3*x2)*y12*y*(-1 + z)*z2*sd.dxyz[4]
 	+6*(-1 + x)*x*y12*(1 + 2*y)*z2*(-3 + 2*z)*cd.node5()
-	-(x*(-2 + 3*x)*y12*(1 + 2*y)*z2*(-3 + 2*z))*sdx5
-	+6*(-1 + x)*x*y12*y*z2*(-3 + 2*z)*sdy5
-	-6*(-1 + x)*x*y12*(1 + 2*y)*(-1 + z)*z2*sdz5
-	-(x*(-2 + 3*x)*y12*y*z2*(-3 + 2*z))*sdxy5
-	-6*(-1 + x)*x*y12*y*(-1 + z)*z2*sdyz5
-	+x*(-2 + 3*x)*y12*(1 + 2*y)*(-1 + z)*z2*sdxz5
-	+x*(-2 + 3*x)*y12*y*(-1 + z)*z2*sdxyz5
+	-(x*(-2 + 3*x)*y12*(1 + 2*y)*z2*(-3 + 2*z))*sd.dx[5]
+	+6*(-1 + x)*x*y12*y*z2*(-3 + 2*z)*sd.dy[5]
+	-6*(-1 + x)*x*y12*(1 + 2*y)*(-1 + z)*z2*sd.dz[5]
+	-(x*(-2 + 3*x)*y12*y*z2*(-3 + 2*z))*sd.dxy[5]
+	-6*(-1 + x)*x*y12*y*(-1 + z)*z2*sd.dyz[5]
+	+x*(-2 + 3*x)*y12*(1 + 2*y)*(-1 + z)*z2*sd.dxz[5]
+	+x*(-2 + 3*x)*y12*y*(-1 + z)*z2*sd.dxyz[5]
 	-6*(-1 + x)*x*y2*(-3 + 2*y)*z2*(-3 + 2*z)*cd.node6()
-	+x*(-2 + 3*x)*y2*(-3 + 2*y)*z2*(-3 + 2*z)*sdx6
-	+6*(-1 + x)*x*(-1 + y)*y2*z2*(-3 + 2*z)*sdy6
-	+6*(-1 + x)*x*y2*(-3 + 2*y)*(-1 + z)*z2*sdz6
-	-(x*(-2 + 3*x)*(-1 + y)*y2*z2*(-3 + 2*z))*sdxy6
-	-6*(-1 + x)*x*(-1 + y)*y2*(-1 + z)*z2*sdyz6
-	-(x*(-2 + 3*x)*y2*(-3 + 2*y)*(-1 + z)*z2)*sdxz6
-	+x*(-2 + 3*x)*(-1 + y)*y2*(-1 + z)*z2*sdxyz6
+	+x*(-2 + 3*x)*y2*(-3 + 2*y)*z2*(-3 + 2*z)*sd.dx[6]
+	+6*(-1 + x)*x*(-1 + y)*y2*z2*(-3 + 2*z)*sd.dy[6]
+	+6*(-1 + x)*x*y2*(-3 + 2*y)*(-1 + z)*z2*sd.dz[6]
+	-(x*(-2 + 3*x)*(-1 + y)*y2*z2*(-3 + 2*z))*sd.dxy[6]
+	-6*(-1 + x)*x*(-1 + y)*y2*(-1 + z)*z2*sd.dyz[6]
+	-(x*(-2 + 3*x)*y2*(-3 + 2*y)*(-1 + z)*z2)*sd.dxz[6]
+	+x*(-2 + 3*x)*(-1 + y)*y2*(-1 + z)*z2*sd.dxyz[6]
 	+6*(-1 + x)*x*y2*(-3 +  2*y)*z2*(-3 + 2*z)*cd.node7()
-	+(1 - 4*x + 3*x2)*y2*(-3 + 2*y)*z2*(-3 + 2*z)*sdx7
-	-6*(-1 + x)*x*(-1 + y)*y2*z2*(-3 + 2*z)*sdy7
-	-6*(-1 + x)*x*y2*(-3 + 2*y)*(-1 + z)*z2*sdz7
-	-((1 - 4*x + 3*x2)*(-1 + y)*y2*z2*(-3 + 2*z))*sdxy7
-	+6*(-1 + x)*x*(-1 + y)*y2*(-1 + z)*z2*sdyz7
-	-((1 - 4*x + 3*x2)*y2*(-3 + 2*y)*(-1 + z)*z2)*sdxz7
-	+(1 - 4*x + 3*x2)*(-1 + y)*y2*(-1 + z)*z2*sdxyz7);
+	+(1 - 4*x + 3*x2)*y2*(-3 + 2*y)*z2*(-3 + 2*z)*sd.dx[7]
+	-6*(-1 + x)*x*(-1 + y)*y2*z2*(-3 + 2*z)*sd.dy[7]
+	-6*(-1 + x)*x*y2*(-3 + 2*y)*(-1 + z)*z2*sd.dz[7]
+	-((1 - 4*x + 3*x2)*(-1 + y)*y2*z2*(-3 + 2*z))*sd.dxy[7]
+	+6*(-1 + x)*x*(-1 + y)*y2*(-1 + z)*z2*sd.dyz[7]
+	-((1 - 4*x + 3*x2)*y2*(-3 + 2*y)*(-1 + z)*z2)*sd.dxz[7]
+	+(1 - 4*x + 3*x2)*(-1 + y)*y2*(-1 + z)*z2*sd.dxyz[7]);
 
   result[1]=
     static_cast<typename VECTOR2::value_type>(6*x12*(1 + 2*x)*(-1 + y)*y*z12*(1 + 2*z)*cd.node0()
-	+6*x12*x*(-1 + y)*y*z12*(1 + 2*z)*sdx0
-	+x12*(1 + 2*x)*(1 - 4*y + 3*y2)*z12*(1 + 2*z)*sdy0
-	+6*x12*(1 + 2*x)*(-1 + y)*y*z12*z*sdz0
-	+x12*x*(1 - 4*y + 3*y2)*z12*(1 + 2*z)*sdxy0
-	+x12*(1 + 2*x)*(1 - 4*y + 3*y2)*z12*z*sdyz0
-	+6*x12*x*(-1 + y)*y*z12*z*sdxz0
-	+x12*x*(1 - 4*y + 3*y2)*z12*z*sdxyz0
+	+6*x12*x*(-1 + y)*y*z12*(1 + 2*z)*sd.dx[0]
+	+x12*(1 + 2*x)*(1 - 4*y + 3*y2)*z12*(1 + 2*z)*sd.dy[0]
+	+6*x12*(1 + 2*x)*(-1 + y)*y*z12*z*sd.dz[0]
+	+x12*x*(1 - 4*y + 3*y2)*z12*(1 + 2*z)*sd.dxy[0]
+	+x12*(1 + 2*x)*(1 - 4*y + 3*y2)*z12*z*sd.dyz[0]
+	+6*x12*x*(-1 + y)*y*z12*z*sd.dxz[0]
+	+x12*x*(1 - 4*y + 3*y2)*z12*z*sd.dxyz[0]
 	-6*x2*(-3 + 2*x)*(-1 + y)*y*z12*(1 + 2*z)*cd.node1()
-	+6*(-1 + x)*x2*(-1 + y)*y*z12*(1 + 2*z)*sdx1
-	-(x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*z12*(1 + 2*z))*sdy1
-	-6*x2*(-3 + 2*x)*(-1 + y)*y*z12*z*sdz1
-	+(-1 + x)*x2*(1 - 4*y + 3*y2)*z12*(1 + 2*z)*sdxy1
-	-(x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*z12*z)*sdyz1
-	+6*(-1 + x)*x2*(-1 + y)*y*z12*z*sdxz1
-	+(-1 + x)*x2*(1 - 4*y + 3*y2)*z12*z*sdxyz1
+	+6*(-1 + x)*x2*(-1 + y)*y*z12*(1 + 2*z)*sd.dx[1]
+	-(x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*z12*(1 + 2*z))*sd.dy[1]
+	-6*x2*(-3 + 2*x)*(-1 + y)*y*z12*z*sd.dz[1]
+	+(-1 + x)*x2*(1 - 4*y + 3*y2)*z12*(1 + 2*z)*sd.dxy[1]
+	-(x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*z12*z)*sd.dyz[1]
+	+6*(-1 + x)*x2*(-1 + y)*y*z12*z*sd.dxz[1]
+	+(-1 + x)*x2*(1 - 4*y + 3*y2)*z12*z*sd.dxyz[1]
 	+6*x2*(-3 + 2*x)*(-1 + y)*y*z12*(1 + 2*z)*cd.node2()
-	-6*(-1 + x)*x2*(-1 + y)*y*z12*(1 + 2*z)*sdx2
-	-(x2*(-3 + 2*x)*y*(-2 + 3*y)*z12*(1 + 2*z))*sdy2
-	+6*x2*(-3 + 2*x)*(-1 + y)*y*z12*z*sdz2
-	+(-1 + x)*x2*y*(-2 + 3*y)*z12*(1 + 2*z)*sdxy2
-	-(x2*(-3 + 2*x)*y*(-2 + 3*y)*z12*z)*sdyz2
-	-6*(-1 + x)*x2*(-1 + y)*y*z12*z*sdxz2
-	+(-1 + x)*x2*y*(-2 + 3*y)*z12*z*sdxyz2
+	-6*(-1 + x)*x2*(-1 + y)*y*z12*(1 + 2*z)*sd.dx[2]
+	-(x2*(-3 + 2*x)*y*(-2 + 3*y)*z12*(1 + 2*z))*sd.dy[2]
+	+6*x2*(-3 + 2*x)*(-1 + y)*y*z12*z*sd.dz[2]
+	+(-1 + x)*x2*y*(-2 + 3*y)*z12*(1 + 2*z)*sd.dxy[2]
+	-(x2*(-3 + 2*x)*y*(-2 + 3*y)*z12*z)*sd.dyz[2]
+	-6*(-1 + x)*x2*(-1 + y)*y*z12*z*sd.dxz[2]
+	+(-1 + x)*x2*y*(-2 + 3*y)*z12*z*sd.dxyz[2]
 	-6*x12*(1 + 2*x)*(-1 + y)*y*z12*(1 + 2*z)*cd.node3()
-	-6*x12*x*(-1 + y)*y*z12*(1 + 2*z)*sdx3
-	+x12*(1 + 2*x)*y*(-2 + 3*y)*z12*(1 + 2*z)*sdy3
-	-6*x12*(1 + 2*x)*(-1 + y)*y*z12*z*sdz3
-	+x12*x*y*(-2 + 3*y)*z12*(1 + 2*z)*sdxy3
-	+x12*(1 + 2*x)*y*(-2 + 3*y)*z12*z*sdyz3
-	-6*x12*x*(-1 + y)*y*z12*z*sdxz3
-	+x12*x*y*(-2 + 3*y)*z12*z*sdxyz3
+	-6*x12*x*(-1 + y)*y*z12*(1 + 2*z)*sd.dx[3]
+	+x12*(1 + 2*x)*y*(-2 + 3*y)*z12*(1 + 2*z)*sd.dy[3]
+	-6*x12*(1 + 2*x)*(-1 + y)*y*z12*z*sd.dz[3]
+	+x12*x*y*(-2 + 3*y)*z12*(1 + 2*z)*sd.dxy[3]
+	+x12*(1 + 2*x)*y*(-2 + 3*y)*z12*z*sd.dyz[3]
+	-6*x12*x*(-1 + y)*y*z12*z*sd.dxz[3]
+	+x12*x*y*(-2 + 3*y)*z12*z*sd.dxyz[3]
 	-6*x12*(1 + 2*x)*(-1 + y)*y*z2*(-3 + 2*z)*cd.node4()
-	-6*x12*x*(-1 + y)*y*z2*(-3 + 2*z)*sdx4
-	-(x12*(1 + 2*x)*(1 - 4*y + 3*y2)*z2*(-3 + 2*z))*sdy4
-	+6*x12*(1 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sdz4
-	-(x12*x*(1 - 4*y + 3*y2)*z2*(-3 + 2*z))*sdxy4
-	+x12*(1 + 2*x)*(1 - 4*y + 3*y2)*(-1 + z)*z2*sdyz4
-	+6*x12*x*(-1 + y)*y*(-1 + z)*z2*sdxz4
-	+x12*x*(1 - 4*y + 3*y2)*(-1 + z)*z2*sdxyz4
+	-6*x12*x*(-1 + y)*y*z2*(-3 + 2*z)*sd.dx[4]
+	-(x12*(1 + 2*x)*(1 - 4*y + 3*y2)*z2*(-3 + 2*z))*sd.dy[4]
+	+6*x12*(1 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sd.dz[4]
+	-(x12*x*(1 - 4*y + 3*y2)*z2*(-3 + 2*z))*sd.dxy[4]
+	+x12*(1 + 2*x)*(1 - 4*y + 3*y2)*(-1 + z)*z2*sd.dyz[4]
+	+6*x12*x*(-1 + y)*y*(-1 + z)*z2*sd.dxz[4]
+	+x12*x*(1 - 4*y + 3*y2)*(-1 + z)*z2*sd.dxyz[4]
 	+6*x2*(-3 + 2*x)*(-1 + y)*y*z2*(-3 + 2*z)*cd.node5()
-	-6*(-1 + x)*x2*(-1 + y)*y*z2*(-3 + 2*z)*sdx5
-	+x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*z2*(-3 + 2*z)*sdy5
-	-6*x2*(-3 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sdz5
-	-((-1 + x)*x2*(1 - 4*y + 3*y2)*z2*(-3 + 2*z))*sdxy5
-	-(x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*(-1 + z)*z2)*sdyz5
-	+6*(-1 + x)*x2*(-1 + y)*y*(-1 + z)*z2*sdxz5
-	+(-1 + x)*x2*(1 - 4*y + 3*y2)*(-1 + z)*z2*sdxyz5
+	-6*(-1 + x)*x2*(-1 + y)*y*z2*(-3 + 2*z)*sd.dx[5]
+	+x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*z2*(-3 + 2*z)*sd.dy[5]
+	-6*x2*(-3 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sd.dz[5]
+	-((-1 + x)*x2*(1 - 4*y + 3*y2)*z2*(-3 + 2*z))*sd.dxy[5]
+	-(x2*(-3 + 2*x)*(1 - 4*y + 3*y2)*(-1 + z)*z2)*sd.dyz[5]
+	+6*(-1 + x)*x2*(-1 + y)*y*(-1 + z)*z2*sd.dxz[5]
+	+(-1 + x)*x2*(1 - 4*y + 3*y2)*(-1 + z)*z2*sd.dxyz[5]
 	-6*x2*(-3 + 2*x)*(-1 + y)*y*z2*(-3 + 2*z)*cd.node6()
-	+6*(-1 + x)*x2*(-1 + y)*y*z2*(-3 + 2*z)*sdx6
-	+x2*(-3 + 2*x)*y*(-2 + 3*y)*z2*(-3 + 2*z)*sdy6
-	+6*x2*(-3 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sdz6
-	-((-1 + x)*x2*y*(-2 + 3*y)*z2*(-3 + 2*z))*sdxy6
-	-(x2*(-3 + 2*x)*y*(-2 + 3*y)*(-1 + z)*z2)*sdyz6
-	-6*(-1 + x)*x2*(-1 + y)*y*(-1 + z)*z2*sdxz6
-	+(-1 + x)*x2*y*(-2 + 3*y)*(-1 + z)*z2*sdxyz6
+	+6*(-1 + x)*x2*(-1 + y)*y*z2*(-3 + 2*z)*sd.dx[6]
+	+x2*(-3 + 2*x)*y*(-2 + 3*y)*z2*(-3 + 2*z)*sd.dy[6]
+	+6*x2*(-3 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sd.dz[6]
+	-((-1 + x)*x2*y*(-2 + 3*y)*z2*(-3 + 2*z))*sd.dxy[6]
+	-(x2*(-3 + 2*x)*y*(-2 + 3*y)*(-1 + z)*z2)*sd.dyz[6]
+	-6*(-1 + x)*x2*(-1 + y)*y*(-1 + z)*z2*sd.dxz[6]
+	+(-1 + x)*x2*y*(-2 + 3*y)*(-1 + z)*z2*sd.dxyz[6]
 	+6*x12*(1 + 2*x)*(-1 + y)*y*z2*(-3 + 2*z)*cd.node7()
-	+6*x12*x*(-1 + y)*y*z2*(-3 + 2*z)*sdx7
-	-(x12*(1 + 2*x)*y*(-2 + 3*y)*z2*(-3 + 2*z))*sdy7
-	-6*x12*(1 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sdz7
-	-(x12*x*y*(-2 + 3*y)*z2*(-3 + 2*z))*sdxy7
-	+x12*(1 + 2*x)*y*(-2 + 3*y)*(-1 + z)*z2*sdyz7
-	-6*x12*x*(-1 + y)*y*(-1 + z)*z2*sdxz7
-	+x12*x*y*(-2 + 3*y)*(-1 + z)*z2*sdxyz7);
+	+6*x12*x*(-1 + y)*y*z2*(-3 + 2*z)*sd.dx[7]
+	-(x12*(1 + 2*x)*y*(-2 + 3*y)*z2*(-3 + 2*z))*sd.dy[7]
+	-6*x12*(1 + 2*x)*(-1 + y)*y*(-1 + z)*z2*sd.dz[7]
+	-(x12*x*y*(-2 + 3*y)*z2*(-3 + 2*z))*sd.dxy[7]
+	+x12*(1 + 2*x)*y*(-2 + 3*y)*(-1 + z)*z2*sd.dyz[7]
+	-6*x12*x*(-1 + y)*y*(-1 + z)*z2*sd.dxz[7]
+	+x12*x*y*(-2 + 3*y)*(-1 + z)*z2*sd.dxyz[7]);
 
   result[2]=
     static_cast<typename VECTOR2::value_type>(6*x12*(1 + 2*x)*y12*(1 + 2*y)*(-1 + z)*z*cd.node0()
-	+6*x12*x*y12*(1 + 2*y)*(-1 + z)*z*sdx0
-	+6*x12*(1 + 2*x)*y12*y*(-1 + z)*z*sdy0
-	+x12*(1 + 2*x)*y12*(1 + 2*y)*(1 - 4*z + 3*z2)*sdz0
-	+6*x12*x*y12*y*(-1 + z)*z*sdxy0
-	+x12*(1 + 2*x)*y12*y*(1 - 4*z + 3*z2)*sdyz0
-	+x12*x*y12*(1 + 2*y)*(1 - 4*z + 3*z2)*sdxz0
-	+x12*x*y12*y*(1 - 4*z + 3*z2)*sdxyz0
+	+6*x12*x*y12*(1 + 2*y)*(-1 + z)*z*sd.dx[0]
+	+6*x12*(1 + 2*x)*y12*y*(-1 + z)*z*sd.dy[0]
+	+x12*(1 + 2*x)*y12*(1 + 2*y)*(1 - 4*z + 3*z2)*sd.dz[0]
+	+6*x12*x*y12*y*(-1 + z)*z*sd.dxy[0]
+	+x12*(1 + 2*x)*y12*y*(1 - 4*z + 3*z2)*sd.dyz[0]
+	+x12*x*y12*(1 + 2*y)*(1 - 4*z + 3*z2)*sd.dxz[0]
+	+x12*x*y12*y*(1 - 4*z + 3*z2)*sd.dxyz[0]
 	-6*x2*(-3 + 2*x)*y12*(1 + 2*y)*(-1 + z)*z*cd.node1()
-	+6*(-1 + x)*x2*y12*(1 + 2*y)*(-1 + z)*z*sdx1
-	-6*x2*(-3 + 2*x)*y12*y*(-1 + z)*z*sdy1
-	-(x2*(-3 + 2*x)*y12*(1 + 2*y)*(1 - 4*z + 3*z2))*sdz1
-	+6*(-1 + x)*x2*y12*y*(-1 + z)*z*sdxy1
-	-(x2*(-3 + 2*x)*y12*y*(1 - 4*z + 3*z2))*sdyz1
-	+(-1 + x)*x2*y12*(1 + 2*y)*(1 - 4*z + 3*z2)*sdxz1
-	+(-1 + x)*x2*y12*y*(1 - 4*z + 3*z2)*sdxyz1
+	+6*(-1 + x)*x2*y12*(1 + 2*y)*(-1 + z)*z*sd.dx[1]
+	-6*x2*(-3 + 2*x)*y12*y*(-1 + z)*z*sd.dy[1]
+	-(x2*(-3 + 2*x)*y12*(1 + 2*y)*(1 - 4*z + 3*z2))*sd.dz[1]
+	+6*(-1 + x)*x2*y12*y*(-1 + z)*z*sd.dxy[1]
+	-(x2*(-3 + 2*x)*y12*y*(1 - 4*z + 3*z2))*sd.dyz[1]
+	+(-1 + x)*x2*y12*(1 + 2*y)*(1 - 4*z + 3*z2)*sd.dxz[1]
+	+(-1 + x)*x2*y12*y*(1 - 4*z + 3*z2)*sd.dxyz[1]
 	+6*x2*(-3 + 2*x)*y2*(-3 + 2*y)*(-1 + z)*z*cd.node2()
-	-6*(-1 + x)*x2*y2*(-3 + 2*y)*(-1 + z)*z*sdx2
-	-6*x2*(-3 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sdy2
-	+x2*(-3 + 2*x)*y2*(-3 + 2*y)*(1 - 4*z + 3*z2)*sdz2
-	+6*(-1 + x)*x2*(-1 + y)*y2*(-1 + z)*z*sdxy2
-	-(x2*(-3 + 2*x)*(-1 + y)*y2*(1 - 4*z + 3*z2))*sdyz2
-	-((-1 + x)*x2*y2*(-3 + 2*y)*(1 - 4*z + 3*z2))*sdxz2
-	+(-1 + x)*x2*(-1 + y)*y2*(1 - 4*z + 3*z2)*sdxyz2
+	-6*(-1 + x)*x2*y2*(-3 + 2*y)*(-1 + z)*z*sd.dx[2]
+	-6*x2*(-3 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sd.dy[2]
+	+x2*(-3 + 2*x)*y2*(-3 + 2*y)*(1 - 4*z + 3*z2)*sd.dz[2]
+	+6*(-1 + x)*x2*(-1 + y)*y2*(-1 + z)*z*sd.dxy[2]
+	-(x2*(-3 + 2*x)*(-1 + y)*y2*(1 - 4*z + 3*z2))*sd.dyz[2]
+	-((-1 + x)*x2*y2*(-3 + 2*y)*(1 - 4*z + 3*z2))*sd.dxz[2]
+	+(-1 + x)*x2*(-1 + y)*y2*(1 - 4*z + 3*z2)*sd.dxyz[2]
 	-6*x12*(1 + 2*x)*y2*(-3 + 2*y)*(-1 + z)*z*cd.node3()
-	-6*x12*x*y2*(-3 + 2*y)*(-1 + z)*z*sdx3
-	+6*x12*(1 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sdy3
-	-(x12*(1 + 2*x)*y2*(-3 + 2*y)*(1 - 4*z + 3*z2))*sdz3
-	+6*x12*x*(-1 + y)*y2*(-1 + z)*z*sdxy3
-	+x12*(1 + 2*x)*(-1 + y)*y2*(1 - 4*z + 3*z2)*sdyz3
-	-(x12*x*y2*(-3 + 2*y)*(1 - 4*z + 3*z2))*sdxz3
-	+x12*x*(-1 + y)*y2*(1 - 4*z + 3*z2)*sdxyz3
+	-6*x12*x*y2*(-3 + 2*y)*(-1 + z)*z*sd.dx[3]
+	+6*x12*(1 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sd.dy[3]
+	-(x12*(1 + 2*x)*y2*(-3 + 2*y)*(1 - 4*z + 3*z2))*sd.dz[3]
+	+6*x12*x*(-1 + y)*y2*(-1 + z)*z*sd.dxy[3]
+	+x12*(1 + 2*x)*(-1 + y)*y2*(1 - 4*z + 3*z2)*sd.dyz[3]
+	-(x12*x*y2*(-3 + 2*y)*(1 - 4*z + 3*z2))*sd.dxz[3]
+	+x12*x*(-1 + y)*y2*(1 - 4*z + 3*z2)*sd.dxyz[3]
 	-6*x12*(1 + 2*x)*y12*(1 + 2*y)*(-1 + z)*z*cd.node4()
-	-6*x12*x*y12*(1 + 2*y)*(-1 + z)*z*sdx4
-	-6*x12*(1 + 2*x)*y12*y*(-1 + z)*z*sdy4
-	+x12*(1 + 2*x)*y12*(1 + 2*y)*z*(-2 + 3*z)*sdz4
-	-6*x12*x*y12*y*(-1 + z)*z*sdxy4
-	+x12*(1 + 2*x)*y12*y*z*(-2 + 3*z)*sdyz4
-	+x12*x*y12*(1 + 2*y)*z*(-2 + 3*z)*sdxz4
-	+x12*x*y12*y*z*(-2 + 3*z)*sdxyz4
+	-6*x12*x*y12*(1 + 2*y)*(-1 + z)*z*sd.dx[4]
+	-6*x12*(1 + 2*x)*y12*y*(-1 + z)*z*sd.dy[4]
+	+x12*(1 + 2*x)*y12*(1 + 2*y)*z*(-2 + 3*z)*sd.dz[4]
+	-6*x12*x*y12*y*(-1 + z)*z*sd.dxy[4]
+	+x12*(1 + 2*x)*y12*y*z*(-2 + 3*z)*sd.dyz[4]
+	+x12*x*y12*(1 + 2*y)*z*(-2 + 3*z)*sd.dxz[4]
+	+x12*x*y12*y*z*(-2 + 3*z)*sd.dxyz[4]
 	+6*x2*(-3 + 2*x)*y12*(1 + 2*y)*(-1 + z)*z*cd.node5()
-	-6*(-1 + x)*x2*y12*(1 + 2*y)*(-1 + z)*z*sdx5
-	+6*x2*(-3 + 2*x)*y12*y*(-1 + z)*z*sdy5
-	-(x2*(-3 + 2*x)*y12*(1 + 2*y)*z*(-2 + 3*z))*sdz5
-	-6*(-1 + x)*x2*y12*y*(-1 + z)*z*sdxy5
-	-(x2*(-3 + 2*x)*y12*y*z*(-2 + 3*z))*sdyz5
-	+(-1 + x)*x2*y12*(1 + 2*y)*z*(-2 + 3*z)*sdxz5
-	+(-1 + x)*x2*y12*y*z*(-2 + 3*z)*sdxyz5
+	-6*(-1 + x)*x2*y12*(1 + 2*y)*(-1 + z)*z*sd.dx[5]
+	+6*x2*(-3 + 2*x)*y12*y*(-1 + z)*z*sd.dy[5]
+	-(x2*(-3 + 2*x)*y12*(1 + 2*y)*z*(-2 + 3*z))*sd.dz[5]
+	-6*(-1 + x)*x2*y12*y*(-1 + z)*z*sd.dxy[5]
+	-(x2*(-3 + 2*x)*y12*y*z*(-2 + 3*z))*sd.dyz[5]
+	+(-1 + x)*x2*y12*(1 + 2*y)*z*(-2 + 3*z)*sd.dxz[5]
+	+(-1 + x)*x2*y12*y*z*(-2 + 3*z)*sd.dxyz[5]
 	-6*x2*(-3 + 2*x)*y2*(-3 + 2*y)*(-1 + z)*z*cd.node6()
-	+6*(-1 + x)*x2*y2*(-3 + 2*y)*(-1 + z)*z*sdx6
-	+6*x2*(-3 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sdy6
-	+x2*(-3 + 2*x)*y2*(-3 + 2*y)*z*(-2 + 3*z)*sdz6
-	-6*(-1 + x)*x2*(-1 + y)*y2*(-1 + z)*z*sdxy6
-	-(x2*(-3 + 2*x)*(-1 + y)*y2*z*(-2 + 3*z))*sdyz6
-	-((-1 + x)*x2*y2*(-3 + 2*y)*z*(-2 + 3*z))*sdxz6
-	+(-1 + x)*x2*(-1 + y)*y2*z*(-2 + 3*z)*sdxyz6
+	+6*(-1 + x)*x2*y2*(-3 + 2*y)*(-1 + z)*z*sd.dx[6]
+	+6*x2*(-3 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sd.dy[6]
+	+x2*(-3 + 2*x)*y2*(-3 + 2*y)*z*(-2 + 3*z)*sd.dz[6]
+	-6*(-1 + x)*x2*(-1 + y)*y2*(-1 + z)*z*sd.dxy[6]
+	-(x2*(-3 + 2*x)*(-1 + y)*y2*z*(-2 + 3*z))*sd.dyz[6]
+	-((-1 + x)*x2*y2*(-3 + 2*y)*z*(-2 + 3*z))*sd.dxz[6]
+	+(-1 + x)*x2*(-1 + y)*y2*z*(-2 + 3*z)*sd.dxyz[6]
 	+6*x12*(1 + 2*x)*y2*(-3 + 2*y)*(-1 + z)*z*cd.node7()
-	+6*x12*x*y2*(-3 + 2*y)*(-1 + z)*z*sdx7
-	-6*x12*(1 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sdy7
-	-(x12*(1 + 2*x)*y2*(-3 + 2*y)*z*(-2 + 3*z))*sdz7
-	-6*x12*x*(-1 + y)*y2*(-1 + z)*z*sdxy7
-	+x12*(1 + 2*x)*(-1 + y)*y2*z*(-2 + 3*z)*sdyz7
-	-(x12*x*y2*(-3 + 2*y)*z*(-2 + 3*z))*sdxz7
-	+x12*x*(-1 + y)*y2*z*(-2 + 3*z)*sdxyz7);
+	+6*x12*x*y2*(-3 + 2*y)*(-1 + z)*z*sd.dx[7]
+	-6*x12*(1 + 2*x)*(-1 + y)*y2*(-1 + z)*z*sd.dy[7]
+	-(x12*(1 + 2*x)*y2*(-3 + 2*y)*z*(-2 + 3*z))*sd.dz[7]
+	-6*x12*x*(-1 + y)*y2*(-1 + z)*z*sd.dxy[7]
+	+x12*(1 + 2*x)*(-1 + y)*y2*z*(-2 + 3*z)*sd.dyz[7]
+	-(x12*x*y2*(-3 + 2*y)*z*(-2 + 3*z))*sd.dxz[7]
+	+x12*x*(-1 + y)*y2*z*(-2 + 3*z)*sd.dxyz[7]);
 }
 
 }}} // namespace SCIRun::Core::Basis
