@@ -622,6 +622,48 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
 
     VMesh::Elem::size_type sz; mesh->size(sz);
 
+    // Shared 3-hex "leading-edge" build used by both pattern==2 and pattern==8.
+    // Computes i60node/i71node from ro (output params) and adds 3 sub-hexes.
+    auto addLeadingEdgeHexes = [&](const int* ro,
+        VMesh::Node::index_type i06node,
+        VMesh::Node::index_type i17node,
+        VMesh::Node::index_type& i60node,
+        VMesh::Node::index_type& i71node)
+    {
+      i60node = add_point_convex(refined, onodes, ro, 6, 0, ivalues, basis_order);
+      i71node = add_point_convex(refined, onodes, ro, 7, 1, ivalues, basis_order);
+
+      nnodes[0] = onodes[ro[0]];
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 0, 1, ivalues, basis_order);
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 0, 2, ivalues, basis_order);
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 0, 3, ivalues, basis_order);
+      nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 4, ivalues, basis_order);
+      nnodes[5] = lookup_convex(refined, emap, onodes, ro, 0, 5, ivalues, basis_order);
+      nnodes[6] = i06node;
+      nnodes[7] = lookup_convex(refined, emap, onodes, ro, 0, 7, ivalues, basis_order);
+      refined->add_elem(nnodes);
+
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 1, ivalues, basis_order);
+      nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 0, ivalues, basis_order);
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 1, 3, ivalues, basis_order);
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 0, 2, ivalues, basis_order);
+      nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 5, ivalues, basis_order);
+      nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 4, ivalues, basis_order);
+      nnodes[6] = i17node;
+      nnodes[7] = i06node;
+      refined->add_elem(nnodes);
+
+      nnodes[0] = lookup_convex(refined, emap, onodes, ro, 1, 0, ivalues, basis_order);
+      nnodes[1] = onodes[ro[1]];
+      nnodes[2] = lookup_convex(refined, emap, onodes, ro, 1, 2, ivalues, basis_order);
+      nnodes[3] = lookup_convex(refined, emap, onodes, ro, 1, 3, ivalues, basis_order);
+      nnodes[4] = lookup_convex(refined, emap, onodes, ro, 1, 4, ivalues, basis_order);
+      nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 5, ivalues, basis_order);
+      nnodes[6] = lookup_convex(refined, emap, onodes, ro, 1, 6, ivalues, basis_order);
+      nnodes[7] = i17node;
+      refined->add_elem(nnodes);
+    };
+
     while (bi != ei)
     {
 				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; this->update_progress_max(loopcnt,sz);  }
@@ -708,41 +750,8 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
           add_point_convex(refined, onodes, ro, 0, 6,ivalues,basis_order);
        VMesh::Node::index_type i17node =
           add_point_convex(refined, onodes, ro, 1, 7,ivalues,basis_order);
-       VMesh::Node::index_type i60node =
-          add_point_convex(refined, onodes, ro, 6, 0,ivalues,basis_order);
-       VMesh::Node::index_type i71node =
-          add_point_convex(refined, onodes, ro, 7, 1,ivalues,basis_order);
-
-        // Leading edge.
-        nnodes[0] = onodes[ro[0]];
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 0, 1,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 0, 3,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 4,ivalues,basis_order);
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 0, 5,ivalues,basis_order);
-        nnodes[6] = i06node;
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 0, 7,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 1,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 0,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 5,ivalues,basis_order);
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 4,ivalues,basis_order);
-        nnodes[6] = i17node;
-        nnodes[7] = i06node;
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 1, 0,ivalues,basis_order);
-        nnodes[1] = onodes[ro[1]];
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 1, 2,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 1, 4,ivalues,basis_order);
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 5,ivalues,basis_order);
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 1, 6,ivalues,basis_order);
-        nnodes[7] = i17node;
-        refined->add_elem(nnodes);
+       VMesh::Node::index_type i60node, i71node;
+       addLeadingEdgeHexes(ro, i06node, i17node, i60node, i71node);
 
         // Top center
         nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 3,ivalues,basis_order);
@@ -1112,41 +1121,8 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
           add_point_convex(refined, onodes, ro, 4, 2,ivalues,basis_order);
        VMesh::Node::index_type i53node =
           add_point_convex(refined, onodes, ro, 5, 3,ivalues,basis_order);
-       VMesh::Node::index_type i60node =
-          add_point_convex(refined, onodes, ro, 6, 0,ivalues,basis_order);
-       VMesh::Node::index_type i71node =
-          add_point_convex(refined, onodes, ro, 7, 1,ivalues,basis_order);
-
-        // Top Front
-        nnodes[0] = onodes[ro[0]];
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 0, 1,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 0, 3,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 4,ivalues,basis_order);
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 0, 5,ivalues,basis_order);
-        nnodes[6] = i06node;
-        nnodes[7] = lookup_convex(refined, emap, onodes, ro, 0, 7,ivalues,basis_order);
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 1,ivalues,basis_order);
-        nnodes[1] = lookup_convex(refined, emap, onodes, ro, 1, 0,ivalues,basis_order);
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 0, 2,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 0, 5,ivalues,basis_order);
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 4,ivalues,basis_order);
-        nnodes[6] = i17node;
-        nnodes[7] = i06node;
-        refined->add_elem(nnodes);
-
-        nnodes[0] = lookup_convex(refined, emap, onodes, ro, 1, 0,ivalues,basis_order);
-        nnodes[1] = onodes[ro[1]];
-        nnodes[2] = lookup_convex(refined, emap, onodes, ro, 1, 2,ivalues,basis_order);
-        nnodes[3] = lookup_convex(refined, emap, onodes, ro, 1, 3,ivalues,basis_order);
-        nnodes[4] = lookup_convex(refined, emap, onodes, ro, 1, 4,ivalues,basis_order);
-        nnodes[5] = lookup_convex(refined, emap, onodes, ro, 1, 5,ivalues,basis_order);
-        nnodes[6] = lookup_convex(refined, emap, onodes, ro, 1, 6,ivalues,basis_order);
-        nnodes[7] = i17node;
-        refined->add_elem(nnodes);
+       VMesh::Node::index_type i60node, i71node;
+       addLeadingEdgeHexes(ro, i06node, i17node, i60node, i71node);
 
         // Top Center
         nnodes[0] = lookup_convex(refined, emap, onodes, ro, 0, 3,ivalues,basis_order);
