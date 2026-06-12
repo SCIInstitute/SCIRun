@@ -70,6 +70,30 @@ jobs:
       - name: Print Qt dir
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
 
+      - name: Set externals path
+        id: paths
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            echo "externals=build/Externals" >> $GITHUB_OUTPUT
+          else
+            echo "externals=bin/Externals" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache Superbuild externals
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.paths.outputs.externals }}/Install
+            ${{ steps.paths.outputs.externals }}/Stamp
+          key: superbuild-v1-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}
+          restore-keys: |
+            superbuild-v1-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-
+            superbuild-v1-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
       - name: Checkout SCIRunTestData
         if: ${{ inputs.run-regression-tests || inputs.coverage }}
         uses: actions/checkout@v6
@@ -89,6 +113,8 @@ jobs:
         run: |
           set -eux
           CMD=(./build.sh)
+          CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
+          CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
           # Variant-specific flags
           if [ "${{ inputs.variant }}" = "gui" ]; then
             # Pass Qt path (from installer or explicit), and set SCIRUN_QT_MIN_VERSION appropriately
@@ -154,6 +180,8 @@ jobs:
 
           # Build arguments for cmake
           $cmakeArgs = @()
+          $cmakeArgs += "-DCMAKE_C_COMPILER_LAUNCHER=sccache"
+          $cmakeArgs += "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
 
           # Always use Visual Studio generator on Windows to ensure MSVC flags are used
           $cmakeArgs += '-G'
