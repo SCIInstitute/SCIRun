@@ -322,6 +322,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ runner.os }}-${{ inputs.variant }}
+          if-no-files-found: ignore
           path: |
             /tmp/unit-test-results.txt
             /tmp/regression-test-results.txt
@@ -332,6 +333,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ runner.os }}-${{ inputs.variant }}
+          if-no-files-found: ignore
           path: |
             unit-test-results.txt
             regression-test-results.txt

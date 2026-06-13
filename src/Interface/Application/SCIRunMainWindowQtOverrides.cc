@@ -69,8 +69,6 @@ void SCIRunMainWindow::exitApplication(int code)
   // In regression mode, use quick_exit to avoid hangs/crashes in async teardown
   // paths where streaming execution threads outlive the GUI objects (e.g. the
   // async streaming test networks). The exit code is still propagated to CTest.
-  // ViewScene test stability is handled separately by offscreen rendering, so
-  // this no longer affects renderer test fidelity.
   if (Application::Instance().parameters()->isRegressionMode())
   {
     std::quick_exit(code);
