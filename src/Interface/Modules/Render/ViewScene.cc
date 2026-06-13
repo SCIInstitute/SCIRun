@@ -39,7 +39,6 @@
 #include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Interface/Modules/Render/GLWidget.h>
-#include <Interface/Modules/Render/OffscreenGLRenderer.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
@@ -162,8 +161,7 @@ namespace Gui {
   class ViewSceneDialogImpl
   {
   public:
-    GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context (null in offscreen mode).
-    std::unique_ptr<OffscreenGLRenderer>  offscreenRenderer_;                       ///< Used instead of mGLWidget in regression mode.
+    GLWidget*                             mGLWidget                     {nullptr};
     Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
     QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
     QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
@@ -401,25 +399,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setupScaleBar();
 
-  if (Application::Instance().parameters()->isRegressionMode())
-  {
-    impl_->offscreenRenderer_ = std::make_unique<OffscreenGLRenderer>(800, 600);
-    impl_->mSpire = impl_->offscreenRenderer_->renderer();
-  }
-  else
-  {
-    impl_->mGLWidget = new GLWidget(parentWidget());
-    QSurfaceFormat format;
-    format.setDepthBufferSize(24);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setVersion(2, 1);
-    impl_->mGLWidget->setFormat(format);
+  impl_->mGLWidget = new GLWidget(parentWidget());
+  QSurfaceFormat format;
+  format.setDepthBufferSize(24);
+  format.setProfile(QSurfaceFormat::CoreProfile);
+  format.setVersion(2, 1);
+  impl_->mGLWidget->setFormat(format);
 
-    connect(impl_->mGLWidget, &GLWidget::fatalError, this, &ViewSceneDialog::fatalError);
-    connect(impl_->mGLWidget, &GLWidget::finishedFrame, this, &ViewSceneDialog::frameFinished);
+  connect(impl_->mGLWidget, &GLWidget::fatalError, this, &ViewSceneDialog::fatalError);
+  connect(impl_->mGLWidget, &GLWidget::finishedFrame, this, &ViewSceneDialog::frameFinished);
 
-    impl_->mSpire = RendererWeakPtr(impl_->mGLWidget->getSpire());
-  }
+  impl_->mSpire = RendererWeakPtr(impl_->mGLWidget->getSpire());
 
   connect(this, &ViewSceneDialog::mousePressSignalForGeometryObjectFeedback,
           this, &ViewSceneDialog::sendGeometryFeedbackToState);
@@ -1417,9 +1407,7 @@ void ViewSceneDialog::updateModifiedGeometries()
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
   newGeometryValue(false, false);
-  if (impl_->offscreenRenderer_)
-    frameFinished();
-  else if (impl_->mGLWidget->isVisible() && impl_->mGLWidget->isValid())
+  if (impl_->mGLWidget->isVisible() && impl_->mGLWidget->isValid())
     impl_->mGLWidget->requestFrame();
   else
     unblockExecution();
@@ -1441,14 +1429,9 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippi
   if (!spire)
     return;
 
-  if (impl_->offscreenRenderer_)
-    spire->setContext(impl_->offscreenRenderer_->context());
-  else
-  {
-    if (!impl_->mGLWidget->isValid())
-      return;
-    spire->setContext(impl_->mGLWidget->context());
-  }
+  if (!impl_->mGLWidget->isValid())
+    return;
+  spire->setContext(impl_->mGLWidget->context());
 
   if (forceAllObjectsToUpdate)
     spire->removeAllGeomObjects();
@@ -3252,13 +3235,6 @@ void ViewSceneDialog::sendBugReport()
 
 void ViewSceneDialog::takeScreenshot()
 {
-  if (impl_->offscreenRenderer_)
-  {
-    if (!impl_->screenshotTaker_)
-      impl_->screenshotTaker_ = new Screenshot(nullptr, this);
-    impl_->screenshotTaker_->setImage(impl_->offscreenRenderer_->renderToImage());
-    return;
-  }
   if (!impl_->screenshotTaker_)
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
   impl_->screenshotTaker_->takeScreenshot();
