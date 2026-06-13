@@ -61,6 +61,7 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   VMesh.h
   VMeshShared.h
   VUnstructuredMesh.h
+  VVolMesh.h
 )
 
 SET(Core_Datatypes_Legacy_Field_SRCS

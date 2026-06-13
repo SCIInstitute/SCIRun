@@ -136,6 +136,7 @@ class TetVolMesh : public Mesh
 {
   /// Make sure the virtual interface has access
   template<class MESH> friend class VTetVolMesh;
+  template<class MESH> friend class VVolMesh;
   template<class MESH> friend class VMeshShared;
   template<class MESH> friend class VUnstructuredMesh;
 
