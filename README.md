@@ -6,6 +6,7 @@
 ![mac-build](https://github.com/SCIInstitute/SCIRun/workflows/mac-build/badge.svg)
 ![linux-build](https://github.com/SCIInstitute/SCIRun/workflows/linux-build/badge.svg)
 ![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
+[![regression-tests](https://github.com/SCIInstitute/SCIRun/workflows/regression-tests/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml)
 <!-- [![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun) -->
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")

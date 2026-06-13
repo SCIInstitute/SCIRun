@@ -46,7 +46,9 @@ namespace SCIRun {
           }
           void run() const
           {
+            if (!lookup_) return;
             auto* exec = lookup_->lookupExecutable(module_->id());
+            if (!exec) return;
             boost::signals2::scoped_connection s(exec->connectExecuteEnds([this](double, const Networks::ModuleId&) { producer_->enqueueReadyModules(); }));
             exec->executeWithSignals();
           }

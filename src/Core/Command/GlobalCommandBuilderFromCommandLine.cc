@@ -29,6 +29,7 @@
 /// @todo Documentation Core/Command/GlobalCommandBuilderFromCommandLine.cc
 
 #include <iostream>
+#include <boost/filesystem.hpp>
 #include <Core/Utils/SmartPointers.h>
 #include <Core/Command/CommandQueue.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
@@ -89,8 +90,30 @@ using namespace SCIRun::Core::Algorithms;
 
       q->enqueue(import);
       auto save = cmdFactory_->create(GlobalCommands::SaveNetworkFile);
-      save->set(Variables::Filename, (*params->importNetworkFile()) + "_imported.srn5");
+      // Normally the converted network is written next to the source so users
+      // get a usable <name>_imported.srn5. In regression mode write it to a
+      // temp directory instead: the import tests only validate that the import
+      // succeeds, and writing next to the source pollutes the (often
+      // shared/read-only) test data directory.
+      if (params->isRegressionMode())
+      {
+        boost::filesystem::path src(*params->importNetworkFile());
+        auto tmp = boost::filesystem::temp_directory_path() / (src.filename().string() + "_imported.srn5");
+        save->set(Variables::Filename, tmp.string());
+      }
+      else
+      {
+        save->set(Variables::Filename, (*params->importNetworkFile()) + "_imported.srn5");
+      }
       q->enqueue(save);
+
+      // In regression mode the import runs through the GUI command factory (no
+      // -x), which never executes the network and so never arms the quit-after-
+      // execute path. Enqueue an explicit quit so the import test terminates
+      // instead of leaving the GUI open. Interactive --import use (not
+      // regression) keeps the window open so the user can see the result.
+      if (params->isRegressionMode())
+        q->enqueue(cmdFactory_->create(GlobalCommands::QuitCommand));
     }
 
     if (params->pythonScriptFile())

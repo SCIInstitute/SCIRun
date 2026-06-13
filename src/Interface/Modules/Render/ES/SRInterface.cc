@@ -1200,8 +1200,14 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       const std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       if (const auto iboMan = im.lock()) {
         ren::IBO ibo;
-        const auto iboData = iboMan->getIBOData(iboName);
+        // hasIBO returns 0 (never a valid glGenBuffers id) when the named IBO is
+        // not present. Skip rather than letting getIBOData throw — the IBO can be
+        // legitimately absent if it was garbage collected between geometry
+        // updates, and a missing index buffer should drop the pass, not abort.
         ibo.glid = iboMan->hasIBO(iboName);
+        if (ibo.glid == 0)
+          return;
+        const auto iboData = iboMan->getIBOData(iboName);
         ibo.primType = iboData.primType;
         ibo.primMode = iboData.primMode;
         ibo.numPrims = iboData.numPrims;
