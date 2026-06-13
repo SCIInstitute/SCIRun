@@ -27,7 +27,7 @@
 
 
 #include <Core/Datatypes/Legacy/Field/QuadSurfMesh.h>
-#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/VSurfMesh.h>
 
 /// Only include this class if we included QuadSurf Support
 #if (SCIRUN_QUADSURF_SUPPORT > 0)
@@ -40,11 +40,11 @@ namespace SCIRun {
 /// This class is not exposed to the general interface and only the VMesh class
 /// is accessed by other classes.
 template<class MESH>
-class VQuadSurfMesh : public VUnstructuredMesh<MESH> {
+class VQuadSurfMesh : public VSurfMesh<MESH> {
 public:
   bool is_quadsurfmesh() override { return (true); }
 
-  VQuadSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh)
+  VQuadSurfMesh(MESH* mesh) : VSurfMesh<MESH>(mesh)
   {
     DEBUG_CONSTRUCTOR("VQuadSurfMesh")
   }
@@ -52,68 +52,7 @@ public:
   {
     DEBUG_DESTRUCTOR("VQuadSurfMesh")
   }
-
-  void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Edge::index_type i) const override;
-  void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Face::index_type i) const override;
-  void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::Elem::index_type i) const override;
-  void get_nodes(VMesh::Node::array_type& nodes,
-                         VMesh::DElem::index_type i) const override;
-
-  void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Face::index_type i) const override;
-  void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::Elem::index_type i) const override;
-  void get_enodes(VMesh::ENode::array_type& edges,
-                          VMesh::DElem::index_type i) const override;
-
-  void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Node::index_type i) const override;
-  void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Face::index_type i) const override;
-  void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::Elem::index_type i) const override;
-  void get_edges(VMesh::Edge::array_type& edges,
-                         VMesh::DElem::index_type i) const override;
-
-  void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Node::index_type i) const override;
-  void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Edge::index_type i) const override;
-  void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::Elem::index_type i) const override;
-  void get_faces(VMesh::Face::array_type& faces,
-                         VMesh::DElem::index_type i) const override;
-
-  void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Node::index_type i) const override;
-  void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Edge::index_type i) const override;
-  void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::Face::index_type i) const override;
-  void get_elems(VMesh::Elem::array_type& elems,
-                         VMesh::DElem::index_type i) const override;
-
-  void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Node::index_type i) const override;
-  void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Edge::index_type i) const override;
-  void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Face::index_type i) const override;
-  void get_delems(VMesh::DElem::array_type& delems,
-                          VMesh::Elem::index_type i) const override;
-
-  void set_nodes(VMesh::Node::array_type&,
-                         VMesh::Elem::index_type) override;
-
-  void set_nodes(VMesh::Node::array_type&,
-                         VMesh::Face::index_type) override;
-
-  VMesh::index_type* get_elems_pointer() const override;
 };
-
 
 /// Functions for creating the virtual interface for specific mesh types
 /// These are similar to compare maker and only serve to instantiate the class
@@ -165,217 +104,6 @@ static MeshTypeID QuadSurfMesh_MeshID3(QuadSurfMesh<QuadBicubicHmt<Point> >::typ
                   QuadSurfMesh<QuadBicubicHmt<Point> >::mesh_maker);
 
 #endif
-
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_nodes(VMesh::Node::array_type& nodes,
-                              VMesh::Edge::index_type i) const
-{
-  this->mesh_->get_nodes_from_edge(nodes,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_nodes(VMesh::Node::array_type& nodes,
-                              VMesh::Face::index_type i) const
-{
-  this->mesh_->get_nodes_from_face(nodes,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_nodes(VMesh::Node::array_type& nodes,
-                               VMesh::Elem::index_type i) const
-{
-  this->mesh_->get_nodes_from_face(nodes,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_nodes(VMesh::Node::array_type& nodes,
-                               VMesh::DElem::index_type i) const
-{
-  this->mesh_->get_nodes_from_edge(nodes,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_enodes(VMesh::ENode::array_type& enodes,
-                               VMesh::Face::index_type i) const
-{
-  this->mesh_->get_edges_from_face(enodes,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_enodes(VMesh::ENode::array_type& enodes,
-                               VMesh::Elem::index_type i) const
-{
-  this->mesh_->get_edges_from_face(enodes,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_enodes(VMesh::ENode::array_type& enodes,
-                               VMesh::DElem::index_type i) const
-{
-  enodes.resize(1); enodes[0] = static_cast<VMesh::ENode::index_type>(i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_edges(VMesh::Edge::array_type& edges,
-                              VMesh::Node::index_type i) const
-{
-  this->mesh_->get_edges_from_node(edges,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_edges(VMesh::Edge::array_type& edges,
-                              VMesh::Face::index_type i) const
-{
-  this->mesh_->get_edges_from_face(edges,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_edges(VMesh::Edge::array_type& edges,
-                              VMesh::Elem::index_type i) const
-{
-  this->mesh_->get_edges_from_face(edges,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_edges(VMesh::Edge::array_type& edges,
-                               VMesh::DElem::index_type i) const
-{
-  edges.resize(1); edges[0] = static_cast<VMesh::Edge::index_type>(i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_faces(VMesh::Face::array_type& faces,
-                               VMesh::Node::index_type i) const
-{
-  this->mesh_->get_faces_from_node(faces,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_faces(VMesh::Face::array_type& faces,
-                               VMesh::Edge::index_type i) const
-{
-  this->mesh_->get_faces_from_edge(faces,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_faces(VMesh::Face::array_type& faces,
-                               VMesh::Elem::index_type i) const
-{
-  faces.resize(1); faces[0] = static_cast<VMesh::Face::index_type>(i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_faces(VMesh::Face::array_type& faces,
-                               VMesh::DElem::index_type i) const
-{
-  this->mesh_->get_faces_from_edge(faces,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_elems(VMesh::Elem::array_type& elems,
-                               VMesh::Node::index_type i) const
-{
-  this->mesh_->get_faces_from_node(elems,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_elems(VMesh::Elem::array_type& elems,
-                               VMesh::Edge::index_type i) const
-{
-  this->mesh_->get_faces_from_edge(elems,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_elems(VMesh::Elem::array_type& elems,
-                               VMesh::Face::index_type i) const
-{
-  elems.resize(1); elems[0] = static_cast<VMesh::Elem::index_type>(i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_elems(VMesh::Elem::array_type& elems,
-                               VMesh::DElem::index_type i) const
-{
-  this->mesh_->get_faces_from_edge(elems,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_delems(VMesh::DElem::array_type& delems,
-                                VMesh::Node::index_type i) const
-{
-  this->mesh_->get_edges_from_node(delems,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_delems(VMesh::DElem::array_type& delems,
-                                VMesh::Edge::index_type i) const
-{
-  delems.resize(1); delems[0] = static_cast<VMesh::DElem::index_type>(i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_delems(VMesh::DElem::array_type& delems,
-                                VMesh::Face::index_type i) const
-{
-  this->mesh_->get_edges_from_face(delems,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::get_delems(VMesh::DElem::array_type& delems,
-                                VMesh::Elem::index_type i) const
-{
-  this->mesh_->get_edges_from_face(delems,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes,
-                              VMesh::Elem::index_type i)
-{
-  this->mesh_->set_nodes_by_elem(nodes,i);
-}
-
-template <class MESH>
-void
-VQuadSurfMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes,
-                              VMesh::Face::index_type i)
-{
-  this->mesh_->set_nodes_by_elem(nodes,i);
-}
-
-
-template <class MESH>
-VMesh::index_type*
-VQuadSurfMesh<MESH>::
-get_elems_pointer() const
-{
-  if (this->mesh_->faces_.size() == 0) return (nullptr);
-   return (&(this->mesh_->faces_[0]));
-}
 
 
 } // namespace SCIRun
