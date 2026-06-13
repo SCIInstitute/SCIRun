@@ -89,9 +89,14 @@ namespace SCIRun::Modules::Basic
       f_ = std::async([this]() { pushDataToStream(); });
     }
 
+    bool moreDataExpected() const
+    {
+      return hasData() || !stream_.empty();
+    }
+
     void waitAndOutputEach()
     {
-      if (hasData())
+      if (moreDataExpected())
       {
         //wait for result.
         while (stream().empty())
@@ -110,8 +115,11 @@ namespace SCIRun::Modules::Basic
         logInfo("__MAIN__ Received data: [{}] outputting matrix.", (*data)(0, 0));
         module_->sendOutput(module_->OutputSlice, bundleOutputs({ "Slice" }, { data }));
 
-        logInfo("__MAIN__ Enqueue execute again");
-        module_->enqueueExecuteAgain(false);
+        if (moreDataExpected())
+        {
+          logInfo("__MAIN__ Enqueue execute again");
+          module_->enqueueExecuteAgain(false);
+        }
       }
     }
 

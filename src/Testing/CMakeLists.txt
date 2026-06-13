@@ -101,16 +101,48 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
-    ADD_TEST(".Test.ExampleNetwork.${srn_name}_srn" ${EXE_LOC} -E ${srn} --no_splash --regression 30 -d ${SCIRUN_TEST_RESOURCE_DIR})
+    SET(test_name ".Test.ExampleNetwork.${srn_name}_srn")
+    # In-app regression timeout (seconds). 60 gives the heaviest networks
+    # headroom when the machine is under parallel load; genuine hangs are still
+    # bounded by the ctest --timeout passed in CI.
+    ADD_TEST("${test_name}" ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
+
+    # Networks that instantiate a ViewScene render through an offscreen GL
+    # context in regression mode. macOS serializes GPU command submission
+    # across contexts, so running several ViewScene networks concurrently can
+    # slow rendering enough to trip the in-app regression timeout. Give these
+    # tests a shared RESOURCE_LOCK so CTest never schedules two of them at once,
+    # while CPU-only tests still parallelize freely.
+    FILE(READ "${srn}" srn_contents)
+    STRING(FIND "${srn_contents}" "ViewScene" srn_viewscene_pos)
+    IF(NOT srn_viewscene_pos EQUAL -1)
+      SET_TESTS_PROPERTIES("${test_name}" PROPERTIES RESOURCE_LOCK gpu)
+    ENDIF()
+    UNSET(srn_contents)
   ENDFOREACH()
 
 ENDIF()
 
 IF(RUN_IMPORT_TESTS)
   FILE(GLOB_RECURSE scirun_legacy_srns "${SCIRUN_TEST_RESOURCE_DIR}/**/*.srn")
+  # The glob is broad; drop files that aren't legacy v4 networks: serialization
+  # test artifacts (TransientOutput/), scratch outputs (*_TMP.srn), and any
+  # converted networks left in the data dir (*_imported.srn5 won't match *.srn,
+  # but guard against *_imported.srn just in case).
+  LIST(FILTER scirun_legacy_srns EXCLUDE REGEX "(/TransientOutput/|_TMP\\.srn$|_imported)")
   FOREACH(srn ${scirun_legacy_srns})
-    GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
-    ADD_TEST(".Test.ImportNetwork.${srn_name}_srn" ${EXE_LOC} -x --no_splash --regression 30 --import ${srn})
+    # Name tests by path relative to the data dir, not just the basename:
+    # several legacy networks share a basename across subdirectories, which
+    # would collide into a single CTest test name.
+    FILE(RELATIVE_PATH srn_rel "${SCIRUN_TEST_RESOURCE_DIR}" "${srn}")
+    STRING(REGEX REPLACE "[/\\\\]" "." srn_rel "${srn_rel}")
+    STRING(REGEX REPLACE "\\.srn$" "" srn_rel "${srn_rel}")
+    SET(import_test_name ".Test.ImportNetwork.${srn_rel}")
+    # Run in GUI mode (no -x): import goes through the GuiCommandFactory's
+    # FileImportCommand. The headless console path has no import command.
+    ADD_TEST("${import_test_name}" ${EXE_LOC} --no_splash --regression 30 --import ${srn})
+    # Bound a hung import at the ctest level.
+    SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES TIMEOUT 120)
   ENDFOREACH()
 ENDIF()
 
