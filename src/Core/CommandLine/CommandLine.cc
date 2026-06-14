@@ -53,7 +53,7 @@ public:
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
       ("datadir,d", po::value<std::string>(), "scirun data directory")
-      ("image-dir", po::value<std::string>(), "output directory for ViewScene images saved with --save-images (deterministic names in regression mode)")
+      ("image-dir", po::value<std::string>(), "output directory for regression-mode images")
       ("regression,r", po::value<int>(), "regression test a network")
       //("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("most-recent,1", "load the most recently used file")
