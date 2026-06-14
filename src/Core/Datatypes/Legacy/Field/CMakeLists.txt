@@ -43,6 +43,8 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   ImageMesh.h
   LatVolMesh.h
   Mesh.h
+  MeshFindClosestNodes1Body.h
+  MeshFindClosestNodes2Body.h
   MeshSupport.h
   MeshTypes.h
   PointCloudMesh.h
@@ -60,6 +62,11 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   VField.h
   VMesh.h
   VMeshShared.h
+  VRegularMeshCoordsImpl.h
+  VRegularMeshGradientPointImpl.h
+  VRegularMeshLocateElemImpl.h
+  VStructMeshCoordsImpl.h
+  VStructMeshLocateImpl.h
   VUnstructuredMesh.h
   VVolMesh.h
   VSurfMesh.h

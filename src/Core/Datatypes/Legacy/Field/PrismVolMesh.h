@@ -942,141 +942,18 @@ public:
   template <class ARRAY>
   bool find_closest_nodes(ARRAY &nodes, const Core::Geometry::Point &p, double maxdist) const
   {
-    nodes.clear();
-
-    ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
-        "PrismVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
-
-    // get grid sizes
-    const size_type ni = node_grid_->get_ni()-1;
-    const size_type nj = node_grid_->get_nj()-1;
-    const size_type nk = node_grid_->get_nk()-1;
-
-    // Convert to grid coordinates.
-    index_type bi, bj, bk, ei, ej, ek;
-
-    Core::Geometry::Point max = p+Core::Geometry::Vector(maxdist,maxdist,maxdist);
-    Core::Geometry::Point min = p+Core::Geometry::Vector(-maxdist,-maxdist,-maxdist);
-
-    node_grid_->unsafe_locate(bi, bj, bk, min);
-    node_grid_->unsafe_locate(ei, ej, ek, max);
-
-    // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj;
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk;
-    if (bk < 0) bk = 0;
-
-    if (ei > ni) ei = ni;
-    if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj;
-    if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk;
-    if (ek < 0) ek = 0;
-
-    double maxdist2 = maxdist*maxdist;
-
-    for (index_type i = bi; i <= ei; i++)
-    {
-      for (index_type j = bj; j <= ej; j++)
-      {
-        for (index_type k = bk; k <= ek; k++)
-        {
-          if (node_grid_->min_distance_squared(p, i, j, k) < maxdist2)
-          {
-            typename SearchGridT<index_type>::iterator  it, eit;
-            node_grid_->lookup_ijk(it, eit, i, j, k);
-
-            while (it != eit)
-            {
-              const Core::Geometry::Point point = points_[*it];
-              const double dist  = (p-point).length2();
-
-              if (dist < maxdist2)
-              {
-                nodes.push_back(*it);
-              }
-              ++it;
-            }
-          }
-        }
-      }
-    }
-
-    return(nodes.size() > 0);
+#define MESH_FIND_CLOSEST_NODES_MSG "PrismVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E)."
+#include <Core/Datatypes/Legacy/Field/MeshFindClosestNodes1Body.h>
+#undef MESH_FIND_CLOSEST_NODES_MSG
   }
 
 
   template <class ARRAY1, class ARRAY2>
   bool find_closest_nodes(ARRAY1 &distances, ARRAY2 &nodes, const Core::Geometry::Point &p, double maxdist) const
   {
-    nodes.clear();
-
-    ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
-        "PrismVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
-
-    // get grid sizes
-    const size_type ni = node_grid_->get_ni()-1;
-    const size_type nj = node_grid_->get_nj()-1;
-    const size_type nk = node_grid_->get_nk()-1;
-
-    // Convert to grid coordinates.
-    index_type bi, bj, bk, ei, ej, ek;
-
-    Core::Geometry::Point max = p+Core::Geometry::Vector(maxdist,maxdist,maxdist);
-    Core::Geometry::Point min = p+Core::Geometry::Vector(-maxdist,-maxdist,-maxdist);
-
-    node_grid_->unsafe_locate(bi, bj, bk, min);
-    node_grid_->unsafe_locate(ei, ej, ek, max);
-
-    // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj;
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk;
-    if (bk < 0) bk = 0;
-
-    if (ei > ni) ei = ni;
-    if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj;
-    if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk;
-    if (ek < 0) ek = 0;
-
-    double maxdist2 = maxdist*maxdist;
-
-    for (index_type i = bi; i <= ei; i++)
-    {
-      for (index_type j = bj; j <= ej; j++)
-      {
-        for (index_type k = bk; k <= ek; k++)
-        {
-          if (node_grid_->min_distance_squared(p, i, j, k) < maxdist2)
-          {
-            typename SearchGridT<index_type>::iterator  it, eit;
-            node_grid_->lookup_ijk(it, eit, i, j, k);
-
-            while (it != eit)
-            {
-              const Core::Geometry::Point point = points_[*it];
-              const double dist  = (p-point).length2();
-
-              if (dist < maxdist2)
-              {
-                nodes.push_back(*it);
-                distances.push_back(dist);
-              }
-              ++it;
-            }
-          }
-        }
-      }
-    }
-
-    return(nodes.size() > 0);
+#define MESH_FIND_CLOSEST_NODES_MSG "PrismVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E)."
+#include <Core/Datatypes/Legacy/Field/MeshFindClosestNodes2Body.h>
+#undef MESH_FIND_CLOSEST_NODES_MSG
   }
 
 
