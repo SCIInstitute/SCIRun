@@ -34,7 +34,7 @@ jobs:
   windows-headless-regression:
     uses: ./.github/workflows/reusable-build.yml
     with:
-      runner: windows-latest
+      runner: windows-2022
       variant: headless
       build-testing: true
       run-unit-tests: true
