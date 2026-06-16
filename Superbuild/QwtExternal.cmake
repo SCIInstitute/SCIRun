@@ -73,30 +73,35 @@ else()
   set(_EP_CFG "")  # no --config for single-config generators
 endif()
 
+if(NOT _is_multi AND CMAKE_BUILD_TYPE)
+  list(APPEND _qwt_extra_cmake_args "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+endif()
+
 ExternalProject_Add(Qwt_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt-cmake-wrapper.git"
   GIT_TAG        ${qwt_WRAPPER_GIT_TAG}
 
-  # Make cloning robust for pinned tags (turn off shallow during stabilization)
-  GIT_SHALLOW    0         # <-- changed from 1 to 0
+  GIT_SHALLOW    0
   GIT_PROGRESS   1
-  GIT_SUBMODULES ""        # explicit: no submodules
+  GIT_SUBMODULES ""
 
   SOURCE_DIR ${_qwt_src}
   BINARY_DIR ${_qwt_bin}
   INSTALL_DIR ${_qwt_inst}
 
-  CMAKE_ARGS
-    -DCMAKE_INSTALL_PREFIX=${_qwt_inst}
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+  CMAKE_CACHE_ARGS
+    -DCMAKE_INSTALL_PREFIX:PATH=${_qwt_inst}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     ${_qwt_extra_cmake_args}
 
-  # For pinned tags, skip update step entirely to avoid running git in a non-git tree
-  UPDATE_COMMAND ""        # <-- added: prevents Qwt_external-gitupdate.cmake
+  UPDATE_COMMAND ""
 
   BUILD_COMMAND   ${CMAKE_COMMAND} --build . $<$<BOOL:${_EP_CFG}>:--config ${_EP_CFG}>
   INSTALL_COMMAND ${CMAKE_COMMAND} --install . $<$<BOOL:${_EP_CFG}>:--config ${_EP_CFG}>
+
+  BUILD_BYPRODUCTS
+    ${QWT_LIBRARY_DIR}/libqwt.a
+    ${QWT_LIBRARY_DIR}/libqwtd.a
 
   LOG_DOWNLOAD  1
   LOG_UPDATE    1
@@ -123,7 +128,7 @@ if(WIN32)
 else()
   # Handle both flat and per-config layouts
   set(QWT_LIBRARY
-    $<$<CONFIG:Debug>:${QWT_LIBRARY_DIR}/Debug/libqwt.a>
+    $<$<CONFIG:Debug>:${QWT_LIBRARY_DIR}/libqwtd.a>
     $<$<CONFIG:Release>:${QWT_LIBRARY_DIR}/libqwt.a>
     $<$<CONFIG:RelWithDebInfo>:${QWT_LIBRARY_DIR}/libqwt.a>
     $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_DIR}/libqwt.a>
