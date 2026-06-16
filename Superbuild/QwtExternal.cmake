@@ -66,16 +66,11 @@ include(ExternalProject)
 
 # Detect whether we're using a multi-config generator (e.g., Visual Studio)
 get_property(_is_multi GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
 if(_is_multi)
-  # Forward the native config placeholder (e.g., $(Configuration))
   set(_EP_CFG "${CMAKE_CFG_INTDIR}")
 else()
-  # Single-config (e.g., Ninja/Unix Makefiles) → use CMAKE_BUILD_TYPE (may be empty = default)
-  if(CMAKE_BUILD_TYPE)
-    set(_EP_CFG "${CMAKE_BUILD_TYPE}")
-  else()
-    set(_EP_CFG ".")  # no named config; the placeholder is '.' for single-config
-  endif()
+  set(_EP_CFG "")  # no --config for single-config generators
 endif()
 
 ExternalProject_Add(Qwt_external
@@ -100,8 +95,8 @@ ExternalProject_Add(Qwt_external
   # For pinned tags, skip update step entirely to avoid running git in a non-git tree
   UPDATE_COMMAND ""        # <-- added: prevents Qwt_external-gitupdate.cmake
 
-  BUILD_COMMAND   ${CMAKE_COMMAND} --build . --config ${_EP_CFG}
-  INSTALL_COMMAND ${CMAKE_COMMAND} --install . --config ${_EP_CFG}
+  BUILD_COMMAND   ${CMAKE_COMMAND} --build . $<$<BOOL:${_EP_CFG}>:--config ${_EP_CFG}>
+  INSTALL_COMMAND ${CMAKE_COMMAND} --install . $<$<BOOL:${_EP_CFG}>:--config ${_EP_CFG}>
 
   LOG_DOWNLOAD  1
   LOG_UPDATE    1
@@ -115,11 +110,9 @@ ExternalProject_Add(Qwt_external
 # ----------------------------
 
 if(WIN32)
-  # Qwt wrapper uses qwtd.lib for Debug, qwt.lib for Release
-  set(QWT_LIBRARY_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib")
-  set(QWT_LIBRARY_RELEASE "${QWT_LIBRARY_DIR}/qwt.lib")
+  set(QWT_LIBRARY_DEBUG   "${QWT_LIBRARY_DIR}/Debug/qwtd.lib")
+  set(QWT_LIBRARY_RELEASE "${QWT_LIBRARY_DIR}/Release/qwt.lib")
 
-  # Generator-expression aware library selection
   set(QWT_LIBRARY
     $<$<CONFIG:Debug>:${QWT_LIBRARY_DEBUG}>
     $<$<CONFIG:Release>:${QWT_LIBRARY_RELEASE}>
@@ -127,10 +120,14 @@ if(WIN32)
     $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_RELEASE}>
   )
 
-elseif(APPLE)
-  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.a")
 else()
-  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.a")
+  # Handle both flat and per-config layouts
+  set(QWT_LIBRARY
+    $<$<CONFIG:Debug>:${QWT_LIBRARY_DIR}/Debug/libqwt.a>
+    $<$<CONFIG:Release>:${QWT_LIBRARY_DIR}/libqwt.a>
+    $<$<CONFIG:RelWithDebInfo>:${QWT_LIBRARY_DIR}/libqwt.a>
+    $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_DIR}/libqwt.a>
+  )
 endif()
 
 # Export to SCIRun
