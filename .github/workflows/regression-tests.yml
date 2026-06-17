@@ -1,0 +1,52 @@
+name: regression-tests
+
+on:
+  push:
+    branches:
+      - regression-tests-ci
+      - master
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+
+jobs:
+  linux-headless-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      variant: headless
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
+
+  mac-gui-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
+
+  windows-headless-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2022
+      variant: headless
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
+
+  mac-coverage:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      build-testing: true
+      coverage: true

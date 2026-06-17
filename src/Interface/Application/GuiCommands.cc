@@ -27,6 +27,7 @@
 
 
 #include <Interface/qt_include.h>
+#include <cstdlib>
 #include <numeric>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Application/Preferences/Preferences.h>
@@ -235,7 +236,10 @@ bool NetworkFileProcessCommand::execute()
 
     auto quiet = get(AlgorithmParameterName("QuietMode")).toBool();
 
-    if (!quiet)
+    // Never pop a modal dialog in regression mode: it blocks the automated run
+    // waiting for a manual OK. The error is reported via the log (and, for
+    // import, by failing the test below).
+    if (!quiet && !Application::Instance().parameters()->isRegressionMode())
     {
       if (message.find("InterfaceWithTetGen") != std::string::npos)
       {
@@ -256,6 +260,18 @@ bool NetworkFileProcessCommand::execute()
   catch (...)
   {
     GuiLogger::logErrorStd("File load failed (" + filename + "): Unknown exception in load_xml.");
+  }
+
+  // In regression mode, surface import failures as a failed test instead of a
+  // (now-suppressed) dialog: exit non-zero so ctest reports it. The reason is
+  // already in the log above.
+  if (failTestOnError() && Application::Instance().parameters()->isRegressionMode())
+  {
+    GuiLogger::logErrorStd("Regression import failed, exiting non-zero: " + filename);
+    // Mirrors SCIRunMainWindow::exitApplication's regression-mode behavior
+    // (which calls quick_exit) so the regression test reports a failure. Done
+    // directly here because exitApplication is a private slot.
+    std::quick_exit(1);
   }
   return false;
 }

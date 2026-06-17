@@ -601,10 +601,16 @@ std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, 
 {
   auto network = nec_.getNetwork();
   auto modFrom = network->lookupModule(ModuleId(moduleIdFrom));
+  if (!modFrom)
+    return "PythonImpl::connect failed: module not found: " + moduleIdFrom;
   auto outputPort = modFrom->outputPorts().at(fromIndex);
   auto modTo = network->lookupModule(ModuleId(moduleIdTo));
+  if (!modTo)
+    return "PythonImpl::connect failed: module not found: " + moduleIdTo;
   auto inputPort = modTo->inputPorts().at(toIndex);
   auto id = nec_.requestConnection(outputPort.get(), inputPort.get());
+  if (!id)
+    return "PythonImpl::connect failed: connection could not be made";
   return "PythonImpl::connect success: " + id->id_;
 }
 

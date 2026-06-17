@@ -115,11 +115,9 @@ ExternalProject_Add(Qwt_external
 # ----------------------------
 
 if(WIN32)
-  # Qwt wrapper uses qwtd.lib for Debug, qwt.lib for Release
   set(QWT_LIBRARY_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib")
   set(QWT_LIBRARY_RELEASE "${QWT_LIBRARY_DIR}/qwt.lib")
 
-  # Generator-expression aware library selection
   set(QWT_LIBRARY
     $<$<CONFIG:Debug>:${QWT_LIBRARY_DEBUG}>
     $<$<CONFIG:Release>:${QWT_LIBRARY_RELEASE}>
@@ -127,10 +125,14 @@ if(WIN32)
     $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_RELEASE}>
   )
 
-elseif(APPLE)
-  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.a")
 else()
-  set(QWT_LIBRARY "${QWT_LIBRARY_DIR}/libqwt.a")
+  # Handle both flat and per-config layouts
+  set(QWT_LIBRARY
+    $<$<CONFIG:Debug>:${QWT_LIBRARY_DIR}/libqwtd.a>
+    $<$<CONFIG:Release>:${QWT_LIBRARY_DIR}/libqwt.a>
+    $<$<CONFIG:RelWithDebInfo>:${QWT_LIBRARY_DIR}/libqwt.a>
+    $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_DIR}/libqwt.a>
+  )
 endif()
 
 # Export to SCIRun
