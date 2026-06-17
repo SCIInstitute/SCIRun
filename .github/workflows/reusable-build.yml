@@ -86,11 +86,10 @@ jobs:
           path: |
             ${{ steps.paths.outputs.externals }}/Install
             ${{ steps.paths.outputs.externals }}/Stamp
-            ${{ steps.paths.outputs.externals }}/src
-          key: superbuild-v2-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}
+          key: superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}
           restore-keys: |
-            superbuild-v2-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-
-            superbuild-v2-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-
+            superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-
+            superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
