@@ -115,8 +115,8 @@ ExternalProject_Add(Qwt_external
 # ----------------------------
 
 if(WIN32)
-  set(QWT_LIBRARY_DEBUG   "${QWT_LIBRARY_DIR}/Debug/qwtd.lib")
-  set(QWT_LIBRARY_RELEASE "${QWT_LIBRARY_DIR}/Release/qwt.lib")
+  set(QWT_LIBRARY_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib")
+  set(QWT_LIBRARY_RELEASE "${QWT_LIBRARY_DIR}/qwt.lib")
 
   set(QWT_LIBRARY
     $<$<CONFIG:Debug>:${QWT_LIBRARY_DEBUG}>
