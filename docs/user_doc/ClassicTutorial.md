@@ -13,7 +13,7 @@ This tutorial demonstrates the use of SCIRun to visualize a tetrahedral mesh and
 
 #### SCIRun
 
-SCIRun is available for download on the [GitHub release page](https://github.com/SCIInstitute/SCIRun/releases). Make sure to update to the most up-to-date release available, which will include the latest bug fixes.  Use the supplied installers to install SCIRun on your local machine.  Linux users may have to [build from source](../start/build.html).  
+SCIRun is available for download on the [GitHub release page](https://github.com/SCIInstitute/SCIRun/releases). Make sure to update to the most up-to-date release available, which will include the latest bug fixes.  Use the supplied installers to install SCIRun on your local machine.  Linux users may have to [build from source](/start/build.md).  
 
 Download the SCIRunData file as a [zip](https://www.sci.utah.edu/releases/scirun_v4.7/SCIRunData_4.7_20160120_data.zip) or [tgz](https://www.sci.utah.edu/releases/scirun_v4.7/SCIRunData_4.7_20160120_data.tgz).  Unpack it in a  convenient location, then add the base directory to the SCIRun Data Path in the SCIRun preference window, under the Paths tab ({numref}`fig-set-path`)
 

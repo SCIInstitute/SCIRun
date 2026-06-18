@@ -83,12 +83,12 @@ public:
   // unrecognized extension: .fac or .tri for faces, .pts or .pos for points
   bool validPointsFileExtention(const std::string& filename)
   {
-    return bfs::extension(filename) == ".pts" || bfs::extension(filename) == ".pos";
+    return bfs::path(filename).extension().string() == ".pts" || bfs::path(filename).extension().string() == ".pos";
   }
 
   bool validFacesFileExtention(const std::string& filename)
   {
-    return bfs::extension(filename) == ".fac" || bfs::extension(filename) == ".tri";
+    return bfs::path(filename).extension().string() == ".fac" || bfs::path(filename).extension().string() == ".tri";
   }
 
   // these files just contain geometry (note that data can be applied to field from matrix)

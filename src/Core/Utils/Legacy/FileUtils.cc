@@ -448,7 +448,7 @@ int copyFile(const bfs::path& src, const bfs::path& dest)
   try
   {
     bsys::error_code ec;
-    bfs::copy_file(src, dest, bfs::copy_option::overwrite_if_exists, ec);
+    bfs::copy_file(src, dest, bfs::copy_options::overwrite_existing, ec);
     code = ec.value();
 #if DEBUG
     if (code != bsys::errc::success)

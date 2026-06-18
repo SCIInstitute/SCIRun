@@ -5085,7 +5085,7 @@ xmlSchemaValidateLengthFacetInternal(xmlSchemaFacetPtr facet,
 		    * is not the correct handling.
 		    * TODO: Get rid of this case somehow.
 		    */
-		    if (valType == XML_SCHEMAS_STRING)
+		    if ((int)valType == (int)XML_SCHEMAS_STRING)
 			len = xmlUTF8Strlen(value);
 		    else
 			len = xmlSchemaNormLen(value);

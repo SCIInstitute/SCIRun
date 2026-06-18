@@ -30,6 +30,7 @@
 #define CORE_ALGORITHMS_LEGACY_FIELDS_MERGEFIELDS_APPENDFIELDS_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <list>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {

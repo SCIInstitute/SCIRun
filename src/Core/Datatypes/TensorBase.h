@@ -30,6 +30,7 @@
 
 #ifndef _WIN32
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #endif
 #define NOMINMAX
 #include <unsupported/Eigen/CXX11/Tensor>

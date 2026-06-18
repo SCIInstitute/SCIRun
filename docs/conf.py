@@ -21,7 +21,7 @@ copyright = '2021, Scientific Computing and Imaging Institute at the University 
 author = 'TBA'
 
 # The full version, including alpha/beta/rc tags
-release = '0.01'
+release = '5.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -42,6 +42,7 @@ extensions = [
         'sphinx.ext.autodoc',
         'sphinx.ext.napoleon',
         'myst_parser',
+        'sphinx_design',
         'sphinx_markdown_tables',
         'sphinxcontrib.bibtex',
         'notfound.extension'

@@ -76,7 +76,7 @@ class CalculateDistanceFieldP : public Interruptible
       VMesh::size_type num_values = ofield->num_values();
       VMesh::size_type num_evalues = ofield->num_evalues();
 
-      double max = DBL_MAX;
+      double max = std::numeric_limits<double>::max();
       if (algo_->get(Parameters::Truncate).toBool())
       {
         max = algo_->get(Parameters::TruncateDistance).toDouble();
@@ -391,7 +391,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   if (objmesh->num_nodes() == 0)
   {
     warning("Object Field does not contain any nodes, setting distance to maximum.");
-    ofield->set_all_values(DBL_MAX);
+    ofield->set_all_values(std::numeric_limits<double>::max());
 
     return (true);
   }
@@ -475,7 +475,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   if (objmesh->num_nodes() == 0)
   {
     warning("Object Field does not contain any nodes, setting distance to maximum.");
-    dfield->set_all_values(DBL_MAX);
+    dfield->set_all_values(std::numeric_limits<double>::max());
     vfield->clear_all_values();
 
     return (true);

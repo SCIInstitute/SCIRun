@@ -566,7 +566,7 @@ namespace detail
       }
 
       mesh_->get_faces(faces, elem);
-      double mindist = DBL_MAX;
+      double mindist = std::numeric_limits<double>::max();
       bool found = false;
       Point ecenter;
 

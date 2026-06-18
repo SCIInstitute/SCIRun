@@ -25,7 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(glew_GIT_TAG "origin/master")
+SET(glew_GIT_TAG "origin/scirun-5.0.0-beta")
 
 IF(TRAVIS_BUILD)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")

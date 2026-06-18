@@ -57,14 +57,14 @@ The ViewScene module also supports a series of hotkeys:
 
 ## Tools
 
-:::{figure-md} fig-controls
+:::{figure-md} fig-vs-controls
 
 ![ViewScene window controls](../module_images/viewscenecontrols.png)
 
 ViewScene window controls
 :::
 
-The ViewScene window contains three toolbars located to the top, right and left of the window (see {numref}`fig-controls`). The tools have the following functions:
+The ViewScene window contains three toolbars located to the top, right and left of the window (see {numref}`fig-vs-controls`). The tools have the following functions:
 
 ### Auto View
 restores the display back to a default condition. This is very useful when objects disappear from the view window due to a combination of settings

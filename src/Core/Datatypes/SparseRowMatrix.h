@@ -32,6 +32,9 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Math/MiscMath.h>
 //#define register
+#ifndef _WIN32
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
 #include <Eigen/SparseCore>
 //#undef register
 

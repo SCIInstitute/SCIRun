@@ -717,14 +717,14 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
 
       // Get the values and compute an inside/outside mask.
       unsigned int inside = 0;
-      unsigned int inside_count = 0;
+      //unsigned int inside_count = 0;
       for (unsigned int i = 0; i < onodes.size(); i++)
       {
         inside = inside << 1;
         if (values[onodes[i]])
         {
           inside |= 1;
-          inside_count++;
+          //inside_count++;
         }
       }
 

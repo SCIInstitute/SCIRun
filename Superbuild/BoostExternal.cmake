@@ -52,7 +52,7 @@ SET(boost_Libraries
   "program_options"
   "regex"
   "serialization"
-  "system"
+  #"system"
   "thread"
   CACHE INTERNAL "Boost library name.")
 
@@ -68,7 +68,7 @@ IF(UNIX)
   ADD_DEFINITIONS(-DBOOST_NO_CXX11_ALLOCATOR)
 ENDIF()
 
-SET(boost_GIT_TAG "origin/v1.75.0")
+SET(boost_GIT_TAG "origin/v1.89.0a")
 
 # TODO: set up 64-bit build detection
 # Boost Jam needs to have 64-bit build explicitly configured

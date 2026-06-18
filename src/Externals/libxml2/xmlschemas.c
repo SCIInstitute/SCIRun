@@ -18657,7 +18657,7 @@ xmlSchemaFixupComponents(xmlSchemaParserCtxtPtr pctxt)
     xmlSchemaTreeItemPtr item, *items;
     int nbItems, i;
 
-#define FIXHFAILURE if (pctxt->err == XML_SCHEMAP_INTERNAL) goto exit_failure;
+#define FIXHFAILURE if ((int)pctxt->err == (int)XML_SCHEMAP_INTERNAL) goto exit_failure;
 
     if ((con->pending == NULL) ||
 	(con->pending->nbItems == 0))
