@@ -89,7 +89,6 @@ jobs:
           key: superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}
           restore-keys: |
             superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-
-            superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
