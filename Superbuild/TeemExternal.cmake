@@ -34,6 +34,7 @@ ExternalProject_Add(Teem_external
   DEPENDS ${teem_DEPENDENCIES}
   GIT_REPOSITORY "https://github.com/SCIInstitute/teem.git"
   GIT_TAG ${teem_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

@@ -87,6 +87,7 @@ ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
   GIT_REPOSITORY ${boost_GIT_URL}
   GIT_TAG ${boost_GIT_TAG}
+  UPDATE_COMMAND ""
   BUILD_IN_SOURCE ON
   PATCH_COMMAND ""
   INSTALL_COMMAND ""

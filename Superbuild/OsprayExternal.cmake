@@ -36,6 +36,7 @@ ExternalProject_Add(Ospray_external
   DEPENDS ${ospray_DEPENDENCIES}
   GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
   GIT_TAG ${ospray_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

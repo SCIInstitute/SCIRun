@@ -52,6 +52,7 @@ endif()
 ExternalProject_Add(Qwt_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt.git"
   GIT_TAG ${qwt_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""
