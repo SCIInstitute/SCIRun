@@ -129,13 +129,6 @@ configure_scirun() {
 
 build_scirun_make() {
     echo "Building SCIRun using make..."
-    # Touch cached stamp files so they appear newer than cmake-regenerated tmp/ scripts.
-    # cmake rewrites Externals/tmp/*/*.cmake on every configure run; without this, make
-    # always considers the ExternalProject steps stale and re-runs them against missing
-    # source directories, failing immediately on a cache restore.
-    if [[ -d "Externals/Stamp" ]]; then
-        find Externals/Stamp -type f -exec touch -d "2100-01-01" {} \;
-    fi
     trybuild make $makeflags
 }
 
