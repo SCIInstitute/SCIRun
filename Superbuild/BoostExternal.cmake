@@ -307,6 +307,12 @@ endif()
 set(_BOOST_B2_ARGS
   ${_BOOST_CXXFLAGS}
 
+  # Disable ICU so Boost.Locale/Regex use their std/POSIX backends instead of
+  # autodetecting a system ICU (e.g. Homebrew's keg-only icu4c on Intel macOS),
+  # which compiles the ICU backend but fails on the missing <unicode/ucnv.h>.
+  # SCIRun does not use ICU-backed Boost features.
+  --disable-icu
+
   --with-atomic
   --with-chrono
   --with-date_time
