@@ -51,7 +51,7 @@ if (MSVC)
 
   # Defensive: prevent accidental linkage to release Python
   target_link_options(Core_Python PRIVATE
-    $<$<CONFIG:Debug>:/NODEFAULTLIB:${SCI_PYTHON_VERSION_SHORT_WIN32}.lib>
+    $<$<CONFIG:Debug>:/NODEFAULTLIB:python${SCI_PYTHON_VERSION_SHORT_WIN32}.lib>
   )
 endif()
 
