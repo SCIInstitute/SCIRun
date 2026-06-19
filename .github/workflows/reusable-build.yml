@@ -227,10 +227,14 @@ jobs:
           Write-Host "Configuring: $cmakeExe $($cmakeArgsFull -join ' ')"
           & $cmakeExe @cmakeArgsFull
 
-          # Touch cached stamp files so they appear newer than cmake-regenerated tmp/ scripts.
+          # Touch cached stamp files to a far-future date so they are unconditionally newer
+          # than cmake module files (ExternalProject.cmake) on any runner. CMake's custom
+          # commands depend on the cmake module files themselves; if those files are newer
+          # than the restored stamps, make re-runs every ExternalProject step and fails.
           if (Test-Path "Externals\Stamp") {
+            $futureDate = [DateTime]::new(2100, 1, 1)
             Get-ChildItem -Path "Externals\Stamp" -Recurse -File |
-              ForEach-Object { $_.LastWriteTime = Get-Date }
+              ForEach-Object { $_.LastWriteTime = $futureDate }
           }
 
           # Build (Release) using cmake --build
