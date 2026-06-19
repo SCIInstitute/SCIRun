@@ -83,15 +83,16 @@ jobs:
             echo "externals=bin/Externals" >> $GITHUB_OUTPUT
           fi
 
-      - name: Cache Superbuild externals
-        uses: actions/cache@v4
+      - name: Restore Superbuild externals cache
+        id: cache-externals
+        uses: actions/cache/restore@v4
         with:
           path: |
             ${{ steps.paths.outputs.externals }}/Install
             ${{ steps.paths.outputs.externals }}/Stamp
-          key: superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}
+          key: superbuild-v4-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}
           restore-keys: |
-            superbuild-v3-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-
+            superbuild-v4-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
@@ -405,3 +406,12 @@ jobs:
             bin/SCIRun/SCIRun-*-Darwin.pkg
             bin/SCIRun/SCIRun-*-win64.exe
             build/**/*.msi
+
+      - name: Save Superbuild externals cache
+        if: ${{ success() && steps.cache-externals.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ steps.paths.outputs.externals }}/Install
+            ${{ steps.paths.outputs.externals }}/Stamp
+          key: superbuild-v4-${{ runner.os }}-${{ hashFiles('Superbuild/*.cmake') }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}
