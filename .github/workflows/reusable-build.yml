@@ -227,6 +227,12 @@ jobs:
           Write-Host "Configuring: $cmakeExe $($cmakeArgsFull -join ' ')"
           & $cmakeExe @cmakeArgsFull
 
+          # Touch cached stamp files so they appear newer than cmake-regenerated tmp/ scripts.
+          if (Test-Path "Externals\Stamp") {
+            Get-ChildItem -Path "Externals\Stamp" -Recurse -File |
+              ForEach-Object { $_.LastWriteTime = Get-Date }
+          }
+
           # Build (Release) using cmake --build
           Write-Host "Building with cmake --build . --config Release --parallel"
           & cmake --build . --config Release --parallel
