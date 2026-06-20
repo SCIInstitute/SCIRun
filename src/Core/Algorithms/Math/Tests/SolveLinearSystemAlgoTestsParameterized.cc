@@ -50,7 +50,6 @@ using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
 
-#if GTEST_HAS_COMBINE
 
 using ::testing::Values;
 using ::testing::Combine;
@@ -158,6 +157,3 @@ INSTANTIATE_TEST_CASE_P(
 		Values("jacobi","none"),
 	Values(1e-1,1e-3,1e-4,1e-5))
 	);
-#else
-TEST(DummyTest, CombineIsNotSupportedOnThisPlatform(){}
-#endif
