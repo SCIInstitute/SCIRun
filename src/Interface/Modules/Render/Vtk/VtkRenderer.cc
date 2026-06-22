@@ -32,7 +32,6 @@
 #include <vtkProperty.h>
 #include <vtkAxesActor.h>
 #include <vtkWindowToImageFilter.h>
-#include <vtkRenderWindowInteractor.h>
 #include <vtkPNGWriter.h>
 
 #include "VtkRenderer.h"
@@ -173,11 +172,16 @@ void VtkRenderer::renderTestScene()
     renderWindow_->SetWindowName("VTK Test Window");
     renderWindow_->SetSize(800, 600);
 
+    interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    interactor_->SetRenderWindow(renderWindow_);
+    renderWindow_->Render();
+    interactor_->Start();
+
     initialized_ = true;
   }
 
   // This will create and show the VTK window
-  renderWindow_->Render();
+  //renderWindow_->Render();
 }
 
 void VtkRenderer::testOffscreen()

@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <vtkActor.h>
 
 #include <es-log/trace-log.h>
 #include <Modules/Render/ViewSceneVtk.h>
@@ -41,44 +42,6 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms::Render;
 
 MODULE_INFO_DEF(ViewSceneVtk, Render, SCIRun)
-
-//ALGORITHM_PARAMETER_DEF(Render, ShowPlane);
-//ALGORITHM_PARAMETER_DEF(Render, AutoRotationRate);
-//ALGORITHM_PARAMETER_DEF(Render, RendererChoice);
-//ALGORITHM_PARAMETER_DEF(Render, SeparateModelPerObject);
-//ALGORITHM_PARAMETER_DEF(Render, ShowShadows);
-//ALGORITHM_PARAMETER_DEF(Render, ShowFrameRate);
-//ALGORITHM_PARAMETER_DEF(Render, ShowRenderAnnotations);
-//ALGORITHM_PARAMETER_DEF(Render, SubsampleDuringInteraction);
-//ALGORITHM_PARAMETER_DEF(Render, SamplesPerPixel);
-//ALGORITHM_PARAMETER_DEF(Render, AOSamples);
-//ALGORITHM_PARAMETER_DEF(Render, ViewerHeight);
-//ALGORITHM_PARAMETER_DEF(Render, ViewerWidth);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewAtX);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewAtY);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewAtZ);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewFromX);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewFromY);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewFromZ);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewUpX);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewUpY);
-//ALGORITHM_PARAMETER_DEF(Render, CameraViewUpZ);
-//ALGORITHM_PARAMETER_DEF(Render, FrameWriterFilename);
-//ALGORITHM_PARAMETER_DEF(Render, BackgroundColor);
-//ALGORITHM_PARAMETER_DEF(Render, ShowAmbientLight);
-//ALGORITHM_PARAMETER_DEF(Render, AmbientLightColor);
-//ALGORITHM_PARAMETER_DEF(Render, AmbientLightIntensity);
-//ALGORITHM_PARAMETER_DEF(Render, ShowDirectionalLight);
-//ALGORITHM_PARAMETER_DEF(Render, DirectionalLightColor);
-//ALGORITHM_PARAMETER_DEF(Render, DirectionalLightIntensity);
-//ALGORITHM_PARAMETER_DEF(Render, DirectionalLightAzimuth);
-//ALGORITHM_PARAMETER_DEF(Render, DirectionalLightElevation);
-//ALGORITHM_PARAMETER_DEF(Render, ShowProbe);
-//ALGORITHM_PARAMETER_DEF(Render, ProbeX);
-//ALGORITHM_PARAMETER_DEF(Render, ProbeY);
-//ALGORITHM_PARAMETER_DEF(Render, ProbeZ);
-//ALGORITHM_PARAMETER_DEF(Render, InvertZoom);
-//ALGORITHM_PARAMETER_DEF(Render, ZoomSpeed);
 
 ViewSceneVtk::ViewSceneVtk() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -167,4 +130,3 @@ void ViewSceneVtk::sendCompositeGeometry()
     get_state()->setTransientValue(Parameters::GeomData, composite, true);
   }
 }
-

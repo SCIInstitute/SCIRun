@@ -35,6 +35,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
 // #include <ospray/ospray.h>
 //#include <ospray/ospray_util.h>
 
@@ -110,6 +111,7 @@ private:
   bool initialized_ = false;
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
+  vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 };
 
 }}
