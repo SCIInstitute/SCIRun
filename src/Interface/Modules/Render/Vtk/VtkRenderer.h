@@ -32,15 +32,10 @@
 
 
 #ifdef WITH_VTK
-#include <vtkSmartPointer.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindowInteractor.h>
-// #include <ospray/ospray.h>
-//#include <ospray/ospray_util.h>
-
-//#include "OSPRayDataManager.h"
-//#include "OSPRayCamera.h"
+//#include <vtkSmartPointer.h>
+//#include <vtkRenderWindow.h>
+//#include <vtkRenderer.h>
+//#include <vtkRenderWindowInteractor.h>
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Geometry.h>
@@ -107,11 +102,12 @@ private:
 
   void renderTestScene();
   void testOffscreen();
+  void clearViewportTest();
 
   bool initialized_ = false;
-  vtkSmartPointer<vtkRenderer> renderer_;
-  vtkSmartPointer<vtkRenderWindow> renderWindow_;
-  vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+  //vtkSmartPointer<vtkRenderer> renderer_;
+  //vtkSmartPointer<vtkRenderWindow> renderWindow_;
+  //vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 };
 
 }}

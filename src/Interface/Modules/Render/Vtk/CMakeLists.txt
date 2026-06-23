@@ -30,22 +30,22 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render_Vtk
   Core_Datatypes
   Modules_Render
   ${LIBS}
-  VTK::CommonCore
-  VTK::FiltersSources
-  VTK::FiltersCore
-  VTK::RenderingCore
-  VTK::RenderingOpenGL2
-  VTK::RenderingAnnotation
-  VTK::InteractionStyle
+  #VTK::CommonCore
+  #VTK::FiltersSources
+  #VTK::FiltersCore
+  #VTK::RenderingCore
+  #VTK::RenderingOpenGL2
+  #VTK::RenderingAnnotation
+  #VTK::InteractionStyle
   ${SCI_SPIRE_LIBRARY}
 )
 
-vtk_module_autoinit(
-TARGETS Interface_Modules_Render_Vtk
-MODULES
-    VTK::RenderingOpenGL2
-    VTK::InteractionStyle
-)
+#vtk_module_autoinit(
+#TARGETS Interface_Modules_Render_Vtk
+#MODULES
+#    VTK::RenderingOpenGL2
+#    VTK::InteractionStyle
+#)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render_Vtk)
