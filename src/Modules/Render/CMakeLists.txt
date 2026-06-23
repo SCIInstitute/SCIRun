@@ -58,24 +58,24 @@ TARGET_LINK_LIBRARIES(Modules_Render
   Core_Application_Preferences
 )
 
-if (WITH_VTK)
-  TARGET_LINK_LIBRARIES(Modules_Render
-  VTK::CommonCore
-  VTK::FiltersSources
-  VTK::FiltersCore
-  VTK::RenderingCore
-  VTK::RenderingOpenGL2
-  VTK::RenderingAnnotation
-  VTK::InteractionStyle
-  )
-
-  vtk_module_autoinit(
-    TARGETS Modules_Render
-    MODULES
-      VTK::RenderingOpenGL2
-      VTK::InteractionStyle
-  )
-endif()
+#if (WITH_VTK)
+#  TARGET_LINK_LIBRARIES(Modules_Render
+#  VTK::CommonCore
+#  VTK::FiltersSources
+#  VTK::FiltersCore
+#  VTK::RenderingCore
+#  VTK::RenderingOpenGL2
+#  VTK::RenderingAnnotation
+#  VTK::InteractionStyle
+#  )
+#
+#  vtk_module_autoinit(
+#    TARGETS Modules_Render
+#    MODULES
+#      VTK::RenderingOpenGL2
+#      VTK::InteractionStyle
+#  )
+#endif()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Render)

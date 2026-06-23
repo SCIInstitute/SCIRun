@@ -25,8 +25,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <vtkActor.h>
-
 #include <es-log/trace-log.h>
 #include <Modules/Render/ViewSceneVtk.h>
 #include <Modules/Render/ViewScene.h>
