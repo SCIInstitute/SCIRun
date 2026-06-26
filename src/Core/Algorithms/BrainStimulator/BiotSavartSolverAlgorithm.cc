@@ -464,16 +464,22 @@ class VolumetricKernel : public KernelBase
 
           if (typeOut_ == 1)
           {
-            if (Rl < 0.00001) { algo_->warning("coil<->model distance approaching zero!"); }
             //! Biot-Savart Magnetic Field
-//            F += Cross(current, R) * (evol / (4.0 * M_PI * Rl));
+            F += Cross(current, R) * (evol / (4.0 * M_PI * Rl));
+            /*
+            // Note [JDT, 06/2026]:  the above formula came from the original author, but I cannot find a source and it doesn't really make sense to me.  I think it should look more like the following, which is also more like the piecewise version.
+              if (Rl < 0.00001) { algo_->warning("coil<->model distance approaching zero!"); }
               F += mag_permitivity_ * Cross(R, current) / (Rl * Rl * Rl));
+             */
           }
           else if (typeOut_ == 2)
           {
             //! Biot-Savart Magnetic Vector Potential Field
-//            F += current * (evol / (4.0 * M_PI * Rl));
+            F += current * (evol / (4.0 * M_PI * Rl));
+            /*
+            // Note [JDT, 06/2026]:  Same as above
             F += mag_permitivity_ * current * (evol / Rl));
+             */
           }
         }
 
