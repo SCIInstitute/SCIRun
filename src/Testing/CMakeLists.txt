@@ -73,6 +73,28 @@ IF(RUN_UNIT_TESTS)
   FOREACH(test ${UNIT_TEST_LIST})
     ADD_TEST("${test}" "../${EXE_DIRPATH}/${test}")
   ENDFOREACH(test ${UNIT_TEST_LIST})
+
+  IF(WIN32 AND UNIT_TEST_LIST)
+    get_filename_component(_python_bin_dir "${PYTHON_EXECUTABLE}" DIRECTORY)
+    # Resolve Qt bin and plugin dirs from whichever Qt version was found
+    foreach(_qt_ver 6 5)
+      if(Qt${_qt_ver}_DIR)
+        get_filename_component(_qt_bin_dir "${Qt${_qt_ver}_DIR}/../../../bin" ABSOLUTE)
+        get_filename_component(_qt_plugins_dir "${Qt${_qt_ver}_DIR}/../../../plugins" ABSOLUTE)
+        break()
+      endif()
+    endforeach()
+    # Qwt is built by the Superbuild; include both config subdirs so ctest works for Debug and Release
+    string(REPLACE ";" "\\;" _escaped_env_path "$ENV{PATH}")
+    set(_test_path "${_python_bin_dir}\\;${_qt_bin_dir}\\;${Qwt_DIR}/src/Debug\\;${Qwt_DIR}/src/Release\\;${_escaped_env_path}")
+    FOREACH(test ${UNIT_TEST_LIST})
+      set_property(TEST "${test}" PROPERTY ENVIRONMENT
+        "PATH=${_test_path}"
+        "PYTHONHOME=${Python_DIR}"
+        "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms"
+        "QT_QPA_PLATFORM=offscreen")
+    ENDFOREACH()
+  ENDIF()
 ENDIF()
 
 IF(RUN_BASIC_REGRESSION_TESTS)
