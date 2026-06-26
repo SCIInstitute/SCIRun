@@ -69,6 +69,9 @@ class KernelBase
 
   //! Local entry function, must be implemented by each specific kernel
   virtual bool integrate(FieldHandle& mesh, FieldHandle& coil, DenseMatrixHandle& outdata) = 0;
+  
+  // vacuum magnetic permitivity constant: µ_0/(4·π)
+  const double mag_permitivity_ = 1.0e-7; // T·m/A,  N/A^2, H/m
 
  protected:
   //! ref to the executing algorithm context
@@ -331,12 +334,12 @@ class PieceWiseKernel : public KernelBase
               //! it might cause numerical stability issues with respect to the cross-product
               if (Rn < 0.00001) { algo_->warning("coil<->model distance approaching zero!"); }
               //! Biot-Savart Magnetic Field
-              F += mag_permitivity * Cross(Rxyz, dLxyz) * (absCurrent / (Rn * Rn * Rn));
+              F += mag_permitivity_ * Cross(Rxyz, dLxyz) * (absCurrent / (Rn * Rn * Rn));
             }
             else if (typeOut_ == 2)
             {
               //! Biot-Savart Magnetic Vector Potential Field
-              F += mag_permitivity * dLxyz * (absCurrent / (Rn));
+              F += mag_permitivity_ * dLxyz * (absCurrent / (Rn));
             }
           }
         }
@@ -427,9 +430,6 @@ class VolumetricKernel : public KernelBase
   void ParallelKernel(int proc_num)
   {
     assert(proc_num >= 0);
-    
-    // vacuum magnetic permitivity constant: µ_0/(4·π)
-    const double mag_permitivity = 1.0e-7; // T·m/A,  N/A^2, H/m
 
     int cnt = 0;
     Point modelNode;
@@ -464,13 +464,16 @@ class VolumetricKernel : public KernelBase
 
           if (typeOut_ == 1)
           {
+            if (Rl < 0.00001) { algo_->warning("coil<->model distance approaching zero!"); }
             //! Biot-Savart Magnetic Field
-            F += Cross(current, R) * (evol / (4.0 * M_PI * Rl));
+//            F += Cross(current, R) * (evol / (4.0 * M_PI * Rl));
+              F += mag_permitivity_ * Cross(R, current) / (Rl * Rl * Rl));
           }
           else if (typeOut_ == 2)
           {
             //! Biot-Savart Magnetic Vector Potential Field
-            F += current * (evol / (4.0 * M_PI * Rl));
+//            F += current * (evol / (4.0 * M_PI * Rl));
+            F += mag_permitivity_ * current * (evol / Rl));
           }
         }
 
@@ -538,9 +541,6 @@ class DipolesKernel : public KernelBase
   void ParallelKernel(int proc_num)
   {
     assert(proc_num >= 0);
-    
-    // vacuum magnetic permitivity constant: µ_0/(4·π)
-    const double mag_permitivity = 1.0e-7; // T·m/A,  N/A^2, H/m
 
     int cnt = 0;
     Point modelNode;
@@ -572,13 +572,13 @@ class DipolesKernel : public KernelBase
           if (typeOut_ == 1)
           {
             //! Biot-Savart Magnetic Field
-            F += mag_permitivity * (3 * R * Dot(dipoleMoment, R) / (Rl * Rl * Rl * Rl * Rl) -
+            F += mag_permitivity_ * (3 * R * Dot(dipoleMoment, R) / (Rl * Rl * Rl * Rl * Rl) -
                               dipoleMoment / (Rl * Rl * Rl));
           }
           if (typeOut_ == 2)
           {
             //! Biot-Savart Magnetic Vector Potential Field
-            F += mag_permitivity * Cross(dipoleMoment, R) / (Rl * Rl * Rl);
+            F += mag_permitivity_ * Cross(dipoleMoment, R) / (Rl * Rl * Rl);
           }
         }
 
@@ -691,7 +691,7 @@ bool BiotSavartSolverAlgorithm::run(
   }
   else
   {
-    error("Unsupported mesh type! Only curve or volumetric.");
+    error("Unsupported mesh type! Only curve, point cloud, or volumetric.");
     return (false);
   }
 
