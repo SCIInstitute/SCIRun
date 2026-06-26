@@ -74,6 +74,16 @@
     Directory for build files. Relative paths are resolved from the repo root.
     Default: <repo root>\bin
 
+    IMPORTANT -- Windows path length: The SCIRun Superbuild generates deeply
+    nested paths inside the build directory. If the total path to a generated
+    file exceeds Windows' 260-character MAX_PATH limit, the MSVC compiler will
+    fail with a cryptic "filename too long" or C1083 error. To avoid this,
+    choose a short path near the root of a drive, such as C:\SR or D:\build,
+    rather than the default location inside the repository tree (which may
+    already be 40-60 characters deep).
+
+    Example: -BuildDir "C:\SR"
+
 .PARAMETER Jobs
     Number of parallel compile jobs. Default: number of logical CPU cores.
     Lower this (e.g. -Jobs 4) if the build runs out of memory.
@@ -104,8 +114,9 @@
     Debug build limited to 4 parallel jobs (useful on low-memory machines).
 
 .EXAMPLE
-    .\build.ps1 -QtPath "C:\Qt\5.15.2\msvc2019_64" -BuildDir "C:\SCIRunBuild"
-    Release build with explicit Qt path and a custom build directory.
+    .\build.ps1 -QtPath "C:\Qt\5.15.2\msvc2019_64" -BuildDir "C:\SR"
+    Release build with explicit Qt path and a short build directory (recommended
+    on Windows to avoid MAX_PATH filename-too-long errors).
 
 .EXAMPLE
     .\build.ps1 -Qt6
@@ -710,6 +721,15 @@ if ($BuildDir -ne "") {
     $resolvedBuildDir = Join-Path $sourceDir "bin"
 }
 
+if ($resolvedBuildDir.Length -gt 50) {
+    Write-Warn "Build directory path is $($resolvedBuildDir.Length) characters long:"
+    Write-Warn "  $resolvedBuildDir"
+    Write-Warn "The SCIRun Superbuild generates deeply nested paths. Paths longer than"
+    Write-Warn "~260 characters cause MSVC 'filename too long' (C1083) errors on Windows."
+    Write-Warn "Consider a shorter path, e.g.: -BuildDir C:\SR"
+    Write-Host ""
+}
+
 if ($Debug -and $Release) {
     Exit-WithError "Cannot specify both -Debug and -Release. Omit both for the default Release build."
 }
@@ -736,7 +756,8 @@ if ($Qt6) {
 $numJobs = if ($Jobs -gt 0) {
     $Jobs
 } else {
-    [int]([Environment]::GetEnvironmentVariable("NUMBER_OF_PROCESSORS") ?? "4")
+    $env_procs = [Environment]::GetEnvironmentVariable("NUMBER_OF_PROCESSORS")
+    if ($env_procs) { [int]$env_procs } else { 4 }
 }
 
 # Print summary

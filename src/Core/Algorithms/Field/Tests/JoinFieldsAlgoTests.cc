@@ -123,7 +123,6 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
   EXPECT_EQ(914, output->vmesh()->num_nodes());
 }
 
-#if GTEST_HAS_COMBINE
 
 // Get Parameterized Tests
 
@@ -225,8 +224,3 @@ INSTANTIATE_TEST_CASE_P(
                         Combine(Bool(), Bool(), Bool(), Bool(), Values(1e-1,1e-3))
                         );
 
-#else
-
-TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-
-#endif
