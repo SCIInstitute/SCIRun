@@ -28,6 +28,7 @@
 
 #include <es-log/trace-log.h>
 #include <QSettings>
+#include <QOpenGLWidget>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
@@ -72,6 +73,17 @@ using namespace SCIRun::Core::Algorithms;
 SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
+
+  QOpenGLWidget* dummy = new QOpenGLWidget(this);
+  dummy->setFixedSize(1, 1);
+
+  if (centralWidget() && centralWidget()->layout())
+  {
+    centralWidget()->layout()->addWidget(dummy);
+  }
+
+  dummy->hide();
+
   builder_ = makeShared<NetworkEditorBuilder>(this);
   //dockManager_ = new DockManager(dockSpace_, this);
 

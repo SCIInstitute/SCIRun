@@ -144,50 +144,6 @@ IF(NOT BUILD_HEADLESS)
       "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
 
   # ------------------------------------------------------------
-  # Platform-specific Qt auto-detection
-  # ------------------------------------------------------------
-  if(APPLE OR WIN32 OR (UNIX AND NOT APPLE))
-  
-    if(NOT Qt_PATH OR NOT IS_DIRECTORY "${Qt_PATH}")
-  
-      if(APPLE)
-        set(_qt_default "/Users/basisunus/Qt/6.10.2/macos")
-      elseif(WIN32)
-        set(_qt_default "C:/Qt/6.10.1/msvc2022_64")
-      elseif(UNIX)
-        set(_qt_default "$ENV{HOME}/Qt/6.11.0/gcc_64")
-      endif()
-  
-      if(IS_DIRECTORY "${_qt_default}")
-        message(STATUS
-          "Qt_PATH not set or invalid — using auto-detected Qt: ${_qt_default}"
-        )
-  
-        set(Qt_PATH "${_qt_default}" CACHE PATH "Qt install prefix" FORCE)
-  
-        # Auto-detect Qt version from path
-        get_filename_component(_qt_parent "${_qt_default}" DIRECTORY)
-        get_filename_component(_qt_version "${_qt_parent}" NAME)
-  
-        set(SCIRUN_QT_MIN_VERSION
-            "${_qt_version}"
-            CACHE STRING "Qt version" FORCE)
-  
-        string(REPLACE "." ";" SCIRUN_QT_MIN_VERSION_LIST
-              ${SCIRUN_QT_MIN_VERSION})
-  
-        list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
-        list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
-        list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
-  
-      endif()
-    else()
-      message(STATUS "Using user-provided Qt_PATH: ${Qt_PATH}")
-    endif()
-  
-  endif()
-
-  # ------------------------------------------------------------
   # Qt package discovery
   # ------------------------------------------------------------
   IF(IS_DIRECTORY "${Qt_PATH}")
