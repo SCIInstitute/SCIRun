@@ -56,6 +56,7 @@
 #endif
 #endif
 #include <cstdio>
+#include <iostream>
 
 using namespace SCIRun;
 using namespace Render;
@@ -188,18 +189,22 @@ void VtkRenderer::testOffscreen()
   static bool initialized = false;
 
   static vtkSmartPointer<vtkRenderWindow> renWin;
+  static vtkSmartPointer<vtkRenderer> ren;
   static vtkSmartPointer<vtkWindowToImageFilter> w2i;
 
   if (!initialized)
   {
+    // ----- VTK Setup -----
+
     renWin = vtkSmartPointer<vtkRenderWindow>::New();
     renWin->SetOffScreenRendering(1);
-    renWin->SetSize(width_, height_);
 
-    auto ren = vtkSmartPointer<vtkRenderer>::New();
+    ren = vtkSmartPointer<vtkRenderer>::New();
     renWin->AddRenderer(ren);
 
     auto sphere = vtkSmartPointer<vtkSphereSource>::New();
+    sphere->SetThetaResolution(64);
+    sphere->SetPhiResolution(64);
 
     auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     mapper->SetInputConnection(sphere->GetOutputPort());
@@ -209,16 +214,33 @@ void VtkRenderer::testOffscreen()
 
     ren->AddActor(actor);
     ren->SetBackground(0.1, 0.2, 0.4);
+    ren->ResetCamera();
 
     w2i = vtkSmartPointer<vtkWindowToImageFilter>::New();
     w2i->SetInput(renWin);
+
+    // ----- OpenGL Texture -----
+
+    glGenTextures(1, &vtkTexture_);
+
+    glBindTexture(GL_TEXTURE_2D, vtkTexture_);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     initialized = true;
   }
 
   renWin->SetSize(width_, height_);
 
-  // Render VTK
+  // Render VTK offscreen
   renWin->Render();
 
   // Capture image
@@ -230,22 +252,29 @@ void VtkRenderer::testOffscreen()
   int dims[3];
   image->GetDimensions(dims);
 
+  int numComponents = image->GetNumberOfScalarComponents();
+
   unsigned char* pixels = static_cast<unsigned char*>(image->GetScalarPointer());
 
-  // Draw into current SCIrun OpenGL framebuffer
+  GLenum format = (numComponents == 4) ? GL_RGBA : GL_RGB;
 
-  glViewport(0, 0, width_, height_);
+  // Upload image into texture
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  // VTK image origin is lower-left, so this may actually appear correct.
-  // If upside-down, we'll flip later.
+  glBindTexture(GL_TEXTURE_2D, vtkTexture_);
 
-  glRasterPos2f(-1.0f, -1.0f);
+  glTexImage2D(GL_TEXTURE_2D, 0, (format == GL_RGBA) ? GL_RGBA8 : GL_RGB8, dims[0], dims[1], 0, format, GL_UNSIGNED_BYTE, pixels);
 
-  glDrawPixels(dims[0], dims[1], GL_RGB, GL_UNSIGNED_BYTE, pixels);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
-  glFlush();
+  //
+  // At this point vtkTexture_ contains the rendered image.
+  //
+  // Next step:
+  //   bind vtkTexture_
+  //   draw fullscreen quad
+  //
 }
 
 void VtkRenderer::clearViewportTest()

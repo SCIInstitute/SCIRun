@@ -108,6 +108,7 @@ private:
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
   vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+  unsigned int vtkTexture_ {0};
 };
 
 }}
