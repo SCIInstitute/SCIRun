@@ -75,6 +75,10 @@ void SCIRunMainWindow::initialize()
   fillModuleSelector();
 
   executeCommandLineRequests();
+
+  // Startup (including any -e/-s network load) is done; allow showEvent to
+  // restore the dock layout again on subsequent minimize/restore (#2536).
+  startupComplete_ = true;
 }
 
 void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)

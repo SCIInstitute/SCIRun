@@ -147,6 +147,13 @@ private:
   QMap<QString, QMenu*> toolkitMenus_;
   QToolButton* executeButton_;
   QByteArray windowState_;
+  // False until the command-line startup sequence (showing the main window and
+  // loading any -e/-s network) has finished. While false, showEvent skips
+  // restoreState: during a cmdline load the ViewScene QOpenGLWidget forces the
+  // main window to be recreated (a hide/show cycle), and restoring the (stale,
+  // load-time) dock layout then hides the just-opened ViewScene dock and
+  // corrupts its saved ShowViewer state (#2536).
+  bool startupComplete_ { false };
   QPushButton* versionButton_;
   TriggeredEventsWindow* triggeredEventsWindow_;
   MacroEditor* macroEditor_;

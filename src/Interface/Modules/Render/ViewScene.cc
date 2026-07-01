@@ -383,6 +383,15 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   impl_->gid_.reset(new DialogIdGenerator(name));
   impl_->name_ = name;
 
+  // A viewer that was saved open carries a saved camera, so it must NOT run the
+  // first-show autoView (which would overwrite that camera and, once the network
+  // is re-saved, persist the wrong camera -- #2536). Decide this here, at the
+  // earliest point, because in a command-line load the dock can be shown after
+  // geometry is already present, and any later guard loses the race. A fresh
+  // ViewScene (or one saved closed) has ShowViewer=false and still autoViews on
+  // first open.
+  impl_->shown_ = state_->getValue(Parameters::ShowViewer).toBool();
+
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);
@@ -1074,20 +1083,31 @@ void ViewSceneDialog::vsLog(const QString& msg) const
 
 void ViewSceneDialog::pullSpecial()
 {
-  if (!impl_->pulledSavedVisibility_)
+  // Defer this one-time restore of saved visibility/camera/layout until the
+  // dialog has actually been placed in its dock. During a command-line load
+  // (-e/-s) a reentrant state-change signal fires pull() while the dialog is
+  // still parentless (before configDockable/setDockable runs), so parentWidget()
+  // is null. Running the restore then silently no-ops the window show and the
+  // floating/position setup, yet still latches pulledSavedVisibility_ -- which
+  // is why ViewScene windows stayed closed and saved cameras were lost when a
+  // network was loaded from the command line (#2536). Waiting for a valid parent
+  // makes this run at the config-time pull, matching the manual-load path.
+  if (!impl_->pulledSavedVisibility_ && parentWidget())
   {
+    // Capture the parent once: the reentrant pull storm during load can briefly
+    // re-parent the dialog to null mid-block, so re-querying parentWidget() is
+    // unreliable here.
+    auto* dockParent = parentWidget();
+
     pullCameraState();
     const auto show = state_->getValue(Parameters::ShowViewer).toBool();
-    if (show && parentWidget())
-    {
-      parentWidget()->show();
-    }
+    if (show)
+      dockParent->show();
 
     adjustSizeFromState();
 
-    if (parentWidget())
     {
-      auto dock = qobject_cast<QDockWidget*>(parentWidget());
+      auto dock = qobject_cast<QDockWidget*>(dockParent);
       const auto isFloating = state_->getValue(Parameters::IsFloating).toBool();
       if (dock)
         dock->setFloating(isFloating);
@@ -1095,13 +1115,9 @@ void ViewSceneDialog::pullSpecial()
       if (isFloating)
       {
         if (impl_->savedPos_)
-        {
-          parentWidget()->move(*impl_->savedPos_);
-        }
+          dockParent->move(*impl_->savedPos_);
         else
-        {
           adjustPositionFromState();
-        }
       }
     }
     impl_->clippingPlaneManager_->loadFromState();

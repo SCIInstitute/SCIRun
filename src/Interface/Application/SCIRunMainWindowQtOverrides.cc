@@ -96,7 +96,14 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 void SCIRunMainWindow::showEvent(QShowEvent* event)
 {
-  restoreState(windowState_);
+  // Skip restoreState during command-line startup. A cmdline load creates the
+  // ViewScene QOpenGLWidget, which forces the native main window to be recreated
+  // (hide then show); restoring the stale load-time dock layout here would hide
+  // the ViewScene dock that the network's ShowViewer state just opened, and the
+  // resulting hideEvent would corrupt that saved state (#2536). After startup,
+  // normal minimize/restore still restores the layout as before.
+  if (startupComplete_)
+    restoreState(windowState_);
   QMainWindow::showEvent(event);
 }
 
