@@ -25,14 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <vtkSphereSource.h>
-//#include <vtkCubeSource.h>
-//#include <vtkPolyDataMapper.h>
-//#include <vtkActor.h>
-//#include <vtkProperty.h>
-//#include <vtkAxesActor.h>
-//#include <vtkWindowToImageFilter.h>
-//#include <vtkPNGWriter.h>
+#include <vtkSphereSource.h>
+#include <vtkCubeSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkAxesActor.h>
+#include <vtkWindowToImageFilter.h>
+#include <vtkPNGWriter.h>
 
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
@@ -63,8 +63,6 @@ using namespace Core::Datatypes;
 using namespace Core::Geometry;
 
 #ifdef WITH_VTK
-//int VtkRenderer::vtkRendererInstances = 0;
-//VtkDataManager VtkRenderer::dataManager;
 
 VtkRenderer::VtkRenderer()
 {
@@ -77,9 +75,9 @@ VtkRenderer::~VtkRenderer()
 //Rendering-----------------------------------------------------------------------------------------
 void VtkRenderer::renderFrame()
 {
-  //renderTestScene();
-  //testOffscreen();
   clearViewportTest();
+  //renderTestScene();
+  testOffscreen();
 }
 
 
@@ -90,15 +88,15 @@ void VtkRenderer::resize(uint32_t width, uint32_t height)
   width_ = width;
   height_ = height;
 
-  //if (renderWindow_)
-  //{
-  //  renderWindow_->SetSize(width, height);
-  //}
+  if (renderWindow_)
+  {
+    renderWindow_->SetSize(width, height);
+  }
 
-  //if (renderer_)
-  //{
-  //  renderer_->SetViewport(0.0, 0.0, 1.0, 1.0);
-  //}
+  if (renderer_)
+  {
+    renderer_->SetViewport(0.0, 0.0, 1.0, 1.0);
+  }
 }
 
 void VtkRenderer::mousePress(float x, float y, MouseButton btn)
@@ -156,81 +154,98 @@ void VtkRenderer::setLightsAsObject()
 
 void VtkRenderer::renderTestScene()
 {
-  //if (!initialized_)
-  //{
-  //  renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
-  //  renderer_ = vtkSmartPointer<vtkRenderer>::New();
-  //  renderWindow_->AddRenderer(renderer_);
+  if (!initialized_)
+  {
+    renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
+    renderer_ = vtkSmartPointer<vtkRenderer>::New();
+    renderWindow_->AddRenderer(renderer_);
 
-  //  auto sphere = vtkSmartPointer<vtkSphereSource>::New();
-  //  auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-  //  mapper->SetInputConnection(sphere->GetOutputPort());
+    auto sphere = vtkSmartPointer<vtkSphereSource>::New();
+    auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(sphere->GetOutputPort());
 
-  //  auto actor = vtkSmartPointer<vtkActor>::New();
-  //  actor->SetMapper(mapper);
+    auto actor = vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(mapper);
 
-  //  renderer_->AddActor(actor);
-  //  renderer_->SetBackground(0.1, 0.2, 0.4);
-  //  renderer_->ResetCamera();
+    renderer_->AddActor(actor);
+    renderer_->SetBackground(0.1, 0.2, 0.4);
+    renderer_->ResetCamera();
 
-  //  renderWindow_->SetWindowName("VTK Test Window");
-  //  renderWindow_->SetSize(800, 600);
+    renderWindow_->SetWindowName("VTK Test Window");
+    renderWindow_->SetSize(800, 600);
 
-  //  interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-  //  interactor_->SetRenderWindow(renderWindow_);
-  //  renderWindow_->Render();
-  //  interactor_->Start();
+    interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    interactor_->SetRenderWindow(renderWindow_);
+    renderWindow_->Render();
+    interactor_->Initialize();
 
-  //  initialized_ = true;
-  //}
-
-  // This will create and show the VTK window
-  //renderWindow_->Render();
+    initialized_ = true;
+  }
 }
 
 void VtkRenderer::testOffscreen()
 {
-  //auto renWin = vtkSmartPointer<vtkRenderWindow>::New();
-  //renWin->SetOffScreenRendering(1);  // KEY
-  //renWin->SetSize(512, 512);
+  static bool initialized = false;
 
-  //auto ren = vtkSmartPointer<vtkRenderer>::New();
-  //renWin->AddRenderer(ren);
+  static vtkSmartPointer<vtkRenderWindow> renWin;
+  static vtkSmartPointer<vtkWindowToImageFilter> w2i;
 
-  //auto sphere = vtkSmartPointer<vtkSphereSource>::New();
+  if (!initialized)
+  {
+    renWin = vtkSmartPointer<vtkRenderWindow>::New();
+    renWin->SetOffScreenRendering(1);
+    renWin->SetSize(width_, height_);
 
-  //auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-  //mapper->SetInputConnection(sphere->GetOutputPort());
+    auto ren = vtkSmartPointer<vtkRenderer>::New();
+    renWin->AddRenderer(ren);
 
-  //auto actor = vtkSmartPointer<vtkActor>::New();
-  //actor->SetMapper(mapper);
+    auto sphere = vtkSmartPointer<vtkSphereSource>::New();
 
-  //ren->AddActor(actor);
-  //ren->SetBackground(1.0, 1.0, 0.0);
+    auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(sphere->GetOutputPort());
 
-  //renWin->Render();
+    auto actor = vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(mapper);
 
-  //// ---- Read pixels ----
-  //auto w2i = vtkSmartPointer<vtkWindowToImageFilter>::New();
-  //w2i->SetInput(renWin);
-  //w2i->Update();
+    ren->AddActor(actor);
+    ren->SetBackground(0.1, 0.2, 0.4);
 
-  //// Option A: dump to PNG (sanity check)
-  //auto writer = vtkSmartPointer<vtkPNGWriter>::New();
-  //writer->SetFileName("vtk_test.png");
-  //writer->SetInputConnection(w2i->GetOutputPort());
-  //writer->Write();
+    w2i = vtkSmartPointer<vtkWindowToImageFilter>::New();
+    w2i->SetInput(renWin);
 
-  //// Option B: raw memory access
-  //vtkImageData* image = w2i->GetOutput();
-  //int dims[3];
-  //image->GetDimensions(dims);
+    initialized = true;
+  }
 
-  //unsigned char* pixels = static_cast<unsigned char*>(image->GetScalarPointer());
+  renWin->SetSize(width_, height_);
 
-  //// quick sanity check
-  //printf("Image %d x %d\n", dims[0], dims[1]);
-  //printf("First pixel RGB: %d %d %d\n", pixels[0], pixels[1], pixels[2]);
+  // Render VTK
+  renWin->Render();
+
+  // Capture image
+  w2i->Modified();
+  w2i->Update();
+
+  vtkImageData* image = w2i->GetOutput();
+
+  int dims[3];
+  image->GetDimensions(dims);
+
+  unsigned char* pixels = static_cast<unsigned char*>(image->GetScalarPointer());
+
+  // Draw into current SCIrun OpenGL framebuffer
+
+  glViewport(0, 0, width_, height_);
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  // VTK image origin is lower-left, so this may actually appear correct.
+  // If upside-down, we'll flip later.
+
+  glRasterPos2f(-1.0f, -1.0f);
+
+  glDrawPixels(dims[0], dims[1], GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+  glFlush();
 }
 
 void VtkRenderer::clearViewportTest()
