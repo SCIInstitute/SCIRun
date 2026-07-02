@@ -591,7 +591,7 @@ void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
   auto dock = qobject_cast<QDockWidget*>(sender());
   if (dock && isFloating)
   {
-    dock->setWindowFlags(Qt::Window);
+    dock->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
     dock->show();
   }
 }
