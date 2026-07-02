@@ -37,24 +37,24 @@
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
 
-#ifdef __APPLE__
-#define GL_SILENCE_DEPRECATION
-#include <OpenGL/glu.h>
-#else
-#ifdef _WIN32
-#ifndef NOMINMAX
-#define NOMINMAX  // prevent Windows macros from breaking std::min/max
-#endif
-
-#include <Windows.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
+//#ifdef __APPLE__
+//#define GL_SILENCE_DEPRECATION
+//#include <OpenGL/glu.h>
+//#else
+//#ifdef _WIN32
+//#ifndef NOMINMAX
+//#define NOMINMAX  // prevent Windows macros from breaking std::min/max
+//#endif
+//
+//#include <Windows.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
+//
+//#else
+//#include <GL/gl.h>
+//#include <GL/glu.h>
+//#endif
+//#endif
 #include <cstdio>
 #include <iostream>
 
@@ -76,7 +76,7 @@ VtkRenderer::~VtkRenderer()
 //Rendering-----------------------------------------------------------------------------------------
 void VtkRenderer::renderFrame()
 {
-  clearViewportTest();
+  //clearViewportTest();
   //renderTestScene();
   testOffscreen();
 }
@@ -194,8 +194,6 @@ void VtkRenderer::testOffscreen()
 
   if (!initialized)
   {
-    // ----- VTK Setup -----
-
     renWin = vtkSmartPointer<vtkRenderWindow>::New();
     renWin->SetOffScreenRendering(1);
 
@@ -219,31 +217,15 @@ void VtkRenderer::testOffscreen()
     w2i = vtkSmartPointer<vtkWindowToImageFilter>::New();
     w2i->SetInput(renWin);
 
-    // ----- OpenGL Texture -----
-
-    glGenTextures(1, &vtkTexture_);
-
-    glBindTexture(GL_TEXTURE_2D, vtkTexture_);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
     initialized = true;
   }
 
   renWin->SetSize(width_, height_);
 
-  // Render VTK offscreen
+  // Render VTK scene
   renWin->Render();
 
-  // Capture image
+  // Capture framebuffer
   w2i->Modified();
   w2i->Update();
 
@@ -252,33 +234,18 @@ void VtkRenderer::testOffscreen()
   int dims[3];
   image->GetDimensions(dims);
 
-  int numComponents = image->GetNumberOfScalarComponents();
+  imageWidth_ = dims[0];
+  imageHeight_ = dims[1];
+  numChannels_ = image->GetNumberOfScalarComponents();
 
-  unsigned char* pixels = static_cast<unsigned char*>(image->GetScalarPointer());
+  imagePixels_ = static_cast<unsigned char*>(image->GetScalarPointer());
 
-  GLenum format = (numComponents == 4) ? GL_RGBA : GL_RGB;
-
-  // Upload image into texture
-
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-  glBindTexture(GL_TEXTURE_2D, vtkTexture_);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, (format == GL_RGBA) ? GL_RGBA8 : GL_RGB8, dims[0], dims[1], 0, format, GL_UNSIGNED_BYTE, pixels);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  //
-  // At this point vtkTexture_ contains the rendered image.
-  //
-  // Next step:
-  //   bind vtkTexture_
-  //   draw fullscreen quad
-  //
+  imageDirty_ = true;
 }
 
 void VtkRenderer::clearViewportTest()
 {
+  /*
   // Make sure we are operating on the correct framebuffer
   glViewport(0, 0, width_, height_);
 
@@ -290,6 +257,7 @@ void VtkRenderer::clearViewportTest()
 
   // Optional: force execution (mostly for debugging)
   glFlush();
+  */
 }
 
 #endif

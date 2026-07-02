@@ -67,8 +67,19 @@ public:
   //Getters-----------------------------------------------------------------------------------------
   uint32_t width() {return width_;}
   uint32_t height() {return height_;}
+  const unsigned char* imagePixels() const { return imagePixels_; }
 
-private:
+  int imageWidth() const { return imageWidth_; }
+
+  int imageHeight() const { return imageHeight_; }
+
+  int numChannels() const { return numChannels_; }
+
+  bool imageDirty() const { return imageDirty_; }
+
+  void clearImageDirtyFlag() { imageDirty_ = false; }
+
+ private:
   void addGroup();
   void addInstaceOfGroup();
   void addMeshToGroup(Core::Datatypes::VtkGeometryObject* geometryObject, uint32_t vertsPerPoly);
@@ -108,7 +119,13 @@ private:
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
   vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-  unsigned int vtkTexture_ {0};
+  unsigned char* imagePixels_ = nullptr;
+
+  int imageWidth_ = 0;
+  int imageHeight_ = 0;
+  int numChannels_ = 0;
+
+  bool imageDirty_ = false;
 };
 
 }}
