@@ -37,27 +37,6 @@
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
 
-//#ifdef __APPLE__
-//#define GL_SILENCE_DEPRECATION
-//#include <OpenGL/glu.h>
-//#else
-//#ifdef _WIN32
-//#ifndef NOMINMAX
-//#define NOMINMAX  // prevent Windows macros from breaking std::min/max
-//#endif
-//
-//#include <Windows.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-//
-//#else
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-//#endif
-//#endif
-#include <cstdio>
-#include <iostream>
-
 using namespace SCIRun;
 using namespace Render;
 using namespace Core::Datatypes;
@@ -153,36 +132,36 @@ void VtkRenderer::setLightsAsObject()
 {
 }
 
-void VtkRenderer::renderTestScene()
-{
-  if (!initialized_)
-  {
-    renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
-    renderer_ = vtkSmartPointer<vtkRenderer>::New();
-    renderWindow_->AddRenderer(renderer_);
-
-    auto sphere = vtkSmartPointer<vtkSphereSource>::New();
-    auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    mapper->SetInputConnection(sphere->GetOutputPort());
-
-    auto actor = vtkSmartPointer<vtkActor>::New();
-    actor->SetMapper(mapper);
-
-    renderer_->AddActor(actor);
-    renderer_->SetBackground(0.1, 0.2, 0.4);
-    renderer_->ResetCamera();
-
-    renderWindow_->SetWindowName("VTK Test Window");
-    renderWindow_->SetSize(800, 600);
-
-    interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-    interactor_->SetRenderWindow(renderWindow_);
-    renderWindow_->Render();
-    interactor_->Initialize();
-
-    initialized_ = true;
-  }
-}
+//void VtkRenderer::renderTestScene()
+//{
+//  if (!initialized_)
+//  {
+//    renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
+//    renderer_ = vtkSmartPointer<vtkRenderer>::New();
+//    renderWindow_->AddRenderer(renderer_);
+//
+//    auto sphere = vtkSmartPointer<vtkSphereSource>::New();
+//    auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+//    mapper->SetInputConnection(sphere->GetOutputPort());
+//
+//    auto actor = vtkSmartPointer<vtkActor>::New();
+//    actor->SetMapper(mapper);
+//
+//    renderer_->AddActor(actor);
+//    renderer_->SetBackground(0.1, 0.2, 0.4);
+//    renderer_->ResetCamera();
+//
+//    renderWindow_->SetWindowName("VTK Test Window");
+//    renderWindow_->SetSize(800, 600);
+//
+//    interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+//    interactor_->SetRenderWindow(renderWindow_);
+//    renderWindow_->Render();
+//    interactor_->Initialize();
+//
+//    initialized_ = true;
+//  }
+//}
 
 void VtkRenderer::testOffscreen()
 {
@@ -200,17 +179,41 @@ void VtkRenderer::testOffscreen()
     ren = vtkSmartPointer<vtkRenderer>::New();
     renWin->AddRenderer(ren);
 
+    // green sphere in lower-left
+
     auto sphere = vtkSmartPointer<vtkSphereSource>::New();
-    sphere->SetThetaResolution(64);
-    sphere->SetPhiResolution(64);
 
-    auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-    mapper->SetInputConnection(sphere->GetOutputPort());
+    auto sphereMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    sphereMapper->SetInputConnection(sphere->GetOutputPort());
 
-    auto actor = vtkSmartPointer<vtkActor>::New();
-    actor->SetMapper(mapper);
+    auto sphereActor = vtkSmartPointer<vtkActor>::New();
+    sphereActor->SetMapper(sphereMapper);
+    sphereActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
+    sphereActor->SetPosition(-2.0, -2.0, 0.0);
 
-    ren->AddActor(actor);
+    ren->AddActor(sphereActor);
+
+    // red cube in upper-right
+
+    auto cube = vtkSmartPointer<vtkCubeSource>::New();
+
+    auto cubeMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    cubeMapper->SetInputConnection(cube->GetOutputPort());
+
+    auto cubeActor = vtkSmartPointer<vtkActor>::New();
+    cubeActor->SetMapper(cubeMapper);
+    cubeActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
+    cubeActor->SetPosition(2.0, 2.0, 0.0);
+
+    ren->AddActor(cubeActor);
+
+    // axes
+
+    auto axes = vtkSmartPointer<vtkAxesActor>::New();
+    axes->SetTotalLength(2.0, 2.0, 2.0);
+
+    ren->AddActor(axes);
+
     ren->SetBackground(0.1, 0.2, 0.4);
     ren->ResetCamera();
 
@@ -234,30 +237,25 @@ void VtkRenderer::testOffscreen()
   int dims[3];
   image->GetDimensions(dims);
 
-  imageWidth_ = dims[0];
-  imageHeight_ = dims[1];
-  numChannels_ = image->GetNumberOfScalarComponents();
+  int numComponents = image->GetNumberOfScalarComponents();
 
   imagePixels_ = static_cast<unsigned char*>(image->GetScalarPointer());
 
-  imageDirty_ = true;
-}
+  if (numComponents == 3)
+  {
+    int bytesPerLine = dims[0] * 3;
 
-void VtkRenderer::clearViewportTest()
-{
-  /*
-  // Make sure we are operating on the correct framebuffer
-  glViewport(0, 0, width_, height_);
+    image_ = QImage(imagePixels_, dims[0], dims[1], bytesPerLine, QImage::Format_RGB888).copy();
+  }
+  else if (numComponents == 4)
+  {
+    int bytesPerLine = dims[0] * 4;
 
-  // Set a very obvious color so you know it's working (bright red)
-  glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    image_ = QImage(imagePixels_, dims[0], dims[1], bytesPerLine, QImage::Format_RGBA8888).copy();
+  }
 
-  // Clear color + depth buffers
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // Optional: force execution (mostly for debugging)
-  glFlush();
-  */
+  // VTK is usually vertically flipped relative to Qt
+  image_ = image_.mirrored(false, true);
 }
 
 #endif

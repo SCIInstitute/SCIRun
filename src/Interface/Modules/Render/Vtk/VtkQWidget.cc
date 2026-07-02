@@ -35,7 +35,7 @@
 using namespace SCIRun::Render;
 
 VtkQWidget::VtkQWidget(QWidget *parent, VtkRenderer* renderer) :
-	QOpenGLWidget(parent), renderer(renderer)
+	QWidget(parent), renderer(renderer)
 {
   //setAttribute(Qt::WA_NativeWindow);
   //setAttribute(Qt::WA_PaintOnScreen);
@@ -51,24 +51,29 @@ VtkQWidget::~VtkQWidget()
 
 }
 
-void VtkQWidget::initializeGL()
-{
-  initializeOpenGLFunctions();
+//void VtkQWidget::initializeGL()
+//{
+//  initializeOpenGLFunctions();
+//
+//  glEnable(GL_DEPTH_TEST);
+//
+//  // Optional: debug clear color
+//  glClearColor(0.f, 0.f, 0.f, 1.f);
+//}
 
-  glEnable(GL_DEPTH_TEST);
-
-  // Optional: debug clear color
-  glClearColor(0.f, 0.f, 0.f, 1.f);
-}
-
-void VtkQWidget::paintGL()
+void VtkQWidget::paintEvent(QPaintEvent* event)
 {
   renderer->renderFrame();
+
+  QPainter painter(this);
+  painter.drawImage(rect(), renderer->image());
 }
 
-void VtkQWidget::resizeGL(int width, int height)
+void VtkQWidget::resizeEvent(QResizeEvent* event)
 {
-  renderer->resize(width, height);
+  QWidget::resizeEvent(event);
+
+  renderer->resize(event->size().width(), event->size().height());
 }
 
 void VtkQWidget::updateRenderer()

@@ -28,8 +28,8 @@
 #pragma once
 
 #include <Interface/qt_include.h>
-#include <QOpenGLWidget.h>
-#include <QOpenGLFunctions.h>
+//#include <QOpenGLWidget.h>
+//#include <QOpenGLFunctions.h>
 #include <QTimer>
 #include <Interface/Modules/Render/Vtk/share.h>
 
@@ -37,7 +37,8 @@ namespace SCIRun { namespace Render {
 
 class VtkRenderer;
 
-class SCISHARE VtkQWidget : public QOpenGLWidget, protected QOpenGLFunctions
+//class SCISHARE VtkQWidget : public QOpenGLWidget, protected QOpenGLFunctions
+class SCISHARE VtkQWidget : public QWidget
 {
   Q_OBJECT
 
@@ -49,9 +50,12 @@ public Q_SLOTS:
     void updateRenderer();
 
 protected:
-  virtual void initializeGL() override;
-  virtual void paintGL() override;
-  virtual void resizeGL(int width, int height) override;
+  //virtual void initializeGL() override;
+  //virtual void paintGL() override;
+  //virtual void resizeGL(int width, int height) override;
+
+  virtual void paintEvent(QPaintEvent* event) override;
+  virtual void resizeEvent(QResizeEvent* event) override;
 
   VtkRenderer* renderer {nullptr};
 

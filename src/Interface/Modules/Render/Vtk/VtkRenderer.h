@@ -41,6 +41,7 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
 #include <glm/glm.hpp>
+#include <QImage>
 
 namespace SCIRun { namespace Render {
 
@@ -68,16 +69,7 @@ public:
   uint32_t width() {return width_;}
   uint32_t height() {return height_;}
   const unsigned char* imagePixels() const { return imagePixels_; }
-
-  int imageWidth() const { return imageWidth_; }
-
-  int imageHeight() const { return imageHeight_; }
-
-  int numChannels() const { return numChannels_; }
-
-  bool imageDirty() const { return imageDirty_; }
-
-  void clearImageDirtyFlag() { imageDirty_ = false; }
+  QImage image() const { return image_; }
 
  private:
   void addGroup();
@@ -102,30 +94,14 @@ public:
 
   bool isScivis {true};
 
-  //OSPFrameBuffer frameBuffer_ {nullptr};
-  //OSPRenderer    renderer_    {nullptr};
-  //OSPRayCamera*  camera_      {nullptr};
-  //OSPCamera      parentCamera_{nullptr};
-  //OSPWorld       world_       {nullptr};
-
-
-  //OSPGroup group_ {nullptr};
-
-  void renderTestScene();
   void testOffscreen();
-  void clearViewportTest();
 
   bool initialized_ = false;
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
   vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
   unsigned char* imagePixels_ = nullptr;
-
-  int imageWidth_ = 0;
-  int imageHeight_ = 0;
-  int numChannels_ = 0;
-
-  bool imageDirty_ = false;
+  QImage image_;
 };
 
 }}
