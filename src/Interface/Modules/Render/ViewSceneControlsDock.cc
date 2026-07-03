@@ -35,8 +35,8 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
-#include <qwt_knob.h>
-#include <qwt_abstract_slider.h>
+#include <qwt/qwt_knob.h>
+#include <qwt/qwt_abstract_slider.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;

@@ -51,7 +51,6 @@ TARGET_LINK_LIBRARIES(Algorithms_Field
   Core_Datatypes_Legacy_Field
   Algorithms_Base
   Core_Algorithms_Legacy_Fields
-  ${SCI_BOOST_LIBRARY}
   ${SCI_CLEAVER2_LIBRARY}
 )
 

@@ -48,5 +48,4 @@ TARGET_LINK_LIBRARIES(Algorithm_Layer_Test
   Engine_Network
   gtest_main
   gtest
-  ${SCI_BOOST_LIBRARY}
 )

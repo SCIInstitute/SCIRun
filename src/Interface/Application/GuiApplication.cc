@@ -28,6 +28,7 @@
 
 #include <QApplication>
 #include <QMessageBox>
+#include <QSurfaceFormat>
 #include <Interface/Application/GuiApplication.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Core/Logging/Log.h>
@@ -69,6 +70,13 @@ public:
 int GuiApplication::run(int argc, const char* argv[])
 {
   QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+  QSurfaceFormat fmt;
+  fmt.setDepthBufferSize(24);
+  fmt.setStencilBufferSize(8);
+  fmt.setVersion(3, 3);
+  fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
+  QSurfaceFormat::setDefaultFormat(fmt);
+
   SCIRunGuiApplication app(argc, const_cast<char**>(argv));
 
   try
