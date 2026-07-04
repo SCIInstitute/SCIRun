@@ -44,6 +44,10 @@ SET(Algorithms_Field_Tests_SRCS
   MapFieldDataFromElemToNodeAlgoTests.cc
   MapFieldDataFromNodeToElemAlgoTests.cc
   MapFieldDataFromSourceToDestinationAlgoTests.cc
+  MappingDataSourceTests.cc
+  MapFieldDataOntoNodesAlgoTests.cc
+  MapFieldDataOntoElemsAlgoTests.cc
+  ApplyMappingMatrixAlgoTests.cc
   GetFieldDataAlgoTests.cc
   SetFieldDataAlgoTests.cc
   SetFieldDataToConstantValueAlgoTests.cc
