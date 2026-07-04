@@ -41,8 +41,7 @@ IF(GENERATE_MODULE_FACTORY_CODE)
   MESSAGE(STATUS "Setting up algorithm factory generator")
   ADD_EXECUTABLE(MakeAlgorithmFactory Generator/MakeAlgorithmFactory.h Generator/MakeAlgorithmFactory.cc)
   TARGET_LINK_LIBRARIES(MakeAlgorithmFactory
-    Modules_Factory_Generator
-    ${SCI_BOOST_LIBRARY})
+    Modules_Factory_Generator)
   SET_PROPERTY(TARGET MakeAlgorithmFactory   PROPERTY FOLDER "Modules")
 
   # add the command to generate the source code
@@ -79,7 +78,6 @@ TARGET_LINK_LIBRARIES(Algorithms_Factory
   Core_Algorithms_Visualization
   Core_Algorithms_Legacy_FiniteElements
   Core_Algorithms_Legacy_Converter
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

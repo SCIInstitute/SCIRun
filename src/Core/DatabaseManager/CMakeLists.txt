@@ -41,8 +41,10 @@ SCIRUN_ADD_LIBRARY(Core_DatabaseManager
 )
 
 TARGET_LINK_LIBRARIES(Core_DatabaseManager
-                      ${SCI_SQLITE_LIBRARY}
-                      ${SCI_BOOST_LIBRARY})
+  ${SCI_SQLITE_LIBRARY}
+  Boost::atomic
+  Boost::filesystem
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_DatabaseManager)

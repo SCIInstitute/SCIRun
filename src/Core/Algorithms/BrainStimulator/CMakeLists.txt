@@ -60,7 +60,6 @@ TARGET_LINK_LIBRARIES(Algorithms_BrainStimulator
   Core_Algorithms_Legacy_Fields
 #  Core_Datatypes_Legacy_BrainStimulator
   Algorithms_Base
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -94,5 +94,4 @@ TARGET_LINK_LIBRARIES(Dataflow_Network
   Core_Logging
   Algorithms_Base
   Algorithms_Describe
-  ${SCI_BOOST_LIBRARY}
 )

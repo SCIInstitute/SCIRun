@@ -42,6 +42,19 @@ SCIRUN_ADD_LIBRARY(Core_Python
   ${Core_Python_SRCS}
 )
 
+# --- MSVC Debug-only Python ABI enforcement ---
+if (MSVC)
+  target_compile_definitions(Core_Python PRIVATE
+    $<$<CONFIG:Debug>:Py_DEBUG>
+    $<$<CONFIG:Debug>:Py_TRACE_REFS>
+  )
+
+  # Defensive: prevent accidental linkage to release Python
+  target_link_options(Core_Python PRIVATE
+    $<$<CONFIG:Debug>:/NODEFAULTLIB:python${SCI_PYTHON_VERSION_SHORT_WIN32}.lib>
+  )
+endif()
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Python)
 ENDIF(BUILD_SHARED_LIBS)
@@ -60,8 +73,7 @@ ELSE()
 ENDIF()
 
 TARGET_LINK_LIBRARIES(Core_Python
-  ${SCI_PYTHON_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
+  ${SCI_PYTHON_LIBRARIES}
   SCIRunPythonAPI
   Core_Matlab
   Core_Datatypes

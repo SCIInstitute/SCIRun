@@ -50,7 +50,6 @@ TARGET_LINK_LIBRARIES(Testing_Utils
   Core_Algorithms_Legacy_Fields
   gtest
   gmock
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

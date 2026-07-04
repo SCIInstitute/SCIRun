@@ -95,6 +95,10 @@ SCIRUN_ADD_LIBRARY(Core_Basis
   ${Core_Basis_SRCS}
 )
 
+target_link_libraries(Core_Basis
+  Boost::headers
+)
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Basis)
 ENDIF(BUILD_SHARED_LIBS)

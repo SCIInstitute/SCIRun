@@ -46,8 +46,8 @@ TARGET_LINK_LIBRARIES(SCIRunPythonAPI
   Core_Thread
   Core_Datatypes_Legacy_Base
   Core_Persistent
-  ${SCI_PYTHON_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
+  ${SCI_PYTHON_LIBRARIES}
+  Boost::python313
 )
 
 IF(BUILD_SHARED_LIBS)

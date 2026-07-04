@@ -30,6 +30,32 @@ SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
 
 ###########################################
+# Force superbuild Python, prevent system Python binding
+###########################################
+
+if(BUILD_WITH_PYTHON)
+
+  # This is where PythonExternal.cmake will install Python
+  set(_SB_PYTHON_PREFIX "${ep_base}/Python_external")
+
+  # Prevent CMake from picking up /usr/bin/python3.x
+  set(Python3_FIND_SYSTEM_ONLY OFF CACHE BOOL "" FORCE)
+  set(Python3_FIND_REGISTRY NEVER CACHE STRING "" FORCE)
+  set(Python3_FIND_UNVERSIONED_NAMES NEVER CACHE STRING "" FORCE)
+  set(Python3_FIND_STRATEGY LOCATION CACHE STRING "" FORCE)
+
+  # Predeclare Python location (even before it exists)
+  set(Python3_ROOT_DIR "${_SB_PYTHON_PREFIX}" CACHE PATH "" FORCE)
+
+  # These stop FindPython / FindPython3 from falling back
+  set(Python_ROOT_DIR "${_SB_PYTHON_PREFIX}" CACHE PATH "" FORCE)
+
+  # Do NOT set Python3_EXECUTABLE yet — it doesn't exist during first configure
+  # We only block system discovery here.
+
+endif()
+
+###########################################
 # Set default CMAKE_BUILD_TYPE
 # if empty for Unix Makefile builds
 IF(CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
@@ -118,26 +144,45 @@ list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
 
 IF(NOT BUILD_HEADLESS)
 
-  SET(Qt_PATH "" CACHE PATH "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
+  SET(Qt_PATH "" CACHE PATH
+      "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
 
-  IF(IS_DIRECTORY ${Qt_PATH})
-    if (${QT_VERSION_MAJOR} STREQUAL "6")
-      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
+  # ------------------------------------------------------------
+  # Qt package discovery
+  # ------------------------------------------------------------
+  IF(IS_DIRECTORY "${Qt_PATH}")
+    if (QT_VERSION_MAJOR STREQUAL "6")
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
+        COMPONENTS
+          DBus DBusTools
+          Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg
+          CoreTools GuiTools WidgetsTools OpenGLWidgets
+        REQUIRED
+        HINTS ${Qt_PATH})
     else()
-      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION} COMPONENTS Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg REQUIRED HINTS ${Qt_PATH})
+      FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
+        COMPONENTS
+          Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg
+        REQUIRED
+        HINTS ${Qt_PATH})
     endif()
   ELSE()
-    MESSAGE(SEND_ERROR "Set Qt_PATH to directory where Qt is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+    MESSAGE(SEND_ERROR
+      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or enable BUILD_HEADLESS.")
   ENDIF()
 
+  # ------------------------------------------------------------
+  # macOS-only settings
+  # ------------------------------------------------------------
   IF(APPLE)
-    SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
+    SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING
+        "Set macdeployqt output level (0–3)")
     MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
   ENDIF()
+
 ELSE()
   ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF()
-
 
 ###########################################
 # Configure Doxygen documentation
@@ -206,7 +251,10 @@ ENDIF()
 IF(PREBUILT_OSPRAY)
   find_package(ospray 2.10.0 REQUIRED)
 ELSEIF(BUILD_OSPRAY)
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
+  #INCLUDE(${SUPERBUILD_DIR}/TBBExternal.cmake)
+  #INCLUDE(${SUPERBUILD_DIR}/RKCommonExternal.cmake)
+  #INCLUDE(${SUPERBUILD_DIR}/EmbreeExternal.cmake)
+  ADD_EXTERNAL(${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external)
 ENDIF()
 SET(WITH_OSPRAY (BUILD_OSPRAY || PREBUILT_OSPRAY))
 
@@ -299,7 +347,10 @@ IF(NOT BUILD_HEADLESS)
  	  "-DQt${QT_VERSION_MAJOR}Widgets_DIR:PATH=${Qt${QT_VERSION_MAJOR}Widgets_DIR}"
 	  "-DQt${QT_VERSION_MAJOR}Concurrent_DIR:PATH=${Qt${QT_VERSION_MAJOR}Concurrent_DIR}"
     "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
-    "-DQWT_DIR:PATH=${QWT_DIR}"
+    "-DQWT_INCLUDE:PATH=${QWT_INCLUDE}"
+    "-DQWT_LIBRARY_DIR:PATH=${QWT_LIBRARY_DIR}"
+    "-DQWT_LIBRARY:STRING=${QWT_LIBRARY}"
+    "-DQWT_INSTALL_DIR:PATH=${QWT_INSTALL_DIR}"
   )
 ENDIF()
 

@@ -47,9 +47,19 @@ SCIRUN_ADD_LIBRARY(Core_Containers
   ${Core_Containers_HEADERS}
 )
 
+if(WIN32 AND BUILD_SHARED_LIBS)
+  set_target_properties(Core_Containers
+    PROPERTIES
+      WINDOWS_EXPORT_ALL_SYMBOLS ON
+  )
+endif()
+
 TARGET_LINK_LIBRARIES(Core_Containers
-                  Core_Persistent
-                  Core_Exceptions_Legacy
+  PUBLIC
+    Boost::headers
+  PRIVATE
+    Core_Persistent
+    Core_Exceptions_Legacy
 )
 
 IF(BUILD_SHARED_LIBS)

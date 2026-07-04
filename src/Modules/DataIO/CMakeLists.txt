@@ -65,7 +65,6 @@ TARGET_LINK_LIBRARIES(Modules_DataIO
   Algorithms_DataIO
   Core_Algorithms_Legacy_DataIO
   Core_ImportExport
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
