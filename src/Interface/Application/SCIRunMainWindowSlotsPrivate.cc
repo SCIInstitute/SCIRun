@@ -416,6 +416,9 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 {
   if (item && 0 == column)
   {
+    Q_ASSERT(moduleSelectorTreeWidget_);
+    Q_ASSERT(item);
+
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
     auto faves = item->foreground(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu() : getFavoriteMenu();

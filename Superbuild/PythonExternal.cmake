@@ -28,7 +28,7 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-SET(DEFAULT_PYTHON_VERSION "3.11.11")
+SET(DEFAULT_PYTHON_VERSION "3.13.1")
 
 set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
 set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.10.16 3.11.11 3.12.8 3.13.1)
@@ -67,6 +67,7 @@ IF(UNIX)
   SET(python_CONFIGURE_FLAGS
     "--prefix=<INSTALL_DIR>"
     "--with-ensurepip=no"
+    "LDFLAGS=-Wl,-rpath,'$$ORIGIN/../lib'"
   )
   IF(APPLE)
     # framework contains *.dylib
@@ -112,8 +113,9 @@ ELSE()
     CONFIGURE_COMMAND PCbuild/build.bat
     BUILD_IN_SOURCE ON
     BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
-    INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-      <SOURCE_DIR>/PC/pyconfig.h
+    INSTALL_COMMAND "${CMAKE_COMMAND}" -E
+      copy_if_different
+      <SOURCE_DIR>/PCbuild/${python_WIN32_64BIT_DIR}/pyconfig.h
       <SOURCE_DIR>/Include/pyconfig.h
   )
   # build both Release and Debug versions
@@ -133,22 +135,24 @@ SET(SCI_PYTHON_MODULE_PARENT_PATH lib)
 IF(UNIX)
   SET(SCI_PYTHON_NAME python${SCI_PYTHON_VERSION_SHORT})
   IF(APPLE)
-    # TODO: check Xcode IDE builds...
-
     SET(SCI_PYTHON_FRAMEWORK ${INSTALL_DIR}/Python.framework)
     SET(SCI_PYTHON_ROOT_DIR ${SCI_PYTHON_FRAMEWORK}/Versions/${SCI_PYTHON_VERSION_SHORT})
     SET(SCI_PYTHON_INCLUDE ${SCI_PYTHON_ROOT_DIR}/Headers)
     SET(SCI_PYTHON_LIBRARY_DIR ${SCI_PYTHON_ROOT_DIR}/lib)
     SET(SCI_PYTHON_LINK_LIBRARY_DIRS ${SCI_PYTHON_LIBRARY_DIR})
-    SET(SCI_PYTHON_EXE ${SCI_PYTHON_ROOT_DIR}/bin/${SCI_PYTHON_NAME})
-    SET(SCI_PYTHON_LIBRARY ${SCI_PYTHON_NAME})
 
-    # required by interpreter interface
+    # Boost.Build requires python3, NOT python3.x inside frameworks
+    SET(SCI_PYTHON_EXE ${SCI_PYTHON_ROOT_DIR}/bin/python3)
+
+    # Keep SCI_PYTHON_LIBRARY as the module name (python3.11 works here)
+    SET(SCI_PYTHON_LIBRARY python${SCI_PYTHON_VERSION_SHORT})
+
     IF(BUILD_HEADLESS)
-      SET(PYTHON_MODULE_SEARCH_PATH Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
+      SET(PYTHON_MODULE_SEARCH_PATH Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_LIBRARY} CACHE INTERNAL "Python modules." FORCE)
     ELSE()
-      SET(PYTHON_MODULE_SEARCH_PATH Frameworks/Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
+      SET(PYTHON_MODULE_SEARCH_PATH Frameworks/Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_LIBRARY} CACHE INTERNAL "Python modules." FORCE)
     ENDIF()
+
     SET(SCI_PYTHON_FRAMEWORK_ARCHIVE ${INSTALL_DIR}/${python_FRAMEWORK_ARCHIVE})
   ELSE()
     SET(SCI_PYTHON_ROOT_DIR ${INSTALL_DIR})

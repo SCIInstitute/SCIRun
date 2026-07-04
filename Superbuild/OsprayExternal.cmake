@@ -28,7 +28,21 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(ospray_GIT_TAG "origin/scirun-build-2.10")
 
 set(ospray_DEPENDENCIES)
-LIST(APPEND ospray_DEPENDENCIES GLM_external)
+set(ospray_DEPENDENCIES)
+LIST(APPEND ospray_DEPENDENCIES
+  GLM_external
+  rkcommon_external
+  Embree_external
+)
+
+ExternalProject_Get_Property(rkcommon_external INSTALL_DIR)
+set(RKCOMMON_INSTALL_DIR ${INSTALL_DIR})
+
+ExternalProject_Get_Property(TBB_external INSTALL_DIR)
+set(TBB_INSTALL_DIR ${INSTALL_DIR})
+
+ExternalProject_Get_Property(Embree_external INSTALL_DIR)
+set(EMBREE_INSTALL_DIR ${INSTALL_DIR})
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
@@ -36,17 +50,23 @@ ExternalProject_Add(Ospray_external
   DEPENDS ${ospray_DEPENDENCIES}
   GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
   GIT_TAG ${ospray_GIT_TAG}
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
+
+  GIT_SUBMODULES ""
+  GIT_SUBMODULES_RECURSE OFF
+
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DENABLE_OSPRAY_SUPERBUILD:BOOL=ON
-    -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
     -DBUILD_ISA_AVX512:BOOL=OFF
+    -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
+    -Drkcommon_DIR:PATH=${RKCOMMON_INSTALL_DIR}/lib/cmake/rkcommon-1.11.0
+    -DTBB_ROOT:PATH=${TBB_INSTALL_DIR}
+    -Dembree_DIR:PATH=${EMBREE_INSTALL_DIR}/lib/cmake/embree-3.13.4
+    -DEMBREE_VERSION_REQUIRED:STRING=3.13.0
+    -DOSPRAY_ENABLE_ISPC:BOOL=OFF
+    -Dglm_DIR:PATH=${GLM_DIR}/cmake/glm
 )
 
 ExternalProject_Get_Property(Ospray_external BINARY_DIR)

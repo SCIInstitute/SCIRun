@@ -50,5 +50,4 @@ TARGET_LINK_LIBRARIES(Modules_DataIO_Tests
   gtest_main
   gtest
   gmock
-  ${SCI_BOOST_LIBRARY}
 )

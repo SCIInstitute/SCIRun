@@ -47,7 +47,6 @@ TARGET_LINK_LIBRARIES(Testing_ModuleTestBase
   Dataflow_State
   gtest
   gmock
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
