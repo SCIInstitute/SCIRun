@@ -37,6 +37,8 @@
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
 
+#include <iostream>
+
 using namespace SCIRun;
 using namespace Render;
 using namespace Core::Datatypes;
@@ -256,6 +258,8 @@ void VtkRenderer::testOffscreen()
 
   // VTK is usually vertically flipped relative to Qt
   image_ = image_.mirrored(false, true);
+
+  //std::cout << "Rendered image size: " << image_.width() << "x" << image_.height() << std::endl;
 }
 
 #endif
