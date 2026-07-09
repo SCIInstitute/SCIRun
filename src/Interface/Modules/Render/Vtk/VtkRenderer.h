@@ -38,7 +38,7 @@
 #include <vtkRenderWindowInteractor.h>
 
 #include <Core/Datatypes/Feedback.h>
-#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/VtkGeometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
 #include <glm/glm.hpp>
 #include <QImage>

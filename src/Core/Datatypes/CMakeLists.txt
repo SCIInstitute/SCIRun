@@ -57,6 +57,7 @@ SET(Core_Datatypes_HEADERS
   TensorFwd.h
   DenseColumnMatrix.h
   Geometry.h
+  VtkGeometry.h
   HasId.h
   Material.h
   Matrix.h
@@ -85,6 +86,7 @@ TARGET_LINK_LIBRARIES(Core_Datatypes
   Core_Persistent
   Core_Datatypes_Legacy_Base
   Core_Geometry_Primitives
+  VTK::CommonCore
 )
 
 IF(BUILD_SHARED_LIBS)
