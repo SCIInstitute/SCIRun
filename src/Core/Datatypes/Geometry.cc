@@ -61,15 +61,3 @@ CompositeOsprayGeometryObject::CompositeOsprayGeometryObject(const std::vector<O
   }
 }
 
-VtkGeometryObject* VtkGeometryObject::clone() const
-{
-  return nullptr;  // TODO
-}
-
-CompositeVtkGeometryObject::CompositeVtkGeometryObject(const std::vector<VtkGeometryObjectHandle>& objs) : objs_(objs)
-{
-  for (const auto& obj : objs_)
-  {
-    if (obj) box.extend(obj->box);
-  }
-}

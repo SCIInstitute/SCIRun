@@ -32,6 +32,7 @@ SET(Core_Datatypes_SRCS
   ColorMap.cc
   Datatype.cc
   Geometry.cc
+  VtkGeometry.cc
   Material.cc
   Matrix.cc
   MatrixAlgorithms.cc

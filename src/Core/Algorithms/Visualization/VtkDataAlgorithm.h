@@ -30,7 +30,7 @@
 #define CORE_ALGORITHMS_VISUALIZATION_VTKDATAALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/VtkGeometry.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <Core/Algorithms/Visualization/share.h>
 

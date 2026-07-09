@@ -25,57 +25,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_DATATYPES_VTKGEOMETRY_H
-#define CORE_DATATYPES_VTKGEOMETRY_H
+#include <Core/Datatypes/VtkGeometry.h>
 
-#include <vtkSmartPointer.h>
-#include <vtkDataObject.h>
+using namespace SCIRun::Core;
+using namespace Datatypes;
 
-#include <Core/Datatypes/Datatype.h>
-#include <Core/GeometryPrimitives/BBox.h>
-#include <Core/Datatypes/share.h>
-
-namespace SCIRun
+VtkGeometryObject* VtkGeometryObject::clone() const
 {
-namespace Core
-{
-namespace Datatypes
-{
-
-class SCISHARE VtkGeometryObject : public Datatype
-{
-public:
-    VtkGeometryObject() {}
-    VtkGeometryObject(const VtkGeometryObject& other) = delete;
-    VtkGeometryObject& operator=(const VtkGeometryObject& other) = delete;
-
-    VtkGeometryObject* clone() const override;
-
-    std::string dynamic_type_name() const override { return "VtkGeometryObject"; }
-
-    vtkSmartPointer<vtkDataObject> dataObject;
-
-    Core::Geometry::BBox box;
-
-    uint64_t id{0};
-    uint64_t version{ 0 };
-};
-
-using VtkGeometryObjectHandle = SharedPointer<VtkGeometryObject>;
-
-class SCISHARE CompositeVtkGeometryObject : public VtkGeometryObject
-{
-public:
-    explicit CompositeVtkGeometryObject(const std::vector<VtkGeometryObjectHandle>& objs);
-    const std::vector<VtkGeometryObjectHandle>& objects() const { return objs_; }
-
-private:
-    std::vector<VtkGeometryObjectHandle> objs_;
-};
-
-}
-}
+    return nullptr;  // TODO
 }
 
-
-#endif
+CompositeVtkGeometryObject::CompositeVtkGeometryObject(const std::vector<VtkGeometryObjectHandle>& objs) : objs_(objs)
+{
+    for (const auto& obj : objs_)
+    {
+        if (obj) box.extend(obj->box);
+    }
+}

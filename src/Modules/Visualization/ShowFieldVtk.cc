@@ -29,7 +29,7 @@
 #include <Modules/Visualization/ShowFieldVtk.h>
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/VtkGeometry.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>

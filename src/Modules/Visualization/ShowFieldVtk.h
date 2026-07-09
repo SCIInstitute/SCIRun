@@ -32,6 +32,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
+#include <Core/Datatypes/VtkGeometry.h>
 
 namespace SCIRun {
   namespace Modules {
