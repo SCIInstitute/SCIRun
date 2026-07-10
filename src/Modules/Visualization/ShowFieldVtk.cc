@@ -32,7 +32,14 @@
 #include <Core/Datatypes/VtkGeometry.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/VtkGeometry.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
+#ifdef BUILD_Modules_Visualization
+#pragma message("BUILD_Modules_Visualization defined")
+#else
+#pragma message("BUILD_Modules_Visualization NOT defined")
+#endif
 
 using namespace SCIRun;
 using namespace Dataflow::Networks;

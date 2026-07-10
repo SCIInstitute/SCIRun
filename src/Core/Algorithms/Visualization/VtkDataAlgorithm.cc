@@ -98,7 +98,8 @@ static uint32_t getNewVersionNumber()
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addStreamline(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = fillDataBuffers(field, colorMap);
+  return nullptr;
+  /* auto obj = fillDataBuffers(field, colorMap);
   obj->type = GeometryType::STREAMLINE;
   auto& fieldData = obj->data;
   std::vector<float> vertex_orig, color_orig;
@@ -136,7 +137,7 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStreamline(FieldHandle field, Color
   vertex = vertex_new;
   color = color_new;
 
-  return obj;
+  return obj;*/
 }
 
 void VtkDataAlgorithm::ReorderNodes(std::vector<uint32_t> index, std::vector<uint32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<uint32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new) const
@@ -312,22 +313,25 @@ std::vector<uint32_t> VtkDataAlgorithm::sort_points(EdgeVector edges, std::vecto
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addTriSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
-  printf("add tri-surface\n");
+  return nullptr;
+  /* printf("add tri-surface\n");
   auto obj = fillDataBuffers(field, colorMap);
   obj->type = GeometryType::TRI_SURFACE;
-  return obj;
+  return obj;*/
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addQuadSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = fillDataBuffers(field, colorMap);
+  return nullptr;
+  /* auto obj = fillDataBuffers(field, colorMap);
   obj->type = GeometryType::QUAD_SURFACE;
-  return obj;
+  return obj;*/
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = makeObject(field);
+  return nullptr;
+  /* auto obj = makeObject(field);
   obj->type = GeometryType::STRUCTURED_VOLUME;
 
   auto& fieldData = obj->data;
@@ -405,12 +409,13 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
 
   fieldData.color = voxels;
   fieldData.vertex = vertex_new;
-  return obj;
+  return obj;*/
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addUnstructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = makeObject(field);
+  return nullptr;
+  /* auto obj = makeObject(field);
   obj->type = GeometryType::UNSTRUCTURED_VOLUME;
 
   auto& fieldData = obj->data;
@@ -499,12 +504,13 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addUnstructVol(FieldHandle field, Colo
   fieldData.color = voxels;
   fieldData.vertex = vertex_new;
   fieldData.index = index_new;
-  return obj;
+  return obj;*/
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addCylinder(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = fillDataBuffers(field, colorMap);
+  return nullptr;
+  /* auto obj = fillDataBuffers(field, colorMap);
   obj->type = GeometryType::CYLINDER;
   obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
 
@@ -552,21 +558,23 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addCylinder(FieldHandle field, ColorMa
   vertex = vertex_new;
   color = color_new;
 
-  return obj;
+  return obj;*/
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addSphere(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = fillDataBuffers(field, colorMap);
+  return nullptr;
+  /* auto obj = fillDataBuffers(field, colorMap);
   obj->type = GeometryType::SPHERE;
   obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
-  return obj;
+  return obj;*/
 }
 
 
 VtkGeometryObjectHandle VtkDataAlgorithm::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = makeObject(field);
+  return nullptr;
+  /* auto obj = makeObject(field);
   auto& fieldData = obj->data;
   auto& vertex = fieldData.vertex;
   auto& color = fieldData.color;
@@ -641,7 +649,7 @@ VtkGeometryObjectHandle VtkDataAlgorithm::fillDataBuffers(FieldHandle field, Col
     }
   }
 
-  return obj;
+  return obj;*/
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::makeObject(FieldHandle field) const

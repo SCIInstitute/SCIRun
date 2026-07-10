@@ -30,6 +30,7 @@
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/VtkGeometry.h>
 
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;

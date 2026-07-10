@@ -32,7 +32,6 @@
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
-#include <Core/Datatypes/VtkGeometry.h>
 
 namespace SCIRun {
 namespace Core {
