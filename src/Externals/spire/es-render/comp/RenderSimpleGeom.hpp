@@ -45,7 +45,7 @@ struct RenderSimpleGeom
   static const int MaxNumAttributes = 5;
 
   int attribSize;     ///< How many elements in 'appliedAttribs' are valid.
-  size_t stride;      ///< Stride between elements vertex buffer.
+  size_t stride = 0;      ///< Stride between elements vertex buffer.
   spire::ShaderAttributeApplied appliedAttribs[MaxNumAttributes];
 
   // -- Functions --
