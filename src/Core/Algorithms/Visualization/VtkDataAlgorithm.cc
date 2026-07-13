@@ -25,6 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <vtkUnstructuredGrid.h>
+#include <vtkPoints.h>
+#include <vtkDoubleArray.h>
+#include <vtkPointData.h>
+#include <vtkHexahedron.h>
+#include <vtkCellArray.h>
 
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
@@ -330,86 +336,70 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addQuadSurface(FieldHandle field, Colo
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
-  return nullptr;
-  /* auto obj = makeObject(field);
-  obj->type = GeometryType::STRUCTURED_VOLUME;
+  auto obj = makeObject(field);
 
-  auto& fieldData = obj->data;
+  auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
 
-  std::vector<float> voxels;
-  std::vector<float> vertex_new;
-
-  auto facade(field->mesh()->getFacade());
+  auto facade = field->mesh()->getFacade();
   auto vfield = field->vfield();
   auto vmesh = field->vmesh();
 
-  const BBox bbox = vmesh->get_bounding_box();
-  Vector size = bbox.diagonal();
-  Point center = bbox.center();
-  VMesh::dimension_type dim;
-  vmesh->get_dimensions(dim);
-  Vector dimensions_ = Vector(1.0,1.0,1.0);
-  for (size_t p=0;p<dim.size();p++) dimensions_[p] = static_cast<double>(dim[p]);
+  //----------------------------------
+  // Points
+  //----------------------------------
 
-  for (int i = 0; i < DIM_; ++i)
-  {
-    fieldData.dim[i] = dimensions_[i];
-    fieldData.origin[i] = center[i] - HALF_SCALE_*size[i];
-    // dimensions are reduced by one to convert from number of lines to number of faces
-    fieldData.spacing[i] = size[i]/(dimensions_[i]-1);
-  }
-
-  double value;
-  //std::cout << "mname:" << field->mesh()->type_name << std::endl;
+  auto points = vtkSmartPointer<vtkPoints>::New();
 
   for (const auto& node : facade->nodes())
   {
-    auto point = node.point();
-    if (vfield->num_values() > 0)
+    auto p = node.point();
+
+    points->InsertNextPoint(p.x(), p.y(), p.z());
+  }
+
+  grid->SetPoints(points);
+
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
+
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    vfield->get_value(value, node.index());
+    scalars->InsertNextValue(value);
+  }
+
+  grid->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Hex cells
+  //----------------------------------
+
+  for (const auto& cell : facade->cells())
+  {
+    VMesh::Node::array_type nodes;
+    vmesh->get_nodes(nodes, cell.index());
+
+    if (nodes.size() != 8) continue;
+
+    vtkNew<vtkHexahedron> hex;
+
+    for (size_t i = 0; i < 8; ++i)
     {
-      vfield->get_value(value, node.index());
-      voxels.push_back(value);
+      hex->GetPointIds()->SetId(static_cast<vtkIdType>(i), static_cast<vtkIdType>(nodes[i]));
     }
-    vertex_new.push_back(static_cast<float>(point.x()));
-    vertex_new.push_back(static_cast<float>(point.y()));
-    vertex_new.push_back(static_cast<float>(point.z()));
 
-  }
-  //auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-  if (colorMap)
-  {
-    ColorMap_OSP_helper cmp(colorMap);
-    obj->tfn.colors = cmp.colorList_;
-    obj->tfn.opacities = cmp.opacityList_;
-    obj->tfn.range = {cmp.min_, cmp.max_};
-
-    // set default opacity for now
-    // alpha pushed twice for both upper and lower values
-    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-    obj->tfn.opacities.push_back(alpha);
-    obj->tfn.opacities.push_back(alpha);
-  }
-  else
-  {
-    auto red = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
-    auto green = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
-    auto blue = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
-
-    obj->tfn.colors.push_back(red);
-    obj->tfn.colors.push_back(green);
-    obj->tfn.colors.push_back(blue);
-    obj->tfn.colors.push_back(red);
-    obj->tfn.colors.push_back(green);
-    obj->tfn.colors.push_back(blue);
-
-    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-    obj->tfn.opacities.push_back(alpha);
-    obj->tfn.opacities.push_back(alpha);
+    grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
   }
 
-  fieldData.color = voxels;
-  fieldData.vertex = vertex_new;
-  return obj;*/
+  obj->dataObject = grid;
+
+  return obj;
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addUnstructVol(FieldHandle field, ColorMapHandle colorMap) const
@@ -722,8 +712,15 @@ AlgorithmOutput VtkDataAlgorithm::run(const AlgorithmInput& input) const
     }
   }
 
-  renderable->version = getNewVersionNumber();
-  renderable->id = get(Parameters::ModuleID).toInt();
+  if (!renderable)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
+  }
+  else
+  {
+    renderable->version = getNewVersionNumber();
+    renderable->id = get(Parameters::ModuleID).toInt();
+  }
 
   AlgorithmOutput output;
   output[Name("SceneGraph")] = renderable;
