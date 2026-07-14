@@ -36,6 +36,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkWindowToImageFilter.h>
+#include <vtkActor.h>
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VtkGeometry.h>
@@ -94,12 +96,16 @@ public:
 
   bool isScivis {true};
 
-  void testOffscreen();
+  //void testOffscreen();
+  void initialize();
 
   bool initialized_ = false;
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
   vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+  std::vector<vtkSmartPointer<vtkActor>> actors_;
+  vtkSmartPointer<vtkWindowToImageFilter> w2i_;
+
   unsigned char* imagePixels_ = nullptr;
   QImage image_;
 };

@@ -60,6 +60,13 @@ IF(WITH_OSPRAY)
   TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization ospray::ospray)
 ENDIF()
 
+IF(WITH_VTK)
+  target_link_libraries(Core_Algorithms_Visualization
+    VTK::CommonDataModel
+    VTK::CommonCore
+  )
+ENDIF()
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Visualization)
 ENDIF(BUILD_SHARED_LIBS)
