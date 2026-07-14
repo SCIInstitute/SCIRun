@@ -25,12 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <vtkSphereSource.h>
-#include <vtkCubeSource.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkAxesActor.h>
-#include <vtkPNGWriter.h>
+//#include <vtkAxesActor.h>
 #include <vtkDataSetMapper.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkDataObject.h>
