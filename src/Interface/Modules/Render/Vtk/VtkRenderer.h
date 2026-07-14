@@ -38,6 +38,9 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkWindowToImageFilter.h>
 #include <vtkActor.h>
+#include <vtkPolyData.h>
+#include <vtkUnstructuredGrid.h>
+
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VtkGeometry.h>
@@ -74,21 +77,7 @@ public:
   QImage image() const { return image_; }
 
  private:
-  void addGroup();
-  void addInstaceOfGroup();
-  void addMeshToGroup(Core::Datatypes::VtkGeometryObject* geometryObject, uint32_t vertsPerPoly);
-  void addStructuredVolumeToGroup(Core::Datatypes::VtkGeometryObject* geometryObject);
-  //void addMaterial(OSPGeometricModel model, Core::Datatypes::VtkGeometryObject::Material& mat);
-  //void addTransferFunction(OSPVolumetricModel model,  Core::Datatypes::VtkGeometryObject::TransferFunc& transFunc);
-  void addDirectionalLight(glm::vec3 col, glm::vec3 dir);
-  void addAmbientLight(glm::vec3 col, float intensity);
-  void addSphereLight(glm::vec3 col, glm::vec3 position, float radius, float intensity);
-  void addQuadLight(glm::vec3 col, glm::vec3 position, glm::vec3 edge1, glm::vec3 edge2, float intensity);
-  void setLightsAsObject();
-
   static int vtkRendererInstances;
-  //static VtkDataManager dataManager;
-  //std::vector<OSPLight> lights_;
 
   uint32_t width_  {16};
   uint32_t height_ {16};
@@ -96,8 +85,31 @@ public:
 
   bool isScivis {true};
 
-  //void testOffscreen();
   void initialize();
+
+    //----------------------------------------
+  // Geometry dispatch
+  //----------------------------------------
+  void addGeometry(const Core::Datatypes::VtkGeometryObjectHandle& geo);
+
+  //----------------------------------------
+  // Dataset renderers
+  //----------------------------------------
+  void renderPolyData(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
+  void renderUnstructuredGrid(vtkUnstructuredGrid* grid, const Core::Datatypes::VtkGeometryObjectHandle& geo);
+  void renderImageData(vtkImageData* image, const Core::Datatypes::VtkGeometryObjectHandle& geo);
+
+  //----------------------------------------
+  // Materials / transfer functions
+  //----------------------------------------
+  void applyMaterial(vtkActor* actor, const Core::Datatypes::VtkGeometryObject::Material& mat);
+  vtkSmartPointer<vtkLookupTable> createLookupTable(const Core::Datatypes::VtkGeometryObject::TransferFunc& tfn, double range[2]);
+
+  //----------------------------------------
+  // Lighting
+  //----------------------------------------
+  void addDirectionalLight(glm::vec3 color, glm::vec3 direction);
+  void addAmbientLight(glm::vec3 color, float intensity);
 
   bool initialized_ = false;
   vtkSmartPointer<vtkRenderer> renderer_;

@@ -399,6 +399,8 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
 
   obj->dataObject = grid;
 
+  obj->type = GeometryType::STRUCTURED_VOLUME;
+
   return obj;
 }
 

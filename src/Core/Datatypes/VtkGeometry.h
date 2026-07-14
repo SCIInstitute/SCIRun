@@ -32,6 +32,7 @@
 #include <vtkDataObject.h>
 
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Datatypes/share.h>
 
@@ -45,6 +46,19 @@ namespace Datatypes
 class SCISHARE VtkGeometryObject : public Datatype
 {
 public:
+    struct Material
+    {
+    float color[3]{1.f, 1.f, 1.f};
+    float opacity{1.f};
+    };
+
+    struct TransferFunc
+    {
+    std::vector<float> colors;
+    std::vector<float> opacities;
+    std::vector<float> range;
+    };
+
     VtkGeometryObject() {}
     VtkGeometryObject(const VtkGeometryObject& other) = delete;
     VtkGeometryObject& operator=(const VtkGeometryObject& other) = delete;
@@ -54,6 +68,11 @@ public:
     std::string dynamic_type_name() const override { return "VtkGeometryObject"; }
 
     vtkSmartPointer<vtkDataObject> dataObject;
+
+    GeometryType type{GeometryType::NO_TYPE};
+
+    Material material;
+    TransferFunc tfn;
 
     Core::Geometry::BBox box;
 
