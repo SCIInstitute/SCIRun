@@ -408,22 +408,28 @@ MouseButton ViewSceneVtkDialog::getRenderButton(QMouseEvent* event)
 
 void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
 {
-  #ifdef WITH_VTK
-  float xSS, ySS;
-  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+#ifdef WITH_VTK
 
-  renderer_->mousePress(xSS, ySS, getRenderButton(event));
-  #endif
+  const float x = static_cast<float>(event->x() - viewer_->pos().x());
+
+  const float y = static_cast<float>(event->y() - viewer_->pos().y());
+
+  renderer_->mousePress(x, y, getRenderButton(event));
+
+#endif
 }
 
 void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
 {
-  #ifdef WITH_VTK
-  float xSS, ySS;
-  mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
+#ifdef WITH_VTK
 
-  renderer_->mouseMove(xSS, ySS, getRenderButton(event));
-  #endif
+  const float x = static_cast<float>(event->x() - viewer_->pos().x());
+
+  const float y = static_cast<float>(event->y() - viewer_->pos().y());
+
+  renderer_->mouseMove(x, y, getRenderButton(event));
+
+#endif
 }
 
 void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
