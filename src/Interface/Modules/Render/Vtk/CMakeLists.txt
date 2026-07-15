@@ -6,11 +6,13 @@ INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIRS})
 SET(LIBS ${LIBS} ${OPENGL_LIBRARIES} ${TBB_LIBRARY_MALLOC} ${TBB_LIBRARY})
 
 SET(SRCS ${SRCS}
+  VtkCameraController.cc
   VtkQWidget.cc
   VtkRenderer.cc
 )
 
 SET(MOC_HEADERS
+  VtkCameraController.h
   VtkQWidget.h
   VtkRenderer.h
   share.h

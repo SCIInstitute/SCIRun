@@ -412,7 +412,7 @@ void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
-  //renderer_->mousePress(xSS, ySS, getRenderButton(event));
+  renderer_->mousePress(xSS, ySS, getRenderButton(event));
   #endif
 }
 
@@ -422,20 +422,20 @@ void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
   float xSS, ySS;
   mousePositionToScreenSpace(event->x(), event->y(), xSS, ySS);
 
-  //renderer_->mouseMove(xSS, ySS, getRenderButton(event));
+  renderer_->mouseMove(xSS, ySS, getRenderButton(event));
   #endif
 }
 
 void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
 {
 #ifdef WITH_VTK
-  //renderer_->mouseRelease();
+  renderer_->mouseRelease();
 #endif
 }
 
 void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
 {
   #ifdef WITH_VTK
-  //renderer_->mouseWheel(event->angleDelta().y());
+  renderer_->mouseWheel(event->angleDelta().y());
   #endif
 }

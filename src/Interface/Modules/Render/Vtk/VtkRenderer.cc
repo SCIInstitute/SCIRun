@@ -113,22 +113,33 @@ void VtkRenderer::resize(uint32_t width, uint32_t height)
 
 void VtkRenderer::mousePress(float x, float y, MouseButton btn)
 {
+  cameraController_.mousePress(x, y, btn);
 }
 
 void VtkRenderer::mouseMove(float x, float y, MouseButton btn)
 {
+  cameraController_.mouseMove(x, y, renderer_);
+
+  renderFrame();
 }
 
 void VtkRenderer::mouseRelease()
 {
+  cameraController_.mouseRelease();
 }
 
 void VtkRenderer::mouseWheel(int32_t delta)
 {
+  cameraController_.mouseWheel(delta, renderer_);
+
+  renderFrame();
 }
 
 void VtkRenderer::autoView()
 {
+  cameraController_.resetView(renderer_);
+
+  renderFrame();
 }
 
 //Data----------------------------------------------------------------------------------------------

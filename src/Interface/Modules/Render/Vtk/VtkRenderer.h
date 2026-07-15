@@ -41,6 +41,7 @@
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 
+#include "VtkCameraController.h"
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VtkGeometry.h>
@@ -117,6 +118,8 @@ public:
   vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
   std::vector<vtkSmartPointer<vtkActor>> actors_;
   vtkSmartPointer<vtkWindowToImageFilter> w2i_;
+
+  VtkCameraController cameraController_;
 
   unsigned char* imagePixels_ = nullptr;
   QImage image_;
