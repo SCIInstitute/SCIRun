@@ -31,22 +31,6 @@
 
 #include <cstdlib>
 
-#ifdef __APPLE__
-  #include <Availability.h>
-#endif
-
-/// quick_exit only entered libSystem in macOS 15.0, and the SDK declares it with no
-/// availability annotation ("void quick_exit(int) __dead2;" in _stdlib.h). Compiling
-/// against the macOS 15 SDK with an older deployment target therefore emits a hard
-/// reference and links cleanly with no warning, but the binary aborts on load on
-/// macOS < 15 with "dyld: Symbol not found: _quick_exit". Fall back to _Exit there.
-///
-/// The literal 150000 is deliberate: __MAC_15_0 is undefined on SDKs older than 15
-/// and would silently evaluate to 0, inverting this test.
-#if defined(__APPLE__) && (__MAC_OS_X_VERSION_MIN_REQUIRED < 150000)
-  #define SCIRUN_NO_QUICK_EXIT 1
-#endif
-
 namespace SCIRun
 {
 namespace Core
@@ -57,11 +41,29 @@ namespace Core
 /// regression mode to avoid hangs and crashes in async teardown paths where
 /// streaming execution threads outlive the GUI objects.
 ///
-/// Both branches below must stay behaviorally equivalent, which holds only so long
-/// as nothing registers at_quick_exit handlers: _Exit does not run them.
+/// Apple always takes _Exit so that one build runs on every supported macOS.
+/// quick_exit entered libSystem in macOS 15.0, which breaks both directions:
+///
+///   - Against SDKs older than 15, it is not declared at all. Both spellings fail to
+///     compile -- "quick_exit" as an undeclared identifier, "std::quick_exit" as a
+///     reference to an unresolved using declaration, since libc++'s <cstdlib> has no
+///     ::quick_exit to pull in.
+///   - Against the 15 SDK it is declared ("void quick_exit(int) __dead2;" in
+///     _stdlib.h) gated only on __DARWIN_C_LEVEL/C11 -- a compile-time feature gate
+///     carrying no availability annotation -- so the compiler can neither warn nor
+///     weak-link. The object gets a hard _quick_exit reference and aborts on load on
+///     macOS < 15 with "dyld: Symbol not found: _quick_exit".
+///
+/// The trigger is the SDK, not the host: a macOS 14 machine with Xcode 16 installed
+/// builds the broken binary. Gating on __MAC_OS_X_VERSION_MIN_REQUIRED does not help
+/// either, because the deployment target is not pinned -- it follows the build host,
+/// and so reads 150000 on exactly the builders that emit the hard reference.
+///
+/// The two branches are equivalent only so long as nothing registers at_quick_exit
+/// handlers: _Exit does not run them.
 [[noreturn]] inline void quickExit(int code)
 {
-#ifdef SCIRUN_NO_QUICK_EXIT
+#ifdef __APPLE__
   std::_Exit(code);
 #else
   std::quick_exit(code);
