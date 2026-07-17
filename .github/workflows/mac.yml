@@ -90,6 +90,7 @@ jobs:
       runner: macOS-latest
       variant: headless
       build-testing: true
+      run-smoke-test: true
 
   mac-headless-14-arm:
     uses: ./.github/workflows/reusable-build.yml
@@ -97,6 +98,7 @@ jobs:
       runner: macOS-14
       variant: headless
       build-testing: true
+      run-smoke-test: true
 
   mac-headless-14-arm-slim:
     uses: ./.github/workflows/reusable-build.yml
@@ -106,6 +108,7 @@ jobs:
       build-testing: true
       build-with-python: false
       run-unit-tests: true
+      run-smoke-test: true
 
   mac-headless-15-arm:
     uses: ./.github/workflows/reusable-build.yml
@@ -113,6 +116,7 @@ jobs:
       runner: macOS-15
       variant: headless
       build-testing: true
+      run-smoke-test: true
 
   mac-headless-15-arm-slim:
     uses: ./.github/workflows/reusable-build.yml
@@ -122,6 +126,7 @@ jobs:
       build-testing: true
       build-with-python: false
       run-unit-tests: true
+      run-smoke-test: true
 
   mac-headless-15-intel:
     uses: ./.github/workflows/reusable-build.yml
@@ -129,6 +134,7 @@ jobs:
       runner: macOS-15-intel
       variant: headless
       build-testing: true
+      run-smoke-test: true
 
   mac-headless-15-intel-slim:
     uses: ./.github/workflows/reusable-build.yml
@@ -138,6 +144,7 @@ jobs:
       build-testing: true
       build-with-python: false
       run-unit-tests: true
+      run-smoke-test: true
 
   mac-headless-26:
     uses: ./.github/workflows/reusable-build.yml
@@ -145,3 +152,4 @@ jobs:
       runner: macOS-26
       variant: headless
       build-testing: true
+      run-smoke-test: true
