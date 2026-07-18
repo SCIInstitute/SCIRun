@@ -38,6 +38,7 @@ SET(Core_Utils_HEADERS
   FileUtil.h
   Lockable.h
   Macros.h
+  QuickExit.h
   Singleton.h
   StringContainer.h
   StringUtil.h
