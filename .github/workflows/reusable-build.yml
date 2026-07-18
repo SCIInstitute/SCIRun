@@ -38,6 +38,10 @@ on:
         required: false
         type: boolean
         default: false
+      run-smoke-test:
+        required: false
+        type: boolean
+        default: false
       run-regression-tests:
         required: false
         type: boolean
@@ -212,6 +216,34 @@ jobs:
           & cmake --build . --config Release --parallel
 
           Pop-Location
+
+      - name: Smoke test - executable loads and runs (Unix)
+        if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
+        working-directory: bin/SCIRun
+        # A successful build does NOT prove the binary can start. The dynamic loader
+        # resolves linked libraries at load time, before main, so a reference to a
+        # symbol the host OS lacks links cleanly and only aborts on execution.
+        # Actually running the executable is what catches that class of failure;
+        # --help suffices, because the loader has already resolved every dependency
+        # by the time main runs, and --help routes to ConsoleApplication (see
+        # src/Main/scirunMain.cc) so no window server is needed.
+        #
+        # Deliberately NO continue-on-error: unlike the test steps below, this step
+        # must be able to fail the job, or it gates nothing.
+        run: |
+          set -eux
+          # SCIRun_test is the unbundled executable, built on APPLE only
+          # (src/Main/CMakeLists.txt); other platforms build SCIRun directly.
+          if [ -x ./SCIRun_test ]; then
+            APP=./SCIRun_test
+          elif [ -x ./SCIRun ]; then
+            APP=./SCIRun
+          else
+            echo "No SCIRun executable found in $(pwd)" >&2
+            ls -la
+            exit 1
+          fi
+          "$APP" --help
 
       - name: Package (optional - Unix/macOS)
         if: ${{ inputs.artifact-name != '' && runner.os != 'Windows' }}
