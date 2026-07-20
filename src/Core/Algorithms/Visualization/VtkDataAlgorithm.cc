@@ -31,6 +31,7 @@
 #include <vtkPointData.h>
 #include <vtkHexahedron.h>
 #include <vtkCellArray.h>
+#include <vtkImageData.h>
 
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
@@ -336,13 +337,53 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addQuadSurface(FieldHandle field, Colo
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = makeObject(field);
+  auto volumeObj = makeObject(field);
+  auto meshObj = makeObject(field);
 
   auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
 
   auto facade = field->mesh()->getFacade();
   auto vfield = field->vfield();
   auto vmesh = field->vmesh();
+
+  //volume
+  auto image = vtkSmartPointer<vtkImageData>::New();
+
+  const auto ni = vmesh->get_ni();
+  const auto nj = vmesh->get_nj();
+  const auto nk = vmesh->get_nk();
+  auto bbox = vmesh->get_bounding_box();
+  const auto originX = bbox.get_min().x();
+  const auto originY = bbox.get_min().y();
+  const auto originZ = bbox.get_min().z();
+  const auto sizeX = bbox.get_max().x() - originX;
+  const auto sizeY = bbox.get_max().y() - originY;
+  const auto sizeZ = bbox.get_max().z() - originZ;
+  const auto dx = sizeX / (ni - 1);
+  const auto dy = sizeY / (nj - 1);
+  const auto dz = sizeZ / (nk - 1);
+
+  image->SetDimensions(ni, nj, nk);
+  image->SetOrigin(originX, originY, originZ);
+  image->SetSpacing(dx, dy, dz);
+
+  auto imageScalars = vtkSmartPointer<vtkDoubleArray>::New();
+  imageScalars->SetName("Values");
+  imageScalars->SetNumberOfComponents(1);
+  imageScalars->SetNumberOfTuples(ni * nj * nk);
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    vfield->get_value(value, node.index());
+    imageScalars->SetValue(node.index(), value);
+  }
+
+  image->GetPointData()->SetScalars(imageScalars);
+
+  volumeObj->dataObject = image;
+  volumeObj->type = GeometryType::STRUCTURED_VOLUME;
 
   //----------------------------------
   // Points
@@ -366,7 +407,7 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
   auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
   scalars->SetName("Values");
 
-  double value = 0.0;
+  value = 0.0;
 
   for (const auto& node : facade->nodes())
   {
@@ -397,11 +438,10 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
     grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
   }
 
-  obj->dataObject = grid;
+  meshObj->dataObject = grid;
+  meshObj->type = GeometryType::STRUCTURED_VOLUME;
 
-  obj->type = GeometryType::STRUCTURED_VOLUME;
-
-  return obj;
+  return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{volumeObj, meshObj});
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addUnstructVol(FieldHandle field, ColorMapHandle colorMap) const

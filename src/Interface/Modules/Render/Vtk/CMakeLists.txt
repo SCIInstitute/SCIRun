@@ -38,6 +38,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render_Vtk
   VTK::RenderingCore
   VTK::RenderingOpenGL2
   VTK::RenderingAnnotation
+  VTK::RenderingVolumeOpenGL2
   VTK::InteractionStyle
   ${SCI_SPIRE_LIBRARY}
 )
@@ -46,6 +47,7 @@ vtk_module_autoinit(
 TARGETS Interface_Modules_Render_Vtk
 MODULES
     VTK::RenderingOpenGL2
+    VTK::RenderingVolumeOpenGL2
     VTK::InteractionStyle
 )
 

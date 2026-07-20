@@ -31,6 +31,10 @@
 #include <vtkDataObject.h>
 #include <vtkLookupTable.h>
 #include <vtkProperty.h>
+#include <vtkSmartVolumeMapper.h>
+#include <vtkVolumeProperty.h>
+#include <vtkPiecewiseFunction.h>
+#include <vtkColorTransferFunction.h>
 
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
@@ -179,31 +183,25 @@ void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
 {
   if (!geo || !geo->dataObject) return;
 
-  switch (geo->type)
+  if (auto image = vtkImageData::SafeDownCast(geo->dataObject))
   {
-  case GeometryType::STRUCTURED_VOLUME:
-  case GeometryType::UNSTRUCTURED_VOLUME:
-  {
-    if (auto grid = vtkUnstructuredGrid::SafeDownCast(geo->dataObject))
-    {
-      renderUnstructuredGrid(grid, geo);
-    }
-    break;
+    renderImageData(image, geo);
+    return;
   }
 
-  case GeometryType::TRI_SURFACE:
-  case GeometryType::QUAD_SURFACE:
-  case GeometryType::STREAMLINE:
+  if (auto grid = vtkUnstructuredGrid::SafeDownCast(geo->dataObject))
   {
-    if (auto poly = vtkPolyData::SafeDownCast(geo->dataObject))
-    {
-      renderPolyData(poly, geo);
-    }
-    break;
+    renderUnstructuredGrid(grid, geo);
+    return;
   }
 
-  default: std::cout << "Unsupported geometry type " << static_cast<int>(geo->type) << std::endl; break;
+  if (auto poly = vtkPolyData::SafeDownCast(geo->dataObject))
+  {
+    renderPolyData(poly, geo);
+    return;
   }
+
+  std::cout << "Unsupported VTK dataset" << std::endl;
 }
 
 void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
@@ -256,9 +254,52 @@ void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGe
   actors_.push_back(actor);
 }
 
-void VtkRenderer::renderImageData(vtkImageData* image, const Core::Datatypes::VtkGeometryObjectHandle& geo)
+void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHandle& geo)
 {
+  auto mapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
+  mapper->SetInputData(image);
 
+  auto volumeProperty = vtkSmartPointer<vtkVolumeProperty>::New();
+  volumeProperty->ShadeOff();
+  volumeProperty->SetInterpolationTypeToLinear();
+
+  //----------------------------------
+  // Opacity transfer function
+  //----------------------------------
+
+  auto opacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
+
+  //----------------------------------
+  // Color transfer function
+  //----------------------------------
+
+  auto color = vtkSmartPointer<vtkColorTransferFunction>::New();
+
+  if (!geo->tfn.range.empty())
+  {
+    // TODO:
+    // Build from SCIRun transfer function
+  }
+  else
+  {
+    double range[2];
+    image->GetScalarRange(range);
+
+    opacity->AddPoint(range[0], 0.0);
+    opacity->AddPoint(range[1], 1.0);
+
+    color->AddRGBPoint(range[0], 0.0, 0.0, 1.0);
+    color->AddRGBPoint(range[1], 1.0, 0.0, 0.0);
+  }
+
+  volumeProperty->SetScalarOpacity(opacity);
+  volumeProperty->SetColor(color);
+
+  auto volume = vtkSmartPointer<vtkVolume>::New();
+  volume->SetMapper(mapper);
+  volume->SetProperty(volumeProperty);
+
+  renderer_->AddVolume(volume);
 }
 
 void VtkRenderer::applyMaterial(vtkActor* actor, const VtkGeometryObject::Material& mat)
