@@ -38,7 +38,7 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
 
   for (auto b : std::vector<QWidget*>{ closeToolButton_, executeDownOnlyToolButton_, executeToolButton_, findToolButton_, helpToolButton_, forceAlwaysExecuteCheckBox_, executeInteractivelyCheckBox_ })
   {
-    b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+    b->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
   }
   closeToolButton_->setIcon(QPixmap(":/general/Resources/delete_red.png"));
   executeDownOnlyToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/run_down.png"));

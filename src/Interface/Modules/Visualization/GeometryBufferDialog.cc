@@ -67,7 +67,7 @@ GeometryBufferDialog::GeometryBufferDialog(const std::string& name, ModuleStateH
   //TODO: add convenience function at ModuleDialogGeneric level
   for (QToolButton* b : { nextIndexButton_, previousIndexButton_, firstIndexButton_, lastIndexButton_, playButton_, pauseButton_ })
   {
-    b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+    b->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
   }
 
   connect(playButton_, &QPushButton::clicked, [this]() { startPlay(); });

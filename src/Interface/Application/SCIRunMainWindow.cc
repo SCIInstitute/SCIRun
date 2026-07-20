@@ -383,7 +383,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionAutoRotateViewScene_, &QAction::triggered, [this]() { showStatusMessage(QString("ViewScene auto-rotate toggled."), 3000); });
 
   moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
-	  "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+	  "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }"
 	  "QHeaderView::section { background: rgb(66,66,69);} "
 	  );
 

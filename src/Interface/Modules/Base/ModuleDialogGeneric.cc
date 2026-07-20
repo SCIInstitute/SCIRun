@@ -921,13 +921,13 @@ void WidgetStyleMixin::tableHeaderStyle(QTableWidget* tableHeader)
 void WidgetStyleMixin::toolbarStyle(QToolBar* toolbar)
 {
   toolbar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-    "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
 }
 
 void WidgetStyleMixin::setStateVarTooltipWithStyle(QWidget* widget, const std::string& stateVarName)
 {
   widget->setToolTip("State key: " + QString::fromStdString(stateVarName));
-  widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+  widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
 }
 
 std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile)
