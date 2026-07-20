@@ -165,7 +165,7 @@ void SCIRunMainWindow::createExecuteToolbar()
   networkProgressBar_.reset(new NetworkExecutionProgressBar(makeShared<NetworkStatusImpl>(networkEditor_), this));
   executeBar->addActions(networkProgressBar_->mainActions());
   executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-    "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }"
+    + WidgetStyleMixin::toolTipStyle()
     );
   executeBar->setAutoFillBackground(true);
   connect(actionExecuteBar_, &QAction::toggled, executeBar, &QWidget::setVisible);
@@ -572,7 +572,7 @@ void SCIRunMainWindow::setupVersionButton()
   versionButton_ = new QPushButton("Version: " + qver);
   versionButton_->setFlat(true);
   versionButton_->setToolTip("Click to copy version tag to clipboard");
-  versionButton_->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+  versionButton_->setStyleSheet(WidgetStyleMixin::toolTipStyle());
   connect(versionButton_, &QPushButton::clicked, this, &SCIRunMainWindow::copyVersionToClipboard);
   statusBar()->addPermanentWidget(versionButton_);
 }
