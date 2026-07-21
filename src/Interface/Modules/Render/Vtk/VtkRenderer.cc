@@ -277,8 +277,11 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
 
   if (!geo->tfn.range.empty())
   {
-    // TODO:
-    // Build from SCIRun transfer function
+    double range[2] = {geo->tfn.range[0], geo->tfn.range[1]};
+    opacity->AddPoint(range[0], 0.0);
+    opacity->AddPoint(range[1], geo->tfn.opacities[0]);
+    color->AddRGBPoint(geo->tfn.range[0], geo->tfn.colors[0], geo->tfn.colors[1], geo->tfn.colors[2]);
+    color->AddRGBPoint(geo->tfn.range[1], geo->tfn.colors[0], geo->tfn.colors[1], geo->tfn.colors[2]);
   }
   else
   {

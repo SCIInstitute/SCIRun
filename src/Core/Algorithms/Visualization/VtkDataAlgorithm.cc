@@ -387,6 +387,10 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
   volumeObj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
   volumeObj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
   volumeObj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+  volumeObj->tfn.range = {static_cast<float>(imageScalars->GetRange()[0]),
+    static_cast<float>(imageScalars->GetRange()[1])};
+  volumeObj->tfn.colors = {volumeObj->material.color[0], volumeObj->material.color[1], volumeObj->material.color[2]};
+  volumeObj->tfn.opacities = {volumeObj->material.opacity};
   volumeObj->type = GeometryType::STRUCTURED_VOLUME;
 
   //----------------------------------
