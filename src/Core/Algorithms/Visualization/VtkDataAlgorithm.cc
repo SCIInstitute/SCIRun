@@ -383,6 +383,10 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
   image->GetPointData()->SetScalars(imageScalars);
 
   volumeObj->dataObject = image;
+  volumeObj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+  volumeObj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+  volumeObj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+  volumeObj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
   volumeObj->type = GeometryType::STRUCTURED_VOLUME;
 
   //----------------------------------
@@ -439,8 +443,13 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
   }
 
   meshObj->dataObject = grid;
+  meshObj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+  meshObj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+  meshObj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+  meshObj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
   meshObj->type = GeometryType::STRUCTURED_VOLUME;
 
+  //return meshObj;
   return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{volumeObj, meshObj});
 }
 
