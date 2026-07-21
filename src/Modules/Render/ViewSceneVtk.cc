@@ -117,15 +117,43 @@ void ViewSceneVtk::execute()
 #endif
 }
 
+namespace {
+
+void flattenGeometry(const VtkGeometryObjectHandle& geo, std::vector<VtkGeometryObjectHandle>& out)
+{
+  if (!geo) return;
+
+  auto composite = std::dynamic_pointer_cast<CompositeVtkGeometryObject>(geo);
+
+  if (composite)
+  {
+    for (const auto& child : composite->objects())
+    {
+      flattenGeometry(child, out);
+    }
+  }
+  else
+  {
+    out.push_back(geo);
+  }
+}
+
+}
+
 void ViewSceneVtk::sendCompositeGeometry()
 {
   auto allGeom = getValidDynamicInputs(GeneralGeom);
-  // logWarning("allGeom size {}", allGeom.size());
-  if (!allGeom.empty())
+
+  if (allGeom.empty()) return;
+
+  std::vector<VtkGeometryObjectHandle> flattened;
+
+  for (const auto& geo : allGeom)
   {
-    // logWarning("flattened size {}", flattened.size());
-    VtkGeometryObjectHandle composite(new CompositeVtkGeometryObject(allGeom));
-    // logWarning("composite ptr {}", composite.get());
-    get_state()->setTransientValue(Parameters::GeomData, composite, true);
+    flattenGeometry(geo, flattened);
   }
+
+  VtkGeometryObjectHandle composite(new CompositeVtkGeometryObject(flattened));
+
+  get_state()->setTransientValue(Parameters::GeomData, composite, true);
 }
