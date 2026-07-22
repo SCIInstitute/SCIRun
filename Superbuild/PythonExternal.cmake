@@ -110,7 +110,10 @@ ELSE()
     PATCH_COMMAND ""
     # aka.ms/nugetclidl (used by PCbuild/find_python.bat) can redirect to a Bing
     # search page instead of the NuGet installer; point straight at the real host.
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" PCbuild/build.bat
+    # The batch file must use native separators: "cmake -E env" launches a .bat
+    # through cmd, which reads the "/" in "PCbuild/build.bat" as a switch and
+    # fails with "'PCbuild' is not recognized as an internal or external command".
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" "PCbuild\\build.bat"
     BUILD_IN_SOURCE ON
     BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E
