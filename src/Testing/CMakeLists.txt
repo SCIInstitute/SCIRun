@@ -70,6 +70,14 @@ IF(WIN32)
     "PATH=${_test_path}"
     "PYTHONHOME=${Python_DIR}"
     "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms")
+  # Same, minus PYTHONHOME, for the Python tests: those are run by a python
+  # interpreter of their own, which would otherwise look for its stdlib under the
+  # Superbuild prefix. They only need the paths so the SCIRun.exe they spawn
+  # starts. Built from _test_path directly rather than by expanding the variable
+  # above, since nesting these lists strips a level of semicolon escaping.
+  set(SCIRUN_TEST_PATH_ENVIRONMENT
+    "PATH=${_test_path}"
+    "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms")
   # Unit tests run headless and must never pop a window, so pin the offscreen
   # Qt platform. The regression/import tests launch the full SCIRun app; on a
   # developer workstation ViewScene networks need the real "windows" platform
@@ -77,7 +85,15 @@ IF(WIN32)
   # networks fail). Leave QT_QPA_PLATFORM unset for those so the default
   # platform is used locally, while headless CI can still force it via the job
   # environment.
-  set(SCIRUN_TEST_ENVIRONMENT ${SCIRUN_TEST_DLL_ENVIRONMENT} "QT_QPA_PLATFORM=offscreen")
+  # Spelled out from _test_path rather than expanding SCIRUN_TEST_DLL_ENVIRONMENT:
+  # an unquoted expansion strips a level of escaping from the semicolons in PATH,
+  # after which ctest splits PATH into separate ENVIRONMENT entries and the test
+  # starts with a truncated PATH (0xc0000135 for anything needing Qt/Qwt DLLs).
+  set(SCIRUN_TEST_ENVIRONMENT
+    "PATH=${_test_path}"
+    "PYTHONHOME=${Python_DIR}"
+    "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms"
+    "QT_QPA_PLATFORM=offscreen")
 ENDIF()
 
 IF(RUN_UNIT_TESTS)
@@ -102,6 +118,11 @@ IF(RUN_UNIT_TESTS)
       ADD_TEST(NAME ${PYTHON_TEST}
         COMMAND ${CMAKE_COMMAND} -E env "SCIRUN_EXECUTABLE_PATH_FOR_PYTHON_TESTS=${EXE_LOC}" "${PYTHON_TEST_EXE}" "-m" "unittest" "-v" ${PYTHON_TEST}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
+      # These tests spawn SCIRun.exe as a subprocess, which needs the Qt/Python/Qwt
+      # DLLs on PATH or it exits immediately with 0xc0000135 (STATUS_DLL_NOT_FOUND).
+      IF(WIN32)
+        SET_TESTS_PROPERTIES("${PYTHON_TEST}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_PATH_ENVIRONMENT}")
+      ENDIF()
     ENDFOREACH(PYTHON_TEST)
   ENDIF()
 
@@ -111,7 +132,11 @@ IF(RUN_UNIT_TESTS)
 
   IF(WIN32 AND UNIT_TEST_LIST)
     FOREACH(test ${UNIT_TEST_LIST})
-      set_property(TEST "${test}" PROPERTY ENVIRONMENT ${SCIRUN_TEST_ENVIRONMENT})
+      # Quote the expansion: unquoted, CMake strips a level of escaping from the
+      # semicolons in PATH, so ctest splits it into separate ENVIRONMENT entries
+      # and the test starts with a truncated PATH (0xc0000135 for anything that
+      # needs the Qt or Qwt DLLs).
+      set_property(TEST "${test}" PROPERTY ENVIRONMENT "${SCIRUN_TEST_ENVIRONMENT}")
     ENDFOREACH()
   ENDIF()
 ENDIF()
