@@ -51,7 +51,6 @@ Preferences::Preferences() :
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),
   highDPIAdjustment("highDPIAdjustment", false),
-  widgetSelectionCorrection("widgetSelectionCorrection", false),
   autoRotateViewerOnMouseRelease("autoRotateViewerOnMouseRelease", false),
   moduleExecuteDownstreamOnly("moduleExecuteDownstreamOnly", true),
   forceGridBackground("forceGridBackground", false),
