@@ -15,10 +15,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  # Include github.event_name so a scheduled run and a push to master (which
-  # share github.ref == refs/heads/master) land in separate groups and do not
-  # cancel each other. Without it, a nightly firing while a master-push build is
-  # still running cancels it, or vice versa.
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
