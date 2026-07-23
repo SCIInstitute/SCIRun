@@ -58,6 +58,10 @@ namespace Gui {
   class SCISHARE WidgetStyleMixin
   {
   public:
+    // The single source of truth for SCIRun's tooltip appearance (white text
+    // on a blue background). Use this instead of duplicating the QToolTip
+    // stylesheet string at each call site.
+    static QString toolTipStyle();
     static void tabStyle(QTabWidget* tabs);
     static void tableHeaderStyle(QTableWidget* tableHeader);
     static void toolbarStyle(QToolBar* toolbar);
