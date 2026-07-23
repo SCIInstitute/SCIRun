@@ -31,6 +31,7 @@
 #include <numeric>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Application/Preferences/Preferences.h>
+#include <Core/Utils/QuickExit.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
@@ -268,10 +269,10 @@ bool NetworkFileProcessCommand::execute()
   if (failTestOnError() && Application::Instance().parameters()->isRegressionMode())
   {
     GuiLogger::logErrorStd("Regression import failed, exiting non-zero: " + filename);
-    // Mirrors SCIRunMainWindow::exitApplication's regression-mode behavior
-    // (which calls quick_exit) so the regression test reports a failure. Done
-    // directly here because exitApplication is a private slot.
-    std::quick_exit(1);
+    // Mirrors SCIRunMainWindow::exitApplication's regression-mode behavior so the
+    // regression test reports a failure. Done directly here because
+    // exitApplication is a private slot.
+    quickExit(1);
   }
   return false;
 }
