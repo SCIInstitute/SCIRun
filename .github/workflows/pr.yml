@@ -1,0 +1,145 @@
+name: pr
+
+# Slim, always-triggered PR tier.
+#
+# Two rules keep this workflow both cheap and mergeable:
+#
+#  1. No `paths-ignore` on `on:`. A workflow suppressed by a path filter never
+#     reports its checks at all, so a *required* context stays Pending forever
+#     and the pull request can never merge. A job that runs and is skipped by an
+#     `if:` reports "skipped", which branch protection counts as passing. Path
+#     filtering therefore happens at the job level below, never at `on:`.
+#
+#  2. `ci-gate` is the only context that should be marked required in branch
+#     protection. It always runs, so it can always report, and it mirrors the
+#     result of the builds it depends on. Requiring the nested `<job> / build`
+#     contexts directly re-creates the problem in rule 1 as soon as one of them
+#     is filtered or renamed.
+#
+# The full matrix (all the mac-headless-*, windows-gui-python-*, regression and
+# coverage variants) lives in ccpp.yml / mac.yml / windows.yml /
+# regression-tests.yml / windows-build-script.yml and runs on master pushes and
+# nightly -- not on every pull request. Use the `workflow_dispatch` trigger on
+# those workflows to run the full matrix against a risky branch on demand.
+
+on:
+  pull_request:
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: detect changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      docs_only: ${{ steps.filter.outputs.docs_only }}
+    steps:
+      - name: Classify changed paths
+        id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          files=$(gh pr view "${{ github.event.pull_request.number }}" \
+                    --repo "${{ github.repository }}" \
+                    --json files --jq '.files[].path')
+
+          echo "Changed files:"
+          echo "$files"
+
+          count=$(printf '%s\n' "$files" | grep -c . || true)
+
+          # Fail safe towards building: an empty list, or one long enough to have
+          # been truncated by the API, must not be mistaken for a docs-only PR.
+          if [ "$count" -eq 0 ] || [ "$count" -ge 100 ]; then
+            docs_only=false
+          elif printf '%s\n' "$files" | grep -qvE '^docs/'; then
+            docs_only=false
+          else
+            docs_only=true
+          fi
+
+          echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          echo "docs_only=$docs_only"
+
+  linux-gui:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      qt-version: ''
+      variant: gui
+      build-with-python: true
+
+  mac-gui:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      artifact-name: SCIRunMacInstaller
+
+  windows-gui-qt6:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2022
+      qt-version: '6.3.*'
+      variant: gui
+      build-with-python: false
+      artifact-name: SCIRunWindowsInstaller_qt6
+
+  # Unit tests. The ctest step in reusable-build.yml carries
+  # `continue-on-error: true`, so a failing test does NOT fail this job today --
+  # master currently has 4 failing unit suites plus a large body of failing
+  # .Test.ImportNetwork.* cases. What this job does gate on is the build: test
+  # code that no longer compiles will fail the job, and hence ci-gate. The test
+  # results themselves are visible in the log and the uploaded artifact.
+  #
+  # Once the outstanding failures are fixed, drop `continue-on-error` from the
+  # "Run unit tests" steps in reusable-build.yml and this becomes a real gate
+  # with no change needed here.
+  linux-unit-tests:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      variant: headless
+      build-testing: true
+      run-unit-tests: true
+
+  # The single required check. `if: always()` is what lets it report even when
+  # every build above was skipped, which is the case that unblocks docs-only PRs.
+  ci-gate:
+    name: ci-gate
+    if: always()
+    needs: [changes, linux-gui, mac-gui, windows-gui-qt6, linux-unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report upstream results
+        run: |
+          echo "changes:          ${{ needs.changes.result }}"
+          echo "linux-gui:        ${{ needs.linux-gui.result }}"
+          echo "mac-gui:          ${{ needs.mac-gui.result }}"
+          echo "windows-gui-qt6:  ${{ needs.windows-gui-qt6.result }}"
+          echo "linux-unit-tests: ${{ needs.linux-unit-tests.result }}"
+
+      - name: Fail if any required build failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::One or more required builds did not succeed."
+          exit 1
+
+      - name: Pass
+        run: echo "All required builds succeeded or were skipped."
