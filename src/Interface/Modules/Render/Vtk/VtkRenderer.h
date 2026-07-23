@@ -99,6 +99,9 @@ public:
   void renderPolyData(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
   void renderUnstructuredGrid(vtkUnstructuredGrid* grid, const Core::Datatypes::VtkGeometryObjectHandle& geo);
   void renderImageData(vtkImageData* image, const Core::Datatypes::VtkGeometryObjectHandle& geo);
+  void renderSpheres(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
+  void renderCylinders(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
+  void renderStreamlines(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
 
   //----------------------------------------
   // Materials / transfer functions

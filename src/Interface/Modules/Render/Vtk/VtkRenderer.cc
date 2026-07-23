@@ -35,6 +35,9 @@
 #include <vtkVolumeProperty.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
+#include <vtkTubeFilter.h>
+#include <vtkSphereSource.h>
+#include <vtkGlyph3DMapper.h>
 
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
@@ -181,7 +184,26 @@ void VtkRenderer::initialize()
 
 void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
 {
-  if (!geo || !geo->dataObject) return;
+  if (!geo) return;
+
+  auto poly = vtkPolyData::SafeDownCast(geo->dataObject);
+
+  if (poly)
+  {
+    switch (geo->type)
+    {
+    case GeometryType::SPHERE: renderSpheres(poly, geo); return;
+
+    case GeometryType::CYLINDER:
+    case GeometryType::EDGE: renderCylinders(poly, geo); return;
+
+    case GeometryType::STREAMLINE: renderStreamlines(poly, geo); return;
+
+    default: break;
+    }
+  }
+
+  if (!geo->dataObject) return;
 
   if (auto image = vtkImageData::SafeDownCast(geo->dataObject))
   {
@@ -195,7 +217,7 @@ void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
     return;
   }
 
-  if (auto poly = vtkPolyData::SafeDownCast(geo->dataObject))
+  if (poly)
   {
     renderPolyData(poly, geo);
     return;
@@ -303,6 +325,81 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
   volume->SetProperty(volumeProperty);
 
   renderer_->AddVolume(volume);
+}
+
+void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
+{
+  if (!poly) return;
+
+  auto tube = vtkSmartPointer<vtkTubeFilter>::New();
+  tube->SetInputData(poly);
+  tube->SetRadius(geo->radius);
+  tube->SetNumberOfSides(20);
+  tube->CappingOn();
+  tube->Update();
+
+  auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  mapper->SetInputConnection(tube->GetOutputPort());
+
+  auto actor = vtkSmartPointer<vtkActor>::New();
+  actor->SetMapper(mapper);
+
+  applyMaterial(actor, geo->material);
+
+  renderer_->AddActor(actor);
+  actors_.push_back(actor);
+}
+
+void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
+{
+  if (!poly) return;
+
+  auto tube = vtkSmartPointer<vtkTubeFilter>::New();
+  tube->SetInputData(poly);
+  tube->SetRadius(geo->radius);
+  tube->SetNumberOfSides(16);
+  tube->CappingOff();
+  tube->Update();
+
+  auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  mapper->SetInputConnection(tube->GetOutputPort());
+
+  double range[2];
+  poly->GetScalarRange(range);
+
+  mapper->ScalarVisibilityOn();
+  mapper->SetScalarRange(range);
+  mapper->SetLookupTable(createLookupTable(geo->tfn, range));
+
+  auto actor = vtkSmartPointer<vtkActor>::New();
+  actor->SetMapper(mapper);
+
+  applyMaterial(actor, geo->material);
+
+  renderer_->AddActor(actor);
+  actors_.push_back(actor);
+}
+
+void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
+{
+  if (!poly) return;
+
+  auto sphere = vtkSmartPointer<vtkSphereSource>::New();
+  sphere->SetRadius(geo->radius);
+  sphere->SetThetaResolution(16);
+  sphere->SetPhiResolution(16);
+
+  auto mapper = vtkSmartPointer<vtkGlyph3DMapper>::New();
+  mapper->SetInputData(poly);
+  mapper->SetSourceConnection(sphere->GetOutputPort());
+
+  auto actor = vtkSmartPointer<vtkActor>::New();
+  actor->SetMapper(mapper);
+
+  applyMaterial(actor, geo->material);
+
+  renderer_->AddActor(actor);
+  actors_.push_back(actor);
 }
 
 void VtkRenderer::applyMaterial(vtkActor* actor, const VtkGeometryObject::Material& mat)

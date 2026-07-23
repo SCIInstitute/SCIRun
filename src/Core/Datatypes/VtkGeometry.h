@@ -73,6 +73,7 @@ public:
 
     Material material;
     TransferFunc tfn;
+    double radius{1.0};
 
     Core::Geometry::BBox box;
 
