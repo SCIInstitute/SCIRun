@@ -70,6 +70,13 @@ ENDIF()
 
 INCLUDE( ExternalProject )
 
+# Skip the per-external git fetch on reconfigure. Every external pins a tag or
+# tracking branch that changes rarely; the fetch mostly costs network time and,
+# on CI runs that restore the Externals tree from a cache (without .git dirs),
+# would fail outright. Each external keeps an explicit <name>_external-update
+# target for developers who want to pull updates deliberately.
+SET_PROPERTY(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED TRUE)
+
 ###########################################
 # DETERMINE ARCHITECTURE
 # In order for the code to depend on the architecture settings
