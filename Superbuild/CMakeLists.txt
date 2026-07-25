@@ -26,6 +26,17 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
 
+# Pin the macOS floor explicitly. When unset, CMake defaults the deployment
+# target to the build host's OS/SDK, so the minimum supported macOS of a build
+# is an accident of whichever machine produced it, and post-floor symbols link
+# cleanly but fail at load time on older Macs (#2564, #2565). Must be set
+# before the first PROJECT() call; guarded on the host platform because APPLE
+# is not defined until PROJECT() runs.
+IF(CMAKE_HOST_APPLE AND NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+  SET(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING
+      "Minimum macOS version SCIRun and all Superbuild externals target")
+ENDIF()
+
 PROJECT(Superbuild)
 
 INCLUDE(${CMAKE_SOURCE_DIR}/Superbuild.cmake)

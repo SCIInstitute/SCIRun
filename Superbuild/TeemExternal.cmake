@@ -43,6 +43,7 @@ ExternalProject_Add(Teem_external
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DZlib_DIR:PATH=${Zlib_DIR}
     -DTeem_USE_NRRD_INTERNALS:BOOL=ON
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${CMAKE_OSX_DEPLOYMENT_TARGET}
 )
 
 ExternalProject_Get_Property(Teem_external BINARY_DIR)

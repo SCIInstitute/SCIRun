@@ -27,6 +27,14 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.9 FATAL_ERROR)
 
+# Same macOS floor as Superbuild/CMakeLists.txt; see the comment there. The
+# superbuild passes its value in through SCIRUN_CACHE_ARGS, which pre-populates
+# the cache, so this default only takes effect on a direct src/ configure.
+IF(CMAKE_HOST_APPLE AND NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+  SET(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING
+      "Minimum macOS version SCIRun targets")
+ENDIF()
+
 PROJECT(SCIRun)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -603,7 +611,10 @@ MACRO(SCIRUN_ADD_LIBRARY library)
   else()
     # TODO:
     if(APPLE)
-      target_compile_options(${library} PRIVATE -Wall  -Wunused-parameter -Winfinite-recursion)
+      # -Wunguarded-availability-new flags availability-annotated APIs newer
+      # than CMAKE_OSX_DEPLOYMENT_TARGET that are used without an @available
+      # guard — the build-time signal for the dyld failures behind #2564/#2565.
+      target_compile_options(${library} PRIVATE -Wall  -Wunused-parameter -Winfinite-recursion -Wunguarded-availability-new)
           # TODO: put back -Werror
           #eventually: -Wall -Wextra -pedantic -Werror)
     else()

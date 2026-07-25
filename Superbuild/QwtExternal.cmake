@@ -95,6 +95,7 @@ ExternalProject_Add(Qwt_external
     -DCMAKE_INSTALL_PREFIX=${_qwt_inst}
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
     ${_qwt_extra_cmake_args}
 
   # For pinned tags, skip update step entirely to avoid running git in a non-git tree
