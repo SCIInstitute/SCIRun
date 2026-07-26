@@ -141,6 +141,21 @@ build_scirun() {
     build_scirun_make
 }
 
+# When CI restores Externals/ from a cache, the restored stamp files are older
+# than the runner's CMake modules and configure-time scripts, so make would
+# consider every ExternalProject step out of date and redo them all -- including
+# deleting and re-cloning sources. Future-dating the stamps keeps completed
+# external steps completed. SCIRun_external's stamps are excluded so SCIRun
+# itself always reconfigures and rebuilds. Gated on an env var CI sets only
+# when a cache was actually restored; local builds are unaffected.
+touch_external_stamps() {
+    local stampdir="$builddir/Externals/Stamp"
+    if [[ "${SCIRUN_TOUCH_EXTERNAL_STAMPS:-0}" == "1" && -d "$stampdir" ]]; then
+        echo "Future-dating restored ExternalProject stamps in $stampdir"
+        find "$stampdir" -type f ! -path "*SCIRun_external*" -exec touch -t 210001010000 {} +
+    fi
+}
+
 ##########################################################################
 # build.sh script execution starts here
 ##########################################################################
@@ -232,5 +247,7 @@ ensure make --version
 echo "Build Type: $buildtype"
 
 configure_scirun
+
+touch_external_stamps
 
 build_scirun
