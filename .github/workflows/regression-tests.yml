@@ -9,6 +9,7 @@ on:
     branches:
       - regression-tests-ci
       - master
+      - superbuild-cache-staging  # STAGING-ONLY: exercise Superbuild cache (PR #2576); do not merge to master
   schedule:
     - cron: '45 8 * * *'
   workflow_dispatch:
