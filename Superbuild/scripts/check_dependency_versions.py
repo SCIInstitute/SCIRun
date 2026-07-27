@@ -17,7 +17,8 @@ pins) and performs two kinds of check:
              past our pinned SHA, our pin is behind the branch we follow.
 
   * UPDATE — for deps pinned to a release *tag*, query the upstream project's
-             latest release/tag and compare. If a newer version exists, flag it.
+             latest stable release/tag and compare. If a newer version exists,
+             flag it. Prereleases (alpha/beta/rc) are ignored.
 
 The branch/tag a pin tracks is read from the doc string of each
 sci_dep_version() entry, e.g. "... (branch scirun-5.0.0-beta)".
@@ -35,8 +36,8 @@ import os
 import re
 import subprocess
 import sys
-import urllib.request
 import urllib.error
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_MANIFEST = os.path.normpath(os.path.join(HERE, "..", "VERSIONS.cmake"))
@@ -51,32 +52,38 @@ DEFAULT_MANIFEST = os.path.normpath(os.path.join(HERE, "..", "VERSIONS.cmake"))
 # The branch a SHA-pin tracks is derived from the tag_var's doc string, so it
 # does not need to be repeated here.
 DEPENDENCIES = [
-    # name         url_var             tag_var                 upstream
-    ("Eigen",     "EIGEN_URL",        "EIGEN_VERSION",        "gitlab:libeigen%2Feigen"),
-    ("zlib",      "ZLIB_GIT_URL",     "ZLIB_GIT_TAG",         "madler/zlib"),
-    ("LodePNG",   "LODEPNG_GIT_URL",  "LODEPNG_GIT_TAG",      "lvandeve/lodepng"),
-    ("FreeType",  "FREETYPE_GIT_URL", "FREETYPE_GIT_TAG",     None),
-    ("Teem",      "TEEM_GIT_URL",     "TEEM_GIT_TAG",         None),
-    ("SQLite",    "SQLITE_GIT_URL",   "SQLITE_GIT_TAG",       None),
-    ("GLM",       "GLM_GIT_URL",      "GLM_GIT_TAG",          "g-truc/glm"),
-    ("GLEW",      "GLEW_GIT_URL",     "GLEW_GIT_TAG",         "nigels-com/glew"),
-    ("OSPRay",    "OSPRAY_GIT_URL",   "OSPRAY_GIT_TAG",       "RenderKit/ospray"),
-    ("Qwt",       "QWT_GIT_URL",      "QWT_WRAPPER_GIT_TAG",  None),
-    ("Python",    "PYTHON_GIT_URL",   "PYTHON_VERSION",       "python/cpython"),
-    ("Boost",     "BOOST_GIT_URL",    "BOOST_GIT_TAG",        "boostorg/boost"),
-    ("TetGen",    "TETGEN_GIT_URL",   "TETGEN_GIT_TAG",       None),
-    ("Cleaver2",  "CLEAVER2_GIT_URL", "CLEAVER2_GIT_TAG",     "SCIInstitute/Cleaver2"),
-    ("spdlog",    "SPDLOG_GIT_URL",   "SPDLOG_GIT_TAG",       "gabime/spdlog"),
-    ("Tny",       "TNY_GIT_URL",      "TNY_GIT_TAG",          None),
+    # (name, url_var, tag_var, upstream)
+    ("Eigen", "EIGEN_URL", "EIGEN_VERSION", "gitlab:libeigen%2Feigen"),
+    ("zlib", "ZLIB_GIT_URL", "ZLIB_GIT_TAG", "madler/zlib"),
+    ("LodePNG", "LODEPNG_GIT_URL", "LODEPNG_GIT_TAG", "lvandeve/lodepng"),
+    ("FreeType", "FREETYPE_GIT_URL", "FREETYPE_GIT_TAG", None),
+    ("Teem", "TEEM_GIT_URL", "TEEM_GIT_TAG", None),
+    ("SQLite", "SQLITE_GIT_URL", "SQLITE_GIT_TAG", None),
+    ("GLM", "GLM_GIT_URL", "GLM_GIT_TAG", "g-truc/glm"),
+    ("GLEW", "GLEW_GIT_URL", "GLEW_GIT_TAG", "nigels-com/glew"),
+    ("OSPRay", "OSPRAY_GIT_URL", "OSPRAY_GIT_TAG", "RenderKit/ospray"),
+    ("Qwt", "QWT_GIT_URL", "QWT_WRAPPER_GIT_TAG", None),
+    ("Python", "PYTHON_GIT_URL", "PYTHON_VERSION", "python/cpython"),
+    ("Boost", "BOOST_GIT_URL", "BOOST_GIT_TAG", "boostorg/boost"),
+    ("TetGen", "TETGEN_GIT_URL", "TETGEN_GIT_TAG", None),
+    ("Cleaver2", "CLEAVER2_GIT_URL", "CLEAVER2_GIT_TAG", "SCIInstitute/Cleaver2"),
+    ("spdlog", "SPDLOG_GIT_URL", "SPDLOG_GIT_TAG", "gabime/spdlog"),
+    ("Tny", "TNY_GIT_URL", "TNY_GIT_TAG", None),
 ]
 
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 BRANCH_DOC_RE = re.compile(r"\(branch\s+(?P<branch>[^)]+)\)")
+# Markers that identify a prerelease tag (alpha/beta/rc/dev, or a trailing
+# aN/bN as in CPython's "3.15.0b4"). Case-insensitive.
+PRERELEASE_RE = re.compile(
+    r"(?i)(alpha|beta|dev|snapshot|nightly|preview|\brc\b|rc\d|[-._][ab]\d|[ab]\d+$)"
+)
 
 
 def parse_manifest(path):
     """Return {VAR: (value, doc)} for every sci_dep_version() call."""
-    text = open(path, encoding="utf-8").read()
+    with open(path, encoding="utf-8") as fh:
+        text = fh.read()
     # sci_dep_version(NAME "value" "doc")   — value/doc may be quoted.
     pattern = re.compile(
         r"""sci_dep_version\(\s*
@@ -85,40 +92,59 @@ def parse_manifest(path):
             "(?P<doc>[^"]*)"\s*\)""",
         re.VERBOSE,
     )
-    out = {}
-    for m in pattern.finditer(text):
-        out[m.group("var")] = (m.group("value"), m.group("doc"))
-    return out
+    return {m.group("var"): (m.group("value"), m.group("doc"))
+            for m in pattern.finditer(text)}
 
 
 def http_json(url):
+    """GET a URL known to be HTTP(S) and parse the JSON response."""
+    # Only http/https are permitted; refuse file:/ and custom schemes (B310).
+    if not url.startswith(("https://", "http://")):
+        raise ValueError(f"refusing to open non-HTTP(S) URL: {url}")
     req = urllib.request.Request(url, headers={"User-Agent": "scirun-dep-check"})
     token = os.environ.get("GITHUB_TOKEN")
     if token and "api.github.com" in url:
         req.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    # Scheme restricted to http/https by the guard above.
+    with urllib.request.urlopen(req, timeout=30) as resp:  # nosec B310  # noqa: S310
         return json.load(resp)
 
 
+def is_prerelease(tag):
+    return bool(tag) and bool(PRERELEASE_RE.search(tag))
+
+
 def latest_github(repo):
-    """Latest release tag for a GitHub repo, falling back to newest tag."""
+    """Latest stable release tag for a GitHub repo.
+
+    Prefers the published "latest release" (which already excludes
+    prereleases), then falls back to the newest non-prerelease tag.
+    """
     try:
         data = http_json(f"https://api.github.com/repos/{repo}/releases/latest")
         if data.get("tag_name"):
             return data["tag_name"]
-    except urllib.error.HTTPError as e:
-        if e.code != 404:
+    except urllib.error.HTTPError as exc:
+        if exc.code != 404:
             raise
-    tags = http_json(f"https://api.github.com/repos/{repo}/tags?per_page=1")
-    return tags[0]["name"] if tags else None
+    tags = http_json(f"https://api.github.com/repos/{repo}/tags?per_page=100")
+    for tag in tags:
+        name = tag.get("name", "")
+        if not is_prerelease(name):
+            return name
+    return None
 
 
 def latest_gitlab(project):
-    """Newest release tag for a GitLab project id (URL-encoded path)."""
-    data = http_json(
-        f"https://gitlab.com/api/v4/projects/{project}/repository/tags?per_page=1"
+    """Newest non-prerelease tag for a GitLab project id (URL-encoded path)."""
+    tags = http_json(
+        f"https://gitlab.com/api/v4/projects/{project}/repository/tags?per_page=100"
     )
-    return data[0]["name"] if data else None
+    for tag in tags:
+        name = tag.get("name", "")
+        if not is_prerelease(name):
+            return name
+    return None
 
 
 def latest_upstream(upstream):
@@ -134,17 +160,59 @@ def remote_branch_sha(url, branch):
     for ref in (f"refs/heads/{branch}", branch):
         out = subprocess.run(
             ["git", "ls-remote", url, ref],
-            capture_output=True, text=True, timeout=60,
+            capture_output=True, text=True, timeout=60, check=False,
         )
-        line = out.stdout.strip().splitlines()
-        if line:
-            return line[0].split()[0]
+        lines = out.stdout.strip().splitlines()
+        if lines:
+            return lines[0].split()[0]
     return None
 
 
-def norm(v):
+def norm(version):
     """Loose version normalization for comparison/display."""
-    return v.lstrip("vV").strip() if v else v
+    return version.lstrip("vV").strip() if version else version
+
+
+def _check_drift(row, url, pin, doc):
+    """Fill `row` for a SHA pin by comparing against its tracked branch tip."""
+    match = BRANCH_DOC_RE.search(doc)
+    if not match:
+        row["tracks"] = "commit (no tracked branch)"
+        row["detail"] = "pinned to fixed commit"
+        return
+    branch = match.group("branch").strip()
+    row["tracks"] = f"branch {branch}"
+    try:
+        tip = remote_branch_sha(url, branch)
+    except Exception as exc:  # noqa: BLE001
+        row["status"], row["detail"] = "ERROR", f"ls-remote failed: {exc}"
+        return
+    if tip is None:
+        row["status"], row["detail"] = "ERROR", f"branch '{branch}' not found"
+    elif tip != pin:
+        row["status"] = "DRIFT"
+        row["detail"] = f"branch advanced to {tip[:12]} (pinned {pin[:12]})"
+    else:
+        row["detail"] = f"up to date with branch tip {tip[:12]}"
+
+
+def _check_update(row, pin, upstream, offline_upstream):
+    """Fill `row` for a tag pin by comparing against the latest upstream tag."""
+    row["tracks"] = "release tag"
+    if not upstream or offline_upstream:
+        row["detail"] = "no upstream mapping; pin is a fixed tag"
+        return
+    try:
+        latest = latest_upstream(upstream)
+    except Exception as exc:  # noqa: BLE001
+        row["status"], row["detail"] = "ERROR", f"upstream query failed: {exc}"
+        return
+    row["latest"] = latest
+    if latest and norm(latest) != norm(pin):
+        row["status"] = "UPDATE"
+        row["detail"] = f"upstream latest {latest} (pinned {pin})"
+    else:
+        row["detail"] = f"matches upstream {latest}"
 
 
 def check(manifest, offline_upstream=False):
@@ -158,45 +226,10 @@ def check(manifest, offline_upstream=False):
         url = manifest[url_var][0]
         pin, doc = manifest[tag_var]
         row = {"name": name, "pin": pin, "status": "OK", "detail": ""}
-
-        # --- DRIFT check for SHA pins that track a branch ---------------------
         if SHA_RE.match(pin):
-            bm = BRANCH_DOC_RE.search(doc)
-            if bm:
-                branch = bm.group("branch").strip()
-                row["tracks"] = f"branch {branch}"
-                try:
-                    tip = remote_branch_sha(url, branch)
-                except Exception as e:  # noqa: BLE001
-                    row["status"], row["detail"] = "ERROR", f"ls-remote failed: {e}"
-                    results.append(row); continue
-                if tip is None:
-                    row["status"], row["detail"] = "ERROR", f"branch '{branch}' not found"
-                elif tip != pin:
-                    row["status"] = "DRIFT"
-                    row["detail"] = f"branch advanced to {tip[:12]} (pinned {pin[:12]})"
-                else:
-                    row["detail"] = f"up to date with branch tip {tip[:12]}"
-            else:
-                row["tracks"] = "commit (no tracked branch)"
-                row["detail"] = "pinned to fixed commit"
-        # --- UPDATE check for tag/version pins --------------------------------
+            _check_drift(row, url, pin, doc)
         else:
-            row["tracks"] = "release tag"
-            if upstream and not offline_upstream:
-                try:
-                    latest = latest_upstream(upstream)
-                except Exception as e:  # noqa: BLE001
-                    row["status"], row["detail"] = "ERROR", f"upstream query failed: {e}"
-                    results.append(row); continue
-                row["latest"] = latest
-                if latest and norm(latest) != norm(pin):
-                    row["status"] = "UPDATE"
-                    row["detail"] = f"upstream latest {latest} (pinned {pin})"
-                else:
-                    row["detail"] = f"matches upstream {latest}"
-            else:
-                row["detail"] = "no upstream mapping; pin is a fixed tag"
+            _check_update(row, pin, upstream, offline_upstream)
         results.append(row)
     return results
 
