@@ -98,7 +98,7 @@ out of `VERSIONS.cmake` (it documents them in a trailing comment block):
 
 These `*External.cmake` files are **not** wired into the build (no
 `ADD_EXTERNAL`) and are not manifest-managed. They have been moved to
-[`Superbuild/deprecated/`](../../Superbuild/deprecated/) — retained in case a
+`Superbuild/deprecated/` — retained in case a
 special build ever needs them, but not part of the normal build:
 
 - `LibPNGExternal.cmake` — superseded by LodePNG (libpng removed from the build in 2021).
