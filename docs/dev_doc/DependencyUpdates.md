@@ -17,25 +17,36 @@ reproducible:
 
 - A **release tag** (`v1.2.3`, `3.4.0`) — preferred when the dependency tracks
   upstream releases.
-- A **full 40-character commit SHA** — used for dependencies that track a
-  maintenance *branch* of a fork (most `CIBC-Internal/*` repos).
+- A **`scirun-pin-<date>` annotated tag** — used for dependencies that track a
+  maintenance *branch* of a fork (most `CIBC-Internal/*` repos). These forks'
+  branches have diverged from any upstream version tag, so instead of an
+  invented semver we tag the specific pinned commit with a dated SCIRun tag
+  (e.g. `scirun-pin-2026.07.27`). It resolves to exactly one commit — the doc
+  string records both the commit and the branch, e.g. `"SQLite pin -> commit
+  3944c9da (branch scirun-5.0.0-beta)"`.
 
 **Do not pin to a branch ref** (`origin/master`, `origin/scirun-5.0.0-beta`).
 A branch resolves to whatever its tip is at clone time, so two builds days apart
-can silently differ. The manifest records, in each pin's doc string, which
-branch a SHA was captured from, e.g. `"SQLite pinned commit (branch
-scirun-5.0.0-beta)"`.
+can silently differ. A full 40-character commit SHA is also acceptable where a
+pin tag has not (yet) been created.
 
 ## How to update a dependency
 
 1. **Pick the new ref.**
    - Release-tracked dep: choose the new upstream tag.
-   - Branch-tracked fork: resolve the branch tip to a SHA —
+   - Branch-tracked fork: resolve the branch tip and create a fresh dated pin
+     tag at that commit (needs push access to the fork), then point the manifest
+     at the tag:
      ```bash
-     git ls-remote https://github.com/CIBC-Internal/<repo>.git refs/heads/<branch>
+     repo=https://github.com/CIBC-Internal/<repo>.git
+     sha=$(git ls-remote "$repo" refs/heads/<branch> | cut -f1)
+     tag=scirun-pin-$(date +%Y.%m.%d)
+     # create an annotated tag $tag at $sha on the fork (git tag -a / push, or the
+     # GitHub API), then use $tag as the *_GIT_TAG value.
      ```
 2. **Edit the pin** in `Superbuild/VERSIONS.cmake` (the `*_GIT_TAG`, `*_VERSION`,
-   or `*_URL` value). Keep the `(branch <name>)` note in the doc string accurate.
+   or `*_URL` value). Keep the `-> commit <sha> (branch <name>)` note in the doc
+   string accurate — the freshness check reads the branch name from it.
 3. **Rebuild from a clean build directory** and smoke-test the result
    (see the build instructions in the top-level `CLAUDE.md` / `README`).
 4. **Note the change** in the PR description; if it is a notable version jump,

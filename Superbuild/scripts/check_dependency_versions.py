@@ -83,7 +83,9 @@ PRERELEASE_RE = re.compile(
 def parse_manifest(path):
     """Return {VAR: (value, doc)} for every sci_dep_version() call."""
     with open(path, encoding="utf-8") as fh:
-        text = fh.read()
+        # Drop CMake comment lines so commented-out examples (e.g. in the
+        # reproducibility note) are not parsed as real pins.
+        text = "\n".join(ln for ln in fh if not ln.lstrip().startswith("#"))
     # sci_dep_version(NAME "value" "doc")   — value/doc may be quoted.
     pattern = re.compile(
         r"""sci_dep_version\(\s*
@@ -158,17 +160,33 @@ def latest_upstream(upstream):
     return latest_github(upstream)
 
 
+def _ls_remote(url, ref):
+    out = subprocess.run(
+        ["git", "ls-remote", url, ref],
+        capture_output=True, text=True, timeout=60, check=False,
+    )
+    lines = out.stdout.strip().splitlines()
+    return lines[0].split()[0] if lines else None
+
+
 def remote_branch_sha(url, branch):
-    """Tip SHA of `branch` in `url`, or None."""
+    """Tip commit SHA of `branch` in `url`, or None."""
     for ref in (f"refs/heads/{branch}", branch):
-        out = subprocess.run(
-            ["git", "ls-remote", url, ref],
-            capture_output=True, text=True, timeout=60, check=False,
-        )
-        lines = out.stdout.strip().splitlines()
-        if lines:
-            return lines[0].split()[0]
+        sha = _ls_remote(url, ref)
+        if sha:
+            return sha
     return None
+
+
+def resolve_pin_commit(url, pin):
+    """Commit SHA a pin refers to: a raw SHA as-is, or a tag dereferenced.
+
+    Annotated tags are peeled with the `^{}` suffix so we get the underlying
+    commit rather than the tag object.
+    """
+    if SHA_RE.match(pin):
+        return pin
+    return _ls_remote(url, f"refs/tags/{pin}^{{}}") or _ls_remote(url, f"refs/tags/{pin}")
 
 
 def norm(version):
@@ -177,24 +195,26 @@ def norm(version):
 
 
 def _check_drift(row, url, pin, doc):
-    """Fill `row` for a SHA pin by comparing against its tracked branch tip."""
-    match = BRANCH_DOC_RE.search(doc)
-    if not match:
-        row["tracks"] = "commit (no tracked branch)"
-        row["detail"] = "pinned to fixed commit"
-        return
-    branch = match.group("branch").strip()
+    """Fill `row` by comparing the pinned commit against its tracked branch tip.
+
+    `pin` may be a raw SHA or a tag (e.g. scirun-pin-*) aliasing one; both are
+    resolved to the underlying commit before comparison.
+    """
+    branch = BRANCH_DOC_RE.search(doc).group("branch").strip()
     row["tracks"] = f"branch {branch}"
     try:
         tip = remote_branch_sha(url, branch)
+        pinned = resolve_pin_commit(url, pin)
     except Exception as exc:  # noqa: BLE001
         row["status"], row["detail"] = "ERROR", f"ls-remote failed: {exc}"
         return
     if tip is None:
         row["status"], row["detail"] = "ERROR", f"branch '{branch}' not found"
-    elif tip != pin:
+    elif pinned is None:
+        row["status"], row["detail"] = "ERROR", f"could not resolve pin '{pin}'"
+    elif tip != pinned:
         row["status"] = "DRIFT"
-        row["detail"] = f"branch advanced to {tip[:12]} (pinned {pin[:12]})"
+        row["detail"] = f"branch advanced to {tip[:12]} (pin at {pinned[:12]})"
     else:
         row["detail"] = f"up to date with branch tip {tip[:12]}"
 
@@ -229,7 +249,10 @@ def check(manifest, offline_upstream=False):
         url = manifest[url_var][0]
         pin, doc = manifest[tag_var]
         row = {"name": name, "pin": pin, "status": "OK", "detail": ""}
-        if SHA_RE.match(pin):
+        # A "(branch X)" note means the pin (a SHA, or a scirun-pin-* tag
+        # aliasing one) tracks a maintenance branch — check it for drift.
+        # Otherwise the pin is an upstream release tag — check for updates.
+        if BRANCH_DOC_RE.search(doc):
             _check_drift(row, url, pin, doc)
         else:
             _check_update(row, pin, upstream, offline_upstream)
@@ -254,7 +277,7 @@ def render_markdown(results):
         lines.append("| {name} | {e} {status} | `{pin}` | {tracks} | {detail} |".format(
             e=emoji.get(r["status"], ""),
             name=r["name"], status=r["status"],
-            pin=(r.get("pin", "") or "")[:16], tracks=r.get("tracks", ""),
+            pin=(r.get("pin", "") or "")[:24], tracks=r.get("tracks", ""),
             detail=r.get("detail", "")))
     lines += ["", "_🌱 DRIFT = tracked branch advanced past our pinned commit; "
               "⬆️ UPDATE = newer upstream release exists._"]

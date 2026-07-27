@@ -62,19 +62,19 @@ sci_dep_version(EIGEN_URL_HASH "" "Eigen tarball SHA256 (URL_HASH SHA256=...)")
 # I/O, compression, imaging
 # -----------------------------------------------------------------------------
 sci_dep_version(ZLIB_GIT_URL   "https://github.com/CIBC-Internal/zlib.git"    "zlib repository")
-sci_dep_version(ZLIB_GIT_TAG   "713cffef138e2cb93161886805e7dd4678b81c3c"     "zlib pinned commit (branch 1.3.1)")
+sci_dep_version(ZLIB_GIT_TAG   "scirun-pin-2026.07.27"     "zlib pin -> commit 713cffef (branch 1.3.1)")
 
 sci_dep_version(LODEPNG_GIT_URL "https://github.com/CIBC-Internal/cibc-lodepng.git" "LodePNG repository")
-sci_dep_version(LODEPNG_GIT_TAG "815f81a3322ab76e170867a3b6b8dd92e7a6cfb8"    "LodePNG pinned commit (branch master)")
+sci_dep_version(LODEPNG_GIT_TAG "scirun-pin-2026.07.27"    "LodePNG pin -> commit 815f81a3 (branch master)")
 
 sci_dep_version(FREETYPE_GIT_URL "https://github.com/CIBC-Internal/freetype.git" "FreeType repository")
-sci_dep_version(FREETYPE_GIT_TAG "8c48e9dc4d53dec7e14560db6cf0cccc70954ba0"   "FreeType pinned commit (branch scirun-5.0.0)")
+sci_dep_version(FREETYPE_GIT_TAG "scirun-pin-2026.07.27"   "FreeType pin -> commit 8c48e9dc (branch scirun-5.0.0)")
 
 sci_dep_version(TEEM_GIT_URL   "https://github.com/SCIInstitute/teem.git"     "Teem repository")
-sci_dep_version(TEEM_GIT_TAG   "f8ab306b8a96e6ea4d77ee5e9864d76c11be6acd"     "Teem pinned commit (branch adjust-png)")
+sci_dep_version(TEEM_GIT_TAG   "scirun-pin-2026.07.27"     "Teem pin -> commit f8ab306b (branch adjust-png)")
 
 sci_dep_version(SQLITE_GIT_URL "https://github.com/CIBC-Internal/sqlite.git"  "SQLite repository")
-sci_dep_version(SQLITE_GIT_TAG "3944c9daa5d71fe66e684126cef8aea4cfe8396c"     "SQLite pinned commit (branch scirun-5.0.0-beta)")
+sci_dep_version(SQLITE_GIT_TAG "scirun-pin-2026.07.27"     "SQLite pin -> commit 3944c9da (branch scirun-5.0.0-beta)")
 
 # -----------------------------------------------------------------------------
 # Rendering / graphics
@@ -83,10 +83,10 @@ sci_dep_version(GLM_GIT_URL    "https://github.com/g-truc/glm.git"            "G
 sci_dep_version(GLM_GIT_TAG    "0.9.9.8"                                      "GLM pinned tag")
 
 sci_dep_version(GLEW_GIT_URL   "https://github.com/CIBC-Internal/glew.git"    "GLEW repository")
-sci_dep_version(GLEW_GIT_TAG   "2ef2e12f135ddde0df47c5fbb300282fa3e4a3cf"     "GLEW pinned commit (branch scirun-5.0.0-beta)")
+sci_dep_version(GLEW_GIT_TAG   "scirun-pin-2026.07.27"     "GLEW pin -> commit 2ef2e12f (branch scirun-5.0.0-beta)")
 
 sci_dep_version(OSPRAY_GIT_URL "https://github.com/CIBC-Internal/ospray.git"  "OSPRay repository")
-sci_dep_version(OSPRAY_GIT_TAG "174ba1aaa40f0dc79dc8fad9ae4ee6f49818acb9"     "OSPRay pinned commit (branch scirun-build-2.10)")
+sci_dep_version(OSPRAY_GIT_TAG "scirun-pin-2026.07.27"     "OSPRay pin -> commit 174ba1aa (branch scirun-build-2.10)")
 
 # -----------------------------------------------------------------------------
 # GUI (Qt handled via find_package; Qwt built here)
@@ -101,7 +101,7 @@ sci_dep_version(QWT_GIT_TAG         "v6.3.0"                                  "Q
 # Python version is user-selectable; keep the default in sync with
 # DEFAULT_PYTHON_VERSION in PythonExternal.cmake.
 sci_dep_version(PYTHON_GIT_URL "https://github.com/CIBC-Internal/python.git"  "Python repository")
-sci_dep_version(PYTHON_VERSION "3.13.1"                                       "Default Python version (branch = origin/<version>)")
+sci_dep_version(PYTHON_VERSION "3.13.1"                                       "Default Python version; built from CIBC-Internal/python origin/<version>")
 
 sci_dep_version(BOOST_GIT_URL  "https://github.com/CIBC-Internal/boost.git"   "Boost repository")
 sci_dep_version(BOOST_GIT_TAG  "v1.90.0"                                      "Boost pinned tag")
@@ -113,7 +113,7 @@ sci_dep_version(TETGEN_GIT_URL "https://github.com/CIBC-Internal/TetGen.git"  "T
 sci_dep_version(TETGEN_GIT_TAG "v1.6.1"                                       "TetGen pinned tag")
 
 sci_dep_version(CLEAVER2_GIT_URL "https://github.com/CIBC-Internal/Cleaver2Library.git" "Cleaver2 repository")
-sci_dep_version(CLEAVER2_GIT_TAG "7e2904699aef2d2929621515adf203dd9027721d"   "Cleaver2 pinned commit (branch scirun-5.0.0-beta)")
+sci_dep_version(CLEAVER2_GIT_TAG "scirun-pin-2026.07.27"   "Cleaver2 pin -> commit 7e290469 (branch scirun-5.0.0-beta)")
 
 # -----------------------------------------------------------------------------
 # Logging / utility
@@ -122,7 +122,7 @@ sci_dep_version(SPDLOG_GIT_URL "https://github.com/gabime/spdlog"             "s
 sci_dep_version(SPDLOG_GIT_TAG "v1.10.0"                                      "spdlog pinned tag")
 
 sci_dep_version(TNY_GIT_URL    "https://github.com/CIBC-Internal/Tny.git"     "Tny repository")
-sci_dep_version(TNY_GIT_TAG    "08cb2652e4204af409e47bfc23ae3835c144c575"     "Tny pinned commit (branch scirun-5.0.0)")
+sci_dep_version(TNY_GIT_TAG    "scirun-pin-2026.07.27"     "Tny pin -> commit 08cb2652 (branch scirun-5.0.0)")
 
 # =============================================================================
 # NOT MANIFEST-MANAGED
@@ -149,21 +149,25 @@ sci_dep_version(TNY_GIT_TAG    "08cb2652e4204af409e47bfc23ae3835c144c575"     "T
 # =============================================================================
 # REPRODUCIBILITY NOTE
 # =============================================================================
-# Every GIT_TAG above is now an immutable ref: either an upstream release tag
-# (v1.2.3) or a full 40-char commit SHA. The SHAs were captured from the tip of
-# the tracking branch named in each variable's doc string (as of 2026-07-27), so
-# the build is byte-for-byte reproducible until a pin is deliberately bumped.
+# Every GIT_TAG above is an immutable ref: either an upstream release tag
+# (v1.2.3) or, for deps that track a SCIRun maintenance branch, an annotated
+# `scirun-pin-<date>` tag that points at a fixed commit on that branch. Those
+# tags were created 2026-07-27 at the then-current branch tips (the commit is
+# recorded in each pin's doc string), so the build is byte-for-byte reproducible
+# until a pin is deliberately bumped. A tag is used instead of a raw SHA purely
+# for readability — it still resolves to one specific commit.
 #
-# When updating a dependency that tracks a branch, resolve the new tip to a SHA
-# rather than re-introducing a branch ref:
+# When updating a dep that tracks a branch, create a NEW dated pin tag at the
+# new tip and point the manifest at it (do not re-introduce a floating branch
+# ref). For example, for zlib's branch "1.3.1":
 #
-#     git ls-remote <repo-url> refs/heads/<branch>
+#     sha=$(git ls-remote <repo-url> refs/heads/1.3.1 | cut -f1)
+#     # create an annotated tag scirun-pin-<today> at $sha on the repo, then:
+#     #   sci_dep_version(ZLIB_GIT_TAG "scirun-pin-<today>" "... commit <sha> ...")
 #
 # Remaining hardening (follow-up work):
 #   - Add EIGEN_URL_HASH (and hashes for any future tarball deps) so downloads
 #     are integrity-checked, not just version-pinned.
-#   - Where an upstream release tag tracks the same commit as a pinned SHA,
-#     prefer the tag for readability.
 #
 # The check-dependencies CI job (.github/workflows/dependency-check.yml) diffs
 # these pins against upstream tags/releases and reports when newer versions are
