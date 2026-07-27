@@ -1,0 +1,12 @@
+# Code owners for SCIRun.
+#
+# GitHub automatically requests review from the owners listed here whenever a
+# pull request touches a matching path. The catch-all rule below therefore
+# requests the core maintainers on every PR.
+#
+# Note: GitHub never requests review from the PR author, even if they are an
+# owner. So when one maintainer opens a PR, only the other is auto-requested.
+#
+# See: https://docs.github.com/articles/about-code-owners
+
+* @dcwhite @jessdtate
