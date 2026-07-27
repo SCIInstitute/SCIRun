@@ -27,7 +27,7 @@
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
 ExternalProject_Add(Eigen_external
-  URL "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
+  URL ${EIGEN_URL}
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_IN_SOURCE ON

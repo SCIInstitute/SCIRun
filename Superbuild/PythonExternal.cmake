@@ -28,7 +28,8 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-SET(DEFAULT_PYTHON_VERSION "3.13.1")
+# Default Python version comes from Superbuild/VERSIONS.cmake (PYTHON_VERSION).
+SET(DEFAULT_PYTHON_VERSION "${PYTHON_VERSION}")
 
 set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
 set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.10.16 3.11.11 3.12.8 3.13.1)
@@ -56,7 +57,7 @@ SET(python_ABIFLAG_PYMALLOC "m")
 SET(ABIFLAGS "${python_ABIFLAG_PYMALLOC}${python_ABIFLAG_PYDEBUG}")
 
 SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
-SET(python_GIT_URL "https://github.com/CIBC-Internal/python.git")
+SET(python_GIT_URL "${PYTHON_GIT_URL}")
 
 SET(python_WIN32_ARCH)
 SET(python_WIN32_64BIT_DIR)

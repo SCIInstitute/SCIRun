@@ -25,15 +25,15 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(teem_GIT_TAG "origin/adjust-png")
 SET(teem_DEPENDENCIES "Zlib_external")
 
+# Source URL and pinned version come from Superbuild/VERSIONS.cmake.
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Teem_external
   DEPENDS ${teem_DEPENDENCIES}
-  GIT_REPOSITORY "https://github.com/SCIInstitute/teem.git"
-  GIT_TAG ${teem_GIT_TAG}
+  GIT_REPOSITORY ${TEEM_GIT_URL}
+  GIT_TAG ${TEEM_GIT_TAG}
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

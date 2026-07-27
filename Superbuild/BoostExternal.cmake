@@ -77,8 +77,9 @@ IF(WIN32)
   SET(FORCE_64BIT_BUILD ON)
 ENDIF()
 
-SET(_boost_git_url "https://github.com/CIBC-Internal/boost.git")
-SET(_boost_git_tag "v1.90.0")
+# Source URL and pinned version come from Superbuild/VERSIONS.cmake.
+SET(_boost_git_url ${BOOST_GIT_URL})
+SET(_boost_git_tag ${BOOST_GIT_TAG})
 
 # ------------------------------------------------------------------------------
 # Compute Python library filenames
