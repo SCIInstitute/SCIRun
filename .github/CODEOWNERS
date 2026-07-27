@@ -1,12 +1,27 @@
 # Code owners for SCIRun.
 #
-# GitHub automatically requests review from the owners listed here whenever a
-# pull request touches a matching path. The catch-all rule below therefore
-# requests the core maintainers on every PR.
+# GitHub auto-requests review from the owners listed here whenever a PR touches
+# a matching path. It never requests the PR author, so when a maintainer opens a
+# PR only the *other* listed owner is pulled in.
 #
-# Note: GitHub never requests review from the PR author, even if they are an
-# owner. So when one maintainer opens a PR, only the other is auto-requested.
+# This file is deliberately SCOPED rather than a blanket "* @owner": we only gate
+# the paths where a bad merge is expensive or hard to reverse. Everything not
+# matched below (docs, README/badges, general CI tweaks, most module code) has no
+# required owner and can be self-merged once branch checks pass. Add paths here as
+# the reviewer pool grows.
 #
 # See: https://docs.github.com/articles/about-code-owners
 
-* @dcwhite @jessdtate
+# --- Build & dependency configuration (high blast radius) ---
+/Superbuild/                             @jessdtate @dcwhite
+
+# --- Release automation & installer publishing (security-sensitive) ---
+/.github/workflows/publish-release.yml   @jessdtate @dcwhite
+
+# --- Core dataflow engine & on-disk network format (.srn5) ---
+/src/Dataflow/Serialization/             @jessdtate @dcwhite
+/src/Dataflow/Network/                   @jessdtate @dcwhite
+/src/Core/Datatypes/                     @jessdtate @dcwhite
+
+# --- The review policy itself ---
+/.github/CODEOWNERS                       @jessdtate @dcwhite
