@@ -117,13 +117,16 @@ def is_prerelease(tag):
 def latest_github(repo):
     """Latest stable release tag for a GitHub repo.
 
-    Prefers the published "latest release" (which already excludes
-    prereleases), then falls back to the newest non-prerelease tag.
+    Prefers the published "latest release", then falls back to the newest tag.
+    Prereleases are skipped in both cases — GitHub's "latest release" usually
+    excludes them, but a release the maintainers forgot to flag as a prerelease
+    (e.g. Boost's "boost-1.xx.0.beta1") can still slip through, so re-check it.
     """
     try:
         data = http_json(f"https://api.github.com/repos/{repo}/releases/latest")
-        if data.get("tag_name"):
-            return data["tag_name"]
+        tag_name = data.get("tag_name")
+        if tag_name and not is_prerelease(tag_name):
+            return tag_name
     except urllib.error.HTTPError as exc:
         if exc.code != 404:
             raise
