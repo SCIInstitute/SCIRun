@@ -32,6 +32,13 @@
 #include <vtkHexahedron.h>
 #include <vtkCellArray.h>
 #include <vtkImageData.h>
+#include <vtkPolyData.h>
+#include <vtkPolyLine.h>
+#include <vtkFloatArray.h>
+#include <vtkTriangle.h>
+#include <vtkQuad.h>
+#include <vtkLine.h>
+#include <vtkTetra.h>
 
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
@@ -105,73 +112,156 @@ static uint32_t getNewVersionNumber()
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addStreamline(FieldHandle field, ColorMapHandle colorMap) const
 {
-  return nullptr;
-  /* auto obj = fillDataBuffers(field, colorMap);
+  auto obj = makeObject(field);
+
   obj->type = GeometryType::STREAMLINE;
-  auto& fieldData = obj->data;
-  std::vector<float> vertex_orig, color_orig;
-  auto& vertex = fieldData.vertex;
-  auto& color = fieldData.color;
-  auto& index = fieldData.index;
   obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
 
-  EdgeVector all_edges;
-  std::list<Vertex> order, order_test;
+  //----------------------------------
+  // VTK polydata
+  //----------------------------------
 
-  std::vector<float> vertex_new, color_new;
-  std::vector<uint32_t> index_new;
+  auto poly = vtkSmartPointer<vtkPolyData>::New();
+  auto points = vtkSmartPointer<vtkPoints>::New();
+  auto lines = vtkSmartPointer<vtkCellArray>::New();
 
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
 
-  std::vector<uint32_t> index_orig;
+  //----------------------------------
+  // Create VTK points
+  //----------------------------------
+
+  std::unordered_map<uint32_t, vtkIdType> pointMap;
+
+  for (const auto& node : facade->nodes())
   {
-    auto facade(field->mesh()->getFacade());
-    for (const auto& edge : facade->edges())
-    {
-      auto nodesFromEdge = edge.nodeIndices();
-      index_orig.push_back(nodesFromEdge[0]);
-      auto nodePoints = edge.nodePoints();
-      all_edges.push_back(std::make_pair(nodesFromEdge[0],nodesFromEdge[1]));
-    }
+    auto p = node.point();
+
+    vtkIdType pid = points->InsertNextPoint(p.x(), p.y(), p.z());
+
+    pointMap[node.index()] = pid;
   }
 
-  std::vector<uint32_t> cc_index;
-  std::vector<uint32_t> index_sort = sort_points(all_edges,cc_index);
+  poly->SetPoints(points);
 
-  ReorderNodes(index_sort, cc_index, vertex, color, index_new, vertex_new, color_new);
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
 
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
 
-  index = index_new;
-  vertex = vertex_new;
-  color = color_new;
+  double value = 0.0;
 
-  return obj;*/
-}
-
-void VtkDataAlgorithm::ReorderNodes(std::vector<uint32_t> index, std::vector<uint32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<uint32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new) const
-{
-
-  int cc_cnt = 0;
-  for (size_t k=0;k<index.size();k++)
+  for (const auto& node : facade->nodes())
   {
-    if (k!=cc_index[cc_cnt])
+    if (vfield->num_values() > 0)
     {
-      index_new.push_back(k);
+      vfield->get_value(value, node.index());
     }
     else
     {
-      cc_cnt++;
+      value = 0.0;
     }
 
-
-    vertex_new.push_back(vertex[index[k]*4]);
-    vertex_new.push_back(vertex[index[k]*4+1]);
-    vertex_new.push_back(vertex[index[k]*4+2]);
-    vertex_new.push_back(0);
-    color_new.push_back(color[index[k]*4]);
-    color_new.push_back(color[index[k]*4+1]);
-    color_new.push_back(color[index[k]*4+2]);
-    color_new.push_back(color[index[k]*4+3]);
+    scalars->InsertNextValue(value);
   }
+
+  poly->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Collect mesh edges
+  //----------------------------------
+
+  EdgeVector all_edges;
+
+  for (const auto& edge : facade->edges())
+  {
+    auto nodes = edge.nodeIndices();
+
+    all_edges.push_back(std::make_pair(static_cast<Vertex_u>(nodes[0]), static_cast<Vertex_u>(nodes[1])));
+  }
+
+  //----------------------------------
+  // Split into connected components
+  //----------------------------------
+
+  std::vector<EdgeVector> subsets;
+  std::vector<int> size_regions;
+
+  connected_component_edges(all_edges, subsets, size_regions);
+
+  //----------------------------------
+  // Build one vtkPolyLine per component
+  //----------------------------------
+
+  for (const auto& subset : subsets)
+  {
+    if (subset.empty()) continue;
+
+    auto orderedNodes = sort_cc(subset);
+
+    if (orderedNodes.size() < 2) continue;
+
+    auto polyLine = vtkSmartPointer<vtkPolyLine>::New();
+
+    polyLine->GetPointIds()->SetNumberOfIds(static_cast<vtkIdType>(orderedNodes.size()));
+
+    vtkIdType idx = 0;
+
+    for (auto nodeId : orderedNodes)
+    {
+      auto it = pointMap.find(nodeId);
+
+      if (it == pointMap.end()) continue;
+
+      polyLine->GetPointIds()->SetId(idx++, it->second);
+    }
+
+    lines->InsertNextCell(polyLine);
+  }
+
+  poly->SetLines(lines);
+
+  //----------------------------------
+  // Material
+  //----------------------------------
+
+  obj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+
+  obj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+
+  obj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+  obj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+
+  //----------------------------------
+  // Transfer function
+  //----------------------------------
+
+  double range[2];
+  scalars->GetRange(range);
+
+  obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
+
+  if (colorMap)
+  {
+    ColorMap_OSP_helper cmp(colorMap);
+
+    obj->tfn.colors = cmp.colorList_;
+    obj->tfn.opacities = cmp.opacityList_;
+  }
+  else
+  {
+    obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
+
+    obj->tfn.opacities = {obj->material.opacity};
+  }
+
+  obj->dataObject = poly;
+
+  return obj;
 }
 
 void VtkDataAlgorithm::connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions) const
@@ -267,72 +357,282 @@ bool VtkDataAlgorithm::FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::l
   return no_branch;
 }
 
-
-std::vector<uint32_t> VtkDataAlgorithm::sort_points(EdgeVector edges, std::vector<uint32_t>& cc_index) const
-{
-  std::vector<EdgeVector> subsets;
-  std::vector<int> size_regions;
-  connected_component_edges(edges, subsets, size_regions);
-  std::list<Vertex> order;
-
-  int cnt=-1;
-  for (auto edges_subset : subsets)
-  {
-
-    cnt++;
-    LOG_DEBUG("subset size = {}",edges_subset.size());
-    std::ostringstream ostr;
-    ostr << "edge_subset["<<cnt<<"] = [ ";
-    for (auto e : edges_subset)
-    {
-      ostr<<" ["<<e.first<<","<<e.second<<"]";
-    }
-    ostr<<" ]";
-    LOG_DEBUG(ostr.str());
-
-    //for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
-
-
-    std::list<Vertex_u> order_subset = sort_cc(edges_subset);
-
-    LOG_DEBUG("order size = {}",order_subset.size());
-    std::ostringstream ostr_2;
-    ostr_2 << "order_subset["<<cnt<<"] = [ ";
-    for (auto o : order_subset)
-    {
-      ostr_2<<" "<<o;
-    }
-    ostr_2<<" ]";
-    LOG_DEBUG(ostr_2.str());
-
-    order_subset.reverse();
-    if (cnt ==0) cc_index.push_back(order_subset.size()-1);
-    else cc_index.push_back(cc_index.back()+order_subset.size());
-    order.splice(order.end(), order_subset);
-  }
-
-
-  std::vector<uint32_t> index{ std::make_move_iterator(std::begin(order)),
-    std::make_move_iterator(std::end(order)) };
-
-  return index;
-}
-
 VtkGeometryObjectHandle VtkDataAlgorithm::addTriSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
-  return nullptr;
-  /* printf("add tri-surface\n");
-  auto obj = fillDataBuffers(field, colorMap);
+  auto obj = makeObject(field);
+
   obj->type = GeometryType::TRI_SURFACE;
-  return obj;*/
+
+  auto poly = vtkSmartPointer<vtkPolyData>::New();
+  auto points = vtkSmartPointer<vtkPoints>::New();
+  auto polys = vtkSmartPointer<vtkCellArray>::New();
+
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
+  auto vmesh = field->vmesh();
+
+  //----------------------------------
+  // Points
+  //----------------------------------
+
+  for (const auto& node : facade->nodes())
+  {
+    auto p = node.point();
+
+    points->InsertNextPoint(p.x(), p.y(), p.z());
+  }
+
+  poly->SetPoints(points);
+
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
+
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0)
+    {
+      vfield->get_value(value, node.index());
+    }
+    else
+    {
+      value = 0.0;
+    }
+
+    scalars->InsertNextValue(value);
+  }
+
+  poly->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Normals
+  //----------------------------------
+
+  if (get(Parameters::UseNormals).toBool())
+  {
+    vmesh->synchronize(Mesh::NORMALS_E);
+
+    auto normals = vtkSmartPointer<vtkFloatArray>::New();
+    normals->SetName("Normals");
+    normals->SetNumberOfComponents(3);
+
+    Vector n;
+
+    for (const auto& node : facade->nodes())
+    {
+      vmesh->get_normal(n, node.index());
+
+      normals->InsertNextTuple3(static_cast<float>(n.x()), static_cast<float>(n.y()), static_cast<float>(n.z()));
+    }
+
+    poly->GetPointData()->SetNormals(normals);
+  }
+
+  //----------------------------------
+  // Triangle faces
+  //----------------------------------
+
+  for (const auto& face : facade->faces())
+  {
+    auto nodes = face.nodeIndices();
+
+    if (nodes.size() != 3) continue;
+
+    vtkNew<vtkTriangle> tri;
+
+    tri->GetPointIds()->SetId(0, static_cast<vtkIdType>(nodes[0]));
+    tri->GetPointIds()->SetId(1, static_cast<vtkIdType>(nodes[1]));
+    tri->GetPointIds()->SetId(2, static_cast<vtkIdType>(nodes[2]));
+
+    polys->InsertNextCell(tri);
+  }
+
+  poly->SetPolys(polys);
+
+  //----------------------------------
+  // Material
+  //----------------------------------
+
+  obj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+
+  obj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+
+  obj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+  obj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+
+  //----------------------------------
+  // Transfer function
+  //----------------------------------
+
+  double range[2];
+  scalars->GetRange(range);
+
+  obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
+
+  if (colorMap)
+  {
+    ColorMap_OSP_helper cmp(colorMap);
+
+    obj->tfn.colors = cmp.colorList_;
+    obj->tfn.opacities = cmp.opacityList_;
+  }
+  else
+  {
+    obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
+
+    obj->tfn.opacities = {obj->material.opacity};
+  }
+
+  obj->dataObject = poly;
+
+  return obj;
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addQuadSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
-  return nullptr;
-  /* auto obj = fillDataBuffers(field, colorMap);
+  auto obj = makeObject(field);
+
   obj->type = GeometryType::QUAD_SURFACE;
-  return obj;*/
+
+  auto poly = vtkSmartPointer<vtkPolyData>::New();
+  auto points = vtkSmartPointer<vtkPoints>::New();
+  auto polys = vtkSmartPointer<vtkCellArray>::New();
+
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
+  auto vmesh = field->vmesh();
+
+  //----------------------------------
+  // Points
+  //----------------------------------
+
+  for (const auto& node : facade->nodes())
+  {
+    auto p = node.point();
+
+    points->InsertNextPoint(p.x(), p.y(), p.z());
+  }
+
+  poly->SetPoints(points);
+
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
+
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0)
+    {
+      vfield->get_value(value, node.index());
+    }
+    else
+    {
+      value = 0.0;
+    }
+
+    scalars->InsertNextValue(value);
+  }
+
+  poly->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Normals
+  //----------------------------------
+
+  if (get(Parameters::UseNormals).toBool())
+  {
+    vmesh->synchronize(Mesh::NORMALS_E);
+
+    auto normals = vtkSmartPointer<vtkFloatArray>::New();
+    normals->SetName("Normals");
+    normals->SetNumberOfComponents(3);
+
+    Vector n;
+
+    for (const auto& node : facade->nodes())
+    {
+      vmesh->get_normal(n, node.index());
+
+      normals->InsertNextTuple3(static_cast<float>(n.x()), static_cast<float>(n.y()), static_cast<float>(n.z()));
+    }
+
+    poly->GetPointData()->SetNormals(normals);
+  }
+
+  //----------------------------------
+  // Quad faces
+  //----------------------------------
+
+  for (const auto& face : facade->faces())
+  {
+    auto nodes = face.nodeIndices();
+
+    if (nodes.size() != 4) continue;
+
+    vtkNew<vtkQuad> quad;
+
+    // Preserve the winding correction used by
+    // the original implementation.
+
+    quad->GetPointIds()->SetId(0, static_cast<vtkIdType>(nodes[3]));
+    quad->GetPointIds()->SetId(1, static_cast<vtkIdType>(nodes[2]));
+    quad->GetPointIds()->SetId(2, static_cast<vtkIdType>(nodes[1]));
+    quad->GetPointIds()->SetId(3, static_cast<vtkIdType>(nodes[0]));
+
+    polys->InsertNextCell(quad);
+  }
+
+  poly->SetPolys(polys);
+
+  //----------------------------------
+  // Material
+  //----------------------------------
+
+  obj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+
+  obj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+
+  obj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+  obj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+
+  //----------------------------------
+  // Transfer function
+  //----------------------------------
+
+  double range[2];
+  scalars->GetRange(range);
+
+  obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
+
+  if (colorMap)
+  {
+    ColorMap_OSP_helper cmp(colorMap);
+
+    obj->tfn.colors = cmp.colorList_;
+    obj->tfn.opacities = cmp.opacityList_;
+  }
+  else
+  {
+    obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
+
+    obj->tfn.opacities = {obj->material.opacity};
+  }
+
+  obj->dataObject = poly;
+
+  return obj;
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorMapHandle colorMap) const
@@ -459,242 +759,342 @@ VtkGeometryObjectHandle VtkDataAlgorithm::addStructVol(FieldHandle field, ColorM
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addUnstructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
-  return nullptr;
-  /* auto obj = makeObject(field);
+  auto obj = makeObject(field);
+
   obj->type = GeometryType::UNSTRUCTURED_VOLUME;
 
-  auto& fieldData = obj->data;
+  auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
 
-  std::vector<float> voxels;
-  std::vector<float> vertex_new;
-  std::vector<uint32_t> index_new;
-
-  auto facade(field->mesh()->getFacade());
+  auto facade = field->mesh()->getFacade();
   auto vfield = field->vfield();
   auto vmesh = field->vmesh();
 
+  //----------------------------------
+  // Points
+  //----------------------------------
 
-  double value;
-  //std::cout << "mname:" << field->mesh()->type_name << std::endl;
+  auto points = vtkSmartPointer<vtkPoints>::New();
+
   for (const auto& node : facade->nodes())
   {
-    auto point = node.point();
+    auto p = node.point();
+
+    points->InsertNextPoint(p.x(), p.y(), p.z());
+  }
+
+  grid->SetPoints(points);
+
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
+
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
     if (vfield->num_values() > 0)
     {
       vfield->get_value(value, node.index());
-      voxels.push_back(value);
     }
-    vertex_new.push_back(static_cast<float>(point.x()));
-    vertex_new.push_back(static_cast<float>(point.y()));
-    vertex_new.push_back(static_cast<float>(point.z()));
+    else
+    {
+      value = 0.0;
+    }
+
+    scalars->InsertNextValue(value);
   }
 
-  VMesh::Cell::iterator meshCellIter;
-  VMesh::Cell::iterator meshCellEnd;
-  vmesh->end(meshCellEnd);
+  grid->GetPointData()->SetScalars(scalars);
 
-  int numVPerCell = -1;
+  //----------------------------------
+  // Cells
+  //----------------------------------
+
   FieldInformation info(field);
 
-  if(info.is_tetvol()) numVPerCell =4;
-  else if(info.is_hexvol()) numVPerCell =8;
-  else THROW_ALGORITHM_INPUT_ERROR("hex or tet only for unstructured volume!");
-
-  for (vmesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
+  for (const auto& cell : facade->cells())
   {
-    // Vtk require an index array of size 8
-    // for each unstructured mesh cell
-    // a tetrahedral cell's first 4 vertices are set to -1
-    // a wedge cell's first 2 vertices are set to -2
-    VMesh::Cell::index_type elemID = *meshCellIter;
-    VMesh::Node::array_type nodesFromCell(8);
-    vmesh->get_nodes(nodesFromCell, elemID);
-    for(int i=numVPerCell;i<8;i++)
-      nodesFromCell[i] = -4/(8-numVPerCell);
-    for(int i=numVPerCell;i<8+numVPerCell;i++){
-      index_new.push_back(nodesFromCell[i%8]);
+    VMesh::Node::array_type nodes;
+    vmesh->get_nodes(nodes, cell.index());
+
+    if (info.is_tetvol())
+    {
+      if (nodes.size() < 4) continue;
+
+      vtkNew<vtkTetra> tet;
+
+      for (size_t i = 0; i < 4; ++i)
+      {
+        tet->GetPointIds()->SetId(static_cast<vtkIdType>(i), static_cast<vtkIdType>(nodes[i]));
+      }
+
+      grid->InsertNextCell(tet->GetCellType(), tet->GetPointIds());
+    }
+    else if (info.is_hexvol())
+    {
+      if (nodes.size() < 8) continue;
+
+      vtkNew<vtkHexahedron> hex;
+
+      for (size_t i = 0; i < 8; ++i)
+      {
+        hex->GetPointIds()->SetId(static_cast<vtkIdType>(i), static_cast<vtkIdType>(nodes[i]));
+      }
+
+      grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
     }
   }
+
+  //----------------------------------
+  // Material
+  //----------------------------------
+
+  obj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+
+  obj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+
+  obj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+  obj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+
+  //----------------------------------
+  // Transfer function
+  //----------------------------------
+
+  double range[2];
+  scalars->GetRange(range);
+
+  obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
 
   if (colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap);
+
     obj->tfn.colors = cmp.colorList_;
     obj->tfn.opacities = cmp.opacityList_;
 
-    // set default opacity for now
-    // alpha pushed twice for both upper and lower values
-    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-    obj->tfn.opacities.push_back(alpha);
-    obj->tfn.opacities.push_back(alpha);
+    if (obj->tfn.opacities.empty())
+    {
+      obj->tfn.opacities.push_back(obj->material.opacity);
+    }
   }
   else
   {
-    auto red = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
-    auto green = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
-    auto blue = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+    obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
 
-    obj->tfn.colors.push_back(red);
-    obj->tfn.colors.push_back(green);
-    obj->tfn.colors.push_back(blue);
-    obj->tfn.colors.push_back(red);
-    obj->tfn.colors.push_back(green);
-    obj->tfn.colors.push_back(blue);
-
-    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-    obj->tfn.opacities.push_back(alpha);
-    obj->tfn.opacities.push_back(alpha);
+    obj->tfn.opacities = {obj->material.opacity};
   }
 
-  fieldData.color = voxels;
-  fieldData.vertex = vertex_new;
-  fieldData.index = index_new;
-  return obj;*/
+  obj->dataObject = grid;
+
+  return obj;
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addCylinder(FieldHandle field, ColorMapHandle colorMap) const
 {
-  return nullptr;
-  /* auto obj = fillDataBuffers(field, colorMap);
+  auto obj = makeObject(field);
+
   obj->type = GeometryType::CYLINDER;
   obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
 
+  auto poly = vtkSmartPointer<vtkPolyData>::New();
+  auto points = vtkSmartPointer<vtkPoints>::New();
+  auto lines = vtkSmartPointer<vtkCellArray>::New();
 
-  auto& fieldData = obj->data;
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
 
-  auto& vertex = fieldData.vertex;
-  auto& color = fieldData.color;
-  auto& index = fieldData.index;
+  //----------------------------------
+  // Points
+  //----------------------------------
 
-  std::vector<float> vertex_new, color_new;
-  std::vector<uint32_t> index_new;
-
-  ColorRGB nodeColor(get(Parameters::DefaultColorR).toDouble(),
-                     get(Parameters::DefaultColorG).toDouble(),
-                     get(Parameters::DefaultColorB).toDouble());
-  auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-
-  std::vector<float> vertex_orig;
+  for (const auto& node : facade->nodes())
   {
-    auto facade(field->mesh()->getFacade());
-    for (const auto& edge : facade->edges())
-    {
-      auto nodePoints = edge.nodePoints();
-//      std::cout<<"points ="<<nodePoints[0]<<", "<<nodePoints[1]<<std::endl;
+    auto p = node.point();
 
-      vertex_new.push_back(static_cast<float>(nodePoints[0].x()));
-      vertex_new.push_back(static_cast<float>(nodePoints[0].y()));
-      vertex_new.push_back(static_cast<float>(nodePoints[0].z()));
-      vertex.push_back(1);
-      vertex_new.push_back(static_cast<float>(nodePoints[1].x()));
-      vertex_new.push_back(static_cast<float>(nodePoints[1].y()));
-      vertex_new.push_back(static_cast<float>(nodePoints[1].z()));
-      vertex.push_back(1);
-
-      // hard coded to default value for now
-      color_new.push_back(static_cast<float>(nodeColor.r()));
-      color_new.push_back(static_cast<float>(nodeColor.g()));
-      color_new.push_back(static_cast<float>(nodeColor.b()));
-      color_new.push_back(alpha);
-    }
+    points->InsertNextPoint(p.x(), p.y(), p.z());
   }
 
-  index = index_new;
-  vertex = vertex_new;
-  color = color_new;
+  poly->SetPoints(points);
 
-  return obj;*/
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
+
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0)
+    {
+      vfield->get_value(value, node.index());
+    }
+    else
+    {
+      value = 0.0;
+    }
+
+    scalars->InsertNextValue(value);
+  }
+
+  poly->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Line cells from mesh edges
+  //----------------------------------
+
+  for (const auto& edge : facade->edges())
+  {
+    auto nodes = edge.nodeIndices();
+
+    if (nodes.size() != 2) continue;
+
+    vtkNew<vtkLine> line;
+
+    line->GetPointIds()->SetId(0, static_cast<vtkIdType>(nodes[0]));
+
+    line->GetPointIds()->SetId(1, static_cast<vtkIdType>(nodes[1]));
+
+    lines->InsertNextCell(line);
+  }
+
+  poly->SetLines(lines);
+
+  //----------------------------------
+  // Material
+  //----------------------------------
+
+  obj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+
+  obj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+
+  obj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+  obj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+
+  //----------------------------------
+  // Transfer function
+  //----------------------------------
+
+  double range[2];
+  scalars->GetRange(range);
+
+  obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
+
+  if (colorMap)
+  {
+    ColorMap_OSP_helper cmp(colorMap);
+
+    obj->tfn.colors = cmp.colorList_;
+    obj->tfn.opacities = cmp.opacityList_;
+  }
+  else
+  {
+    obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
+
+    obj->tfn.opacities = {obj->material.opacity};
+  }
+
+  obj->dataObject = poly;
+
+  return obj;
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::addSphere(FieldHandle field, ColorMapHandle colorMap) const
 {
-  return nullptr;
-  /* auto obj = fillDataBuffers(field, colorMap);
+  auto obj = makeObject(field);
+
   obj->type = GeometryType::SPHERE;
   obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
-  return obj;*/
-}
 
+  auto poly = vtkSmartPointer<vtkPolyData>::New();
+  auto points = vtkSmartPointer<vtkPoints>::New();
 
-VtkGeometryObjectHandle VtkDataAlgorithm::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap) const
-{
-  return nullptr;
-  /* auto obj = makeObject(field);
-  auto& fieldData = obj->data;
-  auto& vertex = fieldData.vertex;
-  auto& color = fieldData.color;
-  auto& normal = fieldData.normal;
-
-  FieldInformation info(field);
-  auto facade(field->mesh()->getFacade());
+  auto facade = field->mesh()->getFacade();
   auto vfield = field->vfield();
+
+  //----------------------------------
+  // Points (sphere centers)
+  //----------------------------------
 
   for (const auto& node : facade->nodes())
   {
-    auto point = node.point();
-    vertex.push_back(static_cast<float>(point.x()));
-    vertex.push_back(static_cast<float>(point.y()));
-    vertex.push_back(static_cast<float>(point.z()));
+    auto p = node.point();
+
+    points->InsertNextPoint(p.x(), p.y(), p.z());
   }
 
-  {
-    double value;
-    ColorRGB nodeColor(get(Parameters::DefaultColorR).toDouble(),
-                       get(Parameters::DefaultColorG).toDouble(),
-                       get(Parameters::DefaultColorB).toDouble());
-    float alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-    for (const auto& node : facade->nodes())
-    {
-      if (vfield->num_values() > 0)
-      {
-        vfield->get_value(value, node.index());
-        if (colorMap) nodeColor = colorMap->valueToColor(value);
-      }
+  poly->SetPoints(points);
 
-      color.push_back(static_cast<float>(nodeColor.r()));
-      color.push_back(static_cast<float>(nodeColor.g()));
-      color.push_back(static_cast<float>(nodeColor.b()));
-      color.push_back(alpha);
-    }
-  }
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
 
-  if (get(Parameters::UseNormals).toBool() && info.is_surface())
-  {
-    auto mesh = field->vmesh();
-    mesh->synchronize(Mesh::NORMALS_E);
-    {
-      Vector norm;
-      for (const auto& node : facade->nodes())
-      {
-        mesh->get_normal(norm, node.index());
-        normal.push_back(static_cast<float>(norm.x()));
-        normal.push_back(static_cast<float>(norm.y()));
-        normal.push_back(static_cast<float>(norm.z()));
-      }
-    }
-  }
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
 
-  auto& index = fieldData.index;
-  for (const auto& face : facade->faces())
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
   {
-    auto nodes = face.nodeIndices();
-    if(info.is_quadsurfmesh())
+    if (vfield->num_values() > 0)
     {
-      // quad face added in reverse order for correct normal in Vtk viewer
-      index.push_back(static_cast<uint32_t>(nodes[3]));
-      index.push_back(static_cast<uint32_t>(nodes[2]));
-      index.push_back(static_cast<uint32_t>(nodes[1]));
-      index.push_back(static_cast<uint32_t>(nodes[0]));
+      vfield->get_value(value, node.index());
     }
     else
     {
-      index.push_back(static_cast<uint32_t>(nodes[0]));
-      index.push_back(static_cast<uint32_t>(nodes[1]));
-      index.push_back(static_cast<uint32_t>(nodes[2]));
+      value = 0.0;
     }
+
+    scalars->InsertNextValue(value);
   }
 
-  return obj;*/
+  poly->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Material
+  //----------------------------------
+
+  obj->material.color[0] = static_cast<float>(get(Parameters::DefaultColorR).toDouble());
+
+  obj->material.color[1] = static_cast<float>(get(Parameters::DefaultColorG).toDouble());
+
+  obj->material.color[2] = static_cast<float>(get(Parameters::DefaultColorB).toDouble());
+
+  obj->material.opacity = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+
+  //----------------------------------
+  // Transfer function
+  //----------------------------------
+
+  double range[2];
+  scalars->GetRange(range);
+
+  obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
+
+  if (colorMap)
+  {
+    ColorMap_OSP_helper cmp(colorMap);
+
+    obj->tfn.colors = cmp.colorList_;
+    obj->tfn.opacities = cmp.opacityList_;
+  }
+  else
+  {
+    obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
+
+    obj->tfn.opacities = {obj->material.opacity};
+  }
+
+  obj->dataObject = poly;
+
+  return obj;
 }
 
 VtkGeometryObjectHandle VtkDataAlgorithm::makeObject(FieldHandle field) const
