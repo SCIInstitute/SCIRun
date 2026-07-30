@@ -28,6 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <fstream>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
@@ -194,6 +195,79 @@ TEST(ColorMapXmlTests, CanConvertXmlColorMapToSCIRunColorMap)
   EXPECT_EQ(cm->getColorData()[42].g(), cmXml.points[42].g);
   EXPECT_EQ(cm->getColorData()[42].b(), cmXml.points[42].b);
   EXPECT_EQ(cm->getColorData()[42].a(), cmXml.points[42].o);
+}
+
+namespace
+{
+  std::string writeTempColorMapXml(const std::string& contents, const std::string& name)
+  {
+    const std::string path = std::string(::testing::TempDir()) + name;
+    std::ofstream out(path);
+    out << contents;
+    return path;
+  }
+}
+
+// Regression for issue #2579: an empty color array must not underflow
+// "v.size() - 1" and crash on lookup; it should return safe values instead.
+TEST(ColorMapXmlTests, EmptyColorMapDoesNotCrashOnLookup)
+{
+  auto cm = StandardColorMapFactory::create(std::vector<ColorRGB>{}, "empty");
+  ASSERT_TRUE(cm != nullptr);
+  EXPECT_NO_THROW({
+    for (double v = 0.0; v <= 1.0; v += 0.05)
+      cm->valueToColor(v);
+  });
+}
+
+// A single-color colormap is also degenerate for the segment math and must
+// not crash.
+TEST(ColorMapXmlTests, SingleColorColorMapDoesNotCrashOnLookup)
+{
+  auto cm = StandardColorMapFactory::create(std::vector<ColorRGB>{ ColorRGB(0.2, 0.4, 0.6, 1.0) }, "one");
+  ASSERT_TRUE(cm != nullptr);
+  ColorRGB c;
+  EXPECT_NO_THROW({ c = cm->valueToColor(0.5); });
+  EXPECT_EQ(c.r(), 0.2);
+  EXPECT_EQ(c.g(), 0.4);
+  EXPECT_EQ(c.b(), 0.6);
+}
+
+// Issue #2579: a <ColorMap> lacking recognized <Point> elements should parse
+// to an empty points list (so the module can reject it) rather than being
+// mis-parsed.
+TEST(ColorMapXmlTests, ColorMapWithNoPointsParsesToEmpty)
+{
+  const auto path = writeTempColorMapXml(
+    "<ColorMaps>\n"
+    "  <ColorMap name=\"bogus\" space=\"RGB\">\n"
+    "    <RGBPoints>0 0 0 0 1 1 1 1</RGBPoints>\n"
+    "  </ColorMap>\n"
+    "</ColorMaps>\n",
+    "colorMapNoPoints.xml");
+
+  const auto cmXmls = ColorXml::ColorMapXmlIO::readColorMapXml(path);
+  ASSERT_EQ(cmXmls.maps.size(), 1);
+  EXPECT_EQ(cmXmls.maps[0].name, "bogus");
+  EXPECT_TRUE(cmXmls.maps[0].points.empty());
+}
+
+// Issue #2579: tolerate files that omit the <ColorMaps> wrapper and place a
+// single <ColorMap> at the document root.
+TEST(ColorMapXmlTests, ColorMapWithoutWrapperIsParsed)
+{
+  const auto path = writeTempColorMapXml(
+    "<ColorMap name=\"solo\" space=\"RGB\">\n"
+    "  <Point x=\"0.0\" o=\"1\" r=\"0.1\" g=\"0.2\" b=\"0.3\"/>\n"
+    "  <Point x=\"1.0\" o=\"1\" r=\"0.4\" g=\"0.5\" b=\"0.6\"/>\n"
+    "</ColorMap>\n",
+    "colorMapNoWrapper.xml");
+
+  const auto cmXmls = ColorXml::ColorMapXmlIO::readColorMapXml(path);
+  ASSERT_EQ(cmXmls.maps.size(), 1);
+  EXPECT_EQ(cmXmls.maps[0].name, "solo");
+  ASSERT_EQ(cmXmls.maps[0].points.size(), 2);
+  EXPECT_EQ(cmXmls.maps[0].points[1].r, 0.4);
 }
 
 TEST(ColorMapXmlTests, CanGenerateQtStyleSheet)
