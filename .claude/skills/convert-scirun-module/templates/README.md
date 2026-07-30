@@ -12,12 +12,22 @@ This directory will hold fill-the-slot generators for the per-module files:
 
 ## Why deferred
 
-The exact spellings these templates must emit — port declarations, the info
-macro (`MODULE_INFO_DEF` → 4-arg `MODULE_TRAITS_AND_INFO`), and the input/output
-helpers (`getRequiredInput_` / `sendOutput_`) — are being changed by branch
-`module-descriptors-metaprogram` (C++20 variadic ports via string NTTPs). Pinning
-templates now guarantees a rewrite. Finalize them **against that branch's final
-form once it merges**, then flip the Wave gate in `../SKILL.md`.
+These templates are gated on **two** in-flight branches (see the wave gate in
+`../SKILL.md`); pinning them now guarantees a rewrite and a rebase collision:
+
+- **`module-descriptors-metaprogram`** (C++20) drives the header/source templates:
+  port declarations, the info macro (`MODULE_INFO_DEF` → 4-arg
+  `MODULE_TRAITS_AND_INFO`), and the input/output helpers
+  (`getRequiredInput_` / `sendOutput_`) — all being changed to C++20 variadic
+  ports via string NTTPs.
+- **`module-config-cleanup`** (#101) drives the config template: the `.module`
+  JSON schema is unchanged, but it becomes the *sole* registration path once the
+  hand-coded factory maps (`HardCodedAlgorithmFactory.cc`,
+  `ModuleDialogFactory.cc`) are deleted — so `Module.module.tmpl` must emit a
+  config that stands alone, with no companion factory-map edit.
+
+Finalize each template **against its branch's final form once that branch
+merges**, then flip the wave gate in `../SKILL.md`.
 
 ## Interim (if a port is needed before the merge)
 

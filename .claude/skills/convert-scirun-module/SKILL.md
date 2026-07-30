@@ -11,19 +11,34 @@ human-narrative version lives in `docs/dev_doc/SCIRun5ModuleGeneration.md`
 
 ## ⛔ Wave gate — read first
 
-The **file-generation templates are not final** until the C++20 boilerplate
-branch `module-descriptors-metaprogram` merges (variadic ports via C++20 string
-NTTPs, 4-arg `MODULE_TRAITS_AND_INFO` replacing `MODULE_INFO_DEF`,
-`getRequiredInput_`/`sendOutput_`). Until then:
+Live conversions are gated on **two large in-flight branches** (each ~73 commits
+ahead of master). They map to different parts of the per-module loop:
+
+1. **`module-descriptors-metaprogram`** — the C++20 boilerplate. Gates the
+   header/source templates: variadic ports via C++20 string NTTPs, 4-arg
+   `MODULE_TRAITS_AND_INFO` replacing `MODULE_INFO_DEF`,
+   `getRequiredInput_`/`sendOutput_`. (Loop steps 3, 7, 13.)
+2. **`module-config-cleanup`** (module JSON standardization, #101) — gates the
+   config step. The `.module` **schema is unchanged** (still module/algorithm/UI),
+   but this branch makes `.module` files the *sole* registration path and
+   **deletes** the hand-coded factory maps (`HardCodedAlgorithmFactory.cc`,
+   `ModuleDialogFactory.cc`). Post-merge a port only writes a `.module` file and
+   never touches a factory map. (Loop steps 4, 6.)
+
+**Why wait (not just template form).** Both branches touch exactly the files a
+conversion touches — factory registration + Legacy `CMakeLists.txt`
+(config-cleanup) and module boilerplate (C++20). Converting on master now would
+**collide with both branches on rebase**, not merely need a template redo.
+
+Until both land:
 
 - **Do** use this skill to triage, scan idioms, plan a port, and regenerate the
   manifest.
-- **Do not** start live conversions unless the user explicitly says to proceed
-  against current-master macros (accepting a template redo at merge).
+- **Do not** start live conversions unless the user explicitly accepts eating the
+  rebase conflicts and a template redo.
 - The `templates/` dir is intentionally a Wave-2 stub — see `templates/README.md`.
 
-When in doubt about whether the branch has merged: check
-`git log --oneline master | grep -i "module-descriptors\|C++20"` or ask.
+Check merge status: `git log --oneline master | grep -iE "module-descriptors|module-config-cleanup|C\+\+20"` or ask.
 
 ## Reference assets
 
@@ -33,7 +48,7 @@ When in doubt about whether the branch has merged: check
 | `reference/translation-table.md` | Frequency-ranked v4→v5 idiom map (mined from dormant-vs-active sources). The core of the "make it functional" step. |
 | `reference/verification.md` | Acceptance ladder + self-certify-vs-flag policy, grounded in the v4-net import regression corpus. |
 | `reference/idiom_scan.py` | Rescans dormant sources, reprints the idiom frequency table. |
-| `templates/` | **Wave 2.** Fill-the-slot file templates (C++20-pending). |
+| `templates/` | **Wave 2.** Fill-the-slot file templates (gated on both branches — see the wave gate). |
 
 ## Picking the next module
 
