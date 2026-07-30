@@ -24,8 +24,19 @@ Run these gates in order. Each gate must pass before the next.
 
 1. **Builds.** The uncommented `.cc` (+ header, +algo/UI if added) compiles; the
    factory regenerates cleanly; the target links.
-2. **Loads.** Module appears in the module list and instantiates in a headless
-   run without crashing; all ports present and correctly named.
+2. **Loads.** Module is registered and instantiates in a headless run without
+   crashing; all ports present and correctly named. Check registration directly
+   on the headless binary (no `BUILD_TESTING`, no Qt, no test data needed):
+
+   ```bash
+   SCIRun --list-modules | grep -i <ModuleName>
+   ```
+
+   `--list-modules` prints the registered module list and exits via the console
+   path (`GlobalCommandBuilderFromCommandLine` → `PrintModulesCommand`); it is
+   independent of `BUILD_TESTING`, which only gates the test targets. An empty
+   grep result means the module did not register — recheck the `.module` config
+   and the CMakeLists uncomment before going further.
 3. **`LegacyModuleImporter.xml` entry** exists and maps every v4 state var this
    module used (cross-check against the dormant `.cc`'s old GuiVar names).
 4. **v4 network imports.** Find the `v4nets` network(s) that reference this
