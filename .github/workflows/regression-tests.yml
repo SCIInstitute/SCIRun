@@ -1,0 +1,60 @@
+name: regression-tests
+
+# Regression and coverage matrix: master pushes, nightly, and on demand. Pull
+# requests are covered by the slim tier in pr.yml -- see the comment at the top
+# of that file for why no required check may live in a path-filtered workflow.
+
+on:
+  push:
+    branches:
+      - regression-tests-ci
+      - master
+  schedule:
+    - cron: '45 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-headless-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      variant: headless
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
+
+  mac-gui-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
+
+  windows-headless-regression:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2022
+      variant: headless
+      build-testing: true
+      run-unit-tests: true
+      run-regression-tests: true
+
+  mac-coverage:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      build-testing: true
+      coverage: true

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShapeWorks CI Caching — and what SCIRun should copy</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --border:#30363d;
+    --text:#e6edf3; --muted:#9da7b3; --accent:#58a6ff; --green:#3fb950;
+    --amber:#d29922; --red:#f85149; --code-bg:#0b0f14; --kw:#ff7b72;
+    --str:#a5d6ff; --com:#8b949e; --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;font-size:16px}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 24px 96px}
+  header{border-bottom:1px solid var(--border);padding-bottom:28px;margin-bottom:40px}
+  .eyebrow{color:var(--accent);font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px}
+  h1{font-size:2.15rem;line-height:1.15;margin:0 0 14px;font-weight:700;letter-spacing:-.02em}
+  .lede{color:var(--muted);font-size:1.08rem;margin:0;max-width:70ch}
+  h2{font-size:1.5rem;margin:52px 0 8px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+  h2 .num{font-size:.85rem;color:var(--accent);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--panel)}
+  h3{font-size:1.12rem;margin:30px 0 6px;font-weight:650}
+  p{margin:14px 0}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.86em;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+  .tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 9px;border-radius:999px;vertical-align:middle}
+  .tag.ok{background:rgba(63,185,80,.14);color:var(--green);border:1px solid rgba(63,185,80,.35)}
+  .tag.warn{background:rgba(210,153,34,.14);color:var(--amber);border:1px solid rgba(210,153,34,.35)}
+  table{width:100%;border-collapse:collapse;margin:22px 0;font-size:.95rem;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--panel2);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:18px 0;font-family:var(--mono);font-size:.84rem;line-height:1.55}
+  pre .c{color:var(--com)} pre .k{color:var(--kw)} pre .s{color:var(--str)} pre .hl{color:var(--green);font-weight:600}
+  .callout{border:1px solid var(--border);border-left-width:4px;border-radius:8px;padding:14px 18px;margin:22px 0;background:var(--panel)}
+  .callout.ok{border-left-color:var(--green)}
+  .callout.warn{border-left-color:var(--amber)}
+  .callout.info{border-left-color:var(--accent)}
+  .callout p{margin:6px 0}
+  .callout .label{font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+  .callout.ok .label{color:var(--green)} .callout.warn .label{color:var(--amber)} .callout.info .label{color:var(--accent)}
+  ul,ol{margin:14px 0;padding-left:22px}
+  li{margin:8px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+  .card h4{margin:0 0 8px;font-size:1rem}
+  .card.layer1{border-top:3px solid var(--green)}
+  .card.layer2{border-top:3px solid var(--amber)}
+  .muted{color:var(--muted)}
+  footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
+  .flow{display:flex;align-items:stretch;gap:0;margin:22px 0;flex-wrap:wrap}
+  .flow .step{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex:1;min-width:150px;font-size:.9rem}
+  .flow .step b{display:block;color:var(--text);margin-bottom:2px}
+  .flow .arrow{display:flex;align-items:center;color:var(--muted);padding:0 10px;font-size:1.3rem}
+  @media(max-width:680px){.flow .arrow{transform:rotate(90deg);padding:6px 0}.flow{flex-direction:column}}
+  kbd{font-family:var(--mono);font-size:.8em;background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">CI Engineering Notes</p>
+  <h1>How ShapeWorks caches C++ builds in CI</h1>
+  <p class="lede">A breakdown of the caching strategy in <a href="https://github.com/SCIInstitute/shapeworks">SCIInstitute/shapeworks</a> — what's actually doing the work, what's dead code, and which pattern SCIRun should adopt (it currently caches nothing).</p>
+</header>
+
+<section>
+  <p>ShapeWorks has <strong>two layers</strong> of caching in its GitHub Actions workflows, but only one is wired into the active pipeline. Knowing which is which matters before copying anything.</p>
+
+  <table>
+    <thead>
+      <tr><th>Layer</th><th>What it caches</th><th>Mechanism</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Dependency cache</strong></td>
+        <td>Compiled 3rd-party C++ libs (ITK, VTK, OpenVDB, etc.)</td>
+        <td>GitHub-native <code>actions/cache</code></td>
+        <td><span class="tag ok">Active — the real win</span></td>
+      </tr>
+      <tr>
+        <td><strong>ccache</strong> (per-object compiler cache)</td>
+        <td><code>.o</code> files from their own source</td>
+        <td><code>scp</code> to a self-hosted SSH host</td>
+        <td><span class="tag warn">Legacy / dormant</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid">
+    <div class="card layer1">
+      <h4>🟢 Layer 1 — Dependencies</h4>
+      <p class="muted">The multi-hour build of ITK/VTK/OpenVDB is cached and reused across every PR and commit. Re-runs only when the dependency build scripts change. This is what keeps their CI fast.</p>
+    </div>
+    <div class="card layer2">
+      <h4>🟡 Layer 2 — ccache</h4>
+      <p class="muted">A self-hosted <code>scp</code>-tarball scheme. Despite the scripts in the repo, no current workflow calls it and CMake is never told to use it. Effectively dead code from the self-hosted-runner era.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">1</span> Dependency caching — the part that matters</h2>
+  <p>Every workflow (<a href="https://github.com/SCIInstitute/shapeworks/blob/master/.github/workflows/build-linux.yml">build-linux</a>, mac-arm64, mac-intel, windows, linux-debug) uses the same <strong>split restore / save</strong> pattern:</p>
+
+<pre><span class="c">- name: Restore Dependencies Cache</span>
+  <span class="k">id:</span> cache-deps-restore
+  <span class="k">uses:</span> actions/cache/restore@v3
+  <span class="k">with:</span>
+    <span class="k">path:</span> /github/home/install        <span class="c"># ~/install on mac, C:\deps on windows</span>
+    <span class="k">key:</span> <span class="hl">${{ runner.os }}-deps-${{ hashFiles(</span>
+      <span class="s">'.github/workflows/Dockerfile'</span>,
+      <span class="s">'.github/workflows/gha_deps.sh'</span>,
+      <span class="s">'install_shapeworks.sh'</span>,
+      <span class="s">'python_requirements.txt'</span>,
+      <span class="s">'build_dependencies.sh'</span>) }}
+
+<span class="c">- name: Build Dependencies</span>
+  <span class="k">if:</span> <span class="hl">steps.cache-deps-restore.outputs.cache-hit != 'true'</span>   <span class="c"># skip on hit</span>
+  <span class="k">run:</span> .github/workflows/gha_deps.sh
+
+<span class="c">- name: Save Dependencies Cache</span>
+  <span class="k">if:</span> <span class="hl">steps.cache-deps-restore.outputs.cache-hit != 'true'</span>   <span class="c"># save only on miss</span>
+  <span class="k">uses:</span> actions/cache/save@v3
+  <span class="k">with:</span>
+    <span class="k">path:</span> ...
+    <span class="k">key:</span> ...   <span class="c"># same key</span></pre>
+
+  <div class="flow">
+    <div class="step"><b>restore@v3</b><span class="muted">pull cache by key</span></div>
+    <div class="arrow">→</div>
+    <div class="step"><b>build (if miss)</b><span class="muted">gated on cache-hit</span></div>
+    <div class="arrow">→</div>
+    <div class="step"><b>save@v3 (if miss)</b><span class="muted">store for next run</span></div>
+  </div>
+
+  <h3>Why it works</h3>
+  <ol>
+    <li><strong>The key hashes the <em>dependency recipe</em>, not the source.</strong> It's keyed on the build scripts (<code>build_dependencies.sh</code>, <code>gha_deps.sh</code>, <code>install_shapeworks.sh</code>, requirements files, Dockerfile) — <em>not</em> on the project's <code>.cpp</code>/<code>.h</code> files. So the expensive third-party build is reused across every PR and commit, and only re-runs when someone actually changes how dependencies are built.</li>
+    <li><strong>Split <code>restore</code> + <code>save</code></strong> (not the combined <code>actions/cache@v3</code>), with both the build step and the save step gated on <code>cache-hit != 'true'</code> — the standard "only rebuild on a miss" pattern.</li>
+    <li><strong>Per-variant keys</strong> so caches don't collide: <code>-arm64-</code>, <code>-intel-</code>, <code>-deps-debug-</code>, plus <code>osx${MACOSX_DEPLOYMENT_TARGET}</code> and the Linux Docker image hash.</li>
+    <li><strong>A second internal guard:</strong> <code>gha_deps.sh</code> itself short-circuits with <code>if [ -d ${DEP_PATH} ]</code> before building anything.</li>
+  </ol>
+
+  <div class="callout ok">
+    <p class="label">Takeaway</p>
+    <p>Cache the <em>output of the expensive, slow-changing thing</em> (third-party deps), keyed on the files that define how it's built. Everything else recompiles cheaply each run.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">2</span> ccache — don't copy this one</h2>
+  <p><code>common.sh</code>, <a href="https://github.com/SCIInstitute/shapeworks/blob/master/.github/workflows/restore_caches.sh">restore_caches.sh</a>, and <code>store_ccache.sh</code> implement a self-hosted scheme: <code>scp</code> ccache / conda / dep tarballs (pigz <code>tar.gz</code>, or <code>7z</code> on Windows) to and from a secret SSH host (<code>secrets.SSH_HOST</code>). <code>common.sh</code> sets <code>USE_CCACHE=ON</code> for mac/linux.</p>
+
+  <div class="callout warn">
+    <p class="label">But it's effectively dead code</p>
+    <p>Grepping the actual workflow YAMLs, the only <code>ccache</code> reference is <code>brew install ccache</code> in the two Mac jobs. No step calls <code>restore_caches.sh</code> / <code>store_ccache.sh</code>, and CMake is never told to use it (<code>CMAKE_CXX_COMPILER_LAUNCHER=ccache</code> is absent). These scripts are leftovers from an older self-hosted-runner era, superseded by <code>actions/cache</code>.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">3</span> What this means for SCIRun</h2>
+  <p>SCIRun's nine workflows (<code>ccpp.yml</code>, <code>mac.yml</code>, <code>windows.yml</code>, <code>reusable-build.yml</code>, …) use <strong>zero caching today</strong> — every CI run rebuilds everything from scratch, including the Superbuild externals.</p>
+
+  <div class="callout info">
+    <p class="label">Highest-leverage change</p>
+    <p>Copy the ShapeWorks dependency-cache pattern: cache SCIRun's Superbuild / externals output, keyed on the toolchain + Superbuild CMake files, using the same <strong>restore → (build if miss) → save</strong> shape.</p>
+  </div>
+
+  <ul>
+    <li><strong>Step 1 (big win):</strong> Cache the Superbuild externals directory, keyed on a hash of the Superbuild <code>CMakeLists.txt</code> / external-project files and the toolchain. Invalidates only when the externals definition changes.</li>
+    <li><strong>Step 2 (nice-to-have):</strong> Add <code>ccache</code> / <code>sccache</code> as a compiler launcher for SCIRun's own sources — but on GitHub-hosted runners, wire it through <code>actions/cache</code>, <em>not</em> ShapeWorks' scp-to-a-private-host approach.</li>
+  </ul>
+
+  <p class="muted">This is especially relevant given SCIRun's C++ modernization work is currently gated on new CI testing jobs landing — faster CI directly unblocks that.</p>
+</section>
+
+<footer>
+  Sources: <a href="https://github.com/SCIInstitute/shapeworks/tree/master/.github/workflows">shapeworks/.github/workflows</a> (build-linux, build-mac, build-mac-arm64, build-windows, build-linux-debug, common.sh, restore_caches.sh, store_ccache.sh, gha_deps.sh). Generated as CI engineering notes for SCIRun.
+</footer>
+
+</div>
+</body>
+</html>

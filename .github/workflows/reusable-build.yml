@@ -34,6 +34,22 @@ on:
         required: false
         type: boolean
         default: false
+      run-unit-tests:
+        required: false
+        type: boolean
+        default: false
+      run-smoke-test:
+        required: false
+        type: boolean
+        default: false
+      run-regression-tests:
+        required: false
+        type: boolean
+        default: false
+      coverage:
+        required: false
+        type: boolean
+        default: false
       artifact-name:
         required: false
         type: string
@@ -57,6 +73,13 @@ jobs:
 
       - name: Print Qt dir
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
+
+      - name: Checkout SCIRunTestData
+        if: ${{ inputs.run-regression-tests || inputs.coverage }}
+        uses: actions/checkout@v6
+        with:
+          repository: CIBC-Internal/SCIRunTestData
+          path: SCIRunTestData
 
       - name: Prepare (linux)
         if: ${{ startsWith(inputs.runner, 'ubuntu') || inputs.prepare-packages }}
@@ -116,6 +139,13 @@ jobs:
           if [ "${{ inputs.build-testing }}" = "true" ]; then
             CMD+=("-DBUILD_TESTING:BOOL=ON")
           fi
+          if [ "${{ inputs.run-regression-tests }}" = "true" ] || [ "${{ inputs.coverage }}" = "true" ]; then
+            CMD+=("-DSCIRUN_TEST_RESOURCE_DIR=${GITHUB_WORKSPACE}/SCIRunTestData")
+          fi
+          if [ "${{ inputs.coverage }}" = "true" ]; then
+            # Debug build + Clang source-based coverage instrumentation.
+            CMD+=("--debug" "-DENABLE_COVERAGE:BOOL=ON")
+          fi
           # Join and run
           echo "Running: ${CMD[*]}"
           eval "${CMD[*]}"
@@ -159,6 +189,7 @@ jobs:
           if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DBUILD_WITH_PYTHON=OFF" }
           if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
+          if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
 
           # Prepare build directory
           New-Item -ItemType Directory -Force -Path build | Out-Null
@@ -175,6 +206,34 @@ jobs:
           & cmake --build . --config Release --parallel
 
           Pop-Location
+
+      - name: Smoke test - executable loads and runs (Unix)
+        if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
+        working-directory: bin/SCIRun
+        # A successful build does NOT prove the binary can start. The dynamic loader
+        # resolves linked libraries at load time, before main, so a reference to a
+        # symbol the host OS lacks links cleanly and only aborts on execution.
+        # Actually running the executable is what catches that class of failure;
+        # --help suffices, because the loader has already resolved every dependency
+        # by the time main runs, and --help routes to ConsoleApplication (see
+        # src/Main/scirunMain.cc) so no window server is needed.
+        #
+        # Deliberately NO continue-on-error: unlike the test steps below, this step
+        # must be able to fail the job, or it gates nothing.
+        run: |
+          set -eux
+          # SCIRun_test is the unbundled executable, built on APPLE only
+          # (src/Main/CMakeLists.txt); other platforms build SCIRun directly.
+          if [ -x ./SCIRun_test ]; then
+            APP=./SCIRun_test
+          elif [ -x ./SCIRun ]; then
+            APP=./SCIRun
+          else
+            echo "No SCIRun executable found in $(pwd)" >&2
+            ls -la
+            exit 1
+          fi
+          "$APP" --help
 
       - name: Package (optional - Unix/macOS)
         if: ${{ inputs.artifact-name != '' && runner.os != 'Windows' }}
@@ -218,6 +277,94 @@ jobs:
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           )
+
+      - name: Run unit tests (Unix)
+        if: ${{ inputs.run-unit-tests && runner.os != 'Windows' }}
+        working-directory: bin/SCIRun
+        run: |
+          ctest --output-on-failure -j4 -E "\.Test\.ExampleNetwork\." \
+            2>&1 | tee /tmp/unit-test-results.txt
+        continue-on-error: true
+
+      - name: Run regression tests (Unix)
+        if: ${{ inputs.run-regression-tests && runner.os != 'Windows' }}
+        working-directory: bin/SCIRun
+        run: |
+          ctest --output-on-failure --timeout 300 -j3 -R "\.Test\.ExampleNetwork\." \
+            2>&1 | tee /tmp/regression-test-results.txt
+        continue-on-error: true
+
+      - name: Clean up per-process regression settings (Unix)
+        if: ${{ inputs.run-regression-tests && runner.os != 'Windows' }}
+        run: |
+          # Each regression process isolates its QSettings under
+          # SCIRun5_regression_<pid>; remove the stores left behind.
+          rm -f "$HOME"/Library/Preferences/com.sci-cibc-software.SCIRun5_regression_*.plist 2>/dev/null || true
+          rm -f "$HOME"/.config/"SCI:CIBC Software"/SCIRun5_regression_*.conf 2>/dev/null || true
+        continue-on-error: true
+
+      - name: Run unit tests (Windows)
+        if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
+        working-directory: build/SCIRun
+        shell: pwsh
+        run: |
+          ctest --output-on-failure -j4 -C Release -E "\.Test\.ExampleNetwork\." `
+            2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE\unit-test-results.txt"
+        continue-on-error: true
+
+      - name: Run regression tests (Windows)
+        if: ${{ inputs.run-regression-tests && runner.os == 'Windows' }}
+        working-directory: build/SCIRun
+        shell: pwsh
+        run: |
+          ctest --output-on-failure --timeout 300 -j3 -C Release -R "\.Test\.ExampleNetwork\." `
+            2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE\regression-test-results.txt"
+        continue-on-error: true
+
+      - name: Upload test logs (Unix)
+        if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os != 'Windows' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ runner.os }}-${{ inputs.variant }}
+          if-no-files-found: ignore
+          path: |
+            /tmp/unit-test-results.txt
+            /tmp/regression-test-results.txt
+            bin/SCIRun/Testing/Temporary/LastTest.log
+
+      - name: Upload test logs (Windows)
+        if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ runner.os }}-${{ inputs.variant }}
+          if-no-files-found: ignore
+          path: |
+            unit-test-results.txt
+            regression-test-results.txt
+            build/SCIRun/Testing/Temporary/LastTest.log
+
+      - name: Run tests + coverage report (macOS)
+        if: ${{ inputs.coverage && runner.os == 'macOS' }}
+        run: |
+          # scripts/coverage.sh runs ctest with per-process profiling, merges
+          # with llvm-profdata, and writes a text summary + HTML via llvm-cov.
+          # No -R filter: cover both unit and regression tests.
+          ./scripts/coverage.sh bin/SCIRun -- -j3 --timeout 300
+        continue-on-error: true
+
+      - name: Clean up per-process regression settings (coverage)
+        if: ${{ inputs.coverage && runner.os == 'macOS' }}
+        run: rm -f "$HOME"/Library/Preferences/com.sci-cibc-software.SCIRun5_regression_*.plist 2>/dev/null || true
+        continue-on-error: true
+
+      - name: Upload coverage report
+        if: ${{ inputs.coverage && runner.os == 'macOS' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-report-${{ runner.os }}
+          path: |
+            bin/SCIRun/coverage/summary.txt
+            bin/SCIRun/coverage/html
 
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}

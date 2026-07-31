@@ -362,7 +362,7 @@ std::string SimplePythonAPI::scirun_add_module(const std::string& name)
 {
   auto mod = NetworkEditorPythonAPI::addModule(name);
   return mod ?
-    "Module added: " + mod->id() :
+    mod->id() :
     "Error: null module--function not available or module not defined (" + name + ")";
 }
 

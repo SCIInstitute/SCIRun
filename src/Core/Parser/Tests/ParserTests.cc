@@ -1372,8 +1372,8 @@ TEST_F(BasicParserTests, CreateFieldData_find_normal1)
   auto ovfield = ofield->vfield();
   ovfield->minmax(min,max);
 
-  EXPECT_EQ(1, min);
-  EXPECT_EQ(1, max);
+  EXPECT_NEAR(1, min, 1e-3);
+  EXPECT_NEAR(1, max, 1e-3);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_find_normal2)

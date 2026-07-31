@@ -586,7 +586,6 @@ MACRO(SCIRUN_ADD_UNIT_TEST test)
   ADD_EXECUTABLE(${test} ${ARGN})
   LIST(APPEND tmp ${test} ${UNIT_TEST_LIST})
   SET(UNIT_TEST_LIST ${tmp} CACHE INTERNAL "List of unit tests." FORCE)
-  TARGET_COMPILE_DEFINITIONS(${test} PRIVATE -DGTEST_LINKED_AS_SHARED_LIBRARY)
 ENDMACRO()
 
 MACRO(SCIRUN_ADD_TEST_DIR directory)
@@ -821,7 +820,7 @@ SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
-SET_PROPERTY(TARGET spire   PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET ${SCI_SPIRE_LIBRARY}   PROPERTY FOLDER "Graphics")
 
 SET_PROPERTY(TARGET pugixml   PROPERTY FOLDER "Externals")
 
@@ -1037,4 +1036,23 @@ MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
 IF(ENABLE_GCOV_DATA_FILES)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF()
+
+# Clang source-based coverage (recommended on macOS / any Clang toolchain).
+# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
+# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
+# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
+# above, the instrumentation flags must also be applied at link time so the
+# profile runtime is linked into every shared library.
+OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
+IF(ENABLE_COVERAGE)
+  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
+  ENDIF()
+  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
 ENDIF()
