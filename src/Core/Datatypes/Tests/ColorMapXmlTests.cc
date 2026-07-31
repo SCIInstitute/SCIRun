@@ -270,6 +270,33 @@ TEST(ColorMapXmlTests, ColorMapWithoutWrapperIsParsed)
   EXPECT_EQ(cmXmls.maps[0].points[1].r, 0.4);
 }
 
+// Issue #2579: accept the alternate dialect a reporter actually exported:
+// lowercase <colormap> root with <color x a r g b/> points (opacity spelled
+// "a"). This must parse to real points, not an empty (crash-inducing) map.
+TEST(ColorMapXmlTests, AlternateColorDialectIsParsed)
+{
+  const auto path = writeTempColorMapXml(
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+    "<!DOCTYPE colormap SYSTEM \"colormap.dtd\">\n"
+    "<colormap name=\"TERcolormap\">\n"
+    "  <color a=\"1\" b=\"0.50\" g=\"0.00\" r=\"0.00\" x=\"0.00\"/>\n"
+    "  <color a=\"1\" b=\"1.00\" g=\"1.00\" r=\"1.00\" x=\"0.50\"/>\n"
+    "  <color a=\"1\" b=\"0.00\" g=\"0.00\" r=\"0.40\" x=\"1.00\"/>\n"
+    "</colormap>\n",
+    "colorMapAlternateDialect.xml");
+
+  const auto cmXmls = ColorXml::ColorMapXmlIO::readColorMapXml(path);
+  ASSERT_EQ(cmXmls.maps.size(), 1);
+  EXPECT_EQ(cmXmls.maps[0].name, "TERcolormap");
+  ASSERT_EQ(cmXmls.maps[0].points.size(), 3);
+  EXPECT_EQ(cmXmls.maps[0].points[2].r, 0.40);
+  EXPECT_EQ(cmXmls.maps[0].points[2].o, 1.0);  // "a" maps to opacity
+
+  auto cm = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXmls.maps[0]);
+  ASSERT_TRUE(cm != nullptr);
+  EXPECT_NO_THROW({ cm->valueToColor(0.5); });
+}
+
 TEST(ColorMapXmlTests, CanGenerateQtStyleSheet)
 {
   auto cm = StandardColorMapFactory::create("Rainbow", 10);
