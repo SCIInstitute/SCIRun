@@ -71,7 +71,6 @@ TEST_F(ConvertMeshToPointCloudMeshAlgoTests, CanLogErrorMessage)
 }
 
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#if GTEST_HAS_COMBINE
 
 /*Get Parameterized Tests
 */
@@ -130,9 +129,5 @@ INSTANTIATE_TEST_CASE_P(
   Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4))
   );
 
-#else
-TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-//
-#endif
 
 #endif
