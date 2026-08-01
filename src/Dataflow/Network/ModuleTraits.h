@@ -71,10 +71,32 @@ namespace Modules
   template <class ModuleType>
   const bool HasAlgorithm<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & static_cast<int>(ModuleFlags::ModuleHasAlgorithm)) != 0;
 
-  #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = static_cast<int>(value);\
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;\
+  // 1-arg form (legacy): flags only.  staticInfo_ is declared but not defined
+  // here; MODULE_INFO_DEF must still appear in the module's .cc file.
+  #define MODULE_TRAITS_AND_INFO_1(flags) \
+    public: static const int TraitFlags = static_cast<int>(flags); \
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
-  #define MODULE_INFO_DEF(moduleName, category, package) const SCIRun::Dataflow::Networks::ModuleLookupInfo moduleName::staticInfo_(#moduleName, #category, #package);
+  // 4-arg form (preferred): flags + registered name + category + package.
+  // staticInfo_ is defined inline — no MODULE_INFO_DEF in the .cc needed.
+  // Note: registered name may differ from the C++ class name (e.g. ShowColorMap
+  // vs ShowColorMapModule), so it must be supplied explicitly.
+  #define MODULE_TRAITS_AND_INFO_4(flags, regName, category, package) \
+    public: static const int TraitFlags = static_cast<int>(flags); \
+    inline static const Dataflow::Networks::ModuleLookupInfo staticInfo_{ \
+      #regName, #category, #package };
+
+  #define MODULE_TRAITS_AND_INFO_PICK(_1, _2, _3, _4, WHICH, ...) WHICH
+  #define MODULE_TRAITS_AND_INFO(...) \
+    MODULE_TRAITS_AND_INFO_PICK(__VA_ARGS__, \
+      MODULE_TRAITS_AND_INFO_4, _unused3, _unused2, \
+      MODULE_TRAITS_AND_INFO_1)(__VA_ARGS__)
+
+  // Legacy .cc definition — still needed for modules using the 1-arg form.
+  // Becomes a no-op comment for modules that have migrated to the 4-arg form.
+  #define MODULE_INFO_DEF(moduleName, category, package) \
+    const SCIRun::Dataflow::Networks::ModuleLookupInfo \
+      moduleName::staticInfo_(#moduleName, #category, #package);
 
   #define HAS_DYNAMIC_PORTS public: bool hasDynamicPorts() const override { return true; }
 

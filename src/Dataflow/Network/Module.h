@@ -196,14 +196,18 @@ namespace Networks {
 
     friend class ModuleBuilder;
 
-  private:
-    Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
-    std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
-    void runProgrammablePortInput();
+  protected:
+    // Used by getRequiredInput_() / getOptionalInput_() macros in
+    // ModulePortDescriptionTagsVariadic.h; not for direct use.
     template <class T>
     SharedPointer<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>
     std::optional<SharedPointer<T>> getOptionalInputAtIndex(const PortId& id);
+
+  private:
+    Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
+    std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
+    void runProgrammablePortInput();
     template <class T>
     SharedPointer<T> checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 

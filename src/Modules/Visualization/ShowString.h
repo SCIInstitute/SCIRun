@@ -32,6 +32,7 @@
 #define MODULES_VISUALIZATION_SHOW_STRING_H
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Dataflow/Network/ModulePortDescriptionTagsVariadic.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -59,16 +60,14 @@ namespace Modules {
 namespace Visualization {
 
   class SCISHARE ShowString : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
-    public Has1InputPort<StringPortTag>,
-    public Has1OutputPort<GeometryPortTag>
+    public SCIRun::Modules::HasInputPorts<SCIRun::Modules::StringPort<"String">>,
+    public SCIRun::Modules::HasOutputPorts<SCIRun::Modules::GeometryPort<"RenderedString">>
   {
   public:
     ShowString();
     void execute() override;
     void setStateDefaults() override;
-    INPUT_PORT(0, String, String);
-    OUTPUT_PORT(0, RenderedString, GeometryObject);
-    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI, ShowString, Visualization, SCIRun)
   private:
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
     std::tuple<double, double> getTextPosition();

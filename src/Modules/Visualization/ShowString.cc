@@ -54,12 +54,9 @@ ALGORITHM_PARAMETER_DEF(Visualization, FixedVertical);
 ALGORITHM_PARAMETER_DEF(Visualization, CoordinateHorizontal);
 ALGORITHM_PARAMETER_DEF(Visualization, CoordinateVertical);
 
-MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
 
 ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(makeShared<TextBuilder>())
 {
-  INITIALIZE_PORT(String);
-  INITIALIZE_PORT(RenderedString);
 }
 
 void ShowString::setStateDefaults()
@@ -81,12 +78,12 @@ void ShowString::setStateDefaults()
 
 void ShowString::execute()
 {
-  auto str = getRequiredInput(String);
+  auto str = getRequiredInput_(String);
 
   if (needToExecute() || needReexecute_)
   {
     auto geom = buildGeometryObject(str->value());
-    sendOutput(RenderedString, geom);
+    sendOutput_(RenderedString, geom);
     needReexecute_ = false;
     executedOnce_ = true;
   }
