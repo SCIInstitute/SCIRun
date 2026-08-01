@@ -44,13 +44,6 @@ using namespace SCIRun::Modules::Visualization;
 
 void ModuleDescriptionLookup::addEssentialModules()
 {
-
-
-
-
-
-
-
 }
 
 void ModuleDescriptionLookup::addTestingModules()
@@ -64,5 +57,4 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<PortFeedbackSender>("...", "...");
   addModuleDesc<LoggingTester>("...", "...");
   addModuleDesc<CreateTestingArrow>("...", "...");
-
 }
