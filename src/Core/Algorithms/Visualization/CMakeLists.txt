@@ -37,10 +37,12 @@ SET(Algorithms_Visualization_HEADERS
 if (WITH_VTK)
   list(APPEND Algorithms_Visualization_SRCS
 	VtkDataAlgorithm.cc
+	VtkGeometryBuilder.cc
   )
 
   list(APPEND Algorithms_Visualization_HEADERS
 	VtkDataAlgorithm.h
+	VtkGeometryBuilder.h
   )
 endif()
 
