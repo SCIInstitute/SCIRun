@@ -59,9 +59,6 @@
 #include <boost/graph/copy.hpp>
 #include <boost/graph/connected_components.hpp>
 
-#include <Core/Logging/Log.h>
-#include <spdlog/fmt/ostr.h>
-
 using namespace SCIRun;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
@@ -398,7 +395,7 @@ bool VtkGeometryBuilder::FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std:
     }
     else if (cnt > 2)
     {
-      remark("branch detected");
+      //remark("branch detected");
       // TODO: deal with branching streamlines
       no_branch = false;
       continue;
@@ -1157,5 +1154,14 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
 
   obj->dataObject = poly;
 
+  return obj;
+}
+
+VtkGeometryObjectHandle VtkGeometryBuilder::makeObject(FieldHandle field) const
+{
+  VtkGeometryObjectHandle obj(new VtkGeometryObject);
+  auto vmesh = field->vmesh();
+  auto bbox = vmesh->get_bounding_box();
+  obj->box = bbox;
   return obj;
 }

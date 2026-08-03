@@ -30,8 +30,6 @@
 #define CORE_ALGORITHMS_VISUALIZATION_VTKDATAALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/VtkGeometry.h>
-#include <boost/graph/adjacency_list.hpp>
 #include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun
@@ -54,34 +52,12 @@ namespace SCIRun
 
       namespace Visualization
       {
-        typedef std::pair<int,int> Edge;
-        typedef std::vector<Edge> EdgeVector;
-        typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> DirectedGraph;
-        typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_color_t, boost::default_color_type> > UndirectedGraph;
-        typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
-        typedef boost::graph_traits<UndirectedGraph>::vertex_descriptor Vertex_u;
-        typedef std::map<int, int> ComponentMap;
-
         class SCISHARE VtkDataAlgorithm : public AlgorithmBase
         {
-        public:
+         public:
           VtkDataAlgorithm();
+
           AlgorithmOutput run(const AlgorithmInput& input) const override;
-        private:
-          const double HALF_SCALE_ = 0.5;
-          const int DIM_ = 3;
-          Core::Datatypes::VtkGeometryObjectHandle addStreamline(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          Core::Datatypes::VtkGeometryObjectHandle addSphere(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          Core::Datatypes::VtkGeometryObjectHandle addTriSurface(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          Core::Datatypes::VtkGeometryObjectHandle addQuadSurface(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          Core::Datatypes::VtkGeometryObjectHandle addStructVol(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          Core::Datatypes::VtkGeometryObjectHandle addUnstructVol(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          Core::Datatypes::VtkGeometryObjectHandle addCylinder(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions)const;
-          std::list<Vertex_u> sort_cc(EdgeVector sub_edges) const;
-          bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path, bool front) const;
-          Core::Datatypes::VtkGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
-          Core::Datatypes::VtkGeometryObjectHandle makeObject(FieldHandle field) const;
         };
       }
     }
