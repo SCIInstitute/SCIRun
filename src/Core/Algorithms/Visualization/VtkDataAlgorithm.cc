@@ -51,6 +51,8 @@ ALGORITHM_PARAMETER_DEF(VtkVisualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, Radius);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, UseNormals);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowEdges);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowFaces);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowVolume);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ModuleID);
 
 static uint32_t getNewVersionNumber()
@@ -68,6 +70,8 @@ VtkDataAlgorithm::VtkDataAlgorithm()
   addParameter(Parameters::Radius, 0.1);
   addParameter(Parameters::UseNormals, true);
   addParameter(Parameters::ShowEdges, false);
+  addParameter(Parameters::ShowFaces, true);
+  addParameter(Parameters::ShowVolume, false);
   addParameter(Parameters::ModuleID, 0);
 }
 

@@ -698,8 +698,11 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addQuadSurface(FieldHandle field, Co
 
 VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto volumeObj = makeObject(field);
-  auto meshObj = makeObject(field);
+  bool showFaces = algorithm_.get(Parameters::ShowFaces).toBool();
+  bool showVolume = algorithm_.get(Parameters::ShowVolume).toBool();
+
+  auto volumeObj = showVolume ? makeObject(field) : nullptr;
+  auto meshObj = showFaces ? makeObject(field) : nullptr;
 
   auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
 
@@ -708,113 +711,131 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
   auto vmesh = field->vmesh();
 
   // volume
-  auto image = vtkSmartPointer<vtkImageData>::New();
-
-  const auto ni = vmesh->get_ni();
-  const auto nj = vmesh->get_nj();
-  const auto nk = vmesh->get_nk();
-  auto bbox = vmesh->get_bounding_box();
-  const auto originX = bbox.get_min().x();
-  const auto originY = bbox.get_min().y();
-  const auto originZ = bbox.get_min().z();
-  const auto sizeX = bbox.get_max().x() - originX;
-  const auto sizeY = bbox.get_max().y() - originY;
-  const auto sizeZ = bbox.get_max().z() - originZ;
-  const auto dx = sizeX / (ni - 1);
-  const auto dy = sizeY / (nj - 1);
-  const auto dz = sizeZ / (nk - 1);
-
-  image->SetDimensions(ni, nj, nk);
-  image->SetOrigin(originX, originY, originZ);
-  image->SetSpacing(dx, dy, dz);
-
-  auto imageScalars = vtkSmartPointer<vtkDoubleArray>::New();
-  imageScalars->SetName("Values");
-  imageScalars->SetNumberOfComponents(1);
-  imageScalars->SetNumberOfTuples(ni * nj * nk);
-
-  double value = 0.0;
-
-  for (const auto& node : facade->nodes())
+  if (showVolume)
   {
-    vfield->get_value(value, node.index());
-    imageScalars->SetValue(node.index(), value);
-  }
+    auto image = vtkSmartPointer<vtkImageData>::New();
 
-  image->GetPointData()->SetScalars(imageScalars);
+    const auto ni = vmesh->get_ni();
+    const auto nj = vmesh->get_nj();
+    const auto nk = vmesh->get_nk();
+    auto bbox = vmesh->get_bounding_box();
+    const auto originX = bbox.get_min().x();
+    const auto originY = bbox.get_min().y();
+    const auto originZ = bbox.get_min().z();
+    const auto sizeX = bbox.get_max().x() - originX;
+    const auto sizeY = bbox.get_max().y() - originY;
+    const auto sizeZ = bbox.get_max().z() - originZ;
+    const auto dx = sizeX / (ni - 1);
+    const auto dy = sizeY / (nj - 1);
+    const auto dz = sizeZ / (nk - 1);
 
-  volumeObj->dataObject = image;
-  volumeObj->material.color[0] = static_cast<float>(algorithm_.get(Parameters::DefaultColorR).toDouble());
-  volumeObj->material.color[1] = static_cast<float>(algorithm_.get(Parameters::DefaultColorG).toDouble());
-  volumeObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
-  volumeObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
-  volumeObj->tfn.range = {static_cast<float>(imageScalars->GetRange()[0]), static_cast<float>(imageScalars->GetRange()[1])};
-  volumeObj->tfn.colors = {volumeObj->material.color[0], volumeObj->material.color[1], volumeObj->material.color[2]};
-  volumeObj->tfn.opacities = {volumeObj->material.opacity};
-  volumeObj->type = GeometryType::STRUCTURED_VOLUME;
+    image->SetDimensions(ni, nj, nk);
+    image->SetOrigin(originX, originY, originZ);
+    image->SetSpacing(dx, dy, dz);
 
-  //----------------------------------
-  // Points
-  //----------------------------------
+    auto imageScalars = vtkSmartPointer<vtkDoubleArray>::New();
+    imageScalars->SetName("Values");
+    imageScalars->SetNumberOfComponents(1);
+    imageScalars->SetNumberOfTuples(ni * nj * nk);
 
-  auto points = vtkSmartPointer<vtkPoints>::New();
+    double value = 0.0;
 
-  for (const auto& node : facade->nodes())
-  {
-    auto p = node.point();
-
-    points->InsertNextPoint(p.x(), p.y(), p.z());
-  }
-
-  grid->SetPoints(points);
-
-  //----------------------------------
-  // Point scalars
-  //----------------------------------
-
-  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
-  scalars->SetName("Values");
-
-  value = 0.0;
-
-  for (const auto& node : facade->nodes())
-  {
-    vfield->get_value(value, node.index());
-    scalars->InsertNextValue(value);
-  }
-
-  grid->GetPointData()->SetScalars(scalars);
-
-  //----------------------------------
-  // Hex cells
-  //----------------------------------
-
-  for (const auto& cell : facade->cells())
-  {
-    VMesh::Node::array_type nodes;
-    vmesh->get_nodes(nodes, cell.index());
-
-    if (nodes.size() != 8) continue;
-
-    vtkNew<vtkHexahedron> hex;
-
-    for (size_t i = 0; i < 8; ++i)
+    for (const auto& node : facade->nodes())
     {
-      hex->GetPointIds()->SetId(static_cast<vtkIdType>(i), static_cast<vtkIdType>(nodes[i]));
+      vfield->get_value(value, node.index());
+      imageScalars->SetValue(node.index(), value);
     }
 
-    grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
+    image->GetPointData()->SetScalars(imageScalars);
+
+    volumeObj->dataObject = image;
+    volumeObj->material.color[0] = static_cast<float>(algorithm_.get(Parameters::DefaultColorR).toDouble());
+    volumeObj->material.color[1] = static_cast<float>(algorithm_.get(Parameters::DefaultColorG).toDouble());
+    volumeObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
+    volumeObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
+    volumeObj->tfn.range = {static_cast<float>(imageScalars->GetRange()[0]), static_cast<float>(imageScalars->GetRange()[1])};
+    volumeObj->tfn.colors = {volumeObj->material.color[0], volumeObj->material.color[1], volumeObj->material.color[2]};
+    volumeObj->tfn.opacities = {volumeObj->material.opacity};
+    volumeObj->type = GeometryType::STRUCTURED_VOLUME;
   }
 
-  meshObj->dataObject = grid;
-  meshObj->material.color[0] = static_cast<float>(algorithm_.get(Parameters::DefaultColorR).toDouble());
-  meshObj->material.color[1] = static_cast<float>(algorithm_.get(Parameters::DefaultColorG).toDouble());
-  meshObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
-  meshObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
-  meshObj->type = GeometryType::STRUCTURED_VOLUME;
+  if (showFaces)
+  {
+    //----------------------------------
+    // Points
+    //----------------------------------
 
-  // return meshObj;
-  return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{volumeObj, meshObj});
+    auto points = vtkSmartPointer<vtkPoints>::New();
+
+    for (const auto& node : facade->nodes())
+    {
+      auto p = node.point();
+
+      points->InsertNextPoint(p.x(), p.y(), p.z());
+    }
+
+    grid->SetPoints(points);
+
+    //----------------------------------
+    // Point scalars
+    //----------------------------------
+
+    auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+    scalars->SetName("Values");
+
+    double value = 0.0;
+
+    for (const auto& node : facade->nodes())
+    {
+      vfield->get_value(value, node.index());
+      scalars->InsertNextValue(value);
+    }
+
+    grid->GetPointData()->SetScalars(scalars);
+
+    //----------------------------------
+    // Hex cells
+    //----------------------------------
+
+    for (const auto& cell : facade->cells())
+    {
+      VMesh::Node::array_type nodes;
+      vmesh->get_nodes(nodes, cell.index());
+
+      if (nodes.size() != 8) continue;
+
+      vtkNew<vtkHexahedron> hex;
+
+      for (size_t i = 0; i < 8; ++i)
+      {
+        hex->GetPointIds()->SetId(static_cast<vtkIdType>(i), static_cast<vtkIdType>(nodes[i]));
+      }
+
+      grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
+    }
+
+    meshObj->dataObject = grid;
+    meshObj->material.color[0] = static_cast<float>(algorithm_.get(Parameters::DefaultColorR).toDouble());
+    meshObj->material.color[1] = static_cast<float>(algorithm_.get(Parameters::DefaultColorG).toDouble());
+    meshObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
+    meshObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
+    meshObj->type = GeometryType::STRUCTURED_VOLUME;
+  }
+
+  if (showVolume && !showFaces)
+  {
+    return volumeObj;
+  }
+  else if (!showVolume && showFaces)
+  {
+    return meshObj;
+  }
+  else if (showVolume && showFaces)
+  {
+    return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{volumeObj, meshObj});
+  }
+
+  return nullptr;
 }
 
 VtkGeometryObjectHandle VtkGeometryBuilder::addUnstructVol(FieldHandle field, ColorMapHandle colorMap) const

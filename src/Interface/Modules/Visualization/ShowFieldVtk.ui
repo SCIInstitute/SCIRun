@@ -140,13 +140,27 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0" colspan="2">
+       <item row="8" column="0" colspan="2">
+         <widget class="QCheckBox" name="ShowFacesCheckBox_">
+           <property name="text">
+             <string>Show Mesh Faces</string>
+           </property>
+         </widget>
+       </item>
+       <item row="9" column="0" colspan="2">
        <widget class="QCheckBox" name="ShowEdgesCheckBox_">
         <property name="text">
          <string>Show Mesh Edges</string>
         </property>
        </widget>
       </item>
+       <item row="10" column="0" colspan="2">
+         <widget class="QCheckBox" name="ShowVolumeCheckBox_">
+           <property name="text">
+             <string>Show Volume</string>
+           </property>
+         </widget>
+       </item>
      </layout>
     </widget>
    </item>

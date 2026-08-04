@@ -60,7 +60,9 @@ void ShowFieldVtk::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::DefaultColorA);
   setStateDoubleFromAlgo(Parameters::Radius);
   setStateBoolFromAlgo(Parameters::UseNormals);
+  setStateBoolFromAlgo(Parameters::ShowFaces);
   setStateBoolFromAlgo(Parameters::ShowEdges);
+  setStateBoolFromAlgo(Parameters::ShowVolume);
   setStateIntFromAlgo(Parameters::ModuleID);
 }
 
@@ -92,7 +94,9 @@ void ShowFieldVtk::execute()
     setAlgoDoubleFromState(Parameters::DefaultColorA);
     setAlgoDoubleFromState(Parameters::Radius);
     setAlgoBoolFromState(Parameters::UseNormals);
+    setAlgoBoolFromState(Parameters::ShowFaces);
     setAlgoBoolFromState(Parameters::ShowEdges);
+    setAlgoBoolFromState(Parameters::ShowVolume);
 
     // this is mostly for user feedback for now.
     auto state = get_state();
