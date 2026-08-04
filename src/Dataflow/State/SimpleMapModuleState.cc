@@ -55,9 +55,10 @@ SimpleMapModuleState::SimpleMapModuleState(SimpleMapModuleState&& rhs)
 
 SimpleMapModuleState::SimpleMapModuleState(const SimpleMapModuleState& rhs)
   : stateMap_(rhs.stateMap_),
-  transientStateMap_(rhs.transientStateMap_), /// @todo: I think this is wrong, transient shouldn't be copied
   name_(rhs.name_)
 {
+  std::lock_guard<std::mutex> lock(rhs.transientMutex_);
+  transientStateMap_ = rhs.transientStateMap_; /// @todo: I think this is wrong, transient shouldn't be copied
   //std::cout << "SMMS copy ctor " << name_ << std::endl;
 }
 
@@ -66,7 +67,10 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
   if (&rhs != this)
   {
     stateMap_ = rhs.stateMap_;
-    transientStateMap_ = rhs.transientStateMap_;  /// @todo: I think this is wrong, transient shouldn't be copied
+    {
+      std::lock_guard<std::mutex> lock(rhs.transientMutex_);
+      transientStateMap_ = rhs.transientStateMap_;  /// @todo: I think this is wrong, transient shouldn't be copied
+    }
     name_ = rhs.name_;
     //std::cout << "SMMS copy assign " << name_<< std::endl;
     /// @todo??
@@ -151,6 +155,7 @@ ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
 
 void SimpleMapModuleState::print() const
 {
+  std::lock_guard<std::mutex> lock(transientMutex_);
   std::cout << "Printing transient map: " << this << " name: " << name_ << std::endl;
   for (auto q = transientStateMap_.begin(); q != transientStateMap_.end(); ++q)
   {
@@ -161,6 +166,7 @@ void SimpleMapModuleState::print() const
 
 SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientValue(const Name& name) const
 {
+  std::lock_guard<std::mutex> lock(transientMutex_);
   //print();
   auto i = transientStateMap_.find(name.name());
   return i != transientStateMap_.end() && !i->second.empty() ? std::optional(i->second) : TransientValueOption();
@@ -168,9 +174,14 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
 
 void SimpleMapModuleState::setTransientValue(const Name& name, const TransientValue& value, bool fireSignal)
 {
-  transientStateMap_[name.name()] = value;
+  {
+    std::lock_guard<std::mutex> lock(transientMutex_);
+    transientStateMap_[name.name()] = value;
+  }
   //print();
 
+  // Fire signals outside the lock to avoid re-entrancy through signal handlers
+  // that call back into get/setTransientValue.
   if (fireSignal)
   {
     fireTransientStateChangeSignal();
