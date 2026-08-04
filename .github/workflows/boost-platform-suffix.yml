@@ -1,0 +1,37 @@
+name: Boost platform-suffix detection
+
+# Fast, dependency-free regression check for the Boost architecture detection
+# in Superbuild/UseBoost.cmake. It only runs `cmake` (the assertion fires at
+# configure time), so it finishes in seconds and never builds Boost or SCIRun.
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'Superbuild/UseBoost.cmake'
+      - 'Superbuild/Tests/BoostPlatformSuffix/**'
+      - '.github/workflows/boost-platform-suffix.yml'
+  pull_request:
+    paths:
+      - 'Superbuild/UseBoost.cmake'
+      - 'Superbuild/Tests/BoostPlatformSuffix/**'
+      - '.github/workflows/boost-platform-suffix.yml'
+  workflow_dispatch:
+
+jobs:
+  platform-suffix:
+    name: PLATFORM_SUFFIX on ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure test (asserts PLATFORM_SUFFIX matches host arch)
+        run: |
+          cmake -S Superbuild/Tests/BoostPlatformSuffix -B build-suffix-check
