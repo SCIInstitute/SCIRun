@@ -83,7 +83,7 @@ AlgorithmOutput VtkDataAlgorithm::run(const AlgorithmInput& input) const
 
   if (!renderable)
   {
-    THROW_ALGORITHM_INPUT_ERROR("field type not supp*rted.");
+    THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
   }
 
   renderable->version = getNewVersionNumber();

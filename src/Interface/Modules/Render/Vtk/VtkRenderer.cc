@@ -102,10 +102,15 @@ void VtkRenderer::renderFrame()
 
 
 //Interaction---------------------------------------------------------------------------------------
-void VtkRenderer::resize(uint32_t width, uint32_t height)
+void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
 {
   width_ = width;
   height_ = height;
+  if (dpr != devicePixelRatio_)
+  {
+    devicePixelRatio_ = dpr;
+    image_.setDevicePixelRatio(devicePixelRatio_);
+  }
 
   if (renderWindow_)
   {

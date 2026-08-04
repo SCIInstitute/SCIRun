@@ -37,10 +37,6 @@ using namespace SCIRun::Render;
 VtkQWidget::VtkQWidget(QWidget *parent, VtkRenderer* renderer) :
 	QWidget(parent), renderer(renderer)
 {
-  //setAttribute(Qt::WA_NativeWindow);
-  //setAttribute(Qt::WA_PaintOnScreen);
-  //setAttribute(Qt::WA_NoSystemBackground);
-
   renderTimer = new QTimer(this);
   connect(renderTimer, &QTimer::timeout, this, &VtkQWidget::updateRenderer);
   renderTimer->start(16);
@@ -50,16 +46,6 @@ VtkQWidget::~VtkQWidget()
 {
 
 }
-
-//void VtkQWidget::initializeGL()
-//{
-//  initializeOpenGLFunctions();
-//
-//  glEnable(GL_DEPTH_TEST);
-//
-//  // Optional: debug clear color
-//  glClearColor(0.f, 0.f, 0.f, 1.f);
-//}
 
 void VtkQWidget::paintEvent(QPaintEvent* event)
 {
@@ -73,11 +59,47 @@ void VtkQWidget::resizeEvent(QResizeEvent* event)
 {
   QWidget::resizeEvent(event);
 
-  renderer->resize(event->size().width(), event->size().height());
+  updateRenderSize();
+}
+
+void VtkQWidget::showEvent(QShowEvent* event)
+{
+  QWidget::showEvent(event);
+
+  if (auto* win = window()->windowHandle())
+  {
+    connect(win, &QWindow::screenChanged, this, &VtkQWidget::onScreenChanged, Qt::UniqueConnection);
+  }
+
+  updateRenderSize();
+}
+
+void VtkQWidget::onScreenChanged(QScreen* screen)
+{
+  if (!screen) return;
+
+  connect(screen, &QScreen::physicalDotsPerInchChanged, this, &VtkQWidget::updateRenderSize, Qt::UniqueConnection);
+
+  connect(screen, &QScreen::logicalDotsPerInchChanged, this, &VtkQWidget::updateRenderSize, Qt::UniqueConnection);
+
+  updateRenderSize();
 }
 
 void VtkQWidget::updateRenderer()
 {
   update();
-  //renderer->renderFrame();
+}
+
+void VtkQWidget::updateRenderSize()
+{
+  if (!renderer) return;
+
+  double dpr = window()->windowHandle() ? window()->windowHandle()->devicePixelRatio() : devicePixelRatioF();
+
+  const int renderWidth = qRound(width() * dpr);
+  const int renderHeight = qRound(height() * dpr);
+
+  renderer->resize(renderWidth, renderHeight, dpr);
+
+  //qDebug() << "widget =" << width() << "x" << height() << "dpr =" << dpr << "render =" << renderWidth << "x" << renderHeight;
 }

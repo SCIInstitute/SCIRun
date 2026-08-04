@@ -61,7 +61,7 @@ public:
   void renderFrame(); //renders frame with current OpenGL context
 
   //Interaction-------------------------------------------------------------------------------------
-  void resize(uint32_t width, uint32_t height);
+  void resize(uint32_t width, uint32_t height, double dpr = 1.0);
   void mousePress(float x, float y, MouseButton btn);
   void mouseMove(float x, float y, MouseButton btn);
   void mouseRelease();
@@ -82,6 +82,7 @@ public:
 
   uint32_t width_  {16};
   uint32_t height_ {16};
+  double devicePixelRatio_{1.0};
   uint32_t framesAccumulated {0};
 
   bool isScivis {true};
