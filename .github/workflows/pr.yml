@@ -21,13 +21,31 @@ name: pr
 # regression-tests.yml / windows-build-script.yml and runs on master pushes and
 # nightly -- not on every pull request. Use the `workflow_dispatch` trigger on
 # those workflows to run the full matrix against a risky branch on demand.
+#
+# This workflow also answers for the merge queue. A queued entry is a synthetic
+# commit -- master's tip plus every PR ahead of it in the queue -- pushed to a
+# `gh-readonly-queue/master/...` ref. GitHub then waits for the same required
+# context (`ci-gate`) against that ref before landing the batch. So a queue
+# entry is a normal run of everything below, just on a ref that no PR owns.
+#
+# Two things do NOT survive the switch from `pull_request` to `merge_group`,
+# because a merge group has no pull request behind it:
+#
+#   * `github.event.pull_request.number` is empty. It appeared in the old
+#     concurrency group and in the `changes` job; both are handled below.
+#   * `cancel-in-progress` must be off here. Cancelling a queue entry reports a
+#     failed check, which ejects the PR from the queue -- the exact stall the
+#     queue is meant to remove. Pull requests still cancel as before.
 
 on:
   pull_request:
+  merge_group:
 
 concurrency:
-  group: pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  # One group per PR, or per queue entry. `head_ref` is unique per entry, so
+  # speculative batches never cancel each other.
+  group: ${{ github.event_name }}-${{ github.event.pull_request.number || github.event.merge_group.head_ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   changes:
@@ -39,14 +57,32 @@ jobs:
     outputs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
     steps:
+      # Only the merge_group path needs a working tree, and it needs full history
+      # so that base_sha is present to diff against.
+      - name: Check out merge group range
+        if: github.event_name == 'merge_group'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Classify changed paths
         id: filter
         env:
           GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
-          files=$(gh pr view "${{ github.event.pull_request.number }}" \
-                    --repo "${{ github.repository }}" \
-                    --json files --jq '.files[].path')
+          # A merge group has no PR to ask about, so take the file list from the
+          # range the queue is actually proposing to land. This covers every PR
+          # in the batch, which is what we want: one code PR anywhere in a batch
+          # has to pull the whole batch through a real build.
+          if [ "${{ github.event_name }}" = "merge_group" ]; then
+            files=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          else
+            files=$(gh pr view "${{ github.event.pull_request.number }}" \
+                      --repo "${{ github.repository }}" \
+                      --json files --jq '.files[].path')
+          fi
 
           echo "Changed files:"
           echo "$files"
@@ -55,6 +91,8 @@ jobs:
 
           # Fail safe towards building: an empty list, or one long enough to have
           # been truncated by the API, must not be mistaken for a docs-only PR.
+          # git diff does not truncate, but a >=100-file batch should build
+          # anyway, so the same guard is correct on both paths.
           if [ "$count" -eq 0 ] || [ "$count" -ge 100 ]; then
             docs_only=false
           elif printf '%s\n' "$files" | grep -qvE '^docs/'; then
