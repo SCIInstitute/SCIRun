@@ -1,0 +1,114 @@
+# SCIRun contributor list, displayed by Help > Credits...
+#
+# Format:
+#   #  comment, never displayed
+#   :: section heading
+#   anything else is one name, displayed on its own line
+#   blank lines are extra vertical space
+#
+# Keep this a text file. The v4 list froze for a decade because it lived only as
+# pixels in scisplash.ppm; see issue #2610.
+#
+# UNVERIFIED, do not ship without a human pass:
+#  - The SCIRun 4 names below were transcribed from the v4 splash raster, so
+#    spellings and diacritics are not reliable. "Blythe Nobleman" may be one
+#    person or two.
+#  - These git authors could not be resolved to a real name and are omitted:
+#    "Haydelj"/"jcbhaydel" (jcbhaydel@gmail.com), "Nipun" (nipun@cs.utah.edu),
+#    ken.louie9@gmail.com. Add them once someone confirms the spelling.
+#  - Machine and bot identities are deliberately omitted: "cibc",
+#    "SCIRun Tester", "scirun-tester", "root".
+#  - Names appearing in both v4 and v5 (Ayla Khan, Jess Tate, Dan White,
+#    Moritz Dannhauer) are listed once, under SCIRun 5.
+
+:: SCIRun 5
+
+Dan White
+James Hughes
+Chris Bright
+Jess Tate
+Moritz Dannhauer
+Yong Wan
+Tark Patel
+Kim Peterson
+Ayla Khan
+Benjamin Larson
+Brig Bagley
+Nidhi Patel
+Garima Chhabra
+Ally Warner
+Jaume Coll-Font
+Max Hansen
+Collin Tate
+Spencer Frisby
+Karli Gillette
+Georgia Stuart
+Xuan Huang
+Kimia Shayestehfard
+Petar Petrov
+Johannes Vorwerk
+Kris Zygmunt
+Tom Fogal
+Zayan Khan
+
+:: SCIRun 4
+
+Steve Parker
+David Weinstein
+Marty Cole
+Michael Callahan
+McKay Davis
+J. Davison de St. Germain
+Yarden Livnat
+Allen Sanderson
+Darby Van Uitert
+Jenny Simpson
+Chris Moulding
+Ted Dustman
+Rob MacLeod
+Blythe Nobleman
+John McCorquodale
+Keming Zhang
+Kurt Zimmerman
+Kostadin Damevski
+Alexei Samsonov
+Erik Kuehne
+Peter-Pike Sloan
+Oleg Portniaguine
+James Bigler
+Wayne Witzel
+Bryan Worthen
+David Hart
+Chris Butson
+Sascha Moehrs
+Lisa Durbeck
+John Schmidt
+Richard Coffey
+Jesse Hall
+Nick Benson
+Randy Jones
+Rob Van Uitert
+Kai Li
+Yesim Seringagoglu
+Lorena Kreda
+Alireza Ghodrati
+Saeed Babaeizadeh
+Jeroen Stinstra
+Erik Anderson
+Jason Shepherd
+Frank Sachse
+Darrell Swenson
+Burak Erem
+Andrew Keely
+Kristen Zygmunt
+Brett Burton
+Mike Steffen
+Josh Blauer
+Ran Tao
+Jovana Knežević
+Josh Levine
+
+:: Support
+
+This project was supported by the National Institute of General Medical
+Sciences of the National Institutes of Health under grant number P41GM103545.

@@ -63,6 +63,7 @@ SET(Interface_Application_SOURCES
   MacroEditor.cc
   StateViewer.cc
   ModuleOptionsDialogConfiguration.cc
+  CreditsDialog.cc
 )
 
 SET(Interface_Application_HEADERS
@@ -99,6 +100,7 @@ SET(Interface_Application_HEADERS
   MacroEditor.h
   StateViewer.h
   ModuleOptionsDialogConfiguration.h
+  CreditsDialog.h
 )
 
 SET(Interface_Application_FORMS
