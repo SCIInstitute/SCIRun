@@ -27,8 +27,8 @@ Dan White | SCIRun code wizard/Dan Dan SCIRun Man
 James Hughes | Creator of Spire
 Chris Bright | tamer of the ViewScene controls
 Jess Tate | fount of SCIRun wisdom
-Moritz Dannhauer | brain stimulation, start to finish
-Yong Wan | keeper of the Superbuild
+Moritz Dannhauer | Brain Stimulator
+Yong Wan | vtkSCIRun in progress
 Tark Patel | Widgets and Glyphs for everyone
 Kim Peterson | particle-in-cell, single-handed
 Ayla Khan | did all the CMake
@@ -39,9 +39,9 @@ Nidhi Patel | Documentation Czarina
 Garima Chhabra | test networks for the legacy modules
 Ally Warner | Cleaver, with exclamation points
 Jaume Coll-Font | Tikhonov, TSVD, and the L-curve
-Max Hansen | matrices, and Windows path lengths
-Collin Tate | dragged the docs into pandoc
-Spencer Frisby | wrote the module tests
+Max Hansen
+Collin Tate | the other Tate
+Spencer Frisby | his module unit tests still pass
 Karli Gillette | opened SCIRun to CARP
 Georgia Stuart
 Xuan Huang
