@@ -16,6 +16,8 @@
 #    a comma between the two words, so it may be two.
 #  - "Nipun" (nipun@cs.utah.edu) and "Ken Louie" (ken.louie9@gmail.com) are
 #    listed as far as their git identities go; fill in the rest if anyone knows.
+#  - Anastasia Mironova is not on the v4 splash raster at all; she is credited
+#    in the header of Modules/Legacy/Teem/Misc/BuildDerivedNrrdWithGage.cc.
 #  - Machine and bot identities are deliberately omitted: "cibc",
 #    "SCIRun Tester", "scirun-tester", "root".
 #  - Names appearing in both v4 and v5 (Ayla Khan, Jess Tate, Dan White,
@@ -39,7 +41,7 @@ Nidhi Patel | Documentation Czarina
 Garima Chhabra | test networks for the legacy modules
 Ally Warner | Cleaver, with exclamation points
 Jaume Coll-Font | Tikhonov, TSVD, and the L-curve
-Max Hansen
+Max Hansen | ten characters, tops
 Collin Tate | the other Tate
 Spencer Frisby | his module unit tests still pass
 Karli Gillette | opened SCIRun to CARP
@@ -57,13 +59,13 @@ Ken Louie
 :: SCIRun 4
 
 Steve Parker | Creator of SCIRun, RIP
-David Weinstein
-Marty Cole
-Michael Callahan
+David Weinstein | voltage sources and dipoles since 1999
+Marty Cole | his network reader still opens v4 files
+Michael Callahan | every plugin interface we still use
 McKay Davis
 J. Davison de St. Germain
-Yarden Livnat
-Allen Sanderson
+Yarden Livnat | marching cubes, one tet at a time
+Allen Sanderson | streamlines and the geometry under them
 Darby Van Uitert
 Jenny Simpson
 Chris Moulding
@@ -74,7 +76,7 @@ John McCorquodale
 Keming Zhang
 Kurt Zimmerman
 Kostadin Damevski
-Alexei Samsonov
+Alexei Samsonov | type names and piecewise interpolation
 Erik Kuehne
 Peter-Pike Sloan
 Oleg Portniaguine
@@ -94,12 +96,12 @@ Rob Van Uitert
 Kai Li
 Yesim Seringagoglu
 Lorena Kreda
-Alireza Ghodrati
-Saeed Babaeizadeh
-Jeroen Stinstra
+Alireza Ghodrati | Tikhonov, before Jaume
+Saeed Babaeizadeh | the boundary element matrix
+Jeroen Stinstra | reader of every file format
 Erik Anderson
 Jason Shepherd
-Frank Sachse
+Frank Sachse | the basis functions, all of them
 Darrell Swenson
 Burak Erem
 Andrew Keely
@@ -110,6 +112,7 @@ Josh Blauer
 Ran Tao
 Jovana Knežević
 Josh Levine
+Anastasia Mironova | uncredited until now
 
 :: Support
 
