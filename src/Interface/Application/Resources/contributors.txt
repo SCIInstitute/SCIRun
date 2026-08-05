@@ -23,19 +23,19 @@
 
 :: SCIRun 5
 
-Dan White
-James Hughes
+Dan White | SCIRun code wizard/Dan Dan SCIRun Man
+James Hughes | Creator of Spire
 Chris Bright
-Jess Tate
+Jess Tate | fount of SCIRun wisdom
 Moritz Dannhauer
 Yong Wan
-Tark Patel
+Tark Patel | Widgets and Glyphs for everyone
 Kim Peterson
-Ayla Khan
+Ayla Khan | did all the CMake
 Jacob Haydel | fixer of the red ViewScene
 Benjamin Larson
 Brig Bagley
-Nidhi Patel
+Nidhi Patel | Documentation Czar
 Garima Chhabra
 Ally Warner
 Jaume Coll-Font
@@ -56,7 +56,7 @@ Ken Louie
 
 :: SCIRun 4
 
-Steve Parker
+Steve Parker | Creator of SCIRun, RIP
 David Weinstein
 Marty Cole
 Michael Callahan
