@@ -57,11 +57,16 @@ on:
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    env:
+      SCCACHE_GHA_ENABLED: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       - name: Install Qt (if requested)
         if: ${{ inputs.qt-version != '' }}
@@ -146,6 +151,8 @@ jobs:
             # Debug build + Clang source-based coverage instrumentation.
             CMD+=("--debug" "-DENABLE_COVERAGE:BOOL=ON")
           fi
+          CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
+          CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
           # Join and run
           echo "Running: ${CMD[*]}"
           eval "${CMD[*]}"
@@ -190,6 +197,8 @@ jobs:
           if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
           if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
+          $cmakeArgs += '-DCMAKE_C_COMPILER_LAUNCHER=sccache'
+          $cmakeArgs += '-DCMAKE_CXX_COMPILER_LAUNCHER=sccache'
 
           # Prepare build directory
           New-Item -ItemType Directory -Force -Path build | Out-Null
@@ -206,6 +215,17 @@ jobs:
           & cmake --build . --config Release --parallel
 
           Pop-Location
+
+      - name: Show sccache statistics (Unix)
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          "${SCCACHE_PATH}" --show-stats
+
+      - name: Show sccache statistics (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: '& $env:SCCACHE_PATH --show-stats'
 
       - name: Smoke test - executable loads and runs (Unix)
         if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
