@@ -582,7 +582,7 @@ void SCIRunMainWindow::launchPythonWizard()
 #endif
 }
 
-void SCIRunMainWindow::adjustModuleDock(int)
+void SCIRunMainWindow::adjustModuleDock(bool)
 {
   bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();
   actionPinAllModuleUIs_->setEnabled(dockable);

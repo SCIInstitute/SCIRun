@@ -3240,9 +3240,9 @@ void ViewSceneDialog::takeScreenshot()
   impl_->screenshotTaker_->takeScreenshot();
 }
 
-void ViewSceneDialog::saveNewGeometryChanged(int state)
+void ViewSceneDialog::saveNewGeometryChanged(bool state)
 {
-  impl_->saveScreenshotOnNewGeometry_ = state != 0;
+  impl_->saveScreenshotOnNewGeometry_ = state;
 }
 
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
