@@ -66,7 +66,14 @@ namespace
         body += "<div style=\"font-size:13pt; font-weight:bold; color:#7fb2ff; margin-top:24px; margin-bottom:10px;\">"
           + escaped(line.mid(2).trimmed()) + "</div>";
       else
-        body += "<div style=\"font-size:11pt; margin:2px;\">" + escaped(line) + "</div>";
+      {
+        const auto name = line.section('|', 0, 0).trimmed();
+        const auto epigraph = line.section('|', 1).trimmed();
+        body += "<div style=\"font-size:11pt; margin:2px;\">" + escaped(name) + "</div>";
+        if (!epigraph.isEmpty())
+          body += "<div style=\"font-size:9pt; color:#909090; font-style:italic;\">"
+            + escaped(epigraph) + "</div>";
+      }
     }
 
     const auto version = escaped(QString::fromStdString(Application::Instance().version()));

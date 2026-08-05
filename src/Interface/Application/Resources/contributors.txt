@@ -4,18 +4,18 @@
 #   #  comment, never displayed
 #   :: section heading
 #   anything else is one name, displayed on its own line
+#   Name | epigraph  puts a small italic line under that name
 #   blank lines are extra vertical space
 #
 # Keep this a text file. The v4 list froze for a decade because it lived only as
 # pixels in scisplash.ppm; see issue #2610.
 #
-# UNVERIFIED, do not ship without a human pass:
-#  - The SCIRun 4 names below were transcribed from the v4 splash raster, so
-#    spellings and diacritics are not reliable. "Blythe Nobleman" may be one
-#    person or two.
-#  - These git authors could not be resolved to a real name and are omitted:
-#    "Haydelj"/"jcbhaydel" (jcbhaydel@gmail.com), "Nipun" (nipun@cs.utah.edu),
-#    ken.louie9@gmail.com. Add them once someone confirms the spelling.
+# Notes:
+#  - The SCIRun 4 names were transcribed from the v4 splash raster and accepted
+#    as read. "Blythe Nobleman" is transcribed as one person; the raster renders
+#    a comma between the two words, so it may be two.
+#  - "Nipun" (nipun@cs.utah.edu) and "Ken Louie" (ken.louie9@gmail.com) are
+#    listed as far as their git identities go; fill in the rest if anyone knows.
 #  - Machine and bot identities are deliberately omitted: "cibc",
 #    "SCIRun Tester", "scirun-tester", "root".
 #  - Names appearing in both v4 and v5 (Ayla Khan, Jess Tate, Dan White,
@@ -32,6 +32,7 @@ Yong Wan
 Tark Patel
 Kim Peterson
 Ayla Khan
+Jacob Haydel | fixer of the red ViewScene
 Benjamin Larson
 Brig Bagley
 Nidhi Patel
@@ -50,6 +51,8 @@ Johannes Vorwerk
 Kris Zygmunt
 Tom Fogal
 Zayan Khan
+Nipun
+Ken Louie
 
 :: SCIRun 4
 
