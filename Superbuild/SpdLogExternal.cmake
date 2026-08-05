@@ -31,6 +31,7 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 ExternalProject_Add(SpdLog_external
   GIT_REPOSITORY "https://github.com/gabime/spdlog"
   GIT_TAG "v1.10.0"
+  UPDATE_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
