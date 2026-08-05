@@ -91,6 +91,7 @@ IF(UNIX)
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
+  UPDATE_COMMAND ""
     BUILD_IN_SOURCE ON
     CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
@@ -107,6 +108,7 @@ ELSE()
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
+  UPDATE_COMMAND ""
     # CPython's _RegenSbom target (PCbuild/regen.targets) runs
     # Tools/build/generate_sbom.py, which fetches every package download URL over
     # the network and fails the whole superbuild on a transient upstream error

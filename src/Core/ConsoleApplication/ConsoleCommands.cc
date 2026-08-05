@@ -26,12 +26,15 @@
 */
 
 
+#include <cstdlib>
 #include <Core/ConsoleApplication/ConsoleCommands.h>
+#include <Core/Utils/QuickExit.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Python/PythonInterpreter.h>
@@ -63,20 +66,19 @@ namespace
 /// @todo: real logger
 #define LOG_CONSOLE(x) std::cout << "[SCIRun] " << x << std::endl;
 
-bool LoadFileCommandConsole::execute()
+std::string NetworkFileProcessCommandConsole::resolveFilename() const
+{
+  return get(Variables::Filename).toFilename().string();
+}
+
+bool NetworkFileProcessCommandConsole::execute()
 {
   quietModulesIfNotVerbose();
 
-  auto inputFiles = Application::Instance().parameters()->inputFiles();
-  std::string filename;
-  if (!inputFiles.empty())
-    filename = inputFiles[0];
-  else
-  {
-    filename = get(Variables::Filename).toFilename().string();
-  }
+  auto filename = resolveFilename();
+  const auto verb = actionVerb();
 
-  LOG_CONSOLE("Attempting load of " << filename);
+  LOG_CONSOLE("Attempting " << verb << " of " << filename);
   if (!boost::filesystem::exists(filename))
   {
     LOG_CONSOLE("File does not exist: " << filename);
@@ -84,22 +86,59 @@ bool LoadFileCommandConsole::execute()
   }
   try
   {
-    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
+    auto file = processFile(filename);
 
-    if (openedFile)
+    if (file)
     {
       Application::Instance().controller()->clear();
-      Application::Instance().controller()->loadNetwork(openedFile);
-      LOG_CONSOLE("File load done: " << filename);
+      Application::Instance().controller()->loadNetwork(file);
+      LOG_CONSOLE("File " << verb << " done: " << filename);
       return true;
     }
-    LOG_CONSOLE("File load failed: " << filename);
+    LOG_CONSOLE("File " << verb << " failed: " << filename);
+  }
+  catch (std::exception& e)
+  {
+    LOG_CONSOLE("File " << verb << " failed: " << filename << ", exception: " << e.what());
   }
   catch (...)
   {
-    LOG_CONSOLE("File load failed: " << filename);
+    LOG_CONSOLE("File " << verb << " failed: " << filename);
+  }
+
+  // Mirrors FileImportCommand/NetworkFileProcessCommand (GUI): a failure that
+  // matters in regression mode must exit non-zero so ctest reports it,
+  // instead of silently continuing.
+  if (failTestOnErrorInRegressionMode() && Application::Instance().parameters()->isRegressionMode())
+  {
+    LOG_CONSOLE("Regression " << verb << " failed, exiting non-zero: " << filename);
+    // quickExit rather than quick_exit: the latter has no declaration on macOS
+    // SDKs < 15 and emits a load-time-fatal reference on the 15 SDK (see #2564).
+    quickExit(1);
   }
   return false;
+}
+
+std::string LoadFileCommandConsole::resolveFilename() const
+{
+  auto inputFiles = Application::Instance().parameters()->inputFiles();
+  if (!inputFiles.empty())
+    return inputFiles[0];
+  return NetworkFileProcessCommandConsole::resolveFilename();
+}
+
+NetworkFileHandle LoadFileCommandConsole::processFile(const std::string& filename) const
+{
+  return XMLSerializer::load_xml<NetworkFile>(filename);
+}
+
+NetworkFileHandle ImportFileCommandConsole::processFile(const std::string& filename) const
+{
+  auto dtdPath = Core::Application::Instance().executablePath();
+  const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
+  std::ostringstream legacyImportLog;
+  LegacyNetworkIO lnio(dtdPath.string(), modFactory, legacyImportLog);
+  return lnio.load_net(filename);
 }
 
 bool SaveFileCommandConsole::execute()

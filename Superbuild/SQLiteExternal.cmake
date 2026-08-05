@@ -32,6 +32,7 @@ SET(sqlite_GIT_TAG "origin/scirun-5.0.0-beta")
 ExternalProject_Add(SQLite_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/sqlite.git"
   GIT_TAG ${sqlite_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

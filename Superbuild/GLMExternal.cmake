@@ -31,6 +31,7 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 ExternalProject_Add(GLM_external
   GIT_REPOSITORY "https://github.com/g-truc/glm.git"
   GIT_TAG "0.9.9.8"
+  UPDATE_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
