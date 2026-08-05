@@ -74,6 +74,27 @@ jobs:
       - name: Print Qt dir
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
 
+      # Superbuild externals change rarely but cost the bulk of every build.
+      # Cache the whole Externals tree: the inner SCIRun build consumes headers
+      # and libraries from Source/ (Eigen, GLM, SpdLog, Boost stage), Build/
+      # (Zlib, Teem, ...), and Install/ (Python, Tetgen, Qwt) alike. Exact-key
+      # match only -- a prefix-matched stale tree would be silently used with
+      # the wrong externals because the restored stamps defeat ExternalProject's
+      # own staleness detection (see touch_external_stamps in build.sh).
+      # Windows is scoped out for now: different build dir, per-config stamp
+      # layout under the VS generator.
+      - name: Restore Superbuild externals cache
+        id: cache-externals
+        if: ${{ runner.os != 'Windows' }}
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            bin/Externals
+            !bin/Externals/Download
+            !bin/Externals/Source/**/.git
+            !bin/Externals/Stamp/SCIRun_external
+          key: superbuild-v1-${{ inputs.runner }}-${{ inputs.variant }}-py${{ inputs.build-with-python }}-qt${{ inputs.qt-version }}-osp${{ inputs.with-ospray }}-cov${{ inputs.coverage }}-${{ hashFiles('Superbuild/**') }}
+
       - name: Checkout SCIRunTestData
         if: ${{ inputs.run-regression-tests || inputs.coverage }}
         uses: actions/checkout@v6
@@ -90,6 +111,8 @@ jobs:
       - name: Build (Linux/macOS)
         if: ${{ runner.os != 'Windows' }}
         shell: bash
+        env:
+          SCIRUN_TOUCH_EXTERNAL_STAMPS: ${{ steps.cache-externals.outputs.cache-hit == 'true' && '1' || '0' }}
         run: |
           set -eux
           CMD=(./build.sh)
@@ -206,6 +229,19 @@ jobs:
           & cmake --build . --config Release --parallel
 
           Pop-Location
+
+      # Save only after a successful build on a cache miss; a hit means this
+      # exact key is already stored (immutable), so saving again would fail.
+      - name: Save Superbuild externals cache
+        if: ${{ runner.os != 'Windows' && steps.cache-externals.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            bin/Externals
+            !bin/Externals/Download
+            !bin/Externals/Source/**/.git
+            !bin/Externals/Stamp/SCIRun_external
+          key: ${{ steps.cache-externals.outputs.cache-primary-key }}
 
       - name: Smoke test - executable loads and runs (Unix)
         if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
