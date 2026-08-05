@@ -51,11 +51,14 @@ namespace Gui {
 
   private:
     void setRolling(bool rolling);
+    bool matchesSecret(int key);
 
     QScrollArea* scrollArea_{ nullptr };
     QLabel* rollLabel_{ nullptr };
     QTimer* rollTimer_{ nullptr };
     bool rolling_{ true };
+    bool epigraphsVisible_{ false };
+    int secretProgress_{ 0 };
   };
 
 }}

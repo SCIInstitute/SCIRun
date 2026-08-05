@@ -51,8 +51,8 @@ namespace
   }
 
   /// Turns the contributors.txt line format (see that file's header) into the
-  /// rich text the roll displays.
-  QString creditsHtml()
+  /// rich text the roll displays. Epigraphs are off unless asked for.
+  QString creditsHtml(bool withEpigraphs)
   {
     QString body;
     for (const auto& raw : creditsResourceText().split('\n'))
@@ -70,7 +70,7 @@ namespace
         const auto name = line.section('|', 0, 0).trimmed();
         const auto epigraph = line.section('|', 1).trimmed();
         body += "<div style=\"font-size:11pt; margin:2px;\">" + escaped(name) + "</div>";
-        if (!epigraph.isEmpty())
+        if (withEpigraphs && !epigraph.isEmpty())
           body += "<div style=\"font-size:9pt; color:#909090; font-style:italic;\">"
             + escaped(epigraph) + "</div>";
       }
@@ -92,7 +92,7 @@ CreditsDialog::CreditsDialog(QWidget* parent) : QDialog(parent)
   setWindowTitle("SCIRun Credits");
   setFixedSize(dialogSize);
 
-  rollLabel_ = new QLabel(creditsHtml(), this);
+  rollLabel_ = new QLabel(creditsHtml(epigraphsVisible_), this);
   rollLabel_->setTextFormat(Qt::RichText);
   rollLabel_->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
   rollLabel_->setWordWrap(true);
@@ -159,7 +159,37 @@ void CreditsDialog::keyPressEvent(QKeyEvent* event)
     event->accept();
     return;
   }
+
+  if (matchesSecret(event->key()))
+  {
+    epigraphsVisible_ = !epigraphsVisible_;
+    const auto keepPosition = scrollArea_->verticalScrollBar()->value();
+    rollLabel_->setText(creditsHtml(epigraphsVisible_));
+    scrollArea_->verticalScrollBar()->setValue(keepPosition);
+    event->accept();
+    return;
+  }
+
   QDialog::keyPressEvent(event);  // Esc still closes
+}
+
+bool CreditsDialog::matchesSecret(int key)
+{
+  static const QVector<int> sequence{ Qt::Key_Up, Qt::Key_Up, Qt::Key_Down, Qt::Key_Down,
+    Qt::Key_Left, Qt::Key_Right, Qt::Key_Left, Qt::Key_Right, Qt::Key_B, Qt::Key_A };
+
+  if (key == sequence[secretProgress_])
+  {
+    if (++secretProgress_ == sequence.size())
+    {
+      secretProgress_ = 0;
+      return true;
+    }
+    return false;
+  }
+
+  secretProgress_ = (key == sequence[0]) ? 1 : 0;
+  return false;
 }
 
 bool CreditsDialog::eventFilter(QObject* watched, QEvent* event)

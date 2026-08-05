@@ -4,7 +4,7 @@
 #   #  comment, never displayed
 #   :: section heading
 #   anything else is one name, displayed on its own line
-#   Name | epigraph  puts a small italic line under that name
+#   Name | epigraph  puts a small italic line under that name; hidden by default
 #   blank lines are extra vertical space
 #
 # Keep this a text file. The v4 list froze for a decade because it lived only as
