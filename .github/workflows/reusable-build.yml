@@ -12,6 +12,13 @@ on:
       qt-path:
         required: false
         type: string
+      cmake-generator:
+        # Windows only: the Visual Studio generator passed to CMake. Defaults to
+        # VS 2022; set to 'Visual Studio 18 2026' for the windows-2025 image,
+        # which ships VS 2026 (v145 toolset). Requires CMake >= 4.2.
+        required: false
+        type: string
+        default: 'Visual Studio 17 2022'
       scirun-qt-min-version:
         required: false
         type: string
@@ -159,9 +166,11 @@ jobs:
           # Build arguments for cmake
           $cmakeArgs = @()
 
-          # Always use Visual Studio generator on Windows to ensure MSVC flags are used
+          # Always use a Visual Studio generator on Windows to ensure MSVC flags are used.
+          # The generator is an input (defaults to VS 2022) so the matrix can also build
+          # with VS 2026 on the windows-2025 image.
           $cmakeArgs += '-G'
-          $cmakeArgs += 'Visual Studio 17 2022'
+          $cmakeArgs += '${{ inputs.cmake-generator }}'
           $cmakeArgs += '-A'
           $cmakeArgs += 'x64'
 
