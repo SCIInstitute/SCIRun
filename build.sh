@@ -54,7 +54,7 @@ printhelp() {
     echo -e "--cmake-args=<cmake args>\t\tUse given CMake args"
     echo -e "--documentation\t\tEnable building documentation (requires LaTeX)"
     echo -e "--custom-build-dir=<dir>\t\tBuild in dir (use relative path)"
-    echo -e "-j#\t\t\tRuns # parallel make processes when building [GNU make only]"
+    echo -e "-j#\t\t\tRuns # parallel make processes when building [GNU make only].\n\t\t\tDefaults to a count detected from cores and RAM; -j1 forces a serial build."
     echo -e "-D<var>:<type>=<value>\t\t\tDefine CMake variable."
     echo -e "-?\t\t\tThis help"
     exit 0
@@ -95,6 +95,42 @@ ensure() {
 get_cmake_version() {
     local version=`$cmakebin --version | cut -d ' ' -f 3 | sed -e "s/[^[:digit:].]//g"`
     echo "$version"
+}
+
+# Job count to use when the caller passed no -j.
+#
+# This used to default to empty, i.e. a fully serial build. CI logs showed the
+# macOS jobs compiling all 1508 translation units one at a time with two of the
+# runner's three cores idle for the better part of an hour (issue #2617), and
+# local builds were paying the same cost.
+#
+# The count is capped by RAM as well as by core count: SCIRun has a number of
+# heavy template translation units (Field/Mesh especially) that can each want
+# well over a gigabyte, so core count alone will OOM a small machine. Budget
+# ~2 GB per compiler process. Pass an explicit -j to override, including -j1 to
+# get the old serial behaviour back.
+detect_parallel_jobs() {
+    local ncpu=0 memgb=0 jobs=0
+
+    if [[ $osx == 1 ]]; then
+        ncpu=`sysctl -n hw.ncpu 2>/dev/null`
+        local membytes=`sysctl -n hw.memsize 2>/dev/null`
+        [[ $membytes =~ ^[0-9]+$ ]] && memgb=$(( membytes / 1073741824 ))
+    else
+        ncpu=`nproc 2>/dev/null`
+        local memkb=`awk '/^MemTotal:/ { print $2 }' /proc/meminfo 2>/dev/null`
+        [[ $memkb =~ ^[0-9]+$ ]] && memgb=$(( memkb / 1048576 ))
+    fi
+
+    [[ $ncpu =~ ^[0-9]+$ ]] && [[ $ncpu -gt 0 ]] || ncpu=1
+    # If memory could not be read, fall back to trusting the core count.
+    [[ $memgb -gt 0 ]] || memgb=$(( ncpu * 2 ))
+
+    jobs=$(( memgb / 2 ))
+    [[ $jobs -le $ncpu ]] || jobs=$ncpu
+    [[ $jobs -gt 0 ]] || jobs=1
+
+    echo $jobs
 }
 
 ##########################################################################
@@ -167,6 +203,7 @@ fi
 
 buildtype="Release"
 makeflags=
+parallel_jobs=
 cmakeflags=
 cmakebin="cmake"
 cmakeargs=
@@ -211,7 +248,8 @@ while [[ $1 != "" ]]; do
         --documentation)
             documentation="ON";;
         -j*)
-            makeflags="${makeflags} $1";;
+            makeflags="${makeflags} $1"
+            parallel_jobs="${1#-j}";;
         -D*)
             cmakeflags="${cmakeflags} $1";;
         -?|--?|-help|--help)
@@ -223,6 +261,21 @@ while [[ $1 != "" ]]; do
 done
 
 cmakeargs="${cmakeargs} ${cmakeflags}"
+
+if [[ -z $makeflags ]]; then
+    parallel_jobs=`detect_parallel_jobs`
+    makeflags="-j${parallel_jobs}"
+    echo "No -j given; using -j${parallel_jobs} (auto-detected from cores and RAM)."
+fi
+
+# Most external projects recurse via $(MAKE) and so inherit make's jobserver,
+# which keeps the whole recursive build inside the -j budget above. Those that
+# shell out to `cmake --build` instead (Qwt) do not, so hand them the same
+# budget explicitly. Superbuild.cmake reads this to size Boost's b2 as well,
+# since b2 is not a make at all.
+if [[ $parallel_jobs =~ ^[0-9]+$ ]]; then
+    export CMAKE_BUILD_PARALLEL_LEVEL=$parallel_jobs
+fi
 
 echo "CMake args: $cmakeargs"
 echo "Make Flags: $makeflags"

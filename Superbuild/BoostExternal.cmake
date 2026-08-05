@@ -307,6 +307,11 @@ endif()
 set(_BOOST_B2_ARGS
   ${_BOOST_CXXFLAGS}
 
+  # b2 is not a make, so it does not inherit the outer jobserver and defaults
+  # to building one library at a time. See Superbuild.cmake for how this is
+  # sized.
+  -j${SUPERBUILD_PARALLEL_JOBS}
+
   --with-atomic
   --with-chrono
   --with-date_time
