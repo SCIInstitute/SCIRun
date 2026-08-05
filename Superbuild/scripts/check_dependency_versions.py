@@ -63,13 +63,26 @@ DEPENDENCIES = [
     ("GLEW", "GLEW_GIT_URL", "GLEW_GIT_TAG", "nigels-com/glew"),
     ("OSPRay", "OSPRAY_GIT_URL", "OSPRAY_GIT_TAG", "RenderKit/ospray"),
     ("Qwt", "QWT_GIT_URL", "QWT_WRAPPER_GIT_TAG", None),
-    ("Python", "PYTHON_GIT_URL", "PYTHON_VERSION", "python/cpython"),
-    ("Boost", "BOOST_GIT_URL", "BOOST_GIT_TAG", "boostorg/boost"),
+    # Two rows for Python: the commit pin is checked for drift against the
+    # branch it tracks, while PYTHON_VERSION is compared against CPython
+    # releases so a new upstream version is still reported.
+    ("Python", "PYTHON_GIT_URL", "PYTHON_GIT_TAG", None),
+    ("Python (version)", "PYTHON_GIT_URL", "PYTHON_VERSION", "python/cpython"),
+    # Boost's upstream is deliberately None: CIBC-Internal/boost is not a fork
+    # of boostorg/boost (its master carries SCIRun patches from 2016), so
+    # comparing our pin against upstream Boost releases is meaningless.
+    ("Boost", "BOOST_GIT_URL", "BOOST_GIT_TAG", None),
     ("TetGen", "TETGEN_GIT_URL", "TETGEN_GIT_TAG", None),
     ("Cleaver2", "CLEAVER2_GIT_URL", "CLEAVER2_GIT_TAG", "SCIInstitute/Cleaver2"),
     ("spdlog", "SPDLOG_GIT_URL", "SPDLOG_GIT_TAG", "gabime/spdlog"),
     ("Tny", "TNY_GIT_URL", "TNY_GIT_TAG", None),
 ]
+
+# Statuses that mean a human must act. Transient "ERROR" rows (ls-remote or an
+# upstream API failing) are deliberately excluded so a network blip does not
+# fail the job, but "INVALID" -- a pin that is a mutable branch head -- always
+# counts: it is a reproducibility defect, not a flake.
+ACTIONABLE_STATUSES = ("INVALID", "UPDATE", "DRIFT")
 
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 BRANCH_DOC_RE = re.compile(r"\(branch\s+(?P<branch>[^)]+)\)")
@@ -219,9 +232,42 @@ def _check_drift(row, url, pin, doc):
         row["detail"] = f"up to date with branch tip {tip[:12]}"
 
 
-def _check_update(row, pin, upstream, offline_upstream):
+def pin_is_branch_head(url, pin):
+    """True if `pin` resolves to a branch rather than a tag in `url`.
+
+    A pin documented as a release tag must be immutable. If the ref only exists
+    under refs/heads/ it is a branch head that can move, which silently breaks
+    reproducible builds -- exactly how Boost's "v1.90.0" and Python's "3.13.1"
+    went unnoticed. Raw SHAs are immutable by construction and skipped.
+    """
+    if SHA_RE.match(pin):
+        return False
+    if _ls_remote(url, f"refs/tags/{pin}"):
+        return False
+    return bool(_ls_remote(url, f"refs/heads/{pin}"))
+
+
+def _check_update(row, url, tag_var, pin, upstream, offline_upstream):
     """Fill `row` for a tag pin by comparing against the latest upstream tag."""
     row["tracks"] = "release tag"
+    # Only *_GIT_TAG variables name a git ref; *_VERSION entries are version
+    # strings compared against upstream releases, so the ref check is skipped
+    # (PYTHON_VERSION "3.13.1" does name a branch, but is not used as the pin).
+    if tag_var.endswith("_GIT_TAG"):
+        try:
+            if pin_is_branch_head(url, pin):
+                row["status"] = "INVALID"
+                row["tracks"] = "release tag (claimed)"
+                row["detail"] = (
+                    f"pin '{pin}' is a BRANCH head, not a tag -- it can move and "
+                    "breaks reproducible builds. Pin to a commit SHA (and note "
+                    "'(branch {0})' in the doc string) or to an immutable tag."
+                    .format(pin)
+                )
+                return
+        except Exception as exc:  # noqa: BLE001
+            row["status"], row["detail"] = "ERROR", f"ls-remote failed: {exc}"
+            return
     if not upstream or offline_upstream:
         row["detail"] = "no upstream mapping; pin is a fixed tag"
         return
@@ -255,16 +301,17 @@ def check(manifest, offline_upstream=False):
         if BRANCH_DOC_RE.search(doc):
             _check_drift(row, url, pin, doc)
         else:
-            _check_update(row, pin, upstream, offline_upstream)
+            _check_update(row, url, tag_var, pin, upstream, offline_upstream)
         results.append(row)
     return results
 
 
 def render_markdown(results):
-    order = {"UPDATE": 0, "DRIFT": 1, "ERROR": 2, "SKIP": 3, "OK": 4}
-    emoji = {"OK": "✅", "UPDATE": "⬆️", "DRIFT": "🌱", "ERROR": "⚠️", "SKIP": "➖"}
+    order = {"INVALID": 0, "UPDATE": 1, "DRIFT": 2, "ERROR": 3, "SKIP": 4, "OK": 5}
+    emoji = {"OK": "✅", "UPDATE": "⬆️", "DRIFT": "🌱", "ERROR": "⚠️",
+             "SKIP": "➖", "INVALID": "❌"}
     rows = sorted(results, key=lambda r: (order.get(r["status"], 9), r["name"]))
-    actionable = [r for r in results if r["status"] in ("UPDATE", "DRIFT")]
+    actionable = [r for r in results if r["status"] in ACTIONABLE_STATUSES]
 
     lines = ["## SCIRun dependency version check", ""]
     if actionable:
@@ -279,7 +326,8 @@ def render_markdown(results):
             name=r["name"], status=r["status"],
             pin=(r.get("pin", "") or "")[:24], tracks=r.get("tracks", ""),
             detail=r.get("detail", "")))
-    lines += ["", "_🌱 DRIFT = tracked branch advanced past our pinned commit; "
+    lines += ["", "_❌ INVALID = pin is not immutable (a branch head, not a tag/SHA); "
+              "🌱 DRIFT = tracked branch advanced past our pinned commit; "
               "⬆️ UPDATE = newer upstream release exists._"]
     return "\n".join(lines), actionable
 
@@ -304,7 +352,7 @@ def main(argv=None):
         md, _ = render_markdown(results)
         print(md)
 
-    actionable = [r for r in results if r["status"] in ("UPDATE", "DRIFT")]
+    actionable = [r for r in results if r["status"] in ACTIONABLE_STATUSES]
     return 0 if (args.no_fail or not actionable) else 1
 
 

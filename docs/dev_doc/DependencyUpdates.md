@@ -62,11 +62,21 @@ cmake ../Superbuild -DSPDLOG_GIT_TAG=v1.14.1 ...
 ## Automated freshness check
 
 The [`Dependency version check`](../../.github/workflows/dependency-check.yml)
-GitHub Actions workflow runs weekly (and on demand) and reports two conditions
+GitHub Actions workflow runs weekly (and on demand) and reports three conditions
 via [`Superbuild/scripts/check_dependency_versions.py`](../../Superbuild/scripts/check_dependency_versions.py):
 
 - **UPDATE** — a newer upstream release/tag exists than the one pinned.
 - **DRIFT** — the upstream branch a SHA-pin tracks has advanced past our commit.
+- **INVALID** — a `*_GIT_TAG` documented as a release tag actually resolves to
+  `refs/heads/`, i.e. a branch head that can move. This is a reproducibility
+  defect, not a version-freshness report: the pin must become a commit SHA (with
+  `(branch <name>)` in its doc string) or an immutable tag. Boost's `v1.90.0` and
+  Python's `3.13.1` were both branches that looked like tags, which is why the
+  check exists.
+
+Transient failures (`ls-remote` or an upstream API erroring) are reported as
+**ERROR** and deliberately do *not* count as actionable, so a network blip cannot
+fail the job. `INVALID` always counts.
 
 The job is report-only (it never fails the pipeline). Results appear in the run
 summary, and the scheduled run opens or refreshes a single tracking issue titled

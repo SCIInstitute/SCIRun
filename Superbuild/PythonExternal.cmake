@@ -56,7 +56,20 @@ SET(python_ABIFLAG_PYDEBUG)
 SET(python_ABIFLAG_PYMALLOC "m")
 SET(ABIFLAGS "${python_ABIFLAG_PYMALLOC}${python_ABIFLAG_PYDEBUG}")
 
-SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
+# CIBC-Internal/python carries each supported Python version as a BRANCH, not a
+# tag, so "origin/${USER_PYTHON_VERSION}" is a floating ref. VERSIONS.cmake pins
+# the default version (PYTHON_VERSION) to a commit; use it when the user has not
+# switched versions. A user-selected version has no pinned commit, so it still
+# tracks the branch tip — and says so, rather than silently being unpinned.
+IF(USER_PYTHON_VERSION STREQUAL PYTHON_VERSION AND PYTHON_GIT_TAG)
+  SET(python_GIT_TAG "${PYTHON_GIT_TAG}")
+ELSE()
+  SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
+  MESSAGE(STATUS
+    "[Python_external] USER_PYTHON_VERSION=${USER_PYTHON_VERSION} differs from the "
+    "pinned default ${PYTHON_VERSION}; tracking branch origin/${USER_PYTHON_VERSION} "
+    "(not reproducible).")
+ENDIF()
 SET(python_GIT_URL "${PYTHON_GIT_URL}")
 
 SET(python_WIN32_ARCH)

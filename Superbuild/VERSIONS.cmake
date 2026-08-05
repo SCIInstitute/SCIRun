@@ -101,10 +101,16 @@ sci_dep_version(QWT_GIT_TAG         "v6.3.0"                                  "Q
 # Python version is user-selectable; keep the default in sync with
 # DEFAULT_PYTHON_VERSION in PythonExternal.cmake.
 sci_dep_version(PYTHON_GIT_URL "https://github.com/CIBC-Internal/python.git"  "Python repository")
-sci_dep_version(PYTHON_VERSION "3.13.1"                                       "Default Python version; built from CIBC-Internal/python origin/<version>")
+sci_dep_version(PYTHON_VERSION "3.13.1"                                       "Default Python version; selects the CIBC-Internal/python branch of the same name")
+# CIBC-Internal/python has no tags; each supported version is a branch. Pin the
+# default version to a commit so the common path is reproducible. Selecting a
+# different USER_PYTHON_VERSION falls back to tracking that branch tip.
+sci_dep_version(PYTHON_GIT_TAG "b54e57f244c928d7f2b90106a74603462d1662a2"     "Python pin -> commit b54e57f2 (branch 3.13.1)")
 
 sci_dep_version(BOOST_GIT_URL  "https://github.com/CIBC-Internal/boost.git"   "Boost repository")
-sci_dep_version(BOOST_GIT_TAG  "v1.90.0"                                      "Boost pinned tag")
+# NOT a release tag: "v1.90.0" is a BRANCH in CIBC-Internal/boost (the repo's
+# only tag is "python1"), so it floats. Pinned to the commit instead.
+sci_dep_version(BOOST_GIT_TAG  "f596b5d3f7dc7195f20591aca3b5d1e33d534c0c"     "Boost pin -> commit f596b5d3 (branch v1.90.0)")
 
 # -----------------------------------------------------------------------------
 # Mesh / geometry
@@ -149,9 +155,9 @@ sci_dep_version(TNY_GIT_TAG    "scirun-pin-2026.07.27"     "Tny pin -> commit 08
 # =============================================================================
 # REPRODUCIBILITY NOTE
 # =============================================================================
-# Every GIT_TAG above is an immutable ref: either an upstream release tag
-# (v1.2.3) or, for deps that track a SCIRun maintenance branch, an annotated
-# `scirun-pin-<date>` tag that points at a fixed commit on that branch. Those
+# Every GIT_TAG above is an immutable ref: an upstream release tag (v1.2.3), a
+# full 40-char commit SHA, or — for deps that track a SCIRun maintenance branch
+# — an annotated `scirun-pin-<date>` tag pointing at a fixed commit. Those
 # tags were created 2026-07-27 at the then-current branch tips (the commit is
 # recorded in each pin's doc string), so the build is byte-for-byte reproducible
 # until a pin is deliberately bumped. A tag is used instead of a raw SHA purely
@@ -164,6 +170,12 @@ sci_dep_version(TNY_GIT_TAG    "scirun-pin-2026.07.27"     "Tny pin -> commit 08
 #     sha=$(git ls-remote <repo-url> refs/heads/1.3.1 | cut -f1)
 #     # create an annotated tag scirun-pin-<today> at $sha on the repo, then:
 #     #   sci_dep_version(ZLIB_GIT_TAG "scirun-pin-<today>" "... commit <sha> ...")
+#
+# Boost and Python are pinned to raw SHAs rather than dated tags because their
+# repositories (CIBC-Internal/boost, CIBC-Internal/python) expose the versions
+# we build as BRANCHES, not tags — "v1.90.0" and "3.13.1" are branch heads. The
+# check-dependencies job asserts that no *_GIT_TAG resolves to refs/heads/, so
+# this class of mistake is caught automatically rather than by inspection.
 #
 # Remaining hardening (follow-up work):
 #   - Add EIGEN_URL_HASH (and hashes for any future tarball deps) so downloads
