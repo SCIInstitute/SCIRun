@@ -32,6 +32,7 @@ SET(zlib_GIT_TAG "origin/1.3.1")
 ExternalProject_Add(Zlib_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/zlib.git"
   GIT_TAG ${zlib_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""
