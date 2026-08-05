@@ -32,6 +32,7 @@ SET(cleaver2_GIT_TAG "origin/scirun-5.0.0-beta")
 ExternalProject_Add(Cleaver2_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/Cleaver2Library.git"
   GIT_TAG ${cleaver2_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

@@ -34,6 +34,7 @@ ExternalProject_Add(LibPNG_external
   DEPENDS ${libpng_DEPENDENCIES}
   GIT_REPOSITORY "https://github.com/CIBC-Internal/libpng.git"
   GIT_TAG ${libpng_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""
