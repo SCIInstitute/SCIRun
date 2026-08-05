@@ -160,7 +160,7 @@ void CreditsDialog::keyPressEvent(QKeyEvent* event)
     return;
   }
 
-  if (matchesSecret(event->key()))
+  if (matchesSecret(event->text()))
   {
     epigraphsVisible_ = !epigraphsVisible_;
     const auto keepPosition = scrollArea_->verticalScrollBar()->value();
@@ -173,23 +173,27 @@ void CreditsDialog::keyPressEvent(QKeyEvent* event)
   QDialog::keyPressEvent(event);  // Esc still closes
 }
 
-bool CreditsDialog::matchesSecret(int key)
+bool CreditsDialog::matchesSecret(const QString& typed)
 {
-  static const QVector<int> sequence{ Qt::Key_Up, Qt::Key_Up, Qt::Key_Down, Qt::Key_Down,
-    Qt::Key_Left, Qt::Key_Right, Qt::Key_Left, Qt::Key_Right, Qt::Key_B, Qt::Key_A };
+  // Half the example networks start with this module. If you know to type it
+  // here, the epigraphs are for you.
+  static const QString secret = "createlatvol";
 
-  if (key == sequence[secretProgress_])
+  if (typed.isEmpty() || !typed.at(0).isLetter())
   {
-    if (++secretProgress_ == sequence.size())
-    {
-      secretProgress_ = 0;
-      return true;
-    }
+    typedSoFar_.clear();
     return false;
   }
 
-  secretProgress_ = (key == sequence[0]) ? 1 : 0;
-  return false;
+  typedSoFar_ += typed.toLower();
+  if (typedSoFar_.size() > secret.size())
+    typedSoFar_ = typedSoFar_.right(secret.size());
+
+  if (typedSoFar_ != secret)
+    return false;
+
+  typedSoFar_.clear();
+  return true;
 }
 
 bool CreditsDialog::eventFilter(QObject* watched, QEvent* event)
