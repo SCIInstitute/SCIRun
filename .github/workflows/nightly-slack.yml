@@ -72,6 +72,9 @@ jobs:
 
       - name: Build Slack payload
         env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WF_ID: ${{ github.event.workflow_run.id }}
           WF_NAME: ${{ github.event.workflow_run.name }}
           WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           WF_URL: ${{ github.event.workflow_run.html_url }}
@@ -97,16 +100,29 @@ jobs:
             test_lines="${test_lines}\n• ${label} ${kind}: ${summary}"
           done
 
+          # A job marked continue-on-error (the experimental VS 2026 builds in
+          # windows.yml, via reusable-build.yml's allow-failure input) fails
+          # without failing the run, so the conclusion alone would report a
+          # clean green. Name those jobs instead.
+          failed_jobs="$(gh run view "$WF_ID" --repo "$REPO" --json jobs \
+            -q '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")' \
+            2>/dev/null || true)"
+
           # Emoji: honor the real conclusion, but downgrade a green job to yellow
-          # when its continue-on-error tests actually failed underneath.
+          # when its continue-on-error tests or jobs actually failed underneath.
           case "$WF_CONCLUSION" in
             success)   emoji=":large_green_circle:";;
             failure)   emoji=":red_circle:";;
             cancelled) emoji=":black_circle:";;
             *)         emoji=":white_circle:";;
           esac
-          if [ "$any_fail" -eq 1 ] && [ "$WF_CONCLUSION" = "success" ]; then
-            emoji=":large_yellow_circle:"
+          if [ "$WF_CONCLUSION" = "success" ]; then
+            if [ -n "$failed_jobs" ]; then
+              emoji=":large_yellow_circle:"
+              test_lines="${test_lines}\n• failed, non-blocking: ${failed_jobs}"
+            elif [ "$any_fail" -eq 1 ]; then
+              emoji=":large_yellow_circle:"
+            fi
           fi
 
           header="${emoji} *${WF_NAME}* nightly — ${WF_CONCLUSION}"
