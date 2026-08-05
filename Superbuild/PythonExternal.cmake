@@ -91,6 +91,7 @@ IF(UNIX)
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
+  UPDATE_COMMAND ""
     BUILD_IN_SOURCE ON
     CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
@@ -107,6 +108,7 @@ ELSE()
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
+  UPDATE_COMMAND ""
     PATCH_COMMAND ""
     # aka.ms/nugetclidl (used by PCbuild/find_python.bat) can redirect to a Bing
     # search page instead of the NuGet installer; point straight at the real host.
