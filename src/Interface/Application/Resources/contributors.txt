@@ -35,7 +35,7 @@ Ayla Khan | did all the CMake
 Jacob Haydel | fixer of the red ViewScene
 Benjamin Larson
 Brig Bagley
-Nidhi Patel | Documentation Czar
+Nidhi Patel | Documentation Czarina
 Garima Chhabra
 Ally Warner
 Jaume Coll-Font
