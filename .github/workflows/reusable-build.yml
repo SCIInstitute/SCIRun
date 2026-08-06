@@ -61,12 +61,9 @@ on:
         required: false
         type: string
       allow-failure:
-        # Mark this build as experimental: it still runs and still reports a red
-        # job, but it no longer fails the workflow run. Used for toolchains we
-        # don't control yet (see the VS 2026 jobs in windows.yml). Note that
-        # continue-on-error is not accepted on a job that calls a reusable
-        # workflow, so the flag has to be plumbed through as an input and
-        # applied to the job in here.
+        # Experimental build: still runs, still reports a red job, but doesn't
+        # fail the run. continue-on-error is rejected on a job that calls a
+        # reusable workflow, hence an input applied to the job in here.
         required: false
         type: boolean
         default: false

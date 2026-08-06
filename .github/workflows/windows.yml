@@ -66,20 +66,14 @@ jobs:
 
   # ---------------------------------------------------------------------------
   # Windows Server 2025 image, built with Visual Studio 2026 (v145 toolset).
-  # The windows-2025 label currently resolves to the 'windows-2025-vs2026' image,
-  # which carries a single VS Enterprise 2026 install -- not a side-by-side VS
-  # 2022. The older v143 toolset is present as a component of that install
-  # (Microsoft.VisualStudio.Component.VC.14.44.17.14.x86.x64), so '-T v143' is
-  # available as an escape hatch if v145 needs to be bypassed.
+  # The windows-2025 label resolves to 'windows-2025-vs2026': a single VS
+  # Enterprise 2026 install, no side-by-side VS 2022. v143 ships as a component
+  # of it (Microsoft.VisualStudio.Component.VC.14.44.17.14.x86.x64), so
+  # '-T v143' stays available as an escape hatch.
   #
-  # Kept in the nightly matrix rather than the PR tier (pr.yml) so a
-  # VS-2026-specific break can't block pull requests. See issue #2449.
-  #
-  # allow-failure: our externals lag the toolchain -- the b2 bundled with Boost
-  # 1.90 cannot bootstrap under VS 2026 at all (#2657), which the upgrade to
-  # Boost 1.91 fixes (#2548). A toolchain we don't control should not turn the
-  # whole nightly red in the meantime. These jobs still run and still report red
-  # on their own. Drop the flag once these builds are green.
+  # Nightly-only, not the PR tier (pr.yml), so a VS-2026 break can't block pull
+  # requests (#2449). allow-failure until the externals catch up: Boost 1.90's
+  # b2 can't bootstrap under VS 2026 (#2657), fixed by the 1.91 upgrade (#2548).
   # ---------------------------------------------------------------------------
   windows-2025-headless-vs2026:
     uses: ./.github/workflows/reusable-build.yml

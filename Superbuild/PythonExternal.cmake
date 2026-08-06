@@ -99,11 +99,9 @@ ELSE()
   SET(python_ABIFLAG_PYDEBUG "_d")
 
   # CPython's PCbuild/python.props maps VisualStudioVersion 15/16/17 to
-  # v141/v142/v143 and falls back to v140 for anything it doesn't recognize.
-  # VS 2026 reports 18.0, so the fallback kicks in and MSBuild fails with
-  # MSB8020 ("build tools for Visual Studio 2015 ... cannot be found").
-  # Pin the toolset CMake selected for the active generator instead; the
-  # variable is empty for non-VS generators, which leaves the default alone.
+  # v141/v142/v143 and falls back to v140 otherwise, so VS 2026 (18.0) fails
+  # with MSB8020 ("build tools for Visual Studio 2015 ... cannot be found").
+  # Pin the toolset CMake picked instead; empty for non-VS generators.
   SET(python_MSBUILD_TOOLSET)
   IF(CMAKE_VS_PLATFORM_TOOLSET)
     SET(python_MSBUILD_TOOLSET "/property:PlatformToolset=${CMAKE_VS_PLATFORM_TOOLSET}")

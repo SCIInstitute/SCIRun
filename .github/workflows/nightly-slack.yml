@@ -100,10 +100,8 @@ jobs:
             test_lines="${test_lines}\n• ${label} ${kind}: ${summary}"
           done
 
-          # A job marked continue-on-error (the experimental VS 2026 builds in
-          # windows.yml, via reusable-build.yml's allow-failure input) fails
-          # without failing the run, so the conclusion alone would report a
-          # clean green. Name those jobs instead.
+          # A continue-on-error job (the VS 2026 builds in windows.yml) fails
+          # without failing the run, so the conclusion alone reads green.
           failed_jobs="$(gh run view "$WF_ID" --repo "$REPO" --json jobs \
             -q '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")' \
             2>/dev/null || true)"

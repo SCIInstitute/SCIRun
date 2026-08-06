@@ -108,9 +108,8 @@ ExternalProject_Add(Qwt_external
   LOG_BUILD     1
   LOG_INSTALL   1
 
-  # Without this a failing step only prints "Command failed: 1" plus a path to a
-  # stamp log that never leaves a CI runner, which is exactly what happened to
-  # the VS 2026 nightly. Echo the captured log when a step fails.
+  # Otherwise a failed step prints only "Command failed: 1" plus a path to a
+  # stamp log that never leaves the CI runner.
   LOG_OUTPUT_ON_FAILURE 1
 )
 
