@@ -27,14 +27,13 @@
 # QwtExternal.cmake — build Qwt via the internal CMake wrapper (preferred over qmake)
 
 # ----------------------------
-# Single place to pin wrapper tag
-# ----------------------------
-# Bump this tag when you cut a new wrapper release (e.g., v0.1.1, v0.2.0)
-set(qwt_WRAPPER_GIT_TAG "v0.1.1")
+# Pinned versions come from Superbuild/VERSIONS.cmake.
+# QWT_WRAPPER_GIT_TAG: bump when a new wrapper release is cut (e.g., v0.2.0).
+set(qwt_WRAPPER_GIT_TAG "${QWT_WRAPPER_GIT_TAG}")
 
-# Keep the legacy variable for visibility; it's the upstream Qwt tag
-# that your wrapper fetches internally (informational only here).
-set(qwt_GIT_TAG "v6.3.0")
+# QWT_GIT_TAG: the upstream Qwt tag the wrapper fetches internally
+# (informational here).
+set(qwt_GIT_TAG "${QWT_GIT_TAG}")
 
 # Ensure ExternalProject directories are rooted under the superbuild 'ep_base'
 set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
@@ -79,7 +78,7 @@ else()
 endif()
 
 ExternalProject_Add(Qwt_external
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt-cmake-wrapper.git"
+  GIT_REPOSITORY ${QWT_GIT_URL}
   GIT_TAG        ${qwt_WRAPPER_GIT_TAG}
 
   # Make cloning robust for pinned tags (turn off shallow during stabilization)
