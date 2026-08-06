@@ -15,7 +15,9 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -61,3 +63,28 @@ jobs:
       variant: gui
       build-with-python: true
       artifact-name: SCIRunWindowsPythonInstaller_qt6
+
+  # ---------------------------------------------------------------------------
+  # Windows Server 2025 image, built with Visual Studio 2026 (v145 toolset).
+  # windows-2025 (== windows-latest since June 2026) ships both VS 2022 and
+  # VS 2026; selecting the 'Visual Studio 18 2026' generator exercises the newer
+  # toolchain. Kept in the nightly matrix rather than the PR tier (pr.yml) so a
+  # VS-2026-specific break can't block pull requests. See issue #2449.
+  # ---------------------------------------------------------------------------
+  windows-2025-headless-vs2026:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2025
+      cmake-generator: 'Visual Studio 18 2026'
+      variant: headless
+      build-testing: true
+
+  windows-2025-gui-qt6-vs2026:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2025
+      cmake-generator: 'Visual Studio 18 2026'
+      qt-version: '6.3.*'
+      variant: gui
+      build-with-python: false
+      artifact-name: SCIRunWindowsInstaller_qt6_vs2026

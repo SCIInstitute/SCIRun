@@ -1,21 +1,21 @@
 #  For more information, please see: http://software.sci.utah.edu
-#
+# 
 #  The MIT License
-#
+# 
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
-#
+# 
+#  
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-#
+# 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software.
-#
+#  in all copies or substantial portions of the Software. 
+# 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -26,16 +26,21 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-ExternalProject_Add(Eigen_external
-  URL ${EIGEN_URL}
-  PATCH_COMMAND ""
-  CONFIGURE_COMMAND ""
-  BUILD_IN_SOURCE ON
+SET(data_GIT_URL "https://github.com/CIBC-Internal/Seg3DData.git")
+# master should be always be publicly released version
+SET(data_GIT_TAG "origin/master")
+
+SET(data_DIR "${SEG3D_BINARY_DIR}/Seg3DData")
+
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(Data_external
+  GIT_REPOSITORY ${data_GIT_URL}
+  GIT_TAG ${data_GIT_TAG}
+  UPDATE_COMMAND ""
+  SOURCE_DIR ${data_DIR}
   BUILD_COMMAND ""
+  CONFIGURE_COMMAND ""
+  PATCH_COMMAND ""
   INSTALL_COMMAND ""
 )
-
-ExternalProject_Get_Property(Eigen_external SOURCE_DIR)
-SET(Eigen_DIR ${SOURCE_DIR} CACHE PATH "")
-
-MESSAGE(STATUS "Eigen_DIR: ${Eigen_DIR}")

@@ -28,6 +28,8 @@
 # TODO: build from archive - Git not used
 SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET_PROPERTY(DIRECTORY PROPERTY "EP_UPDATE_DISCONNECTED" TRUE)
 
 ###########################################
 # Force superbuild Python, prevent system Python binding
@@ -212,6 +214,11 @@ SET(SUPERBUILD_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 SET(SCIRUN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src CACHE INTERNAL "" FORCE)
 SET(SCIRUN_BINARY_DIR ${CMAKE_BINARY_DIR}/SCIRun CACHE INTERNAL "" FORCE)
 
+# Central dependency manifest (pinned versions + source URLs). Must be included
+# before any ADD_EXTERNAL call so the *External.cmake files can consume its
+# variables. See VERSIONS.cmake for the update process.
+INCLUDE( ${SUPERBUILD_DIR}/VERSIONS.cmake )
+
 IF(BUILD_TESTING)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TestDataConfig.cmake SCIRunTestData_external )
 ENDIF()
@@ -264,7 +271,7 @@ ENDIF()
 
 IF(NOT BUILD_HEADLESS)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
-  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/CtkExternal.cmake Ctk_external )
+  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/deprecated/CtkExternal.cmake Ctk_external )
 ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )

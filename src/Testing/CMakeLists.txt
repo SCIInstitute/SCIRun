@@ -146,6 +146,19 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 ENDIF()
 
 IF(RUN_IMPORT_TESTS)
+  # Networks that reference modules not yet ported to SCIRun 5.
+  SET(DISABLED_IMPORT_TESTS
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.MDSplus"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.Streamlines-Scalar-Interp"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.Volume-Cutting"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.Volume-Viz"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.SCIRun.MeshingPipeline.DistributedParticles"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.SCIRun.MeshingPipeline.SizingFieldMedialAxisAndBoundaries"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.Teem.Optional.volume-colored-example"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.Teem.Optional.volume-colored-gage"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.Teem.Samples.tooth1"
+  )
+
   FILE(GLOB_RECURSE scirun_legacy_srns "${SCIRUN_TEST_RESOURCE_DIR}/**/*.srn")
   # The glob is broad; drop files that aren't legacy v4 networks: serialization
   # test artifacts (TransientOutput/), scratch outputs (*_TMP.srn), and any
@@ -165,6 +178,9 @@ IF(RUN_IMPORT_TESTS)
     ADD_TEST("${import_test_name}" ${EXE_LOC} --no_splash --regression 30 --import ${srn})
     # Bound a hung import at the ctest level.
     SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES TIMEOUT 120)
+    IF("${import_test_name}" IN_LIST DISABLED_IMPORT_TESTS)
+      SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES DISABLED TRUE)
+    ENDIF()
   ENDFOREACH()
 ENDIF()
 
