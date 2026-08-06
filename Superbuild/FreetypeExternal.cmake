@@ -32,6 +32,7 @@ SET(freetype_GIT_TAG "origin/scirun-5.0.0")
 ExternalProject_Add(Freetype_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/freetype.git"
   GIT_TAG ${freetype_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

@@ -194,6 +194,19 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 ENDIF()
 
 IF(RUN_IMPORT_TESTS)
+  # Networks that reference modules not yet ported to SCIRun 5.
+  SET(DISABLED_IMPORT_TESTS
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.MDSplus"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.Streamlines-Scalar-Interp"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.Volume-Cutting"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.Volume-Viz"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.SCIRun.MeshingPipeline.DistributedParticles"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.SCIRun.MeshingPipeline.SizingFieldMedialAxisAndBoundaries"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.Teem.Optional.volume-colored-example"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.Teem.Optional.volume-colored-gage"
+    ".Test.ImportNetwork.Other.v4nets.example_nets.Teem.Samples.tooth1"
+  )
+
   FILE(GLOB_RECURSE scirun_legacy_srns "${SCIRUN_TEST_RESOURCE_DIR}/**/*.srn")
   # The glob is broad; drop files that aren't legacy v4 networks: serialization
   # test artifacts (TransientOutput/), scratch outputs (*_TMP.srn), and any
@@ -215,6 +228,9 @@ IF(RUN_IMPORT_TESTS)
     SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES TIMEOUT 120)
     IF(WIN32)
       SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
+    ENDIF()
+    IF("${import_test_name}" IN_LIST DISABLED_IMPORT_TESTS)
+      SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES DISABLED TRUE)
     ENDIF()
   ENDFOREACH()
 ENDIF()
