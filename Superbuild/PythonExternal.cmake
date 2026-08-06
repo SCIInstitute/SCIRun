@@ -99,25 +99,8 @@ ELSE()
   SET(python_ABIFLAG_PYDEBUG "_d")
 ENDIF()
 
-# CPython's `make install` is not parallel-safe for macOS framework builds.
-# Makefile.pre.in has
-#
-#   install: @FRAMEWORKINSTALLFIRST@ @INSTALLTARGETS@ @FRAMEWORKINSTALLLAST@
-#
-# where --enable-framework sets FRAMEWORKINSTALLLAST to frameworkinstallmaclib,
-# a target with no prerequisites of its own that symlinks libpython$(VERSION).a
-# into $(LIBPL). $(LIBPL) is created by libainstall, reached via commoninstall
-# in @INSTALLTARGETS@. Nothing orders the two: a serial make happens to visit
-# them left to right, but under -j they run concurrently and the install dies
-# with
-#
-#   ln: .../lib/python3.13/config-3.13-darwin/libpython3.13.a: No such file or directory
-#   make[3]: *** [frameworkinstallmaclib] Error 1
-#
-# It is a race, so it is intermittent, and it is macOS-only because
-# FRAMEWORKINSTALLLAST is empty everywhere else. Install serially; the step is
-# copying headers and takes a couple of seconds, while the compile step above
-# keeps the full jobserver budget. See #2617 and the mac-gui failure on #2619.
+# CPython's install: runs frameworkinstallmaclib (symlinks into $(LIBPL)) as a
+# sibling of libainstall (creates $(LIBPL)), so -j races. Framework builds only.
 SET(python_INSTALL_COMMAND)
 IF(APPLE)
   SET(python_INSTALL_COMMAND

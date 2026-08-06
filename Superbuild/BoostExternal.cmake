@@ -178,23 +178,8 @@ ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
   GIT_REPOSITORY ${_boost_git_url}
   GIT_TAG ${_boost_git_tag}
-  # Every other git-based external got this in c552399bb ("Fix CI caching: add
-  # UPDATE_COMMAND "" to all git-based externals"); Boost's copy was lost in a
-  # later "Merge branch 'master' into refactor" resolution, which took the
-  # refactor side's rewritten ExternalProject_Add wholesale.
-  #
-  # Without it, Superbuild.cmake's EP_UPDATE_DISCONNECTED TRUE makes
-  # ExternalProject emit *two* git steps that both list DEPENDEES download:
-  # `update` and `update_disconnected`. Serial make runs them one after the
-  # other and the second is merely wasted work, so this stayed invisible. Under
-  # -j they start together on the same clone and fight over the submodule config
-  # locks:
-  #
-  #   error: could not lock config file .../Boost_external/.git/modules/dll/config: File exists
-  #   fatal: could not set 'core.worktree' to '../../../libs/dll'
-  #
-  # An empty update command reduces both steps to no-ops, which is also what the
-  # externals cache restore needs.
+  # EP_UPDATE_DISCONNECTED emits update and update_disconnected as siblings; under
+  # -j they race on the submodule config locks. Lost from c552399bb in a merge.
   UPDATE_COMMAND ""
   BUILD_IN_SOURCE ON
   PATCH_COMMAND ""
