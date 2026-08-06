@@ -25,13 +25,13 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(sqlite_GIT_TAG "origin/scirun-5.0.0-beta")
 
+# Source URL and pinned version come from Superbuild/VERSIONS.cmake.
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(SQLite_external
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/sqlite.git"
-  GIT_TAG ${sqlite_GIT_TAG}
+  GIT_REPOSITORY ${SQLITE_GIT_URL}
+  GIT_TAG ${SQLITE_GIT_TAG}
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
