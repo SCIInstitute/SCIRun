@@ -778,11 +778,13 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     { Id::Autoview,        Qt::Key_0, Qt::NoModifier,
       "Autoview",          "0",       "Find a view that shows all the data",
       [](ViewSceneDialog* d) { d->autoViewClicked(); } },
-    { Id::AutoviewNoScale, Qt::Key_0, Qt::AltModifier,
-      "Autoview (no scale)", "Alt+0", "Reset the eye so the data is centered",
-      // TODO: add a spire->centerView() that moves lookAt to bbox center
-      // without changing zoom; for now doAutoView is a reasonable stand-in.
-      [](ViewSceneDialog* d) { d->autoViewClicked(); } },
+    // Qt maps Qt::ControlModifier to Command on macOS, which is what we want here:
+    // unlike Cmd+H (hide window) there is no system conflict on Cmd+0. The main
+    // window does use Ctrl+0 for "Reset Network Zoom"; event() claims the key back
+    // while this dialog has focus.
+    { Id::AutoviewNoScale, Qt::Key_0, Qt::ControlModifier,
+      "Autoview (no scale)", "Ctrl+0", "Reset the eye so the data is centered",
+      [](ViewSceneDialog* d) { d->autoViewNoScaleClicked(); } },
     { Id::SnapToAxis,      Qt::Key_X, Qt::NoModifier,
       "Snap to Axis",      "X",       "Snap to the nearest axis-aligned view",
       [](ViewSceneDialog* d) { d->setClosestAxisView(); } },
@@ -792,6 +794,8 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     // Blocked on: ViewSceneManager exposing an ordered list of active ViewScenes.
     { Id::CopyView,        Qt::Key_1, Qt::ControlModifier,
       "Copy View",         "Ctrl+1-9","Copy view from Viewer Window 1-9", nullptr },
+    // Set Home stays on Alt (Option on macOS) on every platform: Qt maps
+    // Qt::ControlModifier to Command, and Cmd+H is hide-window on macOS.
     { Id::SetHome,         Qt::Key_H, Qt::AltModifier,
       "Set Home",          "Alt+H",   "Store the current view",
       [](ViewSceneDialog* d) {
@@ -827,16 +831,17 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
     // a toggleBoundingBox() slot here similar to showOrientationChecked().
     { Id::BoundingBox,     Qt::Key_B, Qt::NoModifier,
       "Bounding Box",      "B",       "Switch bounding box mode on/off", nullptr },
+    // The toggles below drive their control-dock widget rather than the dialog slot
+    // the widget is connected to. The slots are downstream receivers: calling one
+    // directly leaves the check box -- and the toolbar button styled from it -- stale.
     { Id::ToggleClipping,  Qt::Key_C, Qt::NoModifier,
       "Toggle Clipping",   "C",       "Switch clipping on/off",
-      [](ViewSceneDialog* d) {
-        d->setClippingPlaneVisible(!d->impl_->clippingPlaneManager_->active().visible);
-      } },
+      [](ViewSceneDialog* d) { d->impl_->clippingPlaneControls_->toggleVisible(); } },
     { Id::ToggleFog,       Qt::Key_D, Qt::NoModifier,
       "Toggle Fog",        "D",       "Switch fog on/off",
-      [](ViewSceneDialog* d) {
-        d->setFogOn(!d->state_->getValue(Parameters::FogOn).toBool());
-      } },
+      // fogGroupBox_ is connected on clicked(), which setChecked() does not emit,
+      // so toggleFog() re-emits it for us.
+      [](ViewSceneDialog* d) { d->impl_->fogControls_->toggleFog(); } },
     // TODO(#2505): Flat Shading (F) — no flat-shading mode in the v5 renderer. Needs: a uniform
     // flag in the object/phong shaders to use face normals (or a flat-shading shader
     // variant), a StaticRenderMode or per-pass uniform, SRInterface::setFlatShading(bool),
@@ -858,14 +863,12 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       "Toggle Lighting",   "K",       "Switch lighting on/off",
       [](ViewSceneDialog* d) {
         const bool newState = !d->state_->getValue(Parameters::HeadLightOn).toBool();
-        for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
-          d->toggleLight(i, newState);
+        for (auto* light : d->impl_->lightControls_)
+          light->setLightOn(newState);
       } },
     { Id::OrientationIcon, Qt::Key_O, Qt::NoModifier,
       "Orientation Icon",  "O",       "Switch orientation icon on/off",
-      [](ViewSceneDialog* d) {
-        d->showOrientationChecked(!d->state_->getValue(Parameters::AxesVisible).toBool());
-      } },
+      [](ViewSceneDialog* d) { d->impl_->orientationAxesControls_->toggleOrientation(); } },
     // TODO(#2506): Orthographic (P) — SRCamera/SRInterface only expose perspective projection.
     // Needs: SRInterface::setOrthographic(bool) that swaps between glm::perspective and
     // a glm::ortho sized to the current view frustum width at the lookAt distance,
@@ -893,6 +896,21 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       "Wireframe",         "W",       "Switch wire frame on/off", nullptr },
   }};
   return table;
+}
+
+namespace
+{
+  // The table spells modifiers the Qt way ("Ctrl+0", "Alt+H"). On macOS Qt maps
+  // those to Command and Option, so show the glyphs Mac users expect.
+  QString platformShortcutDisplay(const char* display)
+  {
+    QString text(display);
+#ifdef __APPLE__
+    text.replace("Ctrl+", QString(QChar(0x2318)));  // Command
+    text.replace("Alt+", QString(QChar(0x2325)));   // Option
+#endif
+    return text;
+  }
 }
 
 void ViewSceneDialog::addShortcutsHelpButton()
@@ -938,7 +956,7 @@ void ViewSceneDialog::showShortcutsDialog()
       if (!sc.isImplemented()) continue;
       table->insertRow(row);
       auto* nameItem     = new QTableWidgetItem(sc.actionName);
-      auto* shortcutItem = new QTableWidgetItem(sc.shortcutDisplay);
+      auto* shortcutItem = new QTableWidgetItem(platformShortcutDisplay(sc.shortcutDisplay));
       auto* descItem     = new QTableWidgetItem(sc.description);
       // Store the original table index so the double-click handler can find it.
       nameItem->setData(Qt::UserRole, idx);
@@ -1873,14 +1891,38 @@ void ViewSceneDialog::flashShortcutTooltip(const QString& msg)
   QToolTip::showText(mapToGlobal(QPoint(width() / 2, 32)), msg, this, {}, 1500);
 }
 
+namespace
+{
+  // Keys 1-6 (no modifier) → axis-aligned views; handled as a range so the
+  // table only needs one representative entry for the help dialog.
+  bool isAxisViewKey(Qt::Key key, Qt::KeyboardModifiers mods)
+  {
+    return mods == Qt::NoModifier && key >= Qt::Key_1 && key <= Qt::Key_6;
+  }
+}
+
+bool ViewSceneDialog::handlesShortcutKey(QKeyEvent* event) const
+{
+  const auto key  = static_cast<Qt::Key>(event->key());
+  const auto mods = event->modifiers() & ~Qt::KeypadModifier;
+
+  if (isAxisViewKey(key, mods))
+    return true;
+
+  for (const auto& sc : shortcutTable())
+  {
+    if (sc.key == key && sc.modifiers == mods && sc.action)
+      return true;
+  }
+  return false;
+}
+
 bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
 {
   const auto key  = static_cast<Qt::Key>(event->key());
   const auto mods = event->modifiers() & ~Qt::KeypadModifier;
 
-  // Keys 1-6 (no modifier) → axis-aligned views; handled as a range so the
-  // table only needs one representative entry for the help dialog.
-  if (mods == Qt::NoModifier && key >= Qt::Key_1 && key <= Qt::Key_6)
+  if (isAxisViewKey(key, mods))
   {
     static const char* const axisNames[] = {"+X","-X","+Y","-Y","+Z","-Z"};
     const int n = key - Qt::Key_0;
@@ -1899,6 +1941,20 @@ bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
     }
   }
   return false;
+}
+
+bool ViewSceneDialog::event(QEvent* event)
+{
+  // Modifier shortcuts overlap with main-window actions -- Ctrl+0 is also
+  // "Reset Network Zoom" -- and those win over key events while this dialog is
+  // docked. Claiming the override keeps the key an ordinary key press for us.
+  if (event->type() == QEvent::ShortcutOverride &&
+      handlesShortcutKey(static_cast<QKeyEvent*>(event)))
+  {
+    event->accept();
+    return true;
+  }
+  return ModuleDialogGeneric::event(event);
 }
 
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
@@ -2054,6 +2110,16 @@ void ViewSceneDialog::autoViewClicked()
   if (!spire) return;
 
   spire->doAutoView();
+
+  pushCameraState();
+}
+
+void ViewSceneDialog::autoViewNoScaleClicked()
+{
+  auto spire = impl_->mSpire.lock();
+  if (!spire) return;
+
+  spire->centerView();
 
   pushCameraState();
 }

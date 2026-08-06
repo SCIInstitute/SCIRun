@@ -311,6 +311,13 @@ void SRInterface::runGCOnNextExecution()
     }
 
     //----------------------------------------------------------------------------------------------
+    void SRInterface::centerView()
+    {
+      mCamera->centerView();
+      updateCamera();
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRInterface::setView(const glm::vec3& view, const glm::vec3& up)
     {
       mCamera->setView(view, up);
