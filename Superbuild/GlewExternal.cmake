@@ -37,6 +37,7 @@ ENDIF()
 ExternalProject_Add(Glew_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/glew.git"
   GIT_TAG ${glew_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""
