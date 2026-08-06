@@ -37,6 +37,7 @@ SET(data_DIR "${SEG3D_BINARY_DIR}/Seg3DData")
 ExternalProject_Add(Data_external
   GIT_REPOSITORY ${data_GIT_URL}
   GIT_TAG ${data_GIT_TAG}
+  UPDATE_COMMAND ""
   SOURCE_DIR ${data_DIR}
   BUILD_COMMAND ""
   CONFIGURE_COMMAND ""
