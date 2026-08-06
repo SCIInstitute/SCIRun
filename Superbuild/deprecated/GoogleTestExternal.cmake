@@ -38,6 +38,7 @@ SET(googletest_GIT_TAG "origin/cibc")
 ExternalProject_Add(GoogleTest_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/googletest.git"
   GIT_TAG ${googletest_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

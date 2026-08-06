@@ -28,6 +28,8 @@
 # TODO: build from archive - Git not used
 SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET_PROPERTY(DIRECTORY PROPERTY "EP_UPDATE_DISCONNECTED" TRUE)
 
 ###########################################
 # Force superbuild Python, prevent system Python binding
