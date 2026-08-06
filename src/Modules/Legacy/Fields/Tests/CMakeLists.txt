@@ -1,10 +1,10 @@
+#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -23,23 +23,33 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+#
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+# The only test here drives the TetGen-backed InterfaceWithTetGen module, so it
+# is meaningful only when the library is actually linked in.
+IF(WITH_TETGEN)
+  SET(Modules_Legacy_Fields_Tests_SRCS
+    InterfaceWithTetGenTests.cc
+  )
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
-ExternalProject_Add(SpdLog_external
-  GIT_REPOSITORY "https://github.com/gabime/spdlog"
-  GIT_TAG "v1.10.0"
-  UPDATE_COMMAND ""
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
-  CMAKE_CACHE_ARGS
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-)
+  SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Fields_Tests
+    ${Modules_Legacy_Fields_Tests_SRCS}
+  )
 
-ExternalProject_Get_Property(SpdLog_external SOURCE_DIR)
-SET(SPDLOG_DIR ${SOURCE_DIR})
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields_Tests
+    Modules_Legacy_Fields
+    Modules_Factory
+    Core_Datatypes
+    Dataflow_Network
+    Dataflow_State
+    Testing_Utils
+    Testing_ModuleTestBase
+    gtest_main
+    gtest
+    gmock
+  )
 
-MESSAGE(STATUS "SPDLOG_DIR: ${SPDLOG_DIR}")
+  # InterfaceWithTetGenImpl.h (InterfaceWithTetGenInput) is only compiled behind
+  # this flag; match it so the test sees the same declarations.
+  TARGET_COMPILE_DEFINITIONS(Modules_Legacy_Fields_Tests PRIVATE WITH_TETGEN)
+ENDIF()
