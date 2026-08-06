@@ -111,14 +111,15 @@ get_cmake_version() {
 # get the old serial behaviour back.
 detect_parallel_jobs() {
     local ncpu=0 memgb=0 jobs=0
+    local membytes memkb
 
     if [[ $osx == 1 ]]; then
-        ncpu=`sysctl -n hw.ncpu 2>/dev/null`
-        local membytes=`sysctl -n hw.memsize 2>/dev/null`
+        ncpu=$(sysctl -n hw.ncpu 2>/dev/null)
+        membytes=$(sysctl -n hw.memsize 2>/dev/null)
         [[ $membytes =~ ^[0-9]+$ ]] && memgb=$(( membytes / 1073741824 ))
     else
-        ncpu=`nproc 2>/dev/null`
-        local memkb=`awk '/^MemTotal:/ { print $2 }' /proc/meminfo 2>/dev/null`
+        ncpu=$(nproc 2>/dev/null)
+        memkb=$(awk '/^MemTotal:/ { print $2 }' /proc/meminfo 2>/dev/null)
         [[ $memkb =~ ^[0-9]+$ ]] && memgb=$(( memkb / 1048576 ))
     fi
 
@@ -130,7 +131,7 @@ detect_parallel_jobs() {
     [[ $jobs -le $ncpu ]] || jobs=$ncpu
     [[ $jobs -gt 0 ]] || jobs=1
 
-    echo $jobs
+    echo "$jobs"
 }
 
 ##########################################################################
@@ -263,7 +264,7 @@ done
 cmakeargs="${cmakeargs} ${cmakeflags}"
 
 if [[ -z $makeflags ]]; then
-    parallel_jobs=`detect_parallel_jobs`
+    parallel_jobs=$(detect_parallel_jobs)
     makeflags="-j${parallel_jobs}"
     echo "No -j given; using -j${parallel_jobs} (auto-detected from cores and RAM)."
 fi
