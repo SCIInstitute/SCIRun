@@ -375,40 +375,27 @@ void Module::copyStateToMetadata()
   impl_->metadata_.setMetadata("Module state", stateMetaInfo());
 }
 
-bool Module::executeWithSignals() NOEXCEPT
+namespace
 {
-  auto starting = "STARTING MODULE: " + id().id_;
-
-  if (isStoppable())
+  void logHeadlessExecutionMessage(const std::string& message)
   {
-    dynamic_cast<Stoppable*>(this)->resetStoppability();
-  }
-
-  runProgrammablePortInput();
-
 #ifdef BUILD_HEADLESS //TODO: better headless logging
-  static Mutex executeLogLock("headlessExecution");
-  if (!LogSettings::Instance().verbose())
-  {
-    Guard g(executeLogLock.get());
-    std::cout << starting << std::endl;
-  }
+    static Mutex executeLogLock("headlessExecution");
+    if (!LogSettings::Instance().verbose())
+    {
+      Guard g(executeLogLock.get());
+      std::cout << message << std::endl;
+    }
+#else
+    (void)message;
 #endif
-  impl_->executeBegins_(id());
-  auto start = std::chrono::steady_clock::now();
-  {
-    auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
-    impl_->metadata_.setMetadata("Last execution timestamp", isoString);
-    copyStateToMetadata();
   }
-  /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
-  status(starting);
-  /// @todo: need separate logger per module
-  //LOG_DEBUG("STARTING MODULE: " << id_.id_);
-  impl_->executionState_->transitionTo(ModuleExecutionState::Value::Executing);
-  impl_->returnCode_ = false;
-  bool threadStopValue = false;
+}
 
+/// Runs execute(), converting any exception thrown by the module into an error
+/// message. Returns true if the execution thread was stopped by the user.
+bool Module::executeAndHandleExceptions()
+{
   try
   {
     if (!executionDisabled())
@@ -436,7 +423,7 @@ bool Module::executeWithSignals() NOEXCEPT
   catch (const ThreadStopped&)
   {
     error("MODULE ERROR: execution thread interrupted by user.");
-    threadStopValue = true;
+    return true;
   }
   catch (Core::ExceptionBase& e)
   {
@@ -457,7 +444,37 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     error("MODULE ERROR: unhandled exception caught");
   }
-  impl_->threadStopped_ = threadStopValue;
+  return false;
+}
+
+bool Module::executeWithSignals() NOEXCEPT
+{
+  auto starting = "STARTING MODULE: " + id().id_;
+
+  if (isStoppable())
+  {
+    dynamic_cast<Stoppable*>(this)->resetStoppability();
+  }
+
+  runProgrammablePortInput();
+
+  logHeadlessExecutionMessage(starting);
+
+  impl_->executeBegins_(id());
+  auto start = std::chrono::steady_clock::now();
+  {
+    auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
+    impl_->metadata_.setMetadata("Last execution timestamp", isoString);
+    copyStateToMetadata();
+  }
+  /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
+  status(starting);
+  /// @todo: need separate logger per module
+  //LOG_DEBUG("STARTING MODULE: " << id_.id_);
+  impl_->executionState_->transitionTo(ModuleExecutionState::Value::Executing);
+  impl_->returnCode_ = false;
+
+  impl_->threadStopped_ = executeAndHandleExceptions();
 
   auto end = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed_seconds = end-start;
@@ -469,13 +486,7 @@ bool Module::executeWithSignals() NOEXCEPT
   finished << "MODULE " << id().id_ << " FINISHED " <<
     (impl_->returnCode_ ? "successfully " : "with errors ") << "in " << elapsed_seconds.count() << " seconds.";
   status(finished.str());
-#ifdef BUILD_HEADLESS //TODO: better headless logging
-  if (!LogSettings::Instance().verbose())
-  {
-    Guard g(executeLogLock.get());
-    std::cout << finished.str() << std::endl;
-  }
-#endif
+  logHeadlessExecutionMessage(finished.str());
 
   //TODO: brittle dependency on Completed with executor
   impl_->executionState_->transitionTo(ModuleExecutionState::Value::Completed);

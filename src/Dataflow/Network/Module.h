@@ -202,6 +202,7 @@ namespace Networks {
     Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
     std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
     void runProgrammablePortInput();
+    bool executeAndHandleExceptions();
     template <class T>
     SharedPointer<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>
