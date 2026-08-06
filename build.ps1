@@ -266,17 +266,23 @@ function Get-GitBin {
 function Get-VSInfo {
     $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
     if (Test-Path $vswhere) {
-        foreach ($range in @("[17.0,18.0)", "[16.0,17.0)")) {
+        # Newest first: prefer VS 2026 (v18), then 2022 (v17), then 2019 (v16).
+        $ranges = @{ "[18.0,19.0)" = "Visual Studio 18 2026";
+                     "[17.0,18.0)" = "Visual Studio 17 2022";
+                     "[16.0,17.0)" = "Visual Studio 16 2019" }
+        foreach ($range in @("[18.0,19.0)", "[17.0,18.0)", "[16.0,17.0)")) {
             $path = & $vswhere -latest -version $range `
                 -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
                 -property installationPath 2>$null
             if ($path) {
-                $gen = if ($range -like "*17*") { "Visual Studio 17 2022" } else { "Visual Studio 16 2019" }
-                return @($gen, $path)
+                return @($ranges[$range], $path)
             }
         }
     }
     # Fallback: check well-known paths without vswhere
+    if (Test-Path "$env:ProgramFiles\Microsoft Visual Studio\2026") {
+        return @("Visual Studio 18 2026", "$env:ProgramFiles\Microsoft Visual Studio\2026")
+    }
     if (Test-Path "$env:ProgramFiles\Microsoft Visual Studio\2022") {
         return @("Visual Studio 17 2022", "$env:ProgramFiles\Microsoft Visual Studio\2022")
     }

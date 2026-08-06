@@ -28,6 +28,8 @@
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
+#include <Core/Utils/CurrentFileName.h>
+#include <boost/filesystem.hpp>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
@@ -45,6 +47,8 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 #include <es-log/trace-log.h>
 #include <QOpenGLContext>
+#include <QPainter>
+#include <QToolTip>
 #include <gl-platform/GLPlatform.hpp>
 
 using namespace SCIRun;
@@ -157,7 +161,7 @@ namespace Gui {
   class ViewSceneDialogImpl
   {
   public:
-    GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
+    GLWidget*                             mGLWidget                     {nullptr};
     Render::RendererWeakPtr               mSpire                        {};         ///< Instance of Spire.
     QToolBar*                             toolBar1_                      {nullptr};  ///< Tool bar.
     QToolBar*                             toolBar2_                      {nullptr};  ///< Tool bar.
@@ -204,6 +208,9 @@ namespace Gui {
                                                                          {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
                                                                          {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
 
+    struct HomeCamera { float distance; glm::vec3 lookAt; glm::quat rotation; };
+    std::optional<HomeCamera> homeView_;
+
     std::optional<QPoint> savedPos_;
     QColor                                bgColor_                      {};
     ScaleBarData                              scaleBar_                     {};
@@ -230,6 +237,9 @@ namespace Gui {
     QPushButton* toolBar3Position_ {nullptr};
 
     std::vector<ViewSceneDialog*>                     viewScenesToUpdate  {};
+    QDialog*                                          shortcutsDialog_    {nullptr};
+    QTableWidget*                                     shortcutsTable_     {nullptr};
+    std::optional<QPoint>                             shortcutsDialogPos_ {};
 
     std::unique_ptr<Core::GeometryIDGenerator> gid_;
     std::string name_;
@@ -398,10 +408,11 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   connect(impl_->mGLWidget, &GLWidget::fatalError, this, &ViewSceneDialog::fatalError);
   connect(impl_->mGLWidget, &GLWidget::finishedFrame, this, &ViewSceneDialog::frameFinished);
-  connect(this, &ViewSceneDialog::mousePressSignalForGeometryObjectFeedback,
-          this, &ViewSceneDialog::sendGeometryFeedbackToState);
 
   impl_->mSpire = RendererWeakPtr(impl_->mGLWidget->getSpire());
+
+  connect(this, &ViewSceneDialog::mousePressSignalForGeometryObjectFeedback,
+          this, &ViewSceneDialog::sendGeometryFeedbackToState);
 
   //Set background Color
   const auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
@@ -452,7 +463,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     impl_->toolbarHolder_ = new QMainWindow;
-    impl_->toolbarHolder_->setCentralWidget(impl_->mGLWidget);
+    impl_->toolbarHolder_->setCentralWidget(impl_->mGLWidget ? static_cast<QWidget*>(impl_->mGLWidget) : new QWidget);
 
     impl_->toolBar1_ = new QToolBar;
     impl_->toolBar1_->setMovable(true);
@@ -553,6 +564,7 @@ void ViewSceneDialog::addToolBar()
   addControlLockButton();
   addScreenshotButton();
   addAutoRotateButton();
+  addShortcutsHelpButton();
 
   //TODO: render toolbar members
   addColorOptionsButton();
@@ -749,9 +761,220 @@ void ViewSceneDialog::addAutoViewButton()
   impl_->autoViewButton_ = new QPushButton(this);
   impl_->autoViewButton_->setToolTip("Auto View");
   impl_->autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
-  impl_->autoViewButton_->setShortcut(Qt::Key_0);
+  // Key_0 is handled by dispatchShortcutKey (shows tooltip); don't duplicate with setShortcut.
   connect(impl_->autoViewButton_, &QPushButton::clicked, this, &ViewSceneDialog::autoViewClicked);
   addToolbarButton(impl_->autoViewButton_, Qt::TopToolBarArea);
+}
+
+const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
+{
+  using Id = ShortcutDef::Id;
+  // Lambdas take ViewSceneDialog* so they can call any slot on the instance.
+  // Protected access is fine here because this is a member function of ViewSceneDialog.
+  static const ShortcutTable table = {{
+    { Id::AxisViews,       Qt::Key_1, Qt::NoModifier,
+      "Axis Views",        "1-6",     "Preprogrammed views aligning the view with the X, Y, or Z-axis",
+      [](ViewSceneDialog* d) { d->setAxisView(1); } },
+    { Id::Autoview,        Qt::Key_0, Qt::NoModifier,
+      "Autoview",          "0",       "Find a view that shows all the data",
+      [](ViewSceneDialog* d) { d->autoViewClicked(); } },
+    { Id::AutoviewNoScale, Qt::Key_0, Qt::AltModifier,
+      "Autoview (no scale)", "Alt+0", "Reset the eye so the data is centered",
+      // TODO: add a spire->centerView() that moves lookAt to bbox center
+      // without changing zoom; for now doAutoView is a reasonable stand-in.
+      [](ViewSceneDialog* d) { d->autoViewClicked(); } },
+    { Id::SnapToAxis,      Qt::Key_X, Qt::NoModifier,
+      "Snap to Axis",      "X",       "Snap to the nearest axis-aligned view",
+      [](ViewSceneDialog* d) { d->setClosestAxisView(); } },
+    // TODO(#2510): Copy View (Ctrl+1-9) — enumerate all live ViewSceneDialog instances via
+    // ViewSceneManager, let user pick by index, then call spire->setCameraDistance/
+    // setCameraLookAt/setCameraRotation with values from the chosen window's spire.
+    // Blocked on: ViewSceneManager exposing an ordered list of active ViewScenes.
+    { Id::CopyView,        Qt::Key_1, Qt::ControlModifier,
+      "Copy View",         "Ctrl+1-9","Copy view from Viewer Window 1-9", nullptr },
+    { Id::SetHome,         Qt::Key_H, Qt::AltModifier,
+      "Set Home",          "Alt+H",   "Store the current view",
+      [](ViewSceneDialog* d) {
+        auto spire = d->impl_->mSpire.lock();
+        if (!spire) return;
+        d->impl_->homeView_ = ViewSceneDialogImpl::HomeCamera{
+          spire->getCameraDistance(),
+          spire->getCameraLookAt(),
+          spire->getCameraRotation()
+        };
+      } },
+    { Id::GotoHome,        Qt::Key_H, Qt::NoModifier,
+      "Home",              "H",       "Go back to the stored view",
+      [](ViewSceneDialog* d) {
+        if (!d->impl_->homeView_) return;
+        auto spire = d->impl_->mSpire.lock();
+        if (!spire) return;
+        const auto& hv = *d->impl_->homeView_;
+        spire->setCameraDistance(hv.distance);
+        spire->setCameraLookAt(hv.lookAt);
+        spire->setCameraRotation(hv.rotation);
+        d->pushCameraState();
+      } },
+    // TODO(#2503): Toggle World Axes (A) — v4 rendered a large XYZ triad at the true world
+    // origin. v5 has no equivalent. Needs: a new GeometryObject that draws axis lines
+    // (or glyphs) at (0,0,0), a Parameters::WorldAxesVisible state entry, and wiring
+    // through newGeometryValue. The corner orientation icon (O) is a separate feature.
+    { Id::ToggleAxes,      Qt::Key_A, Qt::NoModifier,
+      "Toggle Axes",       "A",       "Switch axes on/off", nullptr },
+    // TODO(#2504): Bounding Box (B) — Parameters::ShowBBox exists but is commented out throughout
+    // the renderer. Needs: re-enabling ShowBBox, computing the combined scene AABB in
+    // SRInterface, building a wire-frame box GeometryObject each frame it's on, and
+    // a toggleBoundingBox() slot here similar to showOrientationChecked().
+    { Id::BoundingBox,     Qt::Key_B, Qt::NoModifier,
+      "Bounding Box",      "B",       "Switch bounding box mode on/off", nullptr },
+    { Id::ToggleClipping,  Qt::Key_C, Qt::NoModifier,
+      "Toggle Clipping",   "C",       "Switch clipping on/off",
+      [](ViewSceneDialog* d) {
+        d->setClippingPlaneVisible(!d->impl_->clippingPlaneManager_->active().visible);
+      } },
+    { Id::ToggleFog,       Qt::Key_D, Qt::NoModifier,
+      "Toggle Fog",        "D",       "Switch fog on/off",
+      [](ViewSceneDialog* d) {
+        d->setFogOn(!d->state_->getValue(Parameters::FogOn).toBool());
+      } },
+    // TODO(#2505): Flat Shading (F) — no flat-shading mode in the v5 renderer. Needs: a uniform
+    // flag in the object/phong shaders to use face normals (or a flat-shading shader
+    // variant), a StaticRenderMode or per-pass uniform, SRInterface::setFlatShading(bool),
+    // and a Parameters::FlatShading state entry with a toggleFlatShading() slot.
+    { Id::FlatShading,     Qt::Key_F, Qt::NoModifier,
+      "Flat Shading",      "F",       "Switch flat shading on/off", nullptr },
+    { Id::OpenHelp,        Qt::Key_I, Qt::NoModifier,
+      "Open Help",         "I",       "Open this help window",
+      [](ViewSceneDialog* d) { d->showShortcutsDialog(); } },
+    { Id::ViewLocking,     Qt::Key_L, Qt::NoModifier,
+      "View Locking",      "L",       "Switch view locking on/off",
+      [](ViewSceneDialog* d) {
+        const bool anyLocked = d->impl_->lockRotation_->isChecked() ||
+                               d->impl_->lockPan_->isChecked()      ||
+                               d->impl_->lockZoom_->isChecked();
+        if (anyLocked) d->unlockAllTriggered(); else d->lockAllTriggered();
+      } },
+    { Id::ToggleLighting,  Qt::Key_K, Qt::NoModifier,
+      "Toggle Lighting",   "K",       "Switch lighting on/off",
+      [](ViewSceneDialog* d) {
+        const bool newState = !d->state_->getValue(Parameters::HeadLightOn).toBool();
+        for (int i = 0; i < ViewSceneDialogImpl::NUM_LIGHTS; ++i)
+          d->toggleLight(i, newState);
+      } },
+    { Id::OrientationIcon, Qt::Key_O, Qt::NoModifier,
+      "Orientation Icon",  "O",       "Switch orientation icon on/off",
+      [](ViewSceneDialog* d) {
+        d->showOrientationChecked(!d->state_->getValue(Parameters::AxesVisible).toBool());
+      } },
+    // TODO(#2506): Orthographic (P) — SRCamera/SRInterface only expose perspective projection.
+    // Needs: SRInterface::setOrthographic(bool) that swaps between glm::perspective and
+    // a glm::ortho sized to the current view frustum width at the lookAt distance,
+    // SRCamera::setAsPerspective already exists — add setAsOrthographic() alongside it,
+    // and a Parameters::OrthographicMode state entry with a toggleOrthographic() slot.
+    { Id::Orthographic,    Qt::Key_P, Qt::NoModifier,
+      "Orthographic",      "P",       "Switch orthographic projection on/off", nullptr },
+    // TODO(#2507): Stereo (S) — not implemented in v5. Needs: a stereo rendering mode in
+    // SRInterface (side-by-side or anaglyph), likely a second render pass with a
+    // laterally offset camera, SRInterface::setStereo(bool), and a
+    // Parameters::StereoMode state entry. Significant renderer work.
+    { Id::Stereo,          Qt::Key_S, Qt::NoModifier,
+      "Stereo",            "S",       "Switch stereo mode on/off", nullptr },
+    // TODO(#2508): Backculling (U) — no back-face cull toggle in v5. Needs: SRInterface::
+    // setBackfaceCulling(bool) that calls glEnable/glDisable(GL_CULL_FACE) + glCullFace
+    // (GL_BACK) in the render loop (or a StaticGLState flag), a Parameters::BackfaceCulling
+    // state entry, and a toggleBackfaceCulling() slot.
+    { Id::Backculling,     Qt::Key_U, Qt::NoModifier,
+      "Backculling",       "U",       "Switch backculling on/off", nullptr },
+    // TODO(#2509): Wireframe (W) — no wireframe mode in v5. Needs: SRInterface::setWireframe(bool)
+    // using glPolygonMode(GL_FRONT_AND_BACK, GL_LINE/GL_FILL) (desktop GL only; for ES
+    // compatibility a geometry-shader or line-drawing pass may be needed instead),
+    // a Parameters::WireframeMode state entry, and a toggleWireframe() slot.
+    { Id::Wireframe,       Qt::Key_W, Qt::NoModifier,
+      "Wireframe",         "W",       "Switch wire frame on/off", nullptr },
+  }};
+  return table;
+}
+
+void ViewSceneDialog::addShortcutsHelpButton()
+{
+  auto* helpButton = new QPushButton(this);
+  helpButton->setToolTip("Keyboard Shortcuts (I)");
+  {
+    // Draw a white "?" on a transparent pixmap to match the dark toolbar icon style
+    QPixmap px(24, 24);
+    px.fill(Qt::transparent);
+    QPainter p(&px);
+    p.setPen(Qt::white);
+    QFont f = p.font();
+    f.setBold(true);
+    f.setPixelSize(18);
+    p.setFont(f);
+    p.drawText(px.rect(), Qt::AlignCenter, "?");
+    helpButton->setIcon(QIcon(px));
+  }
+  connect(helpButton, &QPushButton::clicked, this, &ViewSceneDialog::showShortcutsDialog);
+  addToolbarButton(helpButton, Qt::TopToolBarArea);
+}
+
+void ViewSceneDialog::showShortcutsDialog()
+{
+  if (!impl_->shortcutsDialog_)
+  {
+    impl_->shortcutsDialog_ = new QDialog(this);
+    impl_->shortcutsDialog_->installEventFilter(this);
+    Ui::ViewSceneShortcuts shortcutsUi;
+    shortcutsUi.setupUi(impl_->shortcutsDialog_);
+    auto* table = shortcutsUi.tableWidget;
+    impl_->shortcutsTable_ = table;
+    table->installEventFilter(this);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    // Only show implemented shortcuts; unimplemented ones are hidden pending
+    // their own feature work (see TODO comments in shortcutTable()).
+    int row = 0;
+    for (int idx = 0; idx < static_cast<int>(numShortcuts); ++idx)
+    {
+      const auto& sc = shortcutTable()[static_cast<std::size_t>(idx)];
+      if (!sc.isImplemented()) continue;
+      table->insertRow(row);
+      auto* nameItem     = new QTableWidgetItem(sc.actionName);
+      auto* shortcutItem = new QTableWidgetItem(sc.shortcutDisplay);
+      auto* descItem     = new QTableWidgetItem(sc.description);
+      // Store the original table index so the double-click handler can find it.
+      nameItem->setData(Qt::UserRole, idx);
+      table->setItem(row, 0, nameItem);
+      table->setItem(row, 1, shortcutItem);
+      table->setItem(row, 2, descItem);
+      ++row;
+    }
+    table->resizeColumnsToContents();
+    table->resizeRowsToContents();
+    // Let the table report its exact content size so the dialog can fit it.
+    table->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    table->setToolTip("Double-click a row to perform that action");
+    connect(table, &QTableWidget::cellDoubleClicked, [this](int row, int /*col*/)
+    {
+      const auto* nameItem = impl_->shortcutsTable_->item(row, 0);
+      if (!nameItem) return;
+      const int idx = nameItem->data(Qt::UserRole).toInt();
+      const auto& sc = shortcutTable()[static_cast<std::size_t>(idx)];
+      if (sc.action)
+        sc.action(this);
+    });
+    // Size the dialog to fit the content, plus padding so the last row is
+    // fully visible without scrolling (Windows chrome also needs extra room).
+    impl_->shortcutsDialog_->adjustSize();
+    const QSize padded = impl_->shortcutsDialog_->size() + QSize(40, 60);
+    impl_->shortcutsDialog_->setFixedSize(padded);
+
+    // Default position: top-right of the ViewScene window to minimise overlap.
+    // Use saved position if the user has moved it previously this session.
+    const QPoint defaultPos = mapToGlobal(QPoint(width(), 0));
+    impl_->shortcutsDialog_->move(impl_->shortcutsDialogPos_.value_or(defaultPos));
+  }
+  impl_->shortcutsDialog_->show();
+  impl_->shortcutsDialog_->raise();
+  impl_->shortcutsDialog_->activateWindow();
 }
 
 void ViewSceneDialog::addScreenshotButton()
@@ -1386,7 +1609,8 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   // future. Kept for future reference.
   //glLayout->removeWidget(impl_->mGLWidget);
 
-  impl_->mGLWidget->close();
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->close();
   ModuleDialogGeneric::closeEvent(evt);
 }
 
@@ -1644,16 +1868,68 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
   }
 }
 
+void ViewSceneDialog::flashShortcutTooltip(const QString& msg)
+{
+  QToolTip::showText(mapToGlobal(QPoint(width() / 2, 32)), msg, this, {}, 1500);
+}
+
+bool ViewSceneDialog::dispatchShortcutKey(QKeyEvent* event)
+{
+  const auto key  = static_cast<Qt::Key>(event->key());
+  const auto mods = event->modifiers() & ~Qt::KeypadModifier;
+
+  // Keys 1-6 (no modifier) → axis-aligned views; handled as a range so the
+  // table only needs one representative entry for the help dialog.
+  if (mods == Qt::NoModifier && key >= Qt::Key_1 && key <= Qt::Key_6)
+  {
+    static const char* const axisNames[] = {"+X","-X","+Y","-Y","+Z","-Z"};
+    const int n = key - Qt::Key_0;
+    setAxisView(n);
+    flashShortcutTooltip(QString("%1 View").arg(axisNames[n - 1]));
+    return true;
+  }
+
+  for (const auto& sc : shortcutTable())
+  {
+    if (sc.key == key && sc.modifiers == mods && sc.action)
+    {
+      sc.action(this);
+      flashShortcutTooltip(sc.actionName);
+      return true;
+    }
+  }
+  return false;
+}
+
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
 {
-  switch (event->key())
+  // Shift is handled separately — it affects cursor state, not a command shortcut.
+  if (event->key() == Qt::Key_Shift)
   {
-  case Qt::Key_Shift:
     impl_->shiftdown_ = true;
     updateCursor();
-    break;
-  default: ;
+    return;
   }
+  dispatchShortcutKey(event);
+}
+
+bool ViewSceneDialog::eventFilter(QObject* obj, QEvent* event)
+{
+  if (obj == impl_->shortcutsDialog_)
+  {
+    if (event->type() == QEvent::Move)
+    {
+      impl_->shortcutsDialogPos_ = impl_->shortcutsDialog_->pos();
+      return false;
+    }
+  }
+  if (event->type() == QEvent::KeyPress &&
+      (obj == impl_->shortcutsDialog_ || obj == impl_->shortcutsTable_))
+  {
+    if (dispatchShortcutKey(static_cast<QKeyEvent*>(event)))
+      return true;  // shortcut fired — consume so dialog doesn't also handle it
+  }
+  return ModuleDialogGeneric::eventFilter(obj, event);
 }
 
 void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
@@ -1692,6 +1968,67 @@ void ViewSceneDialog::updateCursor()
 //--------------------------------------------------------------------------------------------------
 //---------------- Camera --------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
+
+void ViewSceneDialog::setAxisView(int n)
+{
+  // Maps key 1-6 to the six cardinal axis-aligned views with sensible up vectors.
+  static const std::pair<glm::vec3, glm::vec3> views[6] = {
+    { V( 1, 0, 0), V( 0, 1, 0) },   // 1: +X  (Y up)
+    { V(-1, 0, 0), V( 0, 1, 0) },   // 2: -X  (Y up)
+    { V( 0, 1, 0), V( 0, 0, 1) },   // 3: +Y  (Z up)
+    { V( 0,-1, 0), V( 0, 0, 1) },   // 4: -Y  (Z up)
+    { V( 0, 0, 1), V( 0, 1, 0) },   // 5: +Z  (Y up)
+    { V( 0, 0,-1), V( 0, 1, 0) },   // 6: -Z  (Y up)
+  };
+  if (n < 1 || n > 6) return;
+  auto spire = impl_->mSpire.lock();
+  if (!spire) return;
+  spire->setView(views[n - 1].first, views[n - 1].second);
+  pushCameraState();
+}
+
+void ViewSceneDialog::setClosestAxisView()
+{
+  auto spire = impl_->mSpire.lock();
+  if (!spire) return;
+
+  // The camera rotation quaternion is from glm::lookAt (world→camera).
+  // Transposing its mat3 gives the camera axes in world space:
+  //   Rt[0] = right,  Rt[1] = up,  Rt[2] = -forward  (all in world coords)
+  const glm::mat3 Rt = glm::transpose(glm::mat3_cast(spire->getCameraRotation()));
+  const glm::vec3 viewDir = -Rt[2];   // current look direction (world space)
+  const glm::vec3 upDir   =  Rt[1];   // current up direction  (world space)
+
+  static const glm::vec3 axes[6] = {
+    { 1, 0, 0}, {-1, 0, 0},
+    { 0, 1, 0}, { 0,-1, 0},
+    { 0, 0, 1}, { 0, 0,-1},
+  };
+
+  // Find the cardinal axis closest to the current view direction.
+  int bestView = 0;
+  float bestViewDot = -2.f;
+  for (int i = 0; i < 6; ++i)
+  {
+    float d = glm::dot(viewDir, axes[i]);
+    if (d > bestViewDot) { bestViewDot = d; bestView = i; }
+  }
+  const glm::vec3 view = axes[bestView];
+
+  // Find the cardinal axis closest to the current up direction that is
+  // perpendicular to the chosen view axis.
+  int bestUp = 0;
+  float bestUpDot = -2.f;
+  for (int i = 0; i < 6; ++i)
+  {
+    if (std::abs(glm::dot(view, axes[i])) > 0.5f) continue; // skip parallel/anti-parallel
+    float d = glm::dot(upDir, axes[i]);
+    if (d > bestUpDot) { bestUpDot = d; bestUp = i; }
+  }
+
+  spire->setView(view, axes[bestUp]);
+  pushCameraState();
+}
 
 void ViewSceneDialog::snapToViewAxis()
 {
@@ -1770,41 +2107,50 @@ void ViewSceneDialog::toggleLockColor(bool locked)
 
 void ViewSceneDialog::lockRotationToggled()
 {
-  impl_->mGLWidget->setLockRotation(impl_->lockRotation_->isChecked());
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->setLockRotation(impl_->lockRotation_->isChecked());
   toggleLockColor(impl_->lockRotation_->isChecked() || impl_->lockPan_->isChecked() || impl_->lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockPanningToggled()
 {
-  impl_->mGLWidget->setLockPanning(impl_->lockPan_->isChecked());
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->setLockPanning(impl_->lockPan_->isChecked());
   toggleLockColor(impl_->lockRotation_->isChecked() || impl_->lockPan_->isChecked() || impl_->lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockZoomToggled()
 {
-  impl_->mGLWidget->setLockZoom(impl_->lockZoom_->isChecked());
+  if (impl_->mGLWidget)
+    impl_->mGLWidget->setLockZoom(impl_->lockZoom_->isChecked());
   toggleLockColor(impl_->lockRotation_->isChecked() || impl_->lockPan_->isChecked() || impl_->lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockAllTriggered()
 {
   impl_->lockRotation_->setChecked(true);
-  impl_->mGLWidget->setLockRotation(true);
   impl_->lockPan_->setChecked(true);
-  impl_->mGLWidget->setLockPanning(true);
   impl_->lockZoom_->setChecked(true);
-  impl_->mGLWidget->setLockZoom(true);
+  if (impl_->mGLWidget)
+  {
+    impl_->mGLWidget->setLockRotation(true);
+    impl_->mGLWidget->setLockPanning(true);
+    impl_->mGLWidget->setLockZoom(true);
+  }
   toggleLockColor(true);
 }
 
 void ViewSceneDialog::unlockAllTriggered()
 {
   impl_->lockRotation_->setChecked(false);
-  impl_->mGLWidget->setLockRotation(false);
   impl_->lockPan_->setChecked(false);
-  impl_->mGLWidget->setLockPanning(false);
   impl_->lockZoom_->setChecked(false);
-  impl_->mGLWidget->setLockZoom(false);
+  if (impl_->mGLWidget)
+  {
+    impl_->mGLWidget->setLockRotation(false);
+    impl_->mGLWidget->setLockPanning(false);
+    impl_->mGLWidget->setLockZoom(false);
+  }
   toggleLockColor(false);
 }
 
@@ -2798,10 +3144,40 @@ void ViewSceneDialog::saveScreenshot(QString fileName, bool notify)
 
 void ViewSceneDialog::autoSaveScreenshot()
 {
+  const auto moduleName = QString::fromStdString(getName()).replace(':', '-');
+  auto dir = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString());
+
+  if (Application::Instance().parameters()->isRegressionMode())
+  {
+    // Deterministic, golden-image-ready name: <dir>/<network>.<module>.png,
+    // keyed to the loaded network file (no wall-clock timestamp). The output
+    // directory comes from --image-dir when given, else the screenshot pref,
+    // else the current working directory.
+    const auto imageDir = Application::Instance().parameters()->imageOutputDirectory();
+    if (imageDir)
+      dir = QString::fromStdString(imageDir->string());
+    if (dir.isEmpty())
+      dir = ".";
+    boost::filesystem::create_directories(dir.toStdString());
+    const auto network = QString::fromStdString(
+      boost::filesystem::path(Core::getCurrentFileName()).stem().string());
+    const auto file = QString("%1/%2.%3.png").arg(dir).arg(network).arg(moduleName);
+
+    // Save the frame already captured during the run (each frameFinished calls
+    // takeScreenshot). Do NOT re-render here: this runs at exit, and a fresh
+    // offscreen doFrame at teardown crashes inside the GL geometry draw for
+    // networks with real geometry. Only render if nothing was captured yet.
+    if (!impl_->screenshotTaker_)
+      takeScreenshot();
+    if (impl_->screenshotTaker_)
+      impl_->screenshotTaker_->saveScreenshot(file);
+    return;
+  }
+
   QThread::sleep(1);
-  const auto file = QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()) +
+  const auto file = dir +
                     QString("/%1_%2.png")
-                    .arg(QString::fromStdString(getName()).replace(':', '-'))
+                    .arg(moduleName)
                     .arg(QTime::currentTime().toString("hh.mm.ss.zzz"));
 
   saveScreenshot(file, false);
@@ -2861,7 +3237,6 @@ void ViewSceneDialog::takeScreenshot()
 {
   if (!impl_->screenshotTaker_)
     impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
-
   impl_->screenshotTaker_->takeScreenshot();
 }
 
