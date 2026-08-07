@@ -76,7 +76,7 @@ public:
   }
   static void SetUpTestCase()
   {
-    auto xmlFile = TestResources::rootDir() / "../../src/Interface/Application/Resources/LegacyModuleImporter.xml";
+    auto xmlFile = TestResources::sourceRootDir() / "Interface" / "Application" / "Resources" / "LegacyModuleImporter.xml";
     std::ifstream file(xmlFile.string());
     LegacyNetworkIO::initializeStateConverter(file);
   }
