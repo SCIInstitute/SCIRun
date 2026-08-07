@@ -32,7 +32,6 @@ SET(Core_Datatypes_SRCS
   ColorMap.cc
   Datatype.cc
   Geometry.cc
-  VtkGeometry.cc
   Material.cc
   Matrix.cc
   MatrixAlgorithms.cc
@@ -44,6 +43,12 @@ SET(Core_Datatypes_SRCS
   MetadataObject.cc
   Feedback.cc
 )
+
+IF(WITH_VTK)
+  LIST(APPEND Core_Datatypes_SRCS
+	VtkGeometry.cc
+  )
+ENDIF()
 
 SET(Core_Datatypes_HEADERS
   BlockMatrix.h
@@ -58,7 +63,6 @@ SET(Core_Datatypes_HEADERS
   TensorFwd.h
   DenseColumnMatrix.h
   Geometry.h
-  VtkGeometry.h
   HasId.h
   Material.h
   Matrix.h
@@ -78,6 +82,13 @@ SET(Core_Datatypes_HEADERS
   Feedback.h
   )
 
+if (WITH_VTK)
+  list(APPEND Core_Datatypes_HEADERS
+	VtkGeometry.h
+  )
+ENDIF()
+
+
 SCIRUN_ADD_LIBRARY(Core_Datatypes
   ${Core_Datatypes_HEADERS}
   ${Core_Datatypes_SRCS}
@@ -87,8 +98,13 @@ TARGET_LINK_LIBRARIES(Core_Datatypes
   Core_Persistent
   Core_Datatypes_Legacy_Base
   Core_Geometry_Primitives
-  VTK::CommonCore
 )
+
+IF (WITH_VTK)
+  TARGET_LINK_LIBRARIES(Core_Datatypes
+	VTK::CommonCore
+  )
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
