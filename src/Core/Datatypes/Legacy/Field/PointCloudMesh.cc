@@ -65,6 +65,8 @@ public:
                          VMesh::Elem::index_type i) const override;
   void get_elems(VMesh::Elem::array_type& elems,
                          VMesh::Node::index_type i) const override;
+  void get_elems(VMesh::Elem::array_type& elems,
+                         VMesh::DElem::index_type i) const override;
 
   void get_center(Point &point, VMesh::Node::index_type i) const override;
   void get_center(Point &point, VMesh::Elem::index_type i) const override;
@@ -241,6 +243,15 @@ template <class MESH>
 void
 VPointCloudMesh<MESH>::get_elems(VMesh::Elem::array_type& elems,
                                  VMesh::Node::index_type i) const
+{
+  elems.resize(1); elems[0] = static_cast<VMesh::Elem::index_type>(i);
+}
+
+/// Node, elem and delem are all the same thing in a point cloud.
+template <class MESH>
+void
+VPointCloudMesh<MESH>::get_elems(VMesh::Elem::array_type& elems,
+                                 VMesh::DElem::index_type i) const
 {
   elems.resize(1); elems[0] = static_cast<VMesh::Elem::index_type>(i);
 }
