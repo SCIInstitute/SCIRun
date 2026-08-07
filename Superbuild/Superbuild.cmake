@@ -111,7 +111,7 @@ OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
 ###########################################
 # Configure vtk
-OPTION(WITH_VTK "build VTK" ON)
+OPTION(WITH_VTK "build VTK" OFF)
 
 ###########################################
 # Configure Windows executable to run with
