@@ -178,6 +178,9 @@ ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
   GIT_REPOSITORY ${_boost_git_url}
   GIT_TAG ${_boost_git_tag}
+  # EP_UPDATE_DISCONNECTED emits update and update_disconnected as siblings; under
+  # -j they race on the submodule config locks. Lost from c552399bb in a merge.
+  UPDATE_COMMAND ""
   BUILD_IN_SOURCE ON
   PATCH_COMMAND ""
   INSTALL_COMMAND ""
@@ -331,6 +334,11 @@ endif()
 
 set(_BOOST_B2_ARGS
   ${_BOOST_CXXFLAGS}
+
+  # b2 is not a make, so it does not inherit the outer jobserver and defaults
+  # to building one library at a time. See Superbuild.cmake for how this is
+  # sized.
+  -j${SUPERBUILD_PARALLEL_JOBS}
 
   --with-atomic
   --with-chrono
