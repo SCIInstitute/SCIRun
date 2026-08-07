@@ -103,6 +103,11 @@ jobs:
       - name: Build (Linux/macOS)
         if: ${{ runner.os != 'Windows' }}
         shell: bash
+        # No -j is passed on purpose: build.sh auto-detects a job count from the
+        # runner's cores and RAM (see detect_parallel_jobs there) and echoes it,
+        # so this stays correct across the 3-core arm64 images, the 4-core Intel
+        # and Linux ones, and any self-hosted runner added later (#2617).
+        # Before that detection existed these builds ran fully serial.
         run: |
           set -eux
           CMD=(./build.sh)
