@@ -168,3 +168,112 @@ jobs:
       variant: headless
       build-testing: true
       run-smoke-test: true
+
+  # ---------------------------------------------------------------------------
+  # Rolling nightly prerelease
+  # ---------------------------------------------------------------------------
+  # Republishes the night's .pkg installers under a single `nightly` tag that is
+  # rewritten in place, so https://github.com/.../releases/tag/nightly is a
+  # permanent link. Actions artifacts expire after 90 days and need a signed-in
+  # GitHub account to download; release assets have neither limit.
+  #
+  # Schedule only -- master pushes would rewrite the release several times a day.
+  nightly-release:
+    # always(): a failed variant should not suppress the ones that worked. The
+    # release body lists what actually made it in.
+    if: ${{ always() && github.event_name == 'schedule' }}
+    needs: [mac-gui, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # create/update the release and move the tag
+      actions: read     # download this run's artifacts
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: nightly
+    steps:
+      - name: Download installer artifacts
+        run: |
+          gh run download "$GITHUB_RUN_ID" --dir artifacts --pattern 'SCIRunMac*' || true
+          ls -R artifacts 2>/dev/null || echo "(none)"
+
+      - name: Name the packages per variant
+        run: |
+          set -eu
+          shopt -s nullglob
+          mkdir -p upload
+
+          # Every variant's CPack output is SCIRun-<version>-Darwin.pkg
+          # (src/CMakeLists.txt:978) -- identical names would clobber each other
+          # as release assets, so map the artifact name onto a variant suffix.
+          for dir in artifacts/*/; do
+            case "$(basename "$dir")" in
+              SCIRunMacInstaller)          suffix=macos-latest-arm64 ;;
+              SCIRunMacInstaller-26)       suffix=macos26-arm64 ;;
+              SCIRunMacInstaller-26-intel) suffix=macos26-x86_64 ;;
+              SCIRunMacNPInstaller)        suffix=macos-latest-arm64-nopython ;;
+              *) echo "::warning::Unrecognized artifact $(basename "$dir"); skipping"; continue ;;
+            esac
+            for pkg in "$dir"*.pkg; do
+              base="$(basename "$pkg" .pkg)"        # SCIRun-5.0.0-Darwin
+              cp "$pkg" "upload/${base%-Darwin}-${suffix}.pkg"
+            done
+          done
+          ls -l upload
+
+      - name: Publish rolling prerelease
+        run: |
+          set -eu
+          shopt -s nullglob
+          files=(upload/*.pkg)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::No macOS installers were produced; leaving the existing nightly release alone."
+            exit 1
+          fi
+
+          {
+            echo "Automated build of \`master\` from $(date -u +%Y-%m-%d). Rewritten nightly --"
+            echo "assets and commit change without notice, and this is not a supported release."
+            echo
+            echo "Built from ${GITHUB_SHA}."
+            echo
+            echo "| Installer | Runner image | Architecture | Python |"
+            echo "| --- | --- | --- | --- |"
+            for f in "${files[@]}"; do
+              case "$f" in
+                *-macos-latest-arm64-nopython.pkg) echo "| \`$(basename "$f")\` | macOS-latest | arm64 | no |" ;;
+                *-macos-latest-arm64.pkg)          echo "| \`$(basename "$f")\` | macOS-latest | arm64 | yes |" ;;
+                *-macos26-arm64.pkg)               echo "| \`$(basename "$f")\` | macOS 26 | arm64 | yes |" ;;
+                *-macos26-x86_64.pkg)              echo "| \`$(basename "$f")\` | macOS 26 | x86_64 | yes |" ;;
+              esac
+            done
+            echo
+            echo "### These packages are not signed or notarized"
+            echo
+            echo "Gatekeeper will refuse to open them on download (see issue #1663). To install anyway:"
+            echo
+            echo '```'
+            echo "xattr -dr com.apple.quarantine <downloaded>.pkg"
+            echo "sudo installer -pkg <downloaded>.pkg -target /"
+            echo '```'
+          } > notes.md
+
+          title="SCIRun nightly (macOS) — $(date -u +%Y-%m-%d)"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            # A published release ignores target_commitish updates, so the git
+            # ref has to be force-moved for the release to show tonight's commit.
+            gh api -X PATCH "repos/${GH_REPO}/git/refs/tags/${TAG}" \
+              -f sha="$GITHUB_SHA" -F force=true >/dev/null
+            gh release edit "$TAG" --title "$title" --notes-file notes.md --prerelease
+            # Drop last night's assets first: a variant that failed tonight must
+            # not leave a stale installer sitting next to the fresh ones.
+            for asset in $(gh release view "$TAG" --json assets --jq '.assets[].name'); do
+              gh release delete-asset "$TAG" "$asset" --yes
+            done
+            gh release upload "$TAG" "${files[@]}" --clobber
+          else
+            gh release create "$TAG" "${files[@]}" \
+              --prerelease --target "$GITHUB_SHA" \
+              --title "$title" --notes-file notes.md
+          fi

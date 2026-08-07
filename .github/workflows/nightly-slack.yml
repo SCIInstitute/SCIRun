@@ -72,6 +72,8 @@ jobs:
 
       - name: Build Slack payload
         env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
           WF_NAME: ${{ github.event.workflow_run.name }}
           WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           WF_URL: ${{ github.event.workflow_run.html_url }}
@@ -109,13 +111,21 @@ jobs:
             emoji=":large_yellow_circle:"
           fi
 
+          # mac-build attaches its installers to the rolling `nightly` prerelease
+          # (see mac.yml). Link it only when the tag actually moved to this run's
+          # commit -- otherwise the nightly-release job failed and the link would
+          # silently point at an older build.
+          install_line=""
+          if [ "$WF_NAME" = "mac-build" ]; then
+            tag_sha="$(gh api "repos/${REPO}/git/ref/tags/nightly" --jq '.object.sha' 2>/dev/null || true)"
+            if [ "$tag_sha" = "$WF_SHA" ]; then
+              install_line="\n:package: <https://github.com/${REPO}/releases/tag/nightly|macOS installers> (.pkg, unsigned)"
+            fi
+          fi
+
           header="${emoji} *${WF_NAME}* nightly — ${WF_CONCLUSION}"
           footer="<${WF_URL}|View run> · \`${short_sha}\` (${WF_BRANCH})"
-          if [ -n "$test_lines" ]; then
-            text="${header}${test_lines}\n${footer}"
-          else
-            text="${header}\n${footer}"
-          fi
+          text="${header}${test_lines}${install_line}\n${footer}"
 
           # Build the JSON with jq so newlines and any special characters in the
           # summary are escaped correctly. printf %b expands the \n separators.
