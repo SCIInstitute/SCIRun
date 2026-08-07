@@ -28,7 +28,8 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-SET(DEFAULT_PYTHON_VERSION "3.13.1")
+# Default Python version comes from Superbuild/VERSIONS.cmake (PYTHON_VERSION).
+SET(DEFAULT_PYTHON_VERSION "${PYTHON_VERSION}")
 
 set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
 set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.10.16 3.11.11 3.12.8 3.13.1)
@@ -55,8 +56,21 @@ SET(python_ABIFLAG_PYDEBUG)
 SET(python_ABIFLAG_PYMALLOC "m")
 SET(ABIFLAGS "${python_ABIFLAG_PYMALLOC}${python_ABIFLAG_PYDEBUG}")
 
-SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
-SET(python_GIT_URL "https://github.com/CIBC-Internal/python.git")
+# CIBC-Internal/python carries each supported Python version as a BRANCH, not a
+# tag, so "origin/${USER_PYTHON_VERSION}" is a floating ref. VERSIONS.cmake pins
+# the default version (PYTHON_VERSION) to a commit; use it when the user has not
+# switched versions. A user-selected version has no pinned commit, so it still
+# tracks the branch tip — and says so, rather than silently being unpinned.
+IF(USER_PYTHON_VERSION STREQUAL PYTHON_VERSION AND PYTHON_GIT_TAG)
+  SET(python_GIT_TAG "${PYTHON_GIT_TAG}")
+ELSE()
+  SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
+  MESSAGE(STATUS
+    "[Python_external] USER_PYTHON_VERSION=${USER_PYTHON_VERSION} differs from the "
+    "pinned default ${PYTHON_VERSION}; tracking branch origin/${USER_PYTHON_VERSION} "
+    "(not reproducible).")
+ENDIF()
+SET(python_GIT_URL "${PYTHON_GIT_URL}")
 
 SET(python_WIN32_ARCH)
 SET(python_WIN32_64BIT_DIR)
@@ -85,6 +99,15 @@ ELSE()
   SET(python_ABIFLAG_PYDEBUG "_d")
 ENDIF()
 
+# CPython's install: runs frameworkinstallmaclib (symlinks into $(LIBPL)) as a
+# sibling of libainstall (creates $(LIBPL)), so -j races. Framework builds only.
+SET(python_INSTALL_COMMAND)
+IF(APPLE)
+  SET(python_INSTALL_COMMAND
+    INSTALL_COMMAND "${CMAKE_COMMAND}" -E env --unset=MAKEFLAGS make install
+  )
+ENDIF()
+
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 IF(UNIX)
@@ -95,6 +118,7 @@ IF(UNIX)
     BUILD_IN_SOURCE ON
     CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
+    ${python_INSTALL_COMMAND}
   )
   IF(APPLE)
     # Preserves links, permissions

@@ -1,0 +1,360 @@
+#!/usr/bin/env python3
+# For more information, please see: http://software.sci.utah.edu
+#
+# The MIT License
+#
+# Copyright (c) 2026 Scientific Computing and Imaging Institute,
+# University of Utah.
+# (see LICENSE for full text)
+
+"""Check SCIRun's pinned external dependencies for available updates.
+
+Reads Superbuild/VERSIONS.cmake (the single source of truth for dependency
+pins) and performs two kinds of check:
+
+  * DRIFT  — for deps pinned to a commit SHA that tracks an upstream *branch*,
+             query the current tip of that branch. If the branch has advanced
+             past our pinned SHA, our pin is behind the branch we follow.
+
+  * UPDATE — for deps pinned to a release *tag*, query the upstream project's
+             latest stable release/tag and compare. If a newer version exists,
+             flag it. Prereleases (alpha/beta/rc) are ignored.
+
+The branch/tag a pin tracks is read from the doc string of each
+sci_dep_version() entry, e.g. "... (branch scirun-5.0.0-beta)".
+
+Network access is required (git ls-remote + GitHub/GitLab REST APIs). The
+script is read-only: it never edits the manifest. It prints a Markdown report
+to stdout and exits 0 when everything is current, or 1 when at least one
+dependency is out of date (so CI can surface it). Pass --no-fail to always
+exit 0 (e.g. for a report-only scheduled job).
+"""
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+import urllib.error
+import urllib.request
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_MANIFEST = os.path.normpath(os.path.join(HERE, "..", "VERSIONS.cmake"))
+
+# Map each manifest dependency to how it should be checked.
+#
+#   url_var / tag_var : the sci_dep_version variables holding the repo + pin.
+#   upstream          : GitHub "owner/repo" whose latest release/tag is the
+#                       canonical version, or "gitlab:<project>" for GitLab,
+#                       or None to skip the upstream-release check.
+#
+# The branch a SHA-pin tracks is derived from the tag_var's doc string, so it
+# does not need to be repeated here.
+DEPENDENCIES = [
+    # (name, url_var, tag_var, upstream)
+    ("Eigen", "EIGEN_URL", "EIGEN_VERSION", "gitlab:libeigen%2Feigen"),
+    ("zlib", "ZLIB_GIT_URL", "ZLIB_GIT_TAG", "madler/zlib"),
+    ("LodePNG", "LODEPNG_GIT_URL", "LODEPNG_GIT_TAG", "lvandeve/lodepng"),
+    ("FreeType", "FREETYPE_GIT_URL", "FREETYPE_GIT_TAG", None),
+    ("Teem", "TEEM_GIT_URL", "TEEM_GIT_TAG", None),
+    ("SQLite", "SQLITE_GIT_URL", "SQLITE_GIT_TAG", None),
+    ("GLM", "GLM_GIT_URL", "GLM_GIT_TAG", "g-truc/glm"),
+    ("GLEW", "GLEW_GIT_URL", "GLEW_GIT_TAG", "nigels-com/glew"),
+    ("OSPRay", "OSPRAY_GIT_URL", "OSPRAY_GIT_TAG", "RenderKit/ospray"),
+    ("Qwt", "QWT_GIT_URL", "QWT_WRAPPER_GIT_TAG", None),
+    # Two rows for Python: the commit pin is checked for drift against the
+    # branch it tracks, while PYTHON_VERSION is compared against CPython
+    # releases so a new upstream version is still reported.
+    ("Python", "PYTHON_GIT_URL", "PYTHON_GIT_TAG", None),
+    ("Python (version)", "PYTHON_GIT_URL", "PYTHON_VERSION", "python/cpython"),
+    # Boost's upstream is deliberately None: CIBC-Internal/boost is not a fork
+    # of boostorg/boost (its master carries SCIRun patches from 2016), so
+    # comparing our pin against upstream Boost releases is meaningless.
+    ("Boost", "BOOST_GIT_URL", "BOOST_GIT_TAG", None),
+    ("TetGen", "TETGEN_GIT_URL", "TETGEN_GIT_TAG", None),
+    ("Cleaver2", "CLEAVER2_GIT_URL", "CLEAVER2_GIT_TAG", "SCIInstitute/Cleaver2"),
+    ("spdlog", "SPDLOG_GIT_URL", "SPDLOG_GIT_TAG", "gabime/spdlog"),
+    ("Tny", "TNY_GIT_URL", "TNY_GIT_TAG", None),
+]
+
+# Statuses that mean a human must act. Transient "ERROR" rows (ls-remote or an
+# upstream API failing) are deliberately excluded so a network blip does not
+# fail the job, but "INVALID" -- a pin that is a mutable branch head -- always
+# counts: it is a reproducibility defect, not a flake.
+ACTIONABLE_STATUSES = ("INVALID", "UPDATE", "DRIFT")
+
+SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+BRANCH_DOC_RE = re.compile(r"\(branch\s+(?P<branch>[^)]+)\)")
+# Markers that identify a prerelease tag (alpha/beta/rc/dev, or a trailing
+# aN/bN as in CPython's "3.15.0b4"). Case-insensitive.
+PRERELEASE_RE = re.compile(
+    r"(?i)(alpha|beta|dev|snapshot|nightly|preview|\brc\b|rc\d|[-._][ab]\d|[ab]\d+$)"
+)
+
+
+def parse_manifest(path):
+    """Return {VAR: (value, doc)} for every sci_dep_version() call."""
+    with open(path, encoding="utf-8") as fh:
+        # Drop CMake comment lines so commented-out examples (e.g. in the
+        # reproducibility note) are not parsed as real pins.
+        text = "\n".join(ln for ln in fh if not ln.lstrip().startswith("#"))
+    # sci_dep_version(NAME "value" "doc")   — value/doc may be quoted.
+    pattern = re.compile(
+        r"""sci_dep_version\(\s*
+            (?P<var>[A-Z0-9_]+)\s+
+            "(?P<value>[^"]*)"\s+
+            "(?P<doc>[^"]*)"\s*\)""",
+        re.VERBOSE,
+    )
+    return {m.group("var"): (m.group("value"), m.group("doc"))
+            for m in pattern.finditer(text)}
+
+
+def http_json(url):
+    """GET a URL known to be HTTP(S) and parse the JSON response."""
+    # Only http/https are permitted; refuse file:/ and custom schemes (B310).
+    if not url.startswith(("https://", "http://")):
+        raise ValueError(f"refusing to open non-HTTP(S) URL: {url}")
+    req = urllib.request.Request(url, headers={"User-Agent": "scirun-dep-check"})
+    token = os.environ.get("GITHUB_TOKEN")
+    if token and "api.github.com" in url:
+        req.add_header("Authorization", f"Bearer {token}")
+    # Scheme restricted to http/https by the guard above.
+    with urllib.request.urlopen(req, timeout=30) as resp:  # nosec B310  # noqa: S310
+        return json.load(resp)
+
+
+def is_prerelease(tag):
+    return bool(tag) and bool(PRERELEASE_RE.search(tag))
+
+
+def latest_github(repo):
+    """Latest stable release tag for a GitHub repo.
+
+    Prefers the published "latest release", then falls back to the newest tag.
+    Prereleases are skipped in both cases — GitHub's "latest release" usually
+    excludes them, but a release the maintainers forgot to flag as a prerelease
+    (e.g. Boost's "boost-1.xx.0.beta1") can still slip through, so re-check it.
+    """
+    try:
+        data = http_json(f"https://api.github.com/repos/{repo}/releases/latest")
+        tag_name = data.get("tag_name")
+        if tag_name and not is_prerelease(tag_name):
+            return tag_name
+    except urllib.error.HTTPError as exc:
+        if exc.code != 404:
+            raise
+    tags = http_json(f"https://api.github.com/repos/{repo}/tags?per_page=100")
+    for tag in tags:
+        name = tag.get("name", "")
+        if not is_prerelease(name):
+            return name
+    return None
+
+
+def latest_gitlab(project):
+    """Newest non-prerelease tag for a GitLab project id (URL-encoded path)."""
+    tags = http_json(
+        f"https://gitlab.com/api/v4/projects/{project}/repository/tags?per_page=100"
+    )
+    for tag in tags:
+        name = tag.get("name", "")
+        if not is_prerelease(name):
+            return name
+    return None
+
+
+def latest_upstream(upstream):
+    if upstream is None:
+        return None
+    if upstream.startswith("gitlab:"):
+        return latest_gitlab(upstream.split(":", 1)[1])
+    return latest_github(upstream)
+
+
+def _ls_remote(url, ref):
+    out = subprocess.run(
+        ["git", "ls-remote", url, ref],
+        capture_output=True, text=True, timeout=60, check=False,
+    )
+    lines = out.stdout.strip().splitlines()
+    return lines[0].split()[0] if lines else None
+
+
+def remote_branch_sha(url, branch):
+    """Tip commit SHA of `branch` in `url`, or None."""
+    for ref in (f"refs/heads/{branch}", branch):
+        sha = _ls_remote(url, ref)
+        if sha:
+            return sha
+    return None
+
+
+def resolve_pin_commit(url, pin):
+    """Commit SHA a pin refers to: a raw SHA as-is, or a tag dereferenced.
+
+    Annotated tags are peeled with the `^{}` suffix so we get the underlying
+    commit rather than the tag object.
+    """
+    if SHA_RE.match(pin):
+        return pin
+    return _ls_remote(url, f"refs/tags/{pin}^{{}}") or _ls_remote(url, f"refs/tags/{pin}")
+
+
+def norm(version):
+    """Loose version normalization for comparison/display."""
+    return version.lstrip("vV").strip() if version else version
+
+
+def _check_drift(row, url, pin, doc):
+    """Fill `row` by comparing the pinned commit against its tracked branch tip.
+
+    `pin` may be a raw SHA or a tag (e.g. scirun-pin-*) aliasing one; both are
+    resolved to the underlying commit before comparison.
+    """
+    branch = BRANCH_DOC_RE.search(doc).group("branch").strip()
+    row["tracks"] = f"branch {branch}"
+    try:
+        tip = remote_branch_sha(url, branch)
+        pinned = resolve_pin_commit(url, pin)
+    except Exception as exc:  # noqa: BLE001
+        row["status"], row["detail"] = "ERROR", f"ls-remote failed: {exc}"
+        return
+    if tip is None:
+        row["status"], row["detail"] = "ERROR", f"branch '{branch}' not found"
+    elif pinned is None:
+        row["status"], row["detail"] = "ERROR", f"could not resolve pin '{pin}'"
+    elif tip != pinned:
+        row["status"] = "DRIFT"
+        row["detail"] = f"branch advanced to {tip[:12]} (pin at {pinned[:12]})"
+    else:
+        row["detail"] = f"up to date with branch tip {tip[:12]}"
+
+
+def pin_is_branch_head(url, pin):
+    """True if `pin` resolves to a branch rather than a tag in `url`.
+
+    A pin documented as a release tag must be immutable. If the ref only exists
+    under refs/heads/ it is a branch head that can move, which silently breaks
+    reproducible builds -- exactly how Boost's "v1.90.0" and Python's "3.13.1"
+    went unnoticed. Raw SHAs are immutable by construction and skipped.
+    """
+    if SHA_RE.match(pin):
+        return False
+    if _ls_remote(url, f"refs/tags/{pin}"):
+        return False
+    return bool(_ls_remote(url, f"refs/heads/{pin}"))
+
+
+def _check_update(row, url, tag_var, pin, upstream, offline_upstream):
+    """Fill `row` for a tag pin by comparing against the latest upstream tag."""
+    row["tracks"] = "release tag"
+    # Only *_GIT_TAG variables name a git ref; *_VERSION entries are version
+    # strings compared against upstream releases, so the ref check is skipped
+    # (PYTHON_VERSION "3.13.1" does name a branch, but is not used as the pin).
+    if tag_var.endswith("_GIT_TAG"):
+        try:
+            if pin_is_branch_head(url, pin):
+                row["status"] = "INVALID"
+                row["tracks"] = "release tag (claimed)"
+                row["detail"] = (
+                    f"pin '{pin}' is a BRANCH head, not a tag -- it can move and "
+                    "breaks reproducible builds. Pin to a commit SHA (and note "
+                    "'(branch {0})' in the doc string) or to an immutable tag."
+                    .format(pin)
+                )
+                return
+        except Exception as exc:  # noqa: BLE001
+            row["status"], row["detail"] = "ERROR", f"ls-remote failed: {exc}"
+            return
+    if not upstream or offline_upstream:
+        row["detail"] = "no upstream mapping; pin is a fixed tag"
+        return
+    try:
+        latest = latest_upstream(upstream)
+    except Exception as exc:  # noqa: BLE001
+        row["status"], row["detail"] = "ERROR", f"upstream query failed: {exc}"
+        return
+    row["latest"] = latest
+    if latest and norm(latest) != norm(pin):
+        row["status"] = "UPDATE"
+        row["detail"] = f"upstream latest {latest} (pinned {pin})"
+    else:
+        row["detail"] = f"matches upstream {latest}"
+
+
+def check(manifest, offline_upstream=False):
+    """Return list of result dicts, one per dependency."""
+    results = []
+    for name, url_var, tag_var, upstream in DEPENDENCIES:
+        if url_var not in manifest or tag_var not in manifest:
+            results.append({"name": name, "status": "SKIP",
+                            "detail": "not found in manifest"})
+            continue
+        url = manifest[url_var][0]
+        pin, doc = manifest[tag_var]
+        row = {"name": name, "pin": pin, "status": "OK", "detail": ""}
+        # A "(branch X)" note means the pin (a SHA, or a scirun-pin-* tag
+        # aliasing one) tracks a maintenance branch — check it for drift.
+        # Otherwise the pin is an upstream release tag — check for updates.
+        if BRANCH_DOC_RE.search(doc):
+            _check_drift(row, url, pin, doc)
+        else:
+            _check_update(row, url, tag_var, pin, upstream, offline_upstream)
+        results.append(row)
+    return results
+
+
+def render_markdown(results):
+    order = {"INVALID": 0, "UPDATE": 1, "DRIFT": 2, "ERROR": 3, "SKIP": 4, "OK": 5}
+    emoji = {"OK": "✅", "UPDATE": "⬆️", "DRIFT": "🌱", "ERROR": "⚠️",
+             "SKIP": "➖", "INVALID": "❌"}
+    rows = sorted(results, key=lambda r: (order.get(r["status"], 9), r["name"]))
+    actionable = [r for r in results if r["status"] in ACTIONABLE_STATUSES]
+
+    lines = ["## SCIRun dependency version check", ""]
+    if actionable:
+        lines.append(f"**{len(actionable)}** dependency(ies) may need attention.")
+    else:
+        lines.append("All pinned dependencies are current. 🎉")
+    lines += ["", "| Dep | Status | Pinned | Tracks | Detail |",
+              "| --- | --- | --- | --- | --- |"]
+    for r in rows:
+        lines.append("| {name} | {e} {status} | `{pin}` | {tracks} | {detail} |".format(
+            e=emoji.get(r["status"], ""),
+            name=r["name"], status=r["status"],
+            pin=(r.get("pin", "") or "")[:24], tracks=r.get("tracks", ""),
+            detail=r.get("detail", "")))
+    lines += ["", "_❌ INVALID = pin is not immutable (a branch head, not a tag/SHA); "
+              "🌱 DRIFT = tracked branch advanced past our pinned commit; "
+              "⬆️ UPDATE = newer upstream release exists._"]
+    return "\n".join(lines), actionable
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--manifest", default=DEFAULT_MANIFEST,
+                    help="path to VERSIONS.cmake")
+    ap.add_argument("--no-fail", action="store_true",
+                    help="always exit 0, even when updates are found")
+    ap.add_argument("--offline-upstream", action="store_true",
+                    help="skip upstream release queries (drift checks only)")
+    ap.add_argument("--json", action="store_true", help="emit raw JSON results")
+    args = ap.parse_args(argv)
+
+    manifest = parse_manifest(args.manifest)
+    results = check(manifest, offline_upstream=args.offline_upstream)
+
+    if args.json:
+        print(json.dumps(results, indent=2))
+    else:
+        md, _ = render_markdown(results)
+        print(md)
+
+    actionable = [r for r in results if r["status"] in ACTIONABLE_STATUSES]
+    return 0 if (args.no_fail or not actionable) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

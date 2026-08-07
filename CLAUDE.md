@@ -126,3 +126,13 @@ See `docs/dev_doc/SCIRun5ModuleGeneration.md` for the full guide. Summary:
 - **Qt 5.15 or Qt 6.3.1+** for GUI components
 - **Python 3.x** (when `BUILD_WITH_PYTHON=ON`)
 - Unit tests use **GoogleTest/GoogleMock**
+
+---
+
+## Comments
+
+Keep them terse. Two lines is usually enough; a comment longer than the code it explains is too long.
+
+Say why the code is the way it is — the non-obvious constraint, the bug being worked around. Don't restate what the code does.
+
+Background belongs in the commit message, not inline: investigation notes, verbatim error output, which commit broke what, how a bug was tracked down. `git log -S` and `git blame` will find it when someone needs it. Reference an issue or commit hash instead of retelling the story.

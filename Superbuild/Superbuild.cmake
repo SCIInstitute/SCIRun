@@ -73,6 +73,33 @@ ENDIF()
 INCLUDE( ExternalProject )
 
 ###########################################
+# Parallelism for build steps that bypass the make jobserver
+#
+# Externals that recurse via $(MAKE) inherit the top-level jobserver, so the
+# -j passed to the outer make already bounds them and they must NOT be given a
+# second, independent job budget. Boost is the exception: b2 is not a make, so
+# without an explicit -j it builds every library serially no matter what the
+# outer make was told (issue #2617).
+#
+# build.sh exports CMAKE_BUILD_PARALLEL_LEVEL to match its own -j; honour that
+# when set so the two stay in agreement, and fall back to the core count for
+# people who configure the Superbuild with cmake directly.
+###########################################
+IF(NOT DEFINED SUPERBUILD_PARALLEL_JOBS)
+  IF(DEFINED ENV{CMAKE_BUILD_PARALLEL_LEVEL})
+    SET(_sb_jobs $ENV{CMAKE_BUILD_PARALLEL_LEVEL})
+  ELSE()
+    INCLUDE(ProcessorCount)
+    ProcessorCount(_sb_jobs)
+  ENDIF()
+  IF(NOT _sb_jobs OR _sb_jobs LESS 1)
+    SET(_sb_jobs 1)
+  ENDIF()
+  SET(SUPERBUILD_PARALLEL_JOBS ${_sb_jobs} CACHE STRING "Parallel jobs for external build steps that do not inherit the make jobserver")
+ENDIF()
+MESSAGE(STATUS "Superbuild parallel jobs (non-jobserver steps): ${SUPERBUILD_PARALLEL_JOBS}")
+
+###########################################
 # DETERMINE ARCHITECTURE
 # In order for the code to depend on the architecture settings
 ###########################################
@@ -206,6 +233,11 @@ SET(SUPERBUILD_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 SET(SCIRUN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src CACHE INTERNAL "" FORCE)
 SET(SCIRUN_BINARY_DIR ${CMAKE_BINARY_DIR}/SCIRun CACHE INTERNAL "" FORCE)
 
+# Central dependency manifest (pinned versions + source URLs). Must be included
+# before any ADD_EXTERNAL call so the *External.cmake files can consume its
+# variables. See VERSIONS.cmake for the update process.
+INCLUDE( ${SUPERBUILD_DIR}/VERSIONS.cmake )
+
 IF(BUILD_TESTING)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TestDataConfig.cmake SCIRunTestData_external )
 ENDIF()
@@ -251,7 +283,7 @@ ENDIF()
 
 IF(NOT BUILD_HEADLESS)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
-  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/CtkExternal.cmake Ctk_external )
+  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/deprecated/CtkExternal.cmake Ctk_external )
 ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
