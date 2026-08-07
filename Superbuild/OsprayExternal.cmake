@@ -25,7 +25,6 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(ospray_GIT_TAG "origin/scirun-build-2.10")
 
 set(ospray_DEPENDENCIES)
 set(ospray_DEPENDENCIES)
@@ -48,8 +47,8 @@ set(EMBREE_INSTALL_DIR ${INSTALL_DIR})
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Ospray_external
   DEPENDS ${ospray_DEPENDENCIES}
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/ospray.git"
-  GIT_TAG ${ospray_GIT_TAG}
+  GIT_REPOSITORY ${OSPRAY_GIT_URL}
+  GIT_TAG ${OSPRAY_GIT_TAG}
 
   GIT_SUBMODULES ""
   GIT_SUBMODULES_RECURSE OFF
