@@ -31,19 +31,45 @@
 
 #include <Core/Command/Command.h>
 #include <Core/Application/Application.h>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Core/ConsoleApplication/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Console {
 
-  class SCISHARE LoadFileCommandConsole : public Commands::FileCommand<Commands::ConsoleCommand>
+  // Shared logic for the two commands that turn a file on disk into a loaded
+  // network: resolve a filename, hand it to a format-specific parser, and
+  // load the result into the controller. Load (.srn5) and Import (legacy
+  // .srn/.net) differ only in how the filename is resolved, how the file is
+  // parsed, and whether a parse failure should fail a regression test.
+  class SCISHARE NetworkFileProcessCommandConsole : public Commands::FileCommand<Commands::ConsoleCommand>
+  {
+  public:
+    bool execute() final;
+  protected:
+    virtual std::string resolveFilename() const;
+    virtual Dataflow::Networks::NetworkFileHandle processFile(const std::string& filename) const = 0;
+    virtual std::string actionVerb() const = 0;
+    virtual bool failTestOnErrorInRegressionMode() const { return false; }
+  };
+
+  class SCISHARE LoadFileCommandConsole : public NetworkFileProcessCommandConsole
   {
   public:
     LoadFileCommandConsole();
-    bool execute() override;
-  // private:
-  //   int index_ = 0;
+  protected:
+    std::string resolveFilename() const override;
+    Dataflow::Networks::NetworkFileHandle processFile(const std::string& filename) const override;
+    std::string actionVerb() const override { return "load"; }
+  };
+
+  class SCISHARE ImportFileCommandConsole : public NetworkFileProcessCommandConsole
+  {
+  protected:
+    Dataflow::Networks::NetworkFileHandle processFile(const std::string& filename) const override;
+    std::string actionVerb() const override { return "import"; }
+    bool failTestOnErrorInRegressionMode() const override { return true; }
   };
 
   class SCISHARE SaveFileCommandConsole : public Commands::FileCommand<Commands::ConsoleCommand>, public Commands::SaveFileCommandHelper

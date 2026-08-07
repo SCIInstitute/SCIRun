@@ -12,6 +12,13 @@ on:
       qt-path:
         required: false
         type: string
+      cmake-generator:
+        # Windows only: the Visual Studio generator passed to CMake. Defaults to
+        # VS 2022; set to 'Visual Studio 18 2026' for the windows-2025 image,
+        # which ships VS 2026 (v145 toolset). Requires CMake >= 4.2.
+        required: false
+        type: string
+        default: 'Visual Studio 17 2022'
       scirun-qt-min-version:
         required: false
         type: string
@@ -57,6 +64,9 @@ on:
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    permissions:
+      checks: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -74,6 +84,9 @@ jobs:
       - name: Print Qt dir
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
 
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
       - name: Checkout SCIRunTestData
         if: ${{ inputs.run-regression-tests || inputs.coverage }}
         uses: actions/checkout@v6
@@ -90,9 +103,16 @@ jobs:
       - name: Build (Linux/macOS)
         if: ${{ runner.os != 'Windows' }}
         shell: bash
+        # No -j is passed on purpose: build.sh auto-detects a job count from the
+        # runner's cores and RAM (see detect_parallel_jobs there) and echoes it,
+        # so this stays correct across the 3-core arm64 images, the 4-core Intel
+        # and Linux ones, and any self-hosted runner added later (#2617).
+        # Before that detection existed these builds ran fully serial.
         run: |
           set -eux
           CMD=(./build.sh)
+          CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
+          CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
           # Variant-specific flags
           if [ "${{ inputs.variant }}" = "gui" ]; then
             # Pass Qt path (from installer or explicit), and set SCIRUN_QT_MIN_VERSION appropriately
@@ -158,10 +178,14 @@ jobs:
 
           # Build arguments for cmake
           $cmakeArgs = @()
+          $cmakeArgs += "-DCMAKE_C_COMPILER_LAUNCHER=sccache"
+          $cmakeArgs += "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
 
-          # Always use Visual Studio generator on Windows to ensure MSVC flags are used
+          # Always use a Visual Studio generator on Windows to ensure MSVC flags are used.
+          # The generator is an input (defaults to VS 2022) so the matrix can also build
+          # with VS 2026 on the windows-2025 image.
           $cmakeArgs += '-G'
-          $cmakeArgs += 'Visual Studio 17 2022'
+          $cmakeArgs += '${{ inputs.cmake-generator }}'
           $cmakeArgs += '-A'
           $cmakeArgs += 'x64'
 
@@ -191,9 +215,11 @@ jobs:
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
           if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
 
-          # Prepare build directory
-          New-Item -ItemType Directory -Force -Path build | Out-Null
-          Push-Location build
+          # Prepare build directory (use bin/ to match build.ps1, build.sh, the
+          # docs, and the Unix/macOS jobs — keeps the build tree identical across
+          # platforms so the package/test/upload steps below share one path.)
+          New-Item -ItemType Directory -Force -Path bin | Out-Null
+          Push-Location bin
 
           # Run CMake configure
           $cmakeExe = 'cmake'
@@ -268,12 +294,12 @@ jobs:
         if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
         shell: cmd
         run: |
-          if exist build\SCIRun (
-            pushd build\SCIRun
+          if exist bin\SCIRun (
+            pushd bin\SCIRun
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           ) else (
-            pushd build
+            pushd bin
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           )
@@ -282,7 +308,8 @@ jobs:
         if: ${{ inputs.run-unit-tests && runner.os != 'Windows' }}
         working-directory: bin/SCIRun
         run: |
-          ctest --output-on-failure -j4 -E "\.Test\.ExampleNetwork\." \
+          ctest --output-on-failure --timeout 300 -j4 -E "\.Test\.ExampleNetwork\." \
+            --output-junit "$GITHUB_WORKSPACE/junit-unit.xml" \
             2>&1 | tee /tmp/unit-test-results.txt
         continue-on-error: true
 
@@ -291,6 +318,7 @@ jobs:
         working-directory: bin/SCIRun
         run: |
           ctest --output-on-failure --timeout 300 -j3 -R "\.Test\.ExampleNetwork\." \
+            --output-junit "$GITHUB_WORKSPACE/junit-regression.xml" \
             2>&1 | tee /tmp/regression-test-results.txt
         continue-on-error: true
 
@@ -305,21 +333,41 @@ jobs:
 
       - name: Run unit tests (Windows)
         if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
-        working-directory: build/SCIRun
+        working-directory: bin/SCIRun
         shell: pwsh
         run: |
-          ctest --output-on-failure -j4 -C Release -E "\.Test\.ExampleNetwork\." `
+          ctest --output-on-failure --timeout 300 -j4 -C Release -E "\.Test\.ExampleNetwork\." `
+            --output-junit "$env:GITHUB_WORKSPACE\junit-unit.xml" `
             2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE\unit-test-results.txt"
         continue-on-error: true
 
       - name: Run regression tests (Windows)
         if: ${{ inputs.run-regression-tests && runner.os == 'Windows' }}
-        working-directory: build/SCIRun
+        working-directory: bin/SCIRun
         shell: pwsh
         run: |
           ctest --output-on-failure --timeout 300 -j3 -C Release -R "\.Test\.ExampleNetwork\." `
+            --output-junit "$env:GITHUB_WORKSPACE\junit-regression.xml" `
             2>&1 | Tee-Object -FilePath "$env:GITHUB_WORKSPACE\regression-test-results.txt"
         continue-on-error: true
+
+      - name: Publish unit test results
+        uses: dorny/test-reporter@v1
+        if: always() && inputs.run-unit-tests
+        with:
+          name: "Unit Tests (${{ runner.os }} / ${{ inputs.variant }})"
+          path: junit-unit.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Publish regression test results
+        uses: dorny/test-reporter@v1
+        if: always() && inputs.run-regression-tests
+        with:
+          name: "Regression Tests (${{ runner.os }} / ${{ inputs.variant }})"
+          path: junit-regression.xml
+          reporter: java-junit
+          fail-on-error: false
 
       - name: Upload test logs (Unix)
         if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os != 'Windows' }}
@@ -331,6 +379,8 @@ jobs:
             /tmp/unit-test-results.txt
             /tmp/regression-test-results.txt
             bin/SCIRun/Testing/Temporary/LastTest.log
+            junit-unit.xml
+            junit-regression.xml
 
       - name: Upload test logs (Windows)
         if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'Windows' }}
@@ -341,7 +391,9 @@ jobs:
           path: |
             unit-test-results.txt
             regression-test-results.txt
-            build/SCIRun/Testing/Temporary/LastTest.log
+            bin/SCIRun/Testing/Temporary/LastTest.log
+            junit-unit.xml
+            junit-regression.xml
 
       - name: Run tests + coverage report (macOS)
         if: ${{ inputs.coverage && runner.os == 'macOS' }}
@@ -374,4 +426,5 @@ jobs:
           path: |
             bin/SCIRun/SCIRun-*-Darwin.pkg
             bin/SCIRun/SCIRun-*-win64.exe
-            build/**/*.msi
+            bin/**/*.msi
+
