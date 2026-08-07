@@ -108,6 +108,15 @@ ELSE()
   ENDIF()
 ENDIF()
 
+# CPython's install: runs frameworkinstallmaclib (symlinks into $(LIBPL)) as a
+# sibling of libainstall (creates $(LIBPL)), so -j races. Framework builds only.
+SET(python_INSTALL_COMMAND)
+IF(APPLE)
+  SET(python_INSTALL_COMMAND
+    INSTALL_COMMAND "${CMAKE_COMMAND}" -E env --unset=MAKEFLAGS make install
+  )
+ENDIF()
+
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 IF(UNIX)
@@ -118,6 +127,7 @@ IF(UNIX)
     BUILD_IN_SOURCE ON
     CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
+    ${python_INSTALL_COMMAND}
   )
   IF(APPLE)
     # Preserves links, permissions
