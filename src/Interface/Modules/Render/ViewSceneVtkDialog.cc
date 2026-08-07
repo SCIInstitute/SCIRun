@@ -65,7 +65,7 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   statusBar_ = new QStatusBar(this);
 
   renderer_ = new VtkRenderer();
-  viewer_ = new VtkQWidget(parent, renderer_);
+  viewer_ = new VtkQWidget(this, renderer_);
 
   state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, &ViewSceneVtkDialog::newGeometryValueForwarder, this, &ViewSceneVtkDialog::newGeometryValue);
@@ -77,7 +77,9 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   setMinimumSize(200, 200);
 
   statusBar_->setMaximumHeight(20);
+
   vtkLayout->addWidget(viewer_);
+  vtkLayout->addWidget(statusBar_);
 
 /* addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
   addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
@@ -177,7 +179,7 @@ void ViewSceneVtkDialog::addToolBar()
   addTimestepButtons();
   addScreenshotButton();
 
-  //osprayLayout->addWidget(toolBar_);
+  vtkLayout->addWidget(toolBar_);
 
   addControlLockButton();
 }
