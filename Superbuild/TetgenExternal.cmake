@@ -56,6 +56,10 @@ ExternalProject_Add(Tetgen_external
   GIT_TAG                 ${TETGEN_GIT_TAG}
   UPDATE_DISCONNECTED     1
 
+  # Disconnected updates emit update and update_disconnected as siblings; under
+  # -j they race on git lock files. Missed by c552399bb.
+  UPDATE_COMMAND          ""
+
   SOURCE_DIR              ${_tetgen_src}
   BINARY_DIR              ${_tetgen_bin}
 
