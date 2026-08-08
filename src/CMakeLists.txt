@@ -183,7 +183,7 @@ IF(BUILD_TESTING)
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
   ENDIF()
 
-  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
+  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DTEST_SOURCE_ROOT_DIR="${SCIRun_SOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
 #########################################################################
@@ -961,7 +961,15 @@ SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${APPLICATION_NAME}_${SCIRUN_VERSION_MAJOR}
 
 # other platform settings will be built up from here
 IF(APPLE)
-  SET(CPACK_GENERATOR "productbuild;TGZ")
+  # Each generator runs its own preinstall pass, which on macOS re-runs the ~7.5 min
+  # macdeployqt bundle chain. Nothing consumed the tarball. See #2664.
+  OPTION(SCIRUN_PACKAGE_TGZ "Also build a .tar.gz alongside the macOS installer" OFF)
+  MARK_AS_ADVANCED(SCIRUN_PACKAGE_TGZ)
+  IF(SCIRUN_PACKAGE_TGZ)
+    SET(CPACK_GENERATOR "productbuild;TGZ")
+  ELSE()
+    SET(CPACK_GENERATOR "productbuild")
+  ENDIF()
   SET(CPACK_TOPLEVEL_TAG "")
   IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)

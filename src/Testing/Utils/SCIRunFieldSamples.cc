@@ -123,7 +123,7 @@ void triTetrahedronGeometry(FieldHandle field)
   vmesh->add_elem(vdata2);
   VMesh::Node::array_type vdata3;
   vdata3 += 1, 2, 3;
-  vmesh->add_elem(vdata2);
+  vmesh->add_elem(vdata3);
   VMesh::Node::array_type vdata4;
   vdata4 += 0, 2, 3;
   vmesh->add_elem(vdata4);
