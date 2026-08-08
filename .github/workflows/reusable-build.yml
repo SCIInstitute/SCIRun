@@ -215,9 +215,11 @@ jobs:
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
           if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
 
-          # Prepare build directory
-          New-Item -ItemType Directory -Force -Path build | Out-Null
-          Push-Location build
+          # Prepare build directory (use bin/ to match build.ps1, build.sh, the
+          # docs, and the Unix/macOS jobs — keeps the build tree identical across
+          # platforms so the package/test/upload steps below share one path.)
+          New-Item -ItemType Directory -Force -Path bin | Out-Null
+          Push-Location bin
 
           # Run CMake configure
           $cmakeExe = 'cmake'
@@ -292,12 +294,12 @@ jobs:
         if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
         shell: cmd
         run: |
-          if exist build\SCIRun (
-            pushd build\SCIRun
+          if exist bin\SCIRun (
+            pushd bin\SCIRun
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           ) else (
-            pushd build
+            pushd bin
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           )
@@ -331,7 +333,7 @@ jobs:
 
       - name: Run unit tests (Windows)
         if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
-        working-directory: build/SCIRun
+        working-directory: bin/SCIRun
         shell: pwsh
         run: |
           ctest --output-on-failure --timeout 300 -j4 -C Release -E "\.Test\.ExampleNetwork\." `
@@ -341,7 +343,7 @@ jobs:
 
       - name: Run regression tests (Windows)
         if: ${{ inputs.run-regression-tests && runner.os == 'Windows' }}
-        working-directory: build/SCIRun
+        working-directory: bin/SCIRun
         shell: pwsh
         run: |
           ctest --output-on-failure --timeout 300 -j3 -C Release -R "\.Test\.ExampleNetwork\." `
@@ -389,7 +391,7 @@ jobs:
           path: |
             unit-test-results.txt
             regression-test-results.txt
-            build/SCIRun/Testing/Temporary/LastTest.log
+            bin/SCIRun/Testing/Temporary/LastTest.log
             junit-unit.xml
             junit-regression.xml
 
@@ -424,5 +426,5 @@ jobs:
           path: |
             bin/SCIRun/SCIRun-*-Darwin.pkg
             bin/SCIRun/SCIRun-*-win64.exe
-            build/**/*.msi
+            bin/**/*.msi
 
