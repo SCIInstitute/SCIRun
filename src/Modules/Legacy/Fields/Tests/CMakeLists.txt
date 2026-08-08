@@ -1,10 +1,10 @@
+#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -23,19 +23,33 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+#
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+# The only test here drives the TetGen-backed InterfaceWithTetGen module, so it
+# is meaningful only when the library is actually linked in.
+IF(WITH_TETGEN)
+  SET(Modules_Legacy_Fields_Tests_SRCS
+    InterfaceWithTetGenTests.cc
+  )
 
-ExternalProject_Add(Eigen_external
-  URL ${EIGEN_URL}
-  PATCH_COMMAND ""
-  CONFIGURE_COMMAND ""
-  BUILD_IN_SOURCE ON
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
-)
+  SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Fields_Tests
+    ${Modules_Legacy_Fields_Tests_SRCS}
+  )
 
-ExternalProject_Get_Property(Eigen_external SOURCE_DIR)
-SET(Eigen_DIR ${SOURCE_DIR} CACHE PATH "")
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields_Tests
+    Modules_Legacy_Fields
+    Modules_Factory
+    Core_Datatypes
+    Dataflow_Network
+    Dataflow_State
+    Testing_Utils
+    Testing_ModuleTestBase
+    gtest_main
+    gtest
+    gmock
+  )
 
-MESSAGE(STATUS "Eigen_DIR: ${Eigen_DIR}")
+  # InterfaceWithTetGenImpl.h (InterfaceWithTetGenInput) is only compiled behind
+  # this flag; match it so the test sees the same declarations.
+  TARGET_COMPILE_DEFINITIONS(Modules_Legacy_Fields_Tests PRIVATE WITH_TETGEN)
+ENDIF()
