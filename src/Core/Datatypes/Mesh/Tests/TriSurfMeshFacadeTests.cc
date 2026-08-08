@@ -29,6 +29,10 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include <boost/assign.hpp>
 
 //#include <Core/Datatypes/Legacy/Field/MeshFactory.h>
@@ -204,20 +208,36 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
 {
   auto facade(basicTriangleMesh_->getFacade());
 
-  std::ostringstream ostr;
+  // Edge indices are assigned while iterating a std::unordered_map in
+  // TriSurfMesh::compute_edges_bugfix, so their numbering is
+  // implementation-defined and varies across standard-library versions.
+  // Only the set of edges (as node pairs) is a stable invariant, so
+  // canonicalize each edge as a sorted node pair and compare that set.
+  std::vector<std::string> edgeDescriptions;
   for (const auto& edge : facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
-    ostr << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
-    << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
+    auto a = static_cast<int>(nodesFromEdge[0]);
+    auto b = static_cast<int>(nodesFromEdge[1]);
+    auto pa = nodePoints[0];
+    auto pb = nodePoints[1];
+    if (b < a)
+    {
+      std::swap(a, b);
+      std::swap(pa, pb);
+    }
+    std::ostringstream ostr;
+    ostr << "nodes=[" << a << " point=" << pa.get_string()
+         << ", " << b << " point=" << pb.get_string() << "]";
+    edgeDescriptions.push_back(ostr.str());
   }
+  std::sort(edgeDescriptions.begin(), edgeDescriptions.end());
 
-  EXPECT_EQ(
-            "Edge 0 nodes=[2 point=[0.5, 1, 0], 0 point=[0, 0, 0]]\n"
-            "Edge 1 nodes=[1 point=[1, 0, 0], 2 point=[0.5, 1, 0]]\n"
-            "Edge 2 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"
-            , ostr.str());
+  EXPECT_THAT(edgeDescriptions, ::testing::ElementsAre(
+            "nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]",
+            "nodes=[0 point=[0, 0, 0], 2 point=[0.5, 1, 0]]",
+            "nodes=[1 point=[1, 0, 0], 2 point=[0.5, 1, 0]]"));
 }
 
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
@@ -230,11 +250,17 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
     auto faceID = face.index();
     auto edges = face.edgeIndices();
     auto nodes = face.nodeIndices();
-    ostr << "Face " << faceID << " edges=[" << join(edges) << "]" << std::endl;
+    // Edge numbering is implementation-defined (see BasicTriangleEdgeIterationTest),
+    // so sort the incident edge indices for a stable comparison.
+    std::vector<int> sortedEdges;
+    for (size_t i = 0; i < edges.size(); ++i)
+      sortedEdges.push_back(static_cast<int>(edges[i]));
+    std::sort(sortedEdges.begin(), sortedEdges.end());
+    ostr << "Face " << faceID << " edges=[" << join(sortedEdges) << "]" << std::endl;
     ostr << "Face " << faceID << " nodes=[" << join(nodes) << "]" << std::endl;
   }
 
-  EXPECT_EQ("Face 0 edges=[2, 1, 0]\n"
+  EXPECT_EQ("Face 0 edges=[0, 1, 2]\n"
             "Face 0 nodes=[0, 1, 2]\n"
             ,ostr.str());
 }
@@ -249,11 +275,17 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
     // special case, since this is essentially a 2D mesh with a single element,
     // the last edge value is not filled
     auto edges = node.edgeIndices();
-    ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(edges) << "]" << std::endl;
+    // Edge numbering is implementation-defined (see BasicTriangleEdgeIterationTest),
+    // so sort the incident edge indices for a stable comparison.
+    std::vector<int> sortedEdges;
+    for (size_t i = 0; i < edges.size(); ++i)
+      sortedEdges.push_back(static_cast<int>(edges[i]));
+    std::sort(sortedEdges.begin(), sortedEdges.end());
+    ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(sortedEdges) << "]" << std::endl;
   }
 
-  EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[2, 1, 0]\n"
-            "Node 1 point=[1, 0, 0] edges=[2, 1, 0]\n"
-            "Node 2 point=[0.5, 1, 0] edges=[2, 1, 0]\n"
+  EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 1, 2]\n"
+            "Node 1 point=[1, 0, 0] edges=[0, 1, 2]\n"
+            "Node 2 point=[0.5, 1, 0] edges=[0, 1, 2]\n"
             ,ostr.str());
 }

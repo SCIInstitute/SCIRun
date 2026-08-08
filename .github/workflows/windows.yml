@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
     paths-ignore:
       - 'docs/**'
   schedule:
@@ -65,6 +67,27 @@ jobs:
       artifact-name: SCIRunWindowsPythonInstaller_qt6
 
   # ---------------------------------------------------------------------------
+  # Publish installers to a GitHub Release (issue #2398). Nightly on cron/master
+  # push; a draft versioned release on a v* tag. Mac publishes to the same
+  # releases from mac.yml.
+  # ---------------------------------------------------------------------------
+  publish-nightly:
+    needs: [windows-gui-qt5, windows-gui-qt6, windows-gui-python-qt5, windows-gui-python-qt6]
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: nightly
+
+  publish-stable:
+    needs: [windows-gui-qt5, windows-gui-qt6, windows-gui-python-qt5, windows-gui-python-qt6]
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: stable
   # Windows Server 2025 image, built with Visual Studio 2026 (v145 toolset).
   # windows-2025 (== windows-latest since June 2026) ships both VS 2022 and
   # VS 2026; selecting the 'Visual Studio 18 2026' generator exercises the newer
