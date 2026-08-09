@@ -628,6 +628,44 @@ MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 SET(BUILD_FROM_TOP_LEVEL 1)
 
+########################################################################
+# Coverage instrumentation.
+#
+# Must precede the ADD_SUBDIRECTORY calls below: CMAKE_CXX_FLAGS is captured by
+# each subdirectory as it is added, so setting it further down the file compiles
+# and links every SCIRun target without instrumentation while still printing the
+# "enabled" message. That produced zero .profraw files and an empty nightly
+# coverage artifact.
+
+OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
+MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
+
+IF(ENABLE_GCOV_DATA_FILES)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF()
+
+# Clang source-based coverage (recommended on macOS / any Clang toolchain).
+# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
+# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
+# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
+# above, the instrumentation flags must also be applied at link time so the
+# profile runtime is linked into every shared library.
+OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
+IF(ENABLE_COVERAGE)
+  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
+  ENDIF()
+  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
+ENDIF()
+
+########################################################################
+
 ADD_SUBDIRECTORY(Externals)
 IF(NOT BUILD_HEADLESS)
   ADD_SUBDIRECTORY(Interface)
@@ -1035,32 +1073,5 @@ ENDIF()
 
 INCLUDE(CPack)
 
-########################################################################
-#GCov
-
-OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
-MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
-
-IF(ENABLE_GCOV_DATA_FILES)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-ENDIF()
-
-# Clang source-based coverage (recommended on macOS / any Clang toolchain).
-# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
-# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
-# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
-# above, the instrumentation flags must also be applied at link time so the
-# profile runtime is linked into every shared library.
-OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
-IF(ENABLE_COVERAGE)
-  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
-  ENDIF()
-  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
-  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
-  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
-  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
-ENDIF()
+# Coverage options moved above the ADD_SUBDIRECTORY calls -- they had no effect
+# down here. See the "Coverage instrumentation" block there.

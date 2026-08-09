@@ -422,6 +422,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report-${{ runner.os }}
+          # `error`, not the default `warn`: the step above is continue-on-error
+          # (tests legitimately fail), so a coverage.sh that produced nothing
+          # otherwise reports success and silently uploads no artifact.
+          if-no-files-found: error
           path: |
             bin/SCIRun/coverage/summary.txt
             bin/SCIRun/coverage/html
