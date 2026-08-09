@@ -132,7 +132,15 @@ OPTION(WITH_TETGEN "Build Tetgen." ON)
 
 ###########################################
 # Configure ospray
-OPTION(WITH_OSPRAY "Build Ospray." OFF)
+OPTION(BUILD_OSPRAY "Build Ospray." OFF)
+
+###########################################
+# Use local ospray
+OPTION(PREBUILT_OSPRAY "Use prebuilt copy of Ospray." OFF)
+
+IF (BUILD_OSPRAY AND PREBUILT_OSPRAY)
+  MESSAGE(SEND_ERROR "Cannot set both building and prebuilt Ospray.")
+ENDIF()
 
 ###########################################
 # Configure data
@@ -274,11 +282,18 @@ IF(WITH_TETGEN)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
 ENDIF()
 
-IF(WITH_OSPRAY)
+IF(PREBUILT_OSPRAY)
+  find_package(ospray 2.10.0 REQUIRED)
+ELSEIF(BUILD_OSPRAY)
   #INCLUDE(${SUPERBUILD_DIR}/TBBExternal.cmake)
   #INCLUDE(${SUPERBUILD_DIR}/RKCommonExternal.cmake)
   #INCLUDE(${SUPERBUILD_DIR}/EmbreeExternal.cmake)
   ADD_EXTERNAL(${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external)
+ENDIF()
+IF(BUILD_OSPRAY OR PREBUILT_OSPRAY)
+  SET(WITH_OSPRAY ON)
+ELSE()
+  SET(WITH_OSPRAY OFF)
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
