@@ -39,6 +39,7 @@
 #include <Interface/Modules/Render/ES/RendererInterface.h>
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Interface/Modules/Render/GLWidget.h>
+#include <Interface/Modules/Render/MovieRecorder.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
@@ -175,6 +176,7 @@ namespace Gui {
     ObjectSelectionControls* objectSelectionControls_{nullptr};
     OrientationAxesControls* orientationAxesControls_{nullptr};
     ScreenshotControls* screenshotControls_{nullptr};
+    MovieRecordControls* movieRecordControls_{nullptr};
     ScaleBarControls* scaleBarControls_{nullptr};
     ClippingPlaneControls* clippingPlaneControls_{nullptr};
     InputControls* inputControls_{nullptr};
@@ -217,6 +219,9 @@ namespace Gui {
     Render::ClippingPlaneManagerPtr clippingPlaneManager_;
     class Screenshot*                     screenshotTaker_              {nullptr};
     bool                                  saveScreenshotOnNewGeometry_  {false};
+    MovieRecorder*                        movieRecorder_                {nullptr};
+    QTimer                                movieFrameTimer_              {};
+    QPushButton*                          movieRecordButton_            {nullptr};
     bool                                  pulledSavedVisibility_        {false};
     QTimer                                resizeTimer_                  {};
     std::atomic<bool>                     pushingCameraState_           {false};
@@ -485,12 +490,21 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupMaterials();
   setToolBarPositions();
   addLineEditManager(impl_->screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
+  addLineEditManager(impl_->movieRecordControls_->movieOutputPath_, Parameters::MovieOutputPath);
+  addComboBoxManager(impl_->movieRecordControls_->movieFormatComboBox_, Parameters::MovieFormat,
+    {{"PNG frame sequence", "png"},
+     {"MP4 video (ffmpeg)", "mp4"},
+     {"Animated GIF (ffmpeg)", "gif"}});
+  addSpinBoxManager(impl_->movieRecordControls_->movieFrameRateSpinBox_, Parameters::MovieFrameRate);
 
   viewSceneManager.addViewScene(this);
 }
 
 ViewSceneDialog::~ViewSceneDialog()
 {
+  // Stop grabbing frames before the GL widget goes away; the recorder flushes
+  // whatever is already queued in its own destructor.
+  impl_->movieFrameTimer_.stop();
   viewSceneManager.removeViewScene(this);
 }
 
@@ -563,6 +577,7 @@ void ViewSceneDialog::addToolBar()
   addViewBarButton();
   addControlLockButton();
   addScreenshotButton();
+  addMovieRecordButton();
   addAutoRotateButton();
   addShortcutsHelpButton();
 
@@ -986,6 +1001,51 @@ void ViewSceneDialog::addScreenshotButton()
   connect(screenshotButton, &QPushButton::clicked, this, &ViewSceneDialog::quickScreenshotClicked);
   impl_->screenshotControls_ = new ScreenshotControls(this);
   addToolbarButton(screenshotButton, Qt::TopToolBarArea, impl_->screenshotControls_);
+}
+
+namespace
+{
+  /// Drawn rather than shipped as resources: a dot and a square read as
+  /// record/stop at 22px without any labelling. White while recording, since
+  /// the button itself goes red then.
+  QPixmap recordIcon()
+  {
+    QPixmap pixmap(64, 64);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor(200, 40, 40));
+    painter.drawEllipse(QRectF(10, 10, 44, 44));
+    return pixmap;
+  }
+
+  QPixmap stopIcon()
+  {
+    QPixmap pixmap(64, 64);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::white);
+    painter.drawRect(QRectF(16, 16, 32, 32));
+    return pixmap;
+  }
+}
+
+void ViewSceneDialog::addMovieRecordButton()
+{
+  impl_->movieRecordButton_ = new QPushButton(this);
+  impl_->movieRecordButton_->setToolTip("Record Movie");
+  impl_->movieRecordButton_->setIcon(recordIcon());
+  connect(impl_->movieRecordButton_, &QPushButton::clicked, this, &ViewSceneDialog::toggleMovieRecording);
+  impl_->movieRecordControls_ = new MovieRecordControls(this);
+  addToolbarButton(impl_->movieRecordButton_, Qt::TopToolBarArea, impl_->movieRecordControls_);
+
+  impl_->movieRecorder_ = new MovieRecorder(this);
+  connect(impl_->movieRecorder_, &MovieRecorder::recordingFailed, this, &ViewSceneDialog::movieRecordingFailed);
+  connect(impl_->movieRecorder_, &MovieRecorder::recordingFinished, this, &ViewSceneDialog::movieRecordingFinished);
+  connect(impl_->movieRecorder_, &MovieRecorder::frameCountChanged, this, &ViewSceneDialog::movieFrameCountChanged);
+  connect(&impl_->movieFrameTimer_, &QTimer::timeout, this, &ViewSceneDialog::captureMovieFrame);
 }
 
 using V = glm::vec3;
@@ -3128,6 +3188,138 @@ void ViewSceneDialog::setScreenshotDirectory()
   auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Screenshot Directory"), QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()));
 
   state_->setValue(Parameters::ScreenshotDirectory, dir.toStdString());
+}
+
+namespace
+{
+  MovieSettings movieSettingsFrom(const ModuleStateHandle& state)
+  {
+    MovieSettings settings;
+    settings.outputPath = QString::fromStdString(state->getValue(Parameters::MovieOutputPath).toString());
+    settings.format = movieFormatFromSuffix(QString::fromStdString(state->getValue(Parameters::MovieFormat).toString()));
+    settings.frameRate = state->getValue(Parameters::MovieFrameRate).toInt();
+    return settings;
+  }
+
+  QString movieFileFilter()
+  {
+    return "Movie files (*.png *.mp4 *.gif);;PNG frames (*.png);;MP4 video (*.mp4);;Animated GIF (*.gif)";
+  }
+
+  void setRecordButtonAppearance(QPushButton* button, bool recording)
+  {
+    button->setIcon(recording ? stopIcon() : recordIcon());
+    button->setStyleSheet(buttonStyleSheet(recording));
+    button->setToolTip(recording ? "Stop Recording" : "Record Movie");
+  }
+}
+
+void ViewSceneDialog::setMovieOutputPath()
+{
+  const auto current = QString::fromStdString(state_->getValue(Parameters::MovieOutputPath).toString());
+  const auto fileName = QFileDialog::getSaveFileName(this, tr("Choose Movie Output File"),
+    current, movieFileFilter(), nullptr, QFileDialog::DontConfirmOverwrite);
+
+  if (fileName.isEmpty())
+    return;
+
+  state_->setValue(Parameters::MovieOutputPath, fileName.toStdString());
+
+  // Keep the format in step with an explicitly typed extension, so choosing
+  // "movie.mp4" does not silently produce a PNG sequence.
+  const auto suffix = QFileInfo(fileName).suffix().toLower();
+  if (suffix == "png" || suffix == "mp4" || suffix == "gif")
+    state_->setValue(Parameters::MovieFormat, suffix.toStdString());
+}
+
+void ViewSceneDialog::startMovieRecording()
+{
+  if (!impl_->movieRecorder_ || impl_->movieRecorder_->isRecording())
+    return;
+
+  auto settings = movieSettingsFrom(state_);
+  // The format combo is authoritative: an .mp4 name with PNG selected would
+  // otherwise produce PNG frames under a video extension.
+  const QFileInfo out(settings.outputPath);
+  if (out.suffix().toLower() != settings.suffix())
+  {
+    settings.outputPath = out.absolutePath() % "/" % out.completeBaseName() % "." % settings.suffix();
+    state_->setValue(Parameters::MovieOutputPath, settings.outputPath.toStdString());
+  }
+
+  if (!impl_->screenshotTaker_)
+    impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
+
+  // Size the movie from an actual grab, not from the widget: on a HiDPI display
+  // the framebuffer is larger than the widget's logical size.
+  const auto firstFrame = impl_->screenshotTaker_->getScreenshot();
+  if (!impl_->movieRecorder_->start(settings, firstFrame.size()))
+    return;
+  impl_->movieRecorder_->addFrame(firstFrame);
+
+  impl_->movieRecordControls_->setRecordingState(true);
+  impl_->movieRecordControls_->setStatus("Recording to " % settings.outputPath);
+  setRecordButtonAppearance(impl_->movieRecordButton_, true);
+  impl_->movieFrameTimer_.start(1000 / settings.frameRate);
+}
+
+void ViewSceneDialog::stopMovieRecording()
+{
+  if (!impl_->movieRecorder_ || !impl_->movieRecorder_->isRecording())
+    return;
+
+  impl_->movieFrameTimer_.stop();
+  impl_->movieRecordControls_->setStatus("Finishing movie...");
+  impl_->movieRecorder_->stop();
+}
+
+void ViewSceneDialog::toggleMovieRecording()
+{
+  if (impl_->movieRecorder_ && impl_->movieRecorder_->isRecording())
+    stopMovieRecording();
+  else
+    startMovieRecording();
+}
+
+void ViewSceneDialog::captureMovieFrame()
+{
+  if (!impl_->movieRecorder_ || !impl_->movieRecorder_->isRecording())
+    return;
+
+  if (!impl_->screenshotTaker_)
+    impl_->screenshotTaker_ = new Screenshot(impl_->mGLWidget, this);
+
+  impl_->movieRecorder_->addFrame(impl_->screenshotTaker_->getScreenshot());
+}
+
+void ViewSceneDialog::movieFrameCountChanged(int frames)
+{
+  const auto dropped = impl_->movieRecorder_->framesDropped();
+  auto status = tr("Recording: %1 frames").arg(frames);
+  if (dropped > 0)
+    status += tr(" (%1 dropped)").arg(dropped);
+  impl_->movieRecordControls_->setStatus(status);
+}
+
+void ViewSceneDialog::movieRecordingFailed(const QString& message)
+{
+  impl_->movieFrameTimer_.stop();
+  impl_->movieRecordControls_->setRecordingState(false);
+  impl_->movieRecordControls_->setStatus("Recording failed.");
+  setRecordButtonAppearance(impl_->movieRecordButton_, false);
+  QMessageBox::critical(this, "ViewScene Movie Recording", message);
+}
+
+void ViewSceneDialog::movieRecordingFinished(const QString& outputPath, int frames)
+{
+  impl_->movieRecordControls_->setRecordingState(false);
+  setRecordButtonAppearance(impl_->movieRecordButton_, false);
+
+  const auto dropped = impl_->movieRecorder_->framesDropped();
+  auto status = tr("Wrote %1 frames to %2").arg(frames).arg(outputPath);
+  if (dropped > 0)
+    status += tr(" (%1 frames dropped to keep up)").arg(dropped);
+  impl_->movieRecordControls_->setStatus(status);
 }
 
 void ViewSceneDialog::saveScreenshot(QString fileName, bool notify)
