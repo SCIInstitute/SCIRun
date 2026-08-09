@@ -76,6 +76,24 @@ jobs:
       variant: gui
       build-with-python: true
 
+  # Qt6 on Linux. Every other Linux job here and in ccpp.yml autodetects
+  # qtbase5-dev, so before this job the only Qt6 compile coverage anywhere was
+  # mac-gui and windows-gui-qt6 -- the two slowest, scarcest runners.
+  #
+  # Deliberately absent from ci-gate's `needs` for now: this config has never
+  # been built, so it stays advisory until it has a green history. Promoting it
+  # (and dropping mac/windows to path-triggered) is the follow-up.
+  linux-gui-qt6:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      qt-version: '6.3.*'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+
   mac-gui:
     needs: changes
     if: needs.changes.outputs.docs_only == 'false'

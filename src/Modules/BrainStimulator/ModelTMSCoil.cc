@@ -52,38 +52,20 @@ ModelTMSCoil::ModelTMSCoil() : Module(staticInfo_, true)
 
 void ModelTMSCoil::setStateDefaults()
 {
-  auto state = get_state();
-  setStateStringFromAlgo(Parameters::Type);
-  setStateIntFromAlgo(Parameters::FigureOf8CoilShape);
-  setStateDoubleFromAlgo(Parameters::Current);
-  setStateIntFromAlgo(Parameters::Rings);
-  setStateDoubleFromAlgo(Parameters::WingsAngle);
-  setStateDoubleFromAlgo(Parameters::InnerRadius);
-  setStateDoubleFromAlgo(Parameters::OuterRadius);
-  setStateDoubleFromAlgo(Parameters::Distance);
-  setStateIntFromAlgo(Parameters::Layers);
-  setStateDoubleFromAlgo(Parameters::LayerStepSize);
-  setStateIntFromAlgo(Parameters::LevelOfDetail);
+  copyAlgoToState({Parameters::Type, Parameters::FigureOf8CoilShape, Parameters::Current,
+    Parameters::Rings, Parameters::WingsAngle, Parameters::InnerRadius, Parameters::OuterRadius,
+    Parameters::Distance, Parameters::Layers, Parameters::LayerStepSize, Parameters::LevelOfDetail});
 }
 
 void ModelTMSCoil::execute()
 {
   AlgorithmOutput output;
 
- if (needToExecute())  //newStatePresent
+ if (needToExecute())
  {
-   auto state = get_state();
-   setAlgoStringFromState(Parameters::Type);
-   setAlgoIntFromState(Parameters::FigureOf8CoilShape);
-   setAlgoDoubleFromState(Parameters::Current);
-   setAlgoIntFromState(Parameters::Rings);
-   setAlgoDoubleFromState(Parameters::WingsAngle);
-   setAlgoDoubleFromState(Parameters::InnerRadius);
-   setAlgoDoubleFromState(Parameters::OuterRadius);
-   setAlgoDoubleFromState(Parameters::Distance);
-   setAlgoIntFromState(Parameters::Layers);
-   setAlgoDoubleFromState(Parameters::LayerStepSize);
-   setAlgoIntFromState(Parameters::LevelOfDetail);
+   copyStateToAlgo({Parameters::Type, Parameters::FigureOf8CoilShape, Parameters::Current,
+     Parameters::Rings, Parameters::WingsAngle, Parameters::InnerRadius, Parameters::OuterRadius,
+     Parameters::Distance, Parameters::Layers, Parameters::LayerStepSize, Parameters::LevelOfDetail});
 
    output = algo().run(AlgorithmInput());
 
