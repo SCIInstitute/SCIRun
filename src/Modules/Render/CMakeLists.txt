@@ -29,23 +29,15 @@
 SET(Modules_Render_SRCS
   ViewScene.cc
   OsprayViewer.cc
+  ViewSceneVtk.cc
 )
 
 SET(Modules_Render_HEADERS
   ViewScene.h
   OsprayViewer.h
+  ViewSceneVtk.h
   share.h
 )
-
-if (WITH_VTK)
-  list(APPEND Modules_Render_SRCS
-    ViewSceneVtk.cc
-  )
-  
-  list(APPEND Modules_Render_HEADERS
-    ViewSceneVtk.h
-  )
-endif()
 
 SCIRUN_ADD_LIBRARY(Modules_Render
   ${Modules_Render_HEADERS}
@@ -57,25 +49,6 @@ TARGET_LINK_LIBRARIES(Modules_Render
   Core_Datatypes
   Core_Application_Preferences
 )
-
-#if (WITH_VTK)
-#  TARGET_LINK_LIBRARIES(Modules_Render
-#  VTK::CommonCore
-#  VTK::FiltersSources
-#  VTK::FiltersCore
-#  VTK::RenderingCore
-#  VTK::RenderingOpenGL2
-#  VTK::RenderingAnnotation
-#  VTK::InteractionStyle
-#  )
-#
-#  vtk_module_autoinit(
-#    TARGETS Modules_Render
-#    MODULES
-#      VTK::RenderingOpenGL2
-#      VTK::InteractionStyle
-#  )
-#endif()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Render)

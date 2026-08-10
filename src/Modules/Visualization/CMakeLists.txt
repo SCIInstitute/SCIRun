@@ -29,6 +29,7 @@
 SET(Modules_Visualization_SRCS
   CreateStandardColorMap.cc
   ShowField.cc
+  ShowFieldVtk.cc
   ShowFieldGlyphs.cc
   ShowFieldGlyphsPortHandler.cc
   ShowString.cc
@@ -47,6 +48,7 @@ SET(Modules_Visualization_SRCS
 SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
   ShowField.h
+  ShowFieldVtk.h
   ShowFieldGlyphs.h
   ShowFieldGlyphsPortHandler.h
   ShowString.h
@@ -62,16 +64,6 @@ SET(Modules_Visualization_HEADERS
   ReportColorMapInfo.h
   share.h
 )
-
-if(WITH_VTK)
-  list(APPEND Modules_Visualization_SRCS
-	ShowFieldVtk.cc
-  )
-
-  list(APPEND Modules_Visualization_HEADERS
-    ShowFieldVtk.h
-  )
-endif()
 
 SCIRUN_ADD_LIBRARY(Modules_Visualization
   ${Modules_Visualization_HEADERS}

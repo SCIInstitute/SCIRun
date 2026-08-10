@@ -28,23 +28,15 @@
 
 SET(Algorithms_Visualization_SRCS
   OsprayDataAlgorithm.cc
+  VtkDataAlgorithm.cc
+  VtkGeometryBuilder.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
   OsprayDataAlgorithm.h
+  VtkDataAlgorithm.h
+  VtkGeometryBuilder.h
 )
-
-if (WITH_VTK)
-  list(APPEND Algorithms_Visualization_SRCS
-	VtkDataAlgorithm.cc
-	VtkGeometryBuilder.cc
-  )
-
-  list(APPEND Algorithms_Visualization_HEADERS
-	VtkDataAlgorithm.h
-	VtkGeometryBuilder.h
-  )
-endif()
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
   ${Algorithms_Visualization_HEADERS}

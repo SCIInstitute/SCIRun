@@ -53,6 +53,10 @@ namespace SCIRun {
         uint32_t id;
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
+
+#ifndef WITH_VTK
+        DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+#endif
       };
     }
   }
