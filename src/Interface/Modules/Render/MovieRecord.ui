@@ -6,20 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>200</height>
+    <width>460</width>
+    <height>230</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>420</width>
-    <height>200</height>
+    <width>460</width>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Record Movie</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinimumSize</enum>
+   </property>
+   <property name="spacing">
+    <number>8</number>
+   </property>
    <item>
     <widget class="QGroupBox" name="movieOutputGroupBox_">
      <property name="title">
@@ -28,6 +34,18 @@
      <layout class="QHBoxLayout" name="movieOutputLayout_">
       <item>
        <widget class="QLineEdit" name="movieOutputPath_">
+        <property name="minimumSize">
+         <size>
+          <width>280</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>Movie file to write. For a PNG frame sequence the frames are numbered from this name.</string>
         </property>
@@ -37,6 +55,12 @@
        <widget class="QPushButton" name="movieOutputPathButton_">
         <property name="text">
          <string>Set...</string>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="toolTip">
          <string>Choose the output file</string>
@@ -48,6 +72,21 @@
    </item>
    <item>
     <layout class="QFormLayout" name="movieSettingsLayout_">
+     <property name="labelAlignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="formAlignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
+     <property name="horizontalSpacing">
+      <number>8</number>
+     </property>
+     <property name="leftMargin">
+      <number>8</number>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="movieFormatLabel_">
        <property name="text">
@@ -57,6 +96,12 @@
      </item>
      <item row="0" column="1">
       <widget class="QComboBox" name="movieFormatComboBox_">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
        <item>
         <property name="text">
          <string>PNG frame sequence</string>
@@ -83,6 +128,18 @@
      </item>
      <item row="1" column="1">
       <widget class="QSpinBox" name="movieFrameRateSpinBox_">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimum">
         <number>1</number>
        </property>
@@ -98,8 +155,17 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="movieButtonLayout_">
+     <property name="spacing">
+      <number>8</number>
+     </property>
      <item>
       <widget class="QPushButton" name="movieRecordButton_">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>28</height>
+        </size>
+       </property>
        <property name="text">
         <string>Record</string>
        </property>
@@ -110,6 +176,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="movieStopButton_">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>28</height>
+        </size>
+       </property>
        <property name="text">
         <string>Stop</string>
        </property>
@@ -130,6 +202,21 @@
      </property>
      <property name="wordWrap">
       <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>34</height>
+      </size>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
     </widget>
    </item>

@@ -37,6 +37,7 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
 #include <QStandardItemModel>
+#include <QStringBuilder>
 #include <qwt/qwt_knob.h>
 #include <qwt/qwt_abstract_slider.h>
 
@@ -603,6 +604,14 @@ MovieRecordControls::MovieRecordControls(ViewSceneDialog* parent)
   : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
+
+  // The field is always narrower than a real path, so keep the whole thing
+  // reachable without scrolling the line edit.
+  const auto pathHint = movieOutputPath_->toolTip();
+  connect(movieOutputPath_, &QLineEdit::textChanged, this,
+    [this, pathHint](const QString& path)
+    { movieOutputPath_->setToolTip(path.isEmpty() ? pathHint : path % "\n\n" % pathHint); });
+
   connect(movieOutputPathButton_, &QPushButton::clicked, parent, &ViewSceneDialog::setMovieOutputPath);
   connect(movieRecordButton_, &QPushButton::clicked, parent, &ViewSceneDialog::startMovieRecording);
   connect(movieStopButton_, &QPushButton::clicked, parent, &ViewSceneDialog::stopMovieRecording);
