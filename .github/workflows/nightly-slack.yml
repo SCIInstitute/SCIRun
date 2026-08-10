@@ -97,8 +97,16 @@ jobs:
           # A continue-on-error job (the VS 2026 builds) fails without failing
           # the run, so the conclusion alone reads green. Queried here, not in
           # the script, so the script stays runnable offline.
+          #
+          # Matched on step conclusions, not the job's: continue-on-error is
+          # documented to keep the RUN green, but whether it also rewrites the
+          # JOB's conclusion to success is not, and if it does then selecting on
+          # .conclusion finds nothing and this whole line silently never appears.
+          # A failed step reports `failure` either way.
           WF_FAILED_JOBS="$(gh run view "$WF_ID" --repo "$REPO" --json jobs \
-            -q '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")' \
+            -q '[.jobs[]
+                 | select(any(.steps[]?; .conclusion == "failure"))
+                 | .name] | join(", ")' \
             2>/dev/null || true)"
           export WF_FAILED_JOBS
 

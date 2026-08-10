@@ -16,10 +16,12 @@ name: pr
 #     contexts directly re-creates the problem in rule 1 as soon as one of them
 #     is filtered or renamed.
 #
-# Within this workflow there are two tiers. Two Linux jobs -- linux-gui-qt6 and
-# linux-unit-tests -- run on every non-docs PR and are what ci-gate normally
-# waits on. mac-gui and windows-gui-qt6 join them only when the PR touches
-# build-system, CI, or platform-specific paths (see `platform_risk` below).
+# Within this workflow there are two tiers. Three Linux jobs -- linux-gui (Qt5),
+# linux-gui-qt6 and linux-unit-tests -- run on every non-docs PR and are what
+# ci-gate normally waits on. mac-gui and windows-gui-qt6 join them only when the
+# PR touches build-system, CI, or platform-specific paths (see `platform_risk`
+# below). Whether linux-gui still earns its slot now that linux-gui-qt6 covers
+# the GUI path is an open question, not a settled one.
 #
 # The full matrix (all the mac-headless-*, windows-gui-python-*, regression and
 # coverage variants) lives in ccpp.yml / mac.yml / windows.yml /
