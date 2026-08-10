@@ -44,6 +44,8 @@ namespace
   /// bounded queue, which drops frames instead of hanging the GUI.
   constexpr int encoderWriteTimeoutMs = 5000;
   constexpr int encoderFinishTimeoutMs = 30000;
+  /// Long enough to cover a full encoder flush, with slack.
+  constexpr int teardownWaitMs = encoderFinishTimeoutMs + 5000;
 
   QString directoryOf(const QString& path)
   {
@@ -338,7 +340,12 @@ MovieRecorder::~MovieRecorder()
   if (recording_)
     stop();
   writerThread_->quit();
-  writerThread_->wait();
+
+  // Wait long enough for an in-flight encode to finish -- quitting mid-GIF
+  // would truncate the movie the user just made -- but not forever: a wedged
+  // ffmpeg must not hold the application open.
+  if (!writerThread_->wait(teardownWaitMs))
+    writerThread_->terminate();
 }
 
 QString MovieRecorder::ffmpegPath()
