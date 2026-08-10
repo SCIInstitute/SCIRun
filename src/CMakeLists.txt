@@ -72,11 +72,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_P
 
 # Make a version file containing the current version from git.
 include(GetGitRevisionDescription)
-git_describe(VERSION_TAG --tag)
+# Match only release tags (v*). CI moves a rolling `nightly` tag
+# (.github/workflows/publish-release.yml), which would otherwise win here and
+# make the GUI, splash screen and CPack version report "nightly" instead of the
+# last release.
+git_describe(VERSION_TAG --tags --match "v*")
 git_describe(VERSION_BRANCH --all)
 get_git_head_revision(VERSION_REFSPEC VERSION_HASHVAR)
 
-IF(VERSION_TAG MATCHES "HEAD-HASH-NOTFOUND")
+# Covers both no-git (source zip: "HEAD-HASH-NOTFOUND") and a shallow clone with
+# no release tag reachable ("-128-NOTFOUND").
+IF(VERSION_TAG MATCHES "NOTFOUND")
   FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/LATEST_TAG.txt VERSION_TAG)
   STRING(STRIP ${VERSION_TAG} VERSION_TAG)
   MESSAGE(STATUS "Found tag file for version info: " "${VERSION_TAG}")
