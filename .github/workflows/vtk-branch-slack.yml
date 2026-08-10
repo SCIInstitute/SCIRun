@@ -1,7 +1,13 @@
 name: vtk-branch-slack
 
-# Slack notification when a build goes red on a VTK branch (#2681). Those
+# Slack notification when a build GOES red on a VTK branch (#2681). Those
 # branches are not master, so nightly-slack.yml ignores them.
+#
+# Edge-triggered, not level-triggered: the first red after a green posts, and
+# then it is quiet until the workflow recovers. A branch that sits broken for
+# weeks -- which is the normal state here -- would otherwise emit one message
+# per workflow per push. There is deliberately no recovery or still-broken
+# message; check the branch if you want current state.
 #
 # Reaches refactor_add_vtk without that branch merging anything, because
 # workflow_run runs the default branch's copy of the file -- see the header of
@@ -58,6 +64,7 @@ jobs:
           echo "branch=${WF_BRANCH} is_vtk=${is_vtk}"
 
       - name: Build Slack payload
+        id: payload
         if: steps.vtk.outputs.is_vtk == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -77,27 +84,41 @@ jobs:
             *)         emoji=":white_circle:";;
           esac
 
-          # Nobody is watching these branches, so "red for N runs" is the part
-          # that says new-breakage vs long-rotten. index() is the position of
-          # the last success, i.e. the non-green count at the head.
+          # Post the first red after a green, then stay quiet until it recovers.
+          # A branch that is already known-broken produces one message per
+          # workflow per push otherwise -- on refactor_add_vtk's history that is
+          # 76 posts where 22 carry news, and an alert at that rate gets muted.
+          #
+          # index() is the position of the last success, i.e. the non-green count
+          # at the head, counting this run. 1 means it just broke.
           streak="$(gh run list --repo "$REPO" \
             --workflow "$WF_NAME" --branch "$WF_BRANCH" \
             --limit 30 --json conclusion \
             -q '[.[].conclusion | select(. != null and . != "")]
                 | (index("success") // length)' 2>/dev/null || true)"
 
-          detail="<${WF_URL}|View run> · \`${short_sha}\`"
-          if [ -n "${streak:-}" ] && [ "$streak" -gt 1 ] 2>/dev/null; then
-            detail="${detail} · red for ${streak} runs"
+          # Suppress only when we positively know it was already red. An empty or
+          # unparseable streak means the query failed, and 0 means the list had
+          # not caught up with this run yet -- both post, because a missed first
+          # break costs more than one redundant line.
+          post=true
+          if [ -n "${streak:-}" ] && [ "$streak" -ge 2 ] 2>/dev/null; then
+            post=false
+          fi
+          echo "post=$post" >> "$GITHUB_OUTPUT"
+
+          if [ "$post" != "true" ]; then
+            echo "Already red for ${streak} runs; staying quiet until it recovers."
+            exit 0
           fi
 
-          text="${emoji} *${WF_NAME}* ${WF_CONCLUSION} on \`${WF_BRANCH}\`"$'\n'"${detail}"
+          text="${emoji} *${WF_NAME}* ${WF_CONCLUSION} on \`${WF_BRANCH}\`"$'\n'"<${WF_URL}|View run> · \`${short_sha}\`"
           jq -n --arg t "$text" '{text: $t}' > payload.json
           echo "Payload:"
           cat payload.json
 
       - name: Post to Slack
-        if: steps.vtk.outputs.is_vtk == 'true'
+        if: steps.payload.outputs.post == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
