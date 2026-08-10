@@ -616,6 +616,10 @@ MovieRecordControls::MovieRecordControls(ViewSceneDialog* parent)
   connect(movieRecordButton_, &QPushButton::clicked, parent, &ViewSceneDialog::startMovieRecording);
   connect(movieStopButton_, &QPushButton::clicked, parent, &ViewSceneDialog::stopMovieRecording);
 
+  // The toolbar button carries the camera; the transport meaning lives here.
+  movieRecordButton_->setIcon(recordDotIcon());
+  movieStopButton_->setIcon(stopSquareIcon(palette().color(QPalette::ButtonText)));
+
   if (!MovieRecorder::ffmpegAvailable())
   {
     setStatus("ffmpeg not found: only PNG frame sequences can be recorded.");

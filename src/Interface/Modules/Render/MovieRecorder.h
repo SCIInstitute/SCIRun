@@ -60,6 +60,15 @@ namespace SCIRun
 
     SCISHARE MovieFormat movieFormatFromSuffix(const QString& suffix);
 
+    // Icons are painted rather than shipped as resources: three shapes this
+    // simple stay crisp at any toolbar scale and carry no attribution.
+    /// Movie camera, for the toolbar button. Line-art white, to sit beside
+    /// the still-camera screenshot icon.
+    SCISHARE QPixmap movieCameraIcon();
+    /// Red dot and a square, for the popup's Record and Stop buttons.
+    SCISHARE QPixmap recordDotIcon();
+    SCISHARE QPixmap stopSquareIcon(const QColor& ink);
+
     /// Writes captured frames on a worker thread. Never touched directly by the
     /// dialog: MovieRecorder owns it and talks to it with queued connections.
     class MovieFrameWriter : public QObject

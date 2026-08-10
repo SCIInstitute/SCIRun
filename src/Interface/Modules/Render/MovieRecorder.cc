@@ -81,6 +81,62 @@ MovieFormat SCIRun::Gui::movieFormatFromSuffix(const QString& suffix)
 }
 
 //---------------------------------------------------------------------------
+// Icons
+//---------------------------------------------------------------------------
+
+namespace
+{
+  /// All three icons are drawn in a 64x64 box and scaled down by the button.
+  QPixmap iconCanvas()
+  {
+    QPixmap pixmap(64, 64);
+    pixmap.fill(Qt::transparent);
+    return pixmap;
+  }
+}
+
+QPixmap SCIRun::Gui::movieCameraIcon()
+{
+  auto pixmap = iconCanvas();
+  QPainter painter(&pixmap);
+  painter.setRenderHint(QPainter::Antialiasing);
+
+  // Reels as rings, body and lens solid: the same mix of weights as the
+  // screenshot icon this one sits next to.
+  painter.setPen(QPen(Qt::white, 4.5));
+  painter.setBrush(Qt::NoBrush);
+  painter.drawEllipse(QPointF(21, 17), 9.5, 9.5);
+  painter.drawEllipse(QPointF(41, 19), 7.5, 7.5);
+
+  painter.setPen(Qt::NoPen);
+  painter.setBrush(Qt::white);
+  painter.drawRoundedRect(QRectF(8, 29, 38, 24), 4, 4);
+  painter.drawPolygon(QPolygonF({{46, 35}, {58, 28}, {58, 50}, {46, 44}}));
+  return pixmap;
+}
+
+QPixmap SCIRun::Gui::recordDotIcon()
+{
+  auto pixmap = iconCanvas();
+  QPainter painter(&pixmap);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.setPen(Qt::NoPen);
+  painter.setBrush(QColor(200, 40, 40));
+  painter.drawEllipse(QRectF(10, 10, 44, 44));
+  return pixmap;
+}
+
+QPixmap SCIRun::Gui::stopSquareIcon(const QColor& ink)
+{
+  auto pixmap = iconCanvas();
+  QPainter painter(&pixmap);
+  painter.setPen(Qt::NoPen);
+  painter.setBrush(ink);
+  painter.drawRect(QRectF(15, 15, 34, 34));
+  return pixmap;
+}
+
+//---------------------------------------------------------------------------
 // MovieFrameWriter
 //---------------------------------------------------------------------------
 

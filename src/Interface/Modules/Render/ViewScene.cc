@@ -1003,40 +1003,11 @@ void ViewSceneDialog::addScreenshotButton()
   addToolbarButton(screenshotButton, Qt::TopToolBarArea, impl_->screenshotControls_);
 }
 
-namespace
-{
-  /// Drawn rather than shipped as resources: a dot and a square read as
-  /// record/stop at 22px without any labelling. White while recording, since
-  /// the button itself goes red then.
-  QPixmap recordIcon()
-  {
-    QPixmap pixmap(64, 64);
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(200, 40, 40));
-    painter.drawEllipse(QRectF(10, 10, 44, 44));
-    return pixmap;
-  }
-
-  QPixmap stopIcon()
-  {
-    QPixmap pixmap(64, 64);
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(Qt::white);
-    painter.drawRect(QRectF(16, 16, 32, 32));
-    return pixmap;
-  }
-}
-
 void ViewSceneDialog::addMovieRecordButton()
 {
   impl_->movieRecordButton_ = new QPushButton(this);
   impl_->movieRecordButton_->setToolTip("Record Movie");
-  impl_->movieRecordButton_->setIcon(recordIcon());
+  impl_->movieRecordButton_->setIcon(movieCameraIcon());
   connect(impl_->movieRecordButton_, &QPushButton::clicked, this, &ViewSceneDialog::toggleMovieRecording);
   impl_->movieRecordControls_ = new MovieRecordControls(this);
   addToolbarButton(impl_->movieRecordButton_, Qt::TopToolBarArea, impl_->movieRecordControls_);
@@ -3208,7 +3179,6 @@ namespace
 
   void setRecordButtonAppearance(QPushButton* button, bool recording)
   {
-    button->setIcon(recording ? stopIcon() : recordIcon());
     button->setStyleSheet(buttonStyleSheet(recording));
     button->setToolTip(recording ? "Stop Recording" : "Record Movie");
   }
