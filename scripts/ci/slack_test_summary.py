@@ -31,6 +31,14 @@ MAX_NAMES = 5
 CTEST_SUMMARY = re.compile(
     r"(\d+)% tests passed, (\d+) tests failed out of (\d+)")
 
+# ElementTree's exposure is entity-expansion DoS -- billion laughs and quadratic
+# blowup. Both need a DOCTYPE, and ctest's junit output never has one, so
+# rejecting it removes the vector without a defusedxml dependency, which this
+# script cannot take (see the module docstring: it must run on a stock
+# interpreter). External entities are not a concern; CPython's expat does not
+# fetch them.
+DOCTYPE = re.compile(rb"<!DOCTYPE", re.IGNORECASE)
+
 
 class Report:
     """One junit file: a (job, kind) pair such as Linux-headless / regression."""
@@ -49,7 +57,11 @@ class Report:
 
 
 def parse_junit(path, label, kind):
-    root = ET.parse(path).getroot()
+    raw = path.read_bytes()
+    if DOCTYPE.search(raw):
+        raise ET.ParseError("DOCTYPE is not allowed in test output")
+    # No DOCTYPE, so no entity declarations can be present (B314 above).
+    root = ET.fromstring(raw)  # nosec B314  # noqa: S314
     r = Report(label, kind)
     # ctest's own attributes are authoritative; `disabled` tests are counted in
     # `tests` here but excluded from ctest's console "out of N", which is why
