@@ -1,0 +1,142 @@
+name: vtk-branch-slack
+
+# Posts to Slack when a build goes red on a VTK branch. Closes #2681.
+#
+# Red CI on those branches reaches nobody today: they are not master, so the
+# nightly notifier ignores them, and the branch's developer builds on Windows
+# only -- CI is the sole source of mac and linux feedback there.
+#
+# Design notes:
+#
+#  * `workflow_run` workflows run from the version of the file on the DEFAULT
+#    branch. That is the whole reason this can work: merged to master, it fires
+#    for refactor_add_vtk without that branch merging anything, which matters
+#    because it is >130 commits behind and has none of master's CI files.
+#    It also means this cannot be exercised from a PR -- see "Testing" below.
+#
+#  * Failures only. A notifier that also posts green becomes noise people mute,
+#    and the point here is the absence of any signal at all.
+#
+#  * No artifact parsing, unlike nightly-slack.yml. These are build-only
+#    workflows on these branches; there are no test results to summarise.
+#
+#  * No overlap with nightly-slack.yml, which filters to `event == 'schedule'`.
+#    This one takes `push` and `pull_request` and additionally requires a VTK
+#    branch name, so no run can match both.
+#
+# Requires the same SLACK_WEBHOOK_URL repo secret as nightly-slack.yml. Until it
+# is set the workflow runs but skips the post with a warning.
+#
+# Testing: `workflow_run` cannot fire from a branch, so this is untestable until
+# it is on master. First live check is the next push to refactor_add_vtk -- see
+# the acceptance list in #2681.
+
+on:
+  workflow_run:
+    workflows:
+      - linux-build
+      - windows-build
+      - windows-build-script
+      - mac-build
+    types:
+      - completed
+
+permissions:
+  actions: read      # gh run list, for the red-streak count
+  contents: read
+
+jobs:
+  notify:
+    # `pull_request` is here as well as `push` because of an asymmetry on
+    # refactor_add_vtk: its ccpp.yml / windows.yml / windows-build-script.yml
+    # trigger on push, but its mac.yml has only a `pull_request:` trigger. On a
+    # push-only filter, mac -- the platform with no local coverage at all, since
+    # the developer is Windows-only -- would be the one platform that never
+    # notifies. #2681 specifies push only; this is a deliberate widening.
+    if: >-
+      (github.event.workflow_run.event == 'push' ||
+       github.event.workflow_run.event == 'pull_request') &&
+      (github.event.workflow_run.conclusion == 'failure' ||
+       github.event.workflow_run.conclusion == 'cancelled')
+    runs-on: ubuntu-latest
+    steps:
+      # Matched in a step, not in `on:`. Workflow filter patterns are
+      # case-sensitive with no regex, so an `on:` filter would need
+      # ['**vtk**','**VTK**','**Vtk**'] and would still miss Vtk_Renderer.
+      #
+      # Knowingly a heuristic both ways: `fix-vtk-typo-in-docs` notifies for
+      # little, and a future `renderer-backend-v2` would not notify at all. Both
+      # are cheap failures for a notifier -- one spurious line, or one missing
+      # one. Too blunt to gate builds on; fine to ping on.
+      - name: Is this a VTK branch?
+        id: vtk
+        env:
+          WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          # tr rather than ${WF_BRANCH,,}: that needs bash 4, so the snippet
+          # would not run on a stock macOS shell. This is the only part of this
+          # workflow anyone can test off-runner; keep it portable.
+          lower="$(printf '%s' "$WF_BRANCH" | tr '[:upper:]' '[:lower:]')"
+          case "$lower" in
+            *vtk*) is_vtk=true ;;
+            *)     is_vtk=false ;;
+          esac
+          echo "is_vtk=$is_vtk" >> "$GITHUB_OUTPUT"
+          echo "branch=${WF_BRANCH} is_vtk=${is_vtk}"
+
+      - name: Build Slack payload
+        if: steps.vtk.outputs.is_vtk == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WF_URL: ${{ github.event.workflow_run.html_url }}
+          WF_SHA: ${{ github.event.workflow_run.head_sha }}
+          WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          short_sha="${WF_SHA:0:9}"
+
+          case "$WF_CONCLUSION" in
+            failure)   emoji=":red_circle:";;
+            cancelled) emoji=":black_circle:";;
+            *)         emoji=":white_circle:";;
+          esac
+
+          # How long has this been red? Nobody is watching, so "red for 12 runs"
+          # is the part that says whether this is new or long-rotten. index()
+          # returns the position of the most recent success, which is exactly
+          # the number of consecutive non-green runs at the head; `// length`
+          # covers "no success in the window at all". Includes this run.
+          streak="$(gh run list --repo "$REPO" \
+            --workflow "$WF_NAME" --branch "$WF_BRANCH" \
+            --limit 30 --json conclusion \
+            -q '[.[].conclusion | select(. != null and . != "")]
+                | (index("success") // length)' 2>/dev/null || true)"
+
+          detail="<${WF_URL}|View run> · \`${short_sha}\`"
+          if [ -n "${streak:-}" ] && [ "$streak" -gt 1 ] 2>/dev/null; then
+            detail="${detail} · red for ${streak} runs"
+          fi
+
+          text="${emoji} *${WF_NAME}* ${WF_CONCLUSION} on \`${WF_BRANCH}\`"$'\n'"${detail}"
+
+          # jq builds the JSON so newlines and any characters in a branch name
+          # are escaped correctly.
+          jq -n --arg t "$text" '{text: $t}' > payload.json
+          echo "Payload:"
+          cat payload.json
+
+      - name: Post to Slack
+        if: steps.vtk.outputs.is_vtk == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "::warning::SLACK_WEBHOOK_URL secret is not set; skipping Slack post."
+            exit 0
+          fi
+          curl -sSf -X POST -H 'Content-type: application/json' \
+            --data @payload.json "$SLACK_WEBHOOK_URL"
