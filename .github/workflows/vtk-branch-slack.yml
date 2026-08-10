@@ -1,35 +1,13 @@
 name: vtk-branch-slack
 
-# Posts to Slack when a build goes red on a VTK branch. Closes #2681.
+# Slack notification when a build goes red on a VTK branch (#2681). Those
+# branches are not master, so nightly-slack.yml ignores them.
 #
-# Red CI on those branches reaches nobody today: they are not master, so the
-# nightly notifier ignores them, and the branch's developer builds on Windows
-# only -- CI is the sole source of mac and linux feedback there.
+# workflow_run workflows run from the DEFAULT branch's copy of the file, which
+# is what makes this reach refactor_add_vtk without merging anything into it.
+# It also means this cannot be exercised from a PR.
 #
-# Design notes:
-#
-#  * `workflow_run` workflows run from the version of the file on the DEFAULT
-#    branch. That is the whole reason this can work: merged to master, it fires
-#    for refactor_add_vtk without that branch merging anything, which matters
-#    because it is >130 commits behind and has none of master's CI files.
-#    It also means this cannot be exercised from a PR -- see "Testing" below.
-#
-#  * Failures only. A notifier that also posts green becomes noise people mute,
-#    and the point here is the absence of any signal at all.
-#
-#  * No artifact parsing, unlike nightly-slack.yml. These are build-only
-#    workflows on these branches; there are no test results to summarise.
-#
-#  * No overlap with nightly-slack.yml, which filters to `event == 'schedule'`.
-#    This one takes `push` and `pull_request` and additionally requires a VTK
-#    branch name, so no run can match both.
-#
-# Requires the same SLACK_WEBHOOK_URL repo secret as nightly-slack.yml. Until it
-# is set the workflow runs but skips the post with a warning.
-#
-# Testing: `workflow_run` cannot fire from a branch, so this is untestable until
-# it is on master. First live check is the next push to refactor_add_vtk -- see
-# the acceptance list in #2681.
+# Requires the SLACK_WEBHOOK_URL secret, as nightly-slack.yml does.
 
 on:
   workflow_run:
@@ -47,12 +25,12 @@ permissions:
 
 jobs:
   notify:
-    # `pull_request` is here as well as `push` because of an asymmetry on
-    # refactor_add_vtk: its ccpp.yml / windows.yml / windows-build-script.yml
-    # trigger on push, but its mac.yml has only a `pull_request:` trigger. On a
-    # push-only filter, mac -- the platform with no local coverage at all, since
-    # the developer is Windows-only -- would be the one platform that never
-    # notifies. #2681 specifies push only; this is a deliberate widening.
+    # Failures only; green would be noise people mute. nightly-slack.yml filters
+    # to `schedule`, so no run can match both.
+    #
+    # pull_request as well as push: mac.yml on refactor_add_vtk has only a
+    # pull_request trigger, so push alone could never report mac -- the one
+    # platform with no local coverage. #2681 specifies push only.
     if: >-
       (github.event.workflow_run.event == 'push' ||
        github.event.workflow_run.event == 'pull_request') &&
@@ -60,25 +38,18 @@ jobs:
        github.event.workflow_run.conclusion == 'cancelled')
     runs-on: ubuntu-latest
     steps:
-      # Matched in a step, not in `on:`. Workflow filter patterns are
-      # case-sensitive with no regex, so an `on:` filter would need
-      # ['**vtk**','**VTK**','**Vtk**'] and would still miss Vtk_Renderer.
-      #
-      # Knowingly a heuristic both ways: `fix-vtk-typo-in-docs` notifies for
-      # little, and a future `renderer-backend-v2` would not notify at all. Both
-      # are cheap failures for a notifier -- one spurious line, or one missing
-      # one. Too blunt to gate builds on; fine to ping on.
+      # Matched here rather than in `on:` because workflow filter patterns are
+      # case-sensitive with no regex. Heuristic both ways, which is fine for a
+      # notifier: a stray match costs one Slack line, a miss costs one.
       - name: Is this a VTK branch?
         id: vtk
         env:
           WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
           set -euo pipefail
-          # tr rather than ${WF_BRANCH,,}: that needs bash 4, so the snippet
-          # would not run on a stock macOS shell. This is the only part of this
-          # workflow anyone can test off-runner; keep it portable.
-          lower="$(printf '%s' "$WF_BRANCH" | tr '[:upper:]' '[:lower:]')"
-          case "$lower" in
+          # tr, not ${WF_BRANCH,,}: that needs bash 4, and this is the only part
+          # of the workflow anyone can test off-runner.
+          case "$(printf '%s' "$WF_BRANCH" | tr '[:upper:]' '[:lower:]')" in
             *vtk*) is_vtk=true ;;
             *)     is_vtk=false ;;
           esac
@@ -105,11 +76,9 @@ jobs:
             *)         emoji=":white_circle:";;
           esac
 
-          # How long has this been red? Nobody is watching, so "red for 12 runs"
-          # is the part that says whether this is new or long-rotten. index()
-          # returns the position of the most recent success, which is exactly
-          # the number of consecutive non-green runs at the head; `// length`
-          # covers "no success in the window at all". Includes this run.
+          # Nobody is watching these branches, so "red for N runs" is the part
+          # that says new-breakage vs long-rotten. index() is the position of
+          # the last success, i.e. the non-green count at the head.
           streak="$(gh run list --repo "$REPO" \
             --workflow "$WF_NAME" --branch "$WF_BRANCH" \
             --limit 30 --json conclusion \
@@ -122,9 +91,6 @@ jobs:
           fi
 
           text="${emoji} *${WF_NAME}* ${WF_CONCLUSION} on \`${WF_BRANCH}\`"$'\n'"${detail}"
-
-          # jq builds the JSON so newlines and any characters in a branch name
-          # are escaped correctly.
           jq -n --arg t "$text" '{text: $t}' > payload.json
           echo "Payload:"
           cat payload.json

@@ -115,8 +115,8 @@ def build(reports, env):
     sha = env.get("WF_SHA", "")[:9]
     branch = env.get("WF_BRANCH", "")
 
-    # Set by nightly-slack.yml from the run's job list; jobs that failed under
-    # continue-on-error, which leave the run's own conclusion green.
+    # Jobs that failed under continue-on-error, so the run's own conclusion is
+    # still green. Set by nightly-slack.yml.
     failed_jobs = env.get("WF_FAILED_JOBS", "").strip()
 
     any_failed = any(r.failed for r in reports)
@@ -126,8 +126,10 @@ def build(reports, env):
     blocks = [{"type": "section",
                "text": {"type": "mrkdwn", "text": header}}]
 
-    # Directly after the header so the block-count trim below cannot drop it.
-    if failed_jobs:
+    # Only on a green run: there the failures are hidden, which is the whole
+    # point. On a red one they are the stated cause, not "non-blocking".
+    # Before the fields so the block-count trim below cannot drop it.
+    if failed_jobs and conclusion == "success":
         blocks.append({
             "type": "context",
             "elements": [{"type": "mrkdwn",
