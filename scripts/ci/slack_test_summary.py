@@ -95,15 +95,15 @@ def collect(artifacts_dir):
     return reports
 
 
-def emoji_for(conclusion, any_failed):
+def emoji_for(conclusion, any_failed, failed_jobs):
     # Honour the real conclusion, but downgrade a green job to yellow when its
-    # continue-on-error test steps actually failed underneath it.
+    # continue-on-error test steps or jobs actually failed underneath it.
     base = {
         "success": ":large_green_circle:",
         "failure": ":red_circle:",
         "cancelled": ":black_circle:",
     }.get(conclusion, ":white_circle:")
-    if any_failed and conclusion == "success":
+    if conclusion == "success" and (any_failed or failed_jobs):
         return ":large_yellow_circle:"
     return base
 
@@ -115,11 +115,24 @@ def build(reports, env):
     sha = env.get("WF_SHA", "")[:9]
     branch = env.get("WF_BRANCH", "")
 
+    # Set by nightly-slack.yml from the run's job list; jobs that failed under
+    # continue-on-error, which leave the run's own conclusion green.
+    failed_jobs = env.get("WF_FAILED_JOBS", "").strip()
+
     any_failed = any(r.failed for r in reports)
-    header = f"{emoji_for(conclusion, any_failed)} *{name}* nightly — {conclusion}"
+    header = (f"{emoji_for(conclusion, any_failed, failed_jobs)} "
+              f"*{name}* nightly — {conclusion}")
 
     blocks = [{"type": "section",
                "text": {"type": "mrkdwn", "text": header}}]
+
+    # Directly after the header so the block-count trim below cannot drop it.
+    if failed_jobs:
+        blocks.append({
+            "type": "context",
+            "elements": [{"type": "mrkdwn",
+                          "text": f"*failed, non-blocking:* {failed_jobs}"}],
+        })
 
     # One field per report, two columns. Slack caps a section at 10 fields, so
     # chunk rather than assume the matrix stays small.

@@ -81,6 +81,9 @@ jobs:
 
       - name: Build Slack payload
         env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WF_ID: ${{ github.event.workflow_run.id }}
           WF_NAME: ${{ github.event.workflow_run.name }}
           WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           WF_URL: ${{ github.event.workflow_run.html_url }}
@@ -88,6 +91,16 @@ jobs:
           WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
           set -euo pipefail
+
+          # A continue-on-error job (the VS 2026 builds in windows.yml) fails
+          # without failing the run, so the conclusion alone reads green. Queried
+          # here rather than in the script so the script stays hermetic — it can
+          # be run against a downloaded artifacts dir with no network.
+          WF_FAILED_JOBS="$(gh run view "$WF_ID" --repo "$REPO" --json jobs \
+            -q '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")' \
+            2>/dev/null || true)"
+          export WF_FAILED_JOBS
+
           python3 scripts/ci/slack_test_summary.py artifacts > payload.json
           echo "Payload:"
           cat payload.json

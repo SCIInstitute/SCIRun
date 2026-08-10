@@ -60,10 +60,18 @@ on:
       artifact-name:
         required: false
         type: string
+      allow-failure:
+        # Experimental build: still runs, still reports a red job, but doesn't
+        # fail the run. continue-on-error is rejected on a job that calls a
+        # reusable workflow, hence an input applied to the job in here.
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    continue-on-error: ${{ inputs.allow-failure }}
     permissions:
       checks: write
       contents: read
