@@ -11,11 +11,11 @@ name: nightly-slack
 #    (the tested build path) is left untouched.
 #
 #  * `workflow_run` only fires for workflow files that live on the DEFAULT
-#    branch. This notifier therefore does nothing until it is merged to master,
-#    and cannot be exercised from a PR branch. That is why the payload is built
-#    by scripts/ci/slack_test_summary.py rather than inline shell -- the script
-#    runs against downloaded artifacts locally, which is the only way any of this
-#    gets tested before it is live.
+#    branch, so this does nothing until merged and cannot be exercised from a
+#    PR. Hence the payload comes from scripts/ci/slack_test_summary.py, which
+#    runs against downloaded artifacts locally -- the only pre-merge test there
+#    is. (vtk-branch-slack.yml leans on the same property for a different
+#    reason: it reaches feature branches that never merge this file.)
 #
 #  * It reports the REAL ctest pass/fail counts, not just the job conclusion.
 #    The ctest steps in reusable-build.yml carry `continue-on-error: true`, so
@@ -28,6 +28,8 @@ name: nightly-slack
 #    pushes and workflow_dispatch runs do not (pushes still get GitHub's default
 #    failure email). To also notify on-demand runs, add
 #    `|| github.event.workflow_run.event == 'workflow_dispatch'` to the job `if`.
+#    Do not add 'push' here -- vtk-branch-slack.yml owns push/PR failures, and
+#    overlapping filters would double-post.
 #
 # Requires a repo secret SLACK_WEBHOOK_URL holding a Slack incoming-webhook URL
 # (Settings -> Secrets and variables -> Actions). Until it is set, the workflow

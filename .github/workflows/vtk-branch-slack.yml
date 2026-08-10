@@ -3,9 +3,10 @@ name: vtk-branch-slack
 # Slack notification when a build goes red on a VTK branch (#2681). Those
 # branches are not master, so nightly-slack.yml ignores them.
 #
-# workflow_run workflows run from the DEFAULT branch's copy of the file, which
-# is what makes this reach refactor_add_vtk without merging anything into it.
-# It also means this cannot be exercised from a PR.
+# Reaches refactor_add_vtk without that branch merging anything, because
+# workflow_run runs the default branch's copy of the file -- see the header of
+# nightly-slack.yml, which relies on the same property and carries the same
+# consequence: untestable from a PR.
 #
 # Requires the SLACK_WEBHOOK_URL secret, as nightly-slack.yml does.
 
