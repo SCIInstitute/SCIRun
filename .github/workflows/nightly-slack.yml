@@ -12,16 +12,17 @@ name: nightly-slack
 #
 #  * `workflow_run` only fires for workflow files that live on the DEFAULT
 #    branch. This notifier therefore does nothing until it is merged to master,
-#    and cannot be exercised from a PR branch. That is expected for nightly
-#    infrastructure -- there is no way to unit-test a workflow_run trigger from a
-#    feature branch.
+#    and cannot be exercised from a PR branch. That is why the payload is built
+#    by scripts/ci/slack_test_summary.py rather than inline shell -- the script
+#    runs against downloaded artifacts locally, which is the only way any of this
+#    gets tested before it is live.
 #
 #  * It reports the REAL ctest pass/fail counts, not just the job conclusion.
 #    The ctest steps in reusable-build.yml carry `continue-on-error: true`, so
 #    regression-tests reports "success" even when hundreds of cases fail. The
-#    counts are recovered by downloading that run's `test-results-*` artifacts
-#    and parsing the "N% tests passed, M tests failed out of K" summary lines.
-#    A green job with failing tests is flagged yellow rather than green.
+#    counts (and the failing test names) come from the junit-*.xml files in that
+#    run's `test-results-*` artifacts. A green job with failing tests is flagged
+#    yellow rather than green.
 #
 #  * Filtered to `event == 'schedule'`: only the nightly cron pings Slack. Master
 #    pushes and workflow_dispatch runs do not (pushes still get GitHub's default
@@ -55,6 +56,14 @@ jobs:
     if: ${{ github.event.workflow_run.event == 'schedule' }}
     runs-on: ubuntu-latest
     steps:
+      # Only for scripts/ci/slack_test_summary.py. workflow_run always resolves
+      # the workflow -- and therefore this checkout -- against the default
+      # branch, so this is master's copy of the script, never a PR's.
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
       - name: Download test-results artifacts (best effort)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -78,48 +87,8 @@ jobs:
           WF_SHA: ${{ github.event.workflow_run.head_sha }}
           WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
-          short_sha="${WF_SHA:0:9}"
-
-          # Collect ctest summary lines from any downloaded results files.
-          # Filenames: unit-test-results.txt / regression-test-results.txt,
-          # under a dir named test-results-<OS>-<variant>.
-          test_lines=""
-          any_fail=0
-          shopt -s nullglob
-          for f in artifacts/*/*-test-results.txt; do
-            art="$(basename "$(dirname "$f")")"        # test-results-Linux-headless
-            label="${art#test-results-}"               # Linux-headless
-            kind="$(basename "$f")"; kind="${kind%%-test-results.txt}"   # unit | regression
-            summary="$(grep -Eo '[0-9]+% tests passed, [0-9]+ tests failed out of [0-9]+' "$f" | tail -n1)"
-            [ -z "$summary" ] && continue
-            failed="$(printf '%s' "$summary" | grep -Eo '^[0-9]+% tests passed, [0-9]+' | grep -Eo '[0-9]+$')"
-            [ "${failed:-0}" -gt 0 ] && any_fail=1
-            test_lines="${test_lines}\n• ${label} ${kind}: ${summary}"
-          done
-
-          # Emoji: honor the real conclusion, but downgrade a green job to yellow
-          # when its continue-on-error tests actually failed underneath.
-          case "$WF_CONCLUSION" in
-            success)   emoji=":large_green_circle:";;
-            failure)   emoji=":red_circle:";;
-            cancelled) emoji=":black_circle:";;
-            *)         emoji=":white_circle:";;
-          esac
-          if [ "$any_fail" -eq 1 ] && [ "$WF_CONCLUSION" = "success" ]; then
-            emoji=":large_yellow_circle:"
-          fi
-
-          header="${emoji} *${WF_NAME}* nightly — ${WF_CONCLUSION}"
-          footer="<${WF_URL}|View run> · \`${short_sha}\` (${WF_BRANCH})"
-          if [ -n "$test_lines" ]; then
-            text="${header}${test_lines}\n${footer}"
-          else
-            text="${header}\n${footer}"
-          fi
-
-          # Build the JSON with jq so newlines and any special characters in the
-          # summary are escaped correctly. printf %b expands the \n separators.
-          jq -n --arg t "$(printf '%b' "$text")" '{text: $t}' > payload.json
+          set -euo pipefail
+          python3 scripts/ci/slack_test_summary.py artifacts > payload.json
           echo "Payload:"
           cat payload.json
 
