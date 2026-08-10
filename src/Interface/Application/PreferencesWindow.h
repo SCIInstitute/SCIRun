@@ -57,7 +57,6 @@ public:
   void setHighDPIAdjustment(bool highDPI);
   void setModuleExecuteDownstreamOnly(bool mode);
   void setAutoRotateViewerOnMouseRelease(bool mode);
-  void setWidgetSelectionCorrection(bool mode);
   void setToolBarPopupShowDelay(int delay);
   void setToolBarPopupHideDelay(int delay);
 
@@ -68,7 +67,6 @@ public Q_SLOTS:
   void updateAutoNotesState(int state);
   void updateHighDPIAdjust(int state);
   void updateForceGridBackground(int state);
-  void updateWidgetSelectionCorrection(int state);
   void updateAutoRotateViewer(int state);
   void updateToolBarPopupShowDelay(int delay);
   void updateToolBarPopupHideDelay(int delay);
