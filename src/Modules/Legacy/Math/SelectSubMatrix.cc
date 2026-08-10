@@ -49,12 +49,8 @@ SelectSubMatrix::SelectSubMatrix() : Module(staticInfo_)
 
 void SelectSubMatrix::setStateDefaults()
 {
-  setStateBoolFromAlgo(Parameters::rowCheckBox);
-  setStateBoolFromAlgo(Parameters::columnCheckBox);
-  setStateIntFromAlgo(Parameters::rowStartSpinBox);
-  setStateIntFromAlgo(Parameters::columnStartSpinBox);
-  setStateIntFromAlgo(Parameters::columnEndSpinBox);
-  setStateIntFromAlgo(Parameters::rowEndSpinBox);
+  copyAlgoToState({Parameters::rowCheckBox, Parameters::columnCheckBox, Parameters::rowStartSpinBox,
+    Parameters::columnStartSpinBox, Parameters::columnEndSpinBox, Parameters::rowEndSpinBox});
 }
 
 void SelectSubMatrix::execute()
@@ -161,12 +157,8 @@ void SelectSubMatrix::execute()
 
   if (needToExecute())
   {
-    setAlgoBoolFromState(Parameters::rowCheckBox);
-    setAlgoBoolFromState(Parameters::columnCheckBox);
-    setAlgoIntFromState(Parameters::rowStartSpinBox);
-    setAlgoIntFromState(Parameters::rowEndSpinBox);
-    setAlgoIntFromState(Parameters::columnStartSpinBox);
-    setAlgoIntFromState(Parameters::columnEndSpinBox);
+    copyStateToAlgo({Parameters::rowCheckBox, Parameters::columnCheckBox, Parameters::rowStartSpinBox,
+      Parameters::rowEndSpinBox, Parameters::columnStartSpinBox, Parameters::columnEndSpinBox});
 
     auto output = algo().run(withInputData((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
 

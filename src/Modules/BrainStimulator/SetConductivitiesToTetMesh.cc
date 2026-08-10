@@ -53,14 +53,8 @@ SetConductivitiesToMesh::SetConductivitiesToMesh() : Module(staticInfo_)
 
 void SetConductivitiesToMesh::setStateDefaults()
 {
-  setStateDoubleFromAlgo(Parameters::Skin);
-  setStateDoubleFromAlgo(Parameters::SoftBone);
-  setStateDoubleFromAlgo(Parameters::HardBone);
-  setStateDoubleFromAlgo(Parameters::CSF);
-  setStateDoubleFromAlgo(Parameters::GM);
-  setStateDoubleFromAlgo(Parameters::WM);
-  setStateDoubleFromAlgo(Parameters::Electrode);
-  setStateDoubleFromAlgo(Parameters::InternalAir);
+  copyAlgoToState({Parameters::Skin, Parameters::SoftBone, Parameters::HardBone,
+    Parameters::CSF, Parameters::GM, Parameters::WM, Parameters::Electrode, Parameters::InternalAir});
 }
 
 void SetConductivitiesToMesh::execute()
@@ -69,14 +63,8 @@ void SetConductivitiesToMesh::execute()
 
   if (needToExecute())
   {
-    setAlgoDoubleFromState(Parameters::Skin);
-    setAlgoDoubleFromState(Parameters::SoftBone);
-    setAlgoDoubleFromState(Parameters::HardBone);
-    setAlgoDoubleFromState(Parameters::CSF);
-    setAlgoDoubleFromState(Parameters::GM);
-    setAlgoDoubleFromState(Parameters::WM);
-    setAlgoDoubleFromState(Parameters::Electrode);
-    setAlgoDoubleFromState(Parameters::InternalAir);
+    copyStateToAlgo({Parameters::Skin, Parameters::SoftBone, Parameters::HardBone,
+      Parameters::CSF, Parameters::GM, Parameters::WM, Parameters::Electrode, Parameters::InternalAir});
 
     /// algorithm input and run,
     auto input = make_input((InputField, mesh));

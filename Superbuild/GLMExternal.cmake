@@ -29,8 +29,9 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(GLM_external
-  GIT_REPOSITORY "https://github.com/g-truc/glm.git"
-  GIT_TAG "0.9.9.8"
+  GIT_REPOSITORY ${GLM_GIT_URL}
+  GIT_TAG ${GLM_GIT_TAG}
+  UPDATE_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
