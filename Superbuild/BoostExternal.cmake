@@ -382,27 +382,12 @@ ExternalProject_Add_Step(Boost_external build_libs
 # ------------------------------------------------------------------------------
 # Export Boost library info
 # ------------------------------------------------------------------------------
+# Both are substituted into BoostConfig.cmake.in below.
 SET(SCI_BOOST_INCLUDE ${INSTALL_DIR}/include)
 SET(SCI_BOOST_LIBRARY_DIR ${SOURCE_DIR}/stage/lib)
-#SET(SCI_BOOST_USE_FILE ${INSTALL_DIR}/UseBoost.cmake)
-
-SET(BOOST_PREFIX "boost_")
-SET(THREAD_POSTFIX "")
-
-#SET(SCI_BOOST_LIBRARY)
-#FOREACH(lib ${boost_Libraries})
-#  IF(lib STREQUAL "python")
-#    # Python library is versioned: e.g., boost_python313
-#    LIST(APPEND SCI_BOOST_LIBRARY "${BOOST_PREFIX}${lib}${SCI_PYTHON_VERSION_SHORT_WIN32}")
-#  ELSE()
-#    LIST(APPEND SCI_BOOST_LIBRARY "${BOOST_PREFIX}${lib}${THREAD_POSTFIX}")
-#  ENDIF()
-#ENDFOREACH()
 
 CONFIGURE_FILE(${SUPERBUILD_DIR}/BoostConfig.cmake.in
                ${INSTALL_DIR}/BoostConfig.cmake @ONLY)
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/UseBoost.cmake
-#               ${SCI_BOOST_USE_FILE} COPYONLY)
 
 SET(Boost_DIR ${INSTALL_DIR} CACHE PATH "")
 MESSAGE(STATUS "Boost_DIR: ${Boost_DIR}")
