@@ -14,8 +14,8 @@
 #  - The SCIRun 4 names were transcribed from the v4 splash raster and accepted
 #    as read. "Blythe Nobleman" is transcribed as one person; the raster renders
 #    a comma between the two words, so it may be two.
-#  - "Nipun" (nipun@cs.utah.edu) and "Ken Louie" (ken.louie9@gmail.com) are
-#    listed as far as their git identities go; fill in the rest if anyone knows.
+#  - "Ken Louie" (ken.louie9@gmail.com) is listed as far as the git identity
+#    goes; fill in the rest if anyone knows.
 #  - Anastasia Mironova is not on the v4 splash raster at all; she is credited
 #    in the header of Modules/Legacy/Teem/Misc/BuildDerivedNrrdWithGage.cc.
 #  - Machine and bot identities are deliberately omitted: "cibc",
@@ -53,7 +53,7 @@ Johannes Vorwerk
 Kris Zygmunt
 Tom Fogal
 Zayan Khan
-Nipun
+Nipun Gottapu
 Ken Louie
 
 :: SCIRun 4
