@@ -110,7 +110,14 @@ bool QuitCommandGui::execute()
   if (get(RunningPython).toBool())
     SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->quit();
-  exit(0);
+  // quit() posts a DeferredDelete for the main window and asks the event loop to
+  // unwind, but libc exit() runs static destructors before the loop gets a turn,
+  // so Qt flushes that delete from inside __cxa_finalize -- after the
+  // Core_Application statics are gone. ~SCIRunMainWindow then calls
+  // Application::shutdown() on a half-destroyed singleton and segfaults. Same
+  // mechanism as #2560, fixed here the same way. Settings are already written
+  // synchronously by quit()'s closeEvent.
+  quickExit(0);
   return true;
 }
 
