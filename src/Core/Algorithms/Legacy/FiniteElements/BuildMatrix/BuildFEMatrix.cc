@@ -113,7 +113,7 @@ private:
 
   matrix_pointer_type<T> fematrix_;
 
-  std::vector<bool> success_;
+  ParallelSuccessFlags success_;
 
   boost::shared_array<index_type> rows_;
   boost::shared_array<index_type> allcols_;

@@ -60,10 +60,18 @@ on:
       artifact-name:
         required: false
         type: string
+      allow-failure:
+        # Experimental build: still runs, still reports a red job, but doesn't
+        # fail the run. continue-on-error is rejected on a job that calls a
+        # reusable workflow, hence an input applied to the job in here.
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    continue-on-error: ${{ inputs.allow-failure }}
     permissions:
       checks: write
       contents: read
@@ -113,6 +121,11 @@ jobs:
           CMD=(./build.sh)
           CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
           CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
+          # Default ON deletes the generated factory sources after each build, so every
+          # later `make` relinks up to SCIRun.app and re-runs its macdeployqt POST_BUILD
+          # chain -- 4x in the mac package step. Only helps incremental local builds
+          # pick up new .module files; CI is always clean. See #2664.
+          CMD+=("-DREGENERATE_MODULE_FACTORY_CODE:BOOL=OFF")
           # Variant-specific flags
           if [ "${{ inputs.variant }}" = "gui" ]; then
             # Pass Qt path (from installer or explicit), and set SCIRUN_QT_MIN_VERSION appropriately
@@ -181,6 +194,9 @@ jobs:
           $cmakeArgs += "-DCMAKE_C_COMPILER_LAUNCHER=sccache"
           $cmakeArgs += "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
 
+          # As in the Linux/macOS step above: avoids a needless relink cascade. See #2664.
+          $cmakeArgs += "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=OFF"
+
           # Always use a Visual Studio generator on Windows to ensure MSVC flags are used.
           # The generator is an input (defaults to VS 2022) so the matrix can also build
           # with VS 2026 on the windows-2025 image.
@@ -215,9 +231,11 @@ jobs:
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
           if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
 
-          # Prepare build directory
-          New-Item -ItemType Directory -Force -Path build | Out-Null
-          Push-Location build
+          # Prepare build directory (use bin/ to match build.ps1, build.sh, the
+          # docs, and the Unix/macOS jobs — keeps the build tree identical across
+          # platforms so the package/test/upload steps below share one path.)
+          New-Item -ItemType Directory -Force -Path bin | Out-Null
+          Push-Location bin
 
           # Run CMake configure
           $cmakeExe = 'cmake'
@@ -292,12 +310,12 @@ jobs:
         if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
         shell: cmd
         run: |
-          if exist build\SCIRun (
-            pushd build\SCIRun
+          if exist bin\SCIRun (
+            pushd bin\SCIRun
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           ) else (
-            pushd build
+            pushd bin
             cmake --build . --config Release --target package || echo Package target failed or produced no packages
             popd
           )
@@ -331,7 +349,7 @@ jobs:
 
       - name: Run unit tests (Windows)
         if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
-        working-directory: build/SCIRun
+        working-directory: bin/SCIRun
         shell: pwsh
         run: |
           ctest --output-on-failure --timeout 300 -j4 -C Release -E "\.Test\.ExampleNetwork\." `
@@ -341,7 +359,7 @@ jobs:
 
       - name: Run regression tests (Windows)
         if: ${{ inputs.run-regression-tests && runner.os == 'Windows' }}
-        working-directory: build/SCIRun
+        working-directory: bin/SCIRun
         shell: pwsh
         run: |
           ctest --output-on-failure --timeout 300 -j3 -C Release -R "\.Test\.ExampleNetwork\." `
@@ -389,7 +407,7 @@ jobs:
           path: |
             unit-test-results.txt
             regression-test-results.txt
-            build/SCIRun/Testing/Temporary/LastTest.log
+            bin/SCIRun/Testing/Temporary/LastTest.log
             junit-unit.xml
             junit-regression.xml
 
@@ -412,6 +430,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report-${{ runner.os }}
+          # `error`, not the default `warn`: the step above is continue-on-error
+          # (tests legitimately fail), so a coverage.sh that produced nothing
+          # otherwise reports success and silently uploads no artifact.
+          if-no-files-found: error
           path: |
             bin/SCIRun/coverage/summary.txt
             bin/SCIRun/coverage/html
@@ -424,5 +446,5 @@ jobs:
           path: |
             bin/SCIRun/SCIRun-*-Darwin.pkg
             bin/SCIRun/SCIRun-*-win64.exe
-            build/**/*.msi
+            bin/**/*.msi
 
