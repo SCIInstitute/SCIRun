@@ -26,7 +26,10 @@
 */
 
 
+#include <atomic>
 #include <cstdlib>
+#include <future>
+#include <memory>
 #include <Core/ConsoleApplication/ConsoleCommands.h>
 #include <Core/Utils/QuickExit.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -146,14 +149,68 @@ bool SaveFileCommandConsole::execute()
   return !saveImpl(get(Variables::Filename).toFilename().string()).empty();
 }
 
+namespace
+{
+  /// Blocks until a network execution finishes, however the execution manager
+  /// chooses to report it: ExecutionQueueManager signals completion and returns
+  /// no future at all, so waiting on the future alone dereferences null (#2688).
+  /// Construct before starting execution -- the slot has to be armed first.
+  class ExecutionCompletionWaiter
+  {
+  public:
+    explicit ExecutionCompletionWaiter(SCIRun::Dataflow::Engine::NetworkEditorController& controller)
+      : future_(finished_->get_future())
+    {
+      auto finished = finished_;
+      auto alreadyFinished = alreadyFinished_;
+      connection_ = controller.connectStaticNetworkExecutionFinished(
+        [finished, alreadyFinished](int code)
+        {
+          LOG_CONSOLE("Execution finished with code " << code);
+          // The signal can fire more than once; a second set_value would throw.
+          if (!alreadyFinished->exchange(true))
+            finished->set_value(code);
+        });
+    }
+
+    ~ExecutionCompletionWaiter() { connection_.disconnect(); }
+
+    ExecutionCompletionWaiter(const ExecutionCompletionWaiter&) = delete;
+    ExecutionCompletionWaiter& operator=(const ExecutionCompletionWaiter&) = delete;
+
+    void wait(std::future<int>& executionResult)
+    {
+      if (executionResult.valid())
+        executionResult.wait();
+      else
+        future_.wait();
+    }
+
+  private:
+    // Shared with the slot, which may outlive this object if the signal fires
+    // while it is being destroyed.
+    std::shared_ptr<std::promise<int>> finished_{std::make_shared<std::promise<int>>()};
+    std::shared_ptr<std::atomic<bool>> alreadyFinished_{std::make_shared<std::atomic<bool>>(false)};
+    std::future<int> future_;
+    boost::signals2::connection connection_;
+  };
+}
+
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   LOG_CONSOLE("Executing network...");
-  Application::Instance().controller()->connectStaticNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
-  Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
-  auto val = Application::Instance().controller()->executeAll();
-  LOG_CONSOLE("Execution started.");
-  val.wait();
+  auto& controller = *Application::Instance().controller();
+
+  {
+    // Scoped so the slot is disconnected before interactive mode, which can
+    // start executions of its own.
+    ExecutionCompletionWaiter waiter(controller);
+    controller.stopExecutionContextLoopWhenExecutionFinishes();
+    auto result = controller.executeAll();
+    LOG_CONSOLE("Execution started.");
+    waiter.wait(result);
+  }
+
   LOG_CONSOLE("Execute thread stopped. Entering interactive mode.");
 
   InteractiveModeCommandConsole interactive;
