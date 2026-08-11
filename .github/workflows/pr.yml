@@ -16,6 +16,13 @@ name: pr
 #     contexts directly re-creates the problem in rule 1 as soon as one of them
 #     is filtered or renamed.
 #
+# Within this workflow there are two tiers. Three Linux jobs -- linux-gui (Qt5),
+# linux-gui-qt6 and linux-unit-tests -- run on every non-docs PR and are what
+# ci-gate normally waits on. mac-gui and windows-gui-qt6 join them only when the
+# PR touches build-system, CI, or platform-specific paths (see `platform_risk`
+# below). Whether linux-gui still earns its slot now that linux-gui-qt6 covers
+# the GUI path is an open question, not a settled one.
+#
 # The full matrix (all the mac-headless-*, windows-gui-python-*, regression and
 # coverage variants) lives in ccpp.yml / mac.yml / windows.yml /
 # regression-tests.yml / windows-build-script.yml and runs on master pushes and
@@ -38,6 +45,7 @@ jobs:
       pull-requests: read
     outputs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
+      platform_risk: ${{ steps.filter.outputs.platform_risk }}
     steps:
       - name: Classify changed paths
         id: filter
@@ -63,8 +71,27 @@ jobs:
             docs_only=true
           fi
 
+          # Does this PR touch anything that can behave differently per platform?
+          # Build system, CI, vendored externals, and the macOS bundle glue. C++
+          # under src/ that compiles on gcc against Qt6 is not in this set -- that
+          # is the bet this filter makes, and windows.yml/mac.yml on master push
+          # plus the nightly matrix are what catch it when the bet is wrong.
+          #
+          # Only the two top-level CMakeLists count: those hold the APPLE/WIN32
+          # blocks. Nested ones are source lists, and matching them would drag
+          # every new module into the full matrix for no reason.
+          if [ "$count" -eq 0 ] || [ "$count" -ge 100 ]; then
+            platform_risk=true
+          elif printf '%s\n' "$files" | grep -qE '^(Superbuild/|\.github/|CMake/|src/Externals/|src/Main/)|^(src/)?CMakeLists\.txt$|\.cmake$|^build\.(sh|ps1)$'; then
+            platform_risk=true
+          else
+            platform_risk=false
+          fi
+
           echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          echo "platform_risk=$platform_risk" >> "$GITHUB_OUTPUT"
           echo "docs_only=$docs_only"
+          echo "platform_risk=$platform_risk"
 
   linux-gui:
     needs: changes
@@ -78,11 +105,8 @@ jobs:
 
   # Qt6 on Linux. Every other Linux job here and in ccpp.yml autodetects
   # qtbase5-dev, so before this job the only Qt6 compile coverage anywhere was
-  # mac-gui and windows-gui-qt6 -- the two slowest, scarcest runners.
-  #
-  # Deliberately absent from ci-gate's `needs` for now: this config has never
-  # been built, so it stays advisory until it has a green history. Promoting it
-  # (and dropping mac/windows to path-triggered) is the follow-up.
+  # mac-gui and windows-gui-qt6 -- the two slowest, scarcest runners. Pairing it
+  # with linux-unit-tests is what lets those two leave the always-on set below.
   linux-gui-qt6:
     needs: changes
     if: needs.changes.outputs.docs_only == 'false'
@@ -94,9 +118,18 @@ jobs:
       variant: gui
       build-with-python: true
 
+  # mac and windows run only when the PR touches something that can diverge by
+  # platform. They stay in ci-gate's `needs`, so when they do run the gate waits
+  # on them exactly as before; when they are skipped, branch protection counts
+  # that as passing and the gate falls through to the two Linux jobs.
+  #
+  # They are here rather than always-on because ci-gate is a *strict* required
+  # check: every merge to master invalidates every other PR and re-runs all of
+  # this. windows-gui-qt6 alone is 104-139 min against ~63 for linux-gui-qt6,
+  # and macOS-latest is capped at 5 concurrent jobs repo-wide.
   mac-gui:
     needs: changes
-    if: needs.changes.outputs.docs_only == 'false'
+    if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.platform_risk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: macOS-latest
@@ -108,7 +141,7 @@ jobs:
 
   windows-gui-qt6:
     needs: changes
-    if: needs.changes.outputs.docs_only == 'false'
+    if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.platform_risk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
@@ -142,13 +175,14 @@ jobs:
   ci-gate:
     name: ci-gate
     if: always()
-    needs: [changes, linux-gui, mac-gui, windows-gui-qt6, linux-unit-tests]
+    needs: [changes, linux-gui, linux-gui-qt6, mac-gui, windows-gui-qt6, linux-unit-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Report upstream results
         run: |
           echo "changes:          ${{ needs.changes.result }}"
           echo "linux-gui:        ${{ needs.linux-gui.result }}"
+          echo "linux-gui-qt6:    ${{ needs.linux-gui-qt6.result }}"
           echo "mac-gui:          ${{ needs.mac-gui.result }}"
           echo "windows-gui-qt6:  ${{ needs.windows-gui-qt6.result }}"
           echo "linux-unit-tests: ${{ needs.linux-unit-tests.result }}"
