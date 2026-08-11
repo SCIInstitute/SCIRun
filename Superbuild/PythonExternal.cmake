@@ -28,7 +28,8 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-SET(DEFAULT_PYTHON_VERSION "3.13.1")
+# Default Python version comes from Superbuild/VERSIONS.cmake (PYTHON_VERSION).
+SET(DEFAULT_PYTHON_VERSION "${PYTHON_VERSION}")
 
 set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
 set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.10.16 3.11.11 3.12.8 3.13.1)
@@ -55,8 +56,21 @@ SET(python_ABIFLAG_PYDEBUG)
 SET(python_ABIFLAG_PYMALLOC "m")
 SET(ABIFLAGS "${python_ABIFLAG_PYMALLOC}${python_ABIFLAG_PYDEBUG}")
 
-SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
-SET(python_GIT_URL "https://github.com/CIBC-Internal/python.git")
+# CIBC-Internal/python carries each supported Python version as a BRANCH, not a
+# tag, so "origin/${USER_PYTHON_VERSION}" is a floating ref. VERSIONS.cmake pins
+# the default version (PYTHON_VERSION) to a commit; use it when the user has not
+# switched versions. A user-selected version has no pinned commit, so it still
+# tracks the branch tip — and says so, rather than silently being unpinned.
+IF(USER_PYTHON_VERSION STREQUAL PYTHON_VERSION AND PYTHON_GIT_TAG)
+  SET(python_GIT_TAG "${PYTHON_GIT_TAG}")
+ELSE()
+  SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
+  MESSAGE(STATUS
+    "[Python_external] USER_PYTHON_VERSION=${USER_PYTHON_VERSION} differs from the "
+    "pinned default ${PYTHON_VERSION}; tracking branch origin/${USER_PYTHON_VERSION} "
+    "(not reproducible).")
+ENDIF()
+SET(python_GIT_URL "${PYTHON_GIT_URL}")
 
 SET(python_WIN32_ARCH)
 SET(python_WIN32_64BIT_DIR)
@@ -83,6 +97,24 @@ ELSE()
   # 32-bit build outputs to PCbuild dir
   SET(python_WIN32_64BIT_DIR "/amd64")
   SET(python_ABIFLAG_PYDEBUG "_d")
+
+  # CPython's PCbuild/python.props maps VisualStudioVersion 15/16/17 to
+  # v141/v142/v143 and falls back to v140 otherwise, so VS 2026 (18.0) fails
+  # with MSB8020 ("build tools for Visual Studio 2015 ... cannot be found").
+  # Pin the toolset CMake picked instead; empty for non-VS generators.
+  SET(python_MSBUILD_TOOLSET)
+  IF(CMAKE_VS_PLATFORM_TOOLSET)
+    SET(python_MSBUILD_TOOLSET "/property:PlatformToolset=${CMAKE_VS_PLATFORM_TOOLSET}")
+  ENDIF()
+ENDIF()
+
+# CPython's install: runs frameworkinstallmaclib (symlinks into $(LIBPL)) as a
+# sibling of libainstall (creates $(LIBPL)), so -j races. Framework builds only.
+SET(python_INSTALL_COMMAND)
+IF(APPLE)
+  SET(python_INSTALL_COMMAND
+    INSTALL_COMMAND "${CMAKE_COMMAND}" -E env --unset=MAKEFLAGS make install
+  )
 ENDIF()
 
 # If CMake ever allows overriding the checkout command or adding flags,
@@ -95,6 +127,7 @@ IF(UNIX)
     BUILD_IN_SOURCE ON
     CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
+    ${python_INSTALL_COMMAND}
   )
   IF(APPLE)
     # Preserves links, permissions
@@ -109,15 +142,23 @@ ELSE()
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
   UPDATE_COMMAND ""
-    PATCH_COMMAND ""
+    # CPython's _RegenSbom target (PCbuild/regen.targets) runs
+    # Tools/build/generate_sbom.py, which fetches every package download URL over
+    # the network and fails the whole superbuild on a transient upstream error
+    # ("urllib.error.HTTPError: HTTP error 503"). It is an incremental target, so
+    # whether it runs at all is a timestamp race on a fresh clone. SCIRun has no
+    # use for CPython's regenerated SBOM, so keep its outputs newer than their
+    # input and the target stays permanently up to date.
+    PATCH_COMMAND ${CMAKE_COMMAND} -E touch <SOURCE_DIR>/Misc/externals.spdx.json <SOURCE_DIR>/Misc/sbom.spdx.json
     # aka.ms/nugetclidl (used by PCbuild/find_python.bat) can redirect to a Bing
     # search page instead of the NuGet installer; point straight at the real host.
     # The batch file must use native separators: "cmake -E env" launches a .bat
     # through cmd, which reads the "/" in "PCbuild/build.bat" as a switch and
     # fails with "'PCbuild' is not recognized as an internal or external command".
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" "PCbuild\\build.bat"
+    # build.bat forwards any argument it doesn't recognize straight to MSBuild.
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" "PCbuild\\build.bat" ${python_MSBUILD_TOOLSET}
     BUILD_IN_SOURCE ON
-    BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH}
+    BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E
       copy_if_different
       <SOURCE_DIR>/PCbuild/${python_WIN32_64BIT_DIR}/pyconfig.h
@@ -125,7 +166,7 @@ ELSE()
   )
   # build both Release and Debug versions
   ExternalProject_Add_Step(Python_external debug_build
-    COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH}
+    COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
       DEPENDEES build
       DEPENDERS install
       WORKING_DIRECTORY <SOURCE_DIR>
