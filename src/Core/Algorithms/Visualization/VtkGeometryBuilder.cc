@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef WITH_VTK
 #include <vtkUnstructuredGrid.h>
 #include <vtkPoints.h>
 #include <vtkDoubleArray.h>
@@ -39,6 +40,7 @@
 #include <vtkQuad.h>
 #include <vtkLine.h>
 #include <vtkTetra.h>
+#endif
 
 #include <Core/Algorithms/Visualization/VtkGeometryBuilder.h>
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
@@ -177,6 +179,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStreamline(FieldHandle field, Col
 {
   auto obj = makeObject(field);
 
+#ifdef WITH_VTK
   obj->type = GeometryType::STREAMLINE;
   obj->radius = static_cast<float>(algorithm_.get(Parameters::Radius).toDouble());
 
@@ -323,6 +326,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStreamline(FieldHandle field, Col
   }
 
   obj->dataObject = poly;
+#endif
 
   return obj;
 }
@@ -422,6 +426,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addTriSurface(FieldHandle field, Col
 {
   auto obj = makeObject(field);
 
+#ifdef WITH_VTK
   obj->type = GeometryType::TRI_SURFACE;
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
@@ -551,6 +556,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addTriSurface(FieldHandle field, Col
   }
 
   obj->dataObject = poly;
+#endif
 
   return obj;
 }
@@ -559,6 +565,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addQuadSurface(FieldHandle field, Co
 {
   auto obj = makeObject(field);
 
+#ifdef WITH_VTK
   obj->type = GeometryType::QUAD_SURFACE;
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
@@ -692,6 +699,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addQuadSurface(FieldHandle field, Co
   }
 
   obj->dataObject = poly;
+#endif
 
   return obj;
 }
@@ -704,6 +712,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
   auto volumeObj = showVolume ? makeObject(field) : nullptr;
   auto meshObj = showFaces ? makeObject(field) : nullptr;
 
+#ifdef WITH_VTK
   auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
 
   auto facade = field->mesh()->getFacade();
@@ -834,6 +843,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
   {
     return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{volumeObj, meshObj});
   }
+#endif
 
   return nullptr;
 }
@@ -842,6 +852,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addUnstructVol(FieldHandle field, Co
 {
   auto obj = makeObject(field);
 
+#ifdef WITH_VTK
   obj->type = GeometryType::UNSTRUCTURED_VOLUME;
 
   auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
@@ -970,6 +981,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addUnstructVol(FieldHandle field, Co
   }
 
   obj->dataObject = grid;
+#endif
 
   return obj;
 }
@@ -978,6 +990,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addCylinder(FieldHandle field, Color
 {
   auto obj = makeObject(field);
 
+#ifdef WITH_VTK
   obj->type = GeometryType::CYLINDER;
   obj->radius = static_cast<float>(algorithm_.get(Parameters::Radius).toDouble());
 
@@ -1083,6 +1096,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addCylinder(FieldHandle field, Color
   }
 
   obj->dataObject = poly;
+#endif
 
   return obj;
 }
@@ -1091,6 +1105,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
 {
   auto obj = makeObject(field);
 
+#ifdef WITH_VTK
   obj->type = GeometryType::SPHERE;
   obj->radius = static_cast<float>(algorithm_.get(Parameters::Radius).toDouble());
 
@@ -1174,6 +1189,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
   }
 
   obj->dataObject = poly;
+#endif
 
   return obj;
 }

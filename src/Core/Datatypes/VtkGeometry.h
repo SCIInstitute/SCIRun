@@ -28,8 +28,10 @@
 #ifndef CORE_DATATYPES_VTKGEOMETRY_H
 #define CORE_DATATYPES_VTKGEOMETRY_H
 
+#ifdef WITH_VTK
 #include <vtkSmartPointer.h>
 #include <vtkDataObject.h>
+#endif
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Geometry.h>
@@ -66,8 +68,10 @@ public:
     VtkGeometryObject* clone() const override;
 
     std::string dynamic_type_name() const override { return "VtkGeometryObject"; }
-
+    
+#ifdef WITH_VTK
     vtkSmartPointer<vtkDataObject> dataObject;
+#endif
 
     GeometryType type{GeometryType::NO_TYPE};
 

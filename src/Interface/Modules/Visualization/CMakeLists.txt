@@ -31,6 +31,7 @@ SET(Interface_Modules_Visualization_FORMS
   GenerateStreamLines.ui
   ShowField.ui
   ShowFieldGlyphs.ui
+  ShowFieldVtk.ui
   ShowString.ui
   ShowColorMap.ui
   RescaleColorMap.ui
@@ -49,6 +50,7 @@ SET(Interface_Modules_Visualization_HEADERS
   share.h
   ShowFieldDialog.h
   ShowFieldGlyphsDialog.h
+  ShowFieldVtkDialog.h
   ShowStringDialog.h
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
@@ -66,6 +68,7 @@ SET(Interface_Modules_Visualization_SOURCES
   GenerateStreamLinesDialog.cc
   ShowFieldDialog.cc
   ShowFieldGlyphsDialog.cc
+  ShowFieldVtkDialog.cc
   ShowStringDialog.cc
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc
@@ -77,20 +80,6 @@ SET(Interface_Modules_Visualization_SOURCES
   GeometryBufferDialog.cc
   ReportColorMapInfoDialog.cc
 )
-
-if (WITH_VTK)
-  list(APPEND Interface_Modules_Visualization_FORMS
-	ShowFieldVtk.ui
-  )
-
-  list(APPEND Interface_Modules_Visualization_HEADERS
-	ShowFieldVtkDialog.h
-  )
-
-  list(APPEND Interface_Modules_Visualization_SOURCES
-	ShowFieldVtkDialog.cc
-  )
-endif()
 
 QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")
 QT_WRAP_CPP(Interface_Modules_Visualization_HEADERS_MOC "${Interface_Modules_Visualization_HEADERS}")
