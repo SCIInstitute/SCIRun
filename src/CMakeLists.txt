@@ -599,7 +599,7 @@ INCLUDE_DIRECTORIES(
 # SYSTEM: header-only externals (Eigen above all) otherwise diagnose inside our
 # translation units, which is what broke -Werror on Apple (#2432) and is ~43%
 # of CI warning volume. Boost is not here: it arrives as the Boost::headers
-# imported target (already SYSTEM) or via Superbuild/UseBoost.cmake (#2197).
+# imported target (already SYSTEM) from BoostConfig.cmake (#2197).
 INCLUDE_DIRECTORIES(SYSTEM
   ${SCI_TEEM_INCLUDE}
   ${GLM_DIR}
