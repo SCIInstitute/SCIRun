@@ -33,6 +33,7 @@
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
 #include <pugixml/pugixml.hpp>
+#include <boost/filesystem.hpp>
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -194,6 +195,97 @@ TEST(ColorMapXmlTests, CanConvertXmlColorMapToSCIRunColorMap)
   EXPECT_EQ(cm->getColorData()[42].g(), cmXml.points[42].g);
   EXPECT_EQ(cm->getColorData()[42].b(), cmXml.points[42].b);
   EXPECT_EQ(cm->getColorData()[42].a(), cmXml.points[42].o);
+}
+
+TEST(ColorMapXmlTests, CanCreateXmlDataFromSCIRunColorMap)
+{
+  const std::vector<ColorRGB> colors = {
+    ColorRGB(0.1, 0.2, 0.3, 1.0),
+    ColorRGB(0.4, 0.5, 0.6, 0.5),
+    ColorRGB(0.7, 0.8, 0.9, 0.0)
+  };
+  auto cm = StandardColorMapFactory::create(colors, "MyMap");
+  ASSERT_TRUE(cm != nullptr);
+
+  const auto xml = ColorXml::ColorMapXmlIO::createXmlDataFromColorMap(*cm);
+  EXPECT_EQ(xml.name, "MyMap");
+  EXPECT_EQ(xml.space, "RGB");
+  ASSERT_EQ(xml.points.size(), 3u);
+
+  // Position is not retained on the SCIRun ColorMap, so it is regenerated
+  // evenly across [0, 1].
+  EXPECT_DOUBLE_EQ(xml.points[0].x, 0.0);
+  EXPECT_DOUBLE_EQ(xml.points[1].x, 0.5);
+  EXPECT_DOUBLE_EQ(xml.points[2].x, 1.0);
+
+  // Color/opacity values survive the conversion exactly.
+  EXPECT_DOUBLE_EQ(xml.points[0].o, 1.0);
+  EXPECT_DOUBLE_EQ(xml.points[0].r, 0.1);
+  EXPECT_DOUBLE_EQ(xml.points[0].g, 0.2);
+  EXPECT_DOUBLE_EQ(xml.points[0].b, 0.3);
+  EXPECT_DOUBLE_EQ(xml.points[2].o, 0.0);
+  EXPECT_DOUBLE_EQ(xml.points[2].r, 0.7);
+  EXPECT_DOUBLE_EQ(xml.points[2].g, 0.8);
+  EXPECT_DOUBLE_EQ(xml.points[2].b, 0.9);
+}
+
+TEST(ColorMapXmlTests, WriteColorMapXmlRoundTripsThroughReader)
+{
+  ColorXml::ColorMaps cms;
+  ColorXml::ColorMap cm;
+  cm.name = "TestMap";
+  cm.space = "RGB";
+  cm.points = {
+    {0.0, 1.0, 0.1, 0.2, 0.3},
+    {0.5, 0.8, 0.4, 0.5, 0.6},
+    {1.0, 0.0, 0.7, 0.8, 0.9}
+  };
+  cms.maps.push_back(cm);
+
+  const auto tmp = (boost::filesystem::temp_directory_path() /
+    "scirun_write_colormap_roundtrip.xml").string();
+  ASSERT_TRUE(ColorXml::ColorMapXmlIO::writeColorMapXml(tmp, cms));
+
+  const auto readBack = ColorXml::ColorMapXmlIO::readColorMapXml(tmp);
+  ASSERT_EQ(readBack.maps.size(), 1u);
+  const auto& rt = readBack.maps[0];
+  EXPECT_EQ(rt.name, "TestMap");
+  EXPECT_EQ(rt.space, "RGB");
+  ASSERT_EQ(rt.points.size(), 3u);
+  for (size_t i = 0; i < rt.points.size(); ++i)
+  {
+    EXPECT_NEAR(rt.points[i].x, cm.points[i].x, 1e-6);
+    EXPECT_NEAR(rt.points[i].o, cm.points[i].o, 1e-6);
+    EXPECT_NEAR(rt.points[i].r, cm.points[i].r, 1e-6);
+    EXPECT_NEAR(rt.points[i].g, cm.points[i].g, 1e-6);
+    EXPECT_NEAR(rt.points[i].b, cm.points[i].b, 1e-6);
+  }
+
+  boost::filesystem::remove(tmp);
+}
+
+TEST(ColorMapXmlTests, WriteColorMapXmlWritesMultipleMaps)
+{
+  ColorXml::ColorMaps cms;
+  for (const auto& name : {"First", "Second"})
+  {
+    ColorXml::ColorMap cm;
+    cm.name = name;
+    cm.space = "RGB";
+    cm.points = {{0.0, 1.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0, 1.0}};
+    cms.maps.push_back(cm);
+  }
+
+  const auto tmp = (boost::filesystem::temp_directory_path() /
+    "scirun_write_colormap_multi.xml").string();
+  ASSERT_TRUE(ColorXml::ColorMapXmlIO::writeColorMapXml(tmp, cms));
+
+  const auto readBack = ColorXml::ColorMapXmlIO::readColorMapXml(tmp);
+  ASSERT_EQ(readBack.maps.size(), 2u);
+  EXPECT_EQ(readBack.maps[0].name, "First");
+  EXPECT_EQ(readBack.maps[1].name, "Second");
+
+  boost::filesystem::remove(tmp);
 }
 
 TEST(ColorMapXmlTests, CanGenerateQtStyleSheet)
