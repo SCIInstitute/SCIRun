@@ -51,6 +51,7 @@ SET(Interface_Modules_Render_FORMS
   DevControls.ui
   LightControls.ui
   ViewAxisChooser.ui
+  ViewSceneShortcuts.ui
   ViewSceneVtk.ui
 )
 
