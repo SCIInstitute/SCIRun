@@ -26,12 +26,18 @@
 */
 
 
+#include <atomic>
+#include <cstdlib>
+#include <future>
+#include <memory>
 #include <Core/ConsoleApplication/ConsoleCommands.h>
+#include <Core/Utils/QuickExit.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Python/PythonInterpreter.h>
@@ -63,20 +69,19 @@ namespace
 /// @todo: real logger
 #define LOG_CONSOLE(x) std::cout << "[SCIRun] " << x << std::endl;
 
-bool LoadFileCommandConsole::execute()
+std::string NetworkFileProcessCommandConsole::resolveFilename() const
+{
+  return get(Variables::Filename).toFilename().string();
+}
+
+bool NetworkFileProcessCommandConsole::execute()
 {
   quietModulesIfNotVerbose();
 
-  auto inputFiles = Application::Instance().parameters()->inputFiles();
-  std::string filename;
-  if (!inputFiles.empty())
-    filename = inputFiles[0];
-  else
-  {
-    filename = get(Variables::Filename).toFilename().string();
-  }
+  auto filename = resolveFilename();
+  const auto verb = actionVerb();
 
-  LOG_CONSOLE("Attempting load of " << filename);
+  LOG_CONSOLE("Attempting " << verb << " of " << filename);
   if (!boost::filesystem::exists(filename))
   {
     LOG_CONSOLE("File does not exist: " << filename);
@@ -84,22 +89,59 @@ bool LoadFileCommandConsole::execute()
   }
   try
   {
-    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
+    auto file = processFile(filename);
 
-    if (openedFile)
+    if (file)
     {
       Application::Instance().controller()->clear();
-      Application::Instance().controller()->loadNetwork(openedFile);
-      LOG_CONSOLE("File load done: " << filename);
+      Application::Instance().controller()->loadNetwork(file);
+      LOG_CONSOLE("File " << verb << " done: " << filename);
       return true;
     }
-    LOG_CONSOLE("File load failed: " << filename);
+    LOG_CONSOLE("File " << verb << " failed: " << filename);
+  }
+  catch (std::exception& e)
+  {
+    LOG_CONSOLE("File " << verb << " failed: " << filename << ", exception: " << e.what());
   }
   catch (...)
   {
-    LOG_CONSOLE("File load failed: " << filename);
+    LOG_CONSOLE("File " << verb << " failed: " << filename);
+  }
+
+  // Mirrors FileImportCommand/NetworkFileProcessCommand (GUI): a failure that
+  // matters in regression mode must exit non-zero so ctest reports it,
+  // instead of silently continuing.
+  if (failTestOnErrorInRegressionMode() && Application::Instance().parameters()->isRegressionMode())
+  {
+    LOG_CONSOLE("Regression " << verb << " failed, exiting non-zero: " << filename);
+    // quickExit rather than quick_exit: the latter has no declaration on macOS
+    // SDKs < 15 and emits a load-time-fatal reference on the 15 SDK (see #2564).
+    quickExit(1);
   }
   return false;
+}
+
+std::string LoadFileCommandConsole::resolveFilename() const
+{
+  auto inputFiles = Application::Instance().parameters()->inputFiles();
+  if (!inputFiles.empty())
+    return inputFiles[0];
+  return NetworkFileProcessCommandConsole::resolveFilename();
+}
+
+NetworkFileHandle LoadFileCommandConsole::processFile(const std::string& filename) const
+{
+  return XMLSerializer::load_xml<NetworkFile>(filename);
+}
+
+NetworkFileHandle ImportFileCommandConsole::processFile(const std::string& filename) const
+{
+  auto dtdPath = Core::Application::Instance().executablePath();
+  const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
+  std::ostringstream legacyImportLog;
+  LegacyNetworkIO lnio(dtdPath.string(), modFactory, legacyImportLog);
+  return lnio.load_net(filename);
 }
 
 bool SaveFileCommandConsole::execute()
@@ -107,14 +149,68 @@ bool SaveFileCommandConsole::execute()
   return !saveImpl(get(Variables::Filename).toFilename().string()).empty();
 }
 
+namespace
+{
+  /// Blocks until a network execution finishes, however the execution manager
+  /// chooses to report it: ExecutionQueueManager signals completion and returns
+  /// no future at all, so waiting on the future alone dereferences null (#2688).
+  /// Construct before starting execution -- the slot has to be armed first.
+  class ExecutionCompletionWaiter
+  {
+  public:
+    explicit ExecutionCompletionWaiter(SCIRun::Dataflow::Engine::NetworkEditorController& controller)
+      : future_(finished_->get_future())
+    {
+      auto finished = finished_;
+      auto alreadyFinished = alreadyFinished_;
+      connection_ = controller.connectStaticNetworkExecutionFinished(
+        [finished, alreadyFinished](int code)
+        {
+          LOG_CONSOLE("Execution finished with code " << code);
+          // The signal can fire more than once; a second set_value would throw.
+          if (!alreadyFinished->exchange(true))
+            finished->set_value(code);
+        });
+    }
+
+    ~ExecutionCompletionWaiter() { connection_.disconnect(); }
+
+    ExecutionCompletionWaiter(const ExecutionCompletionWaiter&) = delete;
+    ExecutionCompletionWaiter& operator=(const ExecutionCompletionWaiter&) = delete;
+
+    void wait(std::future<int>& executionResult)
+    {
+      if (executionResult.valid())
+        executionResult.wait();
+      else
+        future_.wait();
+    }
+
+  private:
+    // Shared with the slot, which may outlive this object if the signal fires
+    // while it is being destroyed.
+    std::shared_ptr<std::promise<int>> finished_{std::make_shared<std::promise<int>>()};
+    std::shared_ptr<std::atomic<bool>> alreadyFinished_{std::make_shared<std::atomic<bool>>(false)};
+    std::future<int> future_;
+    boost::signals2::connection connection_;
+  };
+}
+
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   LOG_CONSOLE("Executing network...");
-  Application::Instance().controller()->connectStaticNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
-  Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
-  auto val = Application::Instance().controller()->executeAll();
-  LOG_CONSOLE("Execution started.");
-  val.wait();
+  auto& controller = *Application::Instance().controller();
+
+  {
+    // Scoped so the slot is disconnected before interactive mode, which can
+    // start executions of its own.
+    ExecutionCompletionWaiter waiter(controller);
+    controller.stopExecutionContextLoopWhenExecutionFinishes();
+    auto result = controller.executeAll();
+    LOG_CONSOLE("Execution started.");
+    waiter.wait(result);
+  }
+
   LOG_CONSOLE("Execute thread stopped. Entering interactive mode.");
 
   InteractiveModeCommandConsole interactive;

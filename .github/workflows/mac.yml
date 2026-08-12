@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
     paths-ignore:
       - 'docs/**'
   schedule:
@@ -15,7 +17,9 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -93,6 +97,29 @@ jobs:
       variant: gui
       with-ospray: true
       artifact-name: SCIRunMacOsprayInstaller
+
+  # ---------------------------------------------------------------------------
+  # Publish installers to a GitHub Release (issue #2398). Nightly on cron/master
+  # push; a draft versioned release on a v* tag. Windows publishes to the same
+  # releases from windows.yml. mac-gui-ospray is if:false, so it is not a dep.
+  # ---------------------------------------------------------------------------
+  publish-nightly:
+    needs: [mac-gui, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: nightly
+
+  publish-stable:
+    needs: [mac-gui, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: stable
 
   # ---------------------------------------------------------------------------
   # Headless builds (with testing enabled)
