@@ -47,8 +47,10 @@ jobs:
           cd dist
           for d in */; do
             name="${d%/}"
-            # Each subdir holds exactly one installer file.
-            f=$(find "$d" -maxdepth 1 -type f \
+            # Each artifact preserves its build path (bin/SCIRun/... for the
+            # installer, build/** for the .msi), so recurse -- do not restrict
+            # to the top level or the file is missed and then deleted below.
+            f=$(find "$d" -type f \
                   \( -name '*.exe' -o -name '*.pkg' -o -name '*.msi' \) | head -n1)
             [ -n "$f" ] || { echo "No installer in $d, skipping"; continue; }
             ext="${f##*.}"
