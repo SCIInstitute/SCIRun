@@ -15,7 +15,9 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -48,3 +50,29 @@ jobs:
       runner: ubuntu-latest
       variant: gui
       with-ospray: true
+
+  # arm64 (aarch64) coverage. GitHub-hosted Linux/arm64 runners
+  # (ubuntu-24.04-arm) are free for public repositories. These mirror the x86_64
+  # jobs above so the nightly/master matrix exercises the arm64 build path --
+  # e.g. the Boost PLATFORM_SUFFIX arch detection fixed in this branch (#2583).
+  linux-gui-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-24.04-arm
+      qt-version: ''
+      variant: gui
+      build-with-python: true
+
+  linux-headless-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-24.04-arm
+      variant: headless
+      build-testing: true
+
+  linux-gui-nonpython-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-24.04-arm
+      variant: gui
+      build-with-python: false

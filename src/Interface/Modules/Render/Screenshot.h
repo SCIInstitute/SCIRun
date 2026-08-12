@@ -46,6 +46,7 @@ namespace SCIRun
     public:
       explicit Screenshot(QOpenGLWidget *glwidget, QObject *parent = nullptr);
       void takeScreenshot();
+      void setImage(const QImage& img) { screenshot_ = img; } // used by offscreen renderer path
       QImage getScreenshot();
       void saveScreenshot(const QString& filename);
       Modules::Render::RGBMatrices toMatrix() const;

@@ -53,15 +53,9 @@ InterfaceWithCleaver2::InterfaceWithCleaver2() : Module(staticInfo_)
 
 void InterfaceWithCleaver2::setStateDefaults()
 {
-  setStateBoolFromAlgo(Parameters::Verbose);
-  setStateBoolFromAlgo(Parameters::SimpleMode);
-  setStateBoolFromAlgo(Parameters::ReverseJacobians);
-  setStateDoubleFromAlgo(Parameters::Lipschitz);
-  setStateDoubleFromAlgo(Parameters::AlphaLong);
-  setStateDoubleFromAlgo(Parameters::AlphaShort);
-  setStateDoubleFromAlgo(Parameters::VolumeScaling);
-  setStateDoubleFromAlgo(Parameters::VolumeMultiplier);
-  setStateIntFromAlgo(Parameters::MeshMode);
+  copyAlgoToState({Parameters::Verbose, Parameters::SimpleMode, Parameters::ReverseJacobians,
+    Parameters::Lipschitz, Parameters::AlphaLong, Parameters::AlphaShort,
+    Parameters::VolumeScaling, Parameters::VolumeMultiplier, Parameters::MeshMode});
 }
 
 void InterfaceWithCleaver2::execute()
@@ -72,15 +66,9 @@ void InterfaceWithCleaver2::execute()
 
   if (needToExecute())
   {
-    setAlgoBoolFromState(Parameters::Verbose);
-    setAlgoBoolFromState(Parameters::SimpleMode);
-    setAlgoBoolFromState(Parameters::ReverseJacobians);
-    setAlgoDoubleFromState(Parameters::Lipschitz);
-    setAlgoDoubleFromState(Parameters::AlphaLong);
-    setAlgoDoubleFromState(Parameters::AlphaShort);
-    setAlgoDoubleFromState(Parameters::VolumeScaling);
-    setAlgoDoubleFromState(Parameters::VolumeMultiplier);
-    setAlgoIntFromState(Parameters::MeshMode);
+    copyStateToAlgo({Parameters::Verbose, Parameters::SimpleMode, Parameters::ReverseJacobians,
+      Parameters::Lipschitz, Parameters::AlphaLong, Parameters::AlphaShort,
+      Parameters::VolumeScaling, Parameters::VolumeMultiplier, Parameters::MeshMode});
 
     auto output = algo().run(withInputData((InputFields, fields)
       (SizingField, optionalAlgoInput(sizing))
