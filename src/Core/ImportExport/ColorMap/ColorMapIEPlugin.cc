@@ -67,3 +67,46 @@ ColorMapHandle ColorMapXmlIO::createColorMapFromXmlData(const ColorMap& cmXml)
     [](const auto& p) { return ColorRGB(p.r, p.g, p.b, p.o); });
   return StandardColorMapFactory::create(convertedColors, cmXml.name);
 }
+
+// Note: within namespace ColorXml the unqualified name ColorMap resolves to
+// ColorXml::ColorMap, so the SCIRun datatype must be spelled out explicitly.
+SCIRun::ColorXml::ColorMap ColorMapXmlIO::createXmlDataFromColorMap(const Core::Datatypes::ColorMap& cm)
+{
+  ColorMap cmXml;
+  cmXml.name = cm.getColorMapName();
+  cmXml.space = "RGB";
+
+  const auto colors = cm.getColorData();
+  const auto n = colors.size();
+  for (size_t i = 0; i < n; ++i)
+  {
+    const auto& c = colors[i];
+    // Position is not retained on the SCIRun ColorMap, so distribute the stops
+    // evenly across [0, 1] to match the strict schema readColorMapXml expects.
+    const double x = (n > 1) ? static_cast<double>(i) / (n - 1) : 0.0;
+    cmXml.points.push_back({x, c.a(), c.r(), c.g(), c.b()});
+  }
+  return cmXml;
+}
+
+bool ColorMapXmlIO::writeColorMapXml(const std::string& filename, const ColorMaps& colorMaps)
+{
+  pugi::xml_document doc;
+  auto root = doc.append_child("ColorMaps");
+  for (const auto& cm : colorMaps.maps)
+  {
+    auto node = root.append_child("ColorMap");
+    node.append_attribute("name") = cm.name.c_str();
+    node.append_attribute("space") = cm.space.c_str();
+    for (const auto& p : cm.points)
+    {
+      auto point = node.append_child("Point");
+      point.append_attribute("x") = p.x;
+      point.append_attribute("o") = p.o;
+      point.append_attribute("r") = p.r;
+      point.append_attribute("g") = p.g;
+      point.append_attribute("b") = p.b;
+    }
+  }
+  return doc.save_file(filename.c_str());
+}

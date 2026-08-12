@@ -37,8 +37,12 @@ def list_tests_from(base, path):
         tests = t._tests
         for test in tests:
             for btest in test._tests:
-                btestname = btest.__str__().split()
-                print(path + "." + btestname[1][1:-1] + "." + btestname[0])
+                # Use id(), which is always "module.Class.method". Parsing
+                # str(btest) instead breaks on Python 3.11+, where the format
+                # changed from "method (module.Class)" to
+                # "method (module.Class.method)" and the method name ended up
+                # duplicated, producing an unloadable test name.
+                print(path + "." + btest.id())
 
 if __name__ == "__main__":
   # Include the directories
