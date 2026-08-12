@@ -77,8 +77,9 @@ IF(WIN32)
   SET(FORCE_64BIT_BUILD ON)
 ENDIF()
 
-SET(_boost_git_url "https://github.com/CIBC-Internal/boost.git")
-SET(_boost_git_tag "v1.90.0")
+# Source URL and pinned version come from Superbuild/VERSIONS.cmake.
+SET(_boost_git_url ${BOOST_GIT_URL})
+SET(_boost_git_tag ${BOOST_GIT_TAG})
 
 # ------------------------------------------------------------------------------
 # Compute Python library filenames
@@ -177,6 +178,9 @@ ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
   GIT_REPOSITORY ${_boost_git_url}
   GIT_TAG ${_boost_git_tag}
+  # EP_UPDATE_DISCONNECTED emits update and update_disconnected as siblings; under
+  # -j they race on the submodule config locks. Lost from c552399bb in a merge.
+  UPDATE_COMMAND ""
   BUILD_IN_SOURCE ON
   PATCH_COMMAND ""
   INSTALL_COMMAND ""
@@ -304,8 +308,37 @@ else()
   set(BOOST_PYTHON_DEBUGGING_FLAG "")
 endif()
 
+# ------------------------------------------------------------------
+# b2 variant selection
+#
+# Windows uses the Visual Studio generator, which is multi-config, and Boost's
+# tagged layout there produces distinct names (the '-gd' ABI tag) that
+# BoostConfig.cmake.in resolves per configuration. Both variants are needed.
+#
+# Unix is single-config and b2 stages with "system" layout, so release and
+# debug write the SAME filenames -- stage/lib/libboost_thread.a and friends --
+# and the second variant simply overwrites the first. BoostConfig.cmake.in
+# reflects that: on non-Windows it globs the untagged .a and assigns the same
+# file to IMPORTED_LOCATION_RELEASE and IMPORTED_LOCATION_DEBUG. So building
+# both has never produced two usable sets of libraries -- it produced one set,
+# twice, with which variant survived decided by b2's ordering rather than by
+# CMAKE_BUILD_TYPE. Build the variant that matches the build type instead.
+# ------------------------------------------------------------------
+if(WIN32)
+  set(_BOOST_VARIANT variant=release,debug)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(_BOOST_VARIANT variant=debug)
+else()
+  set(_BOOST_VARIANT variant=release)
+endif()
+
 set(_BOOST_B2_ARGS
   ${_BOOST_CXXFLAGS}
+
+  # b2 is not a make, so it does not inherit the outer jobserver and defaults
+  # to building one library at a time. See Superbuild.cmake for how this is
+  # sized.
+  -j${SUPERBUILD_PARALLEL_JOBS}
 
   --with-atomic
   --with-chrono
@@ -321,7 +354,7 @@ set(_BOOST_B2_ARGS
 
   link=static
   runtime-link=shared
-  variant=release,debug
+  ${_BOOST_VARIANT}
   threading=multi
   stage
 )
@@ -343,7 +376,7 @@ ExternalProject_Add_Step(Boost_external build_libs
 
   WORKING_DIRECTORY ${SOURCE_DIR}
   DEPENDEES stage_headers
-  COMMENT "Building Boost static libraries (Debug + Release)"
+  COMMENT "Building Boost static libraries (${_BOOST_VARIANT})"
 )
 
 # ------------------------------------------------------------------------------

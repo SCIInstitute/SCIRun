@@ -1,0 +1,87 @@
+name: Publish release assets
+
+# Reusable publisher. Called by windows.yml / mac.yml after their build matrix
+# finishes. Downloads this run's installer artifacts and attaches them to a
+# GitHub Release so the binaries live somewhere permanent instead of expiring
+# with the 90-day run-artifact retention (see issue #2398).
+#
+#   channel: nightly  -> rolling prerelease on the `nightly` tag, overwritten
+#                        each run. Asset names drop the version string so they
+#                        replace in place instead of accumulating.
+#   channel: stable   -> draft release on the pushed v* tag, with the tag baked
+#                        into each asset name. Review, then publish by hand.
+#
+# Both windows.yml and mac.yml publish to the SAME release; assets are named per
+# artifact so the platforms coexist rather than clobbering each other.
+
+on:
+  workflow_call:
+    inputs:
+      channel:
+        required: true
+        type: string        # 'nightly' or 'stable'
+
+permissions:
+  contents: write           # create/update releases and move the nightly tag
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # No merge-multiple: every GUI job emits an identically-named installer
+      # (SCIRun-<ver>-win64.exe / SCIRun-<ver>-Darwin.pkg), so flattening would
+      # clobber. Land each artifact in its own dist/<artifact-name>/ subdir.
+      - name: Download installer artifacts from this run
+        uses: actions/download-artifact@v6
+        with:
+          pattern: "*Installer*"
+          path: dist
+
+      - name: Rename to unique, channel-appropriate asset names
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -eu
+          shopt -s nullglob
+          cd dist
+          for d in */; do
+            name="${d%/}"
+            # Each subdir holds exactly one installer file.
+            f=$(find "$d" -maxdepth 1 -type f \
+                  \( -name '*.exe' -o -name '*.pkg' -o -name '*.msi' \) | head -n1)
+            [ -n "$f" ] || { echo "No installer in $d, skipping"; continue; }
+            ext="${f##*.}"
+            if [ "$CHANNEL" = "stable" ]; then
+              out="${name}-${TAG}.${ext}"      # e.g. SCIRunWindowsInstaller_qt6-v5.5.0.exe
+            else
+              out="${name}.${ext}"             # e.g. SCIRunWindowsInstaller_qt6.exe (stable name)
+            fi
+            mv "$f" "$out"
+          done
+          # Drop the now-empty per-artifact subdirs so files: matches only installers.
+          find . -mindepth 1 -type d -exec rm -rf {} + 2>/dev/null || true
+          echo "Assets to publish:"
+          ls -la
+
+      - name: Publish nightly (rolling prerelease)
+        if: ${{ inputs.channel == 'nightly' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: Nightly build
+          prerelease: true
+          body: >-
+            Automated nightly build. Assets are overwritten on every run;
+            the tag tracks the latest master commit that produced them.
+          files: dist/*
+
+      - name: Publish stable (draft release on tag)
+        if: ${{ inputs.channel == 'stable' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: SCIRun ${{ github.ref_name }}
+          draft: true                    # review before it goes public
+          generate_release_notes: true
+          files: dist/*
