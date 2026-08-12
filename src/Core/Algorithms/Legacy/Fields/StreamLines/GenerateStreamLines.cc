@@ -206,7 +206,7 @@ namespace detail
     VMesh*  mesh_ {nullptr};
 
     FieldHandle input_;
-    std::vector<bool> success_;
+    ParallelSuccessFlags success_;
     FieldList outputs_;
     VMesh::Node::index_type global_dimension_ {0};
   };

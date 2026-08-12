@@ -29,7 +29,9 @@
 #include <Interface/qt_include.h>
 #include <cstdlib>
 #include <numeric>
+#include <algorithm>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Utils/QuickExit.h>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -108,7 +110,14 @@ bool QuitCommandGui::execute()
   if (get(RunningPython).toBool())
     SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->quit();
-  exit(0);
+  // quit() posts a DeferredDelete for the main window and asks the event loop to
+  // unwind, but libc exit() runs static destructors before the loop gets a turn,
+  // so Qt flushes that delete from inside __cxa_finalize -- after the
+  // Core_Application statics are gone. ~SCIRunMainWindow then calls
+  // Application::shutdown() on a half-destroyed singleton and segfaults. Same
+  // mechanism as #2560, fixed here the same way. Settings are already written
+  // synchronously by quit()'s closeEvent.
+  quickExit(0);
   return true;
 }
 
@@ -120,6 +129,71 @@ bool ShowMainWindowGui::execute()
   mainWin->raise();
   mainWin->show();
   return true;
+}
+
+namespace
+{
+  // The empty plate between the two rules in Resources/scirun_splash.png. All splash text is
+  // painted here at runtime, so nothing in the image itself can go stale.
+  const QRect splashTextPlate(32, 388, 439, 26);
+
+  QString splashCopyright()
+  {
+    return QString("Copyright %1 1994-%2 University of Utah. All Rights Reserved.")
+      .arg(QChar(0x00A9))  // (c), kept out of the source bytes so the file stays ASCII
+      .arg(QDate::currentDate().year());
+  }
+
+  QString splashVersion()
+  {
+    return "Version " + QString::fromStdString(Application::Instance().version());
+  }
+
+  class SplashScreen : public QSplashScreen
+  {
+  public:
+    explicit SplashScreen(const QPixmap& pixmap) : QSplashScreen(pixmap, Qt::WindowStaysOnTopHint) {}
+  protected:
+    void drawContents(QPainter* painter) override
+    {
+      QSplashScreen::drawContents(painter);
+      drawPlateText(painter);
+    }
+  private:
+    static void drawPlateText(QPainter* painter)
+    {
+      const auto copyright = splashCopyright();
+      const auto version = splashVersion();
+      const auto textArea = splashTextPlate.adjusted(4, 0, -4, 0);
+
+      auto font = painter->font();
+      font.setBold(true);
+      auto pixelSize = 13;
+      for (; pixelSize > 9; --pixelSize)  // shrink until both lines fit the plate
+      {
+        font.setPixelSize(pixelSize);
+        const QFontMetrics metrics(font);
+        if (2 * metrics.lineSpacing() <= textArea.height()
+          && std::max(metrics.WIDTH_FUNC(copyright), metrics.WIDTH_FUNC(version)) <= textArea.width())
+          break;
+      }
+      font.setPixelSize(pixelSize);
+
+      const QFontMetrics metrics(font);
+      const auto lineHeight = textArea.height() / 2;
+      const QRect versionLine(textArea.left(), textArea.top(), textArea.width(), lineHeight);
+      const auto copyrightLine = versionLine.translated(0, lineHeight);
+
+      painter->save();
+      painter->setFont(font);
+      painter->setPen(Qt::white);
+      painter->drawText(versionLine, Qt::AlignLeft | Qt::AlignVCenter,
+        metrics.elidedText(version, Qt::ElideRight, textArea.width()));
+      painter->drawText(copyrightLine, Qt::AlignLeft | Qt::AlignVCenter,
+        metrics.elidedText(copyright, Qt::ElideRight, textArea.width()));
+      painter->restore();
+    }
+  };
 }
 
 ShowSplashScreenGui::ShowSplashScreenGui()
@@ -140,7 +214,7 @@ bool ShowSplashScreenGui::execute()
 
 void ShowSplashScreenGui::initSplashScreen()
 {
-  splash_ = new QSplashScreen(QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
+  splash_ = new SplashScreen(QPixmap(":/general/Resources/scirun_splash.png"));
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
