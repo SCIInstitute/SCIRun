@@ -107,6 +107,10 @@ ExternalProject_Add(Qwt_external
   LOG_CONFIGURE 1
   LOG_BUILD     1
   LOG_INSTALL   1
+
+  # Otherwise a failed step prints only "Command failed: 1" plus a path to a
+  # stamp log that never leaves the CI runner.
+  LOG_OUTPUT_ON_FAILURE 1
 )
 
 # ----------------------------
