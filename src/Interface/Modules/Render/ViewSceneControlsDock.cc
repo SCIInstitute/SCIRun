@@ -797,6 +797,11 @@ void LightControls::toggleLightOn()
   lightCheckBox_->toggle();
 }
 
+bool LightControls::isLightOn() const
+{
+  return lightCheckBox_->isChecked();
+}
+
 void LightControls::resetAngles()
 {
   if (lightAzimuthSlider_)

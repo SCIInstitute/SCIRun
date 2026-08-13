@@ -295,6 +295,7 @@ namespace Gui {
     /// which propagates to the dialog and the toolbar button.
     void setLightOn(bool on);
     void toggleLightOn();
+    bool isLightOn() const;
 
    private:
     int lightNumber_{-1};

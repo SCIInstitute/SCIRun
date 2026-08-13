@@ -25,6 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <algorithm>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
@@ -182,6 +183,11 @@ namespace Gui {
     DeveloperControls* developerControls_{nullptr};
     static constexpr int NUM_LIGHTS = 4;
     std::array<LightControls*, NUM_LIGHTS> lightControls_;
+    // Group hotkeys (K, L) switch everything off, then restore what was on rather
+    // than switching everything on -- the sub-toggles are independent in the UI.
+    // Defaults match the startup state: headlight only, nothing locked.
+    std::array<bool, NUM_LIGHTS> lightStateBeforeAllOff_ {{true, false, false, false}};
+    std::array<bool, 3> lockStateBeforeAllOff_ {{true, true, true}};
     CompositeLightControls* secondaryLightControlContainer_{nullptr};
     QLabel* statusLabel_{nullptr};
     QPushButton* autoRotateButton_{nullptr};
@@ -853,19 +859,10 @@ const ViewSceneDialog::ShortcutTable& ViewSceneDialog::shortcutTable()
       [](ViewSceneDialog* d) { d->showShortcutsDialog(); } },
     { Id::ViewLocking,     Qt::Key_L, Qt::NoModifier,
       "View Locking",      "L",       "Switch view locking on/off",
-      [](ViewSceneDialog* d) {
-        const bool anyLocked = d->impl_->lockRotation_->isChecked() ||
-                               d->impl_->lockPan_->isChecked()      ||
-                               d->impl_->lockZoom_->isChecked();
-        if (anyLocked) d->unlockAllTriggered(); else d->lockAllTriggered();
-      } },
+      [](ViewSceneDialog* d) { d->toggleAllLocks(); } },
     { Id::ToggleLighting,  Qt::Key_K, Qt::NoModifier,
       "Toggle Lighting",   "K",       "Switch lighting on/off",
-      [](ViewSceneDialog* d) {
-        const bool newState = !d->state_->getValue(Parameters::HeadLightOn).toBool();
-        for (auto* light : d->impl_->lightControls_)
-          light->setLightOn(newState);
-      } },
+      [](ViewSceneDialog* d) { d->toggleAllLights(); } },
     { Id::OrientationIcon, Qt::Key_O, Qt::NoModifier,
       "Orientation Icon",  "O",       "Switch orientation icon on/off",
       [](ViewSceneDialog* d) { d->impl_->orientationAxesControls_->toggleOrientation(); } },
@@ -2218,6 +2215,59 @@ void ViewSceneDialog::unlockAllTriggered()
     impl_->mGLWidget->setLockZoom(false);
   }
   toggleLockColor(false);
+}
+
+void ViewSceneDialog::toggleAllLocks()
+{
+  const std::array<bool, 3> current{{impl_->lockRotation_->isChecked(),
+                                     impl_->lockPan_->isChecked(),
+                                     impl_->lockZoom_->isChecked()}};
+  const bool anyLocked = std::any_of(current.begin(), current.end(), [](bool b) { return b; });
+  if (anyLocked)
+  {
+    impl_->lockStateBeforeAllOff_ = current;
+    unlockAllTriggered();
+    return;
+  }
+
+  auto restore = impl_->lockStateBeforeAllOff_;
+  if (std::none_of(restore.begin(), restore.end(), [](bool b) { return b; }))
+    restore = {{true, true, true}};
+
+  impl_->lockRotation_->setChecked(restore[0]);
+  impl_->lockPan_->setChecked(restore[1]);
+  impl_->lockZoom_->setChecked(restore[2]);
+  if (impl_->mGLWidget)
+  {
+    impl_->mGLWidget->setLockRotation(restore[0]);
+    impl_->mGLWidget->setLockPanning(restore[1]);
+    impl_->mGLWidget->setLockZoom(restore[2]);
+  }
+  toggleLockColor(true);
+}
+
+void ViewSceneDialog::toggleAllLights()
+{
+  std::array<bool, ViewSceneDialogImpl::NUM_LIGHTS> current{};
+  for (size_t i = 0; i < current.size(); ++i)
+    current[i] = impl_->lightControls_[i]->isLightOn();
+
+  if (std::any_of(current.begin(), current.end(), [](bool b) { return b; }))
+  {
+    impl_->lightStateBeforeAllOff_ = current;
+    for (auto* light : impl_->lightControls_)
+      light->setLightOn(false);
+    return;
+  }
+
+  auto restore = impl_->lightStateBeforeAllOff_;
+  // Everything off at startup, or saved from an all-off state: fall back to the
+  // headlight rather than switching on lights the user never turned on.
+  if (std::none_of(restore.begin(), restore.end(), [](bool b) { return b; }))
+    restore[0] = true;
+
+  for (size_t i = 0; i < restore.size(); ++i)
+    impl_->lightControls_[i]->setLightOn(restore[i]);
 }
 
 void ViewSceneDialog::setAutoRotateSpeed(double speed)

@@ -153,6 +153,7 @@ namespace SCIRun {
       void lockZoomToggled();
       void lockAllTriggered();
       void unlockAllTriggered();
+      void toggleAllLocks();
       void toggleLockColor(bool locked);
       void setAutoRotateSpeed(double speed);
       void autoRotateRight();
@@ -203,6 +204,7 @@ namespace SCIRun {
       void toggleLight(int index, bool value);
       void setLightAzimuth(int index, int value);
       void setLightInclination(int index, int value);
+      void toggleAllLights();
 
       //---------------- Material Settings ---------------------------------------------------------
       void setAmbientValue(double value);
