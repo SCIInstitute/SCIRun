@@ -44,6 +44,10 @@ namespace TestUtils
   struct SCISHARE TestResources
   {
     static boost::filesystem::path rootDir();
+    /// Root of the SCIRun source tree (SCIRun_SOURCE_DIR). Use this to locate
+    /// source resource files instead of deriving a path relative to rootDir(),
+    /// which assumes the test data lives inside the source tree.
+    static boost::filesystem::path sourceRootDir();
   };
 
 }

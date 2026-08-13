@@ -39,7 +39,9 @@
 #include <Interface/Modules/Render/ViewSceneManager.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/TextBuilder.h>
+#include <array>
 #include <atomic>
+#include <functional>
 #include "Interface/Modules/Render/ui_ViewScene.h"
 #include <Interface/Modules/Render/share.h>
 #include <Core/Datatypes/Feedback.h>
@@ -62,6 +64,34 @@ namespace SCIRun {
     Q_OBJECT;
 
     public:
+      // -------- Keyboard shortcut registry ----------------------------------------
+      struct ShortcutDef
+      {
+        enum class Id : int
+        {
+          AxisViews, Autoview, AutoviewNoScale, SnapToAxis, CopyView,
+          SetHome, GotoHome, ToggleAxes, BoundingBox, ToggleClipping,
+          ToggleFog, FlatShading, OpenHelp, ViewLocking, ToggleLighting,
+          OrientationIcon, Orthographic, Stereo, Backculling, Wireframe,
+          NUM_SHORTCUTS
+        };
+        using Action = std::function<void(ViewSceneDialog*)>;
+
+        Id              id;
+        Qt::Key         key;
+        Qt::KeyboardModifiers modifiers {Qt::NoModifier};
+        const char*     actionName;
+        const char*     shortcutDisplay;   // human-readable, e.g. "Ctrl+H" or "1-8"
+        const char*     description;
+        Action          action {nullptr};  // null = not yet implemented / shown grayed
+
+        bool isImplemented() const { return static_cast<bool>(action); }
+      };
+
+      static constexpr auto numShortcuts =
+        static_cast<std::size_t>(ShortcutDef::Id::NUM_SHORTCUTS);
+      using ShortcutTable = std::array<ShortcutDef, numShortcuts>;
+
       ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
       ~ViewSceneDialog() override;
@@ -186,6 +216,9 @@ namespace SCIRun {
       void setFogStartValue(double value);
       void setFogEndValue(double value);
 
+      //---------------- Help ----------------------------------------------------------------------
+      void showShortcutsDialog();
+
       //---------------- Misc. ---------------------------------------------------------------------
       void assignBackgroundColor();
       void setTransparencySortTypeContinuous(bool index);
@@ -201,6 +234,7 @@ namespace SCIRun {
     protected:
       //---------------- Initialization ------------------------------------------------------------
       void pullSpecial() override;
+      bool eventFilter(QObject* obj, QEvent* event) override;
 
       void newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated);
       void updateAllGeometries();
@@ -245,6 +279,12 @@ namespace SCIRun {
       void addDeveloperControlButton();
       void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneControlPopupWidget* widgetToPopup = nullptr);
       void addObjectSelectionButton();
+      void addShortcutsHelpButton();
+      static const ShortcutTable& shortcutTable();
+      bool dispatchShortcutKey(QKeyEvent* event);
+      void setAxisView(int n);         // n=1..6 → +X,-X,+Y,-Y,+Z,-Z
+      void setClosestAxisView();       // snap to nearest cardinal axis
+      void flashShortcutTooltip(const QString& msg);
       void addLightButtons();
       QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
       void pullCameraState();

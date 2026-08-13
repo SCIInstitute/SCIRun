@@ -4,6 +4,5 @@ scripts
 .git 
 .gitattributes
 .gitignore
-.travis.yml
 build.sh
 compile_commands.json
