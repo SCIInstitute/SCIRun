@@ -68,7 +68,6 @@ void ShowFieldVtk::setStateDefaults()
 
 ShowFieldVtk::ShowFieldVtk() : Module(staticInfo_)
 {
-
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(SceneGraph);
@@ -86,8 +85,6 @@ void ShowFieldVtk::execute()
 
   if (needToExecute())
   {
-
-
     setAlgoDoubleFromState(Parameters::DefaultColorR);
     setAlgoDoubleFromState(Parameters::DefaultColorG);
     setAlgoDoubleFromState(Parameters::DefaultColorB);

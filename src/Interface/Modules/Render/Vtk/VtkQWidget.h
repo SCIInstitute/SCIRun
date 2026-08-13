@@ -47,9 +47,9 @@ public Q_SLOTS:
     void updateRenderer();
 
 protected:
-  virtual void paintEvent(QPaintEvent* event) override;
-  virtual void resizeEvent(QResizeEvent* event) override;
-  virtual void showEvent(QShowEvent* event) override;
+  void paintEvent(QPaintEvent* event) override;
+  void resizeEvent(QResizeEvent* event) override;
+  void showEvent(QShowEvent* event) override;
   virtual void onScreenChanged(QScreen* screen);
 
   VtkRenderer* renderer {nullptr};

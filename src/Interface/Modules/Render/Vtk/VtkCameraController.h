@@ -74,7 +74,6 @@ namespace SCIRun {
             float zoomSpeed() const;
 
         private:
-
             //----------------------------------------
             // Helpers
             //----------------------------------------
@@ -94,7 +93,6 @@ namespace SCIRun {
                 float amount);
 
         private:
-
             bool dragging_{ false };
 
             MouseButton activeButton_;

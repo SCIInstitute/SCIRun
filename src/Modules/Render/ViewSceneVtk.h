@@ -104,9 +104,7 @@ namespace Modules {
 
      private:
       void sendCompositeGeometry();
-
     };
-
   }
 }
 }

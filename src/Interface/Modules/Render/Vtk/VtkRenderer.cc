@@ -436,12 +436,10 @@ vtkSmartPointer<vtkLookupTable> VtkRenderer::createLookupTable(const VtkGeometry
 
 void VtkRenderer::addDirectionalLight(glm::vec3 color, glm::vec3 direction)
 {
-
 }
 
 void VtkRenderer::addAmbientLight(glm::vec3 color, float intensity)
 {
-
 }
 
 #endif

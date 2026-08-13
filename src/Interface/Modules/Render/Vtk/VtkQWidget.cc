@@ -44,7 +44,6 @@ VtkQWidget::VtkQWidget(QWidget *parent, VtkRenderer* renderer) :
 
 VtkQWidget::~VtkQWidget()
 {
-
 }
 
 void VtkQWidget::paintEvent(QPaintEvent* event)
