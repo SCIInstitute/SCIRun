@@ -43,6 +43,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -E [ --Execute ]        executes the given network on startup and quits when \n"
     "                          done\n"
     "  -d [ --datadir ] arg    scirun data directory\n"
+    "  --image-dir arg         output directory for regression-mode images\n"
     "  -r [ --regression ] arg regression test a network\n"
     "  -1 [ --most-recent ]    load the most recently used file\n"
     "  -i [ --interactive ]    interactive mode\n"

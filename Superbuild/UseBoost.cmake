@@ -9,10 +9,20 @@ if(UNIX)
   add_definitions(-DBOOST_NO_CXX11_ALLOCATOR)
 endif()
 
-check_c_compiler_flag("-arch x86_64" x86_64Supported)
-#message("x86_64Supported=${x86_64Supported}")
-check_c_compiler_flag("-arch arm64" arm64Supported)
-#message("arm64Supported=${arm64Supported}")
+# Detect whether we are targeting arm64. On Apple platforms the "-arch" driver
+# flag is valid and also covers universal/cross builds, so probe it there.
+# Elsewhere (GCC/Clang on Linux) "-arch" is rejected and both probes would fail,
+# silently mislabeling aarch64 hosts as x64 -- so derive the arch from
+# CMAKE_SYSTEM_PROCESSOR instead. See issue #2583.
+if(APPLE)
+  check_c_compiler_flag("-arch arm64" arm64Supported)
+else()
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+    set(arm64Supported TRUE)
+  else()
+    set(arm64Supported FALSE)
+  endif()
+endif()
 
 # TODO: if static runtime link is supported, then ABI tag postfix must include s
 # see:
@@ -32,7 +42,7 @@ else()
     set(DEBUG_POSTFIX "-d")
   endif()
   set(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
-  if(${arm64Supported})
+  if(arm64Supported)
     set(PLATFORM_SUFFIX "a64")
   else()
     set(PLATFORM_SUFFIX "x64")

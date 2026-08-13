@@ -68,7 +68,6 @@ TARGET_LINK_LIBRARIES(Graphics_Widgets
   Graphics_Glyphs
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

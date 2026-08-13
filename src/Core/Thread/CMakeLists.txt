@@ -48,7 +48,7 @@ SCIRUN_ADD_LIBRARY(Core_Thread
 
 TARGET_LINK_LIBRARIES(Core_Thread
   Core_Logging
-  ${SCI_BOOST_LIBRARY}
+  Boost::thread
 )
 
 IF(BUILD_SHARED_LIBS)

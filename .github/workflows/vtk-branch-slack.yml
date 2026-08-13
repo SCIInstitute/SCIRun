@@ -1,0 +1,130 @@
+name: vtk-branch-slack
+
+# Slack notification when a build GOES red on a VTK branch (#2681). Those
+# branches are not master, so nightly-slack.yml ignores them.
+#
+# Edge-triggered, not level-triggered: the first red after a green posts, and
+# then it is quiet until the workflow recovers. A branch that sits broken for
+# weeks -- which is the normal state here -- would otherwise emit one message
+# per workflow per push. There is deliberately no recovery or still-broken
+# message; check the branch if you want current state.
+#
+# Reaches refactor_add_vtk without that branch merging anything, because
+# workflow_run runs the default branch's copy of the file -- see the header of
+# nightly-slack.yml, which relies on the same property and carries the same
+# consequence: untestable from a PR.
+#
+# Requires the SLACK_WEBHOOK_URL secret, as nightly-slack.yml does.
+
+on:
+  workflow_run:
+    workflows:
+      - linux-build
+      - windows-build
+      - windows-build-script
+      - mac-build
+    types:
+      - completed
+
+permissions:
+  actions: read      # gh run list, for the red-streak count
+  contents: read
+
+jobs:
+  notify:
+    # Failures only; green would be noise people mute. nightly-slack.yml filters
+    # to `schedule`, so no run can match both.
+    #
+    # pull_request as well as push: mac.yml on refactor_add_vtk has only a
+    # pull_request trigger, so push alone could never report mac -- the one
+    # platform with no local coverage. #2681 specifies push only.
+    if: >-
+      (github.event.workflow_run.event == 'push' ||
+       github.event.workflow_run.event == 'pull_request') &&
+      (github.event.workflow_run.conclusion == 'failure' ||
+       github.event.workflow_run.conclusion == 'cancelled')
+    runs-on: ubuntu-latest
+    steps:
+      # Matched here rather than in `on:` because workflow filter patterns are
+      # case-sensitive with no regex. Heuristic both ways, which is fine for a
+      # notifier: a stray match costs one Slack line, a miss costs one.
+      - name: Is this a VTK branch?
+        id: vtk
+        env:
+          WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          # tr, not ${WF_BRANCH,,}: that needs bash 4, and this is the only part
+          # of the workflow anyone can test off-runner.
+          case "$(printf '%s' "$WF_BRANCH" | tr '[:upper:]' '[:lower:]')" in
+            *vtk*) is_vtk=true ;;
+            *)     is_vtk=false ;;
+          esac
+          echo "is_vtk=$is_vtk" >> "$GITHUB_OUTPUT"
+          echo "branch=${WF_BRANCH} is_vtk=${is_vtk}"
+
+      - name: Build Slack payload
+        id: payload
+        if: steps.vtk.outputs.is_vtk == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WF_URL: ${{ github.event.workflow_run.html_url }}
+          WF_SHA: ${{ github.event.workflow_run.head_sha }}
+          WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          short_sha="${WF_SHA:0:9}"
+
+          case "$WF_CONCLUSION" in
+            failure)   emoji=":red_circle:";;
+            cancelled) emoji=":black_circle:";;
+            *)         emoji=":white_circle:";;
+          esac
+
+          # Post the first red after a green, then stay quiet until it recovers.
+          # A branch that is already known-broken produces one message per
+          # workflow per push otherwise -- on refactor_add_vtk's history that is
+          # 76 posts where 22 carry news, and an alert at that rate gets muted.
+          #
+          # index() is the position of the last success, i.e. the non-green count
+          # at the head, counting this run. 1 means it just broke.
+          streak="$(gh run list --repo "$REPO" \
+            --workflow "$WF_NAME" --branch "$WF_BRANCH" \
+            --limit 30 --json conclusion \
+            -q '[.[].conclusion | select(. != null and . != "")]
+                | (index("success") // length)' 2>/dev/null || true)"
+
+          # Suppress only when we positively know it was already red. An empty or
+          # unparseable streak means the query failed, and 0 means the list had
+          # not caught up with this run yet -- both post, because a missed first
+          # break costs more than one redundant line.
+          post=true
+          if [ -n "${streak:-}" ] && [ "$streak" -ge 2 ] 2>/dev/null; then
+            post=false
+          fi
+          echo "post=$post" >> "$GITHUB_OUTPUT"
+
+          if [ "$post" != "true" ]; then
+            echo "Already red for ${streak} runs; staying quiet until it recovers."
+            exit 0
+          fi
+
+          text="${emoji} *${WF_NAME}* ${WF_CONCLUSION} on \`${WF_BRANCH}\`"$'\n'"<${WF_URL}|View run> · \`${short_sha}\`"
+          jq -n --arg t "$text" '{text: $t}' > payload.json
+          echo "Payload:"
+          cat payload.json
+
+      - name: Post to Slack
+        if: steps.payload.outputs.post == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "::warning::SLACK_WEBHOOK_URL secret is not set; skipping Slack post."
+            exit 0
+          fi
+          curl -sSf -X POST -H 'Content-type: application/json' \
+            --data @payload.json "$SLACK_WEBHOOK_URL"

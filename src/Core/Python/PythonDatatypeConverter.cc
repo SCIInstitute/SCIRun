@@ -77,7 +77,7 @@ struct PythonObjectVisitor : boost::static_visitor<py::object>
 struct ValueVisitor : boost::static_visitor<Variable::Value>
 {
 private:
-  const py::object& object_;
+  py::object object_;
 public:
   explicit ValueVisitor(const py::object& object) : object_(object) {}
 
@@ -132,10 +132,12 @@ public:
       const auto firstVal = v[0];
       const py::extract<py::list> e(object_);
       auto pyList = e();
+      auto gil = PyGILState_Ensure();
       Variable::List newList(py::len(pyList));
       for (auto i = 0; i < py::len(pyList); ++i)
         newList[i] = Variable(firstVal.name(),
                               boost::apply_visitor(ValueVisitor(pyList[i]), firstVal.value()));
+      PyGILState_Release(gil);
       return newList;
     }
     else
@@ -626,7 +628,10 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const py::object& o
 Variable SCIRun::Core::Python::convertPythonObjectToVariableWithTypeInference(
     const py::object& object, const Variable& var)
 {
-  return Variable(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
+  auto gil = PyGILState_Ensure();
+  Variable result(var.name(), boost::apply_visitor(ValueVisitor(object), var.value()));
+  PyGILState_Release(gil);
+  return result;
 }
 
 py::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& var)

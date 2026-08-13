@@ -59,7 +59,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_FiniteElements
   Algorithms_Field
   Interface_Modules_Base
   Modules_Legacy_FiniteElements
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 

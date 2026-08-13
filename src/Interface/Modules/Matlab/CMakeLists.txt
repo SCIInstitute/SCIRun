@@ -64,7 +64,6 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Matlab
 TARGET_LINK_LIBRARIES(Interface_Modules_Matlab
   Modules_Legacy_Matlab_DataIO
   Interface_Modules_Base
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)

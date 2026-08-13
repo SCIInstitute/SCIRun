@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertMatrixToColorMap",
+    "namespace": "Visualization",
+    "status": "New module",
+    "description": "Converts an Nx3 (RGB) or Nx4 (RGBA) matrix of color values into a ColorMap.",
+    "header": "Modules/Visualization/ConvertMatrixToColorMap.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

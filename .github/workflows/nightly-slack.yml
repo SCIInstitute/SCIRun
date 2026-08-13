@@ -1,0 +1,126 @@
+name: nightly-slack
+
+# Posts a per-workflow summary of each nightly run to Slack.
+#
+# Design notes:
+#
+#  * Triggered by `workflow_run`, not wired as a notify job inside each build
+#    workflow. One file here replaces five near-identical notify jobs, and it
+#    needs no `needs: [<every matrix job>]` list to learn the outcome -- the
+#    workflow_run payload carries the conclusion directly. reusable-build.yml
+#    (the tested build path) is left untouched.
+#
+#  * `workflow_run` only fires for workflow files that live on the DEFAULT
+#    branch, so this does nothing until merged and cannot be exercised from a
+#    PR. Hence the payload comes from scripts/ci/slack_test_summary.py, which
+#    runs against downloaded artifacts locally -- the only pre-merge test there
+#    is. (vtk-branch-slack.yml leans on the same property for a different
+#    reason: it reaches feature branches that never merge this file.)
+#
+#  * It reports the REAL ctest pass/fail counts, not just the job conclusion.
+#    The ctest steps in reusable-build.yml carry `continue-on-error: true`, so
+#    regression-tests reports "success" even when hundreds of cases fail. The
+#    counts (and the failing test names) come from the junit-*.xml files in that
+#    run's `test-results-*` artifacts. A green job with failing tests is flagged
+#    yellow rather than green.
+#
+#  * Filtered to `event == 'schedule'`: only the nightly cron pings Slack. Master
+#    pushes and workflow_dispatch runs do not (pushes still get GitHub's default
+#    failure email). To also notify on-demand runs, add
+#    `|| github.event.workflow_run.event == 'workflow_dispatch'` to the job `if`.
+#    Do not add 'push' here -- vtk-branch-slack.yml owns push/PR failures, and
+#    overlapping filters would double-post.
+#
+# Requires a repo secret SLACK_WEBHOOK_URL holding a Slack incoming-webhook URL
+# (Settings -> Secrets and variables -> Actions). Until it is set, the workflow
+# runs but skips the post with a warning.
+
+on:
+  workflow_run:
+    workflows:
+      - linux-build
+      - windows-build
+      - windows-build-script
+      - mac-build
+      - regression-tests
+    types:
+      - completed
+
+permissions:
+  actions: read      # download artifacts from, and read, the triggering run
+  contents: read
+
+jobs:
+  notify:
+    # Nightly cron only. workflow_run.event is the event that started the run
+    # being reported, so this is 'schedule' for the nightly and 'push' for a
+    # master build.
+    if: ${{ github.event.workflow_run.event == 'schedule' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Only for scripts/ci/slack_test_summary.py. workflow_run always resolves
+      # the workflow -- and therefore this checkout -- against the default
+      # branch, so this is master's copy of the script, never a PR's.
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Download test-results artifacts (best effort)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WF_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Build-only workflows (linux-build, windows-build, windows-build-
+          # script) upload no test artifacts; tolerate a no-match cleanly.
+          gh run download "$WF_ID" \
+            --repo "$REPO" \
+            --dir artifacts \
+            --pattern 'test-results-*' || true
+          echo "Downloaded artifacts:"
+          ls -R artifacts 2>/dev/null || echo "(none)"
+
+      - name: Build Slack payload
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WF_ID: ${{ github.event.workflow_run.id }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WF_URL: ${{ github.event.workflow_run.html_url }}
+          WF_SHA: ${{ github.event.workflow_run.head_sha }}
+          WF_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+
+          # A continue-on-error job (the VS 2026 builds) fails without failing
+          # the run, so the conclusion alone reads green. Queried here, not in
+          # the script, so the script stays runnable offline.
+          #
+          # Matched on step conclusions, not the job's: continue-on-error is
+          # documented to keep the RUN green, but whether it also rewrites the
+          # JOB's conclusion to success is not, and if it does then selecting on
+          # .conclusion finds nothing and this whole line silently never appears.
+          # A failed step reports `failure` either way.
+          WF_FAILED_JOBS="$(gh run view "$WF_ID" --repo "$REPO" --json jobs \
+            -q '[.jobs[]
+                 | select(any(.steps[]?; .conclusion == "failure"))
+                 | .name] | join(", ")' \
+            2>/dev/null || true)"
+          export WF_FAILED_JOBS
+
+          python3 scripts/ci/slack_test_summary.py artifacts > payload.json
+          echo "Payload:"
+          cat payload.json
+
+      - name: Post to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "::warning::SLACK_WEBHOOK_URL secret is not set; skipping Slack post."
+            exit 0
+          fi
+          curl -sSf -X POST -H 'Content-type: application/json' \
+            --data @payload.json "$SLACK_WEBHOOK_URL"

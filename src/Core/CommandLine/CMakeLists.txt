@@ -41,7 +41,8 @@ SCIRUN_ADD_LIBRARY(Core_CommandLine
 )
 
 TARGET_LINK_LIBRARIES(Core_CommandLine
-  ${SCI_BOOST_LIBRARY}
+  Boost::filesystem
+  Boost::program_options
 )
 
 IF(BUILD_SHARED_LIBS)

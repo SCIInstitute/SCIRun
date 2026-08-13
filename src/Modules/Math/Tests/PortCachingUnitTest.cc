@@ -101,7 +101,6 @@ namespace Testing
 
 }
 
-#if GTEST_HAS_COMBINE
 
 using ::testing::Bool;
 using ::testing::Values;
@@ -531,7 +530,6 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
   receive->execute();
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
-#endif
 #endif
 
 class ReexecuteStrategySimpleUnitTest : public ::testing::Test

@@ -73,6 +73,17 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
+  // Guard against the race where paintGL fires before resizeGL has been called
+  // with the actual widget dimensions (e.g. on first show). Without this the
+  // orientation glyph renders with the 640x480 default aspect ratio.
+  if (width() > 0 && height() > 0 &&
+      (graphics_->getScreenWidthPixels()  != static_cast<size_t>(width()) ||
+       graphics_->getScreenHeightPixels() != static_cast<size_t>(height())))
+  {
+    graphics_->eventResize(static_cast<size_t>(width()),
+                           static_cast<size_t>(height()));
+  }
+
   //set to 200ms to force promise fullfilment every frame if a good frame as been requested
   const double lUpdateTime = frameRequested_ ? 0.2 : updateTime;
   graphics_->doFrame(lUpdateTime);

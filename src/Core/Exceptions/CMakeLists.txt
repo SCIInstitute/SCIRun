@@ -61,4 +61,5 @@ SCIRUN_ADD_LIBRARY(Core_Exceptions_Legacy
 
 TARGET_LINK_LIBRARIES(Core_Exceptions_Legacy
   ${DL_LIBRARY}
+  Boost::headers
 )

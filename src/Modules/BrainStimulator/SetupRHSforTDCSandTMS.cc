@@ -58,13 +58,9 @@ SetupTDCS::SetupTDCS() : Module(ModuleLookupInfo("SetupTDCS", "BrainStimulator",
 
 void SetupTDCS::setStateDefaults()
 {
-  auto state = get_state();
-  setStateIntFromAlgo(Parameters::refnode);
-  setStateDoubleFromAlgo(Parameters::normal_dot_product_bound);
-  setStateDoubleFromAlgo(Parameters::pointdistancebound);
-  setStateIntFromAlgo(Parameters::number_of_electrodes);
-  setStateBoolFromAlgo(Parameters::GetContactSurface);
-  state->setValue(Parameters::SurfaceAreaValues, VariableList());
+  copyAlgoToState({Parameters::refnode, Parameters::normal_dot_product_bound,
+    Parameters::pointdistancebound, Parameters::number_of_electrodes, Parameters::GetContactSurface});
+  get_state()->setValue(Parameters::SurfaceAreaValues, VariableList());
 }
 
 void SetupTDCS::execute()
@@ -86,9 +82,7 @@ void SetupTDCS::execute()
   {
     auto state = get_state();
 
-    setAlgoIntFromState(Parameters::refnode);
-    setAlgoDoubleFromState(Parameters::normal_dot_product_bound);
-    setAlgoDoubleFromState(Parameters::pointdistancebound);
+    copyStateToAlgo({Parameters::refnode, Parameters::normal_dot_product_bound, Parameters::pointdistancebound});
 
     algo().set(Parameters::GetContactSurface, state->getValue(Parameters::GetContactSurface).toBool());
 

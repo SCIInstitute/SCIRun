@@ -30,11 +30,11 @@
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include <qwt_plot_grid.h>
-#include <qwt_symbol.h>
-#include <qwt_legend.h>
+#include <qwt/qwt_plot.h>
+#include <qwt/qwt_plot_curve.h>
+#include <qwt/qwt_plot_grid.h>
+#include <qwt/qwt_symbol.h>
+#include <qwt/qwt_legend.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

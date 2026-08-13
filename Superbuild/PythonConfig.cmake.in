@@ -1,23 +1,62 @@
+# -----------------------------------------------------------------------------
+# SCIRun Python configuration
+# -----------------------------------------------------------------------------
 
 set(SCI_PYTHON_VERSION_SHORT "@SCI_PYTHON_VERSION_SHORT@")
 set(SCI_PYTHON_ROOT "@SCI_PYTHON_ROOT_DIR@")
 set(SCI_PYTHON_INCLUDE "@SCI_PYTHON_INCLUDE@")
+
+# NOTE:
+# This variable historically held "the" Python library.
+# On Windows/MSVC this is unsafe for multi-config generators,
+# so consumers should prefer SCI_PYTHON_LIBRARIES instead.
 set(SCI_PYTHON_LIBRARY "@SCI_PYTHON_LIBRARY@")
+
 set(SCI_PYTHON_LIBRARY_DIR "@SCI_PYTHON_LIBRARY_DIR@")
 set(SCI_PYTHON_LINK_LIBRARY_DIRS "@SCI_PYTHON_LINK_LIBRARY_DIRS@")
 set(SCI_PYTHON_EXE "@SCI_PYTHON_EXE@")
 
+
+# -----------------------------------------------------------------------------
+# Windows / MSVC-specific Python settings
+# -----------------------------------------------------------------------------
 if(WIN32 AND MSVC)
   set(SCI_PYTHON_VERSION_SHORT_WIN32 "@SCI_PYTHON_VERSION_SHORT_WIN32@")
   set(SCI_PYTHON_DEBUG_EXE "@SCI_PYTHON_DEBUG_EXE@")
+
+  # Explicit Python import libraries
   set(SCI_PYTHON_LIBRARY_RELEASE "@SCI_PYTHON_LIBRARY_RELEASE@")
-  set(SCI_PYTHON_LIBRARY_DEBUG "@SCI_PYTHON_LIBRARY_DEBUG@")
-  set(SCI_PYTHON_DLL_PATH "@SCI_PYTHON_DLL_PATH@")
-  set(SCI_PYTHON_DLL_DEBUG_PATH "@SCI_PYTHON_DLL_DEBUG_PATH@")
+  set(SCI_PYTHON_LIBRARY_DEBUG   "@SCI_PYTHON_LIBRARY_DEBUG@")
+
+  # Runtime DLL search paths
+  set(SCI_PYTHON_DLL_PATH        "@SCI_PYTHON_DLL_PATH@")
+  set(SCI_PYTHON_DLL_DEBUG_PATH  "@SCI_PYTHON_DLL_DEBUG_PATH@")
+
   set(SCI_PYTHON_MODULE_PARENT_PATH "@SCI_PYTHON_MODULE_PARENT_PATH@")
   set(SCI_PYTHON_NAME "@SCI_PYTHON_NAME@")
+
+  # ---------------------------------------------------------------------------
+  # NEW: Canonical, configuration-safe Python library variable
+  #
+  # This must be used by all targets that link against Python on Windows.
+  # ---------------------------------------------------------------------------
+  set(SCI_PYTHON_LIBRARIES
+    "$<$<CONFIG:Debug>:${SCI_PYTHON_LIBRARY_DEBUG}>"
+    "$<$<NOT:$<CONFIG:Debug>>:${SCI_PYTHON_LIBRARY_RELEASE}>"
+  )
+
+else()
+  # ---------------------------------------------------------------------------
+  # Non-Windows platforms (Linux, macOS):
+  # Python has a single ABI, so a single library is correct.
+  # ---------------------------------------------------------------------------
+  set(SCI_PYTHON_LIBRARIES "${SCI_PYTHON_LIBRARY}")
 endif()
 
+
+# -----------------------------------------------------------------------------
+# macOS framework support
+# -----------------------------------------------------------------------------
 if(APPLE)
   set(SCI_PYTHON_FRAMEWORK "@SCI_PYTHON_FRAMEWORK@")
   set(SCI_PYTHON_FRAMEWORK_ARCHIVE "@SCI_PYTHON_FRAMEWORK_ARCHIVE@")
@@ -26,5 +65,14 @@ else()
   set(SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH "@SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH@")
 endif()
 
+
+# -----------------------------------------------------------------------------
+# Python module search path
+# -----------------------------------------------------------------------------
 set(PYTHON_MODULE_SEARCH_PATH "@PYTHON_MODULE_SEARCH_PATH@")
+
+
+# -----------------------------------------------------------------------------
+# Entry point for consumers
+# -----------------------------------------------------------------------------
 set(SCI_PYTHON_USE_FILE "@SCI_PYTHON_USE_FILE@")

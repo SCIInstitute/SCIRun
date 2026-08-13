@@ -44,7 +44,6 @@ TARGET_LINK_LIBRARIES(Core_Application_Session
   Core_Logging
   Algorithms_Base
   Core_DatabaseManager
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

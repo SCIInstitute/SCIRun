@@ -170,7 +170,7 @@ class SearchGridT
           for (index_type k = mink; k <= maxk; k++)
           {
             index_type q = linearize(i, j, k);
-            std::remove(bin_[q].begin(),bin_[q].end(),val);
+            bin_[q].erase(std::remove(bin_[q].begin(),bin_[q].end(),val),bin_[q].end());
           }
         }
       }
@@ -188,7 +188,7 @@ class SearchGridT
       index_type i, j, k;
       unsafe_locate(i, j, k, point);
       index_type q = linearize(i, j, k);
-      std::remove(bin_[q].begin(),bin_[q].end(),val);
+      bin_[q].erase(std::remove(bin_[q].begin(),bin_[q].end(),val),bin_[q].end());
     }
 
     inline bool lookup(iterator &begin, iterator &end, const Core::Geometry::Point &p)

@@ -50,7 +50,6 @@ TARGET_LINK_LIBRARIES(Core_Command
   Core_CommandLine
   Core_Utils
   Algorithms_Base
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

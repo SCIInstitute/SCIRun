@@ -160,8 +160,14 @@ public:
     core.addExemptComponent<spire::StaticFS>();
 
     // Setup default camera projection.
+    // Use the actual screen dimensions already stored in StaticScreenDims
+    // (set by SRInterface::setupCore / eventResize) so the initial aspect
+    // ratio is correct even before the first resizeGL callback.
     gen::StaticCamera cam;
-    float aspect = static_cast<float>(800) / static_cast<float>(600);
+    const gen::StaticScreenDims* screenDims = core.getStaticComponent<gen::StaticScreenDims>();
+    const float aspect = (screenDims && screenDims->height > 0)
+      ? static_cast<float>(screenDims->width) / static_cast<float>(screenDims->height)
+      : static_cast<float>(800) / static_cast<float>(600);
 
     float perspFOVY = 0.59f;
     float perspZNear = 1.0f;

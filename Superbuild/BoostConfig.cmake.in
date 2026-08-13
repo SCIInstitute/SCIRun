@@ -1,6 +1,181 @@
-set(SCI_BOOST_INCLUDE "@SCI_BOOST_INCLUDE@")
- 
-# These are IMPORTED targets created by FooBarTargets.cmake
-set(SCI_BOOST_LIBRARY @SCI_BOOST_LIBRARY@)
-set(SCI_BOOST_LIBRARY_DIR "@SCI_BOOST_LIBRARY_DIR@")
-set(SCI_BOOST_USE_FILE "@SCI_BOOST_USE_FILE@")
+# ============================================================================
+# BoostConfig.cmake - template for SCIRun superbuild to generate a CMake config file for Boost
+# ============================================================================
+
+@PACKAGE_INIT@
+
+set(Boost_FOUND TRUE)
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+set(Boost_INCLUDE_DIRS "@SCI_BOOST_INCLUDE@")
+set(Boost_LIBRARY_DIR "@SCI_BOOST_LIBRARY_DIR@")
+
+# ---------------------------------------------------------------------------
+# Helper: define Boost imported library target (cross-platform)
+# ---------------------------------------------------------------------------
+function(_scirun_define_boost_target lib)
+  # If Boost already created the target, just ensure includes
+  if(TARGET Boost::${lib})
+    set_target_properties(Boost::${lib} PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
+    )
+    return()
+  endif()
+
+  # Boost.Atomic is header-only on macOS
+  if(APPLE AND lib STREQUAL "atomic")
+    add_library(Boost::atomic INTERFACE IMPORTED)
+    set_target_properties(Boost::atomic PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
+    )
+    return()
+  endif()
+
+  # Create imported library target
+  add_library(Boost::${lib} UNKNOWN IMPORTED)
+  set_target_properties(Boost::${lib} PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
+  )
+
+  # Boost.Python static macro (SCIRun convention)
+  if(lib MATCHES "^python")
+    set_target_properties(Boost::${lib} PROPERTIES
+      INTERFACE_COMPILE_DEFINITIONS BOOST_PYTHON_STATIC_LIB
+    )
+  endif()
+
+  # Detect architecture
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(_boost_arch "x64")
+  else()
+    set(_boost_arch "x32")
+  endif()
+
+  set(_release_lib "")
+  set(_debug_lib "")
+
+  # -------------------------------------------------------------------------
+  # Windows: SCIRun-built Boost uses tagged .lib names
+  # -------------------------------------------------------------------------
+  if(WIN32)
+    file(GLOB _all_candidates
+      "${Boost_LIBRARY_DIR}/libboost_${lib}-*.lib"
+    )
+
+    list(FILTER _all_candidates INCLUDE REGEX "-${_boost_arch}-")
+
+    if(NOT _all_candidates)
+      message(FATAL_ERROR
+        "Boost '${lib}' not found for architecture ${_boost_arch}\n"
+        "Directory: ${Boost_LIBRARY_DIR}"
+      )
+    endif()
+
+    # -----------------------------------------------------------------------
+    # ABI-aware Debug / Release selection (Boost 1.8+)
+    #
+    # Rules:
+    #   - Debug libraries contain '-g'
+    #   - Release libraries do NOT contain '-g'
+    #   - 'y' means Python enabled and may appear in BOTH
+    # -----------------------------------------------------------------------
+
+    # Debug candidates
+    set(_dbg_candidates "${_all_candidates}")
+    list(FILTER _dbg_candidates INCLUDE REGEX "-g")
+
+    if(_dbg_candidates)
+      list(GET _dbg_candidates 0 _debug_lib)
+    endif()
+
+    # Release candidates
+    set(_rel_candidates "${_all_candidates}")
+    list(FILTER _rel_candidates EXCLUDE REGEX "-g")
+
+    if(_rel_candidates)
+      list(GET _rel_candidates 0 _release_lib)
+    endif()
+
+  # -------------------------------------------------------------------------
+  # macOS / Linux
+  # -------------------------------------------------------------------------
+  else()
+    file(GLOB _all_candidates
+      "${Boost_LIBRARY_DIR}/libboost_${lib}.a"
+      "${Boost_LIBRARY_DIR}/libboost_${lib}-mt.a"
+      "${Boost_LIBRARY_DIR}/libboost_${lib}.dylib"
+      "${Boost_LIBRARY_DIR}/libboost_${lib}-mt.dylib"
+    )
+
+    if(NOT _all_candidates)
+      message(FATAL_ERROR
+        "Boost library '${lib}' could not be resolved.\n"
+        "Directory: ${Boost_LIBRARY_DIR}\n"
+        "Platform: ${CMAKE_SYSTEM_NAME}"
+      )
+    endif()
+
+    list(GET _all_candidates 0 _release_lib)
+    set(_debug_lib "${_release_lib}")
+  endif()
+
+  # -------------------------------------------------------------------------
+  # Fail fast if resolution failed
+  # -------------------------------------------------------------------------
+  if(NOT _release_lib OR NOT _debug_lib)
+    message(FATAL_ERROR
+      "Boost library '${lib}' could not be resolved for both configurations.\n"
+      "All candidates:\n  ${_all_candidates}"
+    )
+  endif()
+
+  set_target_properties(Boost::${lib} PROPERTIES
+    IMPORTED_CONFIGURATIONS "Release;Debug"
+    IMPORTED_LOCATION_RELEASE "${_release_lib}"
+    IMPORTED_LOCATION_DEBUG   "${_debug_lib}"
+  )
+endfunction()
+
+# ---------------------------------------------------------------------------
+# Core Boost components
+# ---------------------------------------------------------------------------
+_scirun_define_boost_target(atomic)
+_scirun_define_boost_target(chrono)
+_scirun_define_boost_target(date_time)
+_scirun_define_boost_target(filesystem)
+_scirun_define_boost_target(program_options)
+_scirun_define_boost_target(regex)
+_scirun_define_boost_target(serialization)
+_scirun_define_boost_target(thread)
+
+# ---------------------------------------------------------------------------
+# Boost.Python (optional)
+# ---------------------------------------------------------------------------
+if(@BUILD_WITH_PYTHON@)
+  _scirun_define_boost_target(python@SCI_PYTHON_VERSION_SHORT_WIN32@)
+endif()
+
+# ---------------------------------------------------------------------------
+# Compatibility variables
+# ---------------------------------------------------------------------------
+set(Boost_LIBRARIES
+  Boost::atomic
+  Boost::chrono
+  Boost::date_time
+  Boost::filesystem
+  Boost::program_options
+  Boost::regex
+  Boost::serialization
+  Boost::thread
+)
+
+add_library(Boost::headers INTERFACE IMPORTED)
+set_target_properties(Boost::headers PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIRS}"
+)
+
+if(@BUILD_WITH_PYTHON@)
+  list(APPEND Boost_LIBRARIES Boost::python@SCI_PYTHON_VERSION_SHORT_WIN32@)
+endif()

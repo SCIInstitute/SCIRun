@@ -38,6 +38,7 @@ SET(test_data_DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/download/SCIRunTestData")
 ExternalProject_Add(SCIRunTestData_external
   GIT_REPOSITORY ${test_data_GIT_URL}
   GIT_TAG ${test_data_GIT_TAG}
+  UPDATE_COMMAND ""
   SOURCE_DIR ${test_data_DIR}
   BUILD_COMMAND ""
   CONFIGURE_COMMAND ""

@@ -50,7 +50,6 @@ TARGET_LINK_LIBRARIES(Algorithms_DataIO
   Core_Datatypes_Mesh
   Algorithms_Base
   Core_Datatypes_Legacy_Field
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

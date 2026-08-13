@@ -74,6 +74,10 @@ namespace SCIRun
     public:
       static ColorMaps readColorMapXml(const std::string& filename);
       static Core::Datatypes::ColorMapHandle createColorMapFromXmlData(const ColorMap& cmXml);
+      // Write counterparts: serialize back to the strict schema readColorMapXml consumes,
+      // so files written here round-trip through the reader.
+      static ColorMap createXmlDataFromColorMap(const Core::Datatypes::ColorMap& cm);
+      static bool writeColorMapXml(const std::string& filename, const ColorMaps& colorMaps);
     };
   }
 }

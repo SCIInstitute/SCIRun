@@ -56,5 +56,4 @@ TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
   gtest_main
   gtest
   gmock
-  ${SCI_BOOST_LIBRARY}
 )

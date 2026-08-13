@@ -65,7 +65,9 @@ SCIRUN_ADD_LIBRARY(Core_Math
 )
 
 TARGET_LINK_LIBRARIES(Core_Math
-  Core_Exceptions_Legacy
+  PUBLIC
+    Boost::headers
+    Core_Exceptions_Legacy
 )
 
 IF(BUILD_SHARED_LIBS)

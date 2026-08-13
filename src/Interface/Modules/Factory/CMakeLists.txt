@@ -43,7 +43,6 @@ IF(GENERATE_MODULE_FACTORY_CODE)
   ADD_EXECUTABLE(MakeDialogFactory Generator/MakeDialogFactory.h Generator/MakeDialogFactory.cc)
   TARGET_LINK_LIBRARIES(MakeDialogFactory
     Modules_Factory_Generator
-    ${SCI_BOOST_LIBRARY}
   )
   SET_PROPERTY(TARGET MakeDialogFactory PROPERTY FOLDER "Interface")
 
@@ -88,7 +87,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_Teem
   Interface_Modules_Visualization
   Interface_Modules_Python
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 

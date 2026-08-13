@@ -60,7 +60,6 @@ TARGET_LINK_LIBRARIES(Core_Util_Legacy
   Core_Exceptions_Legacy
   Core_Thread
   Core_Utils
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

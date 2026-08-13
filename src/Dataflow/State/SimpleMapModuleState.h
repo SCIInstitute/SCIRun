@@ -31,6 +31,7 @@
 #define DATAFLOW_STATE_SIMPLEMAPMODULESTATE_H
 
 #include <map>
+#include <mutex>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/State/share.h>
 
@@ -64,6 +65,7 @@ namespace State {
     StateMap stateMap_;
     typedef std::map<std::string, TransientValue> TransientStateMap;
     TransientStateMap transientStateMap_;
+    mutable std::mutex transientMutex_;
     state_changed_sig_t stateChangedSignal_;
     provenance_state_changed_sig_t provenanceStateChangedSignal_;
     std::map<Name, state_changed_sig_t> specificStateChangeSignalMap_;

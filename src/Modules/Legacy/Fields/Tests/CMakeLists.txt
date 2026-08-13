@@ -1,21 +1,21 @@
+#
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -23,23 +23,33 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+#
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+# The only test here drives the TetGen-backed InterfaceWithTetGen module, so it
+# is meaningful only when the library is actually linked in.
+IF(WITH_TETGEN)
+  SET(Modules_Legacy_Fields_Tests_SRCS
+    InterfaceWithTetGenTests.cc
+  )
 
-SET(data_GIT_URL "https://github.com/CIBC-Internal/Seg3DData.git")
-# master should be always be publicly released version
-SET(data_GIT_TAG "origin/master")
+  SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Fields_Tests
+    ${Modules_Legacy_Fields_Tests_SRCS}
+  )
 
-SET(data_DIR "${SEG3D_BINARY_DIR}/Seg3DData")
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields_Tests
+    Modules_Legacy_Fields
+    Modules_Factory
+    Core_Datatypes
+    Dataflow_Network
+    Dataflow_State
+    Testing_Utils
+    Testing_ModuleTestBase
+    gtest_main
+    gtest
+    gmock
+  )
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
-ExternalProject_Add(Data_external
-  GIT_REPOSITORY ${data_GIT_URL}
-  GIT_TAG ${data_GIT_TAG}
-  SOURCE_DIR ${data_DIR}
-  BUILD_COMMAND ""
-  CONFIGURE_COMMAND ""
-  PATCH_COMMAND ""
-  INSTALL_COMMAND ""
-)
+  # InterfaceWithTetGenImpl.h (InterfaceWithTetGenInput) is only compiled behind
+  # this flag; match it so the test sees the same declarations.
+  TARGET_COMPILE_DEFINITIONS(Modules_Legacy_Fields_Tests PRIVATE WITH_TETGEN)
+ENDIF()

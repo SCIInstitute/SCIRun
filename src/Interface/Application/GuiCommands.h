@@ -108,6 +108,10 @@ namespace Gui {
     Dataflow::Networks::NetworkFileHandle file_;
   protected:
     virtual Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) = 0;
+    // When true, a failure in regression mode terminates the process with a
+    // non-zero code so the regression test fails (rather than silently passing).
+    // Import overrides this; regular open does not.
+    virtual bool failTestOnError() const { return false; }
     int guiProcess(const Dataflow::Networks::NetworkFileHandle& file);
     NetworkEditor* networkEditor_;
   };
@@ -127,6 +131,7 @@ namespace Gui {
     std::string logContents() const { return logContents_.str(); }
   protected:
     Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
+    bool failTestOnError() const override { return true; }
     std::ostringstream logContents_;
   };
 

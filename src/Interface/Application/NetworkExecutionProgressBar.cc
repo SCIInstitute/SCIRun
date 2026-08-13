@@ -155,8 +155,12 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
     //qDebug() << "done modules: green" << status_->finished() << "red" << status_->errored();
     auto finished = status_->finished();
     auto errored = status_->errored();
+    auto totalDone = finished + errored;
 
-    auto fracFinished = (static_cast<double>(finished) / (finished + errored)) * pos;
+    auto fracFinished = 0.0;
+    
+    if (totalDone > 0)
+      fracFinished = (static_cast<double>(finished) / totalDone) * pos;
 
     p.setPen(Qt::green);
     p.setBrush(QBrush(Qt::green));

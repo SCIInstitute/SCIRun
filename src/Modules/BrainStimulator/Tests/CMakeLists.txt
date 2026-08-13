@@ -31,7 +31,7 @@ SET(Modules_BrainStimulator_Tests_SRCS
   SetConductivitiesToTetMeshTests.cc
   GenerateROIStatisticsTests.cc
   SimulateForwardMagneticFieldTests.cc
-  SetupRHSforTDCSandTMSTests
+  SetupRHSforTDCSandTMSTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_BrainStimulator_Tests

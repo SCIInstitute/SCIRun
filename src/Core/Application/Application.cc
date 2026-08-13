@@ -85,13 +85,20 @@ Application::Application() :
   //std::cout << "exec path set to: " << private_->app_filepath_ << std::endl;
   auto configDir = configDirectory();
   LogSettings::Instance().setLogDirectory(configDir);
-  SessionManager::Instance().initialize(configDir);
-  SessionManager::Instance().session()->beginSession();
+  // Session initialization is deferred to readCommandLine(): it needs to know
+  // whether we are in regression mode, which isn't known until the command
+  // line is parsed. The session trace DB writes to a fixed path in the config
+  // directory, so initializing it for every regression-test process causes
+  // concurrent SQLite corruption (and SIGBUS from mmap) when tests run in
+  // parallel. See readCommandLine().
 }
 
 Application::~Application()
 {
-  SessionManager::Instance().session()->endSession();
+  // session() can be null in regression mode, where session tracking is never
+  // initialized (see readCommandLine). Guard before use.
+  if (auto session = SessionManager::Instance().session())
+    session->endSession();
 }
 
 void Application::shutdown()
@@ -153,6 +160,18 @@ void Application::readCommandLine(int argc, const char* argv[])
   }
 
   private_->parameters_ = private_->parser.parse(argc, argv);
+
+  // Initialize the session trace now that we know whether this is a regression
+  // run. Skip it entirely in regression mode: the trace DB/text backends write
+  // to a fixed shared path, which corrupts (and can SIGBUS via SQLite mmap)
+  // when many test processes run concurrently. The session left as a
+  // NullSession is harmless. Normal interactive runs keep full session tracking.
+  if (!private_->parameters_->isRegressionMode())
+  {
+    auto configDir = configDirectory();
+    SessionManager::Instance().initialize(configDir);
+    SessionManager::Instance().session()->beginSession();
+  }
 
   //TODO: move this special logic somewhere else
   {

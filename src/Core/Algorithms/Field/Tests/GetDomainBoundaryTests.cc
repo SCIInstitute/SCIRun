@@ -146,7 +146,6 @@ TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
   EXPECT_FALSE(algo.runImpl(input, elemLink, output));
 }
 
-#if GTEST_HAS_COMBINE
 
 /*Get Parameterized Tests
 */
@@ -209,7 +208,3 @@ INSTANTIATE_TEST_CASE_P(
   GetDomainBoundaryTestsParameterized,
   Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4))
   );
-#else
-TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-
-#endif

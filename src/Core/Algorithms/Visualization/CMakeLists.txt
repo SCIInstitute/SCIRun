@@ -44,7 +44,6 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes_Legacy_Field
   Graphics_Glyphs
   Algorithms_Base
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(WITH_OSPRAY)

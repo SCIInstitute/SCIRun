@@ -99,7 +99,8 @@ namespace SCIRun::Modules::Basic
         }
 
         module_->sendOutput(module_->OutputData, data);
-        module_->enqueueExecuteAgain(false);
+        if (module_->hasData() || !stream().empty())
+          module_->enqueueExecuteAgain(false);
       }
       else
         module_->shutdownStream();

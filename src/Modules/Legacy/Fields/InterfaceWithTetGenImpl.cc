@@ -47,6 +47,8 @@
 #include <tetgen.h>
 
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include <sci_debug.h>
 
@@ -323,9 +325,23 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
       Guard g(TetGenMutex.get());
       try
       {
-        tetrahedralize(const_cast<char*>(cmmd_ln.c_str()), &in, &out, addtgio);
+        // --- TetGen 1.6+ behavior-based API ---
+        tetgenbehavior b;
+
+        // parse_commandline expects a mutable C string; copy cmmd_ln.
+        std::string opts = cmmd_ln;                 // cmmd_ln is your existing switches string
+        std::vector<char> buf(opts.begin(), opts.end());
+        buf.push_back('\0');                        // NUL-terminate
+
+        b.parse_commandline(buf.data());
+
+        // Map old call:
+        //   tetrahedralize(char* switches, &in, &out, addtgio);
+        // to new signature:
+        //   tetrahedralize(tetgenbehavior*, &in, &out, addin, bgmmesh);
+        tetrahedralize(&b, &in, &out, addtgio, nullptr);
       }
-      catch(std::exception& e)
+      catch (std::exception& e)
       {
         module_->error(std::string("TetGen failed to generate a mesh: ") + e.what());
         return nullptr;

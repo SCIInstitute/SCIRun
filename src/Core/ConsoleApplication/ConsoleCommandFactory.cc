@@ -54,6 +54,8 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
     return makeShared<PrintVersionCommand>();
   case GlobalCommands::LoadNetworkFile:
     return makeShared<LoadFileCommandConsole>();
+  case GlobalCommands::ImportNetworkFile:
+    return makeShared<ImportFileCommandConsole>();
   case GlobalCommands::PrintModules:
     return makeShared<PrintModulesCommand>();
   case GlobalCommands::SaveNetworkFile:

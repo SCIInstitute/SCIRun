@@ -28,6 +28,8 @@
 
 #include <gtest/gtest.h>
 
+/// @todo: this won't link in debug mode due to Logging::Instance impl
+#if NDEBUG
 #include <Core/Logging/Log.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -198,3 +200,4 @@ void err_handler_example()
 	});
 	// (or logger->set_error_handler(..) to set for specific logger)
 }
+#endif

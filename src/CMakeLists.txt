@@ -72,11 +72,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_P
 
 # Make a version file containing the current version from git.
 include(GetGitRevisionDescription)
-git_describe(VERSION_TAG --tag)
+# Match only release tags (v*). CI moves a rolling `nightly` tag
+# (.github/workflows/publish-release.yml), which would otherwise win here and
+# make the GUI, splash screen and CPack version report "nightly" instead of the
+# last release.
+git_describe(VERSION_TAG --tags --match "v*")
 git_describe(VERSION_BRANCH --all)
 get_git_head_revision(VERSION_REFSPEC VERSION_HASHVAR)
 
-IF(VERSION_TAG MATCHES "HEAD-HASH-NOTFOUND")
+# Covers both no-git (source zip: "HEAD-HASH-NOTFOUND") and a shallow clone with
+# no release tag reachable ("-128-NOTFOUND").
+IF(VERSION_TAG MATCHES "NOTFOUND")
   FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/LATEST_TAG.txt VERSION_TAG)
   STRING(STRIP ${VERSION_TAG} VERSION_TAG)
   MESSAGE(STATUS "Found tag file for version info: " "${VERSION_TAG}")
@@ -183,7 +189,7 @@ IF(BUILD_TESTING)
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
   ENDIF()
 
-  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
+  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DTEST_SOURCE_ROOT_DIR="${SCIRun_SOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
 #########################################################################
@@ -228,8 +234,68 @@ IF(BUILD_WITH_PYTHON)
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
 
-CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
-INCLUDE(${SCI_BOOST_USE_FILE})
+# Disable Boost MSVC auto-linking globally
+# (prevents Boost headers from injecting -gd / -mt / etc. library names)
+add_compile_definitions(
+  BOOST_ALL_NO_LIB
+  BOOST_FILESYSTEM_NO_LIB
+  BOOST_SYSTEM_NO_LIB
+)
+set(_scirun_boost_components
+  atomic
+  chrono
+  filesystem
+  program_options
+  regex
+  serialization
+  thread
+)
+
+if(BUILD_WITH_PYTHON)
+  list(APPEND _scirun_boost_components
+       python${SCI_PYTHON_VERSION_SHORT_WIN32})
+endif()
+
+find_package(Boost CONFIG REQUIRED COMPONENTS
+  ${_scirun_boost_components}
+)
+
+# ---------------------------------------------------------------------------
+# Ensure BOOST_ALL_NO_LIB propagates to EVERY consumer of Boost
+# by attaching it to the imported Boost targets as INTERFACE
+# ---------------------------------------------------------------------------
+foreach(_boost_comp ${_scirun_boost_components})
+  if(TARGET Boost::${_boost_comp})
+    target_compile_definitions(Boost::${_boost_comp}
+      INTERFACE BOOST_ALL_NO_LIB
+    )
+  endif()
+endforeach()
+
+if(TARGET Boost::filesystem)
+  target_compile_definitions(Boost::filesystem
+    INTERFACE
+      BOOST_FILESYSTEM_NO_LIB
+      BOOST_SYSTEM_NO_LIB
+      BOOST_FILESYSTEM_STATIC_LINK
+  )
+endif()
+
+# ---------------------------------------------------------------------------
+# Diagnostics
+# ---------------------------------------------------------------------------
+get_property(_allTargets GLOBAL PROPERTY TARGETS)
+
+message(STATUS "==== Boost-related targets ====")
+foreach(t ${_allTargets})
+  if(t MATCHES "^Boost::")
+    message(STATUS "  ${t}")
+  endif()
+endforeach()
+
+message(STATUS "Boost_FOUND = ${Boost_FOUND}")
+message(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 CONFIG_STANDARD_EXTERNAL( Tny TnyConfig.cmake ${TNY_DIR} )
 INCLUDE(${TNY_USE_FILE})
@@ -253,8 +319,10 @@ IF(WIN32)
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
-  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
-  INCLUDE(${QWT_USE_FILE})
+# QWT variables come directly from superbuild
+  set(SCI_QWT_INCLUDE "${QWT_INCLUDE}")
+  set(SCI_QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}")
+  set(SCI_QWT_LIBRARY     "${QWT_LIBRARY}")
 ENDIF()
 
 ########################################################################
@@ -511,7 +579,7 @@ INCLUDE_DIRECTORIES(
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
+#INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
@@ -524,7 +592,6 @@ MACRO(SCIRUN_ADD_UNIT_TEST test)
   ADD_EXECUTABLE(${test} ${ARGN})
   LIST(APPEND tmp ${test} ${UNIT_TEST_LIST})
   SET(UNIT_TEST_LIST ${tmp} CACHE INTERNAL "List of unit tests." FORCE)
-  TARGET_COMPILE_DEFINITIONS(${test} PRIVATE -DGTEST_LINKED_AS_SHARED_LIBRARY)
 ENDMACRO()
 
 MACRO(SCIRUN_ADD_TEST_DIR directory)
@@ -566,6 +633,44 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SCIRun_BINARY_DIR} CACHE INTERNAL "Single 
 MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 SET(BUILD_FROM_TOP_LEVEL 1)
+
+########################################################################
+# Coverage instrumentation.
+#
+# Must precede the ADD_SUBDIRECTORY calls below: CMAKE_CXX_FLAGS is captured by
+# each subdirectory as it is added, so setting it further down the file compiles
+# and links every SCIRun target without instrumentation while still printing the
+# "enabled" message. That produced zero .profraw files and an empty nightly
+# coverage artifact.
+
+OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
+MARK_AS_ADVANCED(ENABLE_GCOV_DATA_FILES)
+
+IF(ENABLE_GCOV_DATA_FILES)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF()
+
+# Clang source-based coverage (recommended on macOS / any Clang toolchain).
+# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
+# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
+# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
+# above, the instrumentation flags must also be applied at link time so the
+# profile runtime is linked into every shared library.
+OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
+IF(ENABLE_COVERAGE)
+  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
+  ENDIF()
+  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
+ENDIF()
+
+########################################################################
 
 ADD_SUBDIRECTORY(Externals)
 IF(NOT BUILD_HEADLESS)
@@ -759,7 +864,7 @@ SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
-SET_PROPERTY(TARGET spire   PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET ${SCI_SPIRE_LIBRARY}   PROPERTY FOLDER "Graphics")
 
 SET_PROPERTY(TARGET pugixml   PROPERTY FOLDER "Externals")
 
@@ -900,7 +1005,15 @@ SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${APPLICATION_NAME}_${SCIRUN_VERSION_MAJOR}
 
 # other platform settings will be built up from here
 IF(APPLE)
-  SET(CPACK_GENERATOR "productbuild;TGZ")
+  # Each generator runs its own preinstall pass, which on macOS re-runs the ~7.5 min
+  # macdeployqt bundle chain. Nothing consumed the tarball. See #2664.
+  OPTION(SCIRUN_PACKAGE_TGZ "Also build a .tar.gz alongside the macOS installer" OFF)
+  MARK_AS_ADVANCED(SCIRUN_PACKAGE_TGZ)
+  IF(SCIRUN_PACKAGE_TGZ)
+    SET(CPACK_GENERATOR "productbuild;TGZ")
+  ELSE()
+    SET(CPACK_GENERATOR "productbuild")
+  ENDIF()
   SET(CPACK_TOPLEVEL_TAG "")
   IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
@@ -966,13 +1079,5 @@ ENDIF()
 
 INCLUDE(CPack)
 
-########################################################################
-#GCov
-
-OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
-MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
-
-IF(ENABLE_GCOV_DATA_FILES)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-ENDIF()
+# Coverage options moved above the ADD_SUBDIRECTORY calls -- they had no effect
+# down here. See the "Coverage instrumentation" block there.

@@ -56,7 +56,6 @@ TARGET_LINK_LIBRARIES(Algorithms_Legacy_Inverse
   Core_Basis #field basis
   Core_Algorithms_Legacy_Fields
   Algorithms_Base
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

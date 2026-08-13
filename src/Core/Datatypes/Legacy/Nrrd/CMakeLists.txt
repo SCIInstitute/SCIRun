@@ -51,7 +51,6 @@ TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Nrrd
   Core_Util_Legacy
   Core_Datatypes
   Core_Datatypes_Legacy_Base
-  ${SCI_BOOST_LIBRARY}
   ${SCI_TEEM_LIBRARY}
 )
 

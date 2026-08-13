@@ -45,7 +45,6 @@ TARGET_LINK_LIBRARIES(Algorithms_Describe
   Core_Datatypes_Legacy_Field
   Algorithms_Field
   Algorithms_Math
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

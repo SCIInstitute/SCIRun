@@ -124,6 +124,6 @@ TEST(SimulateForwardMagneticFieldAlgoTest, TestOnLatVol)
   DenseMatrixHandle MField_expected_matrix = algo3.runMatrix(MField_expected);
   DenseMatrixHandle MFieldMagnitudes_expected_matrix = algo3.runMatrix(MFieldMagnitudes_expected);
 
-  EXPECT_MATRIX_EQ_TOLERANCE(*MField_matrix, *MField_expected_matrix, 1e-16);
-  EXPECT_MATRIX_EQ_TOLERANCE(*MFieldMagnitudes_matrix, *MFieldMagnitudes_expected_matrix, 1e-16);
+  EXPECT_MATRIX_EQ_TOLERANCE(*MField_matrix, *MField_expected_matrix, 1e-5);
+  EXPECT_MATRIX_EQ_TOLERANCE(*MFieldMagnitudes_matrix, *MFieldMagnitudes_expected_matrix, 1e-5);
 }

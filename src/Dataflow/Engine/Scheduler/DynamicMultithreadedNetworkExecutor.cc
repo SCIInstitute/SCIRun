@@ -71,7 +71,7 @@ namespace SCIRun {
         {
           Guard g(executionLock_->get());
 
-          ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_->errorCode(); });
+          ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_ ? lookup_->errorCode() : 0; });
 
           waitForStartupInit(*network_);
 
@@ -81,7 +81,7 @@ namespace SCIRun {
           produce.join();
           executeThreads_->joinAll();
 
-          return lookup_->errorCode();
+          return lookup_ ? lookup_->errorCode() : 0;
         }
 
       private:

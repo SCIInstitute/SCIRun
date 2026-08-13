@@ -46,16 +46,10 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   connect(errorGraphicItemsCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleErrorInlineMessagesOption);
   connect(highDPIAdjustCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateHighDPIAdjust);
   connect(forceGridBackgroundCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateForceGridBackground);
-  connect(viewerWidgetSelectionCorrectionCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateWidgetSelectionCorrection);
   connect(autoRotateViewerOnMouseReleaseCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateAutoRotateViewer);
   connect(moduleExecuteDownstreamOnlyCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleExecuteDownstream);
   connect(toolBarPopupShowDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupShowDelay);
   connect(toolBarPopupHideDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupHideDelay);
-}
-
-void PreferencesWindow::updateWidgetSelectionCorrection(int state)
-{
-  SCIRun::Core::Preferences::Instance().widgetSelectionCorrection.setValue(state != 0);
 }
 
 void PreferencesWindow::updateToolBarPopupShowDelay(int delay)
@@ -131,12 +125,6 @@ void PreferencesWindow::setToolBarPopupShowDelay(int delay)
 void PreferencesWindow::setToolBarPopupHideDelay(int delay)
 {
   updateToolBarPopupHideDelay(delay);
-}
-
-void PreferencesWindow::setWidgetSelectionCorrection(bool mode)
-{
-  updateWidgetSelectionCorrection(mode ? 1 : 0);
-  viewerWidgetSelectionCorrectionCheckbox_->setChecked(mode);
 }
 
 void PreferencesWindow::setHighDPIAdjustment(bool highDPI)

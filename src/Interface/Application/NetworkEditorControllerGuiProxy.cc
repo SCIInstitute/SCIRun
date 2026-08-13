@@ -143,7 +143,10 @@ size_t NetworkEditorControllerGuiProxy::numModules() const
 
 int NetworkEditorControllerGuiProxy::errorCode() const
 {
-  return controller_->getNetwork()->errorCode();
+  if (!controller_) return 0;
+  auto network = controller_->getNetwork();
+  if (!network) return 0;
+  return network->errorCode();
 }
 
 NetworkGlobalSettings& NetworkEditorControllerGuiProxy::getSettings()

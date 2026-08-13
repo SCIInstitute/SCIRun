@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCIRun Module Subclasses — Summary</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background: #f4f6fb;
+    }
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+      color: #fff;
+      padding: 40px 48px 32px;
+    }
+    header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+    header p { margin-top: 8px; color: #a0b0c8; font-size: 13px; }
+    .badge {
+      display: inline-block;
+      background: #e94560;
+      color: #fff;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    nav {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 48px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #4a5568;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.15s;
+    }
+    nav a:hover { background: #0f3460; color: #fff; border-color: #0f3460; }
+    main { max-width: 1200px; margin: 0 auto; padding: 32px 48px 64px; }
+    .arch-note {
+      background: #fff;
+      border-left: 4px solid #0f3460;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 36px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .arch-note h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #0f3460; margin-bottom: 8px; }
+    .arch-note ul { padding-left: 18px; color: #4a5568; }
+    .arch-note li { margin-bottom: 4px; }
+    section { margin-bottom: 48px; }
+    section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f3460;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section h2 .icon { font-size: 20px; }
+    .count { font-size: 11px; font-weight: 600; background: #e8edf7; color: #0f3460; border-radius: 10px; padding: 2px 8px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    }
+    thead tr { background: #0f3460; color: #fff; }
+    thead th { padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; }
+    tbody tr { border-bottom: 1px solid #f0f4f8; transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f7f9ff; }
+    td { padding: 9px 14px; vertical-align: top; }
+    td:first-child {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 12px;
+      color: #c53030;
+      white-space: nowrap;
+      width: 28%;
+    }
+    td:nth-child(2) { color: #718096; font-size: 12px; width: 24%; }
+    td:last-child { color: #2d3748; }
+    .file { font-size: 11px; color: #a0aec0; font-style: italic; }
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #a0aec0;
+      font-size: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>SCIRun Module Subclasses <span class="badge">~250 classes</span></h1>
+  <p>All classes inheriting from <code>SCIRun::Dataflow::Networks::Module</code> — generated from source analysis of the <strong>refactor</strong> branch &nbsp;·&nbsp; 2026-05-29</p>
+</header>
+
+<nav>
+  <a href="#framework">Framework / Core</a>
+  <a href="#visualization">Visualization</a>
+  <a href="#render">Rendering</a>
+  <a href="#math-modern">Math (Modern)</a>
+  <a href="#math-legacy">Math (Legacy)</a>
+  <a href="#inverse">Inverse Problem</a>
+  <a href="#fields-modern">Fields (Modern)</a>
+  <a href="#fields-legacy">Fields (Legacy)</a>
+  <a href="#bundle">Bundle</a>
+  <a href="#dataio">Data I/O</a>
+  <a href="#fem">Finite Elements</a>
+  <a href="#forward">Forward Problem</a>
+  <a href="#brain">Brain Stimulation</a>
+  <a href="#python">Python</a>
+  <a href="#string">String</a>
+  <a href="#converters">Converters</a>
+  <a href="#basic">Basic / Testing</a>
+  <a href="#legacyviz">Legacy Visualization</a>
+  <a href="#teem">Teem / NRRD</a>
+  <a href="#matlab">Matlab</a>
+  <a href="#examples">Examples</a>
+  <a href="#patterns">Architecture Patterns</a>
+</nav>
+
+<main>
+
+  <div class="arch-note">
+    <h2>Overview</h2>
+    <ul>
+      <li>Every processing node in a SCIRun dataflow network is a concrete <strong>Module</strong> subclass.</li>
+      <li>Ports are declared statically via <code>HasNInputPorts&lt;Tag…&gt;</code> / <code>HasNOutputPorts&lt;Tag…&gt;</code> mix-ins using a typed tag system.</li>
+      <li>Subclasses implement <code>execute()</code> for compute and <code>setStateDefaults()</code> for UI parameter defaults.</li>
+      <li>Heavy computation is usually delegated to a separate <em>Algo</em> or <em>Impl</em> class, keeping the module thin.</li>
+      <li>Two important abstract intermediate bases exist: <strong>GeometryGeneratingModule</strong> (adds render-buffer integration) and <strong>ModuleWithAsyncDynamicPorts</strong> (processes inputs as they arrive).</li>
+    </ul>
+  </div>
+
+  <!-- ── FRAMEWORK ── -->
+  <section id="framework">
+    <h2><span class="icon">🏗</span> Framework / Core <span class="count">5</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>DummyModule</td><td class="file">Dataflow/Network/Module.cc</td><td>No-op placeholder used internally during testing and network loading.</td></tr>
+        <tr><td>GeometryGeneratingModule</td><td class="file">Dataflow/Network/GeometryGeneratingModule.h</td><td>Abstract intermediate base for any module that produces geometry for rendering. Adds render-buffer integration and a <code>GeometryPortTag</code> output.</td></tr>
+        <tr><td>ModuleWithAsyncDynamicPorts</td><td class="file">Dataflow/Network/ (framework)</td><td>Abstract base for modules that process inputs asynchronously as they arrive. Used by ViewScene, OsprayViewer, and GeometryBuffer.</td></tr>
+        <tr><td>SubnetModule</td><td class="file">Interface/Application/Subnetworks.h</td><td>Wraps an entire sub-network as a single opaque module node in a parent network.</td></tr>
+        <tr><td>PlaceholderModule</td><td class="file">Modules/Basic/PlaceholderModule.h</td><td>Stand-in for an unrecognized or removed module when loading old network files. Has no ports and does nothing.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── VISUALIZATION ── -->
+  <section id="visualization">
+    <h2><span class="icon">🎨</span> Visualization <span class="count">14</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ShowField</td><td class="file">Modules/Visualization/ShowField.h</td><td>Primary field-rendering module. Renders a scalar/vector/tensor field as colored surfaces, edges, or nodes. Inputs: Field + optional ColorMap; output: Geometry.</td></tr>
+        <tr><td>ShowFieldGlyphs</td><td class="file">Modules/Visualization/ShowFieldGlyphs.h</td><td>Renders vector or tensor fields as 3D glyphs (arrows, ellipsoids, superquadrics). Accepts up to 3 field+colormap pairs simultaneously.</td></tr>
+        <tr><td>ShowUncertaintyGlyphs</td><td class="file">Modules/Visualization/ShowUncertaintyGlyphs.h</td><td>Renders glyphs sized/shaped by tensor uncertainty data. Inputs: field + matrix.</td></tr>
+        <tr><td>ShowColorMap</td><td class="file">Modules/Visualization/ShowColorMapModule.h</td><td>Renders a color legend/scale bar in the viewer for a given ColorMap.</td></tr>
+        <tr><td>RescaleColorMap</td><td class="file">Modules/Visualization/RescaleColorMap.h</td><td>Re-maps a ColorMap's value range to fit the actual data range of one or more input Fields.</td></tr>
+        <tr><td>ReportColorMapInfo</td><td class="file">Modules/Visualization/ReportColorMapInfo.h</td><td>Reports metadata (range, resolution, etc.) about a ColorMap to scalar output ports.</td></tr>
+        <tr><td>CreateStandardColorMap</td><td class="file">Modules/Visualization/CreateStandardColorMap.h</td><td>Generates a built-in named color map (rainbow, grayscale, etc.) from user parameters.</td></tr>
+        <tr><td>ShowString</td><td class="file">Modules/Visualization/ShowString.h</td><td>Renders a text string as a 2D geometry overlay in the viewer.</td></tr>
+        <tr><td>ShowMeshBoundingBox</td><td class="file">Modules/Visualization/ShowMeshBoundingBox.h</td><td>Visualizes the axis-aligned bounding box of a field's mesh.</td></tr>
+        <tr><td>ShowOrientationAxes</td><td class="file">Modules/Visualization/ShowOrientationAxes.h</td><td>Renders orientation/coordinate-axis arrows derived from a field's bounding box.</td></tr>
+        <tr><td>GeometryBuffer</td><td class="file">Modules/Visualization/GeometryBuffer.h</td><td>Collects incoming geometry objects asynchronously and distributes them across up to 8 output ports. Useful for large networks with many geometry producers.</td></tr>
+        <tr><td>MeshConstruction</td><td class="file">Modules/Visualization/MeshConstruction.h</td><td>Helper that constructs renderable mesh geometry from a field.</td></tr>
+        <tr><td>ShowFieldWithOspray</td><td class="file">Modules/Visualization/ShowFieldWithOspray.h</td><td>Sends field data to the OSPRay path-tracer instead of the standard OpenGL renderer.</td></tr>
+        <tr><td>CreateTestingArrow</td><td class="file">Modules/Visualization/CreateTestingArrow.h</td><td>Generates a simple arrow geometry for testing/debugging the render pipeline.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── RENDERING ── -->
+  <section id="render">
+    <h2><span class="icon">🖥</span> Rendering <span class="count">2</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ViewScene</td><td class="file">Modules/Render/ViewScene.h</td><td>The primary interactive 3D OpenGL viewer. Accepts geometry asynchronously via a dynamic port; outputs camera position and orientation as matrices. The main interactive window module.</td></tr>
+        <tr><td>OsprayViewer</td><td class="file">Modules/Render/OsprayViewer.h</td><td>Photo-realistic path-traced viewer using Intel OSPRay. Accepts OSPRay-specific geometry objects asynchronously; no output ports.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── MATH MODERN ── -->
+  <section id="math-modern">
+    <h2><span class="icon">∑</span> Math — Modern <span class="count">21</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>SolveLinearSystem</td><td class="file">Modules/Math/SolveLinearSystem.h</td><td>Solves <strong>Ax = b</strong> using iterative solvers (CG, BiCG, MINRES, etc.). Inputs: matrix A and RHS b; output: solution x.</td></tr>
+        <tr><td>SolveComplexLinearSystem</td><td class="file">Modules/Math/SolveComplexLinearSystem.h</td><td>Same as SolveLinearSystem but for complex-valued matrices.</td></tr>
+        <tr><td>EvaluateLinearAlgebraUnary</td><td class="file">Modules/Math/EvaluateLinearAlgebraUnary.h</td><td>Applies a user-selected unary operation (transpose, invert, negate, normalize, etc.) to one matrix.</td></tr>
+        <tr><td>EvaluateLinearAlgebraBinary</td><td class="file">Modules/Math/EvaluateLinearAlgebraBinary.h</td><td>Applies a binary operation (add, multiply, subtract, etc.) to two matrices.</td></tr>
+        <tr><td>AppendMatrix</td><td class="file">Modules/Math/AppendMatrix.h</td><td>Concatenates matrices by appending rows or columns. Supports a dynamic number of input matrices.</td></tr>
+        <tr><td>CreateMatrix</td><td class="file">Modules/Math/CreateMatrix.h</td><td>Creates a matrix from values entered by the user in a text-editor UI. No input ports.</td></tr>
+        <tr><td>CreateStandardMatrix</td><td class="file">Modules/Math/CreateStandardMatrix.h</td><td>Creates common named matrices (identity, zeros, ones, random) at a specified size.</td></tr>
+        <tr><td>CreateComplexMatrix</td><td class="file">Modules/Math/CreateComplexMatrix.h</td><td>Creates a complex-valued matrix from two real matrices (real and imaginary parts).</td></tr>
+        <tr><td>GetMatrixSlice</td><td class="file">Modules/Math/GetMatrixSlice.h</td><td>Extracts a single row or column from a matrix. Can be driven by a scalar index port for iteration.</td></tr>
+        <tr><td>GetSubmatrix</td><td class="file">Modules/Math/GetSubmatrix.h</td><td>Extracts a rectangular block from a matrix by specifying row and column ranges.</td></tr>
+        <tr><td>ResizeMatrix</td><td class="file">Modules/Math/ResizeMatrix.h</td><td>Resizes a matrix to specified dimensions by padding with zeros or truncating.</td></tr>
+        <tr><td>ReportMatrixInfo</td><td class="file">Modules/Math/ReportMatrixInfo.h</td><td>Reports a matrix's row count, column count, and Frobenius norm to scalar output ports.</td></tr>
+        <tr><td>ReportMatrixSliceMeasure</td><td class="file">Modules/Math/ReportMatrixSliceMeasure.h</td><td>Computes statistics (min, max, mean, etc.) over a row or column slice of a matrix.</td></tr>
+        <tr><td>ReportComplexMatrixInfo</td><td class="file">Modules/Math/ReportComplexMatrixInfo.h</td><td>Reports metadata for complex matrices (dimensions, norms of real and imaginary parts).</td></tr>
+        <tr><td>ComputePCA</td><td class="file">Modules/Math/ComputePCA.h</td><td>Principal Component Analysis: outputs eigenvalues, eigenvectors, and projected data as three separate matrices.</td></tr>
+        <tr><td>ComputeTensorUncertainty</td><td class="file">Modules/Math/ComputeTensorUncertainty.h</td><td>Computes uncertainty measures from an ensemble of tensor matrices.</td></tr>
+        <tr><td>ConvertMatrixToScalar</td><td class="file">Modules/Math/ConvertMatrixToScalar.h</td><td>Extracts a single scalar value from a 1×1 matrix.</td></tr>
+        <tr><td>ConvertScalarToMatrix</td><td class="file">Modules/Math/ConvertScalarToMatrix.h</td><td>Wraps a scalar value in a 1×1 matrix.</td></tr>
+        <tr><td>ConvertComplexToRealMatrix</td><td class="file">Modules/Math/ConvertComplexToRealMatrix.h</td><td>Splits a complex matrix into separate real and imaginary part matrices.</td></tr>
+        <tr><td>ConvertRealToComplexMatrix</td><td class="file">Modules/Math/ConvertRealToComplexMatrix.h</td><td>Combines two real matrices (real and imaginary parts) into one complex matrix.</td></tr>
+        <tr><td>DisplayHistogram</td><td class="file">Modules/Math/DisplayHistogram.h</td><td>Plots a histogram of a matrix's values in a UI window. No output ports.</td></tr>
+        <tr><td>BasicPlotter</td><td class="file">Modules/Math/BasicPlotter.h</td><td>Plots matrix data as a time-series or XY curve.</td></tr>
+        <tr><td>AdvancedPlotter</td><td class="file">Modules/Math/AdvancedPlotter.h</td><td>Extended version of BasicPlotter with additional display and overlay options.</td></tr>
+        <tr><td>BooleanCompare</td><td class="file">Modules/Math/BooleanCompare.h</td><td>Compares two scalars with a relational operator; outputs the boolean result as a scalar.</td></tr>
+        <tr><td>CreateGeometricTransform</td><td class="file">Modules/Math/CreateGeometricTransform.h</td><td>Builds a 4×4 transformation matrix (translate/rotate/scale) with an interactive 3D widget. Outputs both the matrix and a geometry object.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── MATH LEGACY ── -->
+  <section id="math-legacy">
+    <h2><span class="icon">∑</span> Math — Legacy <span class="count">11</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>AddKnownsToLinearSystem</td><td class="file">Modules/Legacy/Math/AddKnownsToLinearSystem.h</td><td>Applies boundary conditions to a linear system by inserting known values into A and b.</td></tr>
+        <tr><td>AddLinkedNodesToLinearSystem</td><td class="file">Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h</td><td>Couples pairs of mesh nodes together as equality constraints in a linear system.</td></tr>
+        <tr><td>BuildNoiseColumnMatrix</td><td class="file">Modules/Legacy/Math/BuildNoiseColumnMatrix.h</td><td>Constructs a random-noise column vector of specified length and amplitude.</td></tr>
+        <tr><td>CollectMatrices</td><td class="file">Modules/Legacy/Math/CollectMatrices.h</td><td>Accumulates matrices arriving across multiple sequential executions into one growing combined matrix.</td></tr>
+        <tr><td>ComputeSVD</td><td class="file">Modules/Legacy/Math/ComputeSVD.h</td><td>Singular Value Decomposition; outputs U, Σ (as diagonal matrix), and V.</td></tr>
+        <tr><td>ConvertMatrixType</td><td class="file">Modules/Legacy/Math/ConvertMatrixType.h</td><td>Converts between sparse, dense, and column matrix storage formats.</td></tr>
+        <tr><td>EvaluateLinearAlgebraGeneral</td><td class="file">Modules/Legacy/Math/EvaluateLinAlgGeneral.h</td><td>User-scripted multi-matrix expression evaluation with up to 5 inputs and 5 outputs.</td></tr>
+        <tr><td>ReportColumnMatrixMisfit</td><td class="file">Modules/Legacy/Math/ReportColumnMatrixMisfit.h</td><td>Computes the misfit (error norm) between two column vectors; used during iterative inverse solving.</td></tr>
+        <tr><td>SelectSubMatrix</td><td class="file">Modules/Legacy/Math/SelectSubMatrix.h</td><td>Selects rows and columns from a matrix by an index list.</td></tr>
+        <tr><td>SetSubmatrix</td><td class="file">Modules/Legacy/Math/SetSubmatrix.h</td><td>Inserts one matrix into a subregion of a larger matrix.</td></tr>
+        <tr><td>SolveMinNormLeastSqSystem</td><td class="file">Modules/Legacy/Math/SolveMinNormLeastSqSystem.h</td><td>Solves an underdetermined system for the minimum-norm least-squares solution.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── INVERSE ── -->
+  <section id="inverse">
+    <h2><span class="icon">🔄</span> Inverse Problem <span class="count">5</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>SolveInverseProblemWithTikhonov</td><td class="file">Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h</td><td>Tikhonov regularized inverse: computes x = (AᵀA + λRᵀR)⁻¹Aᵀb. Outputs solution, regularized inverse, and the regularization parameter used.</td></tr>
+        <tr><td>SolveInverseProblemWithTikhonovSVD</td><td class="file">Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h</td><td>Tikhonov inverse via pre-computed SVD factorization — faster for repeated solves at different λ values.</td></tr>
+        <tr><td>SolveInverseProblemWithTSVD</td><td class="file">Modules/Legacy/Inverse/SolveInverseProblemWithTSVD.h</td><td>Truncated SVD inverse: discards small singular values to regularize the solution. Accepts pre-computed SVD components.</td></tr>
+        <tr><td>BuildSurfaceLaplacianMatrix</td><td class="file">Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h</td><td>Builds a discrete surface Laplacian matrix from a surface mesh. Used as a spatial regularization operator in inverse problems.</td></tr>
+        <tr><td>LCurvePlot</td><td class="file">Modules/Legacy/Inverse/LCurvePlot.h</td><td>Plots the L-curve (solution norm vs. residual norm) to help select the optimal regularization parameter λ.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── FIELDS MODERN ── -->
+  <section id="fields-modern">
+    <h2><span class="icon">🔷</span> Field Operations — Modern <span class="count">7</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ReportFieldInfo</td><td class="file">Modules/Fields/ReportFieldInfo.h</td><td>Reports field metadata to output ports: mesh element count, node count, data range, bounding box, mesh type, and data type.</td></tr>
+        <tr><td>EditMeshBoundingBox</td><td class="file">Modules/Fields/EditMeshBoundingBox.h</td><td>Interactively rescales and repositions a field's bounding box via a 3D widget. Outputs transformed field, geometry, and transform matrix.</td></tr>
+        <tr><td>InterfaceWithCleaver</td><td class="file">Modules/Fields/InterfaceWithCleaver.h</td><td>Wraps the Cleaver meshing library to generate quality tetrahedral meshes from multi-material indicator fields (dynamic port input).</td></tr>
+        <tr><td>InterfaceWithCleaver2</td><td class="file">Modules/Fields/InterfaceWithCleaver2.h</td><td>Cleaver 2 integration with an updated API and improved mesh quality controls.</td></tr>
+        <tr><td>RefineTetMeshLocally</td><td class="file">Modules/Fields/RefineTetMeshLocally.h</td><td>Locally subdivides tetrahedra in a Cleaver mesh to improve spatial resolution in specific regions.</td></tr>
+        <tr><td>CalculateBundleDifference</td><td class="file">Modules/Fields/CalculateBundleDifference.h</td><td>Computes element-wise difference between two field bundles.</td></tr>
+        <tr><td>CalculateNodeLocationFrequency</td><td class="file">Modules/Fields/CalculateNodeLocationFrequency.h</td><td>Counts how frequently each node location appears across a set of fields.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── FIELDS LEGACY ── -->
+  <section id="fields-legacy">
+    <h2><span class="icon">🔷</span> Field Operations — Legacy <span class="count">~80</span></h2>
+
+    <p style="margin-bottom:12px; color:#4a5568; font-size:13px;">Organized by function. These are the largest single category in the codebase.</p>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Mesh Geometry Transforms</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>AlignMeshBoundingBoxes</td><td class="file">Legacy/Fields/</td><td>Aligns one mesh's bounding box to match another's.</td></tr>
+        <tr><td>ScaleFieldMeshAndData</td><td class="file">Legacy/Fields/</td><td>Uniformly scales both mesh coordinates and field data values by a factor.</td></tr>
+        <tr><td>TransformMeshWithTransform</td><td class="file">Legacy/Fields/</td><td>Applies a 4×4 transform matrix to a mesh, moving all nodes.</td></tr>
+        <tr><td>ResampleRegularMesh</td><td class="file">Legacy/Fields/</td><td>Resamples a structured grid at a different resolution.</td></tr>
+        <tr><td>FairMesh</td><td class="file">Legacy/Fields/</td><td>Smooths a mesh using Laplacian or Taubin filtering.</td></tr>
+        <tr><td>CleanupTetMesh</td><td class="file">Legacy/Fields/</td><td>Removes degenerate elements from a tetrahedral mesh.</td></tr>
+        <tr><td>RefineMesh</td><td class="file">Legacy/Fields/</td><td>Subdivides mesh elements to increase resolution.</td></tr>
+        <tr><td>RegisterWithCorrespondences</td><td class="file">Legacy/Fields/</td><td>Computes a rigid or affine registration transform from point correspondences between two meshes.</td></tr>
+        <tr><td>FlipSurfaceNormals</td><td class="file">Legacy/Fields/</td><td>Reverses surface triangle winding order (flips all normals).</td></tr>
+        <tr><td>ReorderNormalCoherently</td><td class="file">Legacy/Fields/</td><td>Makes surface normals consistently outward- or inward-pointing.</td></tr>
+        <tr><td>MergeTriSurfs</td><td class="file">Legacy/Fields/</td><td>Merges multiple triangle surface meshes into a single combined mesh.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Mesh Creation</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>CreateLatVol</td><td class="file">Legacy/Fields/</td><td>Creates a structured Cartesian (lattice volume) mesh at user-specified dimensions and bounds.</td></tr>
+        <tr><td>CreateImage</td><td class="file">Legacy/Fields/</td><td>Creates a 2D structured grid (image lattice) mesh.</td></tr>
+        <tr><td>GenerateElectrode</td><td class="file">Legacy/Fields/</td><td>Generates electrode geometry as a field for use in FEM simulations.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Field Data Manipulation</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GetFieldData</td><td class="file">Legacy/Fields/</td><td>Extracts a field's data values as a matrix.</td></tr>
+        <tr><td>SetFieldData</td><td class="file">Legacy/Fields/</td><td>Assigns matrix values as a field's data.</td></tr>
+        <tr><td>GetFieldNodes</td><td class="file">Legacy/Fields/</td><td>Extracts node positions as a matrix.</td></tr>
+        <tr><td>SetFieldNodes</td><td class="file">Legacy/Fields/</td><td>Sets mesh node positions from a matrix.</td></tr>
+        <tr><td>SetFieldDataToConstantValue</td><td class="file">Legacy/Fields/</td><td>Fills all field data entries with a single constant value.</td></tr>
+        <tr><td>SwapFieldDataWithMatrixEntries</td><td class="file">Legacy/Fields/</td><td>Replaces field data with values from a matrix (element-to-element mapping).</td></tr>
+        <tr><td>CreateFieldData</td><td class="file">Legacy/Fields/</td><td>Creates field data by evaluating a user-supplied function over mesh elements.</td></tr>
+        <tr><td>ApplyMappingMatrix</td><td class="file">Legacy/Fields/</td><td>Maps data between meshes using a pre-built mapping (interpolation) matrix.</td></tr>
+        <tr><td>BuildMappingMatrix</td><td class="file">Legacy/Fields/</td><td>Constructs the mapping/interpolation matrix between two meshes.</td></tr>
+        <tr><td>ApplyFilterToFieldData</td><td class="file">Legacy/Fields/</td><td>Applies a convolution or smoothing filter to field data values.</td></tr>
+        <tr><td>SmoothVecFieldMedian</td><td class="file">Legacy/Fields/</td><td>Median-filter smoothing of a vector field.</td></tr>
+        <tr><td>SetFieldOrMeshStringProperty</td><td class="file">Legacy/Fields/</td><td>Sets a named metadata string property on a field or mesh.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Field Statistics &amp; Analysis</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ReportFieldGeometryMeasures</td><td class="file">Legacy/Fields/</td><td>Reports geometric measures: volumes, areas, and element size statistics.</td></tr>
+        <tr><td>ReportScalarFieldStats</td><td class="file">Legacy/Fields/</td><td>Reports min, max, mean, and standard deviation of scalar field data.</td></tr>
+        <tr><td>GetMeshQualityField</td><td class="file">Legacy/Fields/</td><td>Computes quality metrics (aspect ratio, Jacobian, etc.) per mesh element, returning them as a scalar field.</td></tr>
+        <tr><td>CalculateFieldDataMetric</td><td class="file">Legacy/Fields/</td><td>Computes a user-selected norm or metric over field data values.</td></tr>
+        <tr><td>CalculateGradients</td><td class="file">Legacy/Fields/</td><td>Computes gradient vectors from a scalar field using FEM interpolation.</td></tr>
+        <tr><td>CalculateVectorMagnitudes</td><td class="file">Legacy/Fields/</td><td>Converts a vector field to a scalar field of per-element magnitudes.</td></tr>
+        <tr><td>CalculateDistanceToField</td><td class="file">Legacy/Fields/</td><td>Computes the unsigned distance from each node to the nearest element of a reference field.</td></tr>
+        <tr><td>CalculateDistanceToFieldBoundary</td><td class="file">Legacy/Fields/</td><td>Same, but measures distance to the boundary of the reference field.</td></tr>
+        <tr><td>CalculateSignedDistanceToField</td><td class="file">Legacy/Fields/</td><td>Signed distance field — negative inside, positive outside the reference surface.</td></tr>
+        <tr><td>CalculateInsideWhichField</td><td class="file">Legacy/Fields/</td><td>For each mesh element, determines which (if any) of N reference fields contains it.</td></tr>
+        <tr><td>CalculateMeshCenter</td><td class="file">Legacy/Fields/</td><td>Computes the centroid (geometric center) of a mesh and outputs it as a point field.</td></tr>
+        <tr><td>CalculateMeshNodes</td><td class="file">Legacy/Fields/</td><td>Extracts node positions as a matrix.</td></tr>
+        <tr><td>GetCentroidsFromMesh</td><td class="file">Legacy/Fields/</td><td>Creates a point cloud field at element centroids.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Clipping &amp; Extraction</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ClipFieldByFunction3</td><td class="file">Legacy/Fields/</td><td>Clips mesh elements by a user-supplied algebraic function.</td></tr>
+        <tr><td>ClipFieldByMesh</td><td class="file">Legacy/Fields/</td><td>Clips one mesh against the boundary of another.</td></tr>
+        <tr><td>ClipVolumeByIsovalue</td><td class="file">Legacy/Fields/</td><td>Extracts the region of a volume field above or below a threshold isovalue.</td></tr>
+        <tr><td>ExtractSimpleIsosurface</td><td class="file">Legacy/Fields/</td><td>Marching-cubes isosurface extraction from a scalar volume field.</td></tr>
+        <tr><td>GetDomainBoundary</td><td class="file">Legacy/Fields/</td><td>Extracts the boundary surface of a labeled material domain.</td></tr>
+        <tr><td>GetFieldBoundary</td><td class="file">Legacy/Fields/</td><td>Extracts the geometric boundary surface of any mesh.</td></tr>
+        <tr><td>SplitFieldByConnectedRegion</td><td class="file">Legacy/Fields/</td><td>Separates disconnected mesh components into individual fields.</td></tr>
+        <tr><td>SplitFieldByDomain</td><td class="file">Legacy/Fields/</td><td>Splits a multi-material mesh into one field per material label.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Sampling</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GeneratePointSamplesFromField</td><td class="file">Legacy/Fields/</td><td>Generates random or regular point samples within a field's domain.</td></tr>
+        <tr><td>GeneratePointSamplesFromFieldOrWidget</td><td class="file">Legacy/Fields/</td><td>Same, but also accepts an interactive widget to control seed placement.</td></tr>
+        <tr><td>GenerateSinglePointProbeFromField</td><td class="file">Legacy/Fields/</td><td>Places a single probe point and returns the interpolated field value at that location.</td></tr>
+        <tr><td>ProjectPointsOntoMesh</td><td class="file">Legacy/Fields/</td><td>Projects a set of points onto the nearest surface location of a mesh.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Conversion</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ConvertFieldBasis</td><td class="file">Legacy/Fields/</td><td>Changes data interpolation basis (e.g., node-centered ↔ cell-centered).</td></tr>
+        <tr><td>ConvertFieldDataType</td><td class="file">Legacy/Fields/</td><td>Converts scalar data storage type (float/double/int).</td></tr>
+        <tr><td>ConvertHexVolToTetVol</td><td class="file">Legacy/Fields/</td><td>Splits hexahedral elements into tetrahedra.</td></tr>
+        <tr><td>ConvertMatricesToMesh</td><td class="file">Legacy/Fields/</td><td>Constructs a mesh from node-position and element-connectivity matrices.</td></tr>
+        <tr><td>ConvertMeshToPointCloud</td><td class="file">Legacy/Fields/</td><td>Drops all mesh connectivity, keeping only node positions as a point cloud.</td></tr>
+        <tr><td>ConvertMeshToUnstructuredMesh</td><td class="file">Legacy/Fields/</td><td>Converts a structured (lattice) mesh to an unstructured representation.</td></tr>
+        <tr><td>ConvertQuadSurfToTriSurf</td><td class="file">Legacy/Fields/</td><td>Splits quadrilateral surface elements into pairs of triangles.</td></tr>
+        <tr><td>ConvertIndicesToFieldData</td><td class="file">Legacy/Fields/</td><td>Maps integer index values to field data using a lookup table.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:13px;font-weight:700;color:#2d3748;margin:16px 0 8px;">Utilities</h3>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>BuildMatrixOfSurfaceNormals</td><td class="file">Legacy/Fields/</td><td>Outputs surface normals for each node or element as a matrix.</td></tr>
+        <tr><td>GenerateNodeNormals</td><td class="file">Legacy/Fields/</td><td>Computes per-node normal vectors by averaging surrounding element normals.</td></tr>
+        <tr><td>CollectFields</td><td class="file">Legacy/Fields/</td><td>Accumulates fields arriving in successive executions into one growing collection.</td></tr>
+        <tr><td>RemoveUnusedNodes</td><td class="file">Legacy/Fields/</td><td>Removes mesh nodes not referenced by any element.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── BUNDLE ── -->
+  <section id="bundle">
+    <h2><span class="icon">📦</span> Bundle Operations <span class="count">9</span></h2>
+    <p style="margin-bottom:12px; color:#4a5568; font-size:13px;">Bundles are named containers that group multiple data objects together under string keys.</p>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GetFieldsFromBundle</td><td class="file">Legacy/Bundle/GetFieldsFromBundle.h</td><td>Extracts up to 6 named fields from a bundle to individual output ports.</td></tr>
+        <tr><td>InsertFieldsIntoBundle</td><td class="file">Legacy/Bundle/InsertFieldsIntoBundle.h</td><td>Inserts fields (dynamic port) into a bundle under user-specified names.</td></tr>
+        <tr><td>GetMatricesFromBundle</td><td class="file">Legacy/Bundle/GetMatricesFromBundle.h</td><td>Extracts up to 6 named matrices from a bundle.</td></tr>
+        <tr><td>InsertMatricesIntoBundle</td><td class="file">Legacy/Bundle/InsertMatricesIntoBundle.h</td><td>Inserts matrices into a bundle under user-specified names.</td></tr>
+        <tr><td>GetColorMapsFromBundle</td><td class="file">Legacy/Bundle/GetColorMapsFromBundle.h</td><td>Extracts named ColorMaps from a bundle.</td></tr>
+        <tr><td>GetStringsFromBundle</td><td class="file">Legacy/Bundle/GetStringsFromBundle.h</td><td>Extracts named string values from a bundle.</td></tr>
+        <tr><td>InsertStringsIntoBundle</td><td class="file">Legacy/Bundle/InsertStringsIntoBundle.h</td><td>Inserts string values into a bundle under user-specified names.</td></tr>
+        <tr><td>InsertEnvironmentIntoBundle</td><td class="file">Legacy/Bundle/InsertEnvironmentIntoBundle.h</td><td>Inserts environment/system variable values into a bundle as strings.</td></tr>
+        <tr><td>ReportBundleInfo</td><td class="file">Legacy/Bundle/ReportBundleInfo.h</td><td>Prints the contents (keys, types, sizes) of a bundle to the log.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── DATA I/O ── -->
+  <section id="dataio">
+    <h2><span class="icon">💾</span> Data I/O <span class="count">11</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GenericReader&lt;H,P&gt;</td><td class="file">Modules/DataIO/GenericReader.h</td><td>Template base: reads a typed data file selected via UI or string port. Outputs the loaded object and the filename string.</td></tr>
+        <tr><td>GenericWriter&lt;H,P&gt;</td><td class="file">Modules/DataIO/GenericWriter.h</td><td>Template base: writes a typed object to a file path specified via UI or string port.</td></tr>
+        <tr><td>ReadField</td><td class="file">Modules/DataIO/ReadField.h</td><td>Reads SCIRun field files (.fld, .mat, VTK, etc.). Delegates to format-specific importers.</td></tr>
+        <tr><td>WriteField</td><td class="file">Modules/DataIO/WriteField.h</td><td>Writes a field to disk in a selected format.</td></tr>
+        <tr><td>ReadBundle</td><td class="file">Modules/DataIO/ReadBundle.h</td><td>Reads a serialized Bundle from disk.</td></tr>
+        <tr><td>WriteBundle</td><td class="file">Modules/DataIO/WriteBundle.h</td><td>Writes a Bundle to disk.</td></tr>
+        <tr><td>ReadMatrixClassic</td><td class="file">Modules/DataIO/ReadMatrixClassic.h</td><td>Reads a matrix from text or binary SCIRun format.</td></tr>
+        <tr><td>WriteMatrix</td><td class="file">Modules/DataIO/WriteMatrix.h</td><td>Writes a matrix to text or binary format.</td></tr>
+        <tr><td>ReadColorMapXml</td><td class="file">Modules/DataIO/ReadColorMapXml.h</td><td>Reads a ColorMap from an XML file; also outputs a bundle with raw color data.</td></tr>
+        <tr><td>AutoReadFile</td><td class="file">Modules/DataIO/AutoReadFile.h</td><td>Detects file type automatically from extension and routes to either a matrix or field output port.</td></tr>
+        <tr><td>WriteG3D</td><td class="file">Modules/DataIO/WriteG3D.h</td><td>Exports geometry data to G3D format for use with external tools.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── FEM ── -->
+  <section id="fem">
+    <h2><span class="icon">🔬</span> Finite Element Methods — Legacy <span class="count">6</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>BuildFEMatrix</td><td class="file">Legacy/FiniteElements/BuildFEMatrix.h</td><td>Assembles the global FEM stiffness matrix <strong>K</strong> from a field with conductivity data. Outputs both real and complex stiffness matrices.</td></tr>
+        <tr><td>BuildFESurfRHS</td><td class="file">Legacy/FiniteElements/BuildFESurfRHS.h</td><td>Assembles the right-hand side vector for FEM surface (Neumann) source terms.</td></tr>
+        <tr><td>BuildFEVolRHS</td><td class="file">Legacy/FiniteElements/BuildFEVolRHS.h</td><td>Assembles the RHS for volumetric source terms in a FEM formulation.</td></tr>
+        <tr><td>ApplyFEMCurrentSource</td><td class="file">Legacy/FiniteElements/ApplyFEMCurrentSource.h</td><td>Applies current-source boundary conditions to a FEM linear system (modifies both A and b).</td></tr>
+        <tr><td>ApplyFEMVoltageSource</td><td class="file">Legacy/FiniteElements/ApplyFEMVoltageSource.h</td><td>Applies voltage-source (Dirichlet) boundary conditions to a FEM linear system.</td></tr>
+        <tr><td>BuildTDCSMatrix</td><td class="file">Legacy/FiniteElements/BuildTDCSMatrix.h</td><td>Builds the full system matrix for transcranial direct current stimulation (tDCS), incorporating electrode contact impedances.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── FORWARD ── -->
+  <section id="forward">
+    <h2><span class="icon">⚡</span> Forward Problem <span class="count">4</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>BuildBEMatrix</td><td class="file">Legacy/Forward/BuildBEMatrix.h</td><td>Builds a Boundary Element Method (BEM) transfer matrix from one or more closed surface meshes. Accepts a dynamic number of surface inputs.</td></tr>
+        <tr><td>CalculateCurrentDensity</td><td class="file">Legacy/Forward/CalculateCurrentDensity.h</td><td>Computes the current density field <strong>J = σ·E</strong> from an electric potential field and a conductivity field.</td></tr>
+        <tr><td>InsertVoltageSource</td><td class="file">Legacy/Forward/InsertVoltageSource.h</td><td>Inserts electrode voltage sources into a forward-problem field and returns the modified field and a mapping matrix.</td></tr>
+        <tr><td>CalcTMP</td><td class="file">Legacy/Forward/CalcTMP.h</td><td>Calculates transmembrane potentials from cardiac activation times using a bidomain model. Accepts 7 matrix inputs.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── BRAIN ── -->
+  <section id="brain">
+    <h2><span class="icon">🧠</span> Brain Stimulation <span class="count">7</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ElectrodeCoilSetup</td><td class="file">Modules/BrainStimulator/ElectrodeCoilSetup.h</td><td>Positions electrode/coil geometry on a head mesh surface. Outputs placement matrices and projected fields for downstream FEM/BEM modules.</td></tr>
+        <tr><td>SolveBiotSavart</td><td class="file">Modules/BrainStimulator/SolveBiotSavart.h</td><td>Computes the magnetic field <strong>B</strong> induced by a current-carrying TMS coil using the Biot-Savart law. Inputs: coil geometry and domain field.</td></tr>
+        <tr><td>SetupTDCS (SetupRHSforTDCSandTMS)</td><td class="file">Modules/BrainStimulator/SetupRHSforTDCSandTMS.h</td><td>Assembles the complete right-hand side vectors and boundary condition matrices for a tDCS or TMS FEM solve. Outputs 8 matrix/field ports.</td></tr>
+        <tr><td>GenerateROIStatistics</td><td class="file">Modules/BrainStimulator/GenerateROIStatistics.h</td><td>Computes mean, std, min, and max of a field quantity over labeled regions-of-interest (ROIs) defined by mask fields and name strings.</td></tr>
+        <tr><td>ModelTMSCoil</td><td class="file">Modules/BrainStimulator/ModelTMSCoil.h</td><td>Generates synthetic coil geometry for Transcranial Magnetic Stimulation from user-defined coil parameters. No input ports; outputs a field.</td></tr>
+        <tr><td>SetConductivitiesToMesh</td><td class="file">Modules/BrainStimulator/SetConductivitiesToTetMesh.h</td><td>Assigns tissue conductivity values to tetrahedral mesh elements based on a label field and a conductivity lookup table.</td></tr>
+        <tr><td>SimulateForwardMagneticField</td><td class="file">Modules/BrainStimulator/SimulateForwardMagneticField.h</td><td>Simulates the forward magnetic field measurement from neural current sources by integrating current density over a domain. 4 field inputs, 2 field outputs.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── PYTHON ── -->
+  <section id="python">
+    <h2><span class="icon">🐍</span> Python Integration <span class="count">5</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>InterfaceWithPython</td><td class="file">Modules/Python/InterfaceWithPython.h</td><td>Runs a Python script inside the SCIRun network. Receives matrices, fields, and strings from dynamic input ports; returns up to 9 typed values to output ports.</td></tr>
+        <tr><td>LoopStart</td><td class="file">Modules/Python/LoopStart.h</td><td>Marks the beginning of a Python-driven loop construct. On each iteration emits data from a metadata object to downstream modules.</td></tr>
+        <tr><td>LoopEnd</td><td class="file">Modules/Python/LoopEnd.h</td><td>Marks the end of a loop. Collects per-iteration results back into a metadata object.</td></tr>
+        <tr><td>PythonObjectForwarder</td><td class="file">Modules/Python/PythonObjectForwarder.h</td><td>Template helper that polls the Python interpreter for objects produced asynchronously and forwards them to typed output ports with configurable retry logic.</td></tr>
+        <tr><td>ModuleStateModifierTester</td><td class="file">Modules/Python/ModuleStateModifierTester.h</td><td>Test/debug module that exercises the state-modification API from Python.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── STRING ── -->
+  <section id="string">
+    <h2><span class="icon">💬</span> String Modules <span class="count">8</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>CreateString</td><td class="file">Modules/String/CreateString.h</td><td>Creates a literal string from user input in the UI. No input ports.</td></tr>
+        <tr><td>NetworkNotes</td><td class="file">Modules/String/NetworkNotes.h</td><td>Stores free-text notes attached to a network file. No compute; UI only.</td></tr>
+        <tr><td>JoinStrings</td><td class="file">Legacy/String/JoinStrings.h</td><td>Concatenates multiple strings with a user-specified separator.</td></tr>
+        <tr><td>PrintMatrixIntoString</td><td class="file">Legacy/String/PrintMatrixIntoString.h</td><td>Formats a matrix as a human-readable string.</td></tr>
+        <tr><td>PrintStringIntoString</td><td class="file">Legacy/String/PrintStringIntoString.h</td><td>Applies printf-style format substitution to a template string.</td></tr>
+        <tr><td>ReportStringInfo</td><td class="file">Legacy/String/ReportStringInfo.h</td><td>Prints a string's length and content to the log output.</td></tr>
+        <tr><td>SplitFileName</td><td class="file">Legacy/String/SplitFileName.h</td><td>Splits a file path into directory, base name, and extension components.</td></tr>
+        <tr><td>GetNetworkFileName</td><td class="file">Legacy/String/GetNetworkFileName.h</td><td>Returns the filename of the currently loaded SCIRun network (.srn5) file.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── CONVERTERS ── -->
+  <section id="converters">
+    <h2><span class="icon">🔁</span> Converters <span class="count">2</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ConvertBundleToField</td><td class="file">Legacy/Converters/ConvertBundleToField.h</td><td>Extracts a field from a bundle by a user-specified key name.</td></tr>
+        <tr><td>ConvertMatrixToString</td><td class="file">Legacy/Converters/ConvertMatrixToString.h</td><td>Serializes a matrix to a formatted string representation.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── BASIC ── -->
+  <section id="basic">
+    <h2><span class="icon">🧪</span> Basic / Testing <span class="count">13</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ChooseInput</td><td class="file">Modules/Basic/ChooseInput.h</td><td>Passes through the first non-empty input from a dynamic port list (mux/selector). Supersedes the legacy ChooseMatrix module.</td></tr>
+        <tr><td>PrintDatatype</td><td class="file">Modules/Basic/PrintDatatype.h</td><td>Prints a description of any datatype object to the log. No output ports.</td></tr>
+        <tr><td>SimulationStreamingReaderBase</td><td class="file">Modules/Basic/SimulationReaderBaseModule.h</td><td>Base for streaming simulation data from external solvers into SCIRun. Outputs a Bundle per timestep.</td></tr>
+        <tr><td>PlaceholderModule</td><td class="file">Modules/Basic/PlaceholderModule.h</td><td>Stand-in for removed or unrecognized modules when loading legacy network files.</td></tr>
+        <tr><td>DynamicPortTester</td><td class="file">Modules/Basic/DynamicPortTester.h</td><td>Test module that exercises dynamic port addition and removal.</td></tr>
+        <tr><td>AsyncPortTestModule</td><td class="file">Modules/Basic/AsyncPortTestModule.h</td><td>Tests async port execution semantics and ordering.</td></tr>
+        <tr><td>AsyncStreamingTestModule</td><td class="file">Modules/Basic/AsyncStreamingTestModule.h</td><td>Tests streaming data delivery through async ports.</td></tr>
+        <tr><td>LoggingTester</td><td class="file">Modules/Basic/LoggingTester.h</td><td>Exercises the module logging API.</td></tr>
+        <tr><td>NeedToExecuteTester</td><td class="file">Modules/Basic/NeedToExecuteTester.h</td><td>Tests the "needs re-execution" caching and invalidation logic.</td></tr>
+        <tr><td>PortFeedbackTestModules</td><td class="file">Modules/Basic/PortFeedbackTestModules.h</td><td>Tests backward (feedback) data flow between ports.</td></tr>
+        <tr><td>SendComplexScalar</td><td class="file">Modules/Basic/SendComplexScalar.h</td><td>Test source that emits a complex scalar value.</td></tr>
+        <tr><td>ReceiveComplexScalar</td><td class="file">Modules/Basic/ReceiveComplexScalar.h</td><td>Test sink that receives and verifies a complex scalar value.</td></tr>
+        <tr><td>CompositeModuleWithStaticPorts / …TypedStaticPorts</td><td class="file">Modules/Basic/</td><td>Test harnesses for composite (subnet) module port wiring.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── LEGACY VIZ ── -->
+  <section id="legacyviz">
+    <h2><span class="icon">🌊</span> Legacy Visualization <span class="count">2</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GenerateStreamLines</td><td class="file">Legacy/Visualization/GenerateStreamLines.h</td><td>Traces streamlines through a vector field using Runge-Kutta integration. Inputs: vector field + optional seed field. Output: curve field. Interruptible.</td></tr>
+        <tr><td>ShowAndEditDipoles</td><td class="file">Legacy/Visualization/ShowAndEditDipoles.h</td><td>Renders dipole sources as 3D arrow geometry and allows interactive repositioning. Outputs both updated field and geometry.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── TEEM ── -->
+  <section id="teem">
+    <h2><span class="icon">📊</span> Teem / NRRD <span class="count">6</span></h2>
+    <p style="margin-bottom:12px; color:#4a5568; font-size:13px;">Integration with the <a href="http://teem.sourceforge.net" style="color:#0f3460;">Teem</a> library for NRRD volumetric data and DTI tractography.</p>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ReadNrrd</td><td class="file">Legacy/Teem/DataIO/ReadNrrd.h</td><td>Reads NRRD (Nearly Raw Raster Data) volumetric files via the Teem library. No input ports; outputs a NrrdData object.</td></tr>
+        <tr><td>ConvertNrrdToField</td><td class="file">Legacy/Teem/Converters/ConvertNrrdToField.h</td><td>Converts a NRRD dataset to a SCIRun Field.</td></tr>
+        <tr><td>ConvertNrrdToMatrix</td><td class="file">Legacy/Teem/Converters/ConvertNrrdToMatrix.h</td><td>Converts a NRRD dataset to a SCIRun Matrix.</td></tr>
+        <tr><td>SplitFieldIntoNrrdData</td><td class="file">Legacy/Teem/Converters/SplitFieldIntoNrrdData.h</td><td>Splits a SCIRun field into separate NRRD arrays (coordinates and data).</td></tr>
+        <tr><td>BuildDerivedNrrdWithGage</td><td class="file">Legacy/Teem/Misc/BuildDerivedNrrdWithGage.h</td><td>Computes derived quantities (gradients, curvatures, etc.) from a NRRD volume using Teem's Gage library.</td></tr>
+        <tr><td>ReportNrrdInfo</td><td class="file">Legacy/Teem/Misc/ReportNrrdInfo.h</td><td>Prints metadata of a NRRD dataset (dimensions, spacing, type) to the log.</td></tr>
+        <tr><td>TendFiber</td><td class="file">Legacy/Teem/Tend/TendFiber.h</td><td>Traces DTI fiber tractography streamlines through a tensor NRRD volume using Teem's Tend library. Output: a curve field.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── MATLAB ── -->
+  <section id="matlab">
+    <h2><span class="icon">🔢</span> MATLAB I/O <span class="count">6</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>ImportMatricesFromMatlab</td><td class="file">Legacy/Matlab/DataIO/ImportMatricesFromMatlab.h</td><td>Reads matrices from a MATLAB .mat file selected by filename. Outputs up to 6 matrices.</td></tr>
+        <tr><td>ExportMatricesToMatlab</td><td class="file">Legacy/Matlab/DataIO/ExportMatricesToMatlab.h</td><td>Writes matrices to a MATLAB .mat file.</td></tr>
+        <tr><td>ImportFieldsFromMatlab</td><td class="file">Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h</td><td>Reads SCIRun field objects stored in a MATLAB .mat file.</td></tr>
+        <tr><td>ExportFieldsToMatlab</td><td class="file">Legacy/Matlab/DataIO/ExportFieldsToMatlab.h</td><td>Writes field objects to a MATLAB .mat file.</td></tr>
+        <tr><td>ImportDatatypesFromMatlab</td><td class="file">Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h</td><td>Generic MATLAB import for any supported SCIRun datatype.</td></tr>
+        <tr><td>ExportDatatypesToMatlab</td><td class="file">Legacy/Matlab/DataIO/ExportDatatypesToMatlab.h</td><td>Generic MATLAB export for any supported SCIRun datatype.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── EXAMPLES ── -->
+  <section id="examples">
+    <h2><span class="icon">📝</span> Examples <span class="count">3</span></h2>
+    <table>
+      <thead><tr><th>Class</th><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>SortMatrix</td><td class="file">Modules/Examples/SortMatrix.h</td><td>Example demonstrating the module API. Sorts a matrix's rows by a selected column.</td></tr>
+        <tr><td>TestModuleSimple</td><td class="file">Modules/Examples/TestModuleSimple.h</td><td>Minimal example module with no UI — illustrates the bare minimum Module subclass.</td></tr>
+        <tr><td>TestModuleSimpleUI</td><td class="file">Modules/Examples/TestModuleSimpleUI.h</td><td>Minimal example module with a parameter UI — shows how to wire state and UI.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── PATTERNS ── -->
+  <section id="patterns">
+    <h2><span class="icon">🏛</span> Architecture Patterns</h2>
+    <div class="arch-note">
+      <h2>All Module subclasses share this structure</h2>
+      <ul>
+        <li><strong>Base class:</strong> <code>SCIRun::Dataflow::Networks::Module</code> (or <code>GeometryGeneratingModule</code> / <code>ModuleWithAsyncDynamicPorts</code> for specialized cases)</li>
+        <li><strong>Ports:</strong> declared statically as mix-in template bases — <code>Has<em>N</em>InputPorts&lt;Tag…&gt;</code> / <code>Has<em>N</em>OutputPorts&lt;Tag…&gt;</code></li>
+        <li><strong>Port tags:</strong> <code>FieldPortTag</code>, <code>MatrixPortTag</code>, <code>GeometryPortTag</code>, <code>ColorMapPortTag</code>, <code>StringPortTag</code>, <code>ScalarPortTag</code>, <code>NrrdPortTag</code>, <code>BundlePortTag</code>, <code>DatatypePortTag</code>, and others</li>
+        <li><strong>Dynamic ports:</strong> wrapped in <code>DynamicPortTag&lt;T&gt;</code> or <code>AsyncDynamicPortTag&lt;T&gt;</code></li>
+        <li><strong>Compute:</strong> implemented in <code>execute()</code>; UI defaults in <code>setStateDefaults()</code></li>
+        <li><strong>State:</strong> parameters stored in an <code>AlgorithmParameter</code>-keyed map retrieved via <code>get_state()</code></li>
+        <li><strong>Separation of concerns:</strong> heavy computation delegated to a separate <em>Algo</em> or <em>Impl</em> class, keeping the module class thin</li>
+        <li><strong>Legacy vs. modern:</strong> Legacy modules under <code>Modules/Legacy/</code> often have a <code>LEGACY_BIOPSE_MODULE</code> or <code>CONVERTED_VERSION_OF_MODULE()</code> macro annotation indicating the migration status</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Generated from SCIRun source analysis — branch <strong>refactor</strong> &nbsp;·&nbsp; 2026-05-29 &nbsp;·&nbsp; Scientific Computing and Imaging Institute, University of Utah
+</footer>
+
+</body>
+</html>

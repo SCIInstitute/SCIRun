@@ -73,7 +73,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_String
   Modules_Legacy_String
   Interface_Modules_Base
   Modules_Legacy_Bundle
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 

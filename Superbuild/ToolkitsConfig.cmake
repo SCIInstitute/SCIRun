@@ -45,6 +45,7 @@ MACRO(EXTERNAL_TOOLKIT name)
   ExternalProject_Add(${toolkit_ExternalProject_name}
     GIT_REPOSITORY "https://github.com/SCIInstitute/${name}.git"
     GIT_TAG ${toolkit_GIT_TAG}
+    UPDATE_COMMAND ""
     BUILD_IN_SOURCE ON
     SOURCE_DIR ${toolkit_DIR}
     BUILD_COMMAND ""

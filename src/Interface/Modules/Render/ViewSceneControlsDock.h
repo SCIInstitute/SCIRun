@@ -43,6 +43,7 @@
 #include "Interface/Modules/Render/ui_Screenshot.h"
 #include "Interface/Modules/Render/ui_ViewAxisChooser.h"
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
+#include "Interface/Modules/Render/ui_ViewSceneShortcuts.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>

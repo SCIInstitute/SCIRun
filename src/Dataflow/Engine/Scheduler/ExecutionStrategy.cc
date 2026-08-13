@@ -121,7 +121,7 @@ void ExecutionQueueManager::executeTopContext()
         return;
       }
     }
-    if (contexts_.consume_one([&](ExecutionContextHandle ctx) { executeImpl(ctx); }))
+    if (contexts_.consume_one([&](ExecutionContextHandle ctx) { currentExecutionFuture_ = executeImpl(ctx); }))
     {
       contextCount_.fetch_sub(1);
     }
@@ -148,4 +148,6 @@ void ExecutionQueueManager::stopExecution()
       executionLaunchThread_->join();
     executionLaunchThread_.reset();
   }
+  if (currentExecutionFuture_.valid())
+    currentExecutionFuture_.wait();
 }
