@@ -97,6 +97,10 @@ jobs:
   # Nightly-only, not the PR tier (pr.yml), so a VS-2026 break can't block pull
   # requests (#2449). allow-failure until the externals catch up: Boost 1.90's
   # b2 can't bootstrap under VS 2026 (#2657), fixed by the 1.91 upgrade (#2548).
+  #
+  # Qt here is 6.10.2, not the '6.3.*' floor the windows-2022 jobs pin: Qt 6.3's
+  # QVarLengthArray calls stdext::make_checked_array_iterator, which the v145 STL
+  # no longer ships. This job exists to exercise the compiler, not the Qt floor.
   # ---------------------------------------------------------------------------
   windows-2025-headless-vs2026:
     uses: ./.github/workflows/reusable-build.yml
@@ -112,7 +116,7 @@ jobs:
     with:
       runner: windows-2025
       cmake-generator: 'Visual Studio 18 2026'
-      qt-version: '6.3.*'
+      qt-version: '6.10.2'
       variant: gui
       build-with-python: false
       artifact-name: SCIRunWindowsInstaller_qt6_vs2026
