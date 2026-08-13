@@ -103,8 +103,15 @@ ELSE()
   # with MSB8020 ("build tools for Visual Studio 2015 ... cannot be found").
   # Pin the toolset CMake picked instead; empty for non-VS generators.
   SET(python_MSBUILD_TOOLSET)
+  SET(python_MSBUILD_TOOLSET_ENV)
   IF(CMAKE_VS_PLATFORM_TOOLSET)
     SET(python_MSBUILD_TOOLSET "/property:PlatformToolset=${CMAKE_VS_PLATFORM_TOOLSET}")
+    # build.bat forwards extra arguments as %1..%9 and cmd splits those on '=',
+    # so the flag arrives as two arguments and MSBuild reads the value as a
+    # second project (MSB1008). Upstream's answer is to quote it, but the quotes
+    # do not survive "cmake -E env" launching a .bat. python.props only defaults
+    # PlatformToolset when unset, so pass it through the environment instead.
+    SET(python_MSBUILD_TOOLSET_ENV "PlatformToolset=${CMAKE_VS_PLATFORM_TOOLSET}")
   ENDIF()
 ENDIF()
 
@@ -156,7 +163,7 @@ ELSE()
     # through cmd, which reads the "/" in "PCbuild/build.bat" as a switch and
     # fails with "'PCbuild' is not recognized as an internal or external command".
     # build.bat forwards any argument it doesn't recognize straight to MSBuild.
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" "PCbuild\\build.bat" ${python_MSBUILD_TOOLSET}
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" ${python_MSBUILD_TOOLSET_ENV} "PCbuild\\build.bat"
     BUILD_IN_SOURCE ON
     BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E

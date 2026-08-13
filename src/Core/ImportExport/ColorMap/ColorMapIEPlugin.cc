@@ -32,6 +32,31 @@
 using namespace SCIRun::ColorXml;
 using namespace SCIRun::Core::Datatypes;
 
+static SCIRun::ColorXml::ColorMap parseColorMapNode(const pugi::xml_node& cm)
+{
+  SCIRun::ColorXml::ColorMap colorMap;
+  colorMap.name = cm.attribute("name").as_string();
+  colorMap.space = cm.attribute("space").as_string();
+  // Accept both the modern SCIRun/ParaView point element (<Point x o r g b/>)
+  // and the alternate dialect some tools export (<color x a r g b/>), where the
+  // opacity is spelled "a" (alpha). The "o"/"a" attribute is optional.
+  for (const auto& p : cm.children())
+  {
+    const std::string tag = p.name();
+    if (tag != "Point" && tag != "color")
+      continue;
+    const auto opacity = p.attribute("o") ? p.attribute("o") : p.attribute("a");
+    colorMap.points.push_back({
+      p.attribute("x").as_double(),
+      opacity.as_double(),
+      p.attribute("r").as_double(),
+      p.attribute("g").as_double(),
+      p.attribute("b").as_double()}
+    );
+  }
+  return colorMap;
+}
+
 ColorMaps ColorMapXmlIO::readColorMapXml(const std::string& filename)
 {
   pugi::xml_document doc;
@@ -40,22 +65,21 @@ ColorMaps ColorMapXmlIO::readColorMapXml(const std::string& filename)
     return {};
 
   ColorMaps colorMaps;
-  for (const auto& cm : doc.child("ColorMaps"))
+  if (const auto root = doc.child("ColorMaps"))
   {
-    ColorMap colorMap;
-    colorMap.name = cm.attribute("name").as_string();
-    colorMap.space = cm.attribute("space").as_string();
-    for (const auto& p : cm.children("Point"))
-    {
-      colorMap.points.push_back({
-        p.attribute("x").as_double(),
-        p.attribute("o").as_double(),
-        p.attribute("r").as_double(),
-        p.attribute("g").as_double(),
-        p.attribute("b").as_double()}
-      );
-    }
-    colorMaps.maps.push_back(colorMap);
+    for (const auto& cm : root.children("ColorMap"))
+      colorMaps.maps.push_back(parseColorMapNode(cm));
+  }
+  else if (const auto single = doc.child("ColorMap"))
+  {
+    // Some exporters (e.g. single-preset ParaView files) omit the <ColorMaps>
+    // wrapper and place a <ColorMap> at the document root.
+    colorMaps.maps.push_back(parseColorMapNode(single));
+  }
+  else if (const auto lower = doc.child("colormap"))
+  {
+    // Alternate dialect: <colormap name="..."><color x a r g b/></colormap>.
+    colorMaps.maps.push_back(parseColorMapNode(lower));
   }
   return colorMaps;
 }
