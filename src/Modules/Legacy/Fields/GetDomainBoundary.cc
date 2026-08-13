@@ -53,15 +53,9 @@ GetDomainBoundary::GetDomainBoundary()
 
 void GetDomainBoundary::setStateDefaults()
 {
-  setStateIntFromAlgo(Parameters::MinRange);
-  setStateIntFromAlgo(Parameters::MaxRange);
-  setStateIntFromAlgo(Parameters::Domain);
-
-  setStateBoolFromAlgo(Parameters::UseRange);
-  setStateBoolFromAlgo(Parameters::AddOuterBoundary);
-  setStateBoolFromAlgo(Parameters::InnerBoundaryOnly);
-  setStateBoolFromAlgo(Parameters::NoInnerBoundary);
-  setStateBoolFromAlgo(Parameters::DisconnectBoundaries);
+  copyAlgoToState({Parameters::MinRange, Parameters::MaxRange, Parameters::Domain,
+    Parameters::UseRange, Parameters::AddOuterBoundary, Parameters::InnerBoundaryOnly,
+    Parameters::NoInnerBoundary, Parameters::DisconnectBoundaries});
 }
 
 void GetDomainBoundary::execute()
@@ -101,17 +95,11 @@ void GetDomainBoundary::execute()
       get_state()->setValue(Parameters::MaxRange, maxrange);
     }
 
+    copyStateToAlgo({Parameters::MinRange, Parameters::MaxRange, Parameters::Domain,
+      Parameters::UseRange, Parameters::AddOuterBoundary, Parameters::InnerBoundaryOnly,
+      Parameters::NoInnerBoundary, Parameters::DisconnectBoundaries});
+
     auto state = get_state();
-
-    setAlgoIntFromState(Parameters::MinRange);
-    setAlgoIntFromState(Parameters::MaxRange);
-    setAlgoIntFromState(Parameters::Domain);
-    setAlgoBoolFromState(Parameters::UseRange);
-    setAlgoBoolFromState(Parameters::AddOuterBoundary);
-    setAlgoBoolFromState(Parameters::InnerBoundaryOnly);
-    setAlgoBoolFromState(Parameters::NoInnerBoundary);
-    setAlgoBoolFromState(Parameters::DisconnectBoundaries);
-
     if (!state->getValue(Parameters::UseRange).toBool())
     {
       int guiValue = state->getValue(Parameters::Domain).toInt();

@@ -134,8 +134,11 @@ QT_WRAP_UI(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
 QT_WRAP_CPP(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
 QT_ADD_RESOURCES(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
 
+# Scoped to the one source that reads it: directory-wide ADD_DEFINITIONS made the
+# packaging step's -DBUILD_BUNDLE=ON reconfigure recompile all ~70 sources here. #2664
 IF(BUILD_BUNDLE)
-  ADD_DEFINITIONS(-DBUILD_BUNDLE)
+  SET_SOURCE_FILES_PROPERTIES(SCIRunMainWindowSlotsPrivate.cc
+    PROPERTIES COMPILE_DEFINITIONS BUILD_BUNDLE)
 ENDIF()
 
 SCIRUN_ADD_LIBRARY(Interface_Application

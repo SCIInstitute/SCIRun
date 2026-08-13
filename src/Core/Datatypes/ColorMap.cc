@@ -179,6 +179,15 @@ inline static double mix(double a, double b, double c)
 
 inline static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double f)
 {
+  // Guard against degenerate color arrays. An empty array would make
+  // "v.size() - 1" underflow (v.size() is unsigned), producing a huge
+  // segment count and an out-of-bounds access that crashes SCIRun. This can
+  // happen when an unsupported/empty colormap file is loaded upstream.
+  if (v.empty())
+    return ColorRGB(0.0, 0.0, 0.0);
+  if (v.size() == 1)
+    return v[0];
+
   uint32_t segments = v.size() - 1;
   double m = f * segments;
   uint32_t index = static_cast<uint32_t>(m);

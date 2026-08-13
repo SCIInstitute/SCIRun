@@ -77,12 +77,8 @@ ConvertBundleToField::ConvertBundleToField() :
 
 void ConvertBundleToField::setStateDefaults()
 {
-  auto state = get_state();
-  setStateBoolFromAlgo(Parameters::MergeNodes);
-  setStateBoolFromAlgo(Parameters::MatchNodeValues);
-  setStateBoolFromAlgo(Parameters::MakeNoData);
-  setStateDoubleFromAlgo(Parameters::Tolerance);
-  state->setValue(Fields::Parameters::ForcePointCloud, false);
+  copyAlgoToState({Parameters::MergeNodes, Parameters::MatchNodeValues, Parameters::MakeNoData, Parameters::Tolerance});
+  get_state()->setValue(Fields::Parameters::ForcePointCloud, false);
 }
 
 void ConvertBundleToField::execute()
@@ -91,10 +87,7 @@ void ConvertBundleToField::execute()
 
   if (needToExecute())
   {
-    setAlgoBoolFromState(Parameters::MakeNoData);
-    setAlgoBoolFromState(Parameters::MergeNodes);
-    setAlgoBoolFromState(Parameters::MatchNodeValues);
-    setAlgoDoubleFromState(Parameters::Tolerance);
+    copyStateToAlgo({Parameters::MakeNoData, Parameters::MergeNodes, Parameters::MatchNodeValues, Parameters::Tolerance});
 
     auto output = algo().run(withInputData((InputBundle, bundle)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));

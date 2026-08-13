@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
     paths-ignore:
       - 'docs/**'
   schedule:
@@ -15,7 +17,9 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -61,3 +65,55 @@ jobs:
       variant: gui
       build-with-python: true
       artifact-name: SCIRunWindowsPythonInstaller_qt6
+
+  # ---------------------------------------------------------------------------
+  # Publish installers to a GitHub Release (issue #2398). Nightly on cron/master
+  # push; a draft versioned release on a v* tag. Mac publishes to the same
+  # releases from mac.yml.
+  # ---------------------------------------------------------------------------
+  publish-nightly:
+    needs: [windows-gui-qt5, windows-gui-qt6, windows-gui-python-qt5, windows-gui-python-qt6]
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: nightly
+
+  publish-stable:
+    needs: [windows-gui-qt5, windows-gui-qt6, windows-gui-python-qt5, windows-gui-python-qt6]
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: stable
+  # Windows Server 2025 image, built with Visual Studio 2026 (v145 toolset).
+  # The windows-2025 label resolves to 'windows-2025-vs2026': a single VS
+  # Enterprise 2026 install, no side-by-side VS 2022. v143 ships as a component
+  # of it (Microsoft.VisualStudio.Component.VC.14.44.17.14.x86.x64), so
+  # '-T v143' stays available as an escape hatch.
+  #
+  # Nightly-only, not the PR tier (pr.yml), so a VS-2026 break can't block pull
+  # requests (#2449). allow-failure until the externals catch up: Boost 1.90's
+  # b2 can't bootstrap under VS 2026 (#2657), fixed by the 1.91 upgrade (#2548).
+  # ---------------------------------------------------------------------------
+  windows-2025-headless-vs2026:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2025
+      cmake-generator: 'Visual Studio 18 2026'
+      variant: headless
+      build-testing: true
+      allow-failure: true
+
+  windows-2025-gui-qt6-vs2026:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2025
+      cmake-generator: 'Visual Studio 18 2026'
+      qt-version: '6.3.*'
+      variant: gui
+      build-with-python: false
+      artifact-name: SCIRunWindowsInstaller_qt6_vs2026
+      allow-failure: true
