@@ -89,10 +89,14 @@ jobs:
     with:
       channel: stable
   # Windows Server 2025 image, built with Visual Studio 2026 (v145 toolset).
-  # windows-2025 (== windows-latest since June 2026) ships both VS 2022 and
-  # VS 2026; selecting the 'Visual Studio 18 2026' generator exercises the newer
-  # toolchain. Kept in the nightly matrix rather than the PR tier (pr.yml) so a
-  # VS-2026-specific break can't block pull requests. See issue #2449.
+  # The windows-2025 label resolves to 'windows-2025-vs2026': a single VS
+  # Enterprise 2026 install, no side-by-side VS 2022. v143 ships as a component
+  # of it (Microsoft.VisualStudio.Component.VC.14.44.17.14.x86.x64), so
+  # '-T v143' stays available as an escape hatch.
+  #
+  # Nightly-only, not the PR tier (pr.yml), so a VS-2026 break can't block pull
+  # requests (#2449). allow-failure until the externals catch up: Boost 1.90's
+  # b2 can't bootstrap under VS 2026 (#2657), fixed by the 1.91 upgrade (#2548).
   # ---------------------------------------------------------------------------
   windows-2025-headless-vs2026:
     uses: ./.github/workflows/reusable-build.yml
@@ -101,6 +105,7 @@ jobs:
       cmake-generator: 'Visual Studio 18 2026'
       variant: headless
       build-testing: true
+      allow-failure: true
 
   windows-2025-gui-qt6-vs2026:
     uses: ./.github/workflows/reusable-build.yml
@@ -111,3 +116,4 @@ jobs:
       variant: gui
       build-with-python: false
       artifact-name: SCIRunWindowsInstaller_qt6_vs2026
+      allow-failure: true

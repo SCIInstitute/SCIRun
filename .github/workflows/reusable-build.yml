@@ -60,10 +60,18 @@ on:
       artifact-name:
         required: false
         type: string
+      allow-failure:
+        # Experimental build: still runs, still reports a red job, but doesn't
+        # fail the run. continue-on-error is rejected on a job that calls a
+        # reusable workflow, hence an input applied to the job in here.
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    continue-on-error: ${{ inputs.allow-failure }}
     permissions:
       checks: write
       contents: read
@@ -422,6 +430,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report-${{ runner.os }}
+          # `error`, not the default `warn`: the step above is continue-on-error
+          # (tests legitimately fail), so a coverage.sh that produced nothing
+          # otherwise reports success and silently uploads no artifact.
+          if-no-files-found: error
           path: |
             bin/SCIRun/coverage/summary.txt
             bin/SCIRun/coverage/html

@@ -25,45 +25,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadColorMapXml.h>
+#include <Modules/DataIO/WriteColorMapXml.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Logging/Log.h>
-#include <boost/filesystem.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::DataIO;
 
-MODULE_INFO_DEF(ReadColorMapXml, DataIO, SCIRun)
+MODULE_INFO_DEF(WriteColorMapXml, DataIO, SCIRun)
 
-ReadColorMapXml::ReadColorMapXml() : Module(staticInfo_)
+WriteColorMapXml::WriteColorMapXml() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(Filename);
-  INITIALIZE_PORT(FirstColorMap);
+  INITIALIZE_PORT(ColorMapToWrite);
   INITIALIZE_PORT(ColorMaps);
+  INITIALIZE_PORT(Filename);
 }
 
-void ReadColorMapXml::setStateDefaults()
+void WriteColorMapXml::setStateDefaults()
 {
   auto state = get_state();
 
-  state->setValue(Variables::Filename, std::string("<load any file>"));
+  state->setValue(Variables::Filename, std::string("<save file>"));
 }
 
-void ReadColorMapXml::execute()
+void WriteColorMapXml::execute()
 {
   auto fileOption = getOptionalInput(Filename);
   if (fileOption && *fileOption)
   {
     get_state()->setValue(Variables::Filename, (*fileOption)->value());
   }
+
+  auto singleColorMap = getOptionalInput(ColorMapToWrite);
+  auto bundleOption = getOptionalInput(ColorMaps);
 
   if (needToExecute())
   {
@@ -74,46 +74,33 @@ void ReadColorMapXml::execute()
       THROW_ALGORITHM_INPUT_ERROR("Empty filename, try again.");
     }
 
-    if (!exists(filename))
+    // Collect the colormaps to serialize: everything in the bundle (if any) plus
+    // the single colormap input (if connected).
+    ColorXml::ColorMaps colorMaps;
+    if (bundleOption && *bundleOption)
     {
-      THROW_ALGORITHM_INPUT_ERROR("File does not exist.");
+      for (const auto& cm : (*bundleOption)->getColorMaps())
+      {
+        if (cm)
+          colorMaps.maps.push_back(ColorXml::ColorMapXmlIO::createXmlDataFromColorMap(*cm));
+      }
+    }
+    if (singleColorMap && *singleColorMap)
+    {
+      colorMaps.maps.push_back(ColorXml::ColorMapXmlIO::createXmlDataFromColorMap(**singleColorMap));
+    }
+
+    if (colorMaps.maps.empty())
+    {
+      THROW_ALGORITHM_INPUT_ERROR("No colormap connected to write.");
     }
 
     const auto filenameStr = filename.string();
-
-    remark("Loaded file " + filenameStr);
-
-    auto cmXmls = ColorXml::ColorMapXmlIO::readColorMapXml(filenameStr);
-    if (cmXmls.maps.empty())
+    if (!ColorXml::ColorMapXmlIO::writeColorMapXml(filenameStr, colorMaps))
     {
-      THROW_ALGORITHM_INPUT_ERROR("No colormaps found in xml file: " + filenameStr);
+      THROW_ALGORITHM_PROCESSING_ERROR("Failed to write colormap xml file: " + filenameStr);
     }
 
-    // Reject colormaps that parsed to zero color points. Emitting an empty
-    // colormap here would silently produce invalid output that crashes
-    // downstream color lookups. This usually means the file uses an
-    // unsupported dialect rather than the expected
-    // <ColorMaps><ColorMap name="..."><Point x o r g b/></ColorMap></ColorMaps>.
-    for (const auto& cmXml : cmXmls.maps)
-    {
-      if (cmXml.points.empty())
-      {
-        THROW_ALGORITHM_INPUT_ERROR("Colormap '" + cmXml.name +
-          "' contains no color points (no recognized <Point> elements). "
-          "The file may use an unsupported colormap format: " + filenameStr);
-      }
-    }
-
-    const auto firstColorMap = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXmls.maps[0]);
-    sendOutput(FirstColorMap, firstColorMap);
-
-    BundleHandle bundle(new Bundle);
-    int i = 0;
-    for (const auto& cmXml : cmXmls.maps)
-    {
-      auto cm = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXml);
-      bundle->set("ColorMap #" + std::to_string(++i) + " (" + cm->getColorMapName() + ")", cm);
-    }
-    sendOutput(ColorMaps, bundle);
+    remark("Wrote file " + filenameStr);
   }
 }
