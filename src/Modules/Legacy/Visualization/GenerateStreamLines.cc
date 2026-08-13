@@ -52,16 +52,12 @@ GenerateStreamLines::GenerateStreamLines() : Module(staticInfo_)
 
 void GenerateStreamLines::setStateDefaults()
 {
-  auto state = get_state();
   setStateStringFromAlgoOption(Parameters::StreamlineDirection);
   setStateStringFromAlgoOption(Parameters::StreamlineValue);
-  setStateIntFromAlgo(Parameters::StreamlineMaxSteps);
-  setStateDoubleFromAlgo(Parameters::StreamlineStepSize);
-  setStateDoubleFromAlgo(Parameters::StreamlineTolerance);
   setStateStringFromAlgoOption(Parameters::StreamlineMethod);
-  setStateBoolFromAlgo(Parameters::AutoParameters);
-  setStateBoolFromAlgo(Parameters::RemoveColinearPoints);
-  setStateBoolFromAlgo(Parameters::UseMultithreading);
+  copyAlgoToState({Parameters::StreamlineMaxSteps, Parameters::StreamlineStepSize,
+    Parameters::StreamlineTolerance, Parameters::AutoParameters,
+    Parameters::RemoveColinearPoints, Parameters::UseMultithreading});
 }
 
 void GenerateStreamLines::execute()
@@ -71,15 +67,12 @@ void GenerateStreamLines::execute()
 
   if (needToExecute())
   {
-    setAlgoDoubleFromState(Parameters::StreamlineStepSize);
-    setAlgoDoubleFromState(Parameters::StreamlineTolerance);
     setAlgoOptionFromState(Parameters::StreamlineDirection);
     setAlgoOptionFromState(Parameters::StreamlineValue);
-    setAlgoIntFromState(Parameters::StreamlineMaxSteps);
-    setAlgoBoolFromState(Parameters::RemoveColinearPoints);
-    setAlgoBoolFromState(Parameters::AutoParameters);
     setAlgoOptionFromState(Parameters::StreamlineMethod);
-    setAlgoBoolFromState(Parameters::UseMultithreading);
+    copyStateToAlgo({Parameters::StreamlineStepSize, Parameters::StreamlineTolerance,
+      Parameters::StreamlineMaxSteps, Parameters::RemoveColinearPoints,
+      Parameters::AutoParameters, Parameters::UseMultithreading});
 
     auto output = algo().run(withInputData((Vector_Field, input)(Seed_Points, seeds)));
 

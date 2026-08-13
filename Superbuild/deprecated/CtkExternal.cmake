@@ -45,6 +45,7 @@ LIST(APPEND CTK_CACHE_ARGS
 ExternalProject_Add(Ctk_external
   GIT_REPOSITORY "https://github.com/CIBC-Internal/CTK.git"
   GIT_TAG ${ctk_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

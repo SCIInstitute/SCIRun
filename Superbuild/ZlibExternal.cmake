@@ -25,13 +25,14 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(zlib_GIT_TAG "origin/1.3.1")
 
+# Source URL and pinned version come from Superbuild/VERSIONS.cmake.
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Zlib_external
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/zlib.git"
-  GIT_TAG ${zlib_GIT_TAG}
+  GIT_REPOSITORY ${ZLIB_GIT_URL}
+  GIT_TAG ${ZLIB_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""
