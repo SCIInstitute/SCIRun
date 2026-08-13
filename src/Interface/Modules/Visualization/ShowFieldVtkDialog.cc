@@ -55,6 +55,7 @@ ShowFieldVtkDialog::ShowFieldVtkDialog(const std::string& name, ModuleStateHandl
   addDoubleSpinBoxManager(defaultColorADoubleSpinBox_, DefaultColorA);
   addDoubleSpinBoxManager(RadiusSpinBox_, Radius);
   addCheckBoxManager(UseNormalCheckBox_, UseNormals);
+  addCheckBoxManager(ShowNodesCheckBox_, ShowNodes);
   addCheckBoxManager(ShowFacesCheckBox_, ShowFaces);
   addCheckBoxManager(ShowEdgesCheckBox_, ShowEdges);
   addCheckBoxManager(ShowVolumeCheckBox_, ShowVolume);

@@ -50,6 +50,7 @@ ALGORITHM_PARAMETER_DEF(VtkVisualization, DefaultColorB);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, Radius);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, UseNormals);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowNodes);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowEdges);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowFaces);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowVolume);
@@ -69,6 +70,7 @@ VtkDataAlgorithm::VtkDataAlgorithm()
   addParameter(Parameters::DefaultColorA, 1.0);
   addParameter(Parameters::Radius, 0.1);
   addParameter(Parameters::UseNormals, true);
+  addParameter(Parameters::ShowNodes, false);
   addParameter(Parameters::ShowEdges, false);
   addParameter(Parameters::ShowFaces, true);
   addParameter(Parameters::ShowVolume, false);

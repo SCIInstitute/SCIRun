@@ -118,13 +118,14 @@ VtkGeometryBuilder::buildGeometryObject(
 {
     FieldInformation info(field);
 
+    bool showEdges = algorithm_.get(VtkVisualization::Parameters::ShowEdges).toBool();
+    bool showNodes = algorithm_.get(VtkVisualization::Parameters::ShowNodes).toBool();
+
     if (info.is_trisurfmesh())
     {
         add(addTriSurface(field, colorMap));
 
-        if (algorithm_.get(
-            VtkVisualization::Parameters::ShowEdges)
-            .toBool())
+        if (showEdges)
         {
             add(addCylinder(field, colorMap));
         }
@@ -133,9 +134,7 @@ VtkGeometryBuilder::buildGeometryObject(
     {
         add(addQuadSurface(field, colorMap));
 
-        if (algorithm_.get(
-            VtkVisualization::Parameters::ShowEdges)
-            .toBool())
+        if (showEdges)
         {
             add(addCylinder(field, colorMap));
         }
@@ -144,10 +143,6 @@ VtkGeometryBuilder::buildGeometryObject(
     {
         if (info.is_latvol())
         {
-            //
-            // First pass:
-            // keep existing behavior.
-            //
             add(addStructVol(field, colorMap));
         }
         else if (info.is_hexvol() ||
@@ -156,11 +151,14 @@ VtkGeometryBuilder::buildGeometryObject(
             add(addUnstructVol(field, colorMap));
         }
 
-        if (algorithm_.get(
-            VtkVisualization::Parameters::ShowEdges)
-            .toBool())
+        if (showEdges)
         {
             add(addCylinder(field, colorMap));
+        }
+
+        if (showNodes)
+        {
+            add(addSphere(field, colorMap));
         }
     }
     else if (info.is_pointcloudmesh())

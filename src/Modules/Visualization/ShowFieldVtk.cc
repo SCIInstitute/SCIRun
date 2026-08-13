@@ -60,6 +60,7 @@ void ShowFieldVtk::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::DefaultColorA);
   setStateDoubleFromAlgo(Parameters::Radius);
   setStateBoolFromAlgo(Parameters::UseNormals);
+  setStateBoolFromAlgo(Parameters::ShowNodes);
   setStateBoolFromAlgo(Parameters::ShowFaces);
   setStateBoolFromAlgo(Parameters::ShowEdges);
   setStateBoolFromAlgo(Parameters::ShowVolume);
@@ -91,6 +92,7 @@ void ShowFieldVtk::execute()
     setAlgoDoubleFromState(Parameters::DefaultColorA);
     setAlgoDoubleFromState(Parameters::Radius);
     setAlgoBoolFromState(Parameters::UseNormals);
+    setAlgoBoolFromState(Parameters::ShowNodes);
     setAlgoBoolFromState(Parameters::ShowFaces);
     setAlgoBoolFromState(Parameters::ShowEdges);
     setAlgoBoolFromState(Parameters::ShowVolume);
