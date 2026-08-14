@@ -389,6 +389,47 @@ TEST(ColorMapXmlTests, WriteColorMapXmlWritesMultipleMaps)
   boost::filesystem::remove(tmp);
 }
 
+// Issue #2578: the reporter's file spelled the point element <ColorMapNode> and
+// only worked after a manual rename. Point elements are now recognized by their
+// r/g/b attributes, whatever the tag is called.
+TEST(ColorMapXmlTests, ColorMapNodeDialectIsParsed)
+{
+  const auto path = writeTempColorMapXml(
+    "<ColorMaps>\n"
+    "  <ColorMap name=\"nodes\" space=\"RGB\">\n"
+    "    <ColorMapNode x=\"0.0\" o=\"1\" r=\"0.1\" g=\"0.2\" b=\"0.3\"/>\n"
+    "    <ColorMapNode x=\"1.0\" o=\"1\" r=\"0.4\" g=\"0.5\" b=\"0.6\"/>\n"
+    "  </ColorMap>\n"
+    "</ColorMaps>\n",
+    "colorMapNodeDialect.xml");
+
+  const auto cmXmls = ColorXml::ColorMapXmlIO::readColorMapXml(path);
+  ASSERT_EQ(cmXmls.maps.size(), 1u);
+  EXPECT_EQ(cmXmls.maps[0].name, "nodes");
+  ASSERT_EQ(cmXmls.maps[0].points.size(), 2u);
+  EXPECT_EQ(cmXmls.maps[0].points[1].r, 0.4);
+}
+
+// Issue #2578: an unrecognized wrapper element is resolved by structure - the
+// colormap is whichever element actually holds the point elements.
+TEST(ColorMapXmlTests, UnknownWrapperElementIsParsed)
+{
+  const auto path = writeTempColorMapXml(
+    "<PresetCollection>\n"
+    "  <Preset name=\"wrapped\">\n"
+    "    <ColorMapNode x=\"0.0\" a=\"1\" r=\"1.0\" g=\"0.0\" b=\"0.0\"/>\n"
+    "    <ColorMapNode x=\"1.0\" a=\"1\" r=\"0.0\" g=\"0.0\" b=\"1.0\"/>\n"
+    "  </Preset>\n"
+    "</PresetCollection>\n",
+    "colorMapUnknownWrapper.xml");
+
+  const auto cmXmls = ColorXml::ColorMapXmlIO::readColorMapXml(path);
+  ASSERT_EQ(cmXmls.maps.size(), 1u);
+  EXPECT_EQ(cmXmls.maps[0].name, "wrapped");
+  ASSERT_EQ(cmXmls.maps[0].points.size(), 2u);
+  EXPECT_EQ(cmXmls.maps[0].points[0].r, 1.0);
+}
+
 TEST(ColorMapXmlTests, CanGenerateQtStyleSheet)
 {
   auto cm = StandardColorMapFactory::create("Rainbow", 10);

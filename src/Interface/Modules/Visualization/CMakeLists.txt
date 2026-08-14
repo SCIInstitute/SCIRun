@@ -27,6 +27,7 @@
 
 
 SET(Interface_Modules_Visualization_FORMS
+  ConvertMatrixToColorMap.ui
   CreateStandardColorMap.ui
   GenerateStreamLines.ui
   ShowField.ui
@@ -44,6 +45,7 @@ SET(Interface_Modules_Visualization_FORMS
 )
 
 SET(Interface_Modules_Visualization_HEADERS
+  ConvertMatrixToColorMapDialog.h
   CreateStandardColorMapDialog.h
   GenerateStreamLinesDialog.h
   share.h
@@ -62,6 +64,7 @@ SET(Interface_Modules_Visualization_HEADERS
 )
 
 SET(Interface_Modules_Visualization_SOURCES
+  ConvertMatrixToColorMapDialog.cc
   CreateStandardColorMapDialog.cc
   GenerateStreamLinesDialog.cc
   ShowFieldDialog.cc

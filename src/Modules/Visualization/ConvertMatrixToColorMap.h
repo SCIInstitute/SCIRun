@@ -33,12 +33,34 @@
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Visualization {
+        ALGORITHM_PARAMETER_DECL(AutoDetectColumns);
+        ALGORITHM_PARAMETER_DECL(ColumnRoles);
+        // Published by execute() for the dialog: the input's column count and the
+        // roles actually used, so auto-detected layouts are visible in the UI.
+        ALGORITHM_PARAMETER_DECL(MatrixColumnCount);
+        ALGORITHM_PARAMETER_DECL(DetectedColumnRoles);
+      }
+    }
+  }
+
   namespace Modules {
     namespace Visualization {
 
-      /// Converts an Nx3 (RGB) or Nx4 (RGBA) matrix of color values into a ColorMap.
-      /// Each matrix row is a control point; values are expected in [0, 1]. Rows whose
-      /// entries exceed 1 are assumed to be in [0, 255] and are scaled accordingly.
+      /// Roles a matrix column can play. Order matters: it is the order the
+      /// dialog lists them in.
+      enum class ColumnRole
+      {
+        Ignore, Position, Red, Green, Blue, Alpha
+      };
+      SCISHARE const std::vector<std::string>& columnRoleNames();
+
+      /// Converts a matrix of color values into a ColorMap. Each matrix row is a
+      /// control point. Columns are assigned roles (position/R/G/B/alpha) either
+      /// automatically (Nx3 RGB, Nx4 RGBA, Nx5 position+RGBA) or explicitly in the
+      /// UI. Color values above 1 are assumed to be in [0, 255] and scaled.
       class SCISHARE ConvertMatrixToColorMap : public SCIRun::Dataflow::Networks::Module,
         public Has1InputPort<MatrixPortTag>,
         public Has1OutputPort<ColorMapPortTag>
@@ -46,12 +68,12 @@ namespace SCIRun {
       public:
         ConvertMatrixToColorMap();
         void execute() override;
-        void setStateDefaults() override {}
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputMatrix, Matrix);
         OUTPUT_PORT(0, OutputColorMap, ColorMap);
 
-        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
         NEW_HELP_WEBPAGE_ONLY
       };
