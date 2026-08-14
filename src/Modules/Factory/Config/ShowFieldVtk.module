@@ -2,8 +2,8 @@
   "module": {
     "name": "ShowFieldVtk",
     "namespace": "Visualization",
-    "status": "...",
-    "description": "...",
+    "status": "In progress: experimental VTK rendering path",
+    "description": "Converts a field into VTK geometry for display in ViewSceneVtk. Requires WITH_VTK.",
     "header": "Modules/Visualization/ShowFieldVtk.h"
   },
   "algorithm": {

@@ -94,7 +94,11 @@ void VtkRenderer::renderFrame()
   }
 
   // VTK is usually vertically flipped relative to Qt
-  image_ = image_.flipped(Qt::Vertical);
+  #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    image_ = image_.flipped(Qt::Vertical);
+  #else
+    image_ = image_.mirrored(false, true);
+  #endif
 
   //std::cout << "Rendered image size: " << image_.width() << "x" << image_.height() << std::endl;
 }

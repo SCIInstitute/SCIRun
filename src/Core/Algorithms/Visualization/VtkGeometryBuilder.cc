@@ -732,9 +732,9 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     const auto sizeX = bbox.get_max().x() - originX;
     const auto sizeY = bbox.get_max().y() - originY;
     const auto sizeZ = bbox.get_max().z() - originZ;
-    const auto dx = sizeX / (ni - 1);
-    const auto dy = sizeY / (nj - 1);
-    const auto dz = sizeZ / (nk - 1);
+    const auto dx = sizeX / (ni > 1 ? ni - 1 : 1);
+    const auto dy = sizeY / (nj > 1 ? nj - 1 : 1);
+    const auto dz = sizeZ / (nk > 1 ? nk - 1 : 1);
 
     image->SetDimensions(ni, nj, nk);
     image->SetOrigin(originX, originY, originZ);
@@ -746,10 +746,12 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     imageScalars->SetNumberOfTuples(ni * nj * nk);
 
     double value = 0.0;
+    bool value_num = vfield->num_values() > 0;
 
     for (const auto& node : facade->nodes())
     {
-      vfield->get_value(value, node.index());
+      if (value_num)
+        vfield->get_value(value, node.index());
       imageScalars->SetValue(node.index(), value);
     }
 
@@ -791,10 +793,12 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     scalars->SetName("Values");
 
     double value = 0.0;
+    bool value_num = vfield->num_values() > 0;
 
     for (const auto& node : facade->nodes())
     {
-      vfield->get_value(value, node.index());
+      if (value_num)
+        vfield->get_value(value, node.index());
       scalars->InsertNextValue(value);
     }
 
