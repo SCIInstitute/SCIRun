@@ -347,6 +347,22 @@ jobs:
           rm -f "$HOME"/.config/"SCI:CIBC Software"/SCIRun5_regression_*.conf 2>/dev/null || true
         continue-on-error: true
 
+      - name: Collect macOS crash reports
+        if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'macOS' }}
+        run: |
+          # A test that dies on a signal reports only "Bus error" through ctest,
+          # which is not enough to act on (#2700). macOS already writes a full
+          # symbolicated .ips per crash; collect them so the nightly turns a
+          # signal into a stack. ReportCrash writes asynchronously, so give the
+          # last crash of the run a moment to land.
+          sleep 10
+          mkdir -p "$GITHUB_WORKSPACE/crash-reports"
+          for d in "$HOME/Library/Logs/DiagnosticReports" /Library/Logs/DiagnosticReports; do
+            [ -d "$d" ] && cp "$d"/SCIRun*.ips "$GITHUB_WORKSPACE/crash-reports/" 2>/dev/null
+          done
+          echo "collected $(ls -1 "$GITHUB_WORKSPACE/crash-reports" 2>/dev/null | wc -l) crash report(s)"
+        continue-on-error: true
+
       - name: Run unit tests (Windows)
         if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
         working-directory: bin/SCIRun
@@ -397,6 +413,7 @@ jobs:
             bin/SCIRun/Testing/Temporary/LastTest.log
             junit-unit.xml
             junit-regression.xml
+            crash-reports/
 
       - name: Upload test logs (Windows)
         if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'Windows' }}
