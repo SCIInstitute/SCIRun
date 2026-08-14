@@ -96,10 +96,102 @@ namespace
     return std::count(roles.begin(), roles.end(), role);
   }
 
+  std::vector<ColumnRole> resolveRoles(bool autoDetect, size_t cols, const VariableList& saved)
+  {
+    if (autoDetect)
+      return autoDetectRoles(cols);
+
+    std::vector<ColumnRole> roles(cols, ColumnRole::Ignore);
+    for (size_t i = 0; i < std::min(saved.size(), cols); ++i)
+      roles[i] = roleFromName(saved[i].toString());
+    return roles;
+  }
+
+  struct ColumnMapping
+  {
+    int red = -1, green = -1, blue = -1, alpha = -1, position = -1;
+  };
+
+  // Returns the reason the roles are unusable, or an empty string if they are.
+  std::string mapColumns(const std::vector<ColumnRole>& roles, bool autoDetect,
+    ColumnMapping& mapping)
+  {
+    mapping.red = findColumn(roles, ColumnRole::Red);
+    mapping.green = findColumn(roles, ColumnRole::Green);
+    mapping.blue = findColumn(roles, ColumnRole::Blue);
+    mapping.alpha = findColumn(roles, ColumnRole::Alpha);
+    mapping.position = findColumn(roles, ColumnRole::Position);
+
+    if (mapping.red < 0 || mapping.green < 0 || mapping.blue < 0)
+    {
+      if (autoDetect)
+        return "Cannot infer the layout of a matrix with " + std::to_string(roles.size()) +
+          " columns; expected 3 (RGB), 4 (RGBA) or 5 (position + RGBA). "
+          "Turn off auto-detection to assign the columns yourself.";
+      return "The red, green and blue columns must all be assigned.";
+    }
+
+    for (auto role : { ColumnRole::Position, ColumnRole::Red, ColumnRole::Green,
+      ColumnRole::Blue, ColumnRole::Alpha })
+    {
+      if (countColumns(roles, role) > 1)
+        return "Column role '" + roleName(role) + "' is assigned to more than one column.";
+    }
+    return {};
+  }
+
+  // If any color channel exceeds 1 the matrix is in [0, 255]. Alpha and position
+  // are excluded: alpha is conventionally 0-1 either way, and a position column
+  // is not a color at all.
+  double colorScaleFor(const DenseMatrix& m, const ColumnMapping& mapping)
+  {
+    const double colorMax = std::max({ m.col(mapping.red).maxCoeff(),
+      m.col(mapping.green).maxCoeff(), m.col(mapping.blue).maxCoeff() });
+    return (colorMax > 1.0) ? (1.0 / 255.0) : 1.0;
+  }
+
   struct Stop
   {
     double x, r, g, b, a;
   };
+
+  std::vector<Stop> buildStops(const DenseMatrix& m, const ColumnMapping& mapping,
+    double colorScale)
+  {
+    const auto rows = m.nrows();
+    const double alphaScale =
+      (mapping.alpha >= 0 && m.col(mapping.alpha).maxCoeff() > 1.0) ? (1.0 / 255.0) : 1.0;
+
+    // Positions are normalized to the [0, 1] domain ColorMap looks up in.
+    double positionMin = 0.0, positionSpan = 1.0;
+    if (mapping.position >= 0)
+    {
+      positionMin = m.col(mapping.position).minCoeff();
+      const double positionMax = m.col(mapping.position).maxCoeff();
+      positionSpan = (positionMax > positionMin) ? (positionMax - positionMin) : 1.0;
+    }
+
+    std::vector<Stop> stops;
+    stops.reserve(rows);
+    for (size_t i = 0; i < rows; ++i)
+    {
+      const double x = (mapping.position >= 0)
+        ? (m(i, mapping.position) - positionMin) / positionSpan
+        : ((rows > 1) ? static_cast<double>(i) / (rows - 1) : 0.5);
+      stops.push_back({ x,
+        m(i, mapping.red) * colorScale,
+        m(i, mapping.green) * colorScale,
+        m(i, mapping.blue) * colorScale,
+        (mapping.alpha >= 0) ? m(i, mapping.alpha) * alphaScale : 1.0 });
+    }
+
+    if (mapping.position >= 0)
+    {
+      std::stable_sort(stops.begin(), stops.end(),
+        [](const Stop& a, const Stop& b) { return a.x < b.x; });
+    }
+    return stops;
+  }
 
   // ColorMap stores colors as an evenly spaced list, so an explicit position
   // column can only be honored by resampling the piecewise-linear ramp the
@@ -130,6 +222,32 @@ namespace
     }
     return colors;
   }
+
+  ColorMapHandle makeColorMap(const std::vector<Stop>& stops, const ColumnMapping& mapping)
+  {
+    std::vector<ColorRGB> colors;
+    if (mapping.position >= 0 && stops.size() > 1)
+      colors = resampleColors(stops, 256);
+    else
+    {
+      std::transform(stops.begin(), stops.end(), std::back_inserter(colors),
+        [](const Stop& s) { return ColorRGB(s.r, s.g, s.b); });
+    }
+
+    // ColorMap stores alpha separately, as (position, alpha) control points.
+    std::vector<double> alphaPoints;
+    if (mapping.alpha >= 0)
+    {
+      for (const auto& stop : stops)
+      {
+        alphaPoints.push_back(stop.x);
+        alphaPoints.push_back(stop.a);
+      }
+    }
+
+    return StandardColorMapFactory::create(colors, "Custom",
+      256, 0.0, false, 0.5, 1.0, alphaPoints);
+  }
 }
 
 ConvertMatrixToColorMap::ConvertMatrixToColorMap() : Module(staticInfo_)
@@ -149,134 +267,54 @@ void ConvertMatrixToColorMap::execute()
 {
   auto input = getRequiredInput(InputMatrix);
 
-  if (needToExecute())
+  if (!needToExecute())
+    return;
+
+  auto dense = castMatrix::toDense(input);
+  if (!dense)
   {
-    auto dense = castMatrix::toDense(input);
-    if (!dense)
-    {
-      error("Input must be a dense matrix of color values.");
-      return;
-    }
-
-    const auto rows = dense->nrows();
-    const auto cols = dense->ncols();
-
-    if (rows < 1 || cols < 1)
-    {
-      error("Input matrix is empty; expected at least one color control point.");
-      return;
-    }
-
-    auto state = get_state();
-    const bool autoDetect = state->getValue(Parameters::AutoDetectColumns).toBool();
-
-    std::vector<ColumnRole> roles;
-    if (autoDetect)
-      roles = autoDetectRoles(cols);
-    else
-    {
-      const auto saved = state->getValue(Parameters::ColumnRoles).toVector();
-      roles.assign(cols, ColumnRole::Ignore);
-      for (size_t i = 0; i < std::min(saved.size(), cols); ++i)
-        roles[i] = roleFromName(saved[i].toString());
-    }
-
-    // Publish before validating so the dialog can show the column list even
-    // when the mapping is rejected below.
-    state->setTransientValue(Parameters::MatrixColumnCount, static_cast<int>(cols));
-    std::vector<std::string> roleNames;
-    std::transform(roles.begin(), roles.end(), std::back_inserter(roleNames), roleName);
-    state->setTransientValue(Parameters::DetectedColumnRoles, roleNames);
-
-    const auto redCol = findColumn(roles, ColumnRole::Red);
-    const auto greenCol = findColumn(roles, ColumnRole::Green);
-    const auto blueCol = findColumn(roles, ColumnRole::Blue);
-    if (redCol < 0 || greenCol < 0 || blueCol < 0)
-    {
-      if (autoDetect)
-        error("Cannot infer the layout of a matrix with " + std::to_string(cols) +
-          " columns; expected 3 (RGB), 4 (RGBA) or 5 (position + RGBA). "
-          "Turn off auto-detection to assign the columns yourself.");
-      else
-        error("The red, green and blue columns must all be assigned.");
-      return;
-    }
-
-    for (auto role : { ColumnRole::Position, ColumnRole::Red, ColumnRole::Green,
-      ColumnRole::Blue, ColumnRole::Alpha })
-    {
-      if (countColumns(roles, role) > 1)
-      {
-        error("Column role '" + roleName(role) + "' is assigned to more than one column.");
-        return;
-      }
-    }
-
-    const auto alphaCol = findColumn(roles, ColumnRole::Alpha);
-    const auto positionCol = findColumn(roles, ColumnRole::Position);
-
-    // Scale the color channels alone: alpha is conventionally 0-1 even in a
-    // 0-255 matrix, and a position column is not a color at all.
-    const double colorMax = std::max({ dense->col(redCol).maxCoeff(),
-      dense->col(greenCol).maxCoeff(), dense->col(blueCol).maxCoeff() });
-    const double colorScale = (colorMax > 1.0) ? (1.0 / 255.0) : 1.0;
-    if (colorScale != 1.0)
-      remark("Color values exceed 1; interpreting them as 0-255 and scaling to 0-1.");
-
-    double alphaScale = 1.0;
-    if (alphaCol >= 0 && dense->col(alphaCol).maxCoeff() > 1.0)
-      alphaScale = 1.0 / 255.0;
-
-    // Positions are normalized to the [0, 1] domain ColorMap looks up in.
-    double positionMin = 0.0, positionSpan = 1.0;
-    if (positionCol >= 0)
-    {
-      positionMin = dense->col(positionCol).minCoeff();
-      const double positionMax = dense->col(positionCol).maxCoeff();
-      positionSpan = (positionMax > positionMin) ? (positionMax - positionMin) : 1.0;
-    }
-
-    std::vector<Stop> stops;
-    stops.reserve(rows);
-    for (size_t i = 0; i < rows; ++i)
-    {
-      const double x = (positionCol >= 0)
-        ? ((*dense)(i, positionCol) - positionMin) / positionSpan
-        : ((rows > 1) ? static_cast<double>(i) / (rows - 1) : 0.5);
-      stops.push_back({ x,
-        (*dense)(i, redCol) * colorScale,
-        (*dense)(i, greenCol) * colorScale,
-        (*dense)(i, blueCol) * colorScale,
-        (alphaCol >= 0) ? (*dense)(i, alphaCol) * alphaScale : 1.0 });
-    }
-
-    std::vector<ColorRGB> colors;
-    if (positionCol >= 0 && rows > 1)
-    {
-      std::stable_sort(stops.begin(), stops.end(),
-        [](const Stop& a, const Stop& b) { return a.x < b.x; });
-      colors = resampleColors(stops, 256);
-    }
-    else
-    {
-      std::transform(stops.begin(), stops.end(), std::back_inserter(colors),
-        [](const Stop& s) { return ColorRGB(s.r, s.g, s.b); });
-    }
-
-    // ColorMap stores alpha separately, as (position, alpha) control points.
-    std::vector<double> alphaPoints;
-    if (alphaCol >= 0)
-    {
-      for (const auto& stop : stops)
-      {
-        alphaPoints.push_back(stop.x);
-        alphaPoints.push_back(stop.a);
-      }
-    }
-
-    auto colorMap = StandardColorMapFactory::create(colors, "Custom",
-      256, 0.0, false, 0.5, 1.0, alphaPoints);
-
-    sendOutput(OutputColorMap, colorMap);
+    error("Input must be a dense matrix of color values.");
+    return;
   }
+
+  const auto rows = dense->nrows();
+  const auto cols = dense->ncols();
+  if (rows < 1 || cols < 1)
+  {
+    error("Input matrix is empty; expected at least one color control point.");
+    return;
+  }
+
+  auto state = get_state();
+  const bool autoDetect = state->getValue(Parameters::AutoDetectColumns).toBool();
+  const auto roles = resolveRoles(autoDetect, cols,
+    state->getValue(Parameters::ColumnRoles).toVector());
+  publishColumns(roles);
+
+  ColumnMapping mapping;
+  const auto problem = mapColumns(roles, autoDetect, mapping);
+  if (!problem.empty())
+  {
+    error(problem);
+    return;
+  }
+
+  const auto colorScale = colorScaleFor(*dense, mapping);
+  if (colorScale != 1.0)
+    remark("Color values exceed 1; interpreting them as 0-255 and scaling to 0-1.");
+
+  sendOutput(OutputColorMap,
+    makeColorMap(buildStops(*dense, mapping, colorScale), mapping));
+}
+
+// Reported to the dialog before the mapping is validated, so the column list
+// still appears when the roles are rejected.
+void ConvertMatrixToColorMap::publishColumns(const std::vector<ColumnRole>& roles)
+{
+  auto state = get_state();
+  state->setTransientValue(Parameters::MatrixColumnCount, static_cast<int>(roles.size()));
+
+  std::vector<std::string> roleNames;
+  std::transform(roles.begin(), roles.end(), std::back_inserter(roleNames), roleName);
+  state->setTransientValue(Parameters::DetectedColumnRoles, roleNames);
 }

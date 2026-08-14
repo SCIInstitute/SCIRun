@@ -76,6 +76,9 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
         NEW_HELP_WEBPAGE_ONLY
+
+      private:
+        void publishColumns(const std::vector<ColumnRole>& roles);
       };
     }
   }
