@@ -180,6 +180,12 @@ IF(NOT BUILD_HEADLESS)
   # Qt package discovery
   # ------------------------------------------------------------
   IF(IS_DIRECTORY "${Qt_PATH}")
+    # HINTS below only steers the Qt6 lookup itself. Qt's config files resolve
+    # their own *Tools packages with find_dependency(), which searches
+    # CMAKE_PREFIX_PATH and never sees those hints -- so Qt6DBus ->
+    # Qt6DBusTools -> Qt6CoreTools fails even with everything under Qt_PATH.
+    SET(CMAKE_PREFIX_PATH "${Qt_PATH}" ${CMAKE_PREFIX_PATH})
+
     if (QT_VERSION_MAJOR STREQUAL "6")
       FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
         COMPONENTS

@@ -478,6 +478,13 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # Find and configure Qt
 
 IF(NOT BUILD_HEADLESS)
+  # Qt's config files pull in their *Tools packages via find_dependency(), which
+  # searches CMAKE_PREFIX_PATH rather than the HINTS given below. The Superbuild
+  # forwards Qt*_DIR for some of those packages, but not all of them.
+  IF(IS_DIRECTORY "${Qt_PATH}")
+    SET(CMAKE_PREFIX_PATH "${Qt_PATH}" ${CMAKE_PREFIX_PATH})
+  ENDIF()
+
   if (${QT_VERSION_MAJOR} STREQUAL "6")
     FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
   else()
