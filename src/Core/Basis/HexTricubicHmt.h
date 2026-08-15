@@ -76,9 +76,9 @@ public:
 
   /// Evaluate 64-term tricubic Hermite weighted sum shared by interpolate and derivate.
   template <class ElemData>
-  double evaluateHexCubicBasis(const double* w, const ElemData& cd) const
+  T evaluateHexCubicBasis(const double* w, const ElemData& cd) const
   {
-    return (w[0]  * cd.node0() +
+    return static_cast<T>(w[0]  * cd.node0() +
 	    w[1]  * this->derivs_[cd.node0_index()][0] +
 	    w[2]  * this->derivs_[cd.node0_index()][1] +
 	    w[3]  * this->derivs_[cd.node0_index()][2] +
