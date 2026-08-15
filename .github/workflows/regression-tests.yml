@@ -1,13 +1,23 @@
 name: regression-tests
 
+# Regression and coverage matrix: master pushes, nightly, and on demand. Pull
+# requests are covered by the slim tier in pr.yml -- see the comment at the top
+# of that file for why no required check may live in a path-filtered workflow.
+
 on:
   push:
     branches:
       - regression-tests-ci
       - master
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
+  schedule:
+    - cron: '45 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   linux-headless-regression:

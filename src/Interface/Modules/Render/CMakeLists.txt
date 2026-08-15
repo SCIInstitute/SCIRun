@@ -51,6 +51,7 @@ SET(Interface_Modules_Render_FORMS
   DevControls.ui
   LightControls.ui
   ViewAxisChooser.ui
+  ViewSceneShortcuts.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
@@ -60,6 +61,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewSceneControlsDock.h
   ViewOspraySceneConfig.h
   GLWidget.h
+  OffscreenGLRenderer.h
   GLContextPlatformCompatibility.h
   Screenshot.h
   OsprayViewerDialog.h
@@ -97,6 +99,7 @@ SET(Interface_Modules_Render_SOURCES
   ViewSceneUtility.cc
   ViewSceneControlsDock.cc
   GLWidget.cc
+  OffscreenGLRenderer.cc
   Screenshot.cc
   OsprayViewerDialog.cc
   ViewOspraySceneConfig.cc

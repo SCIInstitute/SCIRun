@@ -1,12 +1,24 @@
 name: windows-build-script
 
+# Exercises build.ps1 end to end: master pushes, nightly, and on demand. Pull
+# requests are covered by the slim tier in pr.yml -- see the comment at the top
+# of that file for why no required check may live in a path-filtered workflow.
+
 on:
   push:
+    branches:
+      - master
     paths-ignore:
       - 'docs/**'
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
+  schedule:
+    - cron: '15 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   windows-headless:

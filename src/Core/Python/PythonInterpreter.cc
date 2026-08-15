@@ -607,6 +607,9 @@ void PythonInterpreter::set_python_argv(const std::vector<std::string>& argv)
 
 void PythonInterpreter::initialize(bool needProgramName, const std::string& commandLine, const boost::filesystem::path& libPath)
 {
+  if (this->private_->initialized_)
+    return;
+
   const auto argv = argvFromFullString(commandLine);
 
   if (needProgramName)

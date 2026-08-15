@@ -66,17 +66,11 @@ SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(stat
 
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
-	setStateStringFromAlgo(Parameters::TikhonovImplementation);
 	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
-	setStateIntFromAlgo(Parameters::regularizationChoice);
-	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-	setStateDoubleFromAlgo(Parameters::LambdaMin);
-	setStateDoubleFromAlgo(Parameters::LambdaMax);
-	setStateIntFromAlgo(Parameters::LambdaNum);
-	setStateDoubleFromAlgo(Parameters::LambdaResolution);
-	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
-	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
+	copyAlgoToState({Parameters::TikhonovImplementation, Parameters::regularizationChoice,
+		Parameters::LambdaFromDirectEntry, Parameters::LambdaMin, Parameters::LambdaMax,
+		Parameters::LambdaNum, Parameters::LambdaResolution, Parameters::LambdaSliderValue,
+		Parameters::regularizationSolutionSubcase, Parameters::regularizationResidualSubcase});
 }
 // execute function
 void SolveInverseProblemWithTikhonov::execute()
@@ -99,15 +93,10 @@ void SolveInverseProblemWithTikhonov::execute()
     state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
     setAlgoStringFromState(Parameters::TikhonovImplementation);
     setAlgoOptionFromState(Parameters::RegularizationMethod);
-    setAlgoIntFromState(Parameters::regularizationChoice);
-    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
-    setAlgoDoubleFromState(Parameters::LambdaMin);
-    setAlgoDoubleFromState(Parameters::LambdaMax);
-    setAlgoIntFromState(Parameters::LambdaNum);
-    setAlgoDoubleFromState(Parameters::LambdaResolution);
-    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
-    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
+    copyStateToAlgo({Parameters::regularizationChoice, Parameters::LambdaFromDirectEntry,
+      Parameters::LambdaMin, Parameters::LambdaMax, Parameters::LambdaNum,
+      Parameters::LambdaResolution, Parameters::LambdaSliderValue,
+      Parameters::regularizationSolutionSubcase, Parameters::regularizationResidualSubcase});
 
 		// run
 		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
