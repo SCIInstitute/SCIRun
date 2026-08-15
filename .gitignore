@@ -33,3 +33,4 @@ cmake
 
 # Sphinx builds
 docs/_build/
+/build

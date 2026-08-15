@@ -51,6 +51,7 @@ SET(Interface_Modules_Render_FORMS
   DevControls.ui
   LightControls.ui
   ViewAxisChooser.ui
+  ViewSceneShortcuts.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
@@ -60,6 +61,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewSceneControlsDock.h
   ViewOspraySceneConfig.h
   GLWidget.h
+  OffscreenGLRenderer.h
   GLContextPlatformCompatibility.h
   Screenshot.h
   OsprayViewerDialog.h
@@ -98,6 +100,7 @@ SET(Interface_Modules_Render_SOURCES
   ViewSceneUtility.cc
   ViewSceneControlsDock.cc
   GLWidget.cc
+  OffscreenGLRenderer.cc
   Screenshot.cc
   OsprayViewerDialog.cc
   ViewOspraySceneConfig.cc
@@ -135,7 +138,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${OPENGL_LIBRARIES}
   ${QT_OPENGL_LIBRARY}
   ${SCI_SPIRE_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${SCI_FREETYPE_LIBRARY}
   ${SCI_LODEPNG_LIBRARY}
@@ -144,6 +146,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render ${QT_GRAPHICS_LIBRARIES})
+TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt::Svg)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)

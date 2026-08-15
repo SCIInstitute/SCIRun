@@ -631,7 +631,8 @@ void GeometryBuilder::renderFacesLinear(
 
       if(useColorMap)
       {
-        // Element data (Cells) so two sided faces.
+        // Element data (Cells) so two sided faces. Boundary faces have only one
+        // adjacent cell, so both sides get its value.
         if (isCellData)
         {
           VMesh::Elem::array_type cells;
@@ -653,7 +654,7 @@ void GeometryBuilder::renderFacesLinear(
           {
             fld->get_value(vvals[0], cells[0]);
             if (cells.size() > 1) fld->get_value(vvals[1], cells[1]);
-            else svals[1] = svals[0];
+            else vvals[1] = vvals[0];
 
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
@@ -665,7 +666,7 @@ void GeometryBuilder::renderFacesLinear(
           {
             fld->get_value(tvals[0], cells[0]);
             if (cells.size() > 1) fld->get_value(tvals[1], cells[1]);
-            else svals[1] = svals[0];
+            else tvals[1] = tvals[0];
 
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {

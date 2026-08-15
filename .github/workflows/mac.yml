@@ -1,11 +1,31 @@
 name: mac-build
 
+# Full mac matrix: master pushes, nightly, and on demand. Pull requests are
+# covered by the slim tier in pr.yml -- see the comment at the top of that file
+# for why no required check may live in a path-filtered workflow.
+
 on:
-  pull_request:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
     paths-ignore:
       - 'docs/**'
+  schedule:
+    - cron: '30 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # GUI builds
+  # ---------------------------------------------------------------------------
   mac-gui:
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -16,12 +36,46 @@ jobs:
       build-with-python: true
       artifact-name: SCIRunMacInstaller
 
-  mac-headless:
+  mac-gui-26:
     uses: ./.github/workflows/reusable-build.yml
     with:
-      runner: macOS-latest
-      variant: headless
-      build-testing: true
+      runner: macos-26
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      artifact-name: SCIRunMacInstaller-26
+
+  mac-gui-26-intel:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macos-26-intel
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      artifact-name: SCIRunMacInstaller-26-intel
+
+  # Oldest available macOS image, built with the GUI. Every other mac-gui job runs
+  # on macOS-latest (currently the macos-26 image), and the only macOS 14 jobs are
+  # headless -- but src/CMakeLists.txt skips ADD_SUBDIRECTORY(Interface) when
+  # BUILD_HEADLESS is on, so without this job nothing compiles src/Interface for an
+  # older macOS at all. That gap let a macOS-15-only libSystem symbol (quick_exit)
+  # link cleanly on the 26 runners and abort at load on macOS 14 (PR #2564).
+  #
+  # Pinned deliberately to the oldest image rather than macOS-latest: running the
+  # newest macOS is already covered several times over, and only the oldest one
+  # exercises the lower deployment target. macOS-14 is deprecated by GitHub, so when
+  # it is retired this should be bumped to the next-oldest image, not deleted.
+  mac-gui-14-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-14
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      run-smoke-test: true
 
   mac-gui-nonpython:
     uses: ./.github/workflows/reusable-build.yml
@@ -43,3 +97,99 @@ jobs:
       variant: gui
       with-ospray: true
       artifact-name: SCIRunMacOsprayInstaller
+
+  # ---------------------------------------------------------------------------
+  # Publish installers to a GitHub Release (issue #2398). Nightly on cron/master
+  # push; a draft versioned release on a v* tag. Windows publishes to the same
+  # releases from windows.yml. mac-gui-ospray is if:false, so it is not a dep.
+  # ---------------------------------------------------------------------------
+  publish-nightly:
+    needs: [mac-gui, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: nightly
+
+  publish-stable:
+    needs: [mac-gui, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/publish-release.yml
+    with:
+      channel: stable
+
+  # ---------------------------------------------------------------------------
+  # Headless builds (with testing enabled)
+  # ---------------------------------------------------------------------------
+  mac-headless:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      variant: headless
+      build-testing: true
+      run-smoke-test: true
+
+  mac-headless-14-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-14
+      variant: headless
+      build-testing: true
+      run-smoke-test: true
+
+  mac-headless-14-arm-slim:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-14
+      variant: headless
+      build-testing: true
+      build-with-python: false
+      run-unit-tests: true
+      run-smoke-test: true
+
+  mac-headless-15-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-15
+      variant: headless
+      build-testing: true
+      run-smoke-test: true
+
+  mac-headless-15-arm-slim:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-15
+      variant: headless
+      build-testing: true
+      build-with-python: false
+      run-unit-tests: true
+      run-smoke-test: true
+
+  mac-headless-15-intel:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-15-intel
+      variant: headless
+      build-testing: true
+      run-smoke-test: true
+
+  mac-headless-15-intel-slim:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-15-intel
+      variant: headless
+      build-testing: true
+      build-with-python: false
+      run-unit-tests: true
+      run-smoke-test: true
+
+  mac-headless-26:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-26
+      variant: headless
+      build-testing: true
+      run-smoke-test: true

@@ -107,7 +107,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Base
   Core_Datatypes
   Dataflow_State
   Core_Application_Preferences
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 

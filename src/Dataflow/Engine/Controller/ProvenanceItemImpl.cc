@@ -63,7 +63,7 @@ std::string ModuleAddedProvenanceItem::name() const
 std::string ModuleAddedProvenanceItem::undoCode() const
 {
 #ifdef BUILD_WITH_PYTHON
-  if (redone_)
+  if (redone_ && nedPy_)
   {
     // logCritical("here is where i need to pull the most recently added id");
     moduleId_ = nedPy_->mostRecentAddModuleId();

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   Copyright (c) 2020-2026 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -65,7 +65,9 @@ int mainImpl(int argc, const char* argv[], char **environment)
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
   //TODO: https://doc.qt.io/qt-5/qapplication.html#details
 #ifndef BUILD_HEADLESS
-  if (Application::Instance().parameters()->disableGui() || Application::Instance().parameters()->help()) 
+  if (Application::Instance().parameters()->disableGui()
+    || Application::Instance().parameters()->help()
+    || Application::Instance().parameters()->version())
   {
     return ConsoleApplication::run(argc, argv);
   }

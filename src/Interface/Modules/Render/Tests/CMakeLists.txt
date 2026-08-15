@@ -42,7 +42,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render_Tests
   Interface_Modules_Render
   ${OPENGL_LIBRARIES}
   ${QT_OPENGL_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   Testing_Utils
   Testing_ModuleTestBase

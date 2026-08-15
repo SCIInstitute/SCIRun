@@ -78,7 +78,7 @@ class MapFieldDataOntoNodesPAlgo : public Interruptible
     const AlgorithmBase* algo_;
 
     bool is_flux_;
-    std::vector<bool> success_;
+    ParallelSuccessFlags success_;
 
   private:
     Barrier barrier_;
