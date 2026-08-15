@@ -338,15 +338,15 @@ std::string NetworkEditorPythonAPI::scirun_set_module_transient_state(const std:
   return "Module or value not found";
 }
 
-std::string NetworkEditorPythonAPI::scirun_dump_module_state(const std::string& moduleId)
+boost::python::object NetworkEditorPythonAPI::scirun_dump_module_state(const std::string& moduleId)
 {
   Guard g(pythonLock_);
   auto module = impl_->findModule(moduleId);
   if (module)
   {
-    return module->stateToString();
+    return module->stateAsDict();
   }
-  return "Module not found";
+  return boost::python::object();
 }
 
 /// @todo: bizarre reason for this return type and casting. but it works.

@@ -459,19 +459,19 @@ namespace
       return {};
     }
 
-    std::string stateToString() const override
+    py::object stateAsDict() const override
     {
       if (module_)
       {
-        std::ostringstream ostr;
+        py::dict stateDict;
         auto state = module_->get_state();
         for (const auto& key : state->getKeys())
         {
-          ostr << state->getValue(key) << std::endl;
+          stateDict[key.name()] = convertVariableToPythonObject(state->getValue(key));
         }
-        return ostr.str();
+        return stateDict;
       }
-      return "[null module]";
+      return py::object();
     }
 
     SharedPointer<PyPorts> output() override

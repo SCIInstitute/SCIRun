@@ -34,7 +34,7 @@
 * `scirun_set_module_state("ModuleID", "StateVariableName", value)`
   * Sets the specified module state variable's value.
 * `scirun_dump_module_state("ModuleID")`
-  * Returns a dictionary with the entire state of the specified module.
+  * Returns a dictionary of the entire state of the specified module, keyed by state variable name. Returns `None` if no module has that ID.
 * `scirun_get_module_transient_state("ModuleID", "StateVariableName")`
   * Returns the value of the specified module transient state variable.
 * `scirun_set_module_transient_state("ModuleID", "StateVariableName", value)`
