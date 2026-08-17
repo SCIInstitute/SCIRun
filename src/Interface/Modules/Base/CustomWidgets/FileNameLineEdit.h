@@ -25,56 +25,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_BASE_CUSTOMWIDGETS_FILENAMELINEEDIT_H
+#define INTERFACE_MODULES_BASE_CUSTOMWIDGETS_FILENAMELINEEDIT_H
 
-#ifndef INTERFACE_APPLICATION_NOTESEDITOR_H
-#define INTERFACE_APPLICATION_NOTESEDITOR_H
+#include <QLineEdit>
+#include <Interface/Modules/Base/share.h>
 
-#include "ui_NoteEditor.h"
-
-#include <Interface/Application/Note.h>
-#include <Dataflow/Network/NetworkFwd.h>
-
-namespace SCIRun {
-namespace Gui {
-
-class NoteEditor : public QDialog, public Ui::NoteEditor
+// Note: intentionally in the global namespace so that uic-generated code
+// (which cannot qualify custom widget names) can construct this class directly.
+class SCISHARE FileNameLineEdit : public QLineEdit
 {
-	Q_OBJECT
-
+  Q_OBJECT
 public:
-  explicit NoteEditor(const QString& moduleName, bool positionAdjustable = true, QWidget* parent = nullptr);
-  void setNoteHtml(const QString& text);
-public Q_SLOTS:
-  void changeNotePosition(int index);
-  void setNoteFontSize(int size);
-  void setDefaultNoteFontSize(int size);
-private Q_SLOTS:
-  void changeTextColor();
-  void changeFontSize(const QString& text);
-  void changeTextAlignment(const QString& text);
-  void resetText();
-  void resetTextColor();
+  explicit FileNameLineEdit(QWidget* parent = nullptr);
 
-  void ok();
-  void cancel();
-  void updateNote();
-Q_SIGNALS:
-  void noteChanged(const Note& note);
 protected:
-  void showEvent(QShowEvent* event) override;
-private:
-  void setNoteColor(const QColor& color);
-  QString moduleName_;
-  Note currentNote_;
-  QString noteHtmlBackup_;
-  int fontSizeBackup_, positionBackup_;
-  QColor previousColor_, currentColor_, colorBackup_;
-  NotePosition position_;
-  int defaultNoteFontSize_{ 20 };
-  int callCount_{ 0 };
+  void dragEnterEvent(QDragEnterEvent* event) override;
+  void dropEvent(QDropEvent* event) override;
 };
-
-}
-}
 
 #endif

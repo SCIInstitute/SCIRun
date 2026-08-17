@@ -267,6 +267,8 @@ private:
   bool deletedFromGui_, colorLocked_;
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_, programmablePortEnabled_{false};
   std::atomic<bool> errored_;
+  enum class LogColorPriority { None = 0, Remark = 1, Warning = 2, Error = 3 };
+  std::atomic<int> currentLogPriority_ { static_cast<int>(LogColorPriority::None) };
   int previousPageIndex_ {0};
   QDialog* replaceWithDialog_{ nullptr };
 
