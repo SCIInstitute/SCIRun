@@ -68,6 +68,17 @@ set(LibXML2_INCLUDE
     ${BINARY_DIR}/include
     CACHE PATH "libxml2 include directory")
 
+find_library(
+    LibXML2_LIBRARY
+    NAMES xml2 libxml2
+    PATHS
+      ${BINARY_DIR}
+      ${BINARY_DIR}/lib
+      ${BINARY_DIR}/Release
+      ${BINARY_DIR}/Debug
+    NO_DEFAULT_PATH
+)
+
 set(LibXML2_LIBRARY
-    ${BINARY_DIR}/lib/xml2.lib
+    ${LibXML2_LIBRARY}
     CACHE FILEPATH "libxml2 library")

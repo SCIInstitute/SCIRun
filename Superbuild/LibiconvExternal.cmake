@@ -26,24 +26,60 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY EP_BASE ${ep_base})
 
-ExternalProject_Add(Libiconv_external
-  GIT_REPOSITORY ${LIBICONV_GIT_URL}
-  GIT_TAG ${LIBICONV_GIT_TAG}
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
-  CMAKE_CACHE_ARGS
-    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-)
+find_package(Iconv)
 
-ExternalProject_Get_Property(Libiconv_external BINARY_DIR)
+if(Iconv_FOUND)
 
-SET(LIBICONV_INCLUDE_DIR
-    ${BINARY_DIR}/include
-    CACHE PATH "")
+  message(STATUS "Using system Iconv")
 
-SET(LIBICONV_LIBRARY
-    ${BINARY_DIR}/lib/iconv.lib
-    CACHE FILEPATH "")
+  set(LIBICONV_INCLUDE_DIR
+      ${Iconv_INCLUDE_DIR}
+      CACHE PATH "Iconv include dir")
+
+  set(LIBICONV_LIBRARY
+      ${Iconv_LIBRARY}
+      CACHE FILEPATH "Iconv library")
+
+  set(LIBICONV_DIR
+      "SYSTEM"
+      CACHE PATH "Iconv source")
+
+else()
+
+  message(STATUS "Iconv not found, building external libiconv")
+
+  ExternalProject_Add(
+    Libiconv_external
+
+    GIT_REPOSITORY ${LIBICONV_GIT_URL}
+    GIT_TAG        ${LIBICONV_GIT_TAG}
+
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+
+    # TODO:
+    # configure/build commands for your chosen iconv source
+
+    INSTALL_DIR    ${ep_install_dir}
+
+    CMAKE_CACHE_ARGS
+      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+      -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+  )
+
+  ExternalProject_Get_Property(Libiconv_external BINARY_DIR)
+
+  set(LIBICONV_DIR
+      ${BINARY_DIR}
+      CACHE PATH "Iconv build dir")
+
+  if(WIN32)
+    set(LIBICONV_LIBRARY
+        ${BINARY_DIR}/lib/iconv.lib
+        CACHE FILEPATH "Iconv library")
+  endif()
+
+endif()
+
+message(STATUS "LIBICONV_INCLUDE_DIR: ${LIBICONV_INCLUDE_DIR}")
+message(STATUS "LIBICONV_LIBRARY: ${LIBICONV_LIBRARY}")
