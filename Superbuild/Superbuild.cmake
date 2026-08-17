@@ -260,6 +260,8 @@ ADD_EXTERNAL( ${SUPERBUILD_DIR}/SpdLogExternal.cmake SpdLog_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/Cleaver2External.cmake Cleaver2_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibiconvExternal.cmake Libiconv_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/Libxml2External.cmake Libxml2_external )
 
 IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
@@ -345,6 +347,10 @@ SET(SCIRUN_CACHE_ARGS
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
+    "-DLIBICONV_DIR:PATH=${LIBICONV_DIR}"
+    "-DLIBXML2_DIR:PATH=${LIBXML2_DIR}"
+    "-DLibXML2_INCLUDE:PATH=${LibXML2_INCLUDE}"
+    "-DLibXML2_LIBRARY:FILEPATH=${LibXML2_LIBRARY}"
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
 
