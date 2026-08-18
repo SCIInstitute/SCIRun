@@ -521,6 +521,22 @@ void ModuleWidget::subnetButtonClicked()
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
+  const auto incoming = static_cast<int>(
+    (color == Qt::red)    ? LogColorPriority::Error   :
+    (color == Qt::yellow) ? LogColorPriority::Warning :
+                            LogColorPriority::Remark);
+
+  // Only update if the incoming message has strictly higher priority than
+  // whatever is already shown (fixes #103: remark after error stays red).
+  int expected = currentLogPriority_.load();
+  while (incoming > expected)
+  {
+    if (currentLogPriority_.compare_exchange_weak(expected, incoming))
+      break;
+  }
+  if (incoming <= expected)
+    return;
+
   if (color == Qt::red)
   {
     errored_ = true;
@@ -531,6 +547,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
 
 void ModuleWidget::resetLogButtonColor()
 {
+  currentLogPriority_ = static_cast<int>(LogColorPriority::None);
   fullWidgetDisplay_->setStatusColor("");
 }
 
@@ -1092,6 +1109,7 @@ bool ModuleWidget::executeWithSignals()
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
+    currentLogPriority_ = static_cast<int>(LogColorPriority::None);
     //colorLocked_ = true; //TODO
     timer_.reset(new SimpleScopedTimer);
     theModule_->executeWithSignals();

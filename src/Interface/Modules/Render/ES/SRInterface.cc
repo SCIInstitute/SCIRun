@@ -1078,7 +1078,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               {
                 mSelectedID = entityID;
               }
-              mEntityIdMap.insert(std::make_pair(objectName, entityID));
+              mEntityIdMap.emplace(objectName, entityID);
 
               mCore.addComponent(entityID, trafo);
 
@@ -1171,7 +1171,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           for (const auto& pass : it->mPasses)
           {
             uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
-            mEntityIdMap.insert(std::make_pair(it->mName, entityID));
+            mEntityIdMap.emplace(it->mName, entityID);
           }
           ++it;
         }
