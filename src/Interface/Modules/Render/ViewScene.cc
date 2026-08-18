@@ -2961,8 +2961,8 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
   uint32_t vboSize = sizeof(float) * 3 * static_cast<uint32_t>(points.size());
 
-  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(vboSize));
-  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(iboSize));
+  auto iboBufferSPtr = std::make_shared<spire::VarBuffer>(vboSize);
+  auto vboBufferSPtr = std::make_shared<spire::VarBuffer>(iboSize);
 
   auto* iboBuffer = iboBufferSPtr.get();
   auto* vboBuffer = vboBufferSPtr.get();
