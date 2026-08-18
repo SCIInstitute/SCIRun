@@ -40,7 +40,7 @@ SCIRUN_ADD_LIBRARY(Core_XMLUtil ${Core_XMLUtil_SRCS} ${Core_XMLUtil_HEADERS})
 
 TARGET_LINK_LIBRARIES( Core_XMLUtil
   Core_Util_Legacy
-  ${LibXML2_LIBRARY}
+  LibXml2::LibXml2
 )
 
 IF(BUILD_SHARED_LIBS)
