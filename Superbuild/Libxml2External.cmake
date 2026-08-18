@@ -44,6 +44,7 @@ ExternalProject_Add(Libxml2_external
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
 
+    -DBUILD_SHARED_LIBS:BOOL=OFF
     -DLIBXML2_WITH_ICONV:BOOL=OFF
     -DLIBXML2_WITH_ZLIB:BOOL=OFF
 )
@@ -53,22 +54,3 @@ ExternalProject_Get_Property(Libxml2_external BINARY_DIR)
 SET(LibXML2_DIR ${BINARY_DIR} CACHE PATH "")
 
 MESSAGE(STATUS "LibXML2_DIR: ${LibXML2_DIR}")
-
-set(LibXML2_INCLUDE
-    ${BINARY_DIR}/include
-    CACHE PATH "libxml2 include directory")
-
-find_library(
-    LibXML2_LIBRARY
-    NAMES xml2 libxml2
-    PATHS
-      ${BINARY_DIR}
-      ${BINARY_DIR}/lib
-      ${BINARY_DIR}/Release
-      ${BINARY_DIR}/Debug
-    NO_DEFAULT_PATH
-)
-
-set(LibXML2_LIBRARY
-    ${LibXML2_LIBRARY}
-    CACHE FILEPATH "libxml2 library")
