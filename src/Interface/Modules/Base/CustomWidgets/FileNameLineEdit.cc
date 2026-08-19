@@ -25,56 +25,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/Base/CustomWidgets/FileNameLineEdit.h>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
+#include <QUrl>
 
-#ifndef INTERFACE_APPLICATION_NOTESEDITOR_H
-#define INTERFACE_APPLICATION_NOTESEDITOR_H
-
-#include "ui_NoteEditor.h"
-
-#include <Interface/Application/Note.h>
-#include <Dataflow/Network/NetworkFwd.h>
-
-namespace SCIRun {
-namespace Gui {
-
-class NoteEditor : public QDialog, public Ui::NoteEditor
+FileNameLineEdit::FileNameLineEdit(QWidget* parent)
+  : QLineEdit(parent)
 {
-	Q_OBJECT
-
-public:
-  explicit NoteEditor(const QString& moduleName, bool positionAdjustable = true, QWidget* parent = nullptr);
-  void setNoteHtml(const QString& text);
-public Q_SLOTS:
-  void changeNotePosition(int index);
-  void setNoteFontSize(int size);
-  void setDefaultNoteFontSize(int size);
-private Q_SLOTS:
-  void changeTextColor();
-  void changeFontSize(const QString& text);
-  void changeTextAlignment(const QString& text);
-  void resetText();
-  void resetTextColor();
-
-  void ok();
-  void cancel();
-  void updateNote();
-Q_SIGNALS:
-  void noteChanged(const Note& note);
-protected:
-  void showEvent(QShowEvent* event) override;
-private:
-  void setNoteColor(const QColor& color);
-  QString moduleName_;
-  Note currentNote_;
-  QString noteHtmlBackup_;
-  int fontSizeBackup_, positionBackup_;
-  QColor previousColor_, currentColor_, colorBackup_;
-  NotePosition position_;
-  int defaultNoteFontSize_{ 20 };
-  int callCount_{ 0 };
-};
-
-}
+  setAcceptDrops(true);
 }
 
-#endif
+void FileNameLineEdit::dragEnterEvent(QDragEnterEvent* event)
+{
+  if (event->mimeData()->hasUrls())
+    event->acceptProposedAction();
+  else
+    QLineEdit::dragEnterEvent(event);
+}
+
+void FileNameLineEdit::dropEvent(QDropEvent* event)
+{
+  const auto urls = event->mimeData()->urls();
+  if (!urls.isEmpty())
+  {
+    setText(urls.first().toLocalFile());
+    Q_EMIT editingFinished();
+  }
+}

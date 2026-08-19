@@ -76,3 +76,33 @@ jobs:
       runner: ubuntu-24.04-arm
       variant: gui
       build-with-python: false
+
+  # ---------------------------------------------------------------------------
+  # Ubuntu 26.04 (public preview since 2026-06-11, actions/runner-images#14226).
+  # New toolchain and new system libraries; ubuntu-latest stays 24.04 until GA,
+  # so nothing above this line exercises 26.04.
+  #
+  # Same shape as the VS 2026 jobs in windows.yml: nightly-only, never in the PR
+  # tier (pr.yml), and allow-failure so a preview-image break reports red without
+  # failing the run. nightly-slack.yml names continue-on-error job failures
+  # explicitly, so these still surface in Slack.
+  #
+  # ONE job on purpose, not a gui/headless/qt6 spread. 26.04 defaults to GCC
+  # 15.2, and src/Externals/libxml2 is libxml2 2.6.22 (2005) built
+  # unconditionally for every variant -- so today every variant dies in the same
+  # place, and a spread would just buy three identical ~60-minute logs a night.
+  # The Qt5-availability question a gui job would answer is already answered
+  # cheaper: the `Prepare (linux)` step in reusable-build.yml runs its apt calls
+  # on every ubuntu runner regardless of variant, and warns if apt Qt5 is gone.
+  #
+  # Once libxml2 compiles here, widen this to mirror the x86_64 trio above (and
+  # ubuntu-26.04-arm, also in preview) -- at that point the variants diverge and
+  # each earns its slot.
+  # ---------------------------------------------------------------------------
+  linux-2604-headless:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-26.04
+      variant: headless
+      build-testing: true
+      allow-failure: true

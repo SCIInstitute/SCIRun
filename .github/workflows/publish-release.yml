@@ -73,9 +73,19 @@ jobs:
           tag_name: nightly
           name: Nightly build
           prerelease: true
-          body: >-
+          body: |
             Automated nightly build. Assets are overwritten on every run;
             the tag tracks the latest master commit that produced them.
+
+            **These binaries are not signed or notarized** (issue #1663), so
+            both platforms will refuse to launch them straight from a download.
+            On macOS, clear the quarantine flag first:
+
+            ```
+            xattr -dr com.apple.quarantine <downloaded>.pkg
+            ```
+
+            On Windows, SmartScreen needs "More info" → "Run anyway".
           files: dist/*
 
       - name: Publish stable (draft release on tag)
