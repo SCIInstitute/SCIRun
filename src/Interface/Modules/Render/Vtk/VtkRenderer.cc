@@ -347,8 +347,14 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
   tube->CappingOn();
   tube->Update();
 
+  double range[2];
+  poly->GetScalarRange(range);
+
   auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   mapper->SetInputConnection(tube->GetOutputPort());
+  mapper->ScalarVisibilityOn();
+  mapper->SetScalarRange(range);
+  mapper->SetLookupTable(createLookupTable(geo->tfn, range));
 
   auto actor = vtkSmartPointer<vtkActor>::New();
   actor->SetMapper(mapper);
