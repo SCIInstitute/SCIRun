@@ -95,6 +95,7 @@ namespace SCIRun
       // Call this whenever the window is resized. This will modify the viewport appropriately.
       void eventResize(size_t width, size_t height) override;
       void doAutoView() override;
+      void centerView() override;
       // Sets the selected View of the window
       void setCameraDistance(const float distance) override;
       float getCameraDistance() const override;
