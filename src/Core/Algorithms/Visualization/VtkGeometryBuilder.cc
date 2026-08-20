@@ -763,8 +763,18 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     volumeObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
     volumeObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
     volumeObj->tfn.range = {static_cast<float>(imageScalars->GetRange()[0]), static_cast<float>(imageScalars->GetRange()[1])};
-    volumeObj->tfn.colors = {volumeObj->material.color[0], volumeObj->material.color[1], volumeObj->material.color[2]};
-    volumeObj->tfn.opacities = {volumeObj->material.opacity};
+    if (colorMap)
+    {
+      ColorMap_OSP_helper cmp(colorMap);
+
+      volumeObj->tfn.colors = cmp.colorList_;
+      volumeObj->tfn.opacities = cmp.opacityList_;
+    }
+    else
+    {
+      volumeObj->tfn.colors = {volumeObj->material.color[0], volumeObj->material.color[1], volumeObj->material.color[2]};
+      volumeObj->tfn.opacities = {volumeObj->material.opacity};
+    }
     volumeObj->type = GeometryType::STRUCTURED_VOLUME;
   }
 
@@ -794,12 +804,17 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
 
     double value = 0.0;
     bool value_num = vfield->num_values() > 0;
+    std::vector<double> valueRange(2);
+    valueRange[0] = std::numeric_limits<double>::max();
+    valueRange[1] = std::numeric_limits<double>::lowest();
 
     for (const auto& node : facade->nodes())
     {
       if (value_num)
         vfield->get_value(value, node.index());
       scalars->InsertNextValue(value);
+      valueRange[0] = std::min(valueRange[0], value);
+      valueRange[1] = std::max(valueRange[1], value);
     }
 
     grid->GetPointData()->SetScalars(scalars);
@@ -830,6 +845,19 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     meshObj->material.color[1] = static_cast<float>(algorithm_.get(Parameters::DefaultColorG).toDouble());
     meshObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
     meshObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
+    meshObj->tfn.range = {static_cast<float>(valueRange[0]), static_cast<float>(valueRange[1])};
+    if (colorMap)
+    {
+      ColorMap_OSP_helper cmp(colorMap);
+
+      meshObj->tfn.colors = cmp.colorList_;
+      meshObj->tfn.opacities = cmp.opacityList_;
+    }
+    else
+    {
+      meshObj->tfn.colors = {meshObj->material.color[0], meshObj->material.color[1], meshObj->material.color[2]};
+      meshObj->tfn.opacities = {meshObj->material.opacity};
+    }
     meshObj->type = GeometryType::STRUCTURED_VOLUME;
   }
 
