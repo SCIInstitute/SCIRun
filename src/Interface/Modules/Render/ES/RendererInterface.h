@@ -108,6 +108,8 @@ namespace SCIRun
       virtual glm::mat4 getWidgetTransform() = 0;
       virtual void setView(const glm::vec3& view, const glm::vec3& up) = 0;
       virtual void doAutoView() = 0;
+      // Recenters the camera on the scene bounding box without changing the zoom.
+      virtual void centerView() = 0;
       virtual void setZoomSpeed(int zoomSpeed) = 0;
       virtual glm::vec2 autoRotateVector() const = 0;
       virtual void setAutoRotateVector(const glm::vec2& axis) = 0;
