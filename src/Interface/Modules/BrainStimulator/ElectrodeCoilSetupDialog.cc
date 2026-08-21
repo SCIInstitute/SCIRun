@@ -168,19 +168,19 @@ std::vector<Variable> ElectrodeCoilSetupDialog::validate_numerical_input(int i)
   int stimtype_ind=((QComboBox *)stimTypeVector_[i])->currentIndex();
   static const std::string unknown("???");
 
-  values.push_back(Variable(ElectrodeCoilSetupAlgorithm::columnNames[0], boost::lexical_cast<std::string>(inputport_ind)));
-  values.push_back(Variable(Name("Type"), boost::lexical_cast<std::string>(stimtype_ind)));
+  values.emplace_back(ElectrodeCoilSetupAlgorithm::columnNames[0], boost::lexical_cast<std::string>(inputport_ind));
+  values.emplace_back(Name("Type"), boost::lexical_cast<std::string>(stimtype_ind));
 
   for (int j=2; j<ElectrodeCoilSetupAlgorithm::number_of_columns; j++)
   {
    try
    {
      boost::lexical_cast<double>((electrode_coil_tableWidget->item(i,j)->text()).toStdString());
-    values.push_back(Variable(ElectrodeCoilSetupAlgorithm::columnNames[j], electrode_coil_tableWidget->item(i,j)->text().toStdString()));
+    values.emplace_back(ElectrodeCoilSetupAlgorithm::columnNames[j], electrode_coil_tableWidget->item(i,j)->text().toStdString());
    }
    catch(boost::bad_lexical_cast &)
    {
-    values.push_back(Variable(ElectrodeCoilSetupAlgorithm::columnNames[j], unknown));
+    values.emplace_back(ElectrodeCoilSetupAlgorithm::columnNames[j], unknown);
    }
   }
 

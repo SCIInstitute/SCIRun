@@ -37,6 +37,21 @@ SHA_MARKER = re.compile(r"<!--\s*nightly-sha:\s*([0-9a-f]{7,40})\s*-->")
 REPO_URL = "https://github.com/SCIInstitute/SCIRun"
 MAX_COMMITS = 50
 
+# Carried over from the fixed body this script replaced (dc9d5885): without it
+# the first thing a downloader hits is Gatekeeper or SmartScreen. Drop when
+# #1663 lands.
+UNSIGNED = f"""\
+**These binaries are not signed or notarized** ([#1663]({REPO_URL}/issues/1663)),
+so both platforms refuse to launch them straight from a download.
+
+On macOS, clear the quarantine flag first:
+
+```
+xattr -dr com.apple.quarantine <downloaded>.pkg
+```
+
+On Windows, SmartScreen needs "More info" &rarr; "Run anyway"."""
+
 
 def block(name: str, body: str) -> str:
     return f"<!-- {name} -->\n{body}\n<!-- /{name} -->"
@@ -181,6 +196,7 @@ def main() -> int:
         f"<!-- nightly-sha: {args.sha} -->",
         "## Downloads",
         *blocks,
+        UNSIGNED,
         "## Changes since the previous nightly",
         block("changes", changes),
     ])

@@ -1,10 +1,10 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
+#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -23,29 +23,32 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-# The only test here drives the TetGen-backed InterfaceWithTetGen module, so it
-# is meaningful only when the library is actually linked in.
-IF(WITH_TETGEN)
-  SET(Modules_Legacy_Fields_Tests_SRCS
-    InterfaceWithTetGenTests.cc
-  )
+SET_PROPERTY(DIRECTORY PROPERTY EP_BASE ${ep_base})
 
-  SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Fields_Tests
-    ${Modules_Legacy_Fields_Tests_SRCS}
-  )
+ExternalProject_Add(Libxml2_external
 
-  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields_Tests
-    Modules_Legacy_Fields
-    Modules_Factory
-    Core_Datatypes
-    Dataflow_Network
-    Dataflow_State
-    Testing_Utils
-    Testing_ModuleTestBase
-    gtest_main
-    gtest
-    gmock
-  )
-ENDIF()
+  GIT_REPOSITORY ${LIBXML2_GIT_URL}
+  GIT_TAG ${LIBXML2_GIT_TAG}
+
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+
+  INSTALL_DIR ${ep_install_dir}
+
+  CMAKE_CACHE_ARGS
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -DLIBXML2_WITH_ICONV:BOOL=OFF
+    -DLIBXML2_WITH_ZLIB:BOOL=OFF
+)
+
+ExternalProject_Get_Property(Libxml2_external INSTALL_DIR)
+
+SET(LibXML2_DIR ${INSTALL_DIR} CACHE PATH "")
+
+MESSAGE(STATUS "LibXML2_DIR: ${LibXML2_DIR}")
