@@ -306,7 +306,7 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
 
   auto color = vtkSmartPointer<vtkColorTransferFunction>::New();
 
-  if (!geo->tfn.range.empty())
+  if (geo->tfn.fromColorMap)
   {
     double minVal = geo->tfn.range[0];
     double maxVal = geo->tfn.range[1];
@@ -314,18 +314,28 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
     const auto& colors = geo->tfn.colors;
     const auto& opacities = geo->tfn.opacities;
 
-    size_t nColors = colors.size() / 3;
-    size_t nAlpha = opacities.size();
-    size_t n = std::min(nColors, nAlpha);
+    const size_t n = std::min(colors.size() / 3, opacities.size());
 
-    for (size_t i = 0; i < n; ++i)
+    if (n == 1)
     {
-      double t = static_cast<double>(i) / (n - 1);
-      double scalar = minVal + t * (maxVal - minVal);
+      color->AddRGBPoint(minVal, colors[0], colors[1], colors[2]);
 
-      color->AddRGBPoint(scalar, colors[3 * i], colors[3 * i + 1], colors[3 * i + 2]);
+      color->AddRGBPoint(maxVal, colors[0], colors[1], colors[2]);
 
-      opacity->AddPoint(scalar, opacities[i]);
+      opacity->AddPoint(minVal, opacities[0]);
+      opacity->AddPoint(maxVal, opacities[0]);
+    }
+    else
+    {
+      for (size_t i = 0; i < n; ++i)
+      {
+        double t = static_cast<double>(i) / (n - 1);
+        double scalar = minVal + t * (maxVal - minVal);
+
+        color->AddRGBPoint(scalar, colors[3 * i], colors[3 * i + 1], colors[3 * i + 2]);
+
+        opacity->AddPoint(scalar, opacities[i]);
+      }
     }
   }
   else
@@ -333,11 +343,12 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
     double range[2];
     image->GetScalarRange(range);
 
-    opacity->AddPoint(range[0], 0.0);
-    opacity->AddPoint(range[1], 1.0);
+    color->AddRGBPoint(range[0], geo->tfn.colors[0], geo->tfn.colors[1], geo->tfn.colors[2]);
 
-    color->AddRGBPoint(range[0], 0.0, 0.0, 1.0);
-    color->AddRGBPoint(range[1], 1.0, 0.0, 0.0);
+    color->AddRGBPoint(range[1], geo->tfn.colors[0], geo->tfn.colors[1], geo->tfn.colors[2]);
+
+    opacity->AddPoint(range[0], 0.0);
+    opacity->AddPoint(range[1], geo->tfn.opacities[0]);
   }
 
   volumeProperty->SetScalarOpacity(opacity);
@@ -366,14 +377,32 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
 
   auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   mapper->SetInputConnection(tube->GetOutputPort());
-  mapper->ScalarVisibilityOn();
-  mapper->SetScalarRange(range);
-  mapper->SetLookupTable(createLookupTable(geo->tfn, range));
+
+  if (geo->tfn.fromColorMap)
+  {
+    mapper->ScalarVisibilityOn();
+    mapper->SetScalarRange(range);
+    mapper->SetLookupTable(createLookupTable(geo->tfn, range));
+  }
+  else
+  {
+    mapper->ScalarVisibilityOff();
+  }
 
   auto actor = vtkSmartPointer<vtkActor>::New();
   actor->SetMapper(mapper);
 
-  applyMaterial(actor, geo->material);
+  if (geo->tfn.colors.empty())
+  {
+    applyMaterial(actor, geo->material);
+  }
+  else
+  {
+    auto prop = actor->GetProperty();
+
+    // optional
+    prop->SetOpacity(1.0);
+  }
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
@@ -390,20 +419,37 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
   tube->CappingOff();
   tube->Update();
 
-  auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-  mapper->SetInputConnection(tube->GetOutputPort());
-
   double range[2];
   poly->GetScalarRange(range);
 
-  mapper->ScalarVisibilityOn();
-  mapper->SetScalarRange(range);
-  mapper->SetLookupTable(createLookupTable(geo->tfn, range));
+  auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  mapper->SetInputConnection(tube->GetOutputPort());
+
+  if (geo->tfn.fromColorMap)
+  {
+    mapper->ScalarVisibilityOn();
+    mapper->SetScalarRange(range);
+    mapper->SetLookupTable(createLookupTable(geo->tfn, range));
+  }
+  else
+  {
+    mapper->ScalarVisibilityOff();
+  }
 
   auto actor = vtkSmartPointer<vtkActor>::New();
   actor->SetMapper(mapper);
 
-  applyMaterial(actor, geo->material);
+  if (geo->tfn.colors.empty())
+  {
+    applyMaterial(actor, geo->material);
+  }
+  else
+  {
+    auto prop = actor->GetProperty();
+
+    // optional
+    prop->SetOpacity(1.0);
+  }
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
@@ -418,14 +464,38 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
   sphere->SetThetaResolution(16);
   sphere->SetPhiResolution(16);
 
+  double range[2];
+  poly->GetScalarRange(range);
+
   auto mapper = vtkSmartPointer<vtkGlyph3DMapper>::New();
   mapper->SetInputData(poly);
   mapper->SetSourceConnection(sphere->GetOutputPort());
 
+  if (geo->tfn.fromColorMap)
+  {
+    mapper->ScalarVisibilityOn();
+    mapper->SetScalarRange(range);
+    mapper->SetLookupTable(createLookupTable(geo->tfn, range));
+  }
+  else
+  {
+    mapper->ScalarVisibilityOff();
+  }
+
   auto actor = vtkSmartPointer<vtkActor>::New();
   actor->SetMapper(mapper);
 
-  applyMaterial(actor, geo->material);
+  if (geo->tfn.colors.empty())
+  {
+    applyMaterial(actor, geo->material);
+  }
+  else
+  {
+    auto prop = actor->GetProperty();
+
+    // optional
+    prop->SetOpacity(1.0);
+  }
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
@@ -446,11 +516,26 @@ vtkSmartPointer<vtkLookupTable> VtkRenderer::createLookupTable(const VtkGeometry
 {
   auto lut = vtkSmartPointer<vtkLookupTable>::New();
 
-  lut->SetRange(range);
-
   if (tfn.colors.empty())
   {
+    lut->SetRange(range);
     lut->SetHueRange(0.667, 0.0);
+    lut->Build();
+    return lut;
+  }
+
+  const size_t n = std::min(tfn.colors.size() / 3, tfn.opacities.empty() ? tfn.colors.size() / 3 : tfn.opacities.size());
+
+  lut->SetNumberOfTableValues(static_cast<vtkIdType>(n));
+  lut->SetRange(range);
+
+  for (size_t i = 0; i < n; ++i)
+  {
+    double a = 1.0;
+
+    if (i < tfn.opacities.size()) a = tfn.opacities[i];
+
+    lut->SetTableValue(static_cast<vtkIdType>(i), tfn.colors[3 * i], tfn.colors[3 * i + 1], tfn.colors[3 * i + 2], a);
   }
 
   lut->Build();

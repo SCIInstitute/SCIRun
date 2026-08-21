@@ -56,9 +56,10 @@ public:
 
     struct TransferFunc
     {
-    std::vector<float> colors;
-    std::vector<float> opacities;
-    std::vector<float> range;
+      bool fromColorMap{false};
+      std::vector<float> colors;
+      std::vector<float> opacities;
+      std::vector<float> range;
     };
 
     VtkGeometryObject() {}

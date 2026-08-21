@@ -311,6 +311,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStreamline(FieldHandle field, Col
 
   if (colorMap)
   {
+    obj->tfn.fromColorMap = true;
     ColorMap_OSP_helper cmp(colorMap);
 
     obj->tfn.colors = cmp.colorList_;
@@ -318,6 +319,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStreamline(FieldHandle field, Col
   }
   else
   {
+    obj->tfn.fromColorMap = false;
     obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
 
     obj->tfn.opacities = {obj->material.opacity};
@@ -541,6 +543,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addTriSurface(FieldHandle field, Col
 
   if (colorMap)
   {
+    obj->tfn.fromColorMap = true;
     ColorMap_OSP_helper cmp(colorMap);
 
     obj->tfn.colors = cmp.colorList_;
@@ -548,6 +551,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addTriSurface(FieldHandle field, Col
   }
   else
   {
+    obj->tfn.fromColorMap = false;
     obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
 
     obj->tfn.opacities = {obj->material.opacity};
@@ -686,11 +690,13 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addQuadSurface(FieldHandle field, Co
   {
     ColorMap_OSP_helper cmp(colorMap);
 
+    obj->tfn.fromColorMap = true;
     obj->tfn.colors = cmp.colorList_;
     obj->tfn.opacities = cmp.opacityList_;
   }
   else
   {
+    obj->tfn.fromColorMap = false;
     obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
 
     obj->tfn.opacities = {obj->material.opacity};
@@ -767,11 +773,13 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     {
       ColorMap_OSP_helper cmp(colorMap);
 
+      volumeObj->tfn.fromColorMap = true;
       volumeObj->tfn.colors = cmp.colorList_;
       volumeObj->tfn.opacities = cmp.opacityList_;
     }
     else
     {
+      volumeObj->tfn.fromColorMap = false;
       volumeObj->tfn.colors = {volumeObj->material.color[0], volumeObj->material.color[1], volumeObj->material.color[2]};
       volumeObj->tfn.opacities = {volumeObj->material.opacity};
     }
@@ -850,11 +858,13 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     {
       ColorMap_OSP_helper cmp(colorMap);
 
+      meshObj->tfn.fromColorMap = true;
       meshObj->tfn.colors = cmp.colorList_;
       meshObj->tfn.opacities = cmp.opacityList_;
     }
     else
     {
+      meshObj->tfn.fromColorMap = false;
       meshObj->tfn.colors = {meshObj->material.color[0], meshObj->material.color[1], meshObj->material.color[2]};
       meshObj->tfn.opacities = {meshObj->material.opacity};
     }
@@ -995,6 +1005,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addUnstructVol(FieldHandle field, Co
   {
     ColorMap_OSP_helper cmp(colorMap);
 
+    obj->tfn.fromColorMap = true;
     obj->tfn.colors = cmp.colorList_;
     obj->tfn.opacities = cmp.opacityList_;
 
@@ -1005,6 +1016,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addUnstructVol(FieldHandle field, Co
   }
   else
   {
+    obj->tfn.fromColorMap = false;
     obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
 
     obj->tfn.opacities = {obj->material.opacity};
@@ -1115,11 +1127,13 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addCylinder(FieldHandle field, Color
   {
     ColorMap_OSP_helper cmp(colorMap);
 
+    obj->tfn.fromColorMap = true;
     obj->tfn.colors = cmp.colorList_;
     obj->tfn.opacities = cmp.opacityList_;
   }
   else
   {
+    obj->tfn.fromColorMap = false;
     obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
 
     obj->tfn.opacities = {obj->material.opacity};
@@ -1208,11 +1222,13 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
   {
     ColorMap_OSP_helper cmp(colorMap);
 
+    obj->tfn.fromColorMap = true;
     obj->tfn.colors = cmp.colorList_;
     obj->tfn.opacities = cmp.opacityList_;
   }
   else
   {
+    obj->tfn.fromColorMap = false;
     obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
 
     obj->tfn.opacities = {obj->material.opacity};
