@@ -75,10 +75,17 @@ on:
         required: false
         type: boolean
         default: false
+      timeout-minutes:
+        # Backstop for a hung step; GitHub's default of 360 let one burn 6h (#2731).
+        # Slowest real job is ~156 min. Raise per caller if one needs longer.
+        required: false
+        type: number
+        default: 240
 
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
     continue-on-error: ${{ inputs.allow-failure }}
     permissions:
       checks: write
@@ -112,6 +119,9 @@ jobs:
 
       - name: Prepare (linux)
         if: ${{ startsWith(inputs.runner, 'ubuntu') || inputs.prepare-packages }}
+        # apt's idle timeout never fires on a mirror that dribbles bytes, so bound
+        # the step too. A good run is ~4 min.
+        timeout-minutes: 20
         # Two apt calls, not one: apt-get installs nothing at all if any single
         # package in the list is unavailable, so with everything in one command a
         # Qt5 package dropped from a newer Ubuntu also silently takes out mesa,
@@ -120,10 +130,22 @@ jobs:
         # the archive, so keep it in its own best-effort call. The Qt6 jobs get
         # Qt from install-qt-action and never needed this half anyway.
         run: |
-          sudo apt-get update
-          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build xorg-dev libglu1-mesa-dev \
+          # Retry rather than fail: mirror stalls here are transient (#2731).
+          apt_retry() {
+            local i
+            for i in 1 2 3; do
+              sudo apt-get -o Acquire::Retries=3 \
+                           -o Acquire::http::Timeout=30 \
+                           -o Acquire::https::Timeout=30 "$@" && return 0
+              echo "::warning::apt-get $1 failed (attempt $i of 3)"
+              if [ "$i" -lt 3 ]; then sleep $((i * 15)); fi
+            done
+            return 1
+          }
+          apt_retry update
+          apt_retry install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build xorg-dev libglu1-mesa-dev \
             || echo "::warning::Base build dependencies failed to install; the build will probably fail."
-          sudo apt-get install -y qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev \
+          apt_retry install -y qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev \
             || echo "::warning::apt Qt5 packages unavailable on this image; only the Qt5 GUI jobs need them."
 
       - name: Build (Linux/macOS)
