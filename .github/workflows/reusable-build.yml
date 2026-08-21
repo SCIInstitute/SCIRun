@@ -60,10 +60,18 @@ on:
       artifact-name:
         required: false
         type: string
+      allow-failure:
+        # Experimental build: still runs, still reports a red job, but doesn't
+        # fail the run. continue-on-error is rejected on a job that calls a
+        # reusable workflow, hence an input applied to the job in here.
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    continue-on-error: ${{ inputs.allow-failure }}
     permissions:
       checks: write
       contents: read
@@ -96,9 +104,19 @@ jobs:
 
       - name: Prepare (linux)
         if: ${{ startsWith(inputs.runner, 'ubuntu') || inputs.prepare-packages }}
+        # Two apt calls, not one: apt-get installs nothing at all if any single
+        # package in the list is unavailable, so with everything in one command a
+        # Qt5 package dropped from a newer Ubuntu also silently takes out mesa,
+        # ninja and xorg-dev -- and `|| true` hides it until the build fails much
+        # later on something unrelated. Qt5 is EOL upstream and on its way out of
+        # the archive, so keep it in its own best-effort call. The Qt6 jobs get
+        # Qt from install-qt-action and never needed this half anyway.
         run: |
           sudo apt-get update
-          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev || true
+          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build xorg-dev libglu1-mesa-dev \
+            || echo "::warning::Base build dependencies failed to install; the build will probably fail."
+          sudo apt-get install -y qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev \
+            || echo "::warning::apt Qt5 packages unavailable on this image; only the Qt5 GUI jobs need them."
 
       - name: Build (Linux/macOS)
         if: ${{ runner.os != 'Windows' }}
@@ -339,6 +357,22 @@ jobs:
           rm -f "$HOME"/.config/"SCI:CIBC Software"/SCIRun5_regression_*.conf 2>/dev/null || true
         continue-on-error: true
 
+      - name: Collect macOS crash reports
+        if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'macOS' }}
+        run: |
+          # A test that dies on a signal reports only "Bus error" through ctest,
+          # which is not enough to act on (#2700). macOS already writes a full
+          # symbolicated .ips per crash; collect them so the nightly turns a
+          # signal into a stack. ReportCrash writes asynchronously, so give the
+          # last crash of the run a moment to land.
+          sleep 10
+          mkdir -p "$GITHUB_WORKSPACE/crash-reports"
+          for d in "$HOME/Library/Logs/DiagnosticReports" /Library/Logs/DiagnosticReports; do
+            [ -d "$d" ] && cp "$d"/SCIRun*.ips "$GITHUB_WORKSPACE/crash-reports/" 2>/dev/null
+          done
+          echo "collected $(ls -1 "$GITHUB_WORKSPACE/crash-reports" 2>/dev/null | wc -l) crash report(s)"
+        continue-on-error: true
+
       - name: Run unit tests (Windows)
         if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
         working-directory: bin/SCIRun
@@ -389,6 +423,7 @@ jobs:
             bin/SCIRun/Testing/Temporary/LastTest.log
             junit-unit.xml
             junit-regression.xml
+            crash-reports/
 
       - name: Upload test logs (Windows)
         if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'Windows' }}
@@ -422,6 +457,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: coverage-report-${{ runner.os }}
+          # `error`, not the default `warn`: the step above is continue-on-error
+          # (tests legitimately fail), so a coverage.sh that produced nothing
+          # otherwise reports success and silently uploads no artifact.
+          if-no-files-found: error
           path: |
             bin/SCIRun/coverage/summary.txt
             bin/SCIRun/coverage/html

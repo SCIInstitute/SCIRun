@@ -47,8 +47,10 @@ jobs:
           cd dist
           for d in */; do
             name="${d%/}"
-            # Each subdir holds exactly one installer file.
-            f=$(find "$d" -maxdepth 1 -type f \
+            # Each artifact preserves its build path (bin/SCIRun/... for the
+            # installer, build/** for the .msi), so recurse -- do not restrict
+            # to the top level or the file is missed and then deleted below.
+            f=$(find "$d" -type f \
                   \( -name '*.exe' -o -name '*.pkg' -o -name '*.msi' \) | head -n1)
             [ -n "$f" ] || { echo "No installer in $d, skipping"; continue; }
             ext="${f##*.}"
@@ -71,9 +73,19 @@ jobs:
           tag_name: nightly
           name: Nightly build
           prerelease: true
-          body: >-
+          body: |
             Automated nightly build. Assets are overwritten on every run;
             the tag tracks the latest master commit that produced them.
+
+            **These binaries are not signed or notarized** (issue #1663), so
+            both platforms will refuse to launch them straight from a download.
+            On macOS, clear the quarantine flag first:
+
+            ```
+            xattr -dr com.apple.quarantine <downloaded>.pkg
+            ```
+
+            On Windows, SmartScreen needs "More info" → "Run anyway".
           files: dist/*
 
       - name: Publish stable (draft release on tag)

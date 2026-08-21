@@ -72,11 +72,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_P
 
 # Make a version file containing the current version from git.
 include(GetGitRevisionDescription)
-git_describe(VERSION_TAG --tag)
+# Match only release tags (v*). CI moves a rolling `nightly` tag
+# (.github/workflows/publish-release.yml), which would otherwise win here and
+# make the GUI, splash screen and CPack version report "nightly" instead of the
+# last release.
+git_describe(VERSION_TAG --tags --match "v*")
 git_describe(VERSION_BRANCH --all)
 get_git_head_revision(VERSION_REFSPEC VERSION_HASHVAR)
 
-IF(VERSION_TAG MATCHES "HEAD-HASH-NOTFOUND")
+# Covers both no-git (source zip: "HEAD-HASH-NOTFOUND") and a shallow clone with
+# no release tag reachable ("-128-NOTFOUND").
+IF(VERSION_TAG MATCHES "NOTFOUND")
   FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/LATEST_TAG.txt VERSION_TAG)
   STRING(STRIP ${VERSION_TAG} VERSION_TAG)
   MESSAGE(STATUS "Found tag file for version info: " "${VERSION_TAG}")
@@ -222,6 +228,12 @@ INCLUDE(${FREETYPE_USE_FILE})
 
 CONFIG_STANDARD_EXTERNAL( Cleaver2 Cleaver2Config.cmake ${CLEAVER2_DIR} )
 INCLUDE(${CLEAVER2_USE_FILE})
+
+CONFIG_STANDARD_EXTERNAL( LibXml2 libxml2-config.cmake ${LibXML2_DIR} )
+
+message(STATUS "LibXml2_FOUND=${LibXml2_FOUND}")
+message(STATUS "LibXml2_DIR=${LibXml2_DIR}")
+message(STATUS "LIBXml2_USE_FILE=${LIBXml2_USE_FILE}")
 
 IF(BUILD_WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
@@ -554,11 +566,9 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
   ${SCIRun_SOURCE_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/spire/
   ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googletest/include
   ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googlemock/include
-  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
@@ -627,6 +637,44 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SCIRun_BINARY_DIR} CACHE INTERNAL "Single 
 MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 SET(BUILD_FROM_TOP_LEVEL 1)
+
+########################################################################
+# Coverage instrumentation.
+#
+# Must precede the ADD_SUBDIRECTORY calls below: CMAKE_CXX_FLAGS is captured by
+# each subdirectory as it is added, so setting it further down the file compiles
+# and links every SCIRun target without instrumentation while still printing the
+# "enabled" message. That produced zero .profraw files and an empty nightly
+# coverage artifact.
+
+OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
+MARK_AS_ADVANCED(ENABLE_GCOV_DATA_FILES)
+
+IF(ENABLE_GCOV_DATA_FILES)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF()
+
+# Clang source-based coverage (recommended on macOS / any Clang toolchain).
+# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
+# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
+# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
+# above, the instrumentation flags must also be applied at link time so the
+# profile runtime is linked into every shared library.
+OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
+IF(ENABLE_COVERAGE)
+  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
+  ENDIF()
+  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
+ENDIF()
+
+########################################################################
 
 ADD_SUBDIRECTORY(Externals)
 IF(NOT BUILD_HEADLESS)
@@ -902,7 +950,7 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
@@ -1035,32 +1083,5 @@ ENDIF()
 
 INCLUDE(CPack)
 
-########################################################################
-#GCov
-
-OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
-MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
-
-IF(ENABLE_GCOV_DATA_FILES)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-ENDIF()
-
-# Clang source-based coverage (recommended on macOS / any Clang toolchain).
-# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
-# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
-# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
-# above, the instrumentation flags must also be applied at link time so the
-# profile runtime is linked into every shared library.
-OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
-IF(ENABLE_COVERAGE)
-  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
-  ENDIF()
-  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
-  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
-  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
-  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
-ENDIF()
+# Coverage options moved above the ADD_SUBDIRECTORY calls -- they had no effect
+# down here. See the "Coverage instrumentation" block there.

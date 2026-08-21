@@ -32,6 +32,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Utils/QuickExit.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
@@ -137,8 +138,10 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
     }
     else
     {
+      // quickExit, not exit: the GUI is still up, and libc exit() lets Qt flush
+      // posted deletes during static destruction. See #2686.
       if (Application::Instance().parameters()->isRegressionMode())
-        exit(7);
+        Core::quickExit(7);
       //TODO: set error code to non-0 so regression tests fail!
       // probably want to control this with a --regression flag.
     }
