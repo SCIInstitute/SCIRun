@@ -60,6 +60,14 @@ on:
       artifact-name:
         required: false
         type: string
+      max-os-floor:
+        # macOS only. The oldest OS this installer is meant to launch on. The
+        # build step below measures what it ACTUALLY requires and warns on a
+        # mismatch; it never fails the job, because the job cannot fix the
+        # runner image it was handed.
+        required: false
+        type: string
+        default: ''
       allow-failure:
         # Experimental build: still runs, still reports a red job, but doesn't
         # fail the run. continue-on-error is rejected on a job that calls a
@@ -465,6 +473,30 @@ jobs:
             bin/SCIRun/coverage/summary.txt
             bin/SCIRun/coverage/html
 
+      # Runs after packaging so it can read the installed binary, and before the
+      # upload so build-info.json travels inside the same artifact.
+      - name: Record build environment and verify OS floor
+        if: ${{ inputs.artifact-name != '' }}
+        shell: bash
+        # Nothing in this repo sets CMAKE_OSX_DEPLOYMENT_TARGET, so a macOS
+        # binary's minimum OS is simply whichever runner image built it. Reading
+        # LC_BUILD_VERSION back out of the packaged binary is the only way to
+        # know what the installer actually runs on -- and that measured value is
+        # what names the release asset and fills the table in the release notes.
+        run: |
+          set -eu
+          # Git Bash on the Windows runners ships `python`, not `python3`.
+          PY=python3; command -v python3 >/dev/null 2>&1 || PY=python
+          "$PY" scripts/ci/build_info.py \
+            --build-dir bin/SCIRun \
+            --artifact "${{ inputs.artifact-name }}" \
+            --variant "${{ inputs.variant }}" \
+            --runner-label "${{ inputs.runner }}" \
+            --qt-version "${{ inputs.qt-version }}" \
+            --generator "${{ inputs.cmake-generator }}" \
+            --python "${{ inputs.build-with-python }}" \
+            --max-os-floor "${{ inputs.max-os-floor }}"
+
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}
         uses: actions/upload-artifact@v6
@@ -473,5 +505,6 @@ jobs:
           path: |
             bin/SCIRun/SCIRun-*-Darwin.pkg
             bin/SCIRun/SCIRun-*-win64.exe
+            bin/SCIRun/build-info.json
             bin/**/*.msi
 
