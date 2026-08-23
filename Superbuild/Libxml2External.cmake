@@ -1,10 +1,10 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
+#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -23,28 +23,32 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
+SET_PROPERTY(DIRECTORY PROPERTY EP_BASE ${ep_base})
 
-# Sources of Core/XMLUtil classes
+ExternalProject_Add(Libxml2_external
 
-SET(Core_XMLUtil_HEADERS
-  XMLUtil.h
+  GIT_REPOSITORY ${LIBXML2_GIT_URL}
+  GIT_TAG ${LIBXML2_GIT_TAG}
+
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+
+  INSTALL_DIR ${ep_install_dir}
+
+  CMAKE_CACHE_ARGS
+    -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -DLIBXML2_WITH_ICONV:BOOL=OFF
+    -DLIBXML2_WITH_ZLIB:BOOL=OFF
 )
 
-SET(Core_XMLUtil_SRCS
-  XMLUtil.cc
-)
+ExternalProject_Get_Property(Libxml2_external INSTALL_DIR)
 
-SCIRUN_ADD_LIBRARY(Core_XMLUtil ${Core_XMLUtil_SRCS} ${Core_XMLUtil_HEADERS})
+SET(LibXML2_DIR ${INSTALL_DIR} CACHE PATH "")
 
-TARGET_LINK_LIBRARIES( Core_XMLUtil
-  Core_Util_Legacy
-  LibXml2::LibXml2
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_XMLUtil)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
+MESSAGE(STATUS "LibXML2_DIR: ${LibXML2_DIR}")
