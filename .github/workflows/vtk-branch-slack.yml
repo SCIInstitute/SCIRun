@@ -23,6 +23,7 @@ on:
       - windows-build
       - windows-build-script
       - mac-build
+      - pr
     types:
       - completed
 
@@ -35,14 +36,16 @@ jobs:
     # Failures only; green would be noise people mute. nightly-slack.yml filters
     # to `schedule`, so no run can match both.
     #
-    # pull_request as well as push: mac.yml on refactor_add_vtk has only a
-    # pull_request trigger, so push alone could never report mac -- the one
-    # platform with no local coverage. #2681 specifies push only.
+    # pull_request as well as push: the four build workflows only trigger on
+    # push-to-master, so on a topic branch `pr` is the only one that ever runs,
+    # and it runs on pull_request. #2681 specifies push only.
+    #
+    # failure only. pr.yml cancels superseded runs, so a force-push would
+    # otherwise post for every cancellation.
     if: >-
       (github.event.workflow_run.event == 'push' ||
        github.event.workflow_run.event == 'pull_request') &&
-      (github.event.workflow_run.conclusion == 'failure' ||
-       github.event.workflow_run.conclusion == 'cancelled')
+      github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     steps:
       # Matched here rather than in `on:` because workflow filter patterns are
@@ -78,23 +81,20 @@ jobs:
           set -euo pipefail
           short_sha="${WF_SHA:0:9}"
 
-          case "$WF_CONCLUSION" in
-            failure)   emoji=":red_circle:";;
-            cancelled) emoji=":black_circle:";;
-            *)         emoji=":white_circle:";;
-          esac
-
           # Post the first red after a green, then stay quiet until it recovers.
           # A branch that is already known-broken produces one message per
           # workflow per push otherwise -- on refactor_add_vtk's history that is
           # 76 posts where 22 carry news, and an alert at that rate gets muted.
           #
-          # index() is the position of the last success, i.e. the non-green count
-          # at the head, counting this run. 1 means it just broke.
+          # index() is the position of the last success, i.e. the failure count
+          # at the head, counting this run. 1 means it just broke. Cancellations
+          # are dropped rather than counted: pr.yml produces them on every
+          # force-push, and one landing on top of a green would otherwise make
+          # the next real failure look like an ongoing streak and suppress it.
           streak="$(gh run list --repo "$REPO" \
             --workflow "$WF_NAME" --branch "$WF_BRANCH" \
             --limit 30 --json conclusion \
-            -q '[.[].conclusion | select(. != null and . != "")]
+            -q '[.[].conclusion | select(. == "success" or . == "failure")]
                 | (index("success") // length)' 2>/dev/null || true)"
 
           # Suppress only when we positively know it was already red. An empty or
@@ -112,7 +112,7 @@ jobs:
             exit 0
           fi
 
-          text="${emoji} *${WF_NAME}* ${WF_CONCLUSION} on \`${WF_BRANCH}\`"$'\n'"<${WF_URL}|View run> · \`${short_sha}\`"
+          text=":red_circle: *${WF_NAME}* ${WF_CONCLUSION} on \`${WF_BRANCH}\`"$'\n'"<${WF_URL}|View run> · \`${short_sha}\`"
           jq -n --arg t "$text" '{text: $t}' > payload.json
           echo "Payload:"
           cat payload.json
