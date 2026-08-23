@@ -60,6 +60,14 @@ on:
       artifact-name:
         required: false
         type: string
+      max-os-floor:
+        # macOS only. The oldest OS this installer is meant to launch on. The
+        # build step below measures what it ACTUALLY requires and warns on a
+        # mismatch; it never fails the job, because the job cannot fix the
+        # runner image it was handed.
+        required: false
+        type: string
+        default: ''
       allow-failure:
         # Experimental build: still runs, still reports a red job, but doesn't
         # fail the run. continue-on-error is rejected on a job that calls a
@@ -67,10 +75,17 @@ on:
         required: false
         type: boolean
         default: false
+      timeout-minutes:
+        # Backstop for a hung step; GitHub's default of 360 let one burn 6h (#2731).
+        # Slowest real job is ~156 min. Raise per caller if one needs longer.
+        required: false
+        type: number
+        default: 240
 
 jobs:
   build:
     runs-on: ${{ inputs.runner }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
     continue-on-error: ${{ inputs.allow-failure }}
     permissions:
       checks: write
@@ -104,9 +119,34 @@ jobs:
 
       - name: Prepare (linux)
         if: ${{ startsWith(inputs.runner, 'ubuntu') || inputs.prepare-packages }}
+        # apt's idle timeout never fires on a mirror that dribbles bytes, so bound
+        # the step too. A good run is ~4 min.
+        timeout-minutes: 20
+        # Two apt calls, not one: apt-get installs nothing at all if any single
+        # package in the list is unavailable, so with everything in one command a
+        # Qt5 package dropped from a newer Ubuntu also silently takes out mesa,
+        # ninja and xorg-dev -- and `|| true` hides it until the build fails much
+        # later on something unrelated. Qt5 is EOL upstream and on its way out of
+        # the archive, so keep it in its own best-effort call. The Qt6 jobs get
+        # Qt from install-qt-action and never needed this half anyway.
         run: |
-          sudo apt-get update
-          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev || true
+          # Retry rather than fail: mirror stalls here are transient (#2731).
+          apt_retry() {
+            local i
+            for i in 1 2 3; do
+              sudo apt-get -o Acquire::Retries=3 \
+                           -o Acquire::http::Timeout=30 \
+                           -o Acquire::https::Timeout=30 "$@" && return 0
+              echo "::warning::apt-get $1 failed (attempt $i of 3)"
+              if [ "$i" -lt 3 ]; then sleep $((i * 15)); fi
+            done
+            return 1
+          }
+          apt_retry update
+          apt_retry install -y mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build xorg-dev libglu1-mesa-dev \
+            || echo "::warning::Base build dependencies failed to install; the build will probably fail."
+          apt_retry install -y qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev \
+            || echo "::warning::apt Qt5 packages unavailable on this image; only the Qt5 GUI jobs need them."
 
       - name: Build (Linux/macOS)
         if: ${{ runner.os != 'Windows' }}
@@ -347,6 +387,22 @@ jobs:
           rm -f "$HOME"/.config/"SCI:CIBC Software"/SCIRun5_regression_*.conf 2>/dev/null || true
         continue-on-error: true
 
+      - name: Collect macOS crash reports
+        if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'macOS' }}
+        run: |
+          # A test that dies on a signal reports only "Bus error" through ctest,
+          # which is not enough to act on (#2700). macOS already writes a full
+          # symbolicated .ips per crash; collect them so the nightly turns a
+          # signal into a stack. ReportCrash writes asynchronously, so give the
+          # last crash of the run a moment to land.
+          sleep 10
+          mkdir -p "$GITHUB_WORKSPACE/crash-reports"
+          for d in "$HOME/Library/Logs/DiagnosticReports" /Library/Logs/DiagnosticReports; do
+            [ -d "$d" ] && cp "$d"/SCIRun*.ips "$GITHUB_WORKSPACE/crash-reports/" 2>/dev/null
+          done
+          echo "collected $(ls -1 "$GITHUB_WORKSPACE/crash-reports" 2>/dev/null | wc -l) crash report(s)"
+        continue-on-error: true
+
       - name: Run unit tests (Windows)
         if: ${{ inputs.run-unit-tests && runner.os == 'Windows' }}
         working-directory: bin/SCIRun
@@ -397,6 +453,7 @@ jobs:
             bin/SCIRun/Testing/Temporary/LastTest.log
             junit-unit.xml
             junit-regression.xml
+            crash-reports/
 
       - name: Upload test logs (Windows)
         if: ${{ (inputs.run-unit-tests || inputs.run-regression-tests) && runner.os == 'Windows' }}
@@ -438,6 +495,30 @@ jobs:
             bin/SCIRun/coverage/summary.txt
             bin/SCIRun/coverage/html
 
+      # Runs after packaging so it can read the installed binary, and before the
+      # upload so build-info.json travels inside the same artifact.
+      - name: Record build environment and verify OS floor
+        if: ${{ inputs.artifact-name != '' }}
+        shell: bash
+        # Nothing in this repo sets CMAKE_OSX_DEPLOYMENT_TARGET, so a macOS
+        # binary's minimum OS is simply whichever runner image built it. Reading
+        # LC_BUILD_VERSION back out of the packaged binary is the only way to
+        # know what the installer actually runs on -- and that measured value is
+        # what names the release asset and fills the table in the release notes.
+        run: |
+          set -eu
+          # Git Bash on the Windows runners ships `python`, not `python3`.
+          PY=python3; command -v python3 >/dev/null 2>&1 || PY=python
+          "$PY" scripts/ci/build_info.py \
+            --build-dir bin/SCIRun \
+            --artifact "${{ inputs.artifact-name }}" \
+            --variant "${{ inputs.variant }}" \
+            --runner-label "${{ inputs.runner }}" \
+            --qt-version "${{ inputs.qt-version }}" \
+            --generator "${{ inputs.cmake-generator }}" \
+            --python "${{ inputs.build-with-python }}" \
+            --max-os-floor "${{ inputs.max-os-floor }}"
+
       - name: Upload installer (optional)
         if: ${{ inputs.artifact-name != '' }}
         uses: actions/upload-artifact@v6
@@ -446,5 +527,6 @@ jobs:
           path: |
             bin/SCIRun/SCIRun-*-Darwin.pkg
             bin/SCIRun/SCIRun-*-win64.exe
+            bin/SCIRun/build-info.json
             bin/**/*.msi
 
