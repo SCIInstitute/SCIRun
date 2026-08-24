@@ -377,6 +377,7 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
 
   auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   mapper->SetInputConnection(tube->GetOutputPort());
+  auto actor = vtkSmartPointer<vtkActor>::New();
 
   if (geo->tfn.fromColorMap)
   {
@@ -387,22 +388,10 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
   else
   {
     mapper->ScalarVisibilityOff();
-  }
-
-  auto actor = vtkSmartPointer<vtkActor>::New();
-  actor->SetMapper(mapper);
-
-  if (geo->tfn.colors.empty())
-  {
     applyMaterial(actor, geo->material);
   }
-  else
-  {
-    auto prop = actor->GetProperty();
 
-    // optional
-    prop->SetOpacity(1.0);
-  }
+  actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
@@ -424,6 +413,7 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
 
   auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   mapper->SetInputConnection(tube->GetOutputPort());
+  auto actor = vtkSmartPointer<vtkActor>::New();
 
   if (geo->tfn.fromColorMap)
   {
@@ -434,22 +424,10 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
   else
   {
     mapper->ScalarVisibilityOff();
-  }
-
-  auto actor = vtkSmartPointer<vtkActor>::New();
-  actor->SetMapper(mapper);
-
-  if (geo->tfn.colors.empty())
-  {
     applyMaterial(actor, geo->material);
   }
-  else
-  {
-    auto prop = actor->GetProperty();
 
-    // optional
-    prop->SetOpacity(1.0);
-  }
+  actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
@@ -470,6 +448,7 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
   auto mapper = vtkSmartPointer<vtkGlyph3DMapper>::New();
   mapper->SetInputData(poly);
   mapper->SetSourceConnection(sphere->GetOutputPort());
+  auto actor = vtkSmartPointer<vtkActor>::New();
 
   if (geo->tfn.fromColorMap)
   {
@@ -480,22 +459,10 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
   else
   {
     mapper->ScalarVisibilityOff();
-  }
-
-  auto actor = vtkSmartPointer<vtkActor>::New();
-  actor->SetMapper(mapper);
-
-  if (geo->tfn.colors.empty())
-  {
     applyMaterial(actor, geo->material);
   }
-  else
-  {
-    auto prop = actor->GetProperty();
 
-    // optional
-    prop->SetOpacity(1.0);
-  }
+  actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
