@@ -112,6 +112,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Default Color</string>
            </property>
@@ -393,10 +399,10 @@
                   <double>0.000100000000000</double>
                  </property>
                  <property name="maximum">
-                  <double>100.000000000000000</double>
+                  <double>10000000.000000000000000</double>
                  </property>
                  <property name="singleStep">
-                  <double>0.100000000000000</double>
+                  <double>1.000000000000000</double>
                  </property>
                  <property name="value">
                   <double>1.000000000000000</double>
@@ -450,8 +456,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>307</width>
-               <height>134</height>
+               <width>299</width>
+               <height>132</height>
               </rect>
              </property>
              <attribute name="label">
@@ -588,8 +594,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>232</width>
-               <height>54</height>
+               <width>299</width>
+               <height>132</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1016,10 +1022,10 @@
                   <double>0.000100000000000</double>
                  </property>
                  <property name="maximum">
-                  <double>100.000000000000000</double>
+                  <double>10000000.000000000000000</double>
                  </property>
                  <property name="singleStep">
-                  <double>0.100000000000000</double>
+                  <double>1.000000000000000</double>
                  </property>
                  <property name="value">
                   <double>1.000000000000000</double>
@@ -1041,8 +1047,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>202</width>
-               <height>90</height>
+               <width>213</width>
+               <height>81</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1179,8 +1185,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>232</width>
-               <height>54</height>
+               <width>211</width>
+               <height>43</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1267,8 +1273,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>220</width>
-               <height>186</height>
+               <width>227</width>
+               <height>170</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1511,8 +1517,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>293</width>
-               <height>273</height>
+               <width>299</width>
+               <height>245</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1958,7 +1964,7 @@
                 <number>4</number>
                </property>
                <property name="maximum">
-                <double>10.000000000000000</double>
+                <double>1000000.000000000000000</double>
                </property>
                <property name="singleStep">
                 <double>0.100000000000000</double>
@@ -2142,10 +2148,10 @@
                   <double>0.000100000000000</double>
                  </property>
                  <property name="maximum">
-                  <double>100.000000000000000</double>
+                  <double>10000000.000000000000000</double>
                  </property>
                  <property name="singleStep">
-                  <double>0.100000000000000</double>
+                  <double>1.000000000000000</double>
                  </property>
                  <property name="value">
                   <double>1.000000000000000</double>
@@ -2191,8 +2197,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>202</width>
-               <height>90</height>
+               <width>213</width>
+               <height>81</height>
               </rect>
              </property>
              <attribute name="label">
@@ -2338,8 +2344,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>307</width>
-               <height>99</height>
+               <width>299</width>
+               <height>93</height>
               </rect>
              </property>
              <attribute name="label">
@@ -2400,7 +2406,7 @@
                    <number>4</number>
                   </property>
                   <property name="maximum">
-                   <double>100.000000000000000</double>
+                   <double>10000000.000000000000000</double>
                   </property>
                   <property name="singleStep">
                    <double>0.100000000000000</double>

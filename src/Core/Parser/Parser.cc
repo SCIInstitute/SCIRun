@@ -25,13 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <Core/Parser/Parser.h>
 #include <Core/Datatypes/Legacy/Base/Types.h>
 #include <iostream>
 #include <sci_debug.h>
-#include <boost/math/constants/constants.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 
@@ -319,10 +320,10 @@ Parser::Parser()
   add_numerical_constant("Inf",std::numeric_limits<double>::infinity());
   add_numerical_constant("INF",std::numeric_limits<double>::infinity());
 
-  add_numerical_constant("pi",boost::math::double_constants::pi);
-  add_numerical_constant("Pi",boost::math::double_constants::pi);
-  add_numerical_constant("PI",boost::math::double_constants::pi);
-  add_numerical_constant("M_PI",boost::math::double_constants::pi);
+  add_numerical_constant("pi", M_PI);
+  add_numerical_constant("Pi", M_PI);
+  add_numerical_constant("PI", M_PI);
+  add_numerical_constant("M_PI", M_PI);
 }
 
 

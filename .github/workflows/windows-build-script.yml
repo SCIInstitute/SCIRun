@@ -1,0 +1,34 @@
+name: windows-build-script
+
+# Exercises build.ps1 end to end: master pushes, nightly, and on demand. Pull
+# requests are covered by the slim tier in pr.yml -- see the comment at the top
+# of that file for why no required check may live in a path-filtered workflow.
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'docs/**'
+  schedule:
+    - cron: '15 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-headless:
+    runs-on: windows-2022
+    # Builds outside reusable-build.yml, so it needs its own cap; matches the 240 there.
+    timeout-minutes: 240
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build (headless)
+        shell: pwsh
+        run: .\build.ps1 -Headless -InstallPrereqs

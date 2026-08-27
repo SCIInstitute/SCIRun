@@ -66,9 +66,11 @@ QWidget* ctkPopupWidgetPrivate::mouseOver()
 {
   Q_Q(ctkPopupWidget);
   QWidget* widgetUnderCursor = this->Superclass::mouseOver();
+  //qDebug() << __FUNCTION__ << __LINE__ << widgetUnderCursor;
   if (widgetUnderCursor &&
       !this->focusWidgets(true).contains(widgetUnderCursor))
     {
+    //  qDebug() << '\t' <<  __FUNCTION__ << __LINE__ << "installEventFilter";
     widgetUnderCursor->installEventFilter(q);
     }
   return widgetUnderCursor;
@@ -92,6 +94,7 @@ bool ctkPopupWidgetPrivate::eventFilter(QObject* obj, QEvent* event)
     }
   else if (event->type() == QEvent::ApplicationActivate)
     {
+      //qDebug() << __FUNCTION__ << __LINE__;
     QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
     }
   if (this->BaseWidget.isNull())
@@ -106,6 +109,7 @@ bool ctkPopupWidgetPrivate::eventFilter(QObject* obj, QEvent* event)
       }
     else if (this->isHidingCandidate(widget))
       {
+        //qDebug() << __FUNCTION__ << __LINE__;
       QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
       }
     }
@@ -117,23 +121,26 @@ bool ctkPopupWidgetPrivate::eventFilter(QObject* obj, QEvent* event)
       }
     else if (this->isHidingCandidate(widget))
       {
+        //qDebug() << __FUNCTION__ << __LINE__;
       QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
       }
     }
   else if (event->type() == QEvent::WindowStateChange &&
            this->isHidingCandidate(widget))
     {
+      //qDebug() << __FUNCTION__ << __LINE__;
     QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
     }
   else if ((event->type() == QEvent::WindowActivate ||
             event->type() == QEvent::WindowDeactivate) &&
            widget == this->BaseWidget->window())
     {
+      //qDebug() << __FUNCTION__ << __LINE__;
     QTimer::singleShot(0, this, &ctkPopupWidgetPrivate::updateVisibility);
     }
   else if (event->type() == QEvent::RequestSoftwareInputPanel)
     {
-    qApp->setActiveWindow(widget->window());
+    widget->window()->activateWindow();
     }
   return false;
 }
@@ -219,6 +226,7 @@ void ctkPopupWidgetPrivate::updateVisibility()
     return;
     }
   // Restore the visibility of the popup if it was hidden
+  //qDebug() << __FUNCTION__ << __LINE__;
   this->temporarilyHiddenOff();
 }
 
@@ -253,6 +261,7 @@ void ctkPopupWidgetPrivate::temporarilyHiddenOff()
     }
   else
     {
+      //qDebug() << __FUNCTION__ << __LINE__;
     q->updatePopup();
     }
 }
@@ -328,6 +337,7 @@ void ctkPopupWidget::setBaseWidget(QWidget* widget)
     {
     d->BaseWidget->installEventFilter(this);
     }
+  //  qDebug() << __FUNCTION__ << __LINE__;
   QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
 }
 
@@ -343,6 +353,7 @@ void ctkPopupWidget::setAutoShow(bool mode)
 {
   Q_D(ctkPopupWidget);
   d->AutoShow = mode;
+  //qDebug() << __FUNCTION__ << __LINE__;
   QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
 }
 
@@ -372,6 +383,7 @@ void ctkPopupWidget::setAutoHide(bool mode)
 {
   Q_D(ctkPopupWidget);
   d->AutoHide = mode;
+  //qDebug() << __FUNCTION__ << __LINE__;
   QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
 }
 
@@ -410,6 +422,7 @@ void ctkPopupWidget::onEffectFinished()
 void ctkPopupWidget::leaveEvent(QEvent* event)
 {
   Q_D(ctkPopupWidget);
+  //qDebug() << __FUNCTION__ << __LINE__ << layout()->itemAt(0)->widget();
   QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
   this->Superclass::leaveEvent(event);
 }
@@ -418,6 +431,7 @@ void ctkPopupWidget::leaveEvent(QEvent* event)
 void ctkPopupWidget::enterEvent(Q_ENTER_EVENT_CLASS* event)
 {
   Q_D(ctkPopupWidget);
+  //qDebug() << __FUNCTION__ << __LINE__ << layout()->itemAt(0)->widget();
   QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
   this->Superclass::enterEvent(event);
 }
@@ -455,6 +469,7 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
             qobject_cast<QWidget*>(obj)->windowType() == Qt::Popup)
           {
           obj->removeEventFilter(this);
+        //  qDebug() << __FUNCTION__ << __LINE__;
           QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
           }
         break;
@@ -467,6 +482,7 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
         break;
         }
       this->setGeometry(d->desiredOpenGeometry());
+    //  qDebug() << __FUNCTION__ << __LINE__;
       d->temporarilyHiddenOff();
       break;
     case QEvent::Enter:
@@ -474,12 +490,14 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
         {
         // Maybe the user moved the mouse on the widget by mistake, don't open
         // the popup instantly...
+        //qDebug() << __FUNCTION__ << __LINE__;
         QTimer::singleShot(d->ShowDelay, this, &ctkPopupWidget::updatePopup);
         }
       else
         {
         // ... except if the popup is closing, we want to reopen it as sooon as
         // possible.
+        //qDebug() << __FUNCTION__ << __LINE__;
         this->updatePopup();
         }
       break;
@@ -493,6 +511,7 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
         break;
         }
       // The mouse might have left the area that keeps the popup open
+    //  qDebug() << __FUNCTION__ << __LINE__;
       QTimer::singleShot(d->HideDelay, this, &ctkPopupWidget::updatePopup);
       if (obj != d->BaseWidget &&
           obj != d->PopupPixmapWidget)
@@ -510,9 +529,26 @@ bool ctkPopupWidget::eventFilter(QObject* obj, QEvent* event)
 void ctkPopupWidget::updatePopup()
 {
   Q_D(ctkPopupWidget);
+  //d->updateCalled.fetch_add(1);
+  constexpr bool shouldLogPopup = false; //(layout()->itemAt(0)->widget()->objectName().contains("Object"));
+  if constexpr (shouldLogPopup)
+    qDebug() << __FUNCTION__ << __LINE__ << layout()->itemAt(0)->widget();// << d->updateCalled;
 
   // Querying mouseOver can be slow, don't do it if not needed.
   QWidget* mouseOver = (d->AutoShow || d->AutoHide) ? d->mouseOver() : 0;
+
+if constexpr (shouldLogPopup)
+{
+   qDebug() << "\t\t(AutoShow:" << d->AutoShow;
+  qDebug() << "\t\t||(AutoHide:" << d->AutoHide;
+  qDebug() << "\t\t   && isClosing:" << d->isClosing();
+  qDebug() << "\t\t   && this->property AutoShowOnClose .toBool():" << this->property("AutoShowOnClose").toBool();
+  qDebug() << "\t\t) && mouseOver:" << (mouseOver != nullptr);
+  qDebug() << "\t\t&&(d->BaseWidget.isNull():" << d->BaseWidget.isNull();
+  qDebug() << "\t\t   || d->BaseWidget->isEnabled():" << d->BaseWidget->isEnabled();
+}
+
+
   if ((d->AutoShow ||
      // Even if there is no AutoShow, we might still want to reopen the popup
      // when closing it inadvertently, except if we are un-pin-ing the popup
@@ -522,10 +558,15 @@ void ctkPopupWidget::updatePopup()
      // disable opening the popup when the popup is disabled
       (d->BaseWidget.isNull() || d->BaseWidget->isEnabled()))
     {
+      if constexpr (shouldLogPopup)
+      qDebug() << "\t>>>>showPopup";
+
     this->showPopup();
     }
   else if (d->AutoHide && !mouseOver)
     {
+      if constexpr (shouldLogPopup)
+      qDebug() << "\t\t<<<<hidePopup" << d->AutoHide << !mouseOver;
     this->hidePopup();
     }
 }

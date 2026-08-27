@@ -36,6 +36,7 @@ SET(Modules_DataIO_SRCS
   WriteMatrix.cc
   AutoReadFile.cc
   ReadColorMapXml.cc
+  WriteColorMapXml.cc
 )
 
 SET(Modules_DataIO_HEADERS
@@ -50,6 +51,7 @@ SET(Modules_DataIO_HEADERS
   WriteMatrix.h
   AutoReadFile.h
   ReadColorMapXml.h
+  WriteColorMapXml.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_DataIO
@@ -65,7 +67,6 @@ TARGET_LINK_LIBRARIES(Modules_DataIO
   Algorithms_DataIO
   Core_Algorithms_Legacy_DataIO
   Core_ImportExport
-  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

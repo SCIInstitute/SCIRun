@@ -463,7 +463,7 @@ namespace
   ValueConverter toInt = [](const std::string& s) { return std::stoi(s); };
   ValueConverter toDouble = [](const std::string& s)
   {
-    if(s == "Inf") return DBL_MAX;
+    if(s == "Inf") return std::numeric_limits<double>::max();
     return boost::lexical_cast<double>(s);
   };
   ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };

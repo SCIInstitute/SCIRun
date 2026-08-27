@@ -1569,7 +1569,7 @@ ArrayMathProgram::run_parallel(int proc)
 void
 ArrayMathProgramCode::print() const
 {
-  std::cout << "function_ = "<<function_<<"\n";
+  std::cout << "function_ = "<<&function_<<"\n";
   for (size_t j=0;j<variables_.size(); j++)
   std::cout << "variable["<<j<<"]_ = "<<variables_[j]<<"\n";
 }

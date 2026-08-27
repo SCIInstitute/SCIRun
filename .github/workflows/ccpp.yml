@@ -1,115 +1,108 @@
 name: linux-build
 
+# Full linux matrix: master pushes, nightly, and on demand. Pull requests are
+# covered by the slim tier in pr.yml -- see the comment at the top of that file
+# for why no required check may live in a path-filtered workflow.
+
 on:
   push:
+    branches:
+      - master
     paths-ignore:
       - 'docs/**'
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  # event_name keeps schedule and master-push runs (same github.ref) from
+  # cancelling each other.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  linux-build-gui:
+  linux-gui:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      qt-version: ''
+      variant: gui
+      build-with-python: true
 
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+  linux-headless:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      variant: headless
+      build-testing: true
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+  linux-gui-nonpython:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      variant: gui
+      build-with-python: false
 
-    - name: Prepare
-      run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
+  linux-gui-ospray:
+    if: false
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      variant: gui
+      with-ospray: true
 
-    - name: Build
-      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -j3
+  # arm64 (aarch64) coverage. GitHub-hosted Linux/arm64 runners
+  # (ubuntu-24.04-arm) are free for public repositories. These mirror the x86_64
+  # jobs above so the nightly/master matrix exercises the arm64 build path --
+  # e.g. the Boost PLATFORM_SUFFIX arch detection fixed in this branch (#2583).
+  linux-gui-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-24.04-arm
+      qt-version: ''
+      variant: gui
+      build-with-python: true
 
-    - name: Basic Test
-      working-directory: bin/SCIRun
-      run: |
-        cat ./SCIRun | head -c 1024
+  linux-headless-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-24.04-arm
+      variant: headless
+      build-testing: true
 
-  linux-build-gui-nonpython:
+  linux-gui-nonpython-arm:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-24.04-arm
+      variant: gui
+      build-with-python: false
 
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Prepare
-      run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
-
-    - name: Build
-      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -DBUILD_WITH_PYTHON=OFF -DUSER_PYTHON_VERSION="3.9.10" -j3
-
-    - name: Basic Test
-      working-directory: bin/SCIRun
-      run: |
-        cat ./SCIRun | head -c 1024
-
-  linux-build-headless:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Prepare
-      run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build
-
-    - name: Build
-      run: ./build.sh -DBUILD_HEADLESS:BOOL=ON -DBUILD_TESTING:BOOL=ON -j3
-
-    - name: Test
-      working-directory: bin/SCIRun
-      continue-on-error: true
-      run: make test
-
-  linux-build-gui-test:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Prepare
-      run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
-
-    - name: Build
-      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -j3 -DBUILD_TESTING:BOOL=ON
-
-    - name: Test
-      working-directory: bin/SCIRun
-      continue-on-error: true
-      run: make test
-
-  linux-build-gui-ospray:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Prepare
-      run: sudo apt-get update && sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev xorg-dev libglu1-mesa-dev
-
-    - name: Build
-      run: ./build.sh -DSCIRUN_QT_MIN_VERSION:STRING="5.12.8" -DQt_PATH=$(dpkg -L qtbase5-dev) -DWITH_OSPRAY:BOOL=ON
+  # ---------------------------------------------------------------------------
+  # Ubuntu 26.04 (public preview since 2026-06-11, actions/runner-images#14226).
+  # New toolchain and new system libraries; ubuntu-latest stays 24.04 until GA,
+  # so nothing above this line exercises 26.04.
+  #
+  # Same shape as the VS 2026 jobs in windows.yml: nightly-only, never in the PR
+  # tier (pr.yml), and allow-failure so a preview-image break reports red without
+  # failing the run. nightly-slack.yml names continue-on-error job failures
+  # explicitly, so these still surface in Slack.
+  #
+  # ONE job on purpose, not a gui/headless/qt6 spread. 26.04 defaults to GCC
+  # 15.2, and src/Externals/libxml2 is libxml2 2.6.22 (2005) built
+  # unconditionally for every variant -- so today every variant dies in the same
+  # place, and a spread would just buy three identical ~60-minute logs a night.
+  # The Qt5-availability question a gui job would answer is already answered
+  # cheaper: the `Prepare (linux)` step in reusable-build.yml runs its apt calls
+  # on every ubuntu runner regardless of variant, and warns if apt Qt5 is gone.
+  #
+  # Once libxml2 compiles here, widen this to mirror the x86_64 trio above (and
+  # ubuntu-26.04-arm, also in preview) -- at that point the variants diverge and
+  # each earns its slot.
+  # ---------------------------------------------------------------------------
+  linux-2604-headless:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-26.04
+      variant: headless
+      build-testing: true
+      allow-failure: true

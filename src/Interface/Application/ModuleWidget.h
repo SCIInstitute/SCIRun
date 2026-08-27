@@ -34,6 +34,7 @@
 #ifndef Q_MOC_RUN
 #include <Core/Utils/SmartPointers.h>
 #include <boost/bimap.hpp>
+#include <boost/signals2/connection.hpp>
 #include <deque>
 #include <atomic>
 #include <Interface/Application/Note.h>
@@ -266,6 +267,8 @@ private:
   bool deletedFromGui_, colorLocked_;
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_, programmablePortEnabled_{false};
   std::atomic<bool> errored_;
+  enum class LogColorPriority { None = 0, Remark = 1, Warning = 2, Error = 3 };
+  std::atomic<int> currentLogPriority_ { static_cast<int>(LogColorPriority::None) };
   int previousPageIndex_ {0};
   QDialog* replaceWithDialog_{ nullptr };
 
@@ -283,7 +286,11 @@ private:
   QString name_;
 
   ModuleDialogManager dialogManager_;
-  ModuleDialogDockWidget* dockable_;
+  // Must be null-initialized: updateDockWidgetProperties() can fire (via the
+  // dock's topLevelChanged signal in configDockable) before makeOptionsDialog
+  // assigns this, and that slot null-checks dockable_. An uninitialized pointer
+  // holds garbage that passes the null check and segfaults under setWindowFlags.
+  ModuleDialogDockWidget* dockable_{nullptr};
   bool firstTimeShown_{ true };
   static QList<QPoint> positions_;
   void makeOptionsDialog();
@@ -311,7 +318,7 @@ private:
   void updateProgrammablePorts();
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
-  bool deleting_;
+  std::atomic<bool> deleting_;
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
   bool isViewScene_; //TODO: lots of special logic around this case.
@@ -323,6 +330,8 @@ private:
 
   SharedPointer<class ConnectionFactory> connectionFactory_;
   SharedPointer<class ClosestPortFinder> closestPortFinder_;
+  boost::signals2::scoped_connection executeSelfRequestConnection_;
+  boost::signals2::scoped_connection executeEndsConnection_;
   QString* currentExecuteIcon_ {nullptr};
 
   friend class ::PortBuilder;

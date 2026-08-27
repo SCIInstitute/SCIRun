@@ -35,8 +35,8 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
-#include <qwt_knob.h>
-#include <qwt_abstract_slider.h>
+#include <qwt/qwt_knob.h>
+#include <qwt/qwt_abstract_slider.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -566,7 +566,7 @@ namespace
 
 OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   : ViewSceneControlPopupWidget(parent), ButtonStylesheetToggler(toolbarButton,
-    [this]() { toggleCheckable(orientationCheckableGroupBox_); })
+    [this]() { toggleOrientation(); })
 {
   setupUi(this);
 
@@ -581,6 +581,11 @@ OrientationAxesControls::OrientationAxesControls(ViewSceneDialog* parent, QPushB
   connect(orientDefaultPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderDefaultPos);
   connect(orientCenterPositionButton, &QPushButton::clicked, this, &OrientationAxesControls::setSliderCenterPos);
   linkedCheckable_ = [this]() { return orientationCheckableGroupBox_->isChecked(); };
+}
+
+void OrientationAxesControls::toggleOrientation()
+{
+  toggleCheckable(orientationCheckableGroupBox_);
 }
 
 void OrientationAxesControls::toggleButton()
@@ -617,7 +622,7 @@ ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbar
 
 ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
   : ViewSceneControlPopupWidget(parent),
-  ButtonStylesheetToggler(toolbarButton, [this]() { toggleCheckable(planeVisibleCheckBox_); })
+  ButtonStylesheetToggler(toolbarButton, [this]() { toggleVisible(); })
 {
   setupUi(this);
 
@@ -647,6 +652,11 @@ ClippingPlaneControls::ClippingPlaneControls(ViewSceneDialog* parent, QPushButto
   connect(yValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneY);
   connect(zValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneZ);
   connect(dValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneD);
+}
+
+void ClippingPlaneControls::toggleVisible()
+{
+  toggleCheckable(planeVisibleCheckBox_);
 }
 
 InputControls::InputControls(ViewSceneDialog* parent) : ViewSceneControlPopupWidget(parent)
@@ -706,7 +716,7 @@ LightButtonUpdater::LightButtonUpdater(QPushButton* toolbarButton, std::function
 }
 
 LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushButton* toolbarButton)
-  : ViewSceneControlPopupWidget(viewScene), LightButtonUpdater(toolbarButton, [this]() { lightCheckBox_->toggle(); }),
+  : ViewSceneControlPopupWidget(viewScene), LightButtonUpdater(toolbarButton, [this]() { toggleLightOn(); }),
     lightNumber_(lightNumber)
 {
   setupUi(this);
@@ -777,6 +787,21 @@ LightControls::LightControls(ViewSceneDialog* viewScene, int lightNumber, QPushB
 #endif
 }
 
+void LightControls::setLightOn(bool on)
+{
+  lightCheckBox_->setChecked(on);
+}
+
+void LightControls::toggleLightOn()
+{
+  lightCheckBox_->toggle();
+}
+
+bool LightControls::isLightOn() const
+{
+  return lightCheckBox_->isChecked();
+}
+
 void LightControls::resetAngles()
 {
   if (lightAzimuthSlider_)
@@ -798,6 +823,8 @@ CompositeLightControls::CompositeLightControls(ViewSceneDialog* parent, const st
   auto layout = new QHBoxLayout;
   setLayout(layout);
   layout->addWidget(tabs_);
+  if (!lights_.empty())
+    setMinimumSize(lights_[0]->minimumSize());
 }
 
 QColor LightButtonUpdater::color() const

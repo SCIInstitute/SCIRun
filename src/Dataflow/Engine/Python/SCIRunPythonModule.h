@@ -63,6 +63,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("hideUI", &PyModule::hideUI)
     .def("__getattr__", &PyModule::getattr)
     .def("__setattr__", &PyModule::setattr)
+    .def("__str__", &PyModule::id)
     ;
 
   boost::python::class_<PyDatatype, SharedPointer<PyDatatype>, boost::noncopyable>("SCIRun::PyDatatype", boost::python::no_init)
@@ -78,6 +79,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("scirun_remove_module", &NetworkEditorPythonAPI::removeModule);
   boost::python::def("scirun_execute_all", &NetworkEditorPythonAPI::executeAll);
   boost::python::def("scirun_module_ids", &SimplePythonAPI::scirun_module_ids);
+  boost::python::def("scirun_move_module", &NetworkEditorPythonAPI::moveModule);
 
   boost::python::def("scirun_connect_modules", &NetworkEditorPythonAPI::connect);
   boost::python::def("scirun_disconnect_modules", &NetworkEditorPythonAPI::disconnect);

@@ -117,10 +117,8 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
   uint32_t vboSize = sizeof(float) * 7 * static_cast<uint32_t>(points.size());
 
-  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
-    new spire::VarBuffer(iboSize));
-  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
-    new spire::VarBuffer(vboSize));
+  auto iboBufferSPtr = std::make_shared<spire::VarBuffer>(iboSize);
+  auto vboBufferSPtr = std::make_shared<spire::VarBuffer>(vboSize);
 
   spire::VarBuffer* iboBuffer = iboBufferSPtr.get();
   spire::VarBuffer* vboBuffer = vboBufferSPtr.get();
@@ -165,14 +163,14 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   // Construct VBO.
   std::string shader = "Shaders/ColorMapLegend";
   std::vector<SpireVBO::AttributeData> attribs;
-  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+  attribs.emplace_back("aPos", 3 * sizeof(float));
+  attribs.emplace_back("aColor", 4 * sizeof(float));
   std::vector<SpireSubPass::Uniform> uniforms;
-  uniforms.push_back(SpireSubPass::Uniform("uXTranslate",static_cast<float>(xTrans)));
-  uniforms.push_back(SpireSubPass::Uniform("uYTranslate",static_cast<float>(yTrans)));
-  uniforms.push_back(SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
+  uniforms.emplace_back("uXTranslate",static_cast<float>(xTrans));
+  uniforms.emplace_back("uYTranslate",static_cast<float>(yTrans));
+  uniforms.emplace_back("uDisplaySide", static_cast<float>(displaySide));
   int displayLength = state->getValue(DisplayLength).toInt();
-  uniforms.push_back(SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
+  uniforms.emplace_back("uDisplayLength", static_cast<float>(displayLength));
   auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, BBox(Point{}, Point{}), true);
 
@@ -200,13 +198,13 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
 
   auto geom(makeShared<GeometryObjectSpire>(*this, idname, false));
 
-  //geom->setColorMap(cm->getColorMapName());
   geom->ibos().push_back(geomIBO);
   geom->vbos().push_back(geomVBO);
   geom->passes().push_back(pass);
 
   //text
-  char str2[128];
+  constexpr int valueBufferSize = 128;
+  char str2[valueBufferSize];
   std::stringstream sd;
   sd << "%." << sigdig << "g";
   std::vector<Vector> txt_coords;
@@ -226,7 +224,8 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
     std::stringstream lineStream;
-    sprintf(str2, sd.str().c_str(), (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale);
+    const double colorValue = (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale;
+    snprintf(str2, valueBufferSize, sd.str().c_str(), colorValue);
     lineStream << str2 << " " << state->getValue(Units).toString();
     const auto line = lineStream.str();
     bool ds = displaySide == 0;

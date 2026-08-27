@@ -311,6 +311,13 @@ void SRInterface::runGCOnNextExecution()
     }
 
     //----------------------------------------------------------------------------------------------
+    void SRInterface::centerView()
+    {
+      mCamera->centerView();
+      updateCamera();
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRInterface::setView(const glm::vec3& view, const glm::vec3& up)
     {
       mCamera->setView(view, up);
@@ -431,6 +438,16 @@ void SRInterface::runGCOnNextExecution()
       widgetSelectFboId_ = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D, screen_.width, screen_.height, 1, widgetSelectFboName);
       fboMan->bindFBO(*widgetSelectFboId_);
 
+      // The selection FBO matches the logical widget size that mouse coordinates
+      // are reported in, but the inherited viewport is the on-screen framebuffer's,
+      // which Qt scales by devicePixelRatio on high-DPI displays. Point the
+      // viewport at the selection FBO so clip space maps onto it 1:1.
+      GLint priorViewport[4];
+      GL(glGetIntegerv(GL_VIEWPORT, priorViewport));
+      GL(glViewport(0, 0, static_cast<GLsizei>(screen_.width), static_cast<GLsizei>(screen_.height)));
+      ScopedLambdaExecutor restoreViewport([&priorViewport]()
+        { GL(glViewport(priorViewport[0], priorViewport[1], priorViewport[2], priorViewport[3])); });
+
       //a map from selection id to name
       std::map<uint32_t, std::string> selMap;
       std::vector<uint64_t> entityList;
@@ -514,13 +531,11 @@ void SRInterface::runGCOnNextExecution()
           const char* vs =
             "uniform mat4 uModelViewProjection;\n"
             "uniform vec4 uColor;\n"
-            "uniform bool hack;\n"
             "attribute vec3 aPos;\n"
             "varying vec4 fColor;\n"
             "void main()\n"
             "{\n"
             "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
-            "  if(hack) gl_Position.xy = ((gl_Position.xy/gl_Position.w) * vec2(0.5) - vec2(0.5)) * gl_Position.w;\n"
             "  fColor = uColor;\n"
             "}\n";
           const char* fs =
@@ -555,7 +570,6 @@ void SRInterface::runGCOnNextExecution()
         mCore.addComponent(entityID, commonUniforms);
 
         applyUniform(entityID, SpireSubPass::Uniform("uColor", selCol));
-        applyUniform(entityID, SpireSubPass::Uniform("hack", Preferences::Instance().widgetSelectionCorrection));
 
         // Add components associated with entity. We just need a base class which
         // we can pass in an entity ID, then a derived class which bundles
@@ -1071,7 +1085,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               {
                 mSelectedID = entityID;
               }
-              mEntityIdMap.insert(std::make_pair(objectName, entityID));
+              mEntityIdMap.emplace(objectName, entityID);
 
               mCore.addComponent(entityID, trafo);
 
@@ -1164,7 +1178,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           for (const auto& pass : it->mPasses)
           {
             uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
-            mEntityIdMap.insert(std::make_pair(it->mName, entityID));
+            mEntityIdMap.emplace(it->mName, entityID);
           }
           ++it;
         }
@@ -1200,8 +1214,14 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
       const std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       if (const auto iboMan = im.lock()) {
         ren::IBO ibo;
-        const auto iboData = iboMan->getIBOData(iboName);
+        // hasIBO returns 0 (never a valid glGenBuffers id) when the named IBO is
+        // not present. Skip rather than letting getIBOData throw — the IBO can be
+        // legitimately absent if it was garbage collected between geometry
+        // updates, and a missing index buffer should drop the pass, not abort.
         ibo.glid = iboMan->hasIBO(iboName);
+        if (ibo.glid == 0)
+          return;
+        const auto iboData = iboMan->getIBOData(iboName);
         ibo.primType = iboData.primType;
         ibo.primMode = iboData.primMode;
         ibo.numPrims = iboData.numPrims;
@@ -1214,6 +1234,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
     void SRInterface::addTextToEntity(uint64_t entityID, const SpireText& text)
     {
       if (text.name.empty()) return;
+      if (text.width == 0 || text.height == 0 || text.bitmap.empty()) return;
       std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
       std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
       if (!textureMan) return;

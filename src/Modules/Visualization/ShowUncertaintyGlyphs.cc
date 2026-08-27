@@ -282,7 +282,7 @@ void ShowUncertaintyGlyphs::execute()
   auto state = get_state();
   if(needToExecute())
   {
-    auto impl = ShowUncertaintyGlyphsImpl();
+    ShowUncertaintyGlyphsImpl impl;
     impl.setShowTensors(state->getValue(ShowTensors).toBool())
       .setTensorsResolution(state->getValue(TensorsResolution).toInt())
       .setTensorsTransparency(state->getValue(TensorsTransparency).toBool())

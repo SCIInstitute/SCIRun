@@ -1,13 +1,12 @@
-![SCIRun Banner](http://www.sci.utah.edu/images/software/SCIRun/scirun.png "")
+![SCIRun Banner](https://sci.utah.edu/wp-content/uploads/2025/07/scirun.webp "")
 
 ## SCIRun 5
 <!-- https://github.com/SCIInstitute/SCIRun -->
 
-[![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
-![mac-build](https://github.com/SCIInstitute/SCIRun/workflows/mac-build/badge.svg)
-![linux-build](https://github.com/SCIInstitute/SCIRun/workflows/linux-build/badge.svg)
-![windows-build](https://github.com/SCIInstitute/SCIRun/workflows/windows-build/badge.svg)
-<!-- [![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun) -->
+[![mac-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/mac.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/mac.yml)
+[![linux-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/ccpp.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/ccpp.yml)
+[![windows-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/windows.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/windows.yml)
+[![regression-tests](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml)
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
@@ -38,6 +37,13 @@ Please see https://scirun.readthedocs.io/en/latest/start/build.html
 #### Python API
 Please see https://scirun.readthedocs.io/en/latest/user_doc/python.html
 
+#### Example Data
+Please see: https://github.com/CIBC-Internal/SCIRunTestData
+
+Or, for the older dataset:
+https://www.sci.utah.edu/releases/scirun_v4.7/SCIRunData_4.7_20160120_data.zip
+https://www.sci.utah.edu/releases/scirun_v4.7/SCIRunData_4.7_20160120_data.tgz
+
 ### Questions and Answers
 For help, check out the discussion page: https://github.com/SCIInstitute/SCIRun/discussions.
 
@@ -46,7 +52,7 @@ For help, check out the discussion page: https://github.com/SCIInstitute/SCIRun/
 
   The MIT License
 
-  Copyright (c) 2020 Scientific Computing and Imaging Institute,
+  Copyright (c) 2023 Scientific Computing and Imaging Institute,
   University of Utah.
 
 

@@ -48,6 +48,7 @@
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/ProvenanceWindow.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -470,6 +471,12 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   LOG_TRACE("NetworkEditor connecting to state.");
   module->getModule()->get_state()->connectStateChanged([this]() { modified(); });
+  auto modId = module->getModule()->id().id_;
+  module->getModule()->get_state()->connectProvenanceStateChanged([modId](const Name& n, const AlgorithmParameter::Value& oldV, const AlgorithmParameter::Value& newV)
+    {
+      LOG_TRACE("UNDO CODE: scirun_set_module_state(\"{}\", \"{}\", {})", modId, n.name(), to_string(oldV));
+      LOG_TRACE("REDO CODE: scirun_set_module_state(\"{}\", \"{}\", {})", modId, n.name(), to_string(newV));
+    });
 
   connect(this, &NetworkEditor::networkExecuted, module, &ModuleWidget::resetLogButtonColor);
   connect(this, &NetworkEditor::networkExecuted, module, &ModuleWidget::resetProgressBar);
@@ -1460,7 +1467,7 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
   logCritical("updateModulePositions {},{}", __FILE__, __LINE__);
 #endif
 
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  for (auto item : scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
@@ -1481,6 +1488,22 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
     child.second->get()->updateModulePositions(modulePositions, selectAll);
   }
 #endif
+}
+
+bool NetworkEditor::updateModulePosition(const std::string& id, double x, double y)
+{
+  for (auto item : scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (w->getModuleWidget()->getModuleId() == id)
+      {
+        w->setPos({ x,y });
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
@@ -2440,6 +2463,20 @@ void NetworkEditor::showStateViewer()
   //TODO: make non-modal, but needs update slot
   StateViewer viewer(this);
   viewer.exec();
+}
+
+void NetworkEditor::connectCommandConverterEvents(GuiActionProvenanceConverter* gapc)
+{
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::moduleAdded,
+    gapc, &GuiActionProvenanceConverter::moduleAdded);
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::moduleRemoved,
+    gapc, &GuiActionProvenanceConverter::moduleRemoved);
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::connectionAdded,
+    gapc, &GuiActionProvenanceConverter::connectionAdded);
+  connect(controller_.get(), &NetworkEditorControllerGuiProxy::connectionRemoved,
+    gapc, &GuiActionProvenanceConverter::connectionRemoved);
+  connect(this, &NetworkEditor::moduleMoved,
+    gapc, &GuiActionProvenanceConverter::moduleMoved);
 }
 
 ErrorItem::ErrorItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)

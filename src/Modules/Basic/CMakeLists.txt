@@ -28,6 +28,7 @@
 
 SET(Modules_Basic_SRCS
   AsyncPortTestModule.cc
+  AsyncStreamingTestModule.cc
   DynamicPortTester.cc
   NeedToExecuteTester.cc
   ReceiveComplexScalar.cc
@@ -39,10 +40,12 @@ SET(Modules_Basic_SRCS
   LoggingTester.cc
   CompositeModuleWithStaticPorts.cc
   CompositeModuleWithTypedStaticPorts.cc
+  SimulationReaderBaseModule.cc
 )
 
 SET(Modules_Basic_HEADERS
   AsyncPortTestModule.h
+  AsyncStreamingTestModule.h
   DynamicPortTester.h
   NeedToExecuteTester.h
   ReceiveComplexScalar.h
@@ -54,6 +57,7 @@ SET(Modules_Basic_HEADERS
   PlaceholderModule.h
   CompositeModuleWithStaticPorts.h
   CompositeModuleWithTypedStaticPorts.h
+  SimulationReaderBaseModule.h
   share.h
 )
 

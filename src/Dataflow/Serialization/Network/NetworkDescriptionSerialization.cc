@@ -27,6 +27,8 @@
 
 
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+
+#include <boost/filesystem/directory.hpp>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <boost/filesystem/operations.hpp>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
@@ -70,8 +72,8 @@ namespace
       tmpPath = tmpPath.parent_path();
     }
 
-    auto filename = diffpath.leaf().string() + newPath.extension().string();
-    diffpath.remove_leaf() /= filename;
+    auto filename = diffpath.filename().string() + newPath.extension().string();
+    diffpath.remove_filename() /= filename;
     return diffpath;
   }
 }

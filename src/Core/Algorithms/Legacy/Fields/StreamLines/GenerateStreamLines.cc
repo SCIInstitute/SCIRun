@@ -206,7 +206,7 @@ namespace detail
     VMesh*  mesh_ {nullptr};
 
     FieldHandle input_;
-    std::vector<bool> success_;
+    ParallelSuccessFlags success_;
     FieldList outputs_;
     VMesh::Node::index_type global_dimension_ {0};
   };
@@ -566,7 +566,7 @@ namespace detail
       }
 
       mesh_->get_faces(faces, elem);
-      double mindist = DBL_MAX;
+      double mindist = std::numeric_limits<double>::max();
       bool found = false;
       Point ecenter;
 

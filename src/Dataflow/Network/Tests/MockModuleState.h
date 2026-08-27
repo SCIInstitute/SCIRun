@@ -48,6 +48,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(getTransientValue, TransientValueOption(const Name&));
           MOCK_METHOD3(setTransientValue, void(const Name&, const TransientValue&, bool));
           MOCK_METHOD1(connectStateChanged, boost::signals2::connection(state_changed_sig_t::slot_function_type));
+          MOCK_METHOD1(connectProvenanceStateChanged, boost::signals2::connection(provenance_state_changed_sig_t::slot_function_type));
           MOCK_METHOD2(connectSpecificStateChanged, boost::signals2::connection(const Name&, state_changed_sig_t::slot_function_type));
           MOCK_METHOD0(fireTransientStateChangeSignal, void());
           MOCK_METHOD0(disconnectAll, void());

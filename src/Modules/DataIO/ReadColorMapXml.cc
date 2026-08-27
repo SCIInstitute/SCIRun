@@ -89,6 +89,21 @@ void ReadColorMapXml::execute()
       THROW_ALGORITHM_INPUT_ERROR("No colormaps found in xml file: " + filenameStr);
     }
 
+    // Reject colormaps that parsed to zero color points. Emitting an empty
+    // colormap here would silently produce invalid output that crashes
+    // downstream color lookups. This usually means the file uses an
+    // unsupported dialect rather than the expected
+    // <ColorMaps><ColorMap name="..."><Point x o r g b/></ColorMap></ColorMaps>.
+    for (const auto& cmXml : cmXmls.maps)
+    {
+      if (cmXml.points.empty())
+      {
+        THROW_ALGORITHM_INPUT_ERROR("Colormap '" + cmXml.name +
+          "' contains no color points (no recognized <Point> elements). "
+          "The file may use an unsupported colormap format: " + filenameStr);
+      }
+    }
+
     const auto firstColorMap = ColorXml::ColorMapXmlIO::createColorMapFromXmlData(cmXmls.maps[0]);
     sendOutput(FirstColorMap, firstColorMap);
 

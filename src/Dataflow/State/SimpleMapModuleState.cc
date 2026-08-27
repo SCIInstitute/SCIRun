@@ -55,9 +55,10 @@ SimpleMapModuleState::SimpleMapModuleState(SimpleMapModuleState&& rhs)
 
 SimpleMapModuleState::SimpleMapModuleState(const SimpleMapModuleState& rhs)
   : stateMap_(rhs.stateMap_),
-  transientStateMap_(rhs.transientStateMap_), /// @todo: I think this is wrong, transient shouldn't be copied
   name_(rhs.name_)
 {
+  std::lock_guard<std::mutex> lock(rhs.transientMutex_);
+  transientStateMap_ = rhs.transientStateMap_; /// @todo: I think this is wrong, transient shouldn't be copied
   //std::cout << "SMMS copy ctor " << name_ << std::endl;
 }
 
@@ -66,7 +67,10 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
   if (&rhs != this)
   {
     stateMap_ = rhs.stateMap_;
-    transientStateMap_ = rhs.transientStateMap_;  /// @todo: I think this is wrong, transient shouldn't be copied
+    {
+      std::lock_guard<std::mutex> lock(rhs.transientMutex_);
+      transientStateMap_ = rhs.transientStateMap_;  /// @todo: I think this is wrong, transient shouldn't be copied
+    }
     name_ = rhs.name_;
     //std::cout << "SMMS copy assign " << name_<< std::endl;
     /// @todo??
@@ -97,7 +101,9 @@ bool SimpleMapModuleState::containsKey(const Name& name) const
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
   auto oldLocation = stateMap_.find(parameterName);
-  bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value() == value);
+  bool atEnd = oldLocation == stateMap_.end();
+  const auto& oldValue = atEnd ? AlgorithmParameter::Value() : oldLocation->second.value();
+  bool newValue = atEnd || !(oldValue == value);
 
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
 
@@ -105,10 +111,14 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   {
     LOG_DEBUG("----signaling from state map: ({}, {}), num_slots = {}", parameterName.name_,
       SCIRun::Core::to_string(value), stateChangedSignal_.num_slots());
+
     stateChangedSignal_();
+
     auto specSig = specificStateChangeSignalMap_.find(parameterName);
     if (specSig != specificStateChangeSignalMap_.end())
       specSig->second();
+
+    provenanceStateChangedSignal_(parameterName, oldValue, value);
   }
 }
 
@@ -117,6 +127,14 @@ boost::signals2::connection SimpleMapModuleState::connectStateChanged(state_chan
   auto conn = stateChangedSignal_.connect(subscriber);
   LOG_TRACE("SimpleMapModuleState::connectStateChanged, num_slots = {}", stateChangedSignal_.num_slots());
   generalStateConnections_.push_back(conn);
+  return conn;
+}
+
+boost::signals2::connection SimpleMapModuleState::connectProvenanceStateChanged(provenance_state_changed_sig_t::slot_function_type subscriber)
+{
+  auto conn = provenanceStateChangedSignal_.connect(subscriber);
+  LOG_TRACE("SimpleMapModuleState::connectProvenanceStateChanged, num_slots = {}", provenanceStateChangedSignal_.num_slots());
+  provenanceStateConnections_.push_back(conn);
   return conn;
 }
 
@@ -137,6 +155,7 @@ ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
 
 void SimpleMapModuleState::print() const
 {
+  std::lock_guard<std::mutex> lock(transientMutex_);
   std::cout << "Printing transient map: " << this << " name: " << name_ << std::endl;
   for (auto q = transientStateMap_.begin(); q != transientStateMap_.end(); ++q)
   {
@@ -147,6 +166,7 @@ void SimpleMapModuleState::print() const
 
 SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientValue(const Name& name) const
 {
+  std::lock_guard<std::mutex> lock(transientMutex_);
   //print();
   auto i = transientStateMap_.find(name.name());
   return i != transientStateMap_.end() && !i->second.empty() ? std::optional(i->second) : TransientValueOption();
@@ -154,9 +174,14 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
 
 void SimpleMapModuleState::setTransientValue(const Name& name, const TransientValue& value, bool fireSignal)
 {
-  transientStateMap_[name.name()] = value;
+  {
+    std::lock_guard<std::mutex> lock(transientMutex_);
+    transientStateMap_[name.name()] = value;
+  }
   //print();
 
+  // Fire signals outside the lock to avoid re-entrancy through signal handlers
+  // that call back into get/setTransientValue.
   if (fireSignal)
   {
     fireTransientStateChangeSignal();
@@ -181,5 +206,7 @@ void SimpleMapModuleState::disconnectAll()
   for (auto& c : generalStateConnections_)
     c.disconnect();
   for (auto& c : specificStateConnections_)
+    c.disconnect();
+  for (auto& c : provenanceStateConnections_)
     c.disconnect();
 }

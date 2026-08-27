@@ -41,29 +41,13 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include <boost/filesystem.hpp>
 
 #include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
-
-////////////////////////////////////
-/// InsertStringInFile()
-/// Inserts "insert" in front of all occurrances of
-/// "match" within the file named "filename"
-
-SCISHARE void InsertStringInFile(char* filename, const char* match, const char* insert);
-
-
-////////////////////////////////////
-/// GetFilenamesEndingWith()
-/// returns a std::map of strings that contains
-/// all the files with extension "ext" inside
-/// the directory named "dir"
-
-SCISHARE std::map<int,char*>* GetFilenamesEndingWith(const char* dir,
-                                                     const char* ext);
 
 SCISHARE std::vector<std::string> GetFilenamesStartingWith(const std::string & dir,
                                                       const std::string & prefix);

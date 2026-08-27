@@ -70,6 +70,15 @@ namespace
   class PyDatatypeString : public PyDatatype
   {
   public:
+    ~PyDatatypeString()
+    {
+      if (Py_IsInitialized())
+      {
+        PyGILState_STATE gil = PyGILState_Ensure();
+        str_ = py::object();  // release under GIL
+        PyGILState_Release(gil);
+      }
+    }
     explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying), str_(convertStringToPython(underlying))
     {
     }
@@ -529,11 +538,14 @@ SharedPointer<PyModule> PythonImpl::addModule(const std::string& name)
 {
   auto m = nec_.addModule(name);
   if (m)
-    std::cout << "Module added: " + m->id().id_ << std::endl;
+    logInfo("Module added: {}", m->id().id_);
   else
-    std::cout << "Module add failed, no such module type" << std::endl;
+    logWarning("Module add failed, no such module type ({})", name);
 
-  return modules_[m->id().id_];
+  mostRecentAddModuleId_ = m->id().id_;
+  //logCritical("here i have the most recent added id: {}", mostRecentAddModuleId_);
+
+  return modules_[mostRecentAddModuleId_];
 }
 
 void PythonImpl::pythonModuleAddedSlot(const std::string&, ModuleHandle m, ModuleCounter)
@@ -546,12 +558,15 @@ std::string PythonImpl::removeModule(const std::string& id)
 {
   try
   {
-    nec_.removeModule(ModuleId(id));
-    return "Module removed";
+    auto result = nec_.removeModule(ModuleId(id));
+    if (result)
+      return "Module removed: " + id;
+    else
+      return "No module by that id (" + id + ")";
   }
   catch (...)
   {
-    return "No module by that id";
+    return "No module by that id (" + id + ")";
   }
 }
 
@@ -586,10 +601,16 @@ std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, 
 {
   auto network = nec_.getNetwork();
   auto modFrom = network->lookupModule(ModuleId(moduleIdFrom));
+  if (!modFrom)
+    return "PythonImpl::connect failed: module not found: " + moduleIdFrom;
   auto outputPort = modFrom->outputPorts().at(fromIndex);
   auto modTo = network->lookupModule(ModuleId(moduleIdTo));
+  if (!modTo)
+    return "PythonImpl::connect failed: module not found: " + moduleIdTo;
   auto inputPort = modTo->inputPorts().at(toIndex);
   auto id = nec_.requestConnection(outputPort.get(), inputPort.get());
+  if (!id)
+    return "PythonImpl::connect failed: connection could not be made";
   return "PythonImpl::connect success: " + id->id_;
 }
 
@@ -654,6 +675,11 @@ std::string PythonImpl::quit(bool force)
   quitCmd->set(Name("RunningPython"), true);
   quitCmd->execute();
   return "Quit after execute enabled.";
+}
+
+std::string PythonImpl::moveModule(const std::string& id, double x, double y)
+{
+  return nec_.moveModule(id, x, y) ? "Module moved." : "Module not found.";
 }
 
 #endif

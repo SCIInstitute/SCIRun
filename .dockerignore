@@ -1,0 +1,8 @@
+.github
+scripts
+.clang-format
+.git 
+.gitattributes
+.gitignore
+build.sh
+compile_commands.json

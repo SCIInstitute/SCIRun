@@ -51,7 +51,7 @@ namespace Engine {
     using List = typename Stack::container_type;
     using IOType = Engine::NetworkIOInterface<Memento>;
 
-    explicit ProvenanceManager(IOType* networkIO);
+    ProvenanceManager(IOType* networkIO, Core::PythonCommandInterpreterInterface* py);
     void setInitialState(const Memento& initialState);
     void addItem(ItemHandle item);
     ItemHandle undo();
@@ -68,9 +68,8 @@ namespace Engine {
     const IOType* networkIO() const;
 
   private:
-    ItemHandle undo(bool restore);
-    ItemHandle redo(bool restore);
     IOType* networkIO_;
+    Core::PythonCommandInterpreterInterface* py_;
     Stack undo_, redo_;
     std::optional<Memento> initialState_;
   };
@@ -78,7 +77,8 @@ namespace Engine {
 
 
   template <class Memento>
-  ProvenanceManager<Memento>::ProvenanceManager(IOType* networkIO) : networkIO_(networkIO) {}
+  ProvenanceManager<Memento>::ProvenanceManager(IOType* networkIO, Core::PythonCommandInterpreterInterface* py)
+    : networkIO_(networkIO), py_(py) {}
 
   template <class Memento>
   void ProvenanceManager<Memento>::setInitialState(const Memento& initialState)
@@ -115,80 +115,79 @@ namespace Engine {
   template <class Memento>
   typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::undo()
   {
-    return undo(true);
-  }
-
-  template <class Memento>
-  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::undo(bool restore)
-  {
     if (!undo_.empty())
     {
       auto undone = undo_.top();
+      if (py_)
+        py_->run_string(undone->undoCode());
+      else
+        logCritical("Undo/redo not available without Python enabled.");
       undo_.pop();
       redo_.push(undone);
 
-      //clear and load previous memento
-      if (restore)
       {
-        networkIO_->clear();
-        if (!undo_.empty())
-          networkIO_->loadNetwork(undo_.top()->memento());
-        else if (initialState_)
-          networkIO_->loadNetwork(*initialState_);
+        //logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
+
+        //networkIO_->clear();
+        //if (!undo_.empty())
+        //  networkIO_->loadNetwork(undo_.top()->memento());
+        //else if (initialState_)
+        //  networkIO_->loadNetwork(*initialState_);
       }
 
       return undone;
     }
-    return ItemHandle();
+    return nullptr;
   }
 
   template <class Memento>
   typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::redo()
   {
-    return redo(true);
-  }
-
-  template <class Memento>
-  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::redo(bool restore)
-  {
     if (!redo_.empty())
     {
       auto redone = redo_.top();
+      if (py_)
+        py_->run_string(redone->redoCode());
+      else
+        logCritical("Undo/redo not available without Python enabled.");
       redo_.pop();
       undo_.push(redone);
 
       //clear and load redone memento
-      if (restore)
-      {
-        networkIO_->clear();
-        networkIO_->loadNetwork(redone->memento());
-      }
+      // if (true)
+      // {
+      //   logCritical("TODO: memento-based redo is disabled while a python-based implementation is developed.");
+      //   //networkIO_->clear();
+      //   //networkIO_->loadNetwork(redone->memento());
+      // }
 
       return redone;
     }
-    return ItemHandle();
+    return nullptr;
   }
 
   template <class Memento>
   typename ProvenanceManager<Memento>::List ProvenanceManager<Memento>::undoAll()
   {
+    logCritical("TODO: memento-based undo is disabled while a python-based implementation is developed.");
     List undone;
     while (0 != undoSize())
-      undone.push_back(undo(false));
-    networkIO_->clear();
-    if (initialState_)
-      networkIO_->loadNetwork(*initialState_);
+      undone.push_back(undo());
+    // networkIO_->clear();
+    // if (initialState_)
+    //   networkIO_->loadNetwork(*initialState_);
     return undone;
   }
 
   template <class Memento>
   typename ProvenanceManager<Memento>::List ProvenanceManager<Memento>::redoAll()
   {
+    logCritical("TODO: memento-based redo is disabled while a python-based implementation is developed.");
     List redone;
     while (0 != redoSize())
-      redone.push_back(redo(false));
-    networkIO_->clear();
-    networkIO_->loadNetwork(undo_.top()->memento());
+      redone.push_back(redo());
+    // networkIO_->clear();
+    // networkIO_->loadNetwork(undo_.top()->memento());
     return redone;
   }
 

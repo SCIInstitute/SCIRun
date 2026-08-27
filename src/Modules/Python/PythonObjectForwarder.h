@@ -106,11 +106,8 @@ namespace SCIRun
               else if (name == "list")
               {
                 auto list = var.toVector();
-                if (list[0].name().name() == "list")
-                {
-                  auto mat = convertToDenseMatrix(list);
-                  module_.sendOutput(matrixPort, makeShared<Datatypes::DenseMatrix>(mat));
-                }
+                auto mat = convertToDenseMatrix(list);
+                module_.sendOutput(matrixPort, makeShared<Datatypes::DenseMatrix>(mat));
               }
               else if (var.name().name() == Core::Python::pySparseRowMatrixLabel())
               {
@@ -155,6 +152,12 @@ namespace SCIRun
                   for (int c = 0; c < firstColSize; ++c)
                     dense(r, c) = row[c].toDouble();
                 }
+                return dense;
+              }
+              else {
+                Datatypes::DenseMatrix dense(rowSize, 1);
+                for (int r = 0; r < rowSize; ++r)
+                  dense(r, 0) = list[r].toDouble();
                 return dense;
               }
             }

@@ -47,6 +47,8 @@ namespace Engine {
     virtual ~ProvenanceItem() {}
     virtual Memento memento() const = 0;
     virtual std::string name() const = 0;
+    virtual std::string undoCode() const = 0;
+    virtual std::string redoCode() const = 0;
   };
 
 }

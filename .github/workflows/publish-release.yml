@@ -1,0 +1,186 @@
+name: Publish release assets
+
+# Reusable publisher. Called by windows.yml / mac.yml after their build matrix
+# finishes. Downloads this run's installer artifacts and attaches them to a
+# GitHub Release so the binaries live somewhere permanent instead of expiring
+# with the 90-day run-artifact retention (see issue #2398).
+#
+#   channel: nightly  -> rolling prerelease on the `nightly` tag, overwritten
+#                        each run. Notes are regenerated per run; see below.
+#   channel: stable   -> draft release on the pushed v* tag, with the tag baked
+#                        into each asset name. Review, then publish by hand.
+#
+# Asset names come from the `slug` in each artifact's build-info.json, which
+# records what the installer MEASURABLY is (OS floor, arch, Qt, Python) rather
+# than which runner image produced it. See scripts/ci/build_info.py.
+#
+# Both windows.yml and mac.yml publish to the SAME release. They run on separate
+# schedules, so the notes are merged, not overwritten -- scripts/ci/
+# nightly_release_notes.py carries the other platform's table across and only
+# recuts the changelog when the commit has actually moved.
+
+on:
+  workflow_call:
+    inputs:
+      channel:
+        required: true
+        type: string        # 'nightly' or 'stable'
+
+permissions:
+  contents: write           # create/update releases and move the nightly tag
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Full history: the changelog is `git log <previous nightly>..<this one>`,
+      # and a shallow clone cannot reach the previous nightly's commit.
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # softprops/action-gh-release only creates the `nightly` tag the first
+      # time it publishes to it; once the tag exists, later runs update the
+      # release body/assets but never move the tag itself, so `git checkout
+      # nightly` silently pins you to whatever commit first created it. Force
+      # the ref to HEAD every run. Safe from a trigger loop: mac.yml/windows.yml
+      # only fire on `v*` tag pushes, not on `nightly`.
+      - name: Move the nightly tag to this commit
+        if: ${{ inputs.channel == 'nightly' }}
+        run: |
+          git tag --force nightly "${{ github.sha }}"
+          git push --force origin refs/tags/nightly
+
+      # No merge-multiple: every GUI job emits an identically-named installer
+      # (SCIRun-<ver>-win64.exe / SCIRun-<ver>-Darwin.pkg), so flattening would
+      # clobber. Land each artifact in its own dist/<artifact-name>/ subdir.
+      - name: Download installer artifacts from this run
+        uses: actions/download-artifact@v6
+        with:
+          pattern: "installer-*"
+          path: dist
+
+      - name: Rename to unique, self-describing asset names
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -eu
+          shopt -s nullglob
+
+          # Nightly keeps a stable download URL; stable bakes in the tag.
+          if [ "$CHANNEL" = "stable" ]; then LABEL="$TAG"; else LABEL="nightly"; fi
+
+          mkdir -p buildinfo
+          : > names.tsv
+
+          cd dist
+          for d in */; do
+            name="${d%/}"
+            # Each artifact preserves its build path (bin/SCIRun/... for the
+            # installer, build/** for the .msi), so recurse -- do not restrict
+            # to the top level or the file is missed and then deleted below.
+            f=$(find "$d" -type f \
+                  \( -name '*.exe' -o -name '*.pkg' -o -name '*.msi' \) | head -n1)
+            [ -n "$f" ] || { echo "No installer in $d, skipping"; continue; }
+            ext="${f##*.}"
+
+            info=$(find "$d" -name build-info.json | head -n1)
+            if [ -n "$info" ]; then
+              slug=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["slug"])' "$info")
+              # Preserved for the notes step, which runs after the cleanup below.
+              mkdir -p "../buildinfo/$name"
+              cp "$info" "../buildinfo/$name/build-info.json"
+            else
+              # Pre-#2398-era artifact, or a build whose info step did not run.
+              echo "::warning::$name has no build-info.json; falling back to the artifact name"
+              slug="${name#installer-}"
+            fi
+
+            out="SCIRun-${LABEL}-${slug}.${ext}"
+            mv "$f" "$out"
+            printf '%s\t%s\n' "$slug" "$out" >> ../names.tsv
+          done
+
+          # Drop the now-empty per-artifact subdirs so files: matches only installers.
+          find . -mindepth 1 -type d -exec rm -rf {} + 2>/dev/null || true
+          echo "Assets to publish:"
+          ls -la
+
+          # The notes script wants slug -> filename as JSON.
+          cd ..
+          python3 -c 'import json,sys; print(json.dumps(dict(l.rstrip("\n").split("\t") for l in open("names.tsv"))))' \
+            > names.json
+          cat names.json
+
+      - name: Delete stale same-platform assets
+        if: ${{ inputs.channel == 'nightly' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          # The upload step below only replaces assets whose name matches one
+          # we're producing this run, so anything orphaned by a naming change
+          # (job-named installers pre-#2565, a retired OS floor, ...) sits on
+          # the release forever. A single run only ever builds one platform,
+          # so "same extension, not in this run's output" is a safe stand-in
+          # for "belongs to this platform and is now stale".
+          exts=$(cut -f2 names.tsv | sed -E 's/.*\././' | sort -u)
+          current=$(cut -f2 names.tsv)
+
+          gh release view nightly --repo "$REPO" --json assets -q '.assets[].name' \
+            > existing-assets.txt 2>/dev/null || : > existing-assets.txt
+
+          while IFS= read -r name; do
+            [ -n "$name" ] || continue
+            ext=".${name##*.}"
+            if printf '%s\n' "$exts" | grep -qxF "$ext" \
+               && ! printf '%s\n' "$current" | grep -qxF "$name"; then
+              echo "Deleting stale asset: $name"
+              gh release delete-asset nightly "$name" --repo "$REPO" -y || true
+            fi
+          done < existing-assets.txt
+
+      - name: Generate nightly release notes
+        if: ${{ inputs.channel == 'nightly' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          # The existing body carries the other platform's asset table and the
+          # commit its changelog was cut to. Absent on the very first run.
+          gh release view nightly --repo "$REPO" --json body -q .body \
+            > existing-body.md 2>/dev/null || : > existing-body.md
+
+          python3 scripts/ci/nightly_release_notes.py \
+            --dist buildinfo \
+            --sha "${{ github.sha }}" \
+            --existing-body existing-body.md \
+            --asset-names names.json \
+            > body.md
+
+          echo "--- generated notes ---"
+          cat body.md
+
+      - name: Publish nightly (rolling prerelease)
+        if: ${{ inputs.channel == 'nightly' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: Nightly build
+          prerelease: true
+          body_path: body.md
+          files: dist/*
+
+      - name: Publish stable (draft release on tag)
+        if: ${{ inputs.channel == 'stable' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: SCIRun ${{ github.ref_name }}
+          draft: true                    # review before it goes public
+          generate_release_notes: true
+          files: dist/*

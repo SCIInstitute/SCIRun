@@ -229,7 +229,6 @@ IF(WITH_TETGEN)
   SET(Modules_Legacy_Fields_HEADERS ${Modules_Legacy_Fields_HEADERS}
     InterfaceWithTetGenImpl.h
   )
-  ADD_DEFINITIONS(-DWITH_TETGEN)
 ENDIF()
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
@@ -257,8 +256,18 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
 
 IF(WITH_TETGEN)
   TARGET_LINK_LIBRARIES(Modules_Legacy_Fields ${TETGEN_LIBRARY})
+
+  # PUBLIC, not a directory-scoped ADD_DEFINITIONS: InterfaceWithTetGen.h gates
+  # the class body on this flag, so every TU that includes it must agree or the
+  # class has two definitions. Interface_Modules_Fields is the one that didn't
+  # (#2683).
+  TARGET_COMPILE_DEFINITIONS(Modules_Legacy_Fields PUBLIC WITH_TETGEN)
 ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Fields)
+ENDIF()
+
+IF(WITH_TETGEN)
+  SCIRUN_ADD_TEST_DIR(Tests)
 ENDIF()

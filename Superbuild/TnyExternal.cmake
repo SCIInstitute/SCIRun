@@ -29,12 +29,15 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Tny_external
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/Tny.git"
-  GIT_TAG "origin/master"
+  GIT_REPOSITORY ${TNY_GIT_URL}
+  GIT_TAG ${TNY_GIT_TAG}
+  UPDATE_COMMAND ""
   INSTALL_COMMAND ""
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
 	-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+  CMAKE_ARGS
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 )
 
 ExternalProject_Get_Property(Tny_external BINARY_DIR)

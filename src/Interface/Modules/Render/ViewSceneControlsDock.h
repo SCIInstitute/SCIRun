@@ -43,6 +43,7 @@
 #include "Interface/Modules/Render/ui_Screenshot.h"
 #include "Interface/Modules/Render/ui_ViewAxisChooser.h"
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
+#include "Interface/Modules/Render/ui_ViewSceneShortcuts.h"
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -189,6 +190,10 @@ namespace Gui {
    public:
     explicit OrientationAxesControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
     void toggleButton();
+   public Q_SLOTS:
+    /// Single entry point for flipping the orientation icon on/off: drives the
+    /// group box, which propagates to the dialog and the toolbar button.
+    void toggleOrientation();
 
    private:
     void setSliderDefaultPos();
@@ -237,6 +242,10 @@ namespace Gui {
     ClippingPlaneControls(ViewSceneDialog* parent, QPushButton* toolbarButton);
     void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
     void updatePlaneControlDisplay(double x, double y, double z, double d);
+   public Q_SLOTS:
+    /// Single entry point for flipping clipping on/off: drives the check box,
+    /// which propagates to the dialog and the toolbar button.
+    void toggleVisible();
   };
 
   class SCISHARE InputControls : public ViewSceneControlPopupWidget, public Ui::Input
@@ -282,6 +291,11 @@ namespace Gui {
    public:
     explicit LightControls(ViewSceneDialog* parent, int lightNumber, QPushButton* toolbarButton);
     void setAdditionalLightState(int azimuth, int inclination, bool on);
+    /// Single entry point for switching this light on/off: drives the check box,
+    /// which propagates to the dialog and the toolbar button.
+    void setLightOn(bool on);
+    void toggleLightOn();
+    bool isLightOn() const;
 
    private:
     int lightNumber_{-1};

@@ -1,8 +1,8 @@
-#  For more information, please see: http://software.sci.utah.edu
+﻿#  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2026 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -24,41 +24,128 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+# QwtExternal.cmake — build Qwt via the internal CMake wrapper (preferred over qmake)
 
-SET(QWT_CACHE_ARGS
-  "-DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}"
-  "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
-  "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON"
-  )
+# ----------------------------
+# Pinned versions come from Superbuild/VERSIONS.cmake.
+# QWT_WRAPPER_GIT_TAG: bump when a new wrapper release is cut (e.g., v0.2.0).
+set(qwt_WRAPPER_GIT_TAG "${QWT_WRAPPER_GIT_TAG}")
 
-LIST(APPEND QWT_CACHE_ARGS
-  "-DQt_PATH:PATH=${Qt_PATH}"
-  "-DQt5_PATH:PATH=${Qt_PATH}"
-  "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
-  "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
-  "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"
-  "-DQt${QT_VERSION_MAJOR}GuiTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}GuiTools_DIR}"
-)
+# QWT_GIT_TAG: the upstream Qwt tag the wrapper fetches internally
+# (informational here).
+set(qwt_GIT_TAG "${QWT_GIT_TAG}")
 
-if (${QT_VERSION_MAJOR} STREQUAL "5")
-  SET(qwt_GIT_TAG "origin/qt5-static-6.1.5")
-else()
-  SET(qwt_GIT_TAG "origin/qt6-static-6.2.0")
+# Ensure ExternalProject directories are rooted under the superbuild 'ep_base'
+set_property(DIRECTORY PROPERTY EP_BASE "${ep_base}")
+
+# ----------------------------
+# Superbuild directories
+# ----------------------------
+set(_qwt_src  "${CMAKE_BINARY_DIR}/Externals/Source/Qwt_external")
+set(_qwt_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Qwt_external")
+set(_qwt_inst "${CMAKE_BINARY_DIR}/Externals/Install/Qwt_external")
+
+# Qwt install layout
+set(QWT_INSTALL_DIR  "${_qwt_inst}")
+set(QWT_INCLUDE  "${_qwt_inst}/include")
+set(QWT_LIBRARY_DIR  "${_qwt_inst}/lib")
+
+# ----------------------------
+# Qt discovery hints (optional)
+# ----------------------------
+set(_qwt_extra_cmake_args "")
+if(DEFINED Qt6_DIR)
+  list(APPEND _qwt_extra_cmake_args "-DQt6_DIR=${Qt6_DIR}")
+endif()
+if(DEFINED Qt5_DIR)
+  list(APPEND _qwt_extra_cmake_args "-DQt5_DIR=${Qt5_DIR}")
 endif()
 
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
+include(ExternalProject)
+
+# Detect whether we're using a multi-config generator (e.g., Visual Studio)
+get_property(_is_multi GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(_is_multi)
+  # Forward the native config placeholder (e.g., $(Configuration))
+  set(_EP_CFG "${CMAKE_CFG_INTDIR}")
+else()
+  # Single-config (e.g., Ninja/Unix Makefiles) → use CMAKE_BUILD_TYPE (may be empty = default)
+  if(CMAKE_BUILD_TYPE)
+    set(_EP_CFG "${CMAKE_BUILD_TYPE}")
+  else()
+    set(_EP_CFG ".")  # no named config; the placeholder is '.' for single-config
+  endif()
+endif()
+
 ExternalProject_Add(Qwt_external
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt.git"
-  GIT_TAG ${qwt_GIT_TAG}
-  PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
-  CMAKE_CACHE_ARGS ${QWT_CACHE_ARGS}
+  GIT_REPOSITORY ${QWT_GIT_URL}
+  GIT_TAG        ${qwt_WRAPPER_GIT_TAG}
+
+  # Make cloning robust for pinned tags (turn off shallow during stabilization)
+  GIT_SHALLOW    0         # <-- changed from 1 to 0
+  GIT_PROGRESS   1
+  GIT_SUBMODULES ""        # explicit: no submodules
+
+  SOURCE_DIR ${_qwt_src}
+  BINARY_DIR ${_qwt_bin}
+  INSTALL_DIR ${_qwt_inst}
+
+  CMAKE_ARGS
+    -DCMAKE_INSTALL_PREFIX=${_qwt_inst}
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+    ${_qwt_extra_cmake_args}
+
+  # For pinned tags, skip update step entirely to avoid running git in a non-git tree
+  UPDATE_COMMAND ""        # <-- added: prevents Qwt_external-gitupdate.cmake
+
+  BUILD_COMMAND   ${CMAKE_COMMAND} --build . --config ${_EP_CFG}
+  INSTALL_COMMAND ${CMAKE_COMMAND} --install . --config ${_EP_CFG}
+
+  LOG_DOWNLOAD  1
+  LOG_UPDATE    1
+  LOG_CONFIGURE 1
+  LOG_BUILD     1
+  LOG_INSTALL   1
+
+  # Otherwise a failed step prints only "Command failed: 1" plus a path to a
+  # stamp log that never leaves the CI runner.
+  LOG_OUTPUT_ON_FAILURE 1
 )
 
-ExternalProject_Get_Property(Qwt_external BINARY_DIR)
-SET(QWT_DIR ${BINARY_DIR} CACHE PATH "")
+# ----------------------------
+# Exported Qwt library variables (config-aware)
+# ----------------------------
 
-MESSAGE(STATUS "QWT_DIR: ${QWT_DIR}")
+if(WIN32)
+  set(QWT_LIBRARY_DEBUG   "${QWT_LIBRARY_DIR}/qwtd.lib")
+  set(QWT_LIBRARY_RELEASE "${QWT_LIBRARY_DIR}/qwt.lib")
+
+  set(QWT_LIBRARY
+    $<$<CONFIG:Debug>:${QWT_LIBRARY_DEBUG}>
+    $<$<CONFIG:Release>:${QWT_LIBRARY_RELEASE}>
+    $<$<CONFIG:RelWithDebInfo>:${QWT_LIBRARY_RELEASE}>
+    $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_RELEASE}>
+  )
+
+else()
+  # Handle both flat and per-config layouts
+  set(QWT_LIBRARY
+    $<$<CONFIG:Debug>:${QWT_LIBRARY_DIR}/libqwtd.a>
+    $<$<CONFIG:Release>:${QWT_LIBRARY_DIR}/libqwt.a>
+    $<$<CONFIG:RelWithDebInfo>:${QWT_LIBRARY_DIR}/libqwt.a>
+    $<$<CONFIG:MinSizeRel>:${QWT_LIBRARY_DIR}/libqwt.a>
+  )
+endif()
+
+# Export to SCIRun
+# Export to parent (SCIRun superbuild)
+set(QWT_INSTALL_DIR "${QWT_INSTALL_DIR}" PARENT_SCOPE)
+set(QWT_INCLUDE "${QWT_INCLUDE}" PARENT_SCOPE)
+set(QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}" PARENT_SCOPE)
+set(QWT_LIBRARY     "${QWT_LIBRARY}"     PARENT_SCOPE)
+
+message(STATUS "[Qwt_external] WRAPPER_TAG=${qwt_WRAPPER_GIT_TAG} ; QWT_TAG=${qwt_GIT_TAG}")
+message(STATUS "[Qwt_external] INSTALL_DIR=${QWT_INSTALL_DIR}")
+message(STATUS "[Qwt_external] INCLUDE=${QWT_INCLUDE}")
+message(STATUS "[Qwt_external] LIBDIR=${QWT_LIBRARY_DIR}")

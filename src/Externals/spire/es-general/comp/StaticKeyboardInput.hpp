@@ -81,9 +81,9 @@ struct StaticKeyboardInput
   // it is a character such as 'a'.
   struct KeyEvent
   {
-    SpecialKey  special;  // If a special character, then something other than KEY_NO_SPECIAL.
-    int         keyCode;  // Always set. It is the character code.
-    KeyAction   action;   // Either press or release.
+    SpecialKey  special {KEY_NO_SPECIAL};  // If a special character, then something other than KEY_NO_SPECIAL.
+    int         keyCode {0};  // Always set. It is the character code.
+    KeyAction   action {RELEASE};   // Either press or release.
 
     void clear()
     {

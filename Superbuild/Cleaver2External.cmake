@@ -25,13 +25,14 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(cleaver2_GIT_TAG "origin/master")
 
+# Source URL and pinned version come from Superbuild/VERSIONS.cmake.
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Cleaver2_external
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/Cleaver2Library.git"
-  GIT_TAG ${cleaver2_GIT_TAG}
+  GIT_REPOSITORY ${CLEAVER2_GIT_URL}
+  GIT_TAG ${CLEAVER2_GIT_TAG}
+  UPDATE_COMMAND ""
   PATCH_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""

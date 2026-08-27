@@ -29,6 +29,7 @@
 #include "ui_Module.h"
 #include <iostream>
 #include <QtConcurrent>
+#include <QPointer>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
@@ -377,17 +378,17 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
   updateProgrammablePorts();
 
   connect(this, &ModuleWidget::backgroundColorUpdated, this, &ModuleWidget::updateBackgroundColor);
-  theModule_->executionState().connectExecutionStateChanged([this](int state) { (void)QtConcurrent::run(
-      [this, state] { updateBackgroundColorForModuleState(state); }); });
+  theModule_->executionState().connectExecutionStateChanged([weakThis = QPointer<ModuleWidget>(this)](int state) {
+    if (weakThis) (void)QtConcurrent::run([weakThis, state] { if (weakThis) weakThis->updateBackgroundColorForModuleState(state); }); });
 
-  theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
+  executeSelfRequestConnection_ = theModule_->connectExecuteSelfRequest([weakThis = QPointer<ModuleWidget>(this)](bool upstream) { if (weakThis) weakThis->executeAgain(upstream); });
   connect(this, &ModuleWidget::executeAgain, this, &ModuleWidget::executeTriggeredProgrammatically);
 
   Preferences::Instance().modulesAreDockable.connectValueChanged([this](bool d) { adjustDockState(d); });
 
   connect(actionsMenu_->getAction("Destroy"), &QAction::triggered, this, &ModuleWidget::deleteMeLater);
 
-  connectExecuteEnds([this] (double, const ModuleId&) { executeEnds(); });
+  executeEndsConnection_ = connectExecuteEnds([weakThis = QPointer<ModuleWidget>(this)] (double, const ModuleId&) { if (weakThis) weakThis->executeEnds(); });
   connect(this, &ModuleWidget::executeEnds, this, &ModuleWidget::changeExecuteButtonToPlay);
   connect(this, &ModuleWidget::signalExecuteButtonIconChangeToStop, this, &ModuleWidget::changeExecuteButtonToStop);
   connect(this, &ModuleWidget::dynamicPortChanged, this, &ModuleWidget::updateDialogForDynamicPortChange);
@@ -520,6 +521,22 @@ void ModuleWidget::subnetButtonClicked()
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
+  const auto incoming = static_cast<int>(
+    (color == Qt::red)    ? LogColorPriority::Error   :
+    (color == Qt::yellow) ? LogColorPriority::Warning :
+                            LogColorPriority::Remark);
+
+  // Only update if the incoming message has strictly higher priority than
+  // whatever is already shown (fixes #103: remark after error stays red).
+  int expected = currentLogPriority_.load();
+  while (incoming > expected)
+  {
+    if (currentLogPriority_.compare_exchange_weak(expected, incoming))
+      break;
+  }
+  if (incoming <= expected)
+    return;
+
   if (color == Qt::red)
   {
     errored_ = true;
@@ -530,6 +547,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
 
 void ModuleWidget::resetLogButtonColor()
 {
+  currentLogPriority_ = static_cast<int>(LogColorPriority::None);
   fullWidgetDisplay_->setStatusColor("");
 }
 
@@ -1091,6 +1109,7 @@ bool ModuleWidget::executeWithSignals()
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
+    currentLogPriority_ = static_cast<int>(LogColorPriority::None);
     //colorLocked_ = true; //TODO
     timer_.reset(new SimpleScopedTimer);
     theModule_->executeWithSignals();
@@ -1210,6 +1229,13 @@ QDialog* ModuleWidget::dialog()
 
 void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 {
+  // This slot is connected to the dock's topLevelChanged signal inside
+  // configDockable(), which can fire (via setFloating) before makeOptionsDialog
+  // assigns dockable_. Bail out until the member is set; configDockable handles
+  // the initial show/float itself.
+  if (!dockable_)
+    return;
+
   if (isFloating)
   {
     dockable_->setWindowFlags(Qt::Window);

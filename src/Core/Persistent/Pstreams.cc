@@ -62,6 +62,7 @@
 #  include <io.h>
 #endif
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 //TODO: new one from M1/Big Sur build
 #pragma GCC diagnostic ignored "-Wfortify-source"

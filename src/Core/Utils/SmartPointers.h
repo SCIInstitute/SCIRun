@@ -30,6 +30,8 @@
 #define CORE_UTILS_SMARTPOINTERS_H
 
 #include <memory>
+#include <string>
+#include <Core/Utils/share.h>
 
 namespace SCIRun
 {
@@ -37,6 +39,16 @@ namespace SCIRun
   using SharedPointer = std::shared_ptr<T>;
 
   #define makeShared std::make_shared
+
+  namespace Core
+  {
+    class SCISHARE PythonCommandInterpreterInterface
+    {
+    public:
+      virtual ~PythonCommandInterpreterInterface() {}
+      virtual bool run_string( const std::string& command ) = 0;
+    };
+  }
 }
 
 #endif

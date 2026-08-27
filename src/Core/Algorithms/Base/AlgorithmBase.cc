@@ -483,3 +483,10 @@ std::vector<bool> Core::Algorithms::toBoolVector(const Variable::List& list)
 {
   return toTypedVector<bool>(list, [](const Variable& v) { return v.toBool(); });
 }
+
+std::string SCIRun::Core::Algorithms::to_string(const Variable::Value& v)
+{
+  std::ostringstream o;
+  o << v;
+  return o.str();
+}

@@ -43,6 +43,7 @@ SET(Algorithms_Math_Tests_SRCS
   ComputeSVDtest.cc
   CollectMatricesAlgorithmTest.cc
   ComputeTensorUncertaintyTests.cc
+  StreamingReaderTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

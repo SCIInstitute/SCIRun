@@ -55,6 +55,7 @@ SET(Interface_Modules_Base_HEADERS_M
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
   CustomWidgets/CodeEditorWidgets.h
+  CustomWidgets/FileNameLineEdit.h
   CustomWidgets/CTK/ctkColorPickerButton.h
   CustomWidgets/CTK/ctkDoubleSpinBox.h
   CustomWidgets/CTK/ctkDoubleSpinBox_p.h
@@ -78,6 +79,7 @@ SET(Interface_Modules_Base_SOURCES
   CustomWidgets/QtHistogramWidget.cc
   CustomWidgets/QtHistogramGraph.cc
   CustomWidgets/CodeEditorWidgets.cc
+  CustomWidgets/FileNameLineEdit.cc
   CustomWidgets/CTK/ctkColorPickerButton.cpp
   CustomWidgets/CTK/ctkDoubleSpinBox.cpp
   CustomWidgets/CTK/ctkPopupWidget.cpp
@@ -105,7 +107,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Base
   Core_Datatypes
   Dataflow_State
   Core_Application_Preferences
-  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 

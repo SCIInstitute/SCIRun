@@ -27,6 +27,8 @@
 
 
 #include <es-log/trace-log.h>
+#include <QSettings>
+#include <QOpenGLWidget>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
@@ -51,6 +53,7 @@
 #include <Core/Logging/Log.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
+#include <chrono>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
@@ -70,6 +73,17 @@ using namespace SCIRun::Core::Algorithms;
 SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
+
+  QOpenGLWidget* dummy = new QOpenGLWidget(this);
+  dummy->setFixedSize(1, 1);
+
+  if (centralWidget() && centralWidget()->layout())
+  {
+    centralWidget()->layout()->addWidget(dummy);
+  }
+
+  dummy->hide();
+
   builder_ = makeShared<NetworkEditorBuilder>(this);
   //dockManager_ = new DockManager(dockSpace_, this);
 
@@ -80,8 +94,37 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   startup_ = true;
 
-  QCoreApplication::setOrganizationName("SCI:CIBC Software");
-  QCoreApplication::setApplicationName("SCIRun5");
+  const QString organization("SCI:CIBC Software");
+  const QString defaultAppName("SCIRun5");
+  QCoreApplication::setOrganizationName(organization);
+  // In regression mode, isolate QSettings per process: concurrent test
+  // processes otherwise share one settings file, and reading a half-written
+  // plist (favorites, window geometry) during startup can crash in the
+  // module-selector tree restore. Seed the per-process store from the shared
+  // default store so regression runs see the developer's real settings (and
+  // look consistent run to run) while only ever *writing* to their own file.
+  // Reading the stable shared store concurrently is safe; only concurrent
+  // writes caused the original race.
+  if (Application::Instance().parameters()->isRegressionMode())
+  {
+    const QString regressionAppName = QString("%1_regression_%2").arg(defaultAppName).arg(QCoreApplication::applicationPid());
+    {
+      QSettings source(QSettings::NativeFormat, QSettings::UserScope, organization, defaultAppName);
+      QSettings dest(QSettings::NativeFormat, QSettings::UserScope, organization, regressionAppName);
+      dest.clear(); // a recycled pid may have left a stale store
+      const auto keys = source.allKeys();
+      for (const auto& key : keys)
+        dest.setValue(key, source.value(key));
+      dest.sync();
+      // Note: these per-process stores are cleaned up after the run by
+      // scripts/run-regression-tests.sh (and the CI regression step). In-process
+      // deletion on exit is unreliable on macOS because cfprefsd owns the plist
+      // and recreates it after the process exits.
+    }
+    QCoreApplication::setApplicationName(regressionAppName);
+  }
+  else
+    QCoreApplication::setApplicationName(defaultAppName);
 
   setAttribute(Qt::WA_DeleteOnClose);
 
@@ -318,7 +361,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupDockToggleViewAction(userModuleSelectorDockWidget_, "Ctrl+Shift+U");
   setupDockToggleViewAction(logDockWidget_, "Ctrl+Shift+L");
   setupDockToggleViewAction(networkMiniViewDockWidget_, "Ctrl+Shift+V");
-  setupDockToggleViewAction(provenanceWindow_, "Ctrl+Shift+P");
+  //setupDockToggleViewAction(provenanceWindow_, "Ctrl+Shift+P");
   setupDockToggleViewAction(triggeredEventsWindow_, "Ctrl+Shift+E");
   setupDockToggleViewAction(tagManagerWindow_, "Ctrl+Shift+T");
   setupDockToggleViewAction(macroEditor_, "Ctrl+Shift+X");
@@ -340,8 +383,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionAutoRotateViewScene_, &QAction::triggered, [this]() { showStatusMessage(QString("ViewScene auto-rotate toggled."), 3000); });
 
   moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
-	  "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-	  "QHeaderView::section { background: rgb(66,66,69);} "
+	  + WidgetStyleMixin::toolTipStyle()
+	  + "QHeaderView::section { background: rgb(66,66,69);} "
 	  );
 
   hideNonfunctioningWidgets();
@@ -398,12 +441,45 @@ QString SCIRunMainWindow::strippedName(const QString& fullFileName)
   return info.fileName();
 }
 
+namespace
+{
+bool fileExistCheck(const std::string& filename)
+{
+  bool fileExists;
+  //TODO: boost upgrade to 1.80 should remove the need for the try/catch--see issue #2407
+  try
+  {
+    fileExists = boost::filesystem::exists(filename);
+  }
+  catch (...)
+  {
+    fileExists = false;
+  }
+  return fileExists;
+}
+
+bool superFileExistCheck(const std::string& filename)
+{
+  auto check = std::async([filename]() { return fileExistCheck(filename); });
+  auto status = check.wait_for(std::chrono::seconds(1));
+  if (status == std::future_status::ready)
+    return check.get();
+  return false;
+}
+}
+
 void SCIRunMainWindow::updateRecentFileActions()
 {
   QMutableStringListIterator i(recentFiles_);
-  while (i.hasNext()) {
-    if (!QFile::exists(i.next()))
+  while (i.hasNext())
+  {
+    const auto file = i.next().toStdString();
+
+    if (!superFileExistCheck(file))
+    {
+      logWarning("Network file {} not found, removing entry from recent list.", file);
       i.remove();
+    }
   }
 
   for (int j = 0; j < MaxRecentFiles; ++j)

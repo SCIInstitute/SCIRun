@@ -48,7 +48,7 @@ class ProvenanceWindow : public QDockWidget, public Ui::ProvenanceWindow
 	Q_OBJECT
 
 public:
-  explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, QWidget* parent = nullptr);
+  explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, NetworkEditor* editor, QWidget* parent = nullptr);
   void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
   int maxItems() const { return maxItems_; }
 public Q_SLOTS:
@@ -70,6 +70,7 @@ private:
   SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
   int lastUndoRow_, maxItems_{10};
   const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::element_type::IOType* networkEditor_;
+  NetworkEditor* editor_;
 
   void setUndoEnabled(bool enable);
   void setRedoEnabled(bool enable);
@@ -86,7 +87,7 @@ public Q_SLOTS:
   void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&);
   void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
-  void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
+  void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, const QPointF& oldPos, double newX, double newY);
   void networkBeingModifiedByProvenanceManager(bool inProgress);
 Q_SIGNALS:
   void provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);
