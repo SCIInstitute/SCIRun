@@ -51,6 +51,8 @@ struct StaticWorldLight
   StaticWorldLight()
   {
     lightDir[0] = glm::vec3(1.0f, 0.0f, 0.0f);
+    for (int i = 1; i < LIGHT_NUM; ++i)
+      lightDir[i] = glm::vec3(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < LIGHT_NUM; ++i)
       lightColor[i] = glm::vec3(1.0f);
   }

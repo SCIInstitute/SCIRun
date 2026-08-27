@@ -54,10 +54,10 @@ struct StaticCameraData
   float zfar;
 
   // Information regarding the truncated pyramid this projection represents
-  glm::vec3 nearTopLeft;  // (+,+)
+  glm::vec3 nearTopLeft {0.0f};  // (+,+)
   //glm::vec3 nearBotRight; // (-,-) <-- This can be calculated by negating x/y in nearTopLeft
 
-  glm::vec3 farTopLeft;   // (+,+)
+  glm::vec3 farTopLeft {0.0f};   // (+,+)
   //glm::vec3 farBotRight;  // (-,-) <-- This can be calculated by negating x/y in farTopLeft
 
   // Information related to 'plane of play' if we are 2.5D.

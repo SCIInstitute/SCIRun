@@ -81,30 +81,30 @@ public:
   /// file.
   struct InfoBlock
   {
-    int16_t   fontSize;
-    uint8_t   bitField;
-    uint8_t   charSet;
-    uint16_t  stretchH;
-    uint8_t   aa;
-    uint8_t   paddingUp;
-    uint8_t   paddingRight;
-    uint8_t   paddingDown;
-    uint8_t   paddingLeft;
-    uint8_t   spacingHoriz;
-    uint8_t   spacingVert;
-    uint8_t   outline;
+    int16_t   fontSize = 0;
+    uint8_t   bitField = 0;
+    uint8_t   charSet = 0;
+    uint16_t  stretchH = 0;
+    uint8_t   aa = 0;
+    uint8_t   paddingUp = 0;
+    uint8_t   paddingRight = 0;
+    uint8_t   paddingDown = 0;
+    uint8_t   paddingLeft = 0;
+    uint8_t   spacingHoriz = 0;
+    uint8_t   spacingVert = 0;
+    uint8_t   outline = 0;
     std::string fontName;
   };
 
   struct CommonBlock
   {
-    uint16_t lineHeight;  ///< Distance, in pixels, between each line of text.
-    uint16_t base;        ///< The number of pixels from the absolute top of the line to the base
+    uint16_t lineHeight = 0;  ///< Distance, in pixels, between each line of text.
+    uint16_t base = 0;        ///< The number of pixels from the absolute top of the line to the base
                           ///< of the characters. http://www.angelcode.com/products/bmfont/doc/render_text.html
-    uint16_t scaleW;      ///< Width of the texture. Normally used to scale x pos of the char image.
-    uint16_t scaleH;      ///< Height of the texture. Normalled used to scale y pos of the char image.
-    uint16_t pages;       ///< Number of texture pages included in the font.
-    uint8_t bitField;     ///< Contains the packed bit. If packed is set, then monochrome characters have
+    uint16_t scaleW = 0;      ///< Width of the texture. Normally used to scale x pos of the char image.
+    uint16_t scaleH = 0;      ///< Height of the texture. Normalled used to scale y pos of the char image.
+    uint16_t pages = 0;       ///< Number of texture pages included in the font.
+    uint8_t bitField = 0;     ///< Contains the packed bit. If packed is set, then monochrome characters have
                           ///< been packed into each of the texture channels. In this case alphaChannel
                           ///< describes what is stored in each channel.
 
@@ -112,10 +112,10 @@ public:
     /// 2 if it holds the outline and the glyph, 3 if it is set to zero, 4 if it
     /// is set to one.
     /// @{
-    uint8_t alphaChannel;
-    uint8_t redChannel;
-    uint8_t greenChannel;
-    uint8_t blueChannel;
+    uint8_t alphaChannel = 0;
+    uint8_t redChannel = 0;
+    uint8_t greenChannel = 0;
+    uint8_t blueChannel = 0;
     /// @}
   };
 
@@ -129,30 +129,30 @@ public:
   // Character info struct. Read from the BLOCK_CHARS.
   struct CharInfo
   {
-    uint32_t id;        ///< Character id (unicode id).
+    uint32_t id = 0;        ///< Character id (unicode id).
 
     /// For the absolute meaning of all of these values, please consult
     /// http://www.angelcode.com/products/bmfont/doc/render_text.html.
     /// @{
-    uint16_t x;         ///< The left position of the character image in the texture.
-    uint16_t y;         ///< The top position of the character image in the texture.
-    uint16_t width;     ///< The width of the character image in the texture.
-    uint16_t height;    ///< The height of the character image in the texture.
-    int16_t xoffset;    ///< How much the current cursor position should be offset.
-    int16_t yoffset;
-    int16_t xadvance;   ///< How much the current position should be advanced after drawing the character.
+    uint16_t x = 0;         ///< The left position of the character image in the texture.
+    uint16_t y = 0;         ///< The top position of the character image in the texture.
+    uint16_t width = 0;     ///< The width of the character image in the texture.
+    uint16_t height = 0;    ///< The height of the character image in the texture.
+    int16_t xoffset = 0;    ///< How much the current cursor position should be offset.
+    int16_t yoffset = 0;
+    int16_t xadvance = 0;   ///< How much the current position should be advanced after drawing the character.
     /// @}
-    uint8_t page;
-    uint8_t channel;    ///< Texture channel where the character is found.
+    uint8_t page = 0;
+    uint8_t channel = 0;    ///< Texture channel where the character is found.
   };
 
   // Kerning information struct. The multipmap is based off of the first
   // element in the kern info structure.
   struct KernInfo
   {
-    uint32_t firstID;
-    uint32_t secondID;
-    int16_t amount;
+    uint32_t firstID = 0;
+    uint32_t secondID = 0;
+    int16_t amount = 0;
   };
 
   /// Returns the character info for the given character ID. Returns nullptr
