@@ -66,7 +66,6 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
   addParameter(Parameters::ElectrodeResolution,10);
   addParameter(Parameters::UseFieldNodes,true);
   addParameter(Parameters::MoveAll,false);
-  addParameter(Parameters::MoveAll,false);
   addParameter(Parameters::ProbeColor, "Color(1.0, 1.0, 1.0)");
   addParameter(Parameters::ProbeLabel, std::string());
   addParameter(Parameters::ProbeSize, 1.0);
@@ -469,7 +468,7 @@ FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_poin
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
     void
-    GenerateElectrode::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
+    GenerateElectrodeImpl::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
     {
         //-------make planar mesh---------
 
@@ -788,10 +787,11 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
     Vector defdir = Vector(-10, 10, 10);
 
     auto electrode_type = getOption(Parameters::ElectrodeType);
+    auto use_field = getOption(Parameters::UseFieldNodes);
     
-    if (input
+    if (input && (use_field)
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_)
+       && (moveto == "default" || widget_.size() == 0 || inputs_changed_)
   #endif
       )
     {
@@ -802,7 +802,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
       VMesh::Node::size_type num_nodes = smesh->num_nodes();
       if (num_nodes > 50)
       {
-        error("Why would you want to use that many nodes to make an electrode?  Do you want to crash you system?  That's way to many.");
+        error("There are more input nodes than we have arbitrarily decided to allow.");
         return false;
       }
 
@@ -818,11 +818,15 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
         direction = defdir;
       }
     }
+
+  else if ((!input || use_field == 0)
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  else if ((!input_field_p || use_field == 0) && (moveto == "default" || widget_.size() == 0))
+           && (moveto == "default" || widget_.size() == 0)
+#endif
+           )
   {
     double l, lx;
-    l = gui_length_.get();
+    l = getOption(Parameters::ElectrodeLength);
 
     lx = l * .5774;
 
@@ -835,8 +839,11 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
     orig_points[4] = (Point(lx, lx, lx));
 
     direction = defdir;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     gui_moveto_.set("");
+#endif
   }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   else if (moveto == "add_point")
   {
     add_point(orig_points);

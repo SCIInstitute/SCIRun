@@ -59,7 +59,13 @@ using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
 
-
+namespace SCIRun
+{
+namespace Modules
+{
+namespace Fields
+{
+    
 #if 0
 	class GenerateElectrode : public Module
 		{
@@ -143,27 +149,100 @@ void GenerateElectrode::setStateDefaults()
     setAlgoStringFromState(Parameters::ProbeColor);
     setAlgoStringFromState(Parameters::ProbeLabel);
     setAlgoDoubleFromState(Parameters::ProbeSize);
+  
+    getOutputPort(ElectrodeWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
+void GenerateElectrode::processWidgetFeedback(const ModuleFeedback& var)
+{
+  try
+  {
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.matchesWithModuleId(id()))
+    {
+      size_t widgetType;
+      size_t widgetID;
+      int widgetIndex = -1;
+      try
+      {
+        static boost::regex r("SphereWidget::GPSFF\\((.+)\\).+");
+        boost::smatch what;
+        regex_match(vsf.selectionName, what, r);
+        widgetIndex = boost::lexical_cast<int>(what[1]);
+      }
+      catch (...)
+      {
+        logWarning("Failure parsing widget id");
+        return;
+      }
+      try
+      {
+      // Check if correct widget type
+        static boost::regex r("ArrowWidget((.+)).+");
+        boost::smatch what;
+        regex_match(vsf.selectionName, what, r);
+
+        // Get widget index and id
+        static boost::regex ind_r("\\([0-9]*\\)");
+        boost::smatch match;
+        std::string::const_iterator searchStart(vsf.selectionName.cbegin());
+        std::vector<std::string> matches;
+
+        // Find all matches
+        while (regex_search(searchStart, vsf.selectionName.cend(), match, ind_r))
+        {
+          matches.push_back(match[0]);
+          searchStart = match.suffix().first;
+        }
+
+        // Remove parantheses
+        for (auto& match : matches)
+        {
+          match = match.substr(1, match.length()-2);
+        }
+
+        // Cast to size_t
+        widgetType = boost::lexical_cast<size_t>(matches[0]);
+        widgetID = boost::lexical_cast<size_t>(matches[1]);
+        impl_->adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
+      }
+      catch (...)
+      {
+        logWarning("Failure parsing widget id");
+      }
+// How to connect to impl on the algo layer
+      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
+      {
+        adjustPositionFromTransform(vsf.transform, widgetIndex);
+        enqueueExecuteAgain(false);
+      }
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
+  }
+}
+    
 void GenerateElectrode::execute()
 {
   FieldHandle ofield, pfield;
 
   //TODO: enable optional input logic
-  auto source = getRequiredInput(InputField);
-    
-    setAlgoDoubleFromState(Parameters::ElectrodeLength);
-    setAlgoDoubleFromState(Parameters::ElectrodeThickness);
-    setAlgoDoubleFromState(Parameters::ElectrodeWidth);
-    setAlgoIntFromState(Parameters::NumberOfControlPoints);
-    setAlgoIntFromState(Parameters::ElectrodeResolution);
-    setAlgoBoolFromState(Parameters::UseFieldNodes);
-    setAlgoBoolFromState(Parameters::MoveAll);
-    setAlgoOptionFromState(Parameters::ElectrodeType);
-    setAlgoOptionFromState(Parameters::ElectrodeProjection);
-    setAlgoDoubleFromState(Parameters::ProbeSize);
-    setAlgoStringFromState(Parameters::ProbeLabel);
-    setAlgoStringFromState(Parameters::ProbeColor);
+  auto source = getOptionalInput(InputField);
+  
+  setAlgoDoubleFromState(Parameters::ElectrodeLength);
+  setAlgoDoubleFromState(Parameters::ElectrodeThickness);
+  setAlgoDoubleFromState(Parameters::ElectrodeWidth);
+  setAlgoIntFromState(Parameters::NumberOfControlPoints);
+  setAlgoIntFromState(Parameters::ElectrodeResolution);
+  setAlgoBoolFromState(Parameters::UseFieldNodes);
+  setAlgoBoolFromState(Parameters::MoveAll);
+  setAlgoOptionFromState(Parameters::ElectrodeType);
+  setAlgoOptionFromState(Parameters::ElectrodeProjection);
+  setAlgoDoubleFromState(Parameters::ProbeSize);
+  setAlgoStringFromState(Parameters::ProbeLabel);
+  setAlgoStringFromState(Parameters::ProbeColor);
     
 
 //  FieldInformation fis(source);

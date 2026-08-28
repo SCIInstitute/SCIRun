@@ -39,6 +39,8 @@ namespace SCIRun
   {
     namespace Fields
     {
+      
+//      class GenerateElectrodeImpl;
 
       class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
