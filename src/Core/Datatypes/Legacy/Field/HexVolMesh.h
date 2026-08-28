@@ -60,6 +60,7 @@
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Parallel.h>
 #include <Core/Thread/ConditionVariable.h>
+#include <Core/Thread/ThreadGroup.h>
 #include <unordered_map>
 
 #include <set>
@@ -3415,6 +3416,10 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
            Mesh::NODE_NEIGHBORS_E|Mesh::BOUNDING_BOX_E|
            Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E);
 
+  /// Declared before the lock: these workers hold a raw `this` and must be joined
+  /// before synchronize() returns, but joining while the lock is held deadlocks. #2732
+  Core::Thread::JoiningThreadGroup syncWorkers;
+
   Core::Thread::UniqueLock lock(synchronize_lock_.get());
 
   // Only sync was hasn't been synched
@@ -3431,7 +3436,7 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::EDGES_E;
     Synchronize syncclass(*this,tosync);
-    Core::Thread::Util::launchAsyncThread(syncclass);
+    syncWorkers.launch(syncclass);
   }
 
   if (sync == Mesh::FACES_E)
@@ -3445,7 +3450,7 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::FACES_E;
     Synchronize syncclass(*this,tosync);
-    Core::Thread::Util::launchAsyncThread(syncclass);
+    syncWorkers.launch(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -3459,7 +3464,7 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
     Synchronize syncclass(*this,tosync);
-    Core::Thread::Util::launchAsyncThread(syncclass);
+    syncWorkers.launch(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -3473,7 +3478,7 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
     Synchronize syncclass(*this,tosync);
-    Core::Thread::Util::launchAsyncThread(syncclass);
+    syncWorkers.launch(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -3487,7 +3492,7 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
     Synchronize syncclass(*this,tosync);
-    Core::Thread::Util::launchAsyncThread(syncclass);
+    syncWorkers.launch(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -3501,7 +3506,7 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
     Synchronize syncclass(*this,tosync);
-    Core::Thread::Util::launchAsyncThread(syncclass);
+    syncWorkers.launch(syncclass);
   }
 
   // Wait until threads are done
@@ -3509,6 +3514,12 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   {
     synchronize_cond_.wait(lock);
   }
+
+  // A worker sets its synchronized_ bit before it is done with the mesh, and one whose
+  // tables were claimed by another thread never sets a bit at all -- so the wait above
+  // does not cover either of them. #2732
+  lock.unlock();
+  syncWorkers.joinAll();
 
   return (true);
 }
