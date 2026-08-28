@@ -43,7 +43,7 @@ namespace ren {
 struct Shader
 {
   // -- Data --
-  GLuint glid;     // glid associated with shader program.
+  GLuint glid = 0;     // glid associated with shader program.
 
   // -- Functions --
   static const char* getName() {return "ren:shader";}
