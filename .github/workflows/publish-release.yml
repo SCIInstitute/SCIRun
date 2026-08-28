@@ -143,12 +143,6 @@ jobs:
             fi
           done < existing-assets.txt
 
-      # softprops/action-gh-release edits the existing release in place, which
-      # only sets published_at on the FIRST publish -- GitHub's "released this
-      # ... ago" header on the release page then sits frozen at that original
-      # date forever, even though assets keep changing underneath it. Stamp
-      # the actual update time into the title and notes so it's visible
-      # without relying on that header.
       - name: Compute build timestamp
         if: ${{ inputs.channel == 'nightly' }}
         id: ts
