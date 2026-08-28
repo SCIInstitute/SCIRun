@@ -57,7 +57,7 @@ namespace ren {
 
     struct TextureData
     {
-      GLenum att;
+      GLenum att = 0;
       std::string texName;
     };
 

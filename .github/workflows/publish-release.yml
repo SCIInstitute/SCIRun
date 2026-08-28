@@ -40,6 +40,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      # softprops/action-gh-release only creates the `nightly` tag the first
+      # time it publishes to it; once the tag exists, later runs update the
+      # release body/assets but never move the tag itself, so `git checkout
+      # nightly` silently pins you to whatever commit first created it. Force
+      # the ref to HEAD every run. Safe from a trigger loop: mac.yml/windows.yml
+      # only fire on `v*` tag pushes, not on `nightly`.
+      - name: Move the nightly tag to this commit
+        if: ${{ inputs.channel == 'nightly' }}
+        run: |
+          git tag --force nightly "${{ github.sha }}"
+          git push --force origin refs/tags/nightly
+
       # No merge-multiple: every GUI job emits an identically-named installer
       # (SCIRun-<ver>-win64.exe / SCIRun-<ver>-Darwin.pkg), so flattening would
       # clobber. Land each artifact in its own dist/<artifact-name>/ subdir.
@@ -102,6 +114,40 @@ jobs:
             > names.json
           cat names.json
 
+      - name: Delete stale same-platform assets
+        if: ${{ inputs.channel == 'nightly' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -eu
+          # The upload step below only replaces assets whose name matches one
+          # we're producing this run, so anything orphaned by a naming change
+          # (job-named installers pre-#2565, a retired OS floor, ...) sits on
+          # the release forever. A single run only ever builds one platform,
+          # so "same extension, not in this run's output" is a safe stand-in
+          # for "belongs to this platform and is now stale".
+          exts=$(cut -f2 names.tsv | sed -E 's/.*\././' | sort -u)
+          current=$(cut -f2 names.tsv)
+
+          gh release view nightly --repo "$REPO" --json assets -q '.assets[].name' \
+            > existing-assets.txt 2>/dev/null || : > existing-assets.txt
+
+          while IFS= read -r name; do
+            [ -n "$name" ] || continue
+            ext=".${name##*.}"
+            if printf '%s\n' "$exts" | grep -qxF "$ext" \
+               && ! printf '%s\n' "$current" | grep -qxF "$name"; then
+              echo "Deleting stale asset: $name"
+              gh release delete-asset nightly "$name" --repo "$REPO" -y || true
+            fi
+          done < existing-assets.txt
+
+      - name: Compute build timestamp
+        if: ${{ inputs.channel == 'nightly' }}
+        id: ts
+        run: echo "date=$(date -u +'%Y-%m-%d %H:%M UTC')" >> "$GITHUB_OUTPUT"
+
       - name: Generate nightly release notes
         if: ${{ inputs.channel == 'nightly' }}
         env:
@@ -119,6 +165,7 @@ jobs:
             --sha "${{ github.sha }}" \
             --existing-body existing-body.md \
             --asset-names names.json \
+            --updated "${{ steps.ts.outputs.date }}" \
             > body.md
 
           echo "--- generated notes ---"
@@ -129,7 +176,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
-          name: Nightly build
+          name: "Nightly build (updated ${{ steps.ts.outputs.date }})"
           prerelease: true
           body_path: body.md
           files: dist/*

@@ -39,7 +39,7 @@ namespace ren {
 struct RenderSequence
 {
   // -- Data --
-  uint64_t sequence;
+  uint64_t sequence = 0;
 
   // -- Functions --
   static const char* getName() {return "ren:RenderSequence";}
