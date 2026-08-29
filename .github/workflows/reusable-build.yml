@@ -317,6 +317,25 @@ jobs:
           fi
           "$APP" --help
 
+      - name: Verify macOS deployment target (macOS)
+        if: ${{ runner.os == 'macOS' }}
+        shell: bash
+        # A pinned CMAKE_OSX_DEPLOYMENT_TARGET only helps if it actually
+        # reaches the linked binary. Assert the load command floor here so a
+        # regression (e.g. an external dropping the flag) fails the build
+        # instead of surfacing as a dyld error on a user's older Mac.
+        run: |
+          set -eux
+          EXPECTED="14.0"
+          if [ -x bin/SCIRun/SCIRun_test ]; then
+            APP=bin/SCIRun/SCIRun_test
+          else
+            APP=bin/SCIRun/SCIRun
+          fi
+          otool -l "$APP" | grep -B1 -A4 'LC_BUILD_VERSION\|LC_VERSION_MIN_MACOSX'
+          MINOS=$(otool -l "$APP" | awk '/LC_BUILD_VERSION|LC_VERSION_MIN_MACOSX/{f=1} f && ($1=="minos" || $1=="version"){print $2; exit}')
+          test "$MINOS" = "$EXPECTED"
+
       - name: Package (optional - Unix/macOS)
         if: ${{ inputs.artifact-name != '' && runner.os != 'Windows' }}
         shell: bash

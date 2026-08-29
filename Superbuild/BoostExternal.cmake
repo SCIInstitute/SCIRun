@@ -189,6 +189,7 @@ ExternalProject_Add(Boost_external
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${CMAKE_OSX_DEPLOYMENT_TARGET}
     -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
 
     # ---------- Python strictly controlled by SCIRun option ----------
@@ -298,6 +299,13 @@ if(WIN32)
   set(_BOOST_CXXFLAGS "")
 else()
   set(_BOOST_CXXFLAGS cxxflags=-fPIC)
+endif()
+# The actual Boost compile happens in the b2 build_libs step below, not the
+# CMake configure, so the deployment target must also be passed to b2 itself.
+if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET)
+  list(APPEND _BOOST_CXXFLAGS
+    cxxflags=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}
+    linkflags=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
 endif()
 # ------------------------------------------------------------------
 # Boost.Python debug ABI (Windows requires this for python313_d + 'y')
