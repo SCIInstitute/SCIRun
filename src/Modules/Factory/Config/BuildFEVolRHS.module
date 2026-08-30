@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildFEVolRHS",
+    "namespace": "FiniteElements",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/FiniteElements/BuildFEVolRHS.h"
+  },
+  "algorithm": {
+    "name": "BuildFEVolRHSAlgo",
+    "namespace": "FiniteElements",
+    "header": "Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

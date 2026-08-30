@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ComputePCA",
+    "namespace": "Math",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Math/ComputePCA.h"
+  },
+  "algorithm": {
+    "name": "ComputePCAAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ComputePCA.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertIndicesToFieldData",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ConvertIndicesToFieldData.h"
+  },
+  "algorithm": {
+    "name": "ConvertIndicesToFieldDataAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h"
+  },
+  "UI": {
+    "name": "ConvertIndicesToFieldDataDialog",
+    "header": "Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h"
+  }
+}

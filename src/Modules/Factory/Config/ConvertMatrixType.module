@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertMatrixType",
+    "namespace": "Math",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Math/ConvertMatrixType.h"
+  },
+  "algorithm": {
+    "name": "ConvertMatrixTypeAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ConvertMatrixType.h"
+  },
+  "UI": {
+    "name": "ConvertMatrixTypeDialog",
+    "header": "Interface/Modules/Math/ConvertMatrixTypeDialog.h"
+  }
+}

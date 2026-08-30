@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "EvaluateLinearAlgebraBinary",
+    "namespace": "Math",
+    "status": "Partially functional, needs GUI work.",
+    "description": "...",
+    "header": "Modules/Math/EvaluateLinearAlgebraBinary.h"
+  },
+  "algorithm": {
+    "name": "EvaluateLinearAlgebraBinaryAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h"
+  },
+  "UI": {
+    "name": "EvaluateLinearAlgebraBinaryDialog",
+    "header": "Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h"
+  }
+}

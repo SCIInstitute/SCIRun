@@ -53,6 +53,7 @@ class GenericWriter : public Dataflow::Networks::Module,
 {
 public:
   GenericWriter(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
+  GenericWriter(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info, const std::string& stateFilename);
 
   void setStateDefaults() override;
   void execute() override;
@@ -77,6 +78,15 @@ protected:
   virtual bool overwrite() { return true; } /// @todo
 };
 
+
+template <class HType, class PortTag, class PortDescriber>
+GenericWriter<HType, PortTag, PortDescriber>::GenericWriter(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info, const std::string& stateFilename)
+  : SCIRun::Dataflow::Networks::Module(info),
+    stateFilename_(stateFilename),
+    objectPortName_(nullptr)
+{
+  INITIALIZE_PORT(Filename);
+}
 
 template <class HType, class PortTag, class PortDescriber>
 GenericWriter<HType, PortTag, PortDescriber>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)

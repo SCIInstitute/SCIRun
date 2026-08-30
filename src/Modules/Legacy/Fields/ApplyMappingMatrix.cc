@@ -39,10 +39,12 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(ApplyMappingMatrix, ChangeFieldData, SCIRun)
+
 /// @brief Apply a mapping matrix to project the data from one field onto the mesh of another field.
 
 ApplyMappingMatrix::ApplyMappingMatrix()
-  : Module(ModuleLookupInfo("ApplyMappingMatrix", "ChangeFieldData", "SCIRun"), false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Source);
   INITIALIZE_PORT(Destination);

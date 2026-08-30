@@ -49,6 +49,7 @@ SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
   ConvertMatrixToColorMap.h
   ShowField.h
+  VisualizationParameters.h
   ShowFieldGlyphs.h
   ShowFieldGlyphsPortHandler.h
   ShowString.h

@@ -55,6 +55,7 @@ class GenericReader : public SCIRun::Dataflow::Networks::Module,
 {
 public:
   GenericReader(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
+  GenericReader(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info, const std::string& stateFilename);
 
   void setStateDefaults() override final;
   void execute() override;
@@ -78,6 +79,17 @@ protected:
   static bool file_exists(const std::string& filename);
 };
 
+
+template <class HType, class PortTag>
+GenericReader<HType, PortTag>::GenericReader(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info,
+				    const std::string& objectPortName)
+  : SCIRun::Dataflow::Networks::Module(info),
+    objectPortName_(SCIRun::Dataflow::Networks::PortId(0, objectPortName)),
+    old_filemodification_(0)
+{
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FileLoaded);
+}
 
 template <class HType, class PortTag>
 GenericReader<HType, PortTag>::GenericReader(const std::string &name,

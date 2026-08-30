@@ -37,8 +37,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(ComputePCA, Math, SCIRun)
 
-ComputePCA::ComputePCA() : Module(ModuleLookupInfo("ComputePCA", "Math", "SCIRun"),false)
+ComputePCA::ComputePCA() : Module(staticInfo_, false)
 {
     INITIALIZE_PORT(InputMatrix);
     INITIALIZE_PORT(LeftPrincipalMatrix);

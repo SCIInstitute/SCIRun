@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildFEMatrix",
+    "namespace": "FiniteElements",
+    "status": "In progress: main path through code works",
+    "description": "Generates stiffness matrix",
+    "header": "Modules/Legacy/FiniteElements/BuildFEMatrix.h"
+  },
+  "algorithm": {
+    "name": "BuildFEMatrixAlgo",
+    "namespace": "FiniteElements",
+    "header": "Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
