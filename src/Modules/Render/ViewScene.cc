@@ -163,6 +163,9 @@ ALGORITHM_PARAMETER_DEF(Render, ToolBarMainPosition);
 ALGORITHM_PARAMETER_DEF(Render, ToolBarRenderPosition);
 ALGORITHM_PARAMETER_DEF(Render, ToolBarAdvancedPosition);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotDirectory);
+ALGORITHM_PARAMETER_DEF(Render, MovieOutputPath);
+ALGORITHM_PARAMETER_DEF(Render, MovieFormat);
+ALGORITHM_PARAMETER_DEF(Render, MovieFrameRate);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -266,6 +269,11 @@ void ViewScene::setStateDefaults()
   state->setValue(Parameters::ToolBarAdvancedPosition, 2);  //RightToolBarArea
 
   state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
+
+  state->setValue(Parameters::MovieOutputPath,
+    (Core::Preferences::Instance().screenshotDirectory() / "scirun_movie.png").string());
+  state->setValue(Parameters::MovieFormat, std::string("png"));
+  state->setValue(Parameters::MovieFrameRate, 30);
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });

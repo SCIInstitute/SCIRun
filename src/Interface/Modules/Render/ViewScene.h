@@ -234,6 +234,16 @@ namespace SCIRun {
       void setScreenshotDirectory();
       void setToolBarPositions();
 
+      //---------------- Movie Recording -----------------------------------------------------------
+      void setMovieOutputPath();
+      void startMovieRecording();
+      void stopMovieRecording();
+      void toggleMovieRecording();
+      void captureMovieFrame();
+      void movieRecordingFailed(const QString& message);
+      void movieRecordingFinished(const QString& outputPath, int frames);
+      void movieFrameCountChanged(int frames);
+
     protected:
       //---------------- Initialization ------------------------------------------------------------
       void pullSpecial() override;
@@ -268,6 +278,7 @@ namespace SCIRun {
       void setupMaterials();
       void addAutoViewButton();
       void addScreenshotButton();
+      void addMovieRecordButton();
       void addViewBarButton();
       void addControlLockButton();
       void addAutoRotateButton();
@@ -348,6 +359,7 @@ namespace SCIRun {
       friend class ObjectSelectionControls;
       friend class OrientationAxesControls;
       friend class ScreenshotControls;
+      friend class MovieRecordControls;
       friend class ScaleBarControls;
       friend class LightControls;
       friend class ClippingPlaneControls;
