@@ -68,6 +68,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/MapFieldDataFromNodeToElem.h
   Mapping/MapFieldDataOntoNodes.h
   Mapping/MapFieldDataOntoElems.h
+  Mapping/MappingCommon.h
   Mapping/MappingDataSource.h
   Mapping/MapFieldDataFromSourceToDestination.h
   ResampleMesh/ResampleRegularMesh.h
@@ -96,6 +97,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   RefineMesh/RefineMeshTetVolAlgoV.h
   RefineMesh/RefineMeshTriSurfAlgoV.h
   RefineMesh/EdgePairHash.h
+  RefineMesh/RefineMeshCommon.h
   StreamLines/StreamLineIntegrators.h
   StreamLines/GenerateStreamLines.h
   RegisterWithCorrespondences.h

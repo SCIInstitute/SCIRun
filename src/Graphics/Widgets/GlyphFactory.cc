@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun;
 using namespace Core::Geometry;
 using namespace Core::Datatypes;
+using namespace Graphics;
 using namespace Graphics::Datatypes;
 
 std::string RealGlyphFactory::sphere(SphereParameters params, WidgetBase& widget) const
@@ -177,21 +178,24 @@ std::string RealGlyphFactory::cone(ConeParameters params, WidgetBase& widget) co
   return name;
 }
 
-std::string RealGlyphFactory::basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const
+// BasicBoundingBoxParameters and BoundingBoxParameters are identical structs;
+// both box-building entry points share this single implementation.
+static std::string buildBoundingBoxWidget(
+    const CommonWidgetParameters& common, const BoxPosition& pos, WidgetBase& widget)
 {
   auto colorScheme(ColorScheme::COLOR_UNIFORM);
   //get all the bbox edges
-  auto c = params.pos.center_;
-  auto eigvecs = params.pos.scaledEigvecs_;
+  auto c = pos.center_;
+  auto eigvecs = pos.scaledEigvecs_;
   std::vector<Point> points = {
-      c + eigvecs[0] + eigvecs[1] + eigvecs[2],
-      c + eigvecs[0] + eigvecs[1] - eigvecs[2],
-      c + eigvecs[0] - eigvecs[1] + eigvecs[2],
-      c + eigvecs[0] - eigvecs[1] - eigvecs[2],
-      c - eigvecs[0] + eigvecs[1] + eigvecs[2],
-      c - eigvecs[0] + eigvecs[1] - eigvecs[2],
-      c - eigvecs[0] - eigvecs[1] + eigvecs[2],
-      c - eigvecs[0] - eigvecs[1] - eigvecs[2]
+    c + eigvecs[0] + eigvecs[1] + eigvecs[2],
+    c + eigvecs[0] + eigvecs[1] - eigvecs[2],
+    c + eigvecs[0] - eigvecs[1] + eigvecs[2],
+    c + eigvecs[0] - eigvecs[1] - eigvecs[2],
+    c - eigvecs[0] + eigvecs[1] + eigvecs[2],
+    c - eigvecs[0] + eigvecs[1] - eigvecs[2],
+    c - eigvecs[0] - eigvecs[1] + eigvecs[2],
+    c - eigvecs[0] - eigvecs[1] - eigvecs[2]
   };
 
   uint32_t point_indicies[] = {
@@ -201,102 +205,45 @@ std::string RealGlyphFactory::basicBox(BasicBoundingBoxParameters params, Widget
     3, 2, 3, 1, 2, 6
   };
   const auto num_strips = 50;
-  std::vector<Vector> tri_points;
-  std::vector<Vector> tri_normals;
-  std::vector<uint32_t> tri_indices;
-  std::vector<ColorRGB> colors;
   GlyphGeom glyphs;
   //generate triangles for the cylinders.
   for (auto edge = 0; edge < 24; edge += 2)
   {
     glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]],
-                       params.common.scale, num_strips, ColorRGB(), ColorRGB(), false, 0.0);
+                       common.scale, num_strips, ColorRGB(), ColorRGB(), false, 0.0);
   }
   //generate triangles for the spheres
   for (const auto& a : points)
   {
-    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0), false, 0.0);
+    glyphs.addSphere(a, common.scale, num_strips, ColorRGB(1, 0, 0), false, 0.0);
   }
 
   std::stringstream ss;
-  ss << params.common.scale;
+  ss << common.scale;
   for (const auto& a : points) ss << a.x() << a.y() << a.z();
 
   auto name = "bounding_box_cylinders" + ss.str();
 
   RenderState renState;
-
   renState.set(RenderState::ActionFlags::IS_ON, true);
   renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
-
   renState.defaultColor = ColorRGB(1, 1, 1);
   renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::ActionFlags::USE_NORMALS, true);
   renState.set(RenderState::ActionFlags::IS_WIDGET, true);
 
   glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, params.common.bbox);
+    colorScheme, renState, common.bbox);
 
   return name;
 }
 
+std::string RealGlyphFactory::basicBox(BasicBoundingBoxParameters params, WidgetBase& widget) const
+{
+  return buildBoundingBoxWidget(params.common, params.pos, widget);
+}
+
 std::string RealGlyphFactory::box(BoundingBoxParameters params, WidgetBase& widget) const
 {
-  auto colorScheme(ColorScheme::COLOR_UNIFORM);
-  //get all the bbox edges
-  auto c = params.pos.center_;
-  auto eigvecs = params.pos.scaledEigvecs_;
-  std::vector<Point> points = {
-    c + eigvecs[0] + eigvecs[1] + eigvecs[2],
-      c + eigvecs[0] + eigvecs[1] - eigvecs[2],
-      c + eigvecs[0] - eigvecs[1] + eigvecs[2],
-      c + eigvecs[0] - eigvecs[1] - eigvecs[2],
-      c - eigvecs[0] + eigvecs[1] + eigvecs[2],
-      c - eigvecs[0] + eigvecs[1] - eigvecs[2],
-      c - eigvecs[0] - eigvecs[1] + eigvecs[2],
-      c - eigvecs[0] - eigvecs[1] - eigvecs[2]};
-
-  uint32_t point_indicies[] = {
-      0, 1, 0, 2, 0, 4,
-      7, 6, 7, 5, 3, 7,
-      4, 5, 4, 6, 1, 5,
-      3, 2, 3, 1, 2, 6};
-  const auto num_strips = 50;
-  std::vector<Vector> tri_points;
-  std::vector<Vector> tri_normals;
-  std::vector<uint32_t> tri_indices;
-  std::vector<ColorRGB> colors;
-  GlyphGeom glyphs;
-  //generate triangles for the cylinders.
-  for (auto edge = 0; edge < 24; edge += 2)
-  {
-    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]],
-                       params.common.scale, num_strips, ColorRGB(), ColorRGB(), false, 0.0);
-  }
-  //generate triangles for the spheres
-  for (const auto& a : points)
-  {
-    glyphs.addSphere(a, params.common.scale, num_strips, ColorRGB(1, 0, 0), false, 0.0);
-  }
-
-  std::stringstream ss;
-  ss << params.common.scale;
-  for (const auto& a : points) ss << a.x() << a.y() << a.z();
-
-  auto name = "bounding_box_cylinders" + ss.str();
-
-  RenderState renState;
-
-  renState.set(RenderState::ActionFlags::IS_ON, true);
-  renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(1, 1, 1);
-  renState.set(RenderState::ActionFlags::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::ActionFlags::USE_NORMALS, true);
-  renState.set(RenderState::ActionFlags::IS_WIDGET, true);
-
-  glyphs.buildObject(widget, name, renState.get(RenderState::ActionFlags::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, params.common.bbox);
-
-  return name;
+  return buildBoundingBoxWidget(params.common, params.pos, widget);
 }

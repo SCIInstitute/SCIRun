@@ -27,6 +27,7 @@
 
 
 #include <Core/Algorithms/Legacy/DataIO/STLUtils.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <boost/unordered_map.hpp>
 
@@ -54,4 +55,28 @@ std::size_t PointHash::operator()(Geometry::Point const& point) const
   boost::hash_combine( seed, point.y() );
   boost::hash_combine( seed, point.z() );
   return seed;
+}
+
+void SCIRun::Core::Algorithms::addPointIfNew(const Point& p,
+    PointTable& table, unsigned int& pointIndex, SCIRun::VMesh* vmesh)
+{
+  if (table.find(p) == table.end())
+  {
+    table[p] = pointIndex++;
+    vmesh->add_point(p);
+  }
+}
+
+void SCIRun::Core::Algorithms::buildMeshFromFacets(
+    const FacetList& facets, const PointTable& table, SCIRun::VMesh* vmesh)
+{
+  for (const auto& facet : facets)
+  {
+    VMesh::Node::array_type vdata;
+    vdata.resize(3);
+    vdata[0] = table.find(facet.point1_)->second;
+    vdata[1] = table.find(facet.point2_)->second;
+    vdata[2] = table.find(facet.point3_)->second;
+    vmesh->add_elem(vdata);
+  }
 }

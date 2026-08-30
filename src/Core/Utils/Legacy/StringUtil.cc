@@ -231,71 +231,11 @@ bool from_string(const std::string &str, double &value)
 
 bool from_string(const std::string &str, float &value)
 {
-  std::string dstr = str + "\0";
-  strip_spaces(dstr);
-
-  // if empty just return
-  if (dstr.empty()) return (false);
-
-  const float nan = std::numeric_limits<float>::quiet_NaN();
-  const float inf = std::numeric_limits<float>::infinity();
-  // Handle special cases: nan, inf, and -inf
-  if (dstr[0] == 'n' || dstr[0] == 'N')
-  {
-    if (dstr.compare(0,3,"nan") == 0)
-    {
-      value = nan; return (true);
-    }
-    else if (dstr.compare(0,3,"NaN") == 0)
-    {
-      value = nan; return (true);
-    }
-    else if (dstr.compare(0,3,"Nan") == 0)
-    {
-      value = nan; return (true);
-    }
-    else if (dstr.compare(0,3,"NAN") == 0)
-    {
-      value = nan; return (true);
-    }
-  }
-  else if (dstr[0] == 'i' || dstr[0] == 'I')
-  {
-    if (dstr.compare(0,3,"inf") == 0)
-    {
-      value = inf; return (true);
-    }
-    else if (dstr.compare(0,3,"Inf") == 0)
-    {
-      value = inf; return (true);
-    }
-    else if (dstr.compare(0,3,"INF") == 0)
-    {
-      value = inf; return (true);
-    }
-  }
-  else if (dstr.size() > 1 && dstr[0] == '-' && (dstr[1] == 'i' || dstr[1] == 'I'))
-  {
-    if (dstr.compare(0,4,"-inf") == 0)
-    {
-      value = -inf; return (true);
-    }
-    else if (dstr.compare(0,4,"-Inf") == 0)
-    {
-      value = -inf; return (true);
-    }
-    else if (dstr.compare(0,4,"-INF") == 0)
-    {
-      value = -inf; return (true);
-    }
-  }
-
-  // Handle normal numbers
-  char *eptr;
-  double tempValue = strtod(&(dstr[0]),&eptr);
-  value = (float) tempValue;
-  if (eptr == &(dstr[0])) return (false);
-  return (true);
+  // Delegate to the double overload; NaN and infinity narrow correctly to float.
+  double dval;
+  if (!from_string(str, dval)) return false;
+  value = static_cast<float>(dval);
+  return true;
 }
 
 bool from_string(const std::string &str, int &value)

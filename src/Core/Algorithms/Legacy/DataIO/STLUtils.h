@@ -36,6 +36,10 @@
 
 #include <Core/Algorithms/Legacy/DataIO/share.h>
 
+// Forward declaration so that addPointIfNew / buildMeshFromFacets can
+// accept a VMesh* without pulling in the full VMesh header here.
+namespace SCIRun { class VMesh; }
+
 namespace SCIRun {
 namespace Core {
   namespace Algorithms {
@@ -71,6 +75,19 @@ typedef std::list<Facet> FacetList;
 ///   Nj = UzVx - UxVz
 ///   Nk = UxVy - UyVx
 SCISHARE std::vector<float> computeFaceNormal(const Geometry::Point& p1, const Geometry::Point& p2, const Geometry::Point& p3);
+
+/// Add a point to the mesh and lookup table if it has not been seen before.
+/// Increments pointIndex on insertion.
+SCISHARE void addPointIfNew(const Geometry::Point& p,
+                            PointTable& table,
+                            unsigned int& pointIndex,
+                            ::SCIRun::VMesh* vmesh);
+
+/// Build triangle mesh elements from the facet list using the point lookup
+/// table (which must already contain entries for every point in the list).
+SCISHARE void buildMeshFromFacets(const FacetList& facets,
+                                  const PointTable& table,
+                                  ::SCIRun::VMesh* vmesh);
 
 }}}
 

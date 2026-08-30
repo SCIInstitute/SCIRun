@@ -29,6 +29,7 @@
 #include <Core/Thread/Barrier.h>
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MappingCommon.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MappingDataSource.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -218,100 +219,8 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
     return (false);
   }
 
-  if (weights)
-  {
-    FieldInformation wfi(weights);
-    if (mappingModel == "closestnodedata")
-    {
-      if (!wfi.is_lineardata())
-      {
-        error("Closest node data only works for weights data located at the nodes.");
-        return (false);
-      }
-    }
-
-    if (wfi.is_nodata())
-    {
-      error("No data in weights field.");
-      return (false);
-    }
-  }
-
-  // Make sure output equals quantity to be computed
-
-  if (quantity == "value")
-  {
-    // Copy the output datatype
-    fo.set_data_type(fi.get_data_type());
-  }
-  else  if (quantity == "gradient")
-  {
-    // Output will be a vector
-    if (!fi.is_scalar())
-    {
-      error("Gradient can only be calculated on a scalar field.");
-      return (false);
-    }
-    fo.make_vector();
-  }
-  else if (quantity == "gradientnorm")
-  {
-    // Output will be a double
-    if (!fi.is_scalar())
-    {
-      error("Gradient can only be calculated on a scalar field.");
-      return (false);
-    }
-    fo.make_double();
-  }
-  else if (quantity == "flux")
-  {
-    // Only for output surfaces (only field with normals) and output will
-    // be double
-    if (!fi.is_scalar())
-    {
-      error("Flux can only be calculated on a scalar field.");
-      return (false);
-    }
-    if (!fo.is_surface())
-    {
-      error("Flux can only be computed for surfaces meshes as destination");
-      return (false);
-    }
-    fo.make_double();
-  }
-
-  // Incorporate the weights and alter the datatype to reflect that
-  if (weights)
-  {
-    FieldInformation wfi(weights);
-    if ((!wfi.is_tensor())&&(!wfi.is_scalar()))
-    {
-      error("Weights field needs to be a scalar or a tensor.");
-      return (false);
-    }
-
-    if (fo.is_scalar() && wfi.is_tensor())
-    {
-      fo.make_tensor();
-    }
-
-    if (fo.is_tensor() && wfi.is_tensor())
-    {
-      error("Weights and source field cannot be both tensor data.");
-      return (false);
-    }
-  }
-
-  // Create new output field
-  output = CreateField(fo,destination->mesh());
-  output->vfield()->resize_values();
-
-  if (!output)
-  {
-    error("Could not allocate output field");
-    return (false);
-  }
+  if (!configureOutputField(source, destination, weights, fi, fo, quantity, mappingModel, output, this))
+    return false;
 
   // Number of threads is equal to the number of cores
   int np = Parallel::NumCores();

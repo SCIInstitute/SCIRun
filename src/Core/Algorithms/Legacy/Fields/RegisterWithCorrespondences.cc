@@ -379,65 +379,19 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runMorph(FieldHandle input, F
   return transform;
 }
 
-DenseMatrixHandle RegisterWithCorrespondencesAlgo::runAffine(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
+bool RegisterWithCorrespondencesAlgo::computeAndCenterCors(
+    VMesh* icors1, VMesh* icors2, VMesh* imesh,
+    double& sumx, double& sumy, double& sumz,
+    double& sumx2, double& sumy2, double& sumz2) const
 {
-  double sumx2;
-  double sumy2;
-  double sumz2;
-  double sumx;
-  double sumy;
-  double sumz;
-  if (!input)
-  {
-    error("No input field");
-    return nullptr;
-  }
-  if (!Cors1)
-  {
-    error("No Correspondence1 input field");
-    return nullptr;
-  }
-  if (!Cors2)
-  {
-    error("No Correspndence2 input field");
-    return nullptr;
-  }
-
-  FieldInformation fi(input);
-
-  FieldHandle input_cp, Cors1_cp, Cors2_cp;
-
-  output.reset(input->deep_clone());
-  input_cp.reset(input->deep_clone());
-  Cors1_cp.reset(Cors1->deep_clone());
-  Cors2_cp.reset(Cors2->deep_clone());
-
-  if (!output)
-  {
-    error("Could not allocate output field");
-    return nullptr;
-  }
-
-  VMesh* imesh = input_cp->vmesh();
-  VMesh* omesh = output->vmesh();
-  VMesh* icors1 = Cors1_cp->vmesh();
-  VMesh* icors2 = Cors2_cp->vmesh();
-
-  //get the number of nodes in input field
-  //VMesh::size_type num_nodes = imesh->num_nodes();
-
-  VMesh::Node::size_type num_cors1, num_cors2, num_pts;
+  VMesh::Node::size_type num_cors1, num_cors2;
   icors1->size(num_cors1);
   icors2->size(num_cors2);
-  imesh->size(num_pts);
-
-  std::vector<double> coefs;//(3*num_cors1+9);
-  std::vector<double> rside;//(3*num_cors1+9);
 
   if (num_cors1 != num_cors2)
   {
     error("Number of correspondence points does not match");
-    return nullptr;
+    return false;
   }
 
   // Request that it generates the node matrix
@@ -501,6 +455,69 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runAffine(FieldHandle input, 
     icors2->set_point(mypoint, idx);
   }
 
+  return true;
+}
+
+DenseMatrixHandle RegisterWithCorrespondencesAlgo::runAffine(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
+{
+  double sumx2;
+  double sumy2;
+  double sumz2;
+  double sumx;
+  double sumy;
+  double sumz;
+  if (!input)
+  {
+    error("No input field");
+    return nullptr;
+  }
+  if (!Cors1)
+  {
+    error("No Correspondence1 input field");
+    return nullptr;
+  }
+  if (!Cors2)
+  {
+    error("No Correspndence2 input field");
+    return nullptr;
+  }
+
+  FieldInformation fi(input);
+
+  FieldHandle input_cp, Cors1_cp, Cors2_cp;
+
+  output.reset(input->deep_clone());
+  input_cp.reset(input->deep_clone());
+  Cors1_cp.reset(Cors1->deep_clone());
+  Cors2_cp.reset(Cors2->deep_clone());
+
+  if (!output)
+  {
+    error("Could not allocate output field");
+    return nullptr;
+  }
+
+  VMesh* imesh = input_cp->vmesh();
+  VMesh* omesh = output->vmesh();
+  VMesh* icors1 = Cors1_cp->vmesh();
+  VMesh* icors2 = Cors2_cp->vmesh();
+
+  //get the number of nodes in input field
+  //VMesh::size_type num_nodes = imesh->num_nodes();
+
+  VMesh::Node::size_type num_cors1, num_cors2, num_pts;
+  icors1->size(num_cors1);
+  icors2->size(num_cors2);
+  imesh->size(num_pts);
+
+  std::vector<double> coefs;//(3*num_cors1+9);
+  std::vector<double> rside;//(3*num_cors1+9);
+
+  if (!computeAndCenterCors(icors1, icors2, imesh, sumx, sumy, sumz, sumx2, sumy2, sumz2))
+    return nullptr;
+
+  Point mp;
+  Point mypoint;
   VMesh::size_type num_nodes_mesh = imesh->num_nodes();
   for (VMesh::Node::index_type idx = 0; idx < num_nodes_mesh; idx++)
   {
@@ -700,73 +717,10 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runRigid_P(FieldHandle input,
     icors2->size(num_cors2);
     imesh->size(num_pts);
 
-    if (num_cors1 != num_cors2)
-    {
-        error("Number of correspondence points does not match");
+    if (!computeAndCenterCors(icors1, icors2, imesh, sumx, sumy, sumz, sumx2, sumy2, sumz2))
         return nullptr;
-    }
-
-    // Request that it generates the node matrix
-    imesh->synchronize(SCIRun::Mesh::NODES_E);
-
-    //get centroids of both point clouds
-    sumx = 0.0;
-    sumy = 0.0;
-    sumz = 0.0;
-    Point mp;
 
     VMesh::size_type num_nodes = icors1->num_nodes();
-
-    for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
-    {
-        icors1->get_center(mp, idx);
-        sumx = mp.x() + sumx;
-        sumy = mp.y() + sumy;
-        sumz = mp.z() + sumz;
-    }
-    sumx = sumx / (double)num_nodes;
-    sumy = sumy / (double)num_nodes;
-    sumz = sumz / (double)num_nodes;
-
-    sumx2 = 0.0;
-    sumy2 = 0.0;
-    sumz2 = 0.0;
-    Point np;
-
-    VMesh::size_type num_nodes2 = icors2->num_nodes();
-
-    for (VMesh::Node::index_type idx = 0; idx < num_nodes2; idx++)
-    {
-        icors2->get_center(np, idx);
-        sumx2 = np.x() + sumx2;
-        sumy2 = np.y() + sumy2;
-        sumz2 = np.z() + sumz2;
-    }
-    sumx2 = sumx2 / (double)num_nodes;
-    sumy2 = sumy2 / (double)num_nodes;
-    sumz2 = sumz2 / (double)num_nodes;
-
-    //center fields
-    Point mypoint;
-
-    for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
-    {
-        icors1->get_center(mp, idx);
-        mypoint.x(mp.x() - sumx);
-        mypoint.y(mp.y() - sumy);
-        mypoint.z(mp.z() - sumz);
-        icors1->set_point(mypoint, idx);
-    }
-
-    for (VMesh::Node::index_type idx = 0; idx < num_nodes2; idx++)
-    {
-        icors2->get_center(mp, idx);
-        mypoint.x(mp.x() - sumx2);
-        mypoint.y(mp.y() - sumy2);
-        mypoint.z(mp.z() - sumz2);
-        icors2->set_point(mypoint, idx);
-    }
-
 
     //normalize the point matrices
 
@@ -807,6 +761,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runRigid_P(FieldHandle input,
         icors2->set_point(normp2, idx);
     }
 
+    Point mp;
     VMesh::size_type num_nodes_mesh = imesh->num_nodes();
     for (VMesh::Node::index_type idx = 0; idx < num_nodes_mesh; idx++)
     {

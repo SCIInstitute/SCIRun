@@ -38,6 +38,7 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   FieldVIndex.h
   FieldVIterator.h
   GenericField.h
+  GenericVolMeshMethods.h
   HexVolMesh.h
   ImageMesh.h
   LatVolMesh.h
@@ -60,6 +61,8 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   VMesh.h
   VMeshShared.h
   VUnstructuredMesh.h
+  VVolMesh.h
+  VSurfMesh.h
 )
 
 SET(Core_Datatypes_Legacy_Field_SRCS

@@ -34,9 +34,9 @@ SET(Core_Basis_HEADERS
   CrvElementWeights.h
   CrvLinearLgn.h
   CrvQuadraticLgn.h
-  HexElementsWeights.h
   HexSamplingSchemes.h
   HexTricubicHmtScaleFactors.h
+  HexTricubicHmtScaleFactorsCommon.h
   Locate.h
   NoData.h
   PntSamplingSchemes.h

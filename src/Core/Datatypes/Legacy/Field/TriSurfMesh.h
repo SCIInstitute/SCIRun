@@ -102,6 +102,7 @@ class TriSurfMesh : public Mesh
 
 /// Make sure the virtual interface has access
 template<class MESH> friend class VTriSurfMesh;
+template<class MESH> friend class VSurfMesh;
 template<class MESH> friend class VMeshShared;
 template<class MESH> friend class VUnstructuredMesh;
 
