@@ -176,7 +176,7 @@ namespace Gui {
     explicit NewUserWizard(QWidget* parent);
     ~NewUserWizard();
   public Q_SLOTS:
-    void setShowPrefs(int state);
+    void setShowPrefs(bool state);
   private Q_SLOTS:
     void updatePathLabel(const QString& dir);
     void showPrefs();
@@ -203,7 +203,7 @@ namespace Gui {
     explicit PythonWizard(std:: function<void(const QString&)> display, QWidget* parent);
     ~PythonWizard();
   public Q_SLOTS:
-    void setShowPrefs(int state);
+    void setShowPrefs(bool state);
   private Q_SLOTS:
     void updatePathLabel(const QString& dir);
     void showPrefs();

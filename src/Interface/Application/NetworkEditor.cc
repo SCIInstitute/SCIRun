@@ -538,7 +538,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
 #endif
 
-  proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
+  proxy->highlightPorts(Preferences::Instance().highlightPorts);
 
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
