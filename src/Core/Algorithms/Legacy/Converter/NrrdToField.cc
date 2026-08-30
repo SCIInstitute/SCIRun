@@ -43,6 +43,218 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
 namespace detail {
+struct NrrdSpatialParams
+{
+  size_t rdim {0};
+  std::vector<double> rmin, rmax;
+  std::vector<int> rsize;
+  Transform transform;
+  bool useTransform {false};
+};
+
+static void computeNrrdSpatialParams(const Nrrd* nrrd, size_t dim, int vecdim,
+    const std::vector<double>& min, const std::vector<double>& max,
+    const std::vector<int>& size,
+    const std::string& datalocation, const std::string& spaceparity,
+    bool negateM, double M[3][3],
+    NrrdSpatialParams& sp)
+{
+  sp.rdim = nrrd->dim - 1;
+  sp.rmin.resize(sp.rdim);
+  sp.rmax.resize(sp.rdim);
+  sp.rsize.resize(sp.rdim);
+  sp.transform.load_identity();
+  sp.useTransform = false;
+
+  size_t k = 0;
+  for (size_t p = 0; p < dim; p++)
+  {
+    if (p == static_cast<size_t>(vecdim))
+      continue;
+
+    sp.rmin[k] = min[p];
+    sp.rmax[k] = max[p];
+    sp.rsize[k] = size[p];
+
+    k++;
+  }
+
+  Vector Origin;
+  std::vector<Vector> SpaceDir(3);
+
+  if (nrrd->spaceDim > 0)
+  {
+    int sd = nrrd->spaceDim;
+    for (int q = 0; q < (sd+1) && q < 3; q++)
+    {
+      if (airExists(nrrd->spaceOrigin[q]))
+        Origin[q] = nrrd->spaceOrigin[q];
+      else
+        Origin[q] = 0.0;
+
+      int r = 0;
+      for (size_t p = 0; p < dim && r < 3; p++)
+      {
+        if (p == static_cast<size_t>(vecdim))
+          continue;
+
+        if (airExists(nrrd->axis[p].spaceDirection[q]))
+          SpaceDir[r][q] = nrrd->axis[p].spaceDirection[q];
+        else
+          SpaceDir[r][q] = 0.0;
+
+        r++;
+      }
+    }
+
+    if (datalocation == "Node")
+    {
+      k = 0;
+      for (size_t p = 0; p < dim; p++)
+      {
+        if (p == static_cast<size_t>(vecdim))
+          continue;
+
+        sp.rmin[k] = 0.0;
+        sp.rmax[k] = static_cast<double>(size[p]-1);
+        sp.rsize[k] = size[p];
+
+        if (nrrd->axis[p].center != nrrdCenterNode)
+        {
+          double cor = (sp.rmax[k]-sp.rmin[k]) / (2 * (sp.rsize[k]-1));
+          sp.rmin[k] += cor;
+          sp.rmax[k] += cor;
+        }
+        k++;
+      }
+    }
+    else
+    {
+      k = 0;
+      for (size_t p = 0; p < dim; p++)
+      {
+        if (p == static_cast<size_t>(vecdim))
+          continue;
+
+        sp.rmin[k] = 0.0;
+        sp.rmax[k] = static_cast<double>(size[p]);
+        sp.rsize[k] = size[p];
+        if (nrrd->axis[p].center == nrrdCenterNode)
+        {
+          double cor = (sp.rmax[k]-sp.rmin[k]) / (2 * sp.rsize[k]);
+          sp.rmin[k] -= cor;
+          sp.rmax[k] -= cor;
+        }
+        k++;
+      }
+    }
+
+    if (sp.rdim == 1)
+    {
+      SpaceDir[0].find_orthogonal(SpaceDir[1],SpaceDir[2]);
+    }
+    else if (sp.rdim == 2)
+    {
+      SpaceDir[2] = Cross(SpaceDir[0],SpaceDir[1]);
+    }
+
+    sp.transform.load_basis(Point(Origin),SpaceDir[0],SpaceDir[1],SpaceDir[2]);
+
+    sp.useTransform = true;
+
+    if (airExists(nrrd->measurementFrame[0][0]))
+    {
+      for (int p = 0; p < sd; p++)
+      {
+        for (int q = 0; q < sd; q++)
+        {
+          M[q][p] = nrrd->measurementFrame[p][q];
+        }
+      }
+    }
+  }
+
+  if (spaceparity == "Make Right Hand Sided")
+  {
+    // The Teem documentation is not specific on how deal deal with RHS and LHS
+    // Hence we interpret the information as following:
+    // (1) if a patient specific orientation is given, we check the parity of
+    //     the space directions and the parity of the objective and convert
+    //     if needed, i.e. either coord parity or space parity is LHS, then
+    //     we mirror.
+    // (2) if ScannerXYZ is given, nothing is assumed about coord parity and
+    //     space parity, as it is not clear what has been defined.
+    // (3) in case SpaceLeft3DHanded is given, we assume space parity is LHS and
+    //     coord parity is not of importance.
+
+    bool reverseparity = false;
+    bool coordparity = true;
+
+    if (sp.useTransform)
+      coordparity = (Dot(SpaceDir[2],Cross(SpaceDir[0],SpaceDir[1])) >= 0);
+
+    if ((nrrd->space == nrrdSpaceRightAnteriorSuperior)||
+        (nrrd->space == nrrdSpaceLeftPosteriorSuperior)||
+        (nrrd->space == nrrdSpaceRightAnteriorSuperiorTime) ||
+        (nrrd->space == nrrdSpaceLeftPosteriorSuperiorTime))
+    {
+      if (coordparity == false)
+        reverseparity = true;
+    }
+
+    if ((nrrd->space == nrrdSpaceLeftAnteriorSuperior)||
+        (nrrd->space == nrrdSpaceLeftAnteriorSuperiorTime))
+    {
+      if (coordparity == true)
+        reverseparity = true;
+    }
+
+    if ((nrrd->space == nrrdSpace3DLeftHanded) ||
+        (nrrd->space == nrrdSpace3DLeftHandedTime))
+    {
+      reverseparity = true;
+    }
+
+    if (reverseparity)
+    {
+      if (sp.useTransform)
+      {
+        sp.transform.load_basis(-Point(Origin),-SpaceDir[0],-SpaceDir[1],-SpaceDir[2]);
+      }
+      else
+      {
+        sp.useTransform = true;
+        sp.transform.load_basis(Point(0.0,0.0,0.0),Vector(-1.0,0.0,0.0),Vector(0.0,-1.0,0.0),Vector(0.0,0.0,-1.0));
+      }
+      if (negateM)
+      {
+        M[0][0] = -M[0][0]; M[1][0] = -M[1][0]; M[2][0] = -M[2][0];
+        M[0][1] = -M[0][1]; M[1][1] = -M[1][1]; M[2][1] = -M[2][1];
+        M[0][2] = -M[0][2]; M[1][2] = -M[1][2]; M[2][2] = -M[2][2];
+      }
+    }
+  }
+  else if (spaceparity == "Invert")
+  {
+    if (sp.useTransform)
+    {
+      sp.transform.load_basis(-Point(Origin),-SpaceDir[0],-SpaceDir[1],-SpaceDir[2]);
+    }
+    else
+    {
+      sp.useTransform = true;
+      sp.transform.load_basis(Point(0.0,0.0,0.0),Vector(-1.0,0.0,0.0),Vector(0.0,-1.0,0.0),Vector(0.0,0.0,-1.0));
+    }
+    if (negateM)
+    {
+      M[0][0] = -M[0][0]; M[1][0] = -M[1][0]; M[2][0] = -M[2][0];
+      M[0][1] = -M[0][1]; M[1][1] = -M[1][1]; M[2][1] = -M[2][1];
+      M[0][2] = -M[0][2]; M[1][2] = -M[1][2]; M[2][2] = -M[2][2];
+    }
+  }
+}
+
+
 class NrrdToFieldAlgoT {
 public:
   // Convert a nrrd to a normal Scalar Field
@@ -618,190 +830,14 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
     return false;
   }
 
-  Transform tf;
-  tf.load_identity();
-  bool use_tf = false;
-
-  size_t rdim = nrrd->dim - 1;
-  std::vector<double> rmin(rdim), rmax(rdim);
-  std::vector<int> rsize(rdim);
-
-  size_t k = 0;
-  for (size_t p=0; p < dim; p++)
-  {
-    if (p == (size_t)vecdim)
-      continue;
-
-    rmin[k] = min[p];
-    rmax[k] = max[p];
-    rsize[k] = size[p];
-
-    k++;
-  }
-
-  Vector Origin;
-  std::vector<Vector> SpaceDir(3);
-
-  if (nrrd->spaceDim > 0)
-  {
-    int sd = nrrd->spaceDim;
-    for (int q = 0 ; q < (sd+1) && q < 3; q++)
-    {
-      if (airExists(nrrd->spaceOrigin[q]))
-        Origin[q] = nrrd->spaceOrigin[q];
-      else
-        Origin[q] = 0.0;
-
-      int r = 0;
-      for (size_t p = 0; p < dim && r < 3; p++)
-      {
-        if ( p == static_cast<size_t>(vecdim) )
-          continue;
-
-        if (airExists(nrrd->axis[p].spaceDirection[q]))
-          SpaceDir[r][q] = nrrd->axis[p].spaceDirection[q];
-        else
-          SpaceDir[r][q] = 0.0;
-
-        r++;
-      }
-    }
-
-    if (datalocation == "Node")
-    {
-      k = 0;
-      for (size_t p = 0; p < dim; p++)
-      {
-        if ( p == static_cast<size_t>(vecdim) )
-          continue;
-
-        rmin[k] = 0.0;
-        rmax[k] = static_cast<double>(size[p]-1);
-        rsize[k] = size[p];
-
-        if (nrrd->axis[p].center != nrrdCenterNode)
-        {
-          double cor = (rmax[k]-rmin[k]) / (2 * (rsize[k]-1));
-          rmin[k] += cor;
-          rmax[k] += cor;
-        }
-        k++;
-      }
-    }
-    else
-    {
-      k = 0;
-      for (size_t p = 0; p < dim; p++)
-      {
-        if (p == static_cast<size_t>(vecdim))
-          continue;
-
-        rmin[k] = 0.0;
-        rmax[k] = static_cast<double>(size[p]);
-        rsize[k] = size[p];
-        if (nrrd->axis[p].center == nrrdCenterNode)
-        {
-          double cor = (rmax[k]-rmin[k]) / (2 * rsize[k]);
-          rmin[k] -= cor;
-          rmax[k] -= cor;
-        }
-        k++;
-      }
-    }
-
-    if (rdim == 1)
-    {
-      SpaceDir[0].find_orthogonal(SpaceDir[1],SpaceDir[2]);
-    }
-    else if (rdim == 2)
-    {
-      SpaceDir[2] = Cross(SpaceDir[0],SpaceDir[1]);
-    }
-
-    tf.load_basis(Point(Origin),SpaceDir[0],SpaceDir[1],SpaceDir[2]);
-
-    use_tf = true;
-
-
-
-    if (airExists(nrrd->measurementFrame[0][0]))
-    {
-      for (int p = 0; p < sd; p++)
-      {
-        for (int q = 0; q < sd; q++)
-        {
-          M[q][p] = nrrd->measurementFrame[p][q];
-        }
-      }
-    }
-  }
-
-  if (spaceparity == "Make Right Hand Sided")
-  {
-    // The Teem documentation is not specific on how deal deal with RHS and LHS
-    // Hence we interpret the information as following:
-    // (1) if a patient specific orientation is given, we check the parity of
-    //     the space directions and the parity of the objective and convert
-    //     if needed, i.e. either coord parity or space parity is LHS, then
-    //     we mirror.
-    // (2) if ScannerXYZ is given, nothing is assumed about coord parity and
-    //     space parity, as it is not clear what has been defined.
-    // (3) in case SpaceLeft3DHanded is given, we assume space parity is LHS and
-    //     coord parity is not of importance.
-
-    bool reverseparity = false;
-    bool coordparity = true;
-
-    if (use_tf)
-      coordparity = (Dot(SpaceDir[2],Cross(SpaceDir[0],SpaceDir[1])) >= 0);
-
-    if ((nrrd->space == nrrdSpaceRightAnteriorSuperior)||
-        (nrrd->space == nrrdSpaceLeftPosteriorSuperior)||
-        (nrrd->space == nrrdSpaceRightAnteriorSuperiorTime) ||
-        (nrrd->space == nrrdSpaceLeftPosteriorSuperiorTime))
-    {
-      if (coordparity == false)
-        reverseparity = true;
-    }
-
-    if ((nrrd->space == nrrdSpaceLeftAnteriorSuperior)||
-        (nrrd->space == nrrdSpaceLeftAnteriorSuperiorTime))
-    {
-      if (coordparity == true)
-        reverseparity = true;
-    }
-
-    if ((nrrd->space == nrrdSpace3DLeftHanded) ||
-        (nrrd->space == nrrdSpace3DLeftHandedTime))
-    {
-      reverseparity = true;
-    }
-
-    if (reverseparity)
-    {
-      if (use_tf)
-      {
-        tf.load_basis(-Point(Origin),-SpaceDir[0],-SpaceDir[1],-SpaceDir[2]);
-      }
-      else
-      {
-        use_tf = true;
-        tf.load_basis(Point(0.0,0.0,0.0),Vector(-1.0,0.0,0.0),Vector(0.0,-1.0,0.0),Vector(0.0,0.0,-1.0));
-      }
-    }
-  }
-  else if (spaceparity == "Invert")
-  {
-    if (use_tf)
-    {
-      tf.load_basis(-Point(Origin),-SpaceDir[0],-SpaceDir[1],-SpaceDir[2]);
-    }
-    else
-    {
-      use_tf = true;
-      tf.load_basis(Point(0.0,0.0,0.0),Vector(-1.0,0.0,0.0),Vector(0.0,-1.0,0.0),Vector(0.0,0.0,-1.0));
-    }
-  }
+  NrrdSpatialParams sp;
+  computeNrrdSpatialParams(nrrd, dim, vecdim, min, max, size, datalocation, spaceparity, false, M, sp);
+  const size_t rdim = sp.rdim;
+  const std::vector<double>& rmin = sp.rmin;
+  const std::vector<double>& rmax = sp.rmax;
+  const std::vector<int>& rsize = sp.rsize;
+  const Transform& tf = sp.transform;
+  const bool use_tf = sp.useTransform;
 
 
   T* dataptr = static_cast<T*>(nrrd->data);
@@ -811,7 +847,7 @@ bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, F
   std::vector<size_t> space_offset(rdim);
   std::vector<size_t> space_size(rdim);
 
-  k = 1;
+  size_t k = 1;
   int m =0;
   for (int p=0; p<static_cast<int>(dim);p++)
   {
@@ -1162,194 +1198,14 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
     return false;
   }
 
-  Transform tf;
-  tf.load_identity();
-  bool use_tf = false;
-
-  size_t rdim = (nrrd->dim-1);
-  std::vector<double> rmin(rdim), rmax(rdim);
-  std::vector<int> rsize(rdim);
-
-  size_t k = 0;
-  for (size_t p = 0; p < dim; p++)
-  {
-    if ( p == static_cast<size_t>(vecdim) )
-      continue;
-
-    rmin[k] = min[p];
-    rmax[k] = max[p];
-    rsize[k] = size[p];
-    k++;
-  }
-
-  Vector Origin;
-  std::vector<Vector> SpaceDir(3);
-
-
-  if (nrrd->spaceDim > 0)
-  {
-    int sd = nrrd->spaceDim;
-
-    for (int q = 0; q < (sd+1) && q < 3; q++)
-    {
-      if (airExists(nrrd->spaceOrigin[q]))
-        Origin[q] = nrrd->spaceOrigin[q];
-      else
-        Origin[q] = 0.0;
-
-      int r = 0;
-      for (size_t p=0; p<dim && r < 3;p++)
-      {
-        if ( p == static_cast<size_t>(vecdim) )
-          continue;
-
-        if (airExists(nrrd->axis[p].spaceDirection[q]))
-          SpaceDir[r][q] = nrrd->axis[p].spaceDirection[q];
-        else
-          SpaceDir[r][q] = 0.0;
-
-        r++;
-      }
-    }
-
-    if (datalocation == "Node")
-    {
-      k = 0;
-      for (size_t p = 0; p < dim; p++)
-      {
-        if ( p == static_cast<size_t>(vecdim) )
-          continue;
-
-        rmin[k] = 0.0;
-        rmax[k] = static_cast<double>(size[p]-1);
-        rsize[k] = size[p];
-
-        if (nrrd->axis[p].center != nrrdCenterNode)
-        {
-          double cor = (rmax[k]-rmin[k]) / (2 * (rsize[k]-1));
-          rmin[k] += cor;
-          rmax[k] += cor;
-        }
-        k++;
-      }
-    }
-    else
-    {
-      k = 0;
-      for (size_t p = 0; p < dim; p++)
-      {
-        if ( p == static_cast<size_t>(vecdim) )
-          continue;
-
-        rmin[k] = 0.0;
-        rmax[k] = static_cast<double>(size[p]);
-        rsize[k] = size[p];
-
-        if (nrrd->axis[p].center == nrrdCenterNode)
-        {
-          double cor = (rmax[k]-rmin[k]) / (2 * rsize[k]);
-          rmin[k] -= cor;
-          rmax[k] -= cor;
-        }
-        k++;
-      }
-    }
-
-    if (rdim == 1)
-    {
-      SpaceDir[0].find_orthogonal(SpaceDir[1],SpaceDir[2]);
-    }
-    else if (rdim == 2)
-    {
-      SpaceDir[2] = Cross(SpaceDir[0],SpaceDir[1]);
-    }
-
-    tf.load_basis(Point(Origin),SpaceDir[0],SpaceDir[1],SpaceDir[2]);
-
-    use_tf = true;
-
-    if (airExists(nrrd->measurementFrame[0][0]))
-    {
-      for (int p = 0; p < sd; p++)
-      {
-        for (int q = 0; q < sd; q++)
-        {
-          M[q][p] = nrrd->measurementFrame[p][q];
-        }
-      }
-    }
-  }
-
-  if (spaceparity == "Make Right Hand Sided")
-  {
-    // The Teem documentation is not specific on how deal deal with RHS and LHS
-    // Hence we interpret the information as following:
-    // (1) if a patient specific orientation is given, we check the parity of
-    //     the space directions and the parity of the objective and convert
-    //     if needed, i.e. either coord parity or space parity is LHS, then
-    //     we mirror.
-    // (2) if ScannerXYZ is given, nothing is assumed about coord parity and
-    //     space parity, as it is not clear what has been defined.
-    // (3) in case SpaceLeft3DHanded is given, we assume space parity is LHS and
-    //     coord parity is not of importance.
-
-    bool reverseparity = false;
-    bool coordparity = true;
-
-    if (use_tf)
-      coordparity = (Dot(SpaceDir[2],Cross(SpaceDir[0],SpaceDir[1])) >= 0);
-
-    if ((nrrd->space == nrrdSpaceRightAnteriorSuperior)||
-        (nrrd->space == nrrdSpaceLeftPosteriorSuperior)||
-        (nrrd->space == nrrdSpaceRightAnteriorSuperiorTime) ||
-        (nrrd->space == nrrdSpaceLeftPosteriorSuperiorTime))
-    {
-      if (coordparity == false) reverseparity = true;
-    }
-
-    if ((nrrd->space == nrrdSpaceLeftAnteriorSuperior)||
-        (nrrd->space == nrrdSpaceLeftAnteriorSuperiorTime))
-    {
-      if (coordparity == true) reverseparity = true;
-    }
-
-    if ((nrrd->space == nrrdSpace3DLeftHanded) ||
-        (nrrd->space == nrrdSpace3DLeftHandedTime))
-    {
-      reverseparity = true;
-    }
-
-    if (reverseparity)
-    {
-      if (use_tf)
-      {
-        tf.load_basis(-Point(Origin),-SpaceDir[0],-SpaceDir[1],-SpaceDir[2]);
-      }
-      else
-      {
-        use_tf = true;
-        tf.load_basis(Point(0.0,0.0,0.0),Vector(-1.0,0.0,0.0),Vector(0.0,-1.0,0.0),Vector(0.0,0.0,-1.0));
-      }
-      M[0][0] = -M[0][0]; M[1][0] = -M[1][0]; M[2][0] = -M[2][0];
-      M[0][1] = -M[0][1]; M[1][1] = -M[1][1]; M[2][1] = -M[2][1];
-      M[0][2] = -M[0][2]; M[1][2] = -M[1][2]; M[2][2] = -M[2][2];
-    }
-  }
-  else if (spaceparity == "Invert")
-  {
-    if (use_tf)
-    {
-      tf.load_basis(-Point(Origin),-SpaceDir[0],-SpaceDir[1],-SpaceDir[2]);
-    }
-    else
-    {
-      use_tf = true;
-      tf.load_basis(Point(0.0,0.0,0.0),Vector(-1.0,0.0,0.0),Vector(0.0,-1.0,0.0),Vector(0.0,0.0,-1.0));
-    }
-    M[0][0] = -M[0][0]; M[1][0] = -M[1][0]; M[2][0] = -M[2][0];
-    M[0][1] = -M[0][1]; M[1][1] = -M[1][1]; M[2][1] = -M[2][1];
-    M[0][2] = -M[0][2]; M[1][2] = -M[1][2]; M[2][2] = -M[2][2];
-  }
+  NrrdSpatialParams sp;
+  computeNrrdSpatialParams(nrrd, dim, vecdim, min, max, size, datalocation, spaceparity, true, M, sp);
+  const size_t rdim = sp.rdim;
+  const std::vector<double>& rmin = sp.rmin;
+  const std::vector<double>& rmax = sp.rmax;
+  const std::vector<int>& rsize = sp.rsize;
+  const Transform& tf = sp.transform;
+  const bool use_tf = sp.useTransform;
 
   T* dataptr = static_cast<T*>(nrrd->data);
 
@@ -1358,7 +1214,7 @@ bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, F
   std::vector<size_t> space_offset(rdim);
   std::vector<size_t> space_size(rdim);
 
-  k = 1;
+  size_t k = 1;
   int m = 0;
   for (int p = 0; p < static_cast<int>(dim); p++)
   {
