@@ -735,6 +735,14 @@ VMesh::get_neighbors(Node::array_type&, Node::index_type) const
 }
 
 void
+VMesh::get_all_neighbors(Elem::array_type& elems, DElem::index_type delem) const
+{
+  // The delem->elem lookup is already the unfiltered form of get_neighbor():
+  // there is no "which side am I on" check in it to drop.
+  get_elems(elems,delem);
+}
+
+void
 VMesh::pwl_approx_edge(std::vector<coords_type >&, Elem::index_type, unsigned int , unsigned int) const
 {
   ASSERTFAIL("VMesh interface: pwl_appprox_edge has not been implemented");
