@@ -1,0 +1,120 @@
+# SCIRun contributor list, displayed by Help > Credits...
+#
+# Format:
+#   #  comment, never displayed
+#   :: section heading
+#   anything else is one name, displayed on its own line
+#   Name | epigraph  puts a small italic line under that name; hidden by default
+#   blank lines are extra vertical space
+#
+# Keep this a text file. The v4 list froze for a decade because it lived only as
+# pixels in scisplash.ppm; see issue #2610.
+#
+# Notes:
+#  - The SCIRun 4 names were transcribed from the v4 splash raster and accepted
+#    as read. "Blythe Nobleman" is transcribed as one person; the raster renders
+#    a comma between the two words, so it may be two.
+#  - "Ken Louie" (ken.louie9@gmail.com) is listed as far as the git identity
+#    goes; fill in the rest if anyone knows.
+#  - Anastasia Mironova is not on the v4 splash raster at all; she is credited
+#    in the header of Modules/Legacy/Teem/Misc/BuildDerivedNrrdWithGage.cc.
+#  - Machine and bot identities are deliberately omitted: "cibc",
+#    "SCIRun Tester", "scirun-tester", "root".
+#  - Names appearing in both v4 and v5 (Ayla Khan, Jess Tate, Dan White,
+#    Moritz Dannhauer) are listed once, under SCIRun 5.
+
+:: SCIRun 5
+
+Dan White | SCIRun code wizard/Dan Dan SCIRun Man
+James Hughes | Creator of Spire
+Chris Bright | tamer of the ViewScene controls
+Jess Tate | fount of SCIRun wisdom
+Moritz Dannhauer | Brain Stimulator
+Yong Wan | vtkSCIRun in progress
+Tark Patel | Widgets and Glyphs for everyone
+Kim Peterson | particle-in-cell, single-handed
+Ayla Khan | did all the CMake
+Jacob Haydel | fixer of the red ViewScene
+Benjamin Larson | mesh refinement and stylesheets
+Brig Bagley | wrote the shaders
+Nidhi Patel | Documentation Czarina
+Garima Chhabra | test networks for the legacy modules
+Ally Warner | Cleaver, with exclamation points
+Jaume Coll-Font | Tikhonov, TSVD, and the L-curve
+Max Hansen | ten characters, tops
+Collin Tate | the other Tate
+Spencer Frisby | his module unit tests still pass
+Karli Gillette | opened SCIRun to CARP
+Georgia Stuart
+Xuan Huang
+Kimia Shayestehfard
+Petar Petrov
+Johannes Vorwerk
+Kris Zygmunt
+Tom Fogal
+Zayan Khan
+Nipun Gottapu
+Ken Louie
+
+:: SCIRun 4
+
+Steve Parker | Creator of SCIRun, RIP
+David Weinstein | voltage sources and dipoles since 1999
+Marty Cole | his network reader still opens v4 files
+Michael Callahan | every plugin interface we still use
+McKay Davis
+J. Davison de St. Germain
+Yarden Livnat | marching cubes, one tet at a time
+Allen Sanderson | streamlines and the geometry under them
+Darby Van Uitert
+Jenny Simpson
+Chris Moulding
+Ted Dustman
+Rob MacLeod
+Blythe Nobleman
+John McCorquodale
+Keming Zhang
+Kurt Zimmerman
+Kostadin Damevski
+Alexei Samsonov | type names and piecewise interpolation
+Erik Kuehne
+Peter-Pike Sloan
+Oleg Portniaguine
+James Bigler
+Wayne Witzel
+Bryan Worthen
+David Hart
+Chris Butson
+Sascha Moehrs
+Lisa Durbeck
+John Schmidt
+Richard Coffey
+Jesse Hall
+Nick Benson
+Randy Jones
+Rob Van Uitert
+Kai Li
+Yesim Seringagoglu
+Lorena Kreda
+Alireza Ghodrati | Tikhonov, before Jaume
+Saeed Babaeizadeh | the boundary element matrix
+Jeroen Stinstra | reader of every file format
+Erik Anderson
+Jason Shepherd
+Frank Sachse | the basis functions, all of them
+Darrell Swenson
+Burak Erem
+Andrew Keely
+Kristen Zygmunt
+Brett Burton
+Mike Steffen
+Josh Blauer
+Ran Tao
+Jovana Knežević
+Josh Levine
+Anastasia Mironova | uncredited until now
+
+:: Support
+
+This project was supported by the National Institute of General Medical
+Sciences of the National Institutes of Health under grant number P41GM103545.
