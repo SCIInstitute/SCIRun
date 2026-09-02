@@ -89,7 +89,7 @@ ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 
 const AlgorithmParameterName GenerateElectrode::PointPositions("PointPositions");
 const AlgorithmParameterName
-GenerateElectrode::DipoleDirections("DipoleDirection");
+GenerateElectrode::DipoleDirection("DipoleDirection");
 const AlgorithmParameterName GenerateElectrode::Reset("Reset");
 //const AlgorithmParameterName
 //GenerateElectrode::TranslationPoint("TranslationPoint");
@@ -109,15 +109,15 @@ public:
   
 //  bool build_table(VMesh, VField, std::vector<weight_type>, std::string&)
   
-  void get_points(std::vector<Geometry::Point>& points);
-  void get_centers(std::vector<Geometry::Point>& , std::vector<Geometry::Point>& , double , int );
+  void get_points(std::vector<Point>& points);
+  void get_centers(std::vector<Point>& , std::vector<Point>& , double , int );
   
-  FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& , double , int );
-//  FieldHandle Make_Mesh_Planar(std::vector<Geometry::Point>&, double , int );
+  FieldHandle Make_Mesh_Wire(std::vector<Point>& , double , int );
+//  FieldHandle Make_Mesh_Planar(std::vector<Point>&, double , int );
   
   bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
   
-  bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
+  bool CalculateSpline(std::vector<double>& , std::vector<Point>& , std::vector<double>&, std::vector<Point>&);
   
   bool runImpl(FieldHandle, FieldHandle&, FieldHandle&) const;
   
@@ -129,7 +129,7 @@ private:
 //  WidgetHandle arrow_widget_;
   std::vector<GeometryHandle> geoms_;
   
-  std::vector<Geometry::Point> Previous_points_;
+  std::vector<Point> Previous_points_;
   Transform previousTransform_;
 };
 }}}
@@ -745,7 +745,7 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
   FieldInformation fis(input);
   std::vector<Point> orig_points;
 
-  auto dir_string = state_()->getValue( GenerateElectrode::DipoleDirections).toString();
+  auto dir_string = state_()->getValue( GenerateElectrode::DipoleDirection).toString();
   Vector direction = vectorFromString(dir_string);
 
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
@@ -853,9 +853,9 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
     arrow_widget_ = 0;
 #endif
 
-  if (impl_->Previous_points_.size() < 3)
+  if (Previous_points_.size() < 3)
   {
-      impl_->Previous_points_ = orig_points;
+      Previous_points_ = orig_points;
   }
 
   size_type size = orig_points.size();
@@ -897,7 +897,7 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
     create_widgets(orig_points, direction);
 #endif
 
-    impl_->Previous_points_ = orig_points;
+    Previous_points_ = orig_points;
 
   FieldInformation pi("PointCloudMesh", 0, "double");
   MeshHandle pmesh = CreateMesh(pi);
@@ -910,18 +910,18 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
   pi.make_double();
   outputPoints = CreateField(pi, pmesh);
     
-  impl_ -> get_centers(points, final_points,
-      get(Parameters::ElectrodeLength).toDouble(),
-      get(Parameters::ElectrodeResolution).toInt());
+  get_centers(points, final_points,
+      state_()->getValue(Parameters::ElectrodeLength).toDouble(),
+      state_()->getValue(Parameters::ElectrodeResolution).toInt());
 
     if (electrode_type == "wire")
-      outputField = impl_ -> Make_Mesh_Wire(final_points,
+      outputField = Make_Mesh_Wire(final_points,
       state_()->getValue(Parameters::ElectrodeThickness).toDouble(),
       state_()->getValue(Parameters::ElectrodeResolution).toInt());
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (electrode_type == "planar")
-        outputField = impl_ -> Make_Mesh_Planar(final_points, direction,
+        outputField = Make_Mesh_Planar(final_points, direction,
           state_()->getValue(Parameters::ElectrodeThickness).toDouble(),
           state_()->getValue(Parameters::ElectrodeResolution).toInt());
   #endif
@@ -1016,18 +1016,18 @@ void GenerateElectrode::processWidgetFeedback(const ModuleFeedback& var)
         // Cast to size_t
         widgetType = boost::lexical_cast<size_t>(matches[0]);
         widgetID = boost::lexical_cast<size_t>(matches[1]);
-        impl_->adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
+//        impl_->adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
       }
       catch (...)
       {
         logWarning("Failure parsing widget id");
       }
       // How to connect to impl on the algo layer
-      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
-      {
+//      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
+//      {
         adjustPositionFromTransform(vsf.transform, widgetIndex);
         enqueueExecuteAgain(false);
-      }
+//      }
     }
   }
   catch (std::bad_cast&)
@@ -1074,11 +1074,11 @@ void GenerateElectrode::execute()
   
   FieldHandle outputField;
   FieldHandle outputPoints;
-  if (!runImpl(inputField, outputField, outputPoints))
+  if (!impl_ -> runImpl(source, outputField, outputPoints))
     error("False returned on legacy run call.");
   
-  sendOutputFromAlgorithm(ElectrodeMesh, outputField);
-  sendOutputFromAlgorithm(ControlPoints, outputPoints);
+  sendOutput(ElectrodeMesh, outputField);
+  sendOutput(ControlPoints, outputPoints);
   
 }
 

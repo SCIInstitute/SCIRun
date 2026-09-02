@@ -78,7 +78,7 @@ namespace SCIRun
         void setStateDefaults() override;
         
         static const Core::Algorithms::AlgorithmParameterName PointPositions;
-        static const Core::Algorithms::AlgorithmParameterName DipoleDirections;
+        static const Core::Algorithms::AlgorithmParameterName DipoleDirection;
         static const Core::Algorithms::AlgorithmParameterName Reset;
 
         INPUT_PORT(0, InputField, Field);
