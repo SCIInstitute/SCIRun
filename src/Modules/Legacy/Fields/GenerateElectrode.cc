@@ -90,6 +90,7 @@ ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 const AlgorithmParameterName GenerateElectrode::PointPositions("PointPositions");
 const AlgorithmParameterName
 GenerateElectrode::DipoleDirections("DipoleDirection");
+const AlgorithmParameterName GenerateElectrode::Reset("Reset");
 //const AlgorithmParameterName
 //GenerateElectrode::TranslationPoint("TranslationPoint");
 
@@ -117,6 +118,8 @@ public:
   bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
   
   bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
+  
+  const bool runImpl(FieldHandle, FieldHandle&, FieldHandle&);
   
 private:
   std::function<ModuleStateHandle()> state_;
@@ -235,7 +238,7 @@ void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
 //    size_t n=positions.size();
 //    points.resize(n);
 
-  points = state_()->getValue(PointPositions).toVector();
+  points = state_()->getValue(GenerateElectrode::PointPositions).toVector();
   
   //TODO: defaulting widget positions to hard-coded values.
   // Use input field points instead.
@@ -739,7 +742,7 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
   FieldInformation fis(input);
   std::vector<Point> orig_points;
 
-  auto dir_string = state_()->getValue(DipoleDirections).toString();
+  auto dir_string = state_()->getValue( GenerateElectrode::DipoleDirections).toString();
   Vector direction = vectorFromString(dir_string);
 
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
