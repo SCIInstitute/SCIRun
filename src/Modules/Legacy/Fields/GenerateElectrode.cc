@@ -31,29 +31,37 @@
 #include <Modules/Legacy/Fields/GenerateElectrode.h>
 //#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 //#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Logging/Log.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
+#include <Graphics/Widgets/ArrowWidget.h>
+
 
 
 using namespace SCIRun;
-using namespace Core::Logging;
+using namespace Core;
+using namespace Logging;
 using namespace Modules::Fields;
-using namespace Core::Algorithms;
-using namespace Core::Algorithms::Fields;
+using namespace Algorithms;
+using namespace Fields;
 using namespace Dataflow::Networks;
-using namespace Core::Datatypes;
-using namespace Core::Geometry;
+using namespace Datatypes;
+//using namespace SCIRun::Core::Geometry;
+using namespace Geometry;
 using namespace Graphics;
 using namespace Graphics::Datatypes;
 
@@ -68,19 +76,20 @@ ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
 ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
-ALGORITHM_PARAMETER_DEF(Fields, Reset);
+//ALGORITHM_PARAMETER_DEF(Fields, Reset);
+
 
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 
 //ALGORITHM_PARAMETER_DEF(Fields, TranslationPoint);
-ALGORITHM_PARAMETER_DEF(Fields, PointPositions);
-ALGORITHM_PARAMETER_DEF(Fields, DipoleDirection);
+//ALGORITHM_PARAMETER_DEF(Fields, PointPositions);
+//ALGORITHM_PARAMETER_DEF(Fields, DipoleDirection);
 
-//const AlgorithmParameterName GenerateElectrode::PointPositions("PointPositions");
-//const AlgorithmParameterName
-//GenerateElectrode::DipoleDirections("DipoleDirection");
+const AlgorithmParameterName GenerateElectrode::PointPositions("PointPositions");
+const AlgorithmParameterName
+GenerateElectrode::DipoleDirections("DipoleDirection");
 //const AlgorithmParameterName
 //GenerateElectrode::TranslationPoint("TranslationPoint");
 
@@ -97,7 +106,7 @@ public:
   GenerateElectrodeImpl(std::function<ModuleStateHandle()> s,
     GeometryGeneratingModule* module) : state_(s), module_(module) {}
   
-  bool build_table(VMesh, VField, std::vector<weight_type>, std::string&)
+//  bool build_table(VMesh, VField, std::vector<weight_type>, std::string&)
   
   void get_points(std::vector<Geometry::Point>& points);
   void get_centers(std::vector<Geometry::Point>& , std::vector<Geometry::Point>& , double , int );
@@ -121,85 +130,6 @@ private:
   Transform previousTransform_;
 };
 }}}
-
-
-bool
-GenerateElectrodeImpl::build_table(VMesh *vmesh,
-                                                VField* vfield,
-                                                std::vector<weight_type> &table,
-                                                std::string& method)
-{
-  VMesh::size_type num_elems = vmesh->num_elems();
-
-  long double sum = 0.0;
-  for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
-  {
-    double elemsize = 0.0;
-    if (method == "impuni")
-    { // Size of element * data at element.
-      Point p;
-      vmesh->get_center(p, idx);
-      if (vfield->is_vector())
-      {
-        Vector v;
-        if (vfield->interpolate(v, p))
-        {
-          elemsize = v.length() * vmesh->get_size(idx);
-        }
-      }
-      if (vfield->is_scalar())
-      {
-        double d;
-        if (vfield->interpolate(d, p) && d > 0.0)
-        {
-          elemsize = d * vmesh->get_size(idx);
-        }
-      }
-    }
-    else if (method == "impscat")
-    { // data at element
-      Point p;
-      vmesh->get_center(p, idx);
-      if (vfield->is_vector())
-      {
-        Vector v;
-        if (vfield->interpolate(v, p))
-        {
-          elemsize = v.length();
-        }
-      }
-      if (vfield->is_scalar())
-      {
-        double d;
-        if (vfield->interpolate(d, p) && d > 0.0)
-        {
-          elemsize = d;
-        }
-      }
-    }
-    else if (method == "uniuni")
-    { // size of element only
-      elemsize = vmesh->get_size(idx);
-    }
-    else if (method == "uniscat")
-    {
-      elemsize = 1.0;
-    }
-
-    if (elemsize > 0.0)
-    {
-      sum += elemsize;
-      table.push_back(weight_type(sum, idx));
-    }
-  }
-  if (table.size() > 0)
-  {
-    return (true);
-  }
-
-  return (false);
-}
-
 
 
 
@@ -305,7 +235,7 @@ void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
 //    size_t n=positions.size();
 //    points.resize(n);
 
-  auto points = state_()->getValue(Parameters::PointPositions).toVector();
+  points = state_()->getValue(PointPositions).toVector();
   
   //TODO: defaulting widget positions to hard-coded values.
   // Use input field points instead.
@@ -809,8 +739,8 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
   FieldInformation fis(input);
   std::vector<Point> orig_points;
 
-  auto dir_string = state_()->getValue(Parameters::DipoleDirections).toString();
-  Vector direction = vectorFromString(dir_string)
+  auto dir_string = state_()->getValue(DipoleDirections).toString();
+  Vector direction = vectorFromString(dir_string);
 
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
   auto use_field = state_()->getValue(Parameters::UseFieldNodes).toBool();
@@ -841,7 +771,7 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
       smesh->get_center(ap, idx);
 
       orig_points[idx] = ap;
-      direction = defdir;
+//      direction = defdir;
     }
   }
 

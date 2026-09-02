@@ -102,8 +102,8 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
 
 //    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& final_points, double, int) const;
 //    void get_centers(std::vector<Geometry::Point>&, std::vector<Geometry::Point>&, double, int) const;
-    private:
-      SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
+//    private:
+//      SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
     
 };
 }

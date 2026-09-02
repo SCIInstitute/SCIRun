@@ -76,6 +76,9 @@ namespace SCIRun
         GenerateElectrode();
         void execute() override;
         void setStateDefaults() override;
+        
+        static const Core::Algorithms::AlgorithmParameterName PointPositions;
+        static const Core::Algorithms::AlgorithmParameterName DipoleDirections;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, ElectrodeMesh, Field);

@@ -72,23 +72,100 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
   
 }
 
-//namespace detail
-//{
-//class GenerateElectrodeAlgoF {
-//  public:
-//    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
-//    typedef std::vector<weight_type> table_type;
-//
-//    bool build_table(VMesh *mesh, VField* vfield,
-//                     std::vector<weight_type> &table,
-//                     std::string& method);
-//
-//    static bool
-//    weight_less(const weight_type &a, const weight_type &b)
-//    {
-//      return (a.first < b.first);
-//    }
-//};
+namespace detail
+{
+class GenerateElectrodeAlgoF {
+  public:
+    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
+    typedef std::vector<weight_type> table_type;
+
+    bool build_table(VMesh *mesh, VField* vfield,
+                     std::vector<weight_type> &table,
+                     std::string& method);
+
+    static bool
+    weight_less(const weight_type &a, const weight_type &b)
+    {
+      return (a.first < b.first);
+    }
+};
+
+bool
+GenerateElectrodeImpl::build_table(VMesh *vmesh,
+                                                VField* vfield,
+                                                std::vector<weight_type> &table,
+                                                std::string& method)
+{
+  VMesh::size_type num_elems = vmesh->num_elems();
+
+  long double sum = 0.0;
+  for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
+  {
+    double elemsize = 0.0;
+    if (method == "impuni")
+    { // Size of element * data at element.
+      Point p;
+      vmesh->get_center(p, idx);
+      if (vfield->is_vector())
+      {
+        Vector v;
+        if (vfield->interpolate(v, p))
+        {
+          elemsize = v.length() * vmesh->get_size(idx);
+        }
+      }
+      if (vfield->is_scalar())
+      {
+        double d;
+        if (vfield->interpolate(d, p) && d > 0.0)
+        {
+          elemsize = d * vmesh->get_size(idx);
+        }
+      }
+    }
+    else if (method == "impscat")
+    { // data at element
+      Point p;
+      vmesh->get_center(p, idx);
+      if (vfield->is_vector())
+      {
+        Vector v;
+        if (vfield->interpolate(v, p))
+        {
+          elemsize = v.length();
+        }
+      }
+      if (vfield->is_scalar())
+      {
+        double d;
+        if (vfield->interpolate(d, p) && d > 0.0)
+        {
+          elemsize = d;
+        }
+      }
+    }
+    else if (method == "uniuni")
+    { // size of element only
+      elemsize = vmesh->get_size(idx);
+    }
+    else if (method == "uniscat")
+    {
+      elemsize = 1.0;
+    }
+
+    if (elemsize > 0.0)
+    {
+      sum += elemsize;
+      table.push_back(weight_type(sum, idx));
+    }
+  }
+  if (table.size() > 0)
+  {
+    return (true);
+  }
+
+  return (false);
+}
 
 
 
@@ -97,6 +174,7 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
 
 AlgorithmOutput GenerateElectrodeAlgo::run(const AlgorithmInput& input) const
 {
+  // not connected, do not run
   auto inputField = input.get<Field>(Variables::InputField);
     
 
