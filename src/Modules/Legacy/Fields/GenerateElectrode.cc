@@ -947,7 +947,7 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
   }
 #endif
 
-  /*std::vector<Point>*/ final_points;
+//  std::vector<Point> final_points;
 //  std::vector<Point> points(size);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER // Tark
@@ -1011,8 +1011,8 @@ void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transfo
   }
   else
   {
-    auto point = get_point(id);
-    auto point_new = transformMatrix * point;
+    Point point = get_point(id);
+    Point point_new = transformMatrix * point;
     set_point(point_new, id);
 //    direction_[id] = transformMatrix * direction_[id];
 //    direction_[id].normalize();
