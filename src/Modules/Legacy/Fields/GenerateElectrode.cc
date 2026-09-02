@@ -1035,9 +1035,9 @@ void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transfo
     .build();
   widget_[id] = sphere;
 //  widget_[id] = WidgetFactory::createArrowWidget(
-    {*module_, "SAED"},
-    {{currentScale, "no-color", pos_[id], bbox, resolution_ },
-      pos_[id], direction_[id], is_vector, id, ++widgetIter_ });
+//    {*module_, "SAED"},
+//    {{currentScale, "no-color", pos_[id], bbox, resolution_ },
+//      pos_[id], direction_[id], is_vector, id, ++widgetIter_ });
 }
 
 
