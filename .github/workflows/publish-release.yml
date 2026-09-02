@@ -143,6 +143,11 @@ jobs:
             fi
           done < existing-assets.txt
 
+      - name: Compute build timestamp
+        if: ${{ inputs.channel == 'nightly' }}
+        id: ts
+        run: echo "date=$(date -u +'%Y-%m-%d %H:%M UTC')" >> "$GITHUB_OUTPUT"
+
       - name: Generate nightly release notes
         if: ${{ inputs.channel == 'nightly' }}
         env:
@@ -160,6 +165,7 @@ jobs:
             --sha "${{ github.sha }}" \
             --existing-body existing-body.md \
             --asset-names names.json \
+            --updated "${{ steps.ts.outputs.date }}" \
             > body.md
 
           echo "--- generated notes ---"
@@ -170,7 +176,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
-          name: Nightly build
+          name: "Nightly build (updated ${{ steps.ts.outputs.date }})"
           prerelease: true
           body_path: body.md
           files: dist/*
