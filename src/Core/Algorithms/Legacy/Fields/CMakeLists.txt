@@ -109,7 +109,6 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshDerivatives/CalculateMeshCenterAlgo.h
   MeshDerivatives/GetCentroids.h
   MeshDerivatives/CalculateBundleDifference.h
-  GenerateElectrodeAlgo.h
   )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -223,7 +222,6 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TransformMesh/GeneratePolarProjectionImage.cc
   #TracePoints/TracePoints.cc
   Cleanup/ReorderNormalCoherentlyAlgo.cc
-  GenerateElectrodeAlgo.cc
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
