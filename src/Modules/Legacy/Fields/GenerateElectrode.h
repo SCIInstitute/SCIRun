@@ -79,6 +79,7 @@ namespace SCIRun
         
         static const Core::Algorithms::AlgorithmParameterName PointPositions;
         static const Core::Algorithms::AlgorithmParameterName DipoleDirections;
+        static const Core::Algorithms::AlgorithmParameterName Reset;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, ElectrodeMesh, Field);

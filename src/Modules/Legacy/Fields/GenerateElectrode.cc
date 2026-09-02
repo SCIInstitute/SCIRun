@@ -234,11 +234,14 @@ bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<
 void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
 {
   // from state
-//  auto positions = state_()->getValue(Parameters::PointPositions).toVector();
-//    size_t n=positions.size();
-//    points.resize(n);
+  auto positions = state_()->getValue(GenerateElectrode::PointPositions).toVector();
+  size_t n=positions.size();
+  points.resize(n);
 
-  points = state_()->getValue(GenerateElectrode::PointPositions).toVector();
+  for (size_t i = 0; i < n; i++)
+  {
+    points[i] = pointFromString(positions[i].toString());
+  }
   
   //TODO: defaulting widget positions to hard-coded values.
   // Use input field points instead.
