@@ -910,14 +910,14 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
 
     if (electrode_type == "wire")
       outputField = impl_ -> Make_Mesh_Wire(final_points,
-        get(Parameters::ElectrodeThickness).toDouble(),
-        get(Parameters::ElectrodeResolution).toInt());
+      state_()->getValue(Parameters::ElectrodeThickness).toDouble(),
+      state_()->getValue(Parameters::ElectrodeResolution).toInt());
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (electrode_type == "planar")
         outputField = impl_ -> Make_Mesh_Planar(final_points, direction,
-          get(Parameters::ElectrodeThickness).toDouble(),
-          get(Parameters::ElectrodeResolution).toInt());
+          state_()->getValue(Parameters::ElectrodeThickness).toDouble(),
+          state_()->getValue(Parameters::ElectrodeResolution).toInt());
   #endif
 
     return true;
@@ -950,7 +950,7 @@ void GenerateElectrode::setStateDefaults()
   state->setValue(ElectrodeType, "wire");
   state->setValue(ElectrodeProjection, "midway");
   state->setValue(ProbeColor, "Color(1.0, 1.0, 1.0)");
-  state->setValue(ProbeLabelm, std::string());
+  state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeSize, 1.0);
 //  state->setValue(TranslationPoint, VariableList());
   state->setValue(PointPositions, VariableList());
