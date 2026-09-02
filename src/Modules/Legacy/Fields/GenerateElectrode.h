@@ -89,6 +89,7 @@ namespace SCIRun
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
       private:
         SharedPointer<class GenerateElectrodeImpl> impl_;
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
 
       };
     }

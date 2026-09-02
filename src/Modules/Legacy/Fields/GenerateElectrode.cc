@@ -119,7 +119,7 @@ public:
   
   bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
   
-  const bool runImpl(FieldHandle, FieldHandle&, FieldHandle&);
+  bool runImpl(FieldHandle, FieldHandle&, FieldHandle&) const;
   
 private:
   std::function<ModuleStateHandle()> state_;
@@ -1075,7 +1075,7 @@ void GenerateElectrode::execute()
   FieldHandle outputField;
   FieldHandle outputPoints;
   if (!runImpl(inputField, outputField, outputPoints))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+    error("False returned on legacy run call.");
   
   sendOutputFromAlgorithm(ElectrodeMesh, outputField);
   sendOutputFromAlgorithm(ControlPoints, outputPoints);
