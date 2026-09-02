@@ -33,14 +33,40 @@
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Legacy/Fields/share.h>
 
+
 namespace SCIRun
 {
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+
+        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
+        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
+        ALGORITHM_PARAMETER_DECL(ElectrodeWidth);
+        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
+        ALGORITHM_PARAMETER_DECL(ElectrodeType);
+        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
+        ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
+        ALGORITHM_PARAMETER_DECL(MoveAll);
+        ALGORITHM_PARAMETER_DECL(UseFieldNodes);
+        ALGORITHM_PARAMETER_DECL(ProbeColor);
+        ALGORITHM_PARAMETER_DECL(ProbeLabel);
+        ALGORITHM_PARAMETER_DECL(ProbeSize);
+      
+      }
+    }
+  }
+
+
   namespace Modules
   {
     namespace Fields
     {
       
-//      class GenerateElectrodeImpl;
+      class GenerateElectrodeImpl;
 
       class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
@@ -57,6 +83,8 @@ namespace SCIRun
         OUTPUT_PORT(2, ControlPoints, Field);
           
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
+      private:
+        SharedPointer<class GenerateElectrodeImpl> impl_;
 
       };
     }

@@ -7,9 +7,9 @@
     "header": "Modules/Legacy/Fields/GenerateElectrode.h"
   },
   "algorithm": {
-    "name": "GenerateElectrodeAlgo",
-    "namespace": "Fields",
-    "header": "Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgo.h"
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
   },
   "UI": {
     "name": "GenerateElectrodeDialog",
