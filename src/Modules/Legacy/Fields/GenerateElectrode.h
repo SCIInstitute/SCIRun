@@ -29,35 +29,20 @@
 #ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
 #define MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
 
+#include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun
 {
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Fields
-      {
-        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
-        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
-        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
-        ALGORITHM_PARAMETER_DECL(ElectrodeType);
-        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
-        class GenerateElectrodeImpl;
-      }
-    }
-  }
-
   namespace Modules
   {
     namespace Fields
     {
 
       class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
-        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
-        public Has4OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag, MatrixPortTag>
+        public Has1InputPort<FieldPortTag>,
+        public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
       {
       public:
         GenerateElectrode();
@@ -65,21 +50,15 @@ namespace SCIRun
         void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
-        INPUT_PORT(1, ParameterMatrixIn, DenseMatrix);
-        OUTPUT_PORT(0, OutputField, Field);
+        OUTPUT_PORT(0, ElectrodeMesh, Field);
         OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
         OUTPUT_PORT(2, ControlPoints, Field);
-        OUTPUT_PORT(3, ParameterMatrixOut, DenseMatrix);
+          
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
 
-        MODULE_TRAITS_AND_INFO(ModuleFlags::NoAlgoOrUI);
-        //TODO: enable after UI is written
-        //MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI);
-
-      private:
-        SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
       };
     }
   }
-};
+}
 
 #endif
