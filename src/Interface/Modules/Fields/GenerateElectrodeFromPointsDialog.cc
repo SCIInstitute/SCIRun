@@ -26,8 +26,8 @@
 */
 
 
-#include <Interface/Modules/Fields/GenerateElectrodeDialog.h>
-#include <Modules/Legacy/Fields/GenerateElectrode.h>
+#include <Interface/Modules/Fields/GenerateElectrodeFromPointsDialog.h>
+#include <Modules/Legacy/Fields/GenerateElectrodeFromPoints.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/Datatypes/Color.h>
 #include <QColorDialog>
@@ -37,7 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 
-GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, ModuleStateHandle state,
+GenerateElectrodeFromPointsDialog::GenerateElectrodeFromPointsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -56,22 +56,22 @@ GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, Module
   addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
   addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ProbeSize);
 
-  connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeDialog::enableWidgets);
-  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::assignDefaultMeshColor);
+  connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeFromPointsDialog::enableWidgets);
+  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::assignDefaultMeshColor);
   connectButtonToExecuteSignal(colorChooserPushButton_);
-  connect(AddPointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::AddPoint);
-  connect(RemovePointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::RemovePoint);
+  connect(AddPointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::AddPoint);
+  connect(RemovePointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::RemovePoint);
   connectButtonToExecuteSignal(AddPointPushButton_);
   connectButtonToExecuteSignal(RemovePointPushButton_);
 }
 
-void GenerateElectrodeDialog::enableWidgets(const QString& mode)
+void GenerateElectrodeFromPointsDialog::enableWidgets(const QString& mode)
 {
   WidthDoubleSpinBox_->setReadOnly(mode != "planar");
   ProjectionComboBox_->setEnabled(mode == "planar");
 }
 
-void GenerateElectrodeDialog::pullSpecial()
+void GenerateElectrodeFromPointsDialog::pullSpecial()
 {
   ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
   // check for old saved color format: integers 0-255.
@@ -83,7 +83,7 @@ void GenerateElectrodeDialog::pullSpecial()
   enableWidgets(QString::fromStdString(state_->getValue(Parameters::ElectrodeType).toString()));
 }
 
-void GenerateElectrodeDialog::assignDefaultMeshColor()
+void GenerateElectrodeFromPointsDialog::assignDefaultMeshColor()
 {
   auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
   if (newColor.isValid())
@@ -93,25 +93,25 @@ void GenerateElectrodeDialog::assignDefaultMeshColor()
   }
 }
 
-void GenerateElectrodeDialog::pushColor()
+void GenerateElectrodeFromPointsDialog::pushColor()
 {
   state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
 }
 
-//void GenerateElectrodeDialog::toggleSpinBoxes()
+//void GenerateElectrodeFromPointsDialog::toggleSpinBoxes()
 //{
 //  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
 //  sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
 //}
 
-void GenerateElectrodeDialog::AddPoint()
+void GenerateElectrodeFromPointsDialog::AddPoint()
 {
     int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
     state_->setValue(Parameters::NumberOfControlPoints,numpoints+1);
 }
 
 
-void GenerateElectrodeDialog::RemovePoint()
+void GenerateElectrodeFromPointsDialog::RemovePoint()
 {
     int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
     state_->setValue(Parameters::NumberOfControlPoints,numpoints-1);

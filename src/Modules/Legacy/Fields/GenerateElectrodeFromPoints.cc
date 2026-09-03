@@ -28,7 +28,7 @@
 
 ///@brief This module makes a mesh that looks like a wire
 
-#include <Modules/Legacy/Fields/GenerateElectrode.h>
+#include <Modules/Legacy/Fields/GenerateElectrodeFromPoints.h>
 //#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 //#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/VariableHelper.h>
@@ -57,15 +57,15 @@ using namespace SCIRun::Core::Geometry;
 using namespace Graphics;
 using namespace Graphics::Datatypes;
 
-MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
+MODULE_INFO_DEF(GenerateElectrodeFromPoints, NewField, SCIRun)
 
 
 #if 0
-	class GenerateElectrode : public Module
+	class GenerateElectrodeFromPoints : public Module
 		{
 		public:
-			GenerateElectrode(GuiContext* ctx);
-			~GenerateElectrode(){};
+			GenerateElectrodeFromPoints(GuiContext* ctx);
+			~GenerateElectrodeFromPoints(){};
 			virtual void execute();
 			virtual void widget_moved(bool, BaseWidget*);
 			virtual void tcl_command(GuiArgs& args, void* userdata);
@@ -121,15 +121,13 @@ MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
 		};
 #endif
 
-GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_)
+GenerateElectrodeFromPoints::GenerateElectrodeFromPoints() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(ElectrodeMesh);
-  INITIALIZE_PORT(ElectrodeWidget);
-  INITIALIZE_PORT(ControlPoints);
 }
 
-void GenerateElectrode::setStateDefaults()
+void GenerateElectrodeFromPoints::setStateDefaults()
 {
     setAlgoDoubleFromState(Parameters::ElectrodeLength);
     setAlgoDoubleFromState(Parameters::ElectrodeThickness);
@@ -137,15 +135,11 @@ void GenerateElectrode::setStateDefaults()
     setAlgoIntFromState(Parameters::NumberOfControlPoints);
     setAlgoIntFromState(Parameters::ElectrodeResolution);
     setAlgoBoolFromState(Parameters::UseFieldNodes);
-    setAlgoBoolFromState(Parameters::MoveAll);
     setAlgoStringFromState(Parameters::ElectrodeType);
     setAlgoStringFromState(Parameters::ElectrodeProjection);
-    setAlgoStringFromState(Parameters::ProbeColor);
-    setAlgoStringFromState(Parameters::ProbeLabel);
-    setAlgoDoubleFromState(Parameters::ProbeSize);
 }
 
-void GenerateElectrode::execute()
+void GenerateElectrodeFromPoints::execute()
 {
   FieldHandle ofield, pfield;
 
@@ -362,7 +356,7 @@ void GenerateElectrode::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 	void
-	GenerateElectrode::widget_moved(bool release, BaseWidget* widget_)
+	GenerateElectrodeFromPoints::widget_moved(bool release, BaseWidget* widget_)
 	{
 		if (release) want_to_execute();
 		if (gui_move_all_.get()) move_all_=true;
@@ -370,7 +364,7 @@ void GenerateElectrode::execute()
 
 
 	void
-	GenerateElectrode::create_widgets(std::vector<Point>& points)
+	GenerateElectrodeFromPoints::create_widgets(std::vector<Point>& points)
 	{
 		GeomGroup *group = new GeomGroup;
 		widget_switch_ = new GeomSwitch(group);
@@ -400,7 +394,7 @@ void GenerateElectrode::execute()
 	}
 
 	void
-	GenerateElectrode::create_widgets(std::vector<Point>& points,Vector& direction)
+	GenerateElectrodeFromPoints::create_widgets(std::vector<Point>& points,Vector& direction)
 	{
 		GeomGroup *group = new GeomGroup;
 		widget_switch_ = new GeomSwitch(group);
@@ -445,7 +439,7 @@ void GenerateElectrode::execute()
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 	void
-	GenerateElectrode::tcl_command(GuiArgs& args, void* userdata)
+	GenerateElectrodeFromPoints::tcl_command(GuiArgs& args, void* userdata)
 	{
 		if(args.count() < 2)
 		{
@@ -464,7 +458,7 @@ void GenerateElectrode::execute()
 	}
 
 	void
-	GenerateElectrode::presave()
+	GenerateElectrodeFromPoints::presave()
 	{
 		//cout<<"Started presave()"<<endl;
 
@@ -507,7 +501,7 @@ void GenerateElectrode::execute()
 	}
 
 	void
-	GenerateElectrode::post_read()
+	GenerateElectrodeFromPoints::post_read()
 	{
 		size_t has_arrow = 0;
 		size_t num_points = gui_widget_points_.get();
@@ -542,7 +536,7 @@ void GenerateElectrode::execute()
 	}
 
 	void
-	GenerateElectrode::add_point(std::vector<Point>& p)
+	GenerateElectrodeFromPoints::add_point(std::vector<Point>& p)
 	{
 
 
@@ -572,7 +566,7 @@ void GenerateElectrode::execute()
 
 
 	bool
-	GenerateElectrode::remove_point()
+	GenerateElectrodeFromPoints::remove_point()
 	{
 		//cout<<"---removing a widget with remove button"<<endl;
 

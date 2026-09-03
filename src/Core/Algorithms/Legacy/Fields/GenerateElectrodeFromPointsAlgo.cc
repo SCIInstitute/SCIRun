@@ -26,7 +26,7 @@
 */
 
 
-#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Color.h>
@@ -44,18 +44,13 @@ ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
-ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
 
-ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 
+const AlgorithmOutputName GenerateElectrodeFromPointsAlgo::ControlPoints("ControlPoints");
+const AlgorithmOutputName GenerateElectrodeFromPointsAlgo::ElectrodeMesh("ElectrodeMesh");
 
-const AlgorithmOutputName GenerateElectrodeAlgo::ControlPoints("ControlPoints");
-const AlgorithmOutputName GenerateElectrodeAlgo::ElectrodeMesh("ElectrodeMesh");
-
-GenerateElectrodeAlgo::GenerateElectrodeAlgo()
+GenerateElectrodeFromPointsAlgo::GenerateElectrodeFromPointsAlgo()
 {
   addParameter(Parameters::ElectrodeLength, 0.1);
   addParameter(Parameters::ElectrodeThickness, 0.003);
@@ -75,7 +70,7 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
 
 //namespace detail
 //{
-//class GenerateElectrodeAlgoF {
+//class GenerateElectrodeFromPointsAlgoF {
 //  public:
 //    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
 //    typedef std::vector<weight_type> table_type;
@@ -92,7 +87,7 @@ GenerateElectrodeAlgo::GenerateElectrodeAlgo()
 //};
 
 bool
-GenerateElectrodeAlgo::build_table(VMesh *vmesh,
+GenerateElectrodeFromPointsAlgo::build_table(VMesh *vmesh,
                                                 VField* vfield,
                                                 std::vector<weight_type> &table,
                                                 std::string& method)
@@ -172,7 +167,7 @@ GenerateElectrodeAlgo::build_table(VMesh *vmesh,
 
 // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
 
-bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
+bool GenerateElectrodeFromPointsImpl::CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
 {
   // need to have at least 3 nodes
   if (t.size() < 3) return (false);
@@ -236,7 +231,7 @@ bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<
 // this is a spline function.  pp is the final points that are in between the original points p.
 // t and tt are the original and final desired spacing, respectively.
 
-bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
+bool GenerateElectrodeFromPointsImpl::CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
 {
   // need to have at least 3 nodes
   if (t.size() < 3) return (false);
@@ -264,7 +259,7 @@ bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<
   return (true);
 }
 
-void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
+void GenerateElectrodeFromPointsImpl::get_points(std::vector<Point>& points)
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     size_t s=0,n=widget_.size();
@@ -288,7 +283,7 @@ void GenerateElectrodeImpl::get_points(std::vector<Point>& points)
   points = { {0,0,0}, {1,0,0}, {2,0,0}, {3,0,0}, {4,0,0} };
 }
 
-void GenerateElectrodeImpl::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution)
+void GenerateElectrodeFromPointsImpl::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution)
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //This is only needed to get the positions from the widget
@@ -309,7 +304,7 @@ void GenerateElectrodeImpl::get_centers(std::vector<Point>& p, std::vector<Point
 }
 
 
-FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution)
+FieldHandle GenerateElectrodeFromPointsImpl::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution)
 {
     FieldInformation fi("TetVolMesh",0,"double");
     MeshHandle mesh = CreateMesh(fi);
@@ -469,7 +464,7 @@ FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_poin
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
     void
-    GenerateElectrode::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
+    GenerateElectrodeFromPoints::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
     {
         //-------make planar mesh---------
 
@@ -779,7 +774,7 @@ FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_poin
 #endif
 
 
-bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField, FieldHandle& outputPoints) const
+bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& outputField, FieldHandle& outputPoints) const
 {
     
     FieldInformation fis(input);
@@ -961,7 +956,7 @@ bool GenerateElectrodeAlgo::runImpl(FieldHandle input, FieldHandle& outputField,
   
 }
 
-AlgorithmOutput GenerateElectrodeAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput GenerateElectrodeFromPointsAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
     

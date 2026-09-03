@@ -9,10 +9,10 @@
   "algorithm": {
     "name": "GenerateElectrodeFromPointsAlgo",
     "namespace": "Fields",
-    "header": "Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgoFromPoints.h"
+    "header": "Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h"
   },
   "UI": {
     "name": "GenerateElectrodeFromPointsDialog",
-    "header": "Interface/Modules/Fields/GenerateElectrodeDialogFromPoints.h"
+    "header": "Interface/Modules/Fields/GenerateElectrodeFromPointsDialog.h"
   }
 }

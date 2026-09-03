@@ -26,8 +26,8 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEELECTRODEALGO_H
-#define CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEELECTRODEALGO_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEELECTRODEFROMPOINTSALGO_H
+#define CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEELECTRODEFROMPOINTSALGO_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
@@ -63,7 +63,7 @@ namespace SCIRun
       ALGORITHM_PARAMETER_DECL(ProbeLabel);
       ALGORITHM_PARAMETER_DECL(ProbeSize);
 
-      class GenerateElectrodeImpl
+      class GenerateElectrodeFromPointsImpl
       {
       public:
         void get_points(std::vector<Geometry::Point>& points);
@@ -78,10 +78,10 @@ namespace SCIRun
       };
            
       
-class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
+class SCISHARE GenerateElectrodeFromPointsAlgo : public AlgorithmBase
 {
   public:
-    GenerateElectrodeAlgo();
+    GenerateElectrodeFromPointsAlgo();
     bool runImpl(FieldHandle input, FieldHandle&, FieldHandle&) const;
     static const AlgorithmOutputName ControlPoints, ElectrodeMesh;
     
@@ -103,7 +103,7 @@ class SCISHARE GenerateElectrodeAlgo : public AlgorithmBase
 //    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& final_points, double, int) const;
 //    void get_centers(std::vector<Geometry::Point>&, std::vector<Geometry::Point>&, double, int) const;
     private:
-      SharedPointer<Core::Algorithms::Fields::GenerateElectrodeImpl> impl_;
+      SharedPointer<Core::Algorithms::Fields::GenerateElectrodeFromPointsImpl> impl_;
     
 };
 }

@@ -26,8 +26,8 @@
 */
 
 
-#ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
-#define MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
+#ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMPOINTS_H
+#define MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMPOINTS_H
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
@@ -40,12 +40,12 @@ namespace SCIRun
     namespace Fields
     {
 
-      class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE GenerateElectrodeFromPoints : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
         public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
       {
       public:
-        GenerateElectrode();
+        GenerateElectrodeFromPoints();
         void execute() override;
         void setStateDefaults() override;
 

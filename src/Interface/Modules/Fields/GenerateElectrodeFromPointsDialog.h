@@ -26,23 +26,23 @@
 */
 
 
-#ifndef INTERFACE_MODULES_GenerateElectrodeDialog_H
-#define INTERFACE_MODULES_GenerateElectrodeDialog_H
+#ifndef INTERFACE_MODULES_GenerateElectrodeFromPointsDialog_H
+#define INTERFACE_MODULES_GenerateElectrodeFromPointsDialog_H
 
-#include "Interface/Modules/Fields/ui_GenerateElectrode.h"
+#include "Interface/Modules/Fields/ui_GenerateElectrodeFromPoints.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
   namespace Gui {
 
-    class SCISHARE GenerateElectrodeDialog : public ModuleDialogGeneric,
-      public Ui::GenerateElectrode
+    class SCISHARE GenerateElectrodeFromPointsDialog : public ModuleDialogGeneric,
+      public Ui::GenerateElectrodeFromPoints
     {
       Q_OBJECT
 
     public:
-      GenerateElectrodeDialog(const std::string& name,
+      GenerateElectrodeFromPointsDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
 
