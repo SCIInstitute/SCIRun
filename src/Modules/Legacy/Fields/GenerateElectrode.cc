@@ -106,8 +106,7 @@ class GenerateElectrodeImpl
 public:
   GenerateElectrodeImpl(std::function<ModuleStateHandle()> s,
     GeometryGeneratingModule* module) : state_(s), module_(module) {}
-  
-//  bool build_table(VMesh, VField, std::vector<weight_type>, std::string&)
+  void setInput(FieldHandle& input) { fieldInput_ = input; }
   
   std::vector<Point>& get_points();
   Point& get_point(size_t id);
@@ -121,14 +120,17 @@ public:
   bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
   bool CalculateSpline(std::vector<double>& , std::vector<Point>& , std::vector<double>&, std::vector<Point>&);
   const std::vector<GeometryHandle>& geoms() const { return geoms_; }
-  bool runImpl(FieldHandle, FieldHandle&, FieldHandle&) const;
+  bool runImpl(FieldHandle&, FieldHandle&);
   
+  void moveTogether(const Transform& transformMatrix);
   void adjustPositionFromTransform(const Transform& transformMatrix, size_t index, size_t id);
   
 private:
   std::function<ModuleStateHandle()> state_;
   GeometryGeneratingModule* module_;
   std::vector<WidgetHandle> widget_;
+  FieldHandle fieldInput_;
+  
   // I don't think I'll need this.  Composite widgets are different in SR5
 //  WidgetHandle arrow_widget_;
   std::vector<GeometryHandle> geoms_;
@@ -799,10 +801,10 @@ FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_poin
 
 #endif
 
-bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField, FieldHandle& outputPoints) const
+bool GenerateElectrodeImpl::runImpl(FieldHandle& outputField, FieldHandle& outputPoints)
 {
     
-  FieldInformation fis(input);
+//  FieldInformation fis(fieldInput_);
   std::vector<Point> orig_points;
 
   auto dir_string = state_()->getValue( GenerateElectrode::DipoleDirection).toString();
@@ -811,13 +813,13 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
   auto use_field = state_()->getValue(Parameters::UseFieldNodes).toBool();
   
-  if (input && (use_field)
+  if (fieldInput_ && (use_field)
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
        && (moveto == "default" || widget_.size() == 0 || inputs_changed_)
   #endif
     )
   {
-    VMesh* smesh = input->vmesh();
+    VMesh* smesh = fieldInput_->vmesh();
 
     smesh->synchronize(Mesh::ELEM_LOCATE_E);
 
@@ -841,7 +843,7 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle input, FieldHandle& outputField,
     }
   }
 
-  else if ((!input || use_field)
+  else if ((!fieldInput_ || use_field)
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
            && (moveto == "default" || widget_.size() == 0)
 #endif
@@ -1022,18 +1024,21 @@ void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transfo
 //  if (state_()->getValue(Parameters::Sizing).toInt() == static_cast<int>(SizingType::NORMALIZE_BY_LARGEST_VECTOR))
 //    currentScale /= state_()->getValue(Parameters::LargestSize).toDouble();
 
-  auto widgetName = [](int i) { return state_()->getValue(Parameters::ProbeLabel).toString() + "(" + std::to_string(i) + ")"; };
-  auto sphere = SphereWidgetBuilder(*this)
-    .tag(widgetName(id))
+  
+  std::string probename = state_()->getValue(Parameters::ProbeLabel).toString();
+  std::string widgetName = probename + "(" + std::to_string(id) + ")"; ;
+  
+  auto sphere = SphereWidgetBuilder(*module_)
+    .tag(widgetName)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
     .scale(state_()->getValue(Parameters::ProbeSize).toDouble())
     .defaultColor(state_()->getValue(Parameters::ProbeColor).toString())
-    .origin(point_new)
+    .origin(get_point(id))
 //    .boundingBox(bbox)
     .resolution(10)
-    .centerPoint(point_new)
+    .centerPoint(get_point(id))
     .build();
-  widget_[id] = sphere;
+  geoms_[id] = sphere;
 //  widget_[id] = WidgetFactory::createArrowWidget(
 //    {*module_, "SAED"},
 //    {{currentScale, "no-color", pos_[id], bbox, resolution_ },
@@ -1136,7 +1141,7 @@ void GenerateElectrode::processWidgetFeedback(const ModuleFeedback& var)
       // How to connect to impl on the algo layer
 //      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
 //      {
-        adjustPositionFromTransform(vsf.transform, widgetIndex);
+      impl_->adjustPositionFromTransform(vsf.transform, widgetType, widgetIndex);
         enqueueExecuteAgain(false);
 //      }
     }
@@ -1182,10 +1187,14 @@ void GenerateElectrode::execute()
   //  auto state = get_state();
   //  auto electrode_type = state->getValue(Parameters::ElectrodeType).toString();
   
+  if (source)
+  {
+    impl_ -> setInput(*source);
+  }
   
   FieldHandle outputField;
   FieldHandle outputPoints;
-  if (!impl_ -> runImpl(source, outputField, outputPoints))
+  if (!impl_ -> runImpl(outputField, outputPoints))
     error("False returned on legacy run call.");
   
   sendOutput(ElectrodeMesh, outputField);
