@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GenerateElectrodeFromPoints",
+    "namespace": "Fields",
+    "status": "Ported module: no UI yet",
+    "description": "Makes a wire geom with interactive widgets",
+    "header": "Modules/Legacy/Fields/GenerateElectrodeFromPoints.h"
+  },
+  "algorithm": {
+    "name": "GenerateElectrodeFromPointsAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgoFromPoints.h"
+  },
+  "UI": {
+    "name": "GenerateElectrodeFromPointsDialog",
+    "header": "Interface/Modules/Fields/GenerateElectrodeDialogFromPoints.h"
+  }
+}
