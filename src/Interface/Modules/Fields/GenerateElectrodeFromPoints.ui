@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GenerateElectrode</class>
- <widget class="QDialog" name="GenerateElectrode">
+ <class>GenerateElectrodeFromPoints</class>
+ <widget class="QDialog" name="GenerateElectrodeFromPoints">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -71,7 +71,7 @@
       <item row="0" column="2">
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
