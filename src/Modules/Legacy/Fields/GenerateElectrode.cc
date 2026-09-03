@@ -106,13 +106,13 @@ class GenerateElectrodeImpl
 public:
   GenerateElectrodeImpl(std::function<ModuleStateHandle()> s,
     GeometryGeneratingModule* module) : state_(s), module_(module) {}
-  void setInput(FieldHandle& input) { fieldInput_ = input; }
+//  void setInput(FieldHandle& input) { fieldInput_ = input; }
   
-  std::vector<Point>& get_points();
-  Point& get_point(size_t id);
-  bool set_points(std::vector<Point>& points);
-  bool set_point(Point& point, size_t id);
-  std::vector<Point>& get_centers();
+  std::vector<Point>& getPointsFromState();
+  Point& getPointFromState(size_t id);
+  bool setPointsToState(std::vector<Point>& points);
+  bool setPointToState(Point& point, size_t id);
+  std::vector<Point>& getElectrodeCenters();
   
   FieldHandle Make_Mesh_Wire(std::vector<Point>&);
 //  FieldHandle Make_Mesh_Planar(std::vector<Point>&, double , int );
@@ -120,7 +120,7 @@ public:
   bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
   bool CalculateSpline(std::vector<double>& , std::vector<Point>& , std::vector<double>&, std::vector<Point>&);
   const std::vector<GeometryHandle>& geoms() const { return geoms_; }
-  bool runImpl(FieldHandle&, FieldHandle&);
+  bool runImpl(FieldHandle&, FieldHandle&, FieldHandle&, GeometryHandle& );
   
   void moveTogether(const Transform& transformMatrix);
   void adjustPositionFromTransform(const Transform& transformMatrix, size_t index, size_t id);
@@ -129,7 +129,8 @@ private:
   std::function<ModuleStateHandle()> state_;
   GeometryGeneratingModule* module_;
   std::vector<WidgetHandle> widget_;
-  FieldHandle fieldInput_;
+  
+//  FieldHandle fieldInput_;
   
   // I don't think I'll need this.  Composite widgets are different in SR5
 //  WidgetHandle arrow_widget_;
@@ -137,6 +138,17 @@ private:
   
   std::vector<Point> Previous_points_;
   Transform previousTransform_;
+  
+  void loadFromParameters(std::vector<Point>&);
+  void loadFromInputField(FieldHandle, std::vector<Point>&);
+  void defaultWidget(std::vector<Point>&);
+  void addPoint(std::vector<Point>&);
+  bool removePoint();
+  void createWidgets(std::vector<Point>&);
+  WidgetHandle createPointWidget(Point& point, size_t id);
+  GeometryHandle generateGeoms();
+  FieldHandle makeOutputMesh();
+  
   
 };
 }}}
@@ -238,7 +250,7 @@ bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<
   return (true);
 }
 
-std::vector<Point>& GenerateElectrodeImpl::get_points()
+std::vector<Point>& GenerateElectrodeImpl::getPointsFromState()
 {
   std::vector<Point> points;
   
@@ -256,7 +268,7 @@ std::vector<Point>& GenerateElectrodeImpl::get_points()
   return points;
 }
 
-Point& GenerateElectrodeImpl::get_point(size_t id)
+Point& GenerateElectrodeImpl::getPointFromState(size_t id)
 {
   Point point;
   
@@ -269,7 +281,7 @@ Point& GenerateElectrodeImpl::get_point(size_t id)
   return point;
 }
 
-bool GenerateElectrodeImpl::set_points(std::vector<Point>& points)
+bool GenerateElectrodeImpl::setPointsToState(std::vector<Point>& points)
 {
   VariableList positions;
   
@@ -282,14 +294,14 @@ bool GenerateElectrodeImpl::set_points(std::vector<Point>& points)
   return true;
 }
 
-bool GenerateElectrodeImpl::set_point(Point& point, size_t id)
+bool GenerateElectrodeImpl::setPointToState(Point& point, size_t id)
 {
   
-  std::vector<Point>& points = get_points();
+  std::vector<Point>& points = getPointsFromState();
   
   points[id] = point;
   
-  set_points(points);
+  setPointsToState(points);
   
   /*
   auto positions = state_()->getValue(GenerateElectrode::PointPositions).toVector();
@@ -301,28 +313,33 @@ bool GenerateElectrodeImpl::set_point(Point& point, size_t id)
   return true;
 }
 
-std::vector<Point>& GenerateElectrodeImpl::get_centers()
+std::vector<Point>& GenerateElectrodeImpl::getElectrodeCenters()
 {
 
   //get the positions from the module state
-  std::vector<Point>& p=get_points();
+  std::vector<Point> p(widget_.size());
   std::vector<Point> pp;
+  
+  for (size_t k=1; k<widget_.size(); k++)
+  {
+    p[k] = widget_[k]->position();
+  }
     
   double length = state_()->getValue(Parameters::ElectrodeLength).toDouble();
   int resolution = state_()->getValue(Parameters::ElectrodeResolution).toInt();
   
-    std::vector<double> t(p.size());
-    t[0]=0;
+  std::vector<double> t(p.size());
+  t[0]=0;
 
-    for (size_t k=1; k<p.size(); k++)
-    {
-        t[k] = (p[k]-p[k-1]).length() + t[k-1];
-    }
+  for (size_t k=1; k<p.size(); k++)
+  {
+      t[k] = (p[k]-p[k-1]).length() + t[k-1];
+  }
 
-    std::vector<double> tt(resolution*(p.size()-1));
-    for (size_t k=0; k< tt.size(); k++) tt[k] = static_cast<double>(k)*(length/(static_cast<double>(tt.size()-1)));
+  std::vector<double> tt(resolution*(p.size()-1));
+  for (size_t k=0; k< tt.size(); k++) tt[k] = static_cast<double>(k)*(length/(static_cast<double>(tt.size()-1)));
 
-    CalculateSpline(t,p,tt,pp);
+  CalculateSpline(t,p,tt,pp);
   
   return pp;
 }
@@ -801,10 +818,10 @@ FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_poin
 
 #endif
 
-bool GenerateElectrodeImpl::runImpl(FieldHandle& outputField, FieldHandle& outputPoints)
+bool GenerateElectrodeImpl::runImpl(FieldHandle& input, FieldHandle& outputField, FieldHandle& outputPoints, GeometryHandle& outWidget)
 {
     
-//  FieldInformation fis(fieldInput_);
+//  FieldInformation fis(input);
   std::vector<Point> orig_points;
 
   auto dir_string = state_()->getValue( GenerateElectrode::DipoleDirection).toString();
@@ -813,104 +830,65 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle& outputField, FieldHandle& outpu
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
   auto use_field = state_()->getValue(Parameters::UseFieldNodes).toBool();
   
-  if (fieldInput_ && (use_field)
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-       && (moveto == "default" || widget_.size() == 0 || inputs_changed_)
-  #endif
-    )
+  std::string moveto = "";
+  
+  if (input && use_field && (moveto == "default" || widget_.size() == 0 || module_->inputsChanged()))
   {
-    VMesh* smesh = fieldInput_->vmesh();
-
-    smesh->synchronize(Mesh::ELEM_LOCATE_E);
-
-    VMesh::Node::size_type num_nodes = smesh->num_nodes();
-    if (num_nodes > 50)
-    {
-      module_ -> error("There are more input nodes than we have arbitrarily decided to allow.");
-      return false;
-    }
-
-    VMesh::Node::array_type a;
-    orig_points.resize(num_nodes);
-
-    for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
-    {
-      Point ap;
-      smesh->get_center(ap, idx);
-
-      orig_points[idx] = ap;
-//      direction = defdir;
-    }
+    loadFromInputField(input, orig_points);
   }
 
-  else if ((!fieldInput_ || use_field)
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-           && (moveto == "default" || widget_.size() == 0)
-#endif
-           )
+
+  else if ((!input || !use_field) && (moveto == "default" || widget_.size() == 0))
   {
-    double l, lx;
-    l = state_()->getValue(Parameters::ElectrodeLength).toDouble();
-
-    lx = l * .5774;
-
-    orig_points.resize(5);
-
-    orig_points[0] = (Point(0, 0, 0));
-    orig_points[1] = (Point(lx*.25, lx*.25, lx*.25));
-    orig_points[2] = (Point(lx*.5, lx*.5, lx*.5));
-    orig_points[3] = (Point(lx*.75, lx*.75, lx*.75));
-    orig_points[4] = (Point(lx, lx, lx));
+    defaultWidget(orig_points);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     gui_moveto_.set("");
 #endif
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   else if (moveto == "add_point")
   {
-    add_point(orig_points);
-    if (electrode_type == "planar")
-    {
-      direction = arrow_widget_->GetDirection();
-    }
-    else
-    {
-      direction = defdir;
-    }
-    gui_moveto_.set("");
+    addPoint(orig_points);
+//    if (electrode_type == "planar")
+//    {
+//      direction = arrow_widget_->GetDirection();
+//    }
+//    else
+//    {
+//      direction = defdir;
+//    }
+//    gui_moveto_.set("");
   }
   else if (moveto == "remove_point")
   {
-    remove_point();
-    gui_moveto_.set("");
+    removePoint();
+//    gui_moveto_.set("");
     return false;
   }
   else
   {
     size_t n = widget_.size(), s = 0;
     orig_points.resize(n);
-    direction = defdir;
 
-    if (arrow_widget_)
-    {
-      n = n + 1;
-      s = 1;
-      orig_points.resize(n);
-      direction = arrow_widget_->GetDirection();
-      orig_points[0] = arrow_widget_->GetPosition();
-    }
+//    if (arrow_widget_)
+//    {
+//      n = n + 1;
+//      s = 1;
+//      orig_points.resize(n);
+//      direction = arrow_widget_->GetDirection();
+//      orig_points[0] = arrow_widget_->GetPosition();
+//    }
 
     for (size_t k = s; k < n; k++)
     {
-      orig_points[k] = widget_[k - s]->GetPosition();
+      orig_points[k] = widget_[k - s]->position();
     }
   }
-#endif
     
+  state_()->setValue(Parameters::NumberOfControlPoints,orig_points.size());
+  
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  gui_widget_points_.set(orig_points.size());
-
   if (electrode_type == "wire")
     arrow_widget_ = 0;
 #endif
@@ -922,10 +900,10 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle& outputField, FieldHandle& outpu
 
   size_type size = orig_points.size();
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   Vector move_dist;
   std::vector<Point> temp_points;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (move_all_)
   {
     for (size_t k = 0; k < size; k++)
@@ -952,9 +930,11 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle& outputField, FieldHandle& outpu
 //  std::vector<Point> final_points;
 //  std::vector<Point> points(size);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER // Tark
+
   if (electrode_type == "wire")
-    create_widgets(orig_points);
+    createWidgets(orig_points);
+  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (electrode_type == "planar")
     create_widgets(orig_points, direction);
 #endif
@@ -972,59 +952,123 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle& outputField, FieldHandle& outpu
   pi.make_double();
   outputPoints = CreateField(pi, pmesh);
     
-  std::vector<Point> final_points = get_centers();
+  outputField = makeOutputMesh();
+  
+  outWidget = generateGeoms();
 
-    if (electrode_type == "wire")
-      outputField = Make_Mesh_Wire(final_points);
-
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    if (electrode_type == "planar")
-        outputField = Make_Mesh_Planar(final_points, direction,
-          state_()->getValue(Parameters::ElectrodeThickness).toDouble(),
-          state_()->getValue(Parameters::ElectrodeResolution).toInt());
-  #endif
-
-    return true;
+  return true;
     
   
 }
 
-void GenerateElectrodeImpl::moveTogether(const Transform& transform)
+void GenerateElectrodeImpl::loadFromParameters(std::vector<Point>& orig_points)
 {
-  std::vector<Point> points = get_points();
-  std::vector<Point> points_new;
-  for (auto& pos : points)
-  {
-    points_new.push_back(transform * pos);
-  }
-  set_points(points_new);
+  orig_points = getPointsFromState();
 }
 
-
-void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
+void GenerateElectrodeImpl::loadFromInputField(FieldHandle input, std::vector<Point>& orig_points)
 {
-//  auto bbox = fieldInput_->vmesh()->get_bounding_box();
-  bool is_vector = std::dynamic_pointer_cast<ArrowWidget>(widget_[id])->isVector();
+  VMesh* smesh = input->vmesh();
+  smesh->synchronize(Mesh::ELEM_LOCATE_E);
 
-  auto stype = static_cast<ArrowWidgetSection>(type);
-  if (state_()->getValue(Parameters::MoveAll).toBool() && (stype == ArrowWidgetSection::CYLINDER || stype == ArrowWidgetSection::SPHERE))
+  VMesh::Node::size_type num_nodes = smesh->num_nodes();
+  if (num_nodes > 50)
   {
-    moveTogether(transformMatrix);
+    module_ -> error("There are more input nodes than we have arbitrarily decided to allow.");
+    return;
+  }
+
+  VMesh::Node::array_type a;
+  orig_points.resize(num_nodes);
+
+  for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
+  {
+    Point ap;
+    smesh->get_center(ap, idx);
+    
+    orig_points[idx] = ap;
+    //      direction = defdir;
+  }
+}
+  
+void GenerateElectrodeImpl::defaultWidget(std::vector<Point>& orig_points)
+{
+  double l, lx;
+  l = state_()->getValue(Parameters::ElectrodeLength).toDouble();
+
+  lx = l * .5774;
+
+  orig_points.resize(5);
+
+  orig_points[0] = (Point(0, 0, 0));
+  orig_points[1] = (Point(lx*.25, lx*.25, lx*.25));
+  orig_points[2] = (Point(lx*.5, lx*.5, lx*.5));
+  orig_points[3] = (Point(lx*.75, lx*.75, lx*.75));
+  orig_points[4] = (Point(lx, lx, lx));
+  
+}
+  
+void GenerateElectrodeImpl::addPoint(std::vector<Point>& p)
+{
+  size_t size=widget_.size(), s=0;
+  std::vector<Point> points(size);
+  
+  auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
+  
+//  if(electrode_type=="planar")
+//  {
+//    s=1;
+////    points.resize(size);
+//    points[0]=arrow_widget_->position();
+//  }
+//  
+  for (size_t k = s; k < size; k++) points[k] = widget_[k-s]->position();
+  
+  p.resize(size+1);
+  
+  for (size_t k = 0; k < size-1; k++) p[k]=points[k];
+  
+  p[size]=points[size-1];
+  p[size-1]=Point(points[size-2]+(points[size-1]-points[size-2])*.5);
+  
+}
+  
+bool GenerateElectrodeImpl::removePoint()
+{
+  //cout<<"---removing a widget with remove button"<<endl;
+  
+  size_t n;
+  auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
+  
+  if(electrode_type=="wire") n=3;
+  if(electrode_type=="planar") n=2;
+  
+  if (widget_.size() > n)
+  {
+    widget_.pop_back();
   }
   else
   {
-    Point point = get_point(id);
-    Point point_new = transformMatrix * point;
-    set_point(point_new, id);
-//    direction_[id] = transformMatrix * direction_[id];
-//    direction_[id].normalize();
+    module_ -> error("Must have at least 3 points.");
   }
-
-//  double currentScale = scale_[id] * state_()->getValue(Parameters::WidgetScaleFactor).toDouble();
-//  if (state_()->getValue(Parameters::Sizing).toInt() == static_cast<int>(SizingType::NORMALIZE_BY_LARGEST_VECTOR))
-//    currentScale /= state_()->getValue(Parameters::LargestSize).toDouble();
-
   
+//  want_to_execute();
+  
+  return true;
+}
+
+void GenerateElectrodeImpl::createWidgets(std::vector<Point>& points)
+{
+  widget_.resize(0);
+  
+  for (size_t i = 0; i < points.size() - 1; i++)
+  {
+    widget_.push_back(createPointWidget(points[i], i));
+  }
+}
+
+WidgetHandle GenerateElectrodeImpl::createPointWidget(Point& point, size_t id)
+{
   std::string probename = state_()->getValue(Parameters::ProbeLabel).toString();
   std::string widgetName = probename + "(" + std::to_string(id) + ")"; ;
   
@@ -1033,12 +1077,110 @@ void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transfo
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
     .scale(state_()->getValue(Parameters::ProbeSize).toDouble())
     .defaultColor(state_()->getValue(Parameters::ProbeColor).toString())
-    .origin(get_point(id))
+    .origin(point)
 //    .boundingBox(bbox)
     .resolution(10)
-    .centerPoint(get_point(id))
+    .centerPoint(point)
     .build();
-  geoms_[id] = sphere;
+  return sphere;
+}
+
+//void GenerateElectrodeImpl::createWidgets(std::vector<Point>& points, Vector direction)
+//{
+//  widget_.resize(0)
+//  
+//  for (size_t i = 0; i < points.size() - 1; i++)
+//  {
+//    widget_.push_back(createPointWidget(points[i], size_t id));
+//  }
+//}
+
+//WidgetHandle GenerateElectrodeImpl::createArrowWidget(Point& point)
+//{
+//  auto arrow = WidgetFactory::createArrowWidget(
+//    {*module_, "SAED"},
+//    {{currentScale, "no-color", pos_[id], bbox, resolution_ },
+//      pos_[id], direction_[id], is_vector, id, ++widgetIter_ });
+//  return arrow
+//}
+
+GeometryHandle GenerateElectrodeImpl::generateGeoms()
+{
+  // Rewrite all existing geom
+  geoms_.clear();
+  for (const auto& w : widget_)
+  {
+    geoms_.push_back(w);
+  }
+  
+  return createGeomComposite(*module_, "multiple_spheres", geoms_.begin(), geoms_.end());
+  
+}
+
+FieldHandle GenerateElectrodeImpl::makeOutputMesh()
+{
+  std::vector<Point> final_points = getElectrodeCenters();
+  auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
+  FieldHandle outputField;
+  
+    if (electrode_type == "wire")
+      outputField = Make_Mesh_Wire(final_points);
+
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    if (electrode_type == "planar")
+      outputField = Make_Mesh_Planar(final_points);
+  #endif
+  
+  return outputField;
+}
+
+
+void GenerateElectrodeImpl::moveTogether(const Transform& transform)
+{
+//  std::vector<Point> points(widget_.size());
+  std::vector<Point> points_new;
+  std::vector<WidgetHandle> newidget;
+  for (auto& w : widget_)
+  {
+    Point pos = w -> position();
+    points_new.push_back(transform * pos);
+  }
+  
+  for (size_t  k=0;k<widget_.size();k++)
+  {
+    widget_[k]->setPosition(points_new[k]);
+  }
+  
+}
+
+
+void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
+{
+//  auto bbox = input->vmesh()->get_bounding_box();
+//  bool is_vector = std::dynamic_pointer_cast<ArrowWidget>(widget_[id])->isVector();
+
+  auto stype = static_cast<ArrowWidgetSection>(type);
+  if (state_()->getValue(Parameters::MoveAll).toBool() && (stype == ArrowWidgetSection::CYLINDER || stype == ArrowWidgetSection::SPHERE))
+  {
+    moveTogether(transformMatrix);
+  }
+  else
+  {
+    Point point = widget_[id] -> position();
+    Point point_new = transformMatrix * point;
+//    direction_[id] = transformMatrix * direction_[id];
+//    direction_[id].normalize();
+    widget_[id]->setPosition(point_new);
+    
+  }
+
+//  double currentScale = scale_[id] * state_()->getValue(Parameters::WidgetScaleFactor).toDouble();
+//  if (state_()->getValue(Parameters::Sizing).toInt() == static_cast<int>(SizingType::NORMALIZE_BY_LARGEST_VECTOR))
+//    currentScale /= state_()->getValue(Parameters::LargestSize).toDouble();
+
+  
+//  createPointWidget(point_new, id);
+  
 //  widget_[id] = WidgetFactory::createArrowWidget(
 //    {*module_, "SAED"},
 //    {{currentScale, "no-color", pos_[id], bbox, resolution_ },
@@ -1187,16 +1329,19 @@ void GenerateElectrode::execute()
   //  auto state = get_state();
   //  auto electrode_type = state->getValue(Parameters::ElectrodeType).toString();
   
-  if (source)
-  {
-    impl_ -> setInput(*source);
-  }
+//  if (source)
+//  {
+//    impl_ -> setInput(*source);
+//  }
   
   FieldHandle outputField;
   FieldHandle outputPoints;
-  if (!impl_ -> runImpl(outputField, outputPoints))
+  GeometryHandle geomWidget;
+  if (!impl_ -> runImpl(*source, outputField, outputPoints, geomWidget))
     error("False returned on legacy run call.");
   
+  
+  sendOutput(ElectrodeWidget, geomWidget);
   sendOutput(ElectrodeMesh, outputField);
   sendOutput(ControlPoints, outputPoints);
   
