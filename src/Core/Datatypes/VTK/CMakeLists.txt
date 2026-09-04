@@ -26,74 +26,29 @@
 #
 
 
-SET(Core_Datatypes_SRCS
-  BlockMatrix.cc
-  Color.cc
-  ColorMap.cc
-  Datatype.cc
-  Geometry.cc
-  Material.cc
-  Matrix.cc
-  MatrixAlgorithms.cc
-  MatrixTypeConversions.cc
-  PropertyManagerExtensions.cc
-  Scalar.cc
-  SparseRowMatrixFromMap.cc
-  String.cc
-  MetadataObject.cc
-  Feedback.cc
+SET(Core_Datatypes_VTK_SRCS
+  VtkGeometry.cc
 )
 
-SET(Core_Datatypes_HEADERS
-  BlockMatrix.h
-  Color.h
-  ColorMap.h
-  Datatype.h
-  DatatypeFwd.h
-  DenseMatrix.h
-  TensorBase.h
-  DyadicTensor.h
-  Dyadic3DTensor.h
-  TensorFwd.h
-  DenseColumnMatrix.h
-  Geometry.h
-  HasId.h
-  Material.h
-  Matrix.h
-  MatrixAlgorithms.h
-  MatrixComparison.h
-  MatrixFwd.h
-  MatrixIO.h
-  MatrixTypeConversions.h
-  MatrixMathVisitors.h
-  MetadataObject.h
-  PropertyManagerExtensions.h
-  Scalar.h
+SET(Core_Datatypes_VTK_HEADERS
+  VtkGeometry.h
   share.h
-  SparseRowMatrix.h
-  SparseRowMatrixFromMap.h
-  String.h
-  Feedback.h
   )
 
-SCIRUN_ADD_LIBRARY(Core_Datatypes
-  ${Core_Datatypes_HEADERS}
-  ${Core_Datatypes_SRCS}
+SCIRUN_ADD_LIBRARY(Core_Datatypes_VTK
+  ${Core_Datatypes_VTK_HEADERS}
+  ${Core_Datatypes_VTK_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Datatypes
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
   Core_Persistent
   Core_Datatypes_Legacy_Base
   Core_Geometry_Primitives
+  VTK::CommonCore
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_VTK)
 ENDIF(BUILD_SHARED_LIBS)
 
 SCIRUN_ADD_TEST_DIR(Tests)
-ADD_SUBDIRECTORY(Mesh)
-ADD_SUBDIRECTORY(Legacy)
-IF (WITH_VTK)
-  ADD_SUBDIRECTORY(VTK)
-ENDIF (WITH_VTK)

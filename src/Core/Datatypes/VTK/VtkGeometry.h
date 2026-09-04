@@ -36,7 +36,7 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/VTK/share.h>
 
 namespace SCIRun
 {

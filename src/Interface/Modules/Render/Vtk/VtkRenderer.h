@@ -44,7 +44,7 @@
 #include "VtkCameraController.h"
 
 #include <Core/Datatypes/Feedback.h>
-#include <Core/Datatypes/VtkGeometry.h>
+#include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
 #include <glm/glm.hpp>
 #include <QImage>

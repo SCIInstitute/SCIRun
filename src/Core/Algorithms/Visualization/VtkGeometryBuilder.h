@@ -28,7 +28,7 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_VTKGEOMETRYBUILDER_H
 #define CORE_ALGORITHMS_VISUALIZATION_VTKGEOMETRYBUILDER_H
 
-#include <Core/Datatypes/VtkGeometry.h>
+#include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <Core/Algorithms/Visualization/share.h>
 
