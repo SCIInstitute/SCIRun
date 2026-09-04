@@ -34,7 +34,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-//using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Geometry;
 
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
@@ -47,6 +47,8 @@ ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
 
 GenerateElectrodeFromPointsAlgo::GenerateElectrodeFromPointsAlgo()
 {
+  GenerateElectrodeFromPointsImpl impl_;
+  
   addParameter(Parameters::ElectrodeLength, 0.1);
   addParameter(Parameters::ElectrodeThickness, 0.003);
   addParameter(Parameters::ElectrodeWidth, 0.02);
@@ -57,32 +59,32 @@ GenerateElectrodeFromPointsAlgo::GenerateElectrodeFromPointsAlgo()
   addParameter(Parameters::UseFieldNodes,true);
 }
 
-//namespace detail
-//{
-//class GenerateElectrodeFromPointsAlgoF {
-//  public:
-//    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
-//    typedef std::vector<weight_type> table_type;
-//
-//    bool build_table(VMesh *mesh, VField* vfield,
-//                     std::vector<weight_type> &table,
-//                     std::string& method);
-//
-//    static bool
-//    weight_less(const weight_type &a, const weight_type &b)
-//    {
-//      return (a.first < b.first);
-//    }
-//};
+namespace detail
+{
+class GenerateElectrodeAlgoF {
+public:
+  typedef std::pair<double, VMesh::Elem::index_type> weight_type;
+  typedef std::vector<weight_type> table_type;
+  
+  bool build_table(VMesh *mesh, VField* vfield,
+                   std::vector<weight_type> &table,
+                   std::string& method);
+  
+  static bool
+  weight_less(const weight_type &a, const weight_type &b)
+  {
+    return (a.first < b.first);
+  }
+};
 
 bool
-GenerateElectrodeFromPointsAlgo::build_table(VMesh *vmesh,
-                                                VField* vfield,
-                                                std::vector<weight_type> &table,
-                                                std::string& method)
+GenerateElectrodeAlgoF::build_table(VMesh *vmesh,
+                                    VField* vfield,
+                                    std::vector<weight_type> &table,
+                                    std::string& method)
 {
   VMesh::size_type num_elems = vmesh->num_elems();
-
+  
   long double sum = 0.0;
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
   {
@@ -137,7 +139,7 @@ GenerateElectrodeFromPointsAlgo::build_table(VMesh *vmesh,
     {
       elemsize = 1.0;
     }
-
+    
     if (elemsize > 0.0)
     {
       sum += elemsize;
@@ -148,10 +150,10 @@ GenerateElectrodeFromPointsAlgo::build_table(VMesh *vmesh,
   {
     return (true);
   }
-
+  
   return (false);
 }
-
+}
 
 
 // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
@@ -248,56 +250,40 @@ bool GenerateElectrodeFromPointsImpl::CalculateSpline(std::vector<double>& t, st
   return (true);
 }
 
-void GenerateElectrodeFromPointsImpl::get_points(std::vector<Point>& points)
+
+std::vector<Point> GenerateElectrodeFromPointsAlgo::get_centers(std::vector<Point>& p) const
 {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    size_t s=0,n=widget_.size();
-    points.resize(n);
+  std::vector<Point> pp;
+  
+  double length = get(Parameters::ElectrodeLength).toDouble();
+  int resolution = get(Parameters::ElectrodeResolution).toInt();
+  
+  std::vector<double> t(p.size());
+  t[0]=0;
 
+  for (size_t k=1; k<p.size(); k++)
+  {
+      t[k] = (p[k]-p[k-1]).length() + t[k-1];
+  }
 
-    if(gui_type_.get()=="planar")
-    {
-        n+=1;
-        s=1;
-        points.resize(n);
-        points[0]=arrow_widget_->GetPosition();
-    }
+  std::vector<double> tt(resolution*(p.size()-1));
+  for (size_t k=0; k< tt.size(); k++) tt[k] = static_cast<double>(k)*(length/(static_cast<double>(tt.size()-1)));
 
-
-    for (size_t k = s; k < n; k++)
-    points[k] = widget_[k-s]->GetPosition();
-#endif
-  //TODO: defaulting widget positions to hard-coded values.
-  // Use input field points instead.
-  points = { {0,0,0}, {1,0,0}, {2,0,0}, {3,0,0}, {4,0,0} };
-}
-
-void GenerateElectrodeFromPointsImpl::get_centers(std::vector<Point>& p, std::vector<Point>& pp, double length, int resolution)
-{
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  //This is only needed to get the positions from the widget
-    get_points(p);
-#endif
-    std::vector<double> t(p.size());
-    t[0]=0;
-
-    for (size_t k=1; k<p.size(); k++)
-    {
-        t[k] = (p[k]-p[k-1]).length() + t[k-1];
-    }
-
-    std::vector<double> tt(resolution*(p.size()-1));
-    for (size_t k=0; k< tt.size(); k++) tt[k] = static_cast<double>(k)*(length/(static_cast<double>(tt.size()-1)));
-
-    CalculateSpline(t,p,tt,pp);
+  impl_ -> CalculateSpline(t,p,tt,pp);
+  
+  return pp;
 }
 
 
-FieldHandle GenerateElectrodeFromPointsImpl::Make_Mesh_Wire(std::vector<Point>& final_points, double thickness, int resolution)
+FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& final_points) const
 {
     FieldInformation fi("TetVolMesh",0,"double");
     MeshHandle mesh = CreateMesh(fi);
     VMesh::Node::array_type nodes;
+  
+  double thickness = get(Parameters::ElectrodeThickness).toDouble();
+  int resolution = get(Parameters::ElectrodeResolution).toInt();
+
 
     double Pi=3.14159;
 
@@ -453,7 +439,7 @@ FieldHandle GenerateElectrodeFromPointsImpl::Make_Mesh_Wire(std::vector<Point>& 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
     void
-    GenerateElectrodeFromPoints::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
+    GenerateElectrodeFromPointsAlgo::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
     {
         //-------make planar mesh---------
 
@@ -773,161 +759,49 @@ bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& ou
 
     auto electrode_type = getOption(Parameters::ElectrodeType);
     
-    if (input
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      && (use_field == 1) && (moveto == "default" || widget_.size() == 0 || inputs_changed_)
-  #endif
-      )
+    if (!input)
     {
-      VMesh* smesh = input->vmesh();
-
-      smesh->synchronize(Mesh::ELEM_LOCATE_E);
-
-      VMesh::Node::size_type num_nodes = smesh->num_nodes();
-      if (num_nodes > 50)
-      {
-        error("Why would you want to use that many nodes to make an electrode?  Do you want to crash you system?  That's way to many.");
-        return false;
-      }
-
-      VMesh::Node::array_type a;
-      orig_points.resize(num_nodes);
-
-      for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
-      {
-        Point ap;
-        smesh->get_center(ap, idx);
-
-        orig_points[idx] = ap;
-        direction = defdir;
-      }
+      error("input field required for GenerateElectrodeFromPointsAlgo");
     }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  else if ((!input_field_p || use_field == 0) && (moveto == "default" || widget_.size() == 0))
-  {
-    double l, lx;
-    l = gui_length_.get();
+  
+    VMesh* smesh = input->vmesh();
 
-    lx = l * .5774;
+    smesh->synchronize(Mesh::ELEM_LOCATE_E);
 
-    orig_points.resize(5);
-
-    orig_points[0] = (Point(0, 0, 0));
-    orig_points[1] = (Point(lx*.25, lx*.25, lx*.25));
-    orig_points[2] = (Point(lx*.5, lx*.5, lx*.5));
-    orig_points[3] = (Point(lx*.75, lx*.75, lx*.75));
-    orig_points[4] = (Point(lx, lx, lx));
-
-    direction = defdir;
-    gui_moveto_.set("");
-  }
-  else if (moveto == "add_point")
-  {
-    add_point(orig_points);
-    if (electrode_type == "planar")
+    VMesh::Node::size_type num_nodes = smesh->num_nodes();
+    if (num_nodes > 50)
     {
-      direction = arrow_widget_->GetDirection();
+      error("There are more input nodes than we have arbitrarily decided to allow.");
+      return false;
     }
-    else
+
+    VMesh::Node::array_type a;
+    orig_points.resize(num_nodes);
+
+    for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
     {
+      Point ap;
+      smesh->get_center(ap, idx);
+
+      orig_points[idx] = ap;
       direction = defdir;
     }
-    gui_moveto_.set("");
-  }
-  else if (moveto == "remove_point")
-  {
-    remove_point();
-    gui_moveto_.set("");
-    return false;
-  }
-  else
-  {
-    size_t n = widget_.size(), s = 0;
-    orig_points.resize(n);
-    direction = defdir;
-
-    if (arrow_widget_)
-    {
-      n = n + 1;
-      s = 1;
-      orig_points.resize(n);
-      direction = arrow_widget_->GetDirection();
-      orig_points[0] = arrow_widget_->GetPosition();
-    }
-
-    for (size_t k = s; k < n; k++)
-    {
-      orig_points[k] = widget_[k - s]->GetPosition();
-    }
-  }
-#endif
     
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  gui_widget_points_.set(orig_points.size());
+
+  
+
+//  size_type size = orig_points.size();
+  
+//  std::vector<Point> points(size);
+  
+  std::vector<Point> final_points = get_centers(orig_points);
 
   if (electrode_type == "wire")
-    arrow_widget_ = 0;
-#endif
-
-  if (impl_->Previous_points_.size() < 3)
-  {
-      impl_->Previous_points_ = orig_points;
-  }
-
-  size_type size = orig_points.size();
-
-  Vector move_dist;
-  std::vector<Point> temp_points;
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (move_all_)
-  {
-    for (size_t k = 0; k < size; k++)
-    {
-//      if (orig_points[k] != getPreviousPoints(k))
-      if (orig_points[k] != Previous_points_[k])
-      {
-//        move_dist = orig_points[k] - getPreviousPoints(k);
-          move_dist = orig_points[k] - Previous_points_[k];
-        move_idx = k;
-      }
-    }
-
-    for (size_t k = 0; k < size; k++)
-    {
-      if (k == move_idx) temp_points.push_back(orig_points[k]);
-      else temp_points.push_back(orig_points[k] + move_dist);
-    }
-    orig_points = temp_points;
-    move_all_ = false;
-  }
-#endif
-
-  std::vector<Point> final_points;
-  std::vector<Point> points(size);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER // Tark
-  if (electrode_type == "wire")
-    create_widgets(orig_points);
-  if (electrode_type == "planar")
-    create_widgets(orig_points, direction);
-#endif
-
-    impl_->Previous_points_ = orig_points;
-
-    
-  impl_ -> get_centers(points, final_points,
-      get(Parameters::ElectrodeLength).toDouble(),
-      get(Parameters::ElectrodeResolution).toInt());
-
-    if (electrode_type == "wire")
-      outputField = impl_ -> Make_Mesh_Wire(final_points,
-        get(Parameters::ElectrodeThickness).toDouble(),
-        get(Parameters::ElectrodeResolution).toInt());
+    outputField = Make_Mesh_Wire(final_points);
 
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (electrode_type == "planar")
-        outputField = impl_ -> Make_Mesh_Planar(final_points, ofield, direction);
+        outputField = Make_Mesh_Planar(final_points, direction);
   #endif
 
     return true;

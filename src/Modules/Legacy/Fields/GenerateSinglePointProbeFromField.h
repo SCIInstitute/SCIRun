@@ -33,7 +33,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Legacy/Fields/share.h>
-#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h>
 
 namespace SCIRun {
 

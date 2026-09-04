@@ -63,15 +63,11 @@ namespace SCIRun
       class GenerateElectrodeFromPointsImpl
       {
       public:
-        void get_points(std::vector<Geometry::Point>& points);
-        void get_centers(std::vector<Geometry::Point>& , std::vector<Geometry::Point>& , double , int );
-        FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& , double , int );
+        GenerateElectrodeFromPointsImpl(){};
           
-          bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
-          
-          bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
-
-        std::vector<Geometry::Point> Previous_points_;
+        bool CalculateSpline(std::vector<double>&  , std::vector<double>& , std::vector<double>& , std::vector<double>& );
+        
+        bool CalculateSpline(std::vector<double>& , std::vector<Geometry::Point>& , std::vector<double>&, std::vector<Geometry::Point>&);
       };
            
       
@@ -84,26 +80,28 @@ class SCISHARE GenerateElectrodeFromPointsAlgo : public AlgorithmBase
   
     bool runImpl(FieldHandle input, FieldHandle&) const;
     
-    
+    std::vector<Geometry::Point> get_centers(std::vector<Geometry::Point>&) const;
+    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>&) const;
+  
     AlgorithmOutput run(const AlgorithmInput& input) const override;
     
-    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
-    typedef std::vector<weight_type> table_type;
-
-    bool build_table(VMesh *mesh, VField* vfield,
-                     std::vector<weight_type> &table,
-                     std::string& method);
-    static bool
-    weight_less(const weight_type &a, const weight_type &b)
-    {
-      return (a.first < b.first);
-    }
+//    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
+//    typedef std::vector<weight_type> table_type;
+//
+//    bool build_table(VMesh *mesh, VField* vfield,
+//                     std::vector<weight_type> &table,
+//                     std::string& method);
+//    static bool
+//    weight_less(const weight_type &a, const weight_type &b)
+//    {
+//      return (a.first < b.first);
+//    }
     
 
 //    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& final_points, double, int) const;
 //    void get_centers(std::vector<Geometry::Point>&, std::vector<Geometry::Point>&, double, int) const;
     private:
-      SharedPointer<Core::Algorithms::Fields::GenerateElectrodeFromPointsImpl> impl_;
+      SharedPointer<class GenerateElectrodeFromPointsImpl> impl_;
     
 };
 }
