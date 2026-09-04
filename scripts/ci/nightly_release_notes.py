@@ -38,19 +38,22 @@ REPO_URL = "https://github.com/SCIInstitute/SCIRun"
 MAX_COMMITS = 50
 
 # Carried over from the fixed body this script replaced (dc9d5885): without it
-# the first thing a downloader hits is Gatekeeper or SmartScreen. Drop when
-# #1663 lands.
+# the first thing a downloader hits is Gatekeeper or SmartScreen. The two
+# platforms have separate tracking issues -- #1663 (mac) and #2742 (Windows) --
+# and will almost certainly land at different times, so drop each half
+# independently.
 UNSIGNED = f"""\
-**These binaries are not signed or notarized** ([#1663]({REPO_URL}/issues/1663)),
-so both platforms refuse to launch them straight from a download.
+**These binaries are not signed**, so both platforms refuse to launch them
+straight from a download.
 
-On macOS, clear the quarantine flag first:
+On macOS ([#1663]({REPO_URL}/issues/1663)), clear the quarantine flag first:
 
 ```
 xattr -dr com.apple.quarantine <downloaded>.pkg
 ```
 
-On Windows, SmartScreen needs "More info" &rarr; "Run anyway"."""
+On Windows ([#2742]({REPO_URL}/issues/2742)), SmartScreen needs
+"More info" &rarr; "Run anyway"."""
 
 
 def block(name: str, body: str) -> str:
