@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/VtkGeometry.h>
+#include <Core/Datatypes/VTK/VtkGeometry.h>
 
 using namespace SCIRun::Core;
 using namespace Datatypes;
