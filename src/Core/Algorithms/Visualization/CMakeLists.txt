@@ -56,6 +56,7 @@ ENDIF()
 
 IF(WITH_VTK)
   target_link_libraries(Core_Algorithms_Visualization
+    Core_Datatypes_VTK
     VTK::CommonDataModel
     VTK::CommonCore
   )

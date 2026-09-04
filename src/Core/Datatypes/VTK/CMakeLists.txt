@@ -41,9 +41,7 @@ SCIRUN_ADD_LIBRARY(Core_Datatypes_VTK
 )
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
-  Core_Persistent
-  Core_Datatypes_Legacy_Base
-  Core_Geometry_Primitives
+  Core_Datatypes
   VTK::CommonCore
 )
 
