@@ -29,13 +29,12 @@
 #include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Datatypes/Color.h>
 
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Geometry;
+//using namespace SCIRun::Core::Geometry;
 
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
@@ -45,10 +44,6 @@ ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
-
-
-const AlgorithmOutputName GenerateElectrodeFromPointsAlgo::ControlPoints("ControlPoints");
-const AlgorithmOutputName GenerateElectrodeFromPointsAlgo::ElectrodeMesh("ElectrodeMesh");
 
 GenerateElectrodeFromPointsAlgo::GenerateElectrodeFromPointsAlgo()
 {
@@ -60,12 +55,6 @@ GenerateElectrodeFromPointsAlgo::GenerateElectrodeFromPointsAlgo()
   addParameter(Parameters::NumberOfControlPoints,5);
   addParameter(Parameters::ElectrodeResolution,10);
   addParameter(Parameters::UseFieldNodes,true);
-  addParameter(Parameters::MoveAll,false);
-  addParameter(Parameters::MoveAll,false);
-  addParameter(Parameters::ProbeColor, "Color(1.0, 1.0, 1.0)");
-  addParameter(Parameters::ProbeLabel, std::string());
-  addParameter(Parameters::ProbeSize, 1.0);
-  
 }
 
 //namespace detail
@@ -774,7 +763,7 @@ FieldHandle GenerateElectrodeFromPointsImpl::Make_Mesh_Wire(std::vector<Point>& 
 #endif
 
 
-bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& outputField, FieldHandle& outputPoints) const
+bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& outputField) const
 {
     
     FieldInformation fis(input);
@@ -926,16 +915,6 @@ bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& ou
 
     impl_->Previous_points_ = orig_points;
 
-  FieldInformation pi("PointCloudMesh", 0, "double");
-  MeshHandle pmesh = CreateMesh(pi);
-
-  for (VMesh::Node::index_type idx = 0; idx < orig_points.size(); idx++) pmesh->vmesh()->add_point(orig_points[idx]);
-
-  //TODO: copy this here since widgets don't exist yet
-  points = orig_points;
-
-  pi.make_double();
-  outputPoints = CreateField(pi, pmesh);
     
   impl_ -> get_centers(points, final_points,
       get(Parameters::ElectrodeLength).toDouble(),
@@ -962,14 +941,14 @@ AlgorithmOutput GenerateElectrodeFromPointsAlgo::run(const AlgorithmInput& input
     
 
   FieldHandle outputField;
-  FieldHandle outputPoints;
-  if (!runImpl(inputField, outputField, outputPoints))
+  if (!runImpl(inputField, outputField))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[ControlPoints] = outputPoints;
   output[ElectrodeMesh] = outputField;
   return output;
 }
 
+
+const AlgorithmOutputName GenerateElectrodeFromPointsAlgo::ElectrodeMesh("ElectrodeMesh");
  

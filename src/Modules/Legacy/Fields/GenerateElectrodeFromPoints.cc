@@ -29,8 +29,9 @@
 ///@brief This module makes a mesh that looks like a wire
 
 #include <Modules/Legacy/Fields/GenerateElectrodeFromPoints.h>
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithm/Legacy/Field/GenerateElectrodeFromPointsAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Geometry.h>
@@ -42,84 +43,19 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Graphics/Widgets/WidgetFactory.h>
-#include <Graphics/Widgets/WidgetBuilders.h>
 
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using namespace Graphics;
-using namespace Graphics::Datatypes;
+using namespace Core;
+using namespace Logging;
+using namespace Modules::Fields;
+using namespace Algorithms;
+using namespace Algorithms::Fields;
+using namespace Dataflow::Networks;
+using namespace Datatypes;
 
 MODULE_INFO_DEF(GenerateElectrodeFromPoints, NewField, SCIRun)
 
-
-#if 0
-	class GenerateElectrodeFromPoints : public Module
-		{
-		public:
-			GenerateElectrodeFromPoints(GuiContext* ctx);
-			~GenerateElectrodeFromPoints(){};
-			virtual void execute();
-			virtual void widget_moved(bool, BaseWidget*);
-			virtual void tcl_command(GuiArgs& args, void* userdata);
-
-			virtual void post_read(); // get the widget state...
-			virtual void presave();
-
-			void add_point(std::vector<Point>& p);
-			bool remove_point();
-
-			void create_widgets(std::vector<Point>& points);
-
-			void create_widgets(std::vector<Point>& points,Vector& direction);
-
-
-		private:
-
-			CrowdMonitor										widget_lock_;
-			GeomHandle											widget_switch_;
-			GeometryOPortHandle							geom_oport_;
-
-			std::vector<PointWidget*>				widget_;
-			ArrowWidget*										arrow_widget_;
-			GuiVectorHandle									widget_direction_;
-
-			std::vector<GuiPointHandle>			widget_point_;
-			GuiDouble												gui_probe_scale_;
-
-			GuiDouble												gui_color_r_;
-			GuiDouble												gui_color_g_;
-			GuiDouble												gui_color_b_;
-
-			GuiInt													gui_widget_points_;
-
-			GuiDouble												gui_length_;
-			GuiDouble												gui_width_;
-			GuiDouble												gui_thick_;
-
-			GuiString												gui_moveto_;
-			GuiString												gui_type_;
-			GuiString												gui_project_;
-
-			GuiInt													gui_use_field_;
-			GuiInt													gui_move_all_;
-			GuiInt													gui_wire_res_;
-
-			bool														color_changed_;
-			bool														move_all_;
-
-
-
-
-		};
-#endif
 
 GenerateElectrodeFromPoints::GenerateElectrodeFromPoints() : GeometryGeneratingModule(staticInfo_)
 {
@@ -152,23 +88,15 @@ void GenerateElectrodeFromPoints::execute()
     setAlgoIntFromState(Parameters::NumberOfControlPoints);
     setAlgoIntFromState(Parameters::ElectrodeResolution);
     setAlgoBoolFromState(Parameters::UseFieldNodes);
-    setAlgoBoolFromState(Parameters::MoveAll);
     setAlgoOptionFromState(Parameters::ElectrodeType);
     setAlgoOptionFromState(Parameters::ElectrodeProjection);
-    setAlgoDoubleFromState(Parameters::ProbeSize);
-    setAlgoStringFromState(Parameters::ProbeLabel);
-    setAlgoStringFromState(Parameters::ProbeColor);
+
     
 
 //  FieldInformation fis(source);
 //  std::vector<Point> orig_points;
 //  Vector direction;
 //  Vector defdir = Vector(-10, 10, 10);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  const std::string &moveto = gui_moveto_.get();
-  int use_field = gui_use_field_.get();
-#endif
 
 //  auto state = get_state();
 //  auto electrode_type = state->getValue(Parameters::ElectrodeType).toString();
@@ -201,9 +129,6 @@ void GenerateElectrodeFromPoints::execute()
 //      orig_points[idx] = ap;
 //      direction = defdir;
 //    }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    gui_moveto_.set("");
-#endif
 //  }
 //#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //  else if ((!input_field_p || use_field == 0) && (moveto == "default" || widget_.size() == 0))

@@ -30,7 +30,6 @@
 #define MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMPOINTS_H
 
 #include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun
@@ -40,9 +39,9 @@ namespace SCIRun
     namespace Fields
     {
 
-      class SCISHARE GenerateElectrodeFromPoints : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE GenerateElectrodeFromPoints : public SCIRun::Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
-        public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
+        public Has1OutputPort<FieldPortTag>
       {
       public:
         GenerateElectrodeFromPoints();
@@ -51,8 +50,6 @@ namespace SCIRun
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, ElectrodeMesh, Field);
-        OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
-        OUTPUT_PORT(2, ControlPoints, Field);
           
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
 

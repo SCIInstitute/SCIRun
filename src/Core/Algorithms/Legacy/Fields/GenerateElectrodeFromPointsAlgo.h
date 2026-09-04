@@ -30,8 +30,7 @@
 #define CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEELECTRODEFROMPOINTSALGO_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -40,6 +39,8 @@
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/Point.h>
+
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 
 namespace SCIRun
@@ -57,11 +58,7 @@ namespace SCIRun
       ALGORITHM_PARAMETER_DECL(ElectrodeType);
       ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
       ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
-      ALGORITHM_PARAMETER_DECL(MoveAll);
       ALGORITHM_PARAMETER_DECL(UseFieldNodes);
-      ALGORITHM_PARAMETER_DECL(ProbeColor);
-      ALGORITHM_PARAMETER_DECL(ProbeLabel);
-      ALGORITHM_PARAMETER_DECL(ProbeSize);
 
       class GenerateElectrodeFromPointsImpl
       {
@@ -82,8 +79,11 @@ class SCISHARE GenerateElectrodeFromPointsAlgo : public AlgorithmBase
 {
   public:
     GenerateElectrodeFromPointsAlgo();
-    bool runImpl(FieldHandle input, FieldHandle&, FieldHandle&) const;
-    static const AlgorithmOutputName ControlPoints, ElectrodeMesh;
+  
+    static const AlgorithmOutputName ElectrodeMesh;
+  
+    bool runImpl(FieldHandle input, FieldHandle&) const;
+    
     
     AlgorithmOutput run(const AlgorithmInput& input) const override;
     
