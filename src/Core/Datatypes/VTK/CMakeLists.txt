@@ -42,8 +42,13 @@ SCIRUN_ADD_LIBRARY(Core_Datatypes_VTK
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
   Core_Datatypes
+)
+
+IF (WITH_VTK)
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
   VTK::CommonCore
 )
+ENDIF (WITH_VTK)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes_VTK)
