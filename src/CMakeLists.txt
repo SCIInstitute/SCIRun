@@ -319,6 +319,19 @@ IF(WITH_OSPRAY)
   find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
 ENDIF()
 
+IF(WITH_VTK)
+  set(VTK_DIR ${VTK_External_Dir}/lib/cmake/vtk-9.6)
+  find_package(VTK REQUIRED COMPONENTS
+    CommonCore
+    RenderingCore
+    RenderingOpenGL2
+    FiltersCore
+    FiltersSources
+    InteractionStyle
+    HINTS ${VTK_DIR}
+  )
+ENDIF()
+
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
@@ -403,6 +416,11 @@ ENDIF()
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
   SET(OSPRAY_LIBRARIES ospray)
+ENDIF()
+
+# Configure VTK
+IF(WITH_VTK)
+  add_definitions(-DWITH_VTK)
 ENDIF()
 
 ########################################################################
@@ -791,6 +809,7 @@ SET_PROPERTY(TARGET Core_Datatypes_Legacy_Base         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Nrrd         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Bundle         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Datatypes_VTK PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Basis         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Persistent         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_DatabaseManager         PROPERTY FOLDER "Core")
@@ -839,6 +858,9 @@ IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Teem   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
+  IF(WITH_VTK)
+    SET_PROPERTY(TARGET Interface_Modules_Render_Vtk PROPERTY FOLDER "Interface/Modules")
+  ENDIF()
 ENDIF()
 
 SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")

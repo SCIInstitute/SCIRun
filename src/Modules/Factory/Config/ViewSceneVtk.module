@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ViewSceneVtk",
+    "namespace": "Render",
+    "status": "In progress: experimental VTK renderer",
+    "description": "VTK-based scene viewer. Requires WITH_VTK; see ViewScene for the production renderer.",
+    "header": "Modules/Render/ViewSceneVtk.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ViewSceneVtkDialog",
+    "header": "Interface/Modules/Render/ViewSceneVtkDialog.h"
+  }
+}

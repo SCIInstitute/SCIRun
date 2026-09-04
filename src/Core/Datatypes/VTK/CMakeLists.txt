@@ -26,38 +26,31 @@
 #
 
 
-SET(Modules_Render_SRCS
-  ViewScene.cc
-  OsprayViewer.cc
-  ViewSceneVtk.cc
+SET(Core_Datatypes_VTK_SRCS
+  VtkGeometry.cc
 )
 
-SET(Modules_Render_HEADERS
-  ViewScene.h
-  OsprayViewer.h
-  ViewSceneVtk.h
+SET(Core_Datatypes_VTK_HEADERS
+  VtkGeometry.h
   share.h
+  )
+
+SCIRUN_ADD_LIBRARY(Core_Datatypes_VTK
+  ${Core_Datatypes_VTK_HEADERS}
+  ${Core_Datatypes_VTK_SRCS}
 )
 
-SCIRUN_ADD_LIBRARY(Modules_Render
-  ${Modules_Render_HEADERS}
-  ${Modules_Render_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Modules_Render
-  Dataflow_Network
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
   Core_Datatypes
-  Core_Application_Preferences
 )
 
 IF (WITH_VTK)
-  TARGET_LINK_LIBRARIES(Modules_Render
-    Core_Datatypes_VTK
-  )
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
+  VTK::CommonCore
+)
 ENDIF (WITH_VTK)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Render)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_VTK)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)

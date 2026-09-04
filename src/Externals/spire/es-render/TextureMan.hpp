@@ -88,6 +88,9 @@ namespace ren {
       ren::Texture &tex, GLsizei textureWidth,
       GLsizei textureHeight);
 
+    bool updateTexture(ren::Texture& tex, const void* data);
+    bool updateTexture(ren::Texture& tex, const std::vector<uint8_t>& data);
+
     /// Runs a single garbage collection cycle on the current state of the core.
     void runGCCycle(spire::ESCoreBase& core);
 

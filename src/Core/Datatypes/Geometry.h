@@ -154,7 +154,10 @@ namespace Datatypes
     std::vector<OsprayGeometryObjectHandle> objs_;
   };
 
-}}}
+
+}
+}
+}
 
 
 #endif

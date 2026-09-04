@@ -25,56 +25,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H
+#include <Interface/qt_include.h>
+#include <QTimer>
+#include <Interface/Modules/Render/Vtk/share.h>
 
-#include <vector>
-#include <optional>
-#include <Core/Utils/SmartPointers.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Datatypes/MatrixFwd.h>
+namespace SCIRun { namespace Render {
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+class VtkRenderer;
 
-  class Datatype;
-  typedef SharedPointer<Datatype> DatatypeHandle;
-  typedef SharedPointer<const Datatype> DatatypeConstHandle;
-  typedef std::optional<DatatypeHandle> DatatypeHandleOption;
+class SCISHARE VtkQWidget : public QWidget
+{
+  Q_OBJECT
 
-  class Scalar;
-  class Double;
-  class Int32;
-  class String;
-  class GeometryObject;
-  class VtkGeometryObject;
-  class ColorMap;
-  class Bundle;
-  class MetadataObject;
+public:
+  VtkQWidget(QWidget *parent, VtkRenderer* renderer);
+  virtual ~VtkQWidget();
 
-  typedef SharedPointer<String> StringHandle;
-  typedef SharedPointer<GeometryObject> GeometryBaseHandle;
-  typedef SharedPointer<ColorMap> ColorMapHandle;
-  typedef SharedPointer<Bundle> BundleHandle;
+public Q_SLOTS:
+    void updateRenderer();
+
+protected:
+  void paintEvent(QPaintEvent* event) override;
+  void resizeEvent(QResizeEvent* event) override;
+  void showEvent(QShowEvent* event) override;
+  virtual void onScreenChanged(QScreen* screen);
+
+  VtkRenderer* renderer {nullptr};
+
+  QTimer* renderTimer {nullptr};
+
+private:
+  void updateRenderSize();
+};
+
 }}
-
-  class Field;
-  class Mesh;
-  typedef SharedPointer<Field> FieldHandle;
-  typedef SharedPointer<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
-
-  class NrrdData;
-  typedef SharedPointer<NrrdData> NrrdDataHandle;
-
-  namespace Core {
-  namespace Datatypes {
-    typedef NrrdData NrrdDataType;
-  }}
-}
-
-
-#endif

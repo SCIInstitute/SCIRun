@@ -26,55 +26,45 @@
 */
 
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H
+#ifndef CORE_ALGORITHMS_VISUALIZATION_VTKDATAALGORITHM_H
+#define CORE_ALGORITHMS_VISUALIZATION_VTKDATAALGORITHM_H
 
-#include <vector>
-#include <optional>
-#include <Core/Utils/SmartPointers.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Visualization/share.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+namespace SCIRun
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace VtkVisualization
+      {
+        ALGORITHM_PARAMETER_DECL(DefaultColorR);
+        ALGORITHM_PARAMETER_DECL(DefaultColorG);
+        ALGORITHM_PARAMETER_DECL(DefaultColorB);
+        ALGORITHM_PARAMETER_DECL(DefaultColorA);
+        ALGORITHM_PARAMETER_DECL(Radius);
+        ALGORITHM_PARAMETER_DECL(UseNormals);
+        ALGORITHM_PARAMETER_DECL(ShowNodes);
+        ALGORITHM_PARAMETER_DECL(ShowEdges);
+        ALGORITHM_PARAMETER_DECL(ShowFaces);
+        ALGORITHM_PARAMETER_DECL(ShowVolume);
+        ALGORITHM_PARAMETER_DECL(ModuleID);
+      }
 
-  class Datatype;
-  typedef SharedPointer<Datatype> DatatypeHandle;
-  typedef SharedPointer<const Datatype> DatatypeConstHandle;
-  typedef std::optional<DatatypeHandle> DatatypeHandleOption;
+      namespace Visualization
+      {
+        class SCISHARE VtkDataAlgorithm : public AlgorithmBase
+        {
+         public:
+          VtkDataAlgorithm();
 
-  class Scalar;
-  class Double;
-  class Int32;
-  class String;
-  class GeometryObject;
-  class VtkGeometryObject;
-  class ColorMap;
-  class Bundle;
-  class MetadataObject;
-
-  typedef SharedPointer<String> StringHandle;
-  typedef SharedPointer<GeometryObject> GeometryBaseHandle;
-  typedef SharedPointer<ColorMap> ColorMapHandle;
-  typedef SharedPointer<Bundle> BundleHandle;
-}}
-
-  class Field;
-  class Mesh;
-  typedef SharedPointer<Field> FieldHandle;
-  typedef SharedPointer<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
-
-  class NrrdData;
-  typedef SharedPointer<NrrdData> NrrdDataHandle;
-
-  namespace Core {
-  namespace Datatypes {
-    typedef NrrdData NrrdDataType;
-  }}
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
+        };
+      }
+    }
+  }
 }
-
 
 #endif

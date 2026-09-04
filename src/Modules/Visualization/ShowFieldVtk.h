@@ -26,55 +26,40 @@
 */
 
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H
+#ifndef MODULES_VISUALIZATION_SHOWFIELDVTK_H
+#define MODULES_VISUALIZATION_SHOWFIELDVTK_H
 
-#include <vector>
-#include <optional>
-#include <Core/Utils/SmartPointers.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Datatypes/MatrixFwd.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
+#include <Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+  namespace Modules {
+    namespace Visualization {
 
-  class Datatype;
-  typedef SharedPointer<Datatype> DatatypeHandle;
-  typedef SharedPointer<const Datatype> DatatypeConstHandle;
-  typedef std::optional<DatatypeHandle> DatatypeHandleOption;
+      class SCISHARE ShowFieldVtk : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+          public Has1OutputPort<GeometryVtkPortTag>
+      {
+      public:
+        ShowFieldVtk();
+        void execute() override;
+        void setStateDefaults() override;
 
-  class Scalar;
-  class Double;
-  class Int32;
-  class String;
-  class GeometryObject;
-  class VtkGeometryObject;
-  class ColorMap;
-  class Bundle;
-  class MetadataObject;
+        INPUT_PORT(0, Field, Field);
+        INPUT_PORT(1, ColorMapObject, ColorMap);
+        OUTPUT_PORT(0, SceneGraph, VtkGeometryObject);
 
-  typedef SharedPointer<String> StringHandle;
-  typedef SharedPointer<GeometryObject> GeometryBaseHandle;
-  typedef SharedPointer<ColorMap> ColorMapHandle;
-  typedef SharedPointer<Bundle> BundleHandle;
-}}
+        uint32_t id;
 
-  class Field;
-  class Mesh;
-  typedef SharedPointer<Field> FieldHandle;
-  typedef SharedPointer<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
-  class NrrdData;
-  typedef SharedPointer<NrrdData> NrrdDataHandle;
-
-  namespace Core {
-  namespace Datatypes {
-    typedef NrrdData NrrdDataType;
-  }}
+#ifndef WITH_VTK
+        DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+#endif
+      };
+    }
+  }
 }
-
 
 #endif

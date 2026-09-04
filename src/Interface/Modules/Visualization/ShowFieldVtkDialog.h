@@ -26,55 +26,28 @@
 */
 
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H
+#ifndef INTERFACE_MODULES_ShowFieldVtkDIALOG_H
+#define INTERFACE_MODULES_ShowFieldVtkDIALOG_H
 
-#include <vector>
-#include <optional>
-#include <Core/Utils/SmartPointers.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Datatypes/MatrixFwd.h>
+#include "Interface/Modules/Visualization/ui_ShowFieldVtk.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+namespace Gui {
 
-  class Datatype;
-  typedef SharedPointer<Datatype> DatatypeHandle;
-  typedef SharedPointer<const Datatype> DatatypeConstHandle;
-  typedef std::optional<DatatypeHandle> DatatypeHandleOption;
+class SCISHARE ShowFieldVtkDialog : public ModuleDialogGeneric,
+	public Ui::ShowFieldVtk
+{
+	Q_OBJECT
 
-  class Scalar;
-  class Double;
-  class Int32;
-  class String;
-  class GeometryObject;
-  class VtkGeometryObject;
-  class ColorMap;
-  class Bundle;
-  class MetadataObject;
+public:
+  ShowFieldVtkDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
 
-  typedef SharedPointer<String> StringHandle;
-  typedef SharedPointer<GeometryObject> GeometryBaseHandle;
-  typedef SharedPointer<ColorMap> ColorMapHandle;
-  typedef SharedPointer<Bundle> BundleHandle;
-}}
-
-  class Field;
-  class Mesh;
-  typedef SharedPointer<Field> FieldHandle;
-  typedef SharedPointer<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
-
-  class NrrdData;
-  typedef SharedPointer<NrrdData> NrrdDataHandle;
-
-  namespace Core {
-  namespace Datatypes {
-    typedef NrrdData NrrdDataType;
-  }}
 }
-
+}
 
 #endif
