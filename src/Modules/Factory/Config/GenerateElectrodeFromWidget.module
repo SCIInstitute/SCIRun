@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "GenerateElectrodeFromWidget",
+    "name": "GenerateElectrode",
     "namespace": "Fields",
     "status": "Ported module: no UI yet",
     "description": "Makes a wire geom with interactive widgets",
@@ -12,7 +12,7 @@
     "header": "N/A"
   },
   "UI": {
-    "name": "GenerateElectrodeFromDialog",
+    "name": "GenerateElectrodeDialog",
     "header": "Interface/Modules/Fields/GenerateElectrodeDialog.h"
   }
 }
