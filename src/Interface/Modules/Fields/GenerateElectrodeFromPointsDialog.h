@@ -47,18 +47,18 @@ namespace SCIRun {
         QWidget* parent = nullptr);
 
     protected:
-      void pullSpecial() override;
+//      void pullSpecial() override;
 
     private Q_SLOTS:
       void enableWidgets(const QString& mode);
-      void pushColor();
-      void assignDefaultMeshColor();
+//      void pushColor();
+//      void assignDefaultMeshColor();
 //      void toggleSpinBoxes();
-      void AddPoint();
-      void RemovePoint();
+//      void AddPoint();
+//      void RemovePoint();
 
     private:
-      QColor defaultMeshColor_;
+//      QColor defaultMeshColor_;
     };
 
   }

@@ -28,12 +28,14 @@
 
 #include <Interface/Modules/Fields/GenerateElectrodeFromPointsDialog.h>
 #include <Modules/Legacy/Fields/GenerateElectrodeFromPoints.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <Core/Datatypes/Color.h>
-#include <QColorDialog>
+//#include <QColorDialog>
 
+//using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 
@@ -52,17 +54,15 @@ GenerateElectrodeFromPointsDialog::GenerateElectrodeFromPointsDialog(const std::
   addDoubleSpinBoxManager(ThicknessDoubleSpinBox_, Parameters::ElectrodeThickness);
   addSpinBoxManager(NumberOfControlPointsSpinBox_, Parameters::NumberOfControlPoints);
   addSpinBoxManager(ResolutionSpinBox_, Parameters::ElectrodeResolution);
-  addCheckBoxManager(MoveAllCheckBox_, Parameters::MoveAll);
   addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
-  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ProbeSize);
 
   connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeFromPointsDialog::enableWidgets);
-  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::assignDefaultMeshColor);
-  connectButtonToExecuteSignal(colorChooserPushButton_);
-  connect(AddPointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::AddPoint);
-  connect(RemovePointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::RemovePoint);
-  connectButtonToExecuteSignal(AddPointPushButton_);
-  connectButtonToExecuteSignal(RemovePointPushButton_);
+//  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::assignDefaultMeshColor);
+//  connectButtonToExecuteSignal(colorChooserPushButton_);
+//  connect(AddPointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::AddPoint);
+//  connect(RemovePointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::RemovePoint);
+//  connectButtonToExecuteSignal(AddPointPushButton_);
+//  connectButtonToExecuteSignal(RemovePointPushButton_);
 }
 
 void GenerateElectrodeFromPointsDialog::enableWidgets(const QString& mode)
@@ -71,32 +71,32 @@ void GenerateElectrodeFromPointsDialog::enableWidgets(const QString& mode)
   ProjectionComboBox_->setEnabled(mode == "planar");
 }
 
-void GenerateElectrodeFromPointsDialog::pullSpecial()
-{
-  ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
-  // check for old saved color format: integers 0-255.
-  defaultMeshColor_ = QColor(
-    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-
-  enableWidgets(QString::fromStdString(state_->getValue(Parameters::ElectrodeType).toString()));
-}
-
-void GenerateElectrodeFromPointsDialog::assignDefaultMeshColor()
-{
-  auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
-  if (newColor.isValid())
-  {
-    defaultMeshColor_ = newColor;
-    pushColor();
-  }
-}
-
-void GenerateElectrodeFromPointsDialog::pushColor()
-{
-  state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
-}
+//void GenerateElectrodeFromPointsDialog::pullSpecial()
+//{
+//  ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
+//  // check for old saved color format: integers 0-255.
+//  defaultMeshColor_ = QColor(
+//    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+//    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+//    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+//
+//  enableWidgets(QString::fromStdString(state_->getValue(Parameters::ElectrodeType).toString()));
+//}
+//
+//void GenerateElectrodeFromPointsDialog::assignDefaultMeshColor()
+//{
+//  auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
+//  if (newColor.isValid())
+//  {
+//    defaultMeshColor_ = newColor;
+//    pushColor();
+//  }
+//}
+//
+//void GenerateElectrodeFromPointsDialog::pushColor()
+//{
+//  state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+//}
 
 //void GenerateElectrodeFromPointsDialog::toggleSpinBoxes()
 //{
@@ -104,15 +104,15 @@ void GenerateElectrodeFromPointsDialog::pushColor()
 //  sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
 //}
 
-void GenerateElectrodeFromPointsDialog::AddPoint()
-{
-    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
-    state_->setValue(Parameters::NumberOfControlPoints,numpoints+1);
-}
+//void GenerateElectrodeFromPointsDialog::AddPoint()
+//{
+//    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
+//    state_->setValue(Parameters::NumberOfControlPoints,numpoints+1);
+//}
 
 
-void GenerateElectrodeFromPointsDialog::RemovePoint()
-{
-    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
-    state_->setValue(Parameters::NumberOfControlPoints,numpoints-1);
-}
+//void GenerateElectrodeFromPointsDialog::RemovePoint()
+//{
+//    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
+//    state_->setValue(Parameters::NumberOfControlPoints,numpoints-1);
+//}
