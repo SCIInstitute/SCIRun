@@ -71,8 +71,8 @@ void GenerateElectrodeFromPoints::setStateDefaults()
   setStateIntFromAlgo(Parameters::NumberOfControlPoints);
   setStateIntFromAlgo(Parameters::ElectrodeResolution);
   setStateBoolFromAlgo(Parameters::UseFieldNodes);
-  setStateStringFromAlgo(Parameters::ElectrodeType);
-  setStateStringFromAlgo(Parameters::ElectrodeProjection);
+  setStateStringFromAlgoOption(Parameters::ElectrodeType);
+  setStateStringFromAlgoOption(Parameters::ElectrodeProjection);
 }
 
 void GenerateElectrodeFromPoints::execute()

@@ -27,6 +27,7 @@
 
 
 #include <Interface/Modules/Fields/GenerateElectrodeFromPointsDialog.h>
+#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h>
 #include <Modules/Legacy/Fields/GenerateElectrodeFromPoints.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
@@ -45,10 +46,17 @@ GenerateElectrodeFromPointsDialog::GenerateElectrodeFromPointsDialog(const std::
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  fixSize();
+//  fixSize();
 
-  addComboBoxManager(TypeComboBox_, Parameters::ElectrodeType);
-  addComboBoxManager(ProjectionComboBox_, Parameters::ElectrodeProjection);
+  StringPairs type = {{"Wire", "wire"},
+    {"Planar", "planar"}};
+  
+  StringPairs projection = {{"Positive", "positive"},
+    {"Midway", "midway"},
+    {"Negative", "negative"}};
+
+  addComboBoxManager(TypeComboBox_, Parameters::ElectrodeType, type);
+  addComboBoxManager(ProjectionComboBox_, Parameters::ElectrodeProjection, projection);
   addDoubleSpinBoxManager(LengthDoubleSpinBox_, Parameters::ElectrodeLength);
   addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ElectrodeWidth);
   addDoubleSpinBoxManager(ThicknessDoubleSpinBox_, Parameters::ElectrodeThickness);
