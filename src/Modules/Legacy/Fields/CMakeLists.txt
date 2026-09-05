@@ -99,6 +99,7 @@ SET(Modules_Legacy_Fields_HEADERS
   SmoothVecFieldMedian.h
   CalculateMeshNodes.h
   GenerateElectrodeFromPoints.h
+  GenerateElectrode.h
   InterfaceWithTetGen.h
   GenerateNodeNormals.h
   CalculateFieldDataMetric.h
@@ -109,6 +110,7 @@ SET(Modules_Legacy_Fields_HEADERS
 SET(Modules_Legacy_Fields_SRCS
   FlipSurfaceNormals.cc
   ClipVolumeByIsovalue.cc
+  GenerateElectrode.cc
   GenerateElectrodeFromPoints.cc
   #PadRegularMesh.cc
   ResampleRegularMesh.cc

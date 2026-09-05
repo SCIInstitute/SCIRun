@@ -82,6 +82,7 @@ SET(Interface_Modules_Fields_FORMS
   CalculateFieldDataMetric.ui
   CalculateBundleDifference.ui
   GenerateElectrodeFromPoints.ui
+  GenerateElectrode.ui
   ReportScalarFieldStats.ui
 )
 
@@ -142,6 +143,7 @@ SET(Interface_Modules_Fields_HEADERS
   CalculateFieldDataMetricDialog.h
   CalculateBundleDifferenceDialog.h
   GenerateElectrodeFromPointsDialog.h
+  GenerateElectrodeDialog.h
   ReportScalarFieldStatsDialog.h
 )
 
@@ -201,6 +203,7 @@ SET(Interface_Modules_Fields_SOURCES
   CalculateFieldDataMetricDialog.cc
   CalculateBundleDifferenceDialog.cc
   GenerateElectrodeFromPointsDialog.cc
+  GenerateElectrodeDialog.cc
   ReportScalarFieldStatsDialog.cc
 )
 
