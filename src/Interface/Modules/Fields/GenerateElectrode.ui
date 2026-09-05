@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GenerateElectrodeFromPoints</class>
- <widget class="QDialog" name="GenerateElectrodeFromPoints">
+ <class>GenerateElectrode</class>
+ <widget class="QDialog" name="GenerateElectrode">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -150,6 +150,9 @@
       </item>
       <item row="2" column="1">
        <widget class="QCheckBox" name="UseFieldNodesCheckBox_">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -385,7 +388,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="">
+    <widget class="QGroupBox" name="groupBox">
      <property name="enabled">
       <bool>false</bool>
      </property>

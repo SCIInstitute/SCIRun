@@ -26,9 +26,9 @@
 */
 
 
-#include <Interface/Modules/Fields/GenerateElectrodeFromPointsDialog.h>
-#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h>
-#include <Modules/Legacy/Fields/GenerateElectrodeFromPoints.h>
+#include <Interface/Modules/Fields/GenerateElectrodeDialog.h>
+//#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h>
+#include <Modules/Legacy/Fields/GenerateElectrode.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 //#include <QColorDialog>
@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 
-GenerateElectrodeFromPointsDialog::GenerateElectrodeFromPointsDialog(const std::string& name, ModuleStateHandle state,
+GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -51,35 +51,35 @@ GenerateElectrodeFromPointsDialog::GenerateElectrodeFromPointsDialog(const std::
   StringPairs type = {{"Wire", "wire"},
     {"Planar", "planar"}};
   
-  StringPairs projection = {{"Positive", "positive"},
-    {"Midway", "midway"},
-    {"Negative", "negative"}};
+//  StringPairs projection = {{"Positive", "positive"},
+//    {"Midway", "midway"},
+//    {"Negative", "negative"}};
 
   addComboBoxManager(TypeComboBox_, Parameters::ElectrodeType, type);
-  addComboBoxManager(ProjectionComboBox_, Parameters::ElectrodeProjection, projection);
+  addComboBoxMana/*ger(ProjectionComboBox_, Parameters::ElectrodeProjection, projection);*/
   addDoubleSpinBoxManager(LengthDoubleSpinBox_, Parameters::ElectrodeLength);
-  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ElectrodeWidth);
+//  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ElectrodeWidth);
   addDoubleSpinBoxManager(ThicknessDoubleSpinBox_, Parameters::ElectrodeThickness);
   addSpinBoxManager(NumberOfControlPointsSpinBox_, Parameters::NumberOfControlPoints);
   addSpinBoxManager(ResolutionSpinBox_, Parameters::ElectrodeResolution);
-  addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
+//  addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
 
-  connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeFromPointsDialog::enableWidgets);
-//  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::assignDefaultMeshColor);
+//  connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeDialog::enableWidgets);
+//  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::assignDefaultMeshColor);
 //  connectButtonToExecuteSignal(colorChooserPushButton_);
-//  connect(AddPointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::AddPoint);
-//  connect(RemovePointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromPointsDialog::RemovePoint);
+//  connect(AddPointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::AddPoint);
+//  connect(RemovePointPushButton_, &QPushButton::clicked, this, &GenerateElectrodeDialog::RemovePoint);
 //  connectButtonToExecuteSignal(AddPointPushButton_);
 //  connectButtonToExecuteSignal(RemovePointPushButton_);
 }
 
-void GenerateElectrodeFromPointsDialog::enableWidgets(const QString& mode)
-{
-  WidthDoubleSpinBox_->setReadOnly(mode != "planar");
-  ProjectionComboBox_->setEnabled(mode == "planar");
-}
+//void GenerateElectrodeDialog::enableWidgets(const QString& mode)
+//{
+//  WidthDoubleSpinBox_->setReadOnly(mode != "planar");
+//  ProjectionComboBox_->setEnabled(mode == "planar");
+//}
 
-//void GenerateElectrodeFromPointsDialog::pullSpecial()
+//void GenerateElectrodeDialog::pullSpecial()
 //{
 //  ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
 //  // check for old saved color format: integers 0-255.
@@ -91,7 +91,7 @@ void GenerateElectrodeFromPointsDialog::enableWidgets(const QString& mode)
 //  enableWidgets(QString::fromStdString(state_->getValue(Parameters::ElectrodeType).toString()));
 //}
 //
-//void GenerateElectrodeFromPointsDialog::assignDefaultMeshColor()
+//void GenerateElectrodeDialog::assignDefaultMeshColor()
 //{
 //  auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
 //  if (newColor.isValid())
@@ -101,25 +101,25 @@ void GenerateElectrodeFromPointsDialog::enableWidgets(const QString& mode)
 //  }
 //}
 //
-//void GenerateElectrodeFromPointsDialog::pushColor()
+//void GenerateElectrodeDialog::pushColor()
 //{
 //  state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
 //}
 
-//void GenerateElectrodeFromPointsDialog::toggleSpinBoxes()
+//void GenerateElectrodeDialog::toggleSpinBoxes()
 //{
 //  bboxScaleDoubleSpinBox_->setEnabled(!bboxScaleDoubleSpinBox_->isEnabled());
 //  sizeDoubleSpinBox_->setEnabled(!sizeDoubleSpinBox_->isEnabled());
 //}
 
-//void GenerateElectrodeFromPointsDialog::AddPoint()
+//void GenerateElectrodeDialog::AddPoint()
 //{
 //    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
 //    state_->setValue(Parameters::NumberOfControlPoints,numpoints+1);
 //}
 
 
-//void GenerateElectrodeFromPointsDialog::RemovePoint()
+//void GenerateElectrodeDialog::RemovePoint()
 //{
 //    int numpoints = state_->getValue(Parameters::NumberOfControlPoints).toInt();
 //    state_->setValue(Parameters::NumberOfControlPoints,numpoints-1);

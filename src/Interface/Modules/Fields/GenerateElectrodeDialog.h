@@ -26,8 +26,8 @@
 */
 
 
-#ifndef INTERFACE_MODULES_GenerateElectrodeFromPointsDialog_H
-#define INTERFACE_MODULES_GenerateElectrodeFromPointsDialog_H
+#ifndef INTERFACE_MODULES_GenerateElectrodeDialog_H
+#define INTERFACE_MODULES_GenerateElectrodeDialog_H
 
 #include "Interface/Modules/Fields/ui_GenerateElectrodeFromPoints.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -36,13 +36,13 @@
 namespace SCIRun {
   namespace Gui {
 
-    class SCISHARE GenerateElectrodeFromPointsDialog : public ModuleDialogGeneric,
+    class SCISHARE GenerateElectrodeDialog : public ModuleDialogGeneric,
       public Ui::GenerateElectrodeFromPoints
     {
       Q_OBJECT
 
     public:
-      GenerateElectrodeFromPointsDialog(const std::string& name,
+      GenerateElectrodeDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
 
@@ -50,7 +50,7 @@ namespace SCIRun {
 //      void pullSpecial() override;
 
     private Q_SLOTS:
-      void enableWidgets(const QString& mode);
+//      void enableWidgets(const QString& mode);
 //      void pushColor();
 //      void assignDefaultMeshColor();
 //      void toggleSpinBoxes();
