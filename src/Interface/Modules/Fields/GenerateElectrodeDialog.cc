@@ -56,7 +56,7 @@ GenerateElectrodeDialog::GenerateElectrodeDialog(const std::string& name, Module
 //    {"Negative", "negative"}};
 
   addComboBoxManager(TypeComboBox_, Parameters::ElectrodeType, type);
-  addComboBoxMana/*ger(ProjectionComboBox_, Parameters::ElectrodeProjection, projection);*/
+//  addComboBoxManager(ProjectionComboBox_, Parameters::ElectrodeProjection, projection);
   addDoubleSpinBoxManager(LengthDoubleSpinBox_, Parameters::ElectrodeLength);
 //  addDoubleSpinBoxManager(WidthDoubleSpinBox_, Parameters::ElectrodeWidth);
   addDoubleSpinBoxManager(ThicknessDoubleSpinBox_, Parameters::ElectrodeThickness);
