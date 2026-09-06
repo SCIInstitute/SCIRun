@@ -82,24 +82,10 @@ class SCISHARE GenerateElectrodeFromPointsAlgo : public AlgorithmBase
     
     std::vector<Geometry::Point> get_centers(std::vector<Geometry::Point>&) const;
     FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>&) const;
+    FieldHandle Make_Mesh_Planar(std::vector<Geometry::Point>&, Geometry::Vector&) const;
   
     AlgorithmOutput run(const AlgorithmInput& input) const override;
-    
-//    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
-//    typedef std::vector<weight_type> table_type;
-//
-//    bool build_table(VMesh *mesh, VField* vfield,
-//                     std::vector<weight_type> &table,
-//                     std::string& method);
-//    static bool
-//    weight_less(const weight_type &a, const weight_type &b)
-//    {
-//      return (a.first < b.first);
-//    }
-    
 
-//    FieldHandle Make_Mesh_Wire(std::vector<Geometry::Point>& final_points, double, int) const;
-//    void get_centers(std::vector<Geometry::Point>&, std::vector<Geometry::Point>&, double, int) const;
     private:
       SharedPointer<class GenerateElectrodeFromPointsImpl> impl_;
     

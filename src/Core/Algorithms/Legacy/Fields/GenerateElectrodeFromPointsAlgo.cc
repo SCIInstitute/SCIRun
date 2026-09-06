@@ -59,103 +59,6 @@ GenerateElectrodeFromPointsAlgo::GenerateElectrodeFromPointsAlgo()
   addParameter(Parameters::UseFieldNodes,true);
 }
 
-namespace detail
-{
-class GenerateElectrodeAlgoF {
-public:
-  typedef std::pair<double, VMesh::Elem::index_type> weight_type;
-  typedef std::vector<weight_type> table_type;
-  
-  bool build_table(VMesh *mesh, VField* vfield,
-                   std::vector<weight_type> &table,
-                   std::string& method);
-  
-  static bool
-  weight_less(const weight_type &a, const weight_type &b)
-  {
-    return (a.first < b.first);
-  }
-};
-
-bool
-GenerateElectrodeAlgoF::build_table(VMesh *vmesh,
-                                    VField* vfield,
-                                    std::vector<weight_type> &table,
-                                    std::string& method)
-{
-  VMesh::size_type num_elems = vmesh->num_elems();
-  
-  long double sum = 0.0;
-  for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
-  {
-    double elemsize = 0.0;
-    if (method == "impuni")
-    { // Size of element * data at element.
-      Point p;
-      vmesh->get_center(p, idx);
-      if (vfield->is_vector())
-      {
-        Vector v;
-        if (vfield->interpolate(v, p))
-        {
-          elemsize = v.length() * vmesh->get_size(idx);
-        }
-      }
-      if (vfield->is_scalar())
-      {
-        double d;
-        if (vfield->interpolate(d, p) && d > 0.0)
-        {
-          elemsize = d * vmesh->get_size(idx);
-        }
-      }
-    }
-    else if (method == "impscat")
-    { // data at element
-      Point p;
-      vmesh->get_center(p, idx);
-      if (vfield->is_vector())
-      {
-        Vector v;
-        if (vfield->interpolate(v, p))
-        {
-          elemsize = v.length();
-        }
-      }
-      if (vfield->is_scalar())
-      {
-        double d;
-        if (vfield->interpolate(d, p) && d > 0.0)
-        {
-          elemsize = d;
-        }
-      }
-    }
-    else if (method == "uniuni")
-    { // size of element only
-      elemsize = vmesh->get_size(idx);
-    }
-    else if (method == "uniscat")
-    {
-      elemsize = 1.0;
-    }
-    
-    if (elemsize > 0.0)
-    {
-      sum += elemsize;
-      table.push_back(weight_type(sum, idx));
-    }
-  }
-  if (table.size() > 0)
-  {
-    return (true);
-  }
-  
-  return (false);
-}
-}
-
-
 // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
 
 bool GenerateElectrodeFromPointsImpl::CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
@@ -437,7 +340,7 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
 }
 
 
-FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Planar(std::vector<Point>& final_points, Vector& direction)
+FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Planar(std::vector<Point>& final_points, Vector& direction) const
     {
         //-------make planar mesh---------
 
@@ -738,7 +641,8 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Planar(std::vector<Point>
         }
 
         fi.make_double();
-        ofield = CreateField(fi,mesh);
+  
+      FieldHandle ofield = CreateField(fi,mesh);
 
       return ofield;
 
@@ -776,7 +680,7 @@ bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& ou
   VMesh::Node::array_type a;
   orig_points.resize(num_nodes);
   bool get_vect_direction=false;
-  if (vfield->is_vector())
+  if (sfield->is_vector())
   {
     get_vect_direction=true;
   }
