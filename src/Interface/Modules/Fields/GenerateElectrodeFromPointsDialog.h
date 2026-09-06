@@ -47,7 +47,7 @@ namespace SCIRun {
         QWidget* parent = nullptr);
 
     protected:
-//      void pullSpecial() override;
+      void pullSpecial() override;
 
     private Q_SLOTS:
       void enableWidgets(const QString& mode);
