@@ -79,17 +79,17 @@ void GenerateElectrodeFromPointsDialog::enableWidgets(const QString& mode)
   ProjectionComboBox_->setEnabled(mode == "planar");
 }
 
-//void GenerateElectrodeFromPointsDialog::pullSpecial()
-//{
+void GenerateElectrodeFromPointsDialog::pullSpecial()
+{
 //  ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
 //  // check for old saved color format: integers 0-255.
 //  defaultMeshColor_ = QColor(
 //    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
 //    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
 //    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-//
-//  enableWidgets(QString::fromStdString(state_->getValue(Parameters::ElectrodeType).toString()));
-//}
+
+  enableWidgets(QString::fromStdString(state_->getValue(Parameters::ElectrodeType).toString()));
+}
 //
 //void GenerateElectrodeFromPointsDialog::assignDefaultMeshColor()
 //{

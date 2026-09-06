@@ -727,9 +727,11 @@ bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& ou
     outputField = Make_Mesh_Wire(final_points);
   
   if (electrode_type == "planar")
-      std::cout <<" direction for mesh = "<<direction<<std::endl;
-      outputField = Make_Mesh_Planar(final_points, direction);
-
+  {
+    std::cout <<" direction for mesh = "<<direction<<std::endl;
+    outputField = Make_Mesh_Planar(final_points, direction);
+  }
+  
   return true;
     
   
