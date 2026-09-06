@@ -436,10 +436,8 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
     return CreateField(fi,mesh);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-    void
-    GenerateElectrodeFromPointsAlgo::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
+FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Planar(std::vector<Point>& final_points, Vector& direction)
     {
         //-------make planar mesh---------
 
@@ -450,21 +448,24 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
         bool vect_strangeness=false;
         bool res_strangeness=false;
 
-        const std::string &proj=gui_project_.get();
+      auto projection = getOption(Parameters::ElectrodeProjection);
+      double thickness = get(Parameters::ElectrodeThickness).toDouble();
+      double width = get(Parameters::ElectrodeWidth).toDouble()/2.0;
+      int resolution = get(Parameters::ElectrodeResolution).toInt();
 
         double aa, bb;
 
-        if (proj=="positive")
+        if (projection=="positive")
         {
             aa=0;
             bb=1;
         }
-        else if (proj=="midway")
+        else if (projection=="midway")
         {
             aa=.5;
             bb=1;
         }
-        else if (proj=="negative")
+        else if (projection=="negative")
         {
             aa=0;
             bb=-1;
@@ -475,14 +476,11 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
 
         Vector V1, V2, V, Vx, Vy, Vxold;
 
-        double width=gui_width_.get()/2;
-        double thick=gui_thick_.get();
 
         size_t N=final_points.size();
 
         std::vector<Point> fin_nodes;
 
-        Vector direc=arrow_widget_->GetDirection();
 
         direction.normalize();
 
@@ -535,13 +533,13 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
             V=(V1+V2)*.5;
             V.normalize();
 
-            if (Dot(V1,direc)>.8)
+            if (Dot(V1,direction)>.8)
             {
                 vect_strangeness=true;
-                //std::cout <<"V1 . direction = "<<Dot(V1,direc)<<std::endl;
+                //std::cout <<"V1 . direction = "<<Dot(V1,direction)<<std::endl;
             }
 
-            Vx=Cross(V1,direc);
+            Vx=Cross(V1,direction);
             if (Dot(Vx,Vxold)<.3  && k>0)
             {
                 vect_strangeness=true;
@@ -558,7 +556,7 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
              }
              else
              {
-             Vx=Cross(V2,direc);
+             Vx=Cross(V2,direction);
              Vy=Cross(V2,Vy);
              }
              */
@@ -566,16 +564,16 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
             Vx.normalize();
             Vy.normalize();
 
-            Point pr=Point(p[k]+Vy*thick*aa);
+            Point pr=Point(p[k]+Vy*thickness*aa);
 
             fin_nodes.push_back(pr);
-            fin_nodes.push_back(Point(pr-Vy*thick*bb));
+            fin_nodes.push_back(Point(pr-Vy*thickness*bb));
             Point srp=Point(pr+Vx*width);
             fin_nodes.push_back(srp);
-            fin_nodes.push_back(Point(pr+Vx*width-Vy*thick*bb));
+            fin_nodes.push_back(Point(pr+Vx*width-Vy*thickness*bb));
             Point srn=Point(pr-Vx*width);
             fin_nodes.push_back(srn);
-            fin_nodes.push_back(Point(pr-Vx*width-Vy*thick*bb));
+            fin_nodes.push_back(Point(pr-Vx*width-Vy*thickness*bb));
 
             Vxold=Vx;
 
@@ -742,69 +740,80 @@ FieldHandle GenerateElectrodeFromPointsAlgo::Make_Mesh_Wire(std::vector<Point>& 
         fi.make_double();
         ofield = CreateField(fi,mesh);
 
-        send_output_handle("Output Field",ofield);
+      return ofield;
 
     }
 
-#endif
 
 
 bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& outputField) const
 {
     
-    FieldInformation fis(input);
-    std::vector<Point> orig_points;
-    Vector direction;
-    Vector defdir = Vector(-10, 10, 10);
+  FieldInformation fis(input);
+  std::vector<Point> orig_points;
+  Vector direction;
+  Vector defdir = Vector(-10, 10, 10);
 
-    auto electrode_type = getOption(Parameters::ElectrodeType);
+  auto electrode_type = getOption(Parameters::ElectrodeType);
+  
+  if (!input)
+  {
+    error("input field required for GenerateElectrodeFromPointsAlgo");
+  }
+
+  VMesh* smesh = input->vmesh();
+  VField* sfield = input->vfield();
+
+  smesh->synchronize(Mesh::ELEM_LOCATE_E);
+
+  VMesh::Node::size_type num_nodes = smesh->num_nodes();
+  if (num_nodes > 50)
+  {
+    error("There are more input nodes than we have arbitrarily decided to allow.");
+    return false;
+  }
+
+  VMesh::Node::array_type a;
+  orig_points.resize(num_nodes);
+  bool get_vect_direction=false;
+  if (vfield->is_vector())
+  {
+    get_vect_direction=true;
+  }
+  else
+  {
+    direction = defdir;
+  }
+
+  for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
+  {
+    Point ap;
+    smesh->get_center(ap, idx);
+
+    orig_points[idx] = ap;
     
-    if (!input)
+    // just get the first non-zero vector value
+    if (get_vect_direction)
     {
-      error("input field required for GenerateElectrodeFromPointsAlgo");
+      Vector d;
+      sfield->get_value(d, idx);
+      if (d.norm()>0.0)
+      {
+        direction=d.normalize();
+        get_vect_direction=false;
+      }
     }
-  
-    VMesh* smesh = input->vmesh();
-
-    smesh->synchronize(Mesh::ELEM_LOCATE_E);
-
-    VMesh::Node::size_type num_nodes = smesh->num_nodes();
-    if (num_nodes > 50)
-    {
-      error("There are more input nodes than we have arbitrarily decided to allow.");
-      return false;
-    }
-
-    VMesh::Node::array_type a;
-    orig_points.resize(num_nodes);
-
-    for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
-    {
-      Point ap;
-      smesh->get_center(ap, idx);
-
-      orig_points[idx] = ap;
-      direction = defdir;
-    }
-    
-
-  
-
-//  size_type size = orig_points.size();
-  
-//  std::vector<Point> points(size);
+  }
   
   std::vector<Point> final_points = get_centers(orig_points);
 
   if (electrode_type == "wire")
     outputField = Make_Mesh_Wire(final_points);
+  
+  if (electrode_type == "planar")
+      outputField = Make_Mesh_Planar(final_points, direction);
 
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    if (electrode_type == "planar")
-        outputField = Make_Mesh_Planar(final_points, direction);
-  #endif
-
-    return true;
+  return true;
     
   
 }
