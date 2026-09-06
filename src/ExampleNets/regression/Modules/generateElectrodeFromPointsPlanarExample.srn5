@@ -437,7 +437,7 @@
 												<name>dip_dir</name>
 												<value object_id="_28">
 													<which>2</which>
-													<value>[-0.134007, -0.496094, 0.857865]</value>
+													<value>[0.159803, -0.907023, 0.38958]</value>
 												</value>
 											</item>
 											<item>
@@ -508,7 +508,7 @@
 												<name>dip_pos</name>
 												<value object_id="_37">
 													<which>2</which>
-													<value>[-0.0424987, -0.122006, -0.0971988]</value>
+													<value>[-0.0340235, -0.120404, -0.0761581]</value>
 												</value>
 											</item>
 											<item>
@@ -579,7 +579,7 @@
 												<name>dip_scale</name>
 												<value object_id="_46">
 													<which>1</which>
-													<value>2.85001014817782672e-01</value>
+													<value>4.69281969869468130e-01</value>
 												</value>
 											</item>
 											<item>
@@ -1958,28 +1958,28 @@
 												<name>listElement</name>
 												<value object_id="_161">
 													<which>1</which>
-													<value>-4.92077767848968506e-01</value>
+													<value>-4.31966096162796021e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_162">
 													<which>1</which>
-													<value>-4.89999383687973022e-01</value>
+													<value>5.91906607151031494e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_163">
 													<which>1</which>
-													<value>-7.03564822673797607e-01</value>
+													<value>2.00388893485069275e-01</value>
 												</value>
 											</item>
 											<item>
 												<name>listElement</name>
 												<value object_id="_164">
 													<which>1</which>
-													<value>1.50851204991340637e-01</value>
+													<value>6.50304913520812988e-01</value>
 												</value>
 											</item>
 										</value>

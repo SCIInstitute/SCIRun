@@ -683,11 +683,14 @@ bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& ou
   if (sfield->is_vector())
   {
     get_vect_direction=true;
+//    std::cout <<"vector data detected"<<std::endl;
   }
   else
   {
     direction = defdir;
   }
+//  std::cout <<"direction check -- "<<direction<<std::endl;
+//  std::cout <<"defdir -- "<<defdir<<std::endl;
 
   for (VMesh::Node::index_type idx = 0; idx < num_nodes; idx++)
   {
@@ -701,10 +704,19 @@ bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& ou
     {
       Vector d;
       sfield->get_value(d, idx);
+//      std::cout <<"  the d = "<<d<<std::endl;
+//      std::cout <<"  dnorm = "<<d.norm()<<std::endl;
+//      std::cout <<"  the d = "<<d<<std::endl;
       if (d.norm()>0.0)
       {
-        direction=d.normalize();
+        direction=d;
+//        std::cout <<"  the d = "<<d<<std::endl;
+//        std::cout <<"  dnorm = "<<d.norm()<<std::endl;
         get_vect_direction=false;
+//        std::cout <<" vector found. direction = "<<direction<<std::endl;
+//        std::cout <<"  the d = "<<d<<std::endl;
+//        direction.normalize();
+//        std::cout <<" vector found. direction = "<<direction<<std::endl;
       }
     }
   }
@@ -715,6 +727,7 @@ bool GenerateElectrodeFromPointsAlgo::runImpl(FieldHandle input, FieldHandle& ou
     outputField = Make_Mesh_Wire(final_points);
   
   if (electrode_type == "planar")
+      std::cout <<" direction for mesh = "<<direction<<std::endl;
       outputField = Make_Mesh_Planar(final_points, direction);
 
   return true;
