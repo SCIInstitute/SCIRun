@@ -28,7 +28,7 @@
 
 ///@brief This module makes a mesh that looks like a wire
 
-#include <Modules/Legacy/Fields/GenerateElectrode.h>
+#include <Modules/Legacy/Fields/GenerateElectrodeFromWidget.h>
 //#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 //#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Graphics/Datatypes/RenderFieldState.h>
@@ -65,7 +65,7 @@ using namespace Geometry;
 using namespace Graphics;
 using namespace Graphics::Datatypes;
 
-MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
+MODULE_INFO_DEF(GenerateElectrodeFromWidget, NewField, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
@@ -87,12 +87,12 @@ ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 //ALGORITHM_PARAMETER_DEF(Fields, PointPositions);
 //ALGORITHM_PARAMETER_DEF(Fields, DipoleDirection);
 
-const AlgorithmParameterName GenerateElectrode::PointPositions("PointPositions");
+const AlgorithmParameterName GenerateElectrodeFromWidget::PointPositions("PointPositions");
 const AlgorithmParameterName
-GenerateElectrode::DipoleDirection("DipoleDirection");
-const AlgorithmParameterName GenerateElectrode::Reset("Reset");
+GenerateElectrodeFromWidget::DipoleDirection("DipoleDirection");
+const AlgorithmParameterName GenerateElectrodeFromWidget::Reset("Reset");
 //const AlgorithmParameterName
-//GenerateElectrode::TranslationPoint("TranslationPoint");
+//GenerateElectrodeFromWidget::TranslationPoint("TranslationPoint");
 
 namespace SCIRun
 {
@@ -101,10 +101,10 @@ namespace Modules
 namespace Fields
 {
 
-class GenerateElectrodeImpl
+class GenerateElectrodeFromWidgetImpl
 {
 public:
-  GenerateElectrodeImpl(std::function<ModuleStateHandle()> s,
+  GenerateElectrodeFromWidgetImpl(std::function<ModuleStateHandle()> s,
     GeometryGeneratingModule* module) : state_(s), module_(module) {}
 //  void setInput(FieldHandle& input) { fieldInput_ = input; }
   
@@ -158,7 +158,7 @@ private:
 
 // equivalent to the interp1 command in matlab.  uses the parameters p and t to perform a cubic spline interpolation pp in one direction.
 
-bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
+bool GenerateElectrodeFromWidgetImpl::CalculateSpline(std::vector<double>& t, std::vector<double>& x, std::vector<double>& tt, std::vector<double>& xx)
 {
   // need to have at least 3 nodes
   if (t.size() < 3) return (false);
@@ -222,7 +222,7 @@ bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<
 // this is a spline function.  pp is the final points that are in between the original points p.
 // t and tt are the original and final desired spacing, respectively.
 
-bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
+bool GenerateElectrodeFromWidgetImpl::CalculateSpline(std::vector<double>& t, std::vector<Point>& p, std::vector<double>& tt, std::vector<Point>& pp)
 {
   // need to have at least 3 nodes
   if (t.size() < 3) return (false);
@@ -250,12 +250,12 @@ bool GenerateElectrodeImpl::CalculateSpline(std::vector<double>& t, std::vector<
   return (true);
 }
 
-std::vector<Point>& GenerateElectrodeImpl::getPointsFromState()
+std::vector<Point>& GenerateElectrodeFromWidgetImpl::getPointsFromState()
 {
   std::vector<Point> points;
   
   // from state
-  auto positions = state_()->getValue(GenerateElectrode::PointPositions).toVector();
+  auto positions = state_()->getValue(GenerateElectrodeFromWidget::PointPositions).toVector();
   size_t n=positions.size();
   points.resize(n);
   
@@ -268,12 +268,12 @@ std::vector<Point>& GenerateElectrodeImpl::getPointsFromState()
   return points;
 }
 
-Point& GenerateElectrodeImpl::getPointFromState(size_t id)
+Point& GenerateElectrodeFromWidgetImpl::getPointFromState(size_t id)
 {
   Point point;
   
   // from state
-  auto positions = state_()->getValue(GenerateElectrode::PointPositions).toVector();
+  auto positions = state_()->getValue(GenerateElectrodeFromWidget::PointPositions).toVector();
   size_t n=positions.size();
 
   point = pointFromString(positions[id].toString());
@@ -281,7 +281,7 @@ Point& GenerateElectrodeImpl::getPointFromState(size_t id)
   return point;
 }
 
-bool GenerateElectrodeImpl::setPointsToState(std::vector<Point>& points)
+bool GenerateElectrodeFromWidgetImpl::setPointsToState(std::vector<Point>& points)
 {
   VariableList positions;
   
@@ -289,12 +289,12 @@ bool GenerateElectrodeImpl::setPointsToState(std::vector<Point>& points)
   {
     positions.push_back(makeVariable("widget_i", points[i].get_string()));
   }
-  state_()->setValue(GenerateElectrode::PointPositions, positions);
+  state_()->setValue(GenerateElectrodeFromWidget::PointPositions, positions);
   
   return true;
 }
 
-bool GenerateElectrodeImpl::setPointToState(Point& point, size_t id)
+bool GenerateElectrodeFromWidgetImpl::setPointToState(Point& point, size_t id)
 {
   
   std::vector<Point>& points = getPointsFromState();
@@ -304,7 +304,7 @@ bool GenerateElectrodeImpl::setPointToState(Point& point, size_t id)
   setPointsToState(points);
   
   /*
-  auto positions = state_()->getValue(GenerateElectrode::PointPositions).toVector();
+  auto positions = state_()->getValue(GenerateElectrodeFromWidget::PointPositions).toVector();
   
   positions[id] = makeVariable("widget_id", point.get_string())
   state_()->setValue(Parameters::PointPositions, positions);
@@ -313,7 +313,7 @@ bool GenerateElectrodeImpl::setPointToState(Point& point, size_t id)
   return true;
 }
 
-std::vector<Point>& GenerateElectrodeImpl::getElectrodeCenters()
+std::vector<Point>& GenerateElectrodeFromWidgetImpl::getElectrodeCenters()
 {
 
   //get the positions from the module state
@@ -345,7 +345,7 @@ std::vector<Point>& GenerateElectrodeImpl::getElectrodeCenters()
 }
 
 
-FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_points)
+FieldHandle GenerateElectrodeFromWidgetImpl::Make_Mesh_Wire(std::vector<Point>& final_points)
 {
     FieldInformation fi("TetVolMesh",0,"double");
     MeshHandle mesh = CreateMesh(fi);
@@ -509,7 +509,7 @@ FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_poin
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
     void
-    GenerateElectrodeImpl::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
+    GenerateElectrodeFromWidgetImpl::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
     {
         //-------make planar mesh---------
 
@@ -818,13 +818,13 @@ FieldHandle GenerateElectrodeImpl::Make_Mesh_Wire(std::vector<Point>& final_poin
 
 #endif
 
-bool GenerateElectrodeImpl::runImpl(FieldHandle& input, FieldHandle& outputField, FieldHandle& outputPoints, GeometryHandle& outWidget)
+bool GenerateElectrodeFromWidgetImpl::runImpl(FieldHandle& input, FieldHandle& outputField, FieldHandle& outputPoints, GeometryHandle& outWidget)
 {
     
 //  FieldInformation fis(input);
   std::vector<Point> orig_points;
 
-  auto dir_string = state_()->getValue( GenerateElectrode::DipoleDirection).toString();
+  auto dir_string = state_()->getValue( GenerateElectrodeFromWidget::DipoleDirection).toString();
   Vector direction = vectorFromString(dir_string);
 
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
@@ -961,12 +961,12 @@ bool GenerateElectrodeImpl::runImpl(FieldHandle& input, FieldHandle& outputField
   
 }
 
-void GenerateElectrodeImpl::loadFromParameters(std::vector<Point>& orig_points)
+void GenerateElectrodeFromWidgetImpl::loadFromParameters(std::vector<Point>& orig_points)
 {
   orig_points = getPointsFromState();
 }
 
-void GenerateElectrodeImpl::loadFromInputField(FieldHandle input, std::vector<Point>& orig_points)
+void GenerateElectrodeFromWidgetImpl::loadFromInputField(FieldHandle input, std::vector<Point>& orig_points)
 {
   VMesh* smesh = input->vmesh();
   smesh->synchronize(Mesh::ELEM_LOCATE_E);
@@ -991,7 +991,7 @@ void GenerateElectrodeImpl::loadFromInputField(FieldHandle input, std::vector<Po
   }
 }
   
-void GenerateElectrodeImpl::defaultWidget(std::vector<Point>& orig_points)
+void GenerateElectrodeFromWidgetImpl::defaultWidget(std::vector<Point>& orig_points)
 {
   double l, lx;
   l = state_()->getValue(Parameters::ElectrodeLength).toDouble();
@@ -1008,7 +1008,7 @@ void GenerateElectrodeImpl::defaultWidget(std::vector<Point>& orig_points)
   
 }
   
-void GenerateElectrodeImpl::addPoint(std::vector<Point>& p)
+void GenerateElectrodeFromWidgetImpl::addPoint(std::vector<Point>& p)
 {
   size_t size=widget_.size(), s=0;
   std::vector<Point> points(size);
@@ -1033,7 +1033,7 @@ void GenerateElectrodeImpl::addPoint(std::vector<Point>& p)
   
 }
   
-bool GenerateElectrodeImpl::removePoint()
+bool GenerateElectrodeFromWidgetImpl::removePoint()
 {
   //cout<<"---removing a widget with remove button"<<endl;
   
@@ -1057,7 +1057,7 @@ bool GenerateElectrodeImpl::removePoint()
   return true;
 }
 
-void GenerateElectrodeImpl::createWidgets(std::vector<Point>& points)
+void GenerateElectrodeFromWidgetImpl::createWidgets(std::vector<Point>& points)
 {
   widget_.resize(0);
   
@@ -1067,7 +1067,7 @@ void GenerateElectrodeImpl::createWidgets(std::vector<Point>& points)
   }
 }
 
-WidgetHandle GenerateElectrodeImpl::createPointWidget(Point& point, size_t id)
+WidgetHandle GenerateElectrodeFromWidgetImpl::createPointWidget(Point& point, size_t id)
 {
   std::string probename = state_()->getValue(Parameters::ProbeLabel).toString();
   std::string widgetName = probename + "(" + std::to_string(id) + ")"; ;
@@ -1085,7 +1085,7 @@ WidgetHandle GenerateElectrodeImpl::createPointWidget(Point& point, size_t id)
   return sphere;
 }
 
-//void GenerateElectrodeImpl::createWidgets(std::vector<Point>& points, Vector direction)
+//void GenerateElectrodeFromWidgetImpl::createWidgets(std::vector<Point>& points, Vector direction)
 //{
 //  widget_.resize(0)
 //  
@@ -1095,7 +1095,7 @@ WidgetHandle GenerateElectrodeImpl::createPointWidget(Point& point, size_t id)
 //  }
 //}
 
-//WidgetHandle GenerateElectrodeImpl::createArrowWidget(Point& point)
+//WidgetHandle GenerateElectrodeFromWidgetImpl::createArrowWidget(Point& point)
 //{
 //  auto arrow = WidgetFactory::createArrowWidget(
 //    {*module_, "SAED"},
@@ -1104,7 +1104,7 @@ WidgetHandle GenerateElectrodeImpl::createPointWidget(Point& point, size_t id)
 //  return arrow
 //}
 
-GeometryHandle GenerateElectrodeImpl::generateGeoms()
+GeometryHandle GenerateElectrodeFromWidgetImpl::generateGeoms()
 {
   // Rewrite all existing geom
   geoms_.clear();
@@ -1117,7 +1117,7 @@ GeometryHandle GenerateElectrodeImpl::generateGeoms()
   
 }
 
-FieldHandle GenerateElectrodeImpl::makeOutputMesh()
+FieldHandle GenerateElectrodeFromWidgetImpl::makeOutputMesh()
 {
   std::vector<Point> final_points = getElectrodeCenters();
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
@@ -1135,7 +1135,7 @@ FieldHandle GenerateElectrodeImpl::makeOutputMesh()
 }
 
 
-void GenerateElectrodeImpl::moveTogether(const Transform& transform)
+void GenerateElectrodeFromWidgetImpl::moveTogether(const Transform& transform)
 {
 //  std::vector<Point> points(widget_.size());
   std::vector<Point> points_new;
@@ -1154,7 +1154,7 @@ void GenerateElectrodeImpl::moveTogether(const Transform& transform)
 }
 
 
-void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
+void GenerateElectrodeFromWidgetImpl::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
 {
 //  auto bbox = input->vmesh()->get_bounding_box();
 //  bool is_vector = std::dynamic_pointer_cast<ArrowWidget>(widget_[id])->isVector();
@@ -1190,7 +1190,7 @@ void GenerateElectrodeImpl::adjustPositionFromTransform(const Transform& transfo
 
 
 
-GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_), impl_(new GenerateElectrodeImpl([this]() { return get_state(); }, this))
+GenerateElectrodeFromWidget::GenerateElectrodeFromWidget() : GeometryGeneratingModule(staticInfo_), impl_(new GenerateElectrodeFromWidgetImpl([this]() { return get_state(); }, this))
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(ElectrodeMesh);
@@ -1198,7 +1198,7 @@ GenerateElectrode::GenerateElectrode() : GeometryGeneratingModule(staticInfo_), 
   INITIALIZE_PORT(ControlPoints);
 }
 
-void GenerateElectrode::setStateDefaults()
+void GenerateElectrodeFromWidget::setStateDefaults()
 {
   auto state = get_state();
   using namespace Parameters;
@@ -1223,7 +1223,7 @@ void GenerateElectrode::setStateDefaults()
   getOutputPort(ElectrodeWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
-void GenerateElectrode::processWidgetFeedback(const ModuleFeedback& var)
+void GenerateElectrodeFromWidget::processWidgetFeedback(const ModuleFeedback& var)
 {
   try
   {
@@ -1294,7 +1294,7 @@ void GenerateElectrode::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
-void GenerateElectrode::execute()
+void GenerateElectrodeFromWidget::execute()
 {
   
   auto state = get_state();
@@ -1354,7 +1354,7 @@ void GenerateElectrode::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 void
-GenerateElectrode::widget_moved(bool release, BaseWidget* widget_)
+GenerateElectrodeFromWidget::widget_moved(bool release, BaseWidget* widget_)
 {
   if (release) want_to_execute();
   if (gui_move_all_.get()) move_all_=true;
@@ -1362,7 +1362,7 @@ GenerateElectrode::widget_moved(bool release, BaseWidget* widget_)
 
 
 void
-GenerateElectrode::create_widgets(std::vector<Point>& points)
+GenerateElectrodeFromWidget::create_widgets(std::vector<Point>& points)
 {
   GeomGroup *group = new GeomGroup;
   widget_switch_ = new GeomSwitch(group);
@@ -1392,7 +1392,7 @@ GenerateElectrode::create_widgets(std::vector<Point>& points)
 }
 
 void
-GenerateElectrode::create_widgets(std::vector<Point>& points,Vector& direction)
+GenerateElectrodeFromWidget::create_widgets(std::vector<Point>& points,Vector& direction)
 {
   GeomGroup *group = new GeomGroup;
   widget_switch_ = new GeomSwitch(group);
@@ -1437,7 +1437,7 @@ GenerateElectrode::create_widgets(std::vector<Point>& points,Vector& direction)
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void
-GenerateElectrode::tcl_command(GuiArgs& args, void* userdata)
+GenerateElectrodeFromWidget::tcl_command(GuiArgs& args, void* userdata)
 {
   if(args.count() < 2)
   {
@@ -1456,7 +1456,7 @@ GenerateElectrode::tcl_command(GuiArgs& args, void* userdata)
 }
 
 void
-GenerateElectrode::presave()
+GenerateElectrodeFromWidget::presave()
 {
   //cout<<"Started presave()"<<endl;
   
@@ -1499,7 +1499,7 @@ GenerateElectrode::presave()
 }
 
 void
-GenerateElectrode::post_read()
+GenerateElectrodeFromWidget::post_read()
 {
   size_t has_arrow = 0;
   size_t num_points = gui_widget_points_.get();
@@ -1534,7 +1534,7 @@ GenerateElectrode::post_read()
 }
 
 void
-GenerateElectrode::add_point(std::vector<Point>& p)
+GenerateElectrodeFromWidget::add_point(std::vector<Point>& p)
 {
   
   
@@ -1564,7 +1564,7 @@ GenerateElectrode::add_point(std::vector<Point>& p)
 
 
 bool
-GenerateElectrode::remove_point()
+GenerateElectrodeFromWidget::remove_point()
 {
   //cout<<"---removing a widget with remove button"<<endl;
   

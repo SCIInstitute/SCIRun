@@ -26,8 +26,8 @@
 */
 
 
-#ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
-#define MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
+#ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMWIDGET_H
+#define MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMWIDGET_H
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
@@ -66,14 +66,14 @@ namespace SCIRun
     namespace Fields
     {
       
-      class GenerateElectrodeImpl;
+      class GenerateElectrodeFromWidgetImpl;
 
-      class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE GenerateElectrodeFromWidget : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
         public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
       {
       public:
-        GenerateElectrode();
+        GenerateElectrodeFromWidget();
         void execute() override;
         void setStateDefaults() override;
         
@@ -88,7 +88,7 @@ namespace SCIRun
           
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
       private:
-        SharedPointer<class GenerateElectrodeImpl> impl_;
+        SharedPointer<class GenerateElectrodeFromWidgetImpl> impl_;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
 
       };
