@@ -46,6 +46,7 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
 TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes
   Core_Datatypes_Legacy_Field
+  Core_Datatypes_VTK
   Graphics_Glyphs
   Algorithms_Base
 )
@@ -56,7 +57,6 @@ ENDIF()
 
 IF(WITH_VTK)
   target_link_libraries(Core_Algorithms_Visualization
-    Core_Datatypes_VTK
     VTK::CommonDataModel
     VTK::CommonCore
   )

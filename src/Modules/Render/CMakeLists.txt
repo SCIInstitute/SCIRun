@@ -47,14 +47,9 @@ SCIRUN_ADD_LIBRARY(Modules_Render
 TARGET_LINK_LIBRARIES(Modules_Render
   Dataflow_Network
   Core_Datatypes
+  Core_Datatypes_VTK
   Core_Application_Preferences
 )
-
-IF (WITH_VTK)
-  TARGET_LINK_LIBRARIES(Modules_Render
-    Core_Datatypes_VTK
-  )
-ENDIF (WITH_VTK)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Render)
