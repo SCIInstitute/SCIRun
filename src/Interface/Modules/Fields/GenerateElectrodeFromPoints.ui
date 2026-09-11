@@ -58,9 +58,6 @@
           <height>24</height>
          </size>
         </property>
-        <property name="readOnly">
-         <bool>false</bool>
-        </property>
         <property name="decimals">
          <number>5</number>
         </property>
@@ -246,9 +243,6 @@
          </size>
         </property>
         <property name="editable">
-         <bool>false</bool>
-        </property>
-        <property name="duplicatesEnabled">
          <bool>false</bool>
         </property>
         <property name="frame">
