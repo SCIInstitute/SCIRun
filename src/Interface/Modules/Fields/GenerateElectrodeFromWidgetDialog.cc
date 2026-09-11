@@ -29,6 +29,7 @@
 #include <Interface/Modules/Fields/GenerateElectrodeFromWidgetDialog.h>
 //#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromWidgetAlgo.h>
 #include <Modules/Legacy/Fields/GenerateElectrodeFromWidget.h>
+#include <Modules/Legacy/Fields/GenerateElectrode.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 //#include <QColorDialog>
@@ -36,7 +37,7 @@
 //using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 
@@ -63,6 +64,7 @@ GenerateElectrodeFromWidgetDialog::GenerateElectrodeFromWidgetDialog(const std::
   addSpinBoxManager(NumberOfControlPointsSpinBox_, Parameters::NumberOfControlPoints);
   addSpinBoxManager(ResolutionSpinBox_, Parameters::ElectrodeResolution);
   addCheckBoxManager(UseFieldNodesCheckBox_, Parameters::UseFieldNodes);
+  addCheckBoxManager(MoveAllCheckBox_,  Parameters::MoveAll);
 
   connect(TypeComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateElectrodeFromWidgetDialog::enableWidgets);
 //  connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateElectrodeFromWidgetDialog::assignDefaultMeshColor);

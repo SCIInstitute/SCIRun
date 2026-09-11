@@ -43,18 +43,18 @@ namespace SCIRun
       namespace Fields
       {
 
-        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
-        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
         ALGORITHM_PARAMETER_DECL(ElectrodeWidth);
-        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
-        ALGORITHM_PARAMETER_DECL(ElectrodeType);
-        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
+//        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeType);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
         ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
         ALGORITHM_PARAMETER_DECL(MoveAll);
         ALGORITHM_PARAMETER_DECL(UseFieldNodes);
-        ALGORITHM_PARAMETER_DECL(ProbeColor);
-        ALGORITHM_PARAMETER_DECL(ProbeLabel);
-        ALGORITHM_PARAMETER_DECL(ProbeSize);
+//        ALGORITHM_PARAMETER_DECL(ProbeColor);
+//        ALGORITHM_PARAMETER_DECL(ProbeLabel);
+//        ALGORITHM_PARAMETER_DECL(ProbeSize);
       
       }
     }
@@ -80,13 +80,14 @@ namespace SCIRun
         static const Core::Algorithms::AlgorithmParameterName PointPositions;
         static const Core::Algorithms::AlgorithmParameterName DipoleDirection;
         static const Core::Algorithms::AlgorithmParameterName Reset;
+//        static const Core::Algorithms::AlgorithmParameterName MoveAll;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, ElectrodeMesh, Field);
         OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
         OUTPUT_PORT(2, ControlPoints, Field);
           
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI);
       private:
         SharedPointer<class GenerateElectrodeFromWidgetImpl> impl_;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);

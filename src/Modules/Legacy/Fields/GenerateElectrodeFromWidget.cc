@@ -29,8 +29,11 @@
 ///@brief This module makes a mesh that looks like a wire
 
 #include <Modules/Legacy/Fields/GenerateElectrodeFromWidget.h>
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Modules/Legacy/Fields/GenerateElectrode.h>
+#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Algorithms/Base/VariableHelper.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -67,26 +70,27 @@ using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(GenerateElectrodeFromWidget, NewField, SCIRun)
 
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
+//ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
+//ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeWidth);
-ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
+//ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
+//ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
+//ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
 ALGORITHM_PARAMETER_DEF(Fields, ElectrodeProjection);
 ALGORITHM_PARAMETER_DEF(Fields, MoveAll);
 ALGORITHM_PARAMETER_DEF(Fields, UseFieldNodes);
 //ALGORITHM_PARAMETER_DEF(Fields, Reset);
 
 
-ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
-ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
+//ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
+//ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
+//ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 
 //ALGORITHM_PARAMETER_DEF(Fields, TranslationPoint);
 //ALGORITHM_PARAMETER_DEF(Fields, PointPositions);
 //ALGORITHM_PARAMETER_DEF(Fields, DipoleDirection);
 
+//const AlgorithmParameterName GenerateElectrodeFromWidget::MoveAll("MoveAll");
 const AlgorithmParameterName GenerateElectrodeFromWidget::PointPositions("PointPositions");
 const AlgorithmParameterName
 GenerateElectrodeFromWidget::DipoleDirection("DipoleDirection");
@@ -506,350 +510,38 @@ FieldHandle GenerateElectrodeFromWidgetImpl::Make_Mesh_Wire(std::vector<Point>& 
 }
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-    void
-    GenerateElectrodeFromWidgetImpl::Make_Mesh_Planar(std::vector<Point>& final_points, FieldHandle& ofield, Vector& direction)
-    {
-        //-------make planar mesh---------
-
-        FieldInformation fi("TetVolMesh",0,"double");
-        MeshHandle mesh = CreateMesh(fi);
-        VMesh::Node::array_type nodes;
-
-        bool vect_strangeness=false;
-        bool res_strangeness=false;
-
-        const std::string &proj=gui_project_.get();
-
-        double aa, bb;
-
-        if (proj=="positive")
-        {
-            aa=0;
-            bb=1;
-        }
-        else if (proj=="midway")
-        {
-            aa=.5;
-            bb=1;
-        }
-        else if (proj=="negative")
-        {
-            aa=0;
-            bb=-1;
-        }
-
-        //cout <<"proj= "<<proj<<".  aa = "<<aa<<". bb "<<bb<<endl;
-
-
-        Vector V1, V2, V, Vx, Vy, Vxold;
-
-        double width=gui_width_.get()/2;
-        double thick=gui_thick_.get();
-
-        size_t N=final_points.size();
-
-        std::vector<Point> fin_nodes;
-
-        Vector direc=arrow_widget_->GetDirection();
-
-        direction.normalize();
-
-        std::vector<Point> p=final_points;
-
-        Point srp_old, srn_old, pr_old;
-
-        Vector temp1, temp2;
-        double temp1_mag, temp2_mag;
-
-
-        for (size_t k=0;k<N;k++)
-        {
-
-            if (k==N-1)
-            {
-                V1=p[k]-p[k-1];
-                V2=V1;
-            }
-
-            else if (k==0)
-            {
-                V2=p[k+1]-p[k];
-                V1=V2;
-            }
-            else
-            {
-                V1=p[k]-p[k-1];
-                V2=p[k+1]-p[k];
-            }
-
-            if (sqrt(V1[0]*V1[0] + V1[1]*V1[1] + V1[2]*V1[2])>0)
-            {
-                V1.normalize();
-            }
-            else
-            {
-                V1[0]=1; V1[1]=0; V1[2]=0;
-            }
-
-            if (sqrt(V2[0]*V2[0] + V2[1]*V2[1] + V2[2]*V2[2])>0)
-            {
-                V2.normalize();
-            }
-            else
-            {
-                V2[0]=0; V2[1]=1; V2[2]=0;
-            }
-
-            V=(V1+V2)*.5;
-            V.normalize();
-
-            if (Dot(V1,direc)>.8)
-            {
-                vect_strangeness=true;
-                //std::cout <<"V1 . direction = "<<Dot(V1,direc)<<std::endl;
-            }
-
-            Vx=Cross(V1,direc);
-            if (Dot(Vx,Vxold)<.3  && k>0)
-            {
-                vect_strangeness=true;
-                //std::cout <<"newx . oldx = "<<Dot(Vx,Vxold)<<std::endl;
-                Vx=Vxold;
-            }
-            Vy=Cross(V1,Vx);
-
-
-
-
-
-            /*
-             }
-             else
-             {
-             Vx=Cross(V2,direc);
-             Vy=Cross(V2,Vy);
-             }
-             */
-
-            Vx.normalize();
-            Vy.normalize();
-
-            Point pr=Point(p[k]+Vy*thick*aa);
-
-            fin_nodes.push_back(pr);
-            fin_nodes.push_back(Point(pr-Vy*thick*bb));
-            Point srp=Point(pr+Vx*width);
-            fin_nodes.push_back(srp);
-            fin_nodes.push_back(Point(pr+Vx*width-Vy*thick*bb));
-            Point srn=Point(pr-Vx*width);
-            fin_nodes.push_back(srn);
-            fin_nodes.push_back(Point(pr-Vx*width-Vy*thick*bb));
-
-            Vxold=Vx;
-
-            if (k>0)
-            {
-                temp1=srp_old-pr;
-                temp2=srn_old-pr;
-                temp1_mag=sqrt(temp1[0]*temp1[0]+temp1[1]*temp1[1]+temp1[2]*temp1[2]);
-                temp2_mag=sqrt(temp2[0]*temp2[0]+temp2[1]*temp2[1]+temp2[2]*temp2[2]);
-
-
-                if (temp1_mag<width)
-                {
-                    res_strangeness=true;
-                }
-            }
-
-            srp_old=srp;
-            srn_old=srn;
-            pr_old=pr;
-        }
-
-        if (vect_strangeness)
-        {
-            warning("Vector is close to parrallel to part of the spline.  Consider adjusting");
-        }
-
-        if (res_strangeness)
-        {
-            warning("Resulting mesh elements may cross.  Consider modifying control points or vector, changing width, or changing resolution");
-        }
-
-        for (VMesh::Node::index_type idx=0;idx<fin_nodes.size();idx++)
-        {
-
-            mesh->vmesh()->add_point(fin_nodes[idx]);
-        }
-
-        VMesh::Node::index_type EE=0, EE1=1, EE2=2,EE3=3,EE4=4,EE5=5;
-        VMesh::Node::index_type SE, SE1, SE2,SE3,SE4,SE5;
-
-        int DN=5;
-
-        SE=static_cast<VMesh::Node::index_type> (DN+1);
-        SE1=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+1);
-        SE2=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+2);
-        SE3=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+3);
-        SE4=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+4);
-        SE5=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+5);
-
-        for (VMesh::Node::index_type idx=0;idx<N-1;idx++)
-        {
-
-
-            EE1=static_cast<VMesh::Node::index_type> (static_cast<int> (EE)+1);
-
-            VMesh::Node::array_type elem_nodes(4);
-
-
-            //right side elements
-            elem_nodes[0]=EE;
-            elem_nodes[1]=EE1;
-            elem_nodes[2]=EE2;
-            elem_nodes[3]=SE;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=EE1;
-            elem_nodes[2]=EE2;
-            elem_nodes[3]=SE;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=EE2;
-            elem_nodes[2]=EE3;
-            elem_nodes[3]=EE1;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE;
-            elem_nodes[1]=SE1;
-            elem_nodes[2]=SE2;
-            elem_nodes[3]=EE2;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=SE2;
-            elem_nodes[2]=SE3;
-            elem_nodes[3]=EE2;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=EE2;
-            elem_nodes[2]=EE3;
-            elem_nodes[3]=SE3;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            //left side elements
-            elem_nodes[0]=EE;
-            elem_nodes[1]=EE1;
-            elem_nodes[2]=EE4;
-            elem_nodes[3]=SE;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=EE1;
-            elem_nodes[2]=EE4;
-            elem_nodes[3]=SE;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=EE4;
-            elem_nodes[2]=EE5;
-            elem_nodes[3]=EE1;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE;
-            elem_nodes[1]=SE1;
-            elem_nodes[2]=SE4;
-            elem_nodes[3]=EE4;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=SE4;
-            elem_nodes[2]=SE5;
-            elem_nodes[3]=EE4;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            elem_nodes[0]=SE1;
-            elem_nodes[1]=EE4;
-            elem_nodes[2]=EE5;
-            elem_nodes[3]=SE5;
-
-            mesh->vmesh()->add_elem(elem_nodes);
-
-            EE=SE;
-            EE1=SE1;
-            EE2=SE2;
-            EE3=SE3;
-            EE4=SE4;
-            EE5=SE5;
-
-
-
-            SE=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+(DN)+1);
-            SE1=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+1);
-            SE2=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+2);
-            SE3=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+3);
-            SE4=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+4);
-            SE5=static_cast<VMesh::Node::index_type> (static_cast<int> (SE)+5);
-
-        }
-
-        fi.make_double();
-        ofield = CreateField(fi,mesh);
-
-        send_output_handle("Output Field",ofield);
-
-    }
-
-#endif
-
 bool GenerateElectrodeFromWidgetImpl::runImpl(FieldHandle& input, FieldHandle& outputField, FieldHandle& outputPoints, GeometryHandle& outWidget)
 {
     
 //  FieldInformation fis(input);
   std::vector<Point> orig_points;
 
-  auto dir_string = state_()->getValue( GenerateElectrodeFromWidget::DipoleDirection).toString();
-  Vector direction = vectorFromString(dir_string);
+//  auto dir_string = state_()->getValue( GenerateElectrodeFromWidget::DipoleDirection).toString();
+//  Vector direction = vectorFromString(dir_string);
 
   auto electrode_type = state_()->getValue(Parameters::ElectrodeType).toString();
   auto use_field = state_()->getValue(Parameters::UseFieldNodes).toBool();
   
   std::string moveto = "";
-  
-  if (input && use_field && (moveto == "default" || widget_.size() == 0 || module_->inputsChanged()))
-  {
-    loadFromInputField(input, orig_points);
-  }
+//  
+//  if (input && use_field && (moveto == "default" || widget_.size() == 0 || module_->inputsChanged()))
+//  {
+//    loadFromInputField(input, orig_points);
+//  }
 
 
-  else if ((!input || !use_field) && (moveto == "default" || widget_.size() == 0))
+//  else
+  if ((!input || !use_field) && (moveto == "default" || widget_.size() == 0))
   {
     defaultWidget(orig_points);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    gui_moveto_.set("");
-#endif
+    // stand in
+//    moveto = "";
   }
 
-  else if (moveto == "add_point")
-  {
-    addPoint(orig_points);
+//  else if (moveto == "add_point")
+//  {
+//    addPoint(orig_points);
 //    if (electrode_type == "planar")
 //    {
 //      direction = arrow_widget_->GetDirection();
@@ -859,13 +551,13 @@ bool GenerateElectrodeFromWidgetImpl::runImpl(FieldHandle& input, FieldHandle& o
 //      direction = defdir;
 //    }
 //    gui_moveto_.set("");
-  }
-  else if (moveto == "remove_point")
-  {
-    removePoint();
-//    gui_moveto_.set("");
-    return false;
-  }
+//  }
+//  else if (moveto == "remove_point")
+//  {
+//    removePoint();
+////    gui_moveto_.set("");
+//    return false;
+//  }
   else
   {
     size_t n = widget_.size(), s = 0;
@@ -886,7 +578,7 @@ bool GenerateElectrodeFromWidgetImpl::runImpl(FieldHandle& input, FieldHandle& o
     }
   }
     
-  state_()->setValue(Parameters::NumberOfControlPoints,orig_points.size());
+  state_()->setValue(Parameters::NumberOfControlPoints,static_cast<int>(orig_points.size()));
   
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (electrode_type == "wire")
@@ -1125,11 +817,10 @@ FieldHandle GenerateElectrodeFromWidgetImpl::makeOutputMesh()
   
     if (electrode_type == "wire")
       outputField = Make_Mesh_Wire(final_points);
-
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  
     if (electrode_type == "planar")
-      outputField = Make_Mesh_Planar(final_points);
-  #endif
+      module_ -> error("Planar mesh not working right now");
+//      outputField = Make_Mesh_Planar(final_points);
   
   return outputField;
 }
@@ -1337,6 +1028,7 @@ void GenerateElectrodeFromWidget::execute()
   FieldHandle outputField;
   FieldHandle outputPoints;
   GeometryHandle geomWidget;
+  
   if (!impl_ -> runImpl(*source, outputField, outputPoints, geomWidget))
     error("False returned on legacy run call.");
   
