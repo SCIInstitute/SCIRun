@@ -26,31 +26,42 @@
 */
 
 
-#ifndef SPIRE_COMPONENT_SKINNED_GEOM_HPP
-#define SPIRE_COMPONENT_SKINNED_GEOM_HPP
+#ifndef INTERFACE_MODULES_GenerateElectrodeDialog_H
+#define INTERFACE_MODULES_GenerateElectrodeDialog_H
 
-#include <es-log/trace-log.h>
-#include <glm/glm.hpp>
-#include <es-cereal/ComponentSerialize.hpp>
-#include <spire/scishare.h>
+#include "Interface/Modules/Fields/ui_GenerateElectrodeFromPoints.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-namespace ren {
+namespace SCIRun {
+  namespace Gui {
 
-struct SkinnedGeom
-{
-  // -- Data --
-  GLuint vbo = 0;
-  GLuint ibo = 0;
+    class SCISHARE GenerateElectrodeDialog : public ModuleDialogGeneric,
+      public Ui::GenerateElectrodeFromPoints
+    {
+      Q_OBJECT
 
-  // -- Functions --
-  static const char* getName() {return "ren:SkinnedGeom";}
+    public:
+      GenerateElectrodeDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
 
-  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
-  {
-    return true;
+    protected:
+//      void pullSpecial() override;
+
+    private Q_SLOTS:
+//      void enableWidgets(const QString& mode);
+//      void pushColor();
+//      void assignDefaultMeshColor();
+//      void toggleSpinBoxes();
+//      void AddPoint();
+//      void RemovePoint();
+
+    private:
+//      QColor defaultMeshColor_;
+    };
+
   }
-};
-
-} // namespace ren
+}
 
 #endif

@@ -26,31 +26,36 @@
 */
 
 
-#ifndef SPIRE_COMPONENT_SKINNED_GEOM_HPP
-#define SPIRE_COMPONENT_SKINNED_GEOM_HPP
+#ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMPOINTS_H
+#define MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMPOINTS_H
 
-#include <es-log/trace-log.h>
-#include <glm/glm.hpp>
-#include <es-cereal/ComponentSerialize.hpp>
-#include <spire/scishare.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-namespace ren {
-
-struct SkinnedGeom
+namespace SCIRun
 {
-  // -- Data --
-  GLuint vbo = 0;
-  GLuint ibo = 0;
-
-  // -- Functions --
-  static const char* getName() {return "ren:SkinnedGeom";}
-
-  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  namespace Modules
   {
-    return true;
-  }
-};
+    namespace Fields
+    {
 
-} // namespace ren
+      class SCISHARE GenerateElectrodeFromPoints : public SCIRun::Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        GenerateElectrodeFromPoints();
+        void execute() override;
+        void setStateDefaults() override;
+
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, ElectrodeMesh, Field);
+          
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
+
+      };
+    }
+  }
+}
 
 #endif
