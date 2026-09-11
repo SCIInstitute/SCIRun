@@ -56,6 +56,10 @@ namespace SCIRun
 //        ALGORITHM_PARAMETER_DECL(ProbeLabel);
 //        ALGORITHM_PARAMETER_DECL(ProbeSize);
       
+      ALGORITHM_PARAMETER_DECL(Reset);
+      ALGORITHM_PARAMETER_DECL(PointPositions);
+      ALGORITHM_PARAMETER_DECL(DipoleDirection);
+      
       }
     }
   }
@@ -77,9 +81,9 @@ namespace SCIRun
         void execute() override;
         void setStateDefaults() override;
         
-        static const Core::Algorithms::AlgorithmParameterName PointPositions;
-        static const Core::Algorithms::AlgorithmParameterName DipoleDirection;
-        static const Core::Algorithms::AlgorithmParameterName Reset;
+//        static const Core::Algorithms::AlgorithmParameterName PointPositions;
+//        static const Core::Algorithms::AlgorithmParameterName DipoleDirection;
+//        static const Core::Algorithms::AlgorithmParameterName Reset;
 //        static const Core::Algorithms::AlgorithmParameterName MoveAll;
 
         INPUT_PORT(0, InputField, Field);
