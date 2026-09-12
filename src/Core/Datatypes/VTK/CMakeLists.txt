@@ -26,42 +26,31 @@
 #
 
 
-SET(Algorithms_Visualization_SRCS
-  OsprayDataAlgorithm.cc
-  VtkDataAlgorithm.cc
-  VtkGeometryBuilder.cc
+SET(Core_Datatypes_VTK_SRCS
+  VtkGeometry.cc
 )
 
-SET(Algorithms_Visualization_HEADERS
-  OsprayDataAlgorithm.h
-  VtkDataAlgorithm.h
-  VtkGeometryBuilder.h
-)
-
-SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
-  ${Algorithms_Visualization_HEADERS}
-  ${Algorithms_Visualization_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
-  Core_Datatypes
-  Core_Datatypes_Legacy_Field
-  Core_Datatypes_VTK
-  Graphics_Glyphs
-  Algorithms_Base
-)
-
-IF(WITH_OSPRAY)
-  TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization ospray::ospray)
-ENDIF()
-
-IF(WITH_VTK)
-  target_link_libraries(Core_Algorithms_Visualization
-    VTK::CommonDataModel
-    VTK::CommonCore
+SET(Core_Datatypes_VTK_HEADERS
+  VtkGeometry.h
+  share.h
   )
-ENDIF()
+
+SCIRUN_ADD_LIBRARY(Core_Datatypes_VTK
+  ${Core_Datatypes_VTK_HEADERS}
+  ${Core_Datatypes_VTK_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
+  Core_Datatypes
+)
+
+IF (WITH_VTK)
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
+  VTK::CommonCore
+)
+ENDIF (WITH_VTK)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Algorithms_Visualization)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_VTK)
 ENDIF(BUILD_SHARED_LIBS)
+
