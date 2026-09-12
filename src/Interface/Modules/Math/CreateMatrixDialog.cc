@@ -49,7 +49,7 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
     matrixTextEdit_->setEnabled(false);
   }
 
-  connect(editCheckBox_, &QCheckBox::stateChanged, this, &CreateMatrixDialog::pushMatrixToState);
+  connect(editCheckBox_, &QCheckBox::toggled, this, &CreateMatrixDialog::pushMatrixToState);
   connect(matrixTextEdit_, &CodeEditor::textChanged, this, &CreateMatrixDialog::editBoxUnsaved);
   connect(editCheckBox_, &QCheckBox::toggled, matrixTextEdit_, &QTextEdit::setEnabled);
 }
@@ -71,11 +71,11 @@ void CreateMatrixDialog::remindAboutUnsavedMatrix()
       windowTitle() + "\nMatrix is edited but not saved--did you mean to click the save checkbox?");
 }
 
-void CreateMatrixDialog::pushMatrixToState(int state)
+void CreateMatrixDialog::pushMatrixToState(bool state)
 {
   if (!pulling_)
   {
-    if (0 == state) // matrix is done editing
+    if (!state) // matrix is done editing
     {
       state_->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrixTextEdit_->toPlainText().toStdString());
       editBoxSaved();

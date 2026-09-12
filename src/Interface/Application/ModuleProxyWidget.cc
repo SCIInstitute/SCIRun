@@ -815,9 +815,9 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 #endif
 }
 
-void ModuleProxyWidget::highlightPorts(int state)
+void ModuleProxyWidget::highlightPorts(bool state)
 {
-  doHighlight_ = state != 0;
+  doHighlight_ = state;
 }
 
 ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)

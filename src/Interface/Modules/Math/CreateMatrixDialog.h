@@ -51,7 +51,7 @@ protected:
   void hideEvent(QHideEvent* event) override;
 
 private Q_SLOTS:
-  void pushMatrixToState(int state);
+  void pushMatrixToState(bool state);
   void editBoxUnsaved();
   void editBoxSaved();
   void remindAboutUnsavedMatrix();
