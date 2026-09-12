@@ -56,12 +56,11 @@ class PrismMC : public BaseMC
   public:
     PrismMC( FieldHandle field ) : field_handle_(field),
                               field_(field->vfield()),
-                              mesh_(field->vmesh()),
+                              mesh_(field->vmesh())
                              #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-			      triangles_(0),
-			     #endif
-                              trisurf_handle_(nullptr),
-                              trisurf_(nullptr) {}
+                              , triangles_(0)
+                             #endif
+                              {}
 
     virtual ~PrismMC() {}
 
@@ -73,8 +72,6 @@ class PrismMC : public BaseMC
   private:
     void extract_n( VMesh::Elem::index_type, double );
     void extract_c( VMesh::Elem::index_type, double );
-
-    VMesh::Node::index_type find_or_add_edgepoint(index_type u0, index_type u1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &);
 
@@ -88,8 +85,6 @@ class PrismMC : public BaseMC
      GeomFastTriangles *triangles_;
     #endif
 
-    FieldHandle trisurf_handle_;
-    VMesh*      trisurf_;
 };
 
 } // End namespace SCIRun

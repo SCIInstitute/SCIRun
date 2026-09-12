@@ -39,7 +39,6 @@ namespace SCIRun {
   class VMesh;
   class VField;
   class TypeDescription;
-  class FieldRNG;
   class FieldInformation;
 
 }

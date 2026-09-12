@@ -213,6 +213,12 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(std::optional
 {
   FieldHandle ifield;
   const double THRESHOLD = 1e-6;
+  auto fixDegenerateBox = [THRESHOLD](Point& bmin, Point& bmax) {
+    const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
+    if (fabs(bmax.x() - bmin.x()) < THRESHOLD) { bmin.x(bmin.x() - size_estimate); bmax.x(bmax.x() + size_estimate); }
+    if (fabs(bmax.y() - bmin.y()) < THRESHOLD) { bmin.y(bmin.y() - size_estimate); bmax.y(bmax.y() + size_estimate); }
+    if (fabs(bmax.z() - bmin.z()) < THRESHOLD) { bmin.z(bmin.z() - size_estimate); bmax.z(bmax.z() + size_estimate); }
+  };
   auto state = get_state();
   using namespace Parameters;
 
@@ -235,22 +241,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(std::optional
     auto bmax = bbox.get_max();
 
     // Fix degenerate boxes.
-    const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
-    if (fabs(bmax.x() - bmin.x()) < THRESHOLD)
-    {
-      bmin.x(bmin.x() - size_estimate);
-      bmax.x(bmax.x() + size_estimate);
-    }
-    if (fabs(bmax.y() - bmin.y()) < THRESHOLD)
-    {
-      bmin.y(bmin.y() - size_estimate);
-      bmax.y(bmax.y() + size_estimate);
-    }
-    if (fabs(bmax.z() - bmin.z()) < THRESHOLD)
-    {
-      bmin.z(bmin.z() - size_estimate);
-      bmax.z(bmax.z() + size_estimate);
-    }
+    fixDegenerateBox(bmin, bmax);
 
     auto center = bmin + Vector(bmax - bmin) * 0.5;
     impl_->l2norm_ = (bmax - bmin).length();
@@ -289,22 +280,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(std::optional
     auto bmax = bbox.get_max();
 
     // Fix degenerate boxes.
-    const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
-    if (fabs(bmax.x() - bmin.x()) < THRESHOLD)
-    {
-      bmin.x(bmin.x() - size_estimate);
-      bmax.x(bmax.x() + size_estimate);
-    }
-    if (fabs(bmax.y() - bmin.y()) < THRESHOLD)
-    {
-      bmin.y(bmin.y() - size_estimate);
-      bmax.y(bmax.y() + size_estimate);
-    }
-    if (fabs(bmax.z() - bmin.z()) < THRESHOLD)
-    {
-      bmin.z(bmin.z() - size_estimate);
-      bmax.z(bmax.z() + size_estimate);
-    }
+    fixDegenerateBox(bmin, bmax);
 
     auto center = bmin + Vector(bmax - bmin) * 0.5;
 

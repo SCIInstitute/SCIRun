@@ -566,6 +566,20 @@ MergeFields::execute()
     {
       added_set_type already_added;
 
+      auto findNewNodeIndices = [&](const VMesh::Node::array_type& oldnodes,
+                                    VMesh::Node::array_type& newnodes) -> bool
+      {
+        for (size_t j = 0; j < oldnodes.size(); j++)
+        {
+          auto loc = std::lower_bound(added_nodes.begin(), nodes_end, oldnodes[j]);
+          if (loc != nodes_end && *loc == oldnodes[j])
+            newnodes.push_back(loc - added_nodes.begin());
+          else
+            return false;
+        }
+        return true;
+      };
+
       std::sort(added_elems.begin(), added_elems.end());
       std::vector<VMesh::index_type>::iterator elems_end;
       elems_end = std::unique(added_elems.begin(), added_elems.end());
@@ -577,31 +591,12 @@ MergeFields::execute()
           tmesh->get_edges(edges, VMesh::Elem::index_type(*itr));
           for (size_t i = 0; i < edges.size(); i++)
           {
-            VMesh::Node::array_type oldnodes;
-            VMesh::Node::array_type newnodes;
+            VMesh::Node::array_type oldnodes, newnodes;
             tmesh->get_nodes(oldnodes, edges[i]);
-            bool all_found = true;
-            for (size_t j = 0; j < oldnodes.size(); j++)
-            {
-              std::vector<VMesh::index_type>::iterator loc =
-                lower_bound(added_nodes.begin(), nodes_end, oldnodes[j]);
-              if (loc != nodes_end && *loc == oldnodes[j])
-              {
-                newnodes.push_back(loc - added_nodes.begin());
-              }
-              else
-              {
-                all_found = false;
-                break;
-              }
-            }
-
-            if (all_found)
+            if (findNewNodeIndices(oldnodes, newnodes))
             {
               std::sort(newnodes.begin(), newnodes.end());
-              added_set_type::iterator found =
-                already_added.find(newnodes);
-              if (found == already_added.end())
+              if (already_added.find(newnodes) == already_added.end())
               {
                 already_added.insert(newnodes);
                 omesh->add_elem(newnodes);
@@ -615,31 +610,12 @@ MergeFields::execute()
           tmesh->get_faces(faces, VMesh::Elem::index_type(*itr));
           for (size_t i = 0; i < faces.size(); i++)
           {
-            VMesh::Node::array_type oldnodes;
-            VMesh::Node::array_type newnodes;
+            VMesh::Node::array_type oldnodes, newnodes;
             tmesh->get_nodes(oldnodes, faces[i]);
-            bool all_found = true;
-            for(size_t j = 0; j < oldnodes.size(); j++)
-            {
-              std::vector<VMesh::index_type>::iterator loc =
-                std::lower_bound(added_nodes.begin(), nodes_end, oldnodes[j]);
-              if (loc != nodes_end && *loc == oldnodes[j])
-              {
-                newnodes.push_back(loc - added_nodes.begin());
-              }
-              else
-              {
-                all_found = false;
-                break;
-              }
-            }
-
-            if (all_found)
+            if (findNewNodeIndices(oldnodes, newnodes))
             {
               std::sort(newnodes.begin(), newnodes.end());
-              added_set_type::iterator found =
-                already_added.find(newnodes);
-              if (found == already_added.end())
+              if (already_added.find(newnodes) == already_added.end())
               {
                 already_added.insert(newnodes);
                 omesh->add_elem(newnodes);
@@ -649,26 +625,9 @@ MergeFields::execute()
         }
         if (omesh->dimensionality() == 3)
         {
-          VMesh::Node::array_type oldnodes;
-          VMesh::Node::array_type newnodes;
-          tmesh->get_nodes(oldnodes,VMesh::Elem::index_type(*itr));
-          bool all_found = true;
-          for (size_t j = 0; j < oldnodes.size(); j++)
-          {
-            std::vector<VMesh::index_type>::iterator loc =
-              std::lower_bound(added_nodes.begin(), nodes_end, oldnodes[j]);
-            if (loc != nodes_end && *loc == oldnodes[j])
-            {
-              newnodes.push_back(loc - added_nodes.begin());
-            }
-            else
-            {
-              all_found = false;
-              break;
-            }
-          }
-
-          if (all_found)
+          VMesh::Node::array_type oldnodes, newnodes;
+          tmesh->get_nodes(oldnodes, VMesh::Elem::index_type(*itr));
+          if (findNewNodeIndices(oldnodes, newnodes))
           {
             omesh->add_elem(newnodes);
           }

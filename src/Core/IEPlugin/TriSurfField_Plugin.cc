@@ -903,26 +903,15 @@ bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const cha
   return (true);
 }
 
-bool SCIRun::TriSurfFieldToExotxt_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
+static bool writeExotxtBody(LoggerHandle pr, VMesh* mesh, const char* filename, int baseIndex)
 {
-  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
-      std::string::npos)
-  {
-    if (pr) pr->error("input field wasn't a TriSurfField (type_name="
-      + fh->get_type_description(Field::MESH_TD_E)->get_name() + ")");
-    return false;
-  }
-
-  VMesh *mesh = fh->vmesh();
-  VMesh::Node::iterator niter;
-  VMesh::Node::iterator niter_end;
+  VMesh::Node::iterator niter, niter_end;
   VMesh::Node::size_type nsize;
   mesh->begin(niter);
   mesh->end(niter_end);
   mesh->size(nsize);
   VMesh::Face::size_type fsize;
-  VMesh::Face::iterator fiter;
-  VMesh::Face::iterator fiter_end;
+  VMesh::Face::iterator fiter, fiter_end;
   VMesh::Node::array_type fac_nodes(3);
   mesh->size(fsize);
   mesh->begin(fiter);
@@ -931,12 +920,11 @@ bool SCIRun::TriSurfFieldToExotxt_writer(LoggerHandle pr, FieldHandle fh, const 
   FILE *f_out = fopen(filename, "wt");
   if (!f_out) {
     if (pr) pr->error("opening output file " + std::string(filename));
-    return (false);
+    return false;
   }
 
   int node_size = (unsigned)(nsize);
   int tri_size = (unsigned)(fsize);
-  std::cerr << "Number of points = "<< nsize <<"\n";
 
   fprintf( f_out, "! Database Title                             exo2txt                                                                 \n" );
   fprintf( f_out, "cubit(temp.g): 05/06/2005: 16:52:36                                             \n" );
@@ -967,106 +955,6 @@ bool SCIRun::TriSurfFieldToExotxt_writer(LoggerHandle pr, FieldHandle fh, const 
   fprintf( f_out, "         3         0      ! nodes per element, attributes\n" );
   fprintf( f_out, "! Connectivity\n" );
 
-  std::cerr << "Number of tris = "<< fsize <<"\n";
-  while(fiter != fiter_end) {
-    mesh->get_nodes(fac_nodes, *fiter);
-    fprintf(f_out, "%d %d %d\n",
-      (int)fac_nodes[0],
-      (int)fac_nodes[1],
-      (int)fac_nodes[2]);
-    ++fiter;
-  }
-
-  fprintf( f_out, "! Properties\n" );
-  fprintf( f_out, "         1            ! Number of ELEMENT BLOCK Properties\n" );
-  fprintf( f_out, "! Property Name: \n" );
-  fprintf( f_out, "ID                              \n" );
-  fprintf( f_out, "! Property Value(s): \n" );
-  fprintf( f_out, "         1\n" );
-  fprintf( f_out, "         0            ! Number of NODE SET Properties\n" );
-  fprintf( f_out, "         0            ! Number of SIDE SET Properties\n" );
-  fprintf( f_out, "! QA Records\n" );
-  fprintf( f_out, "         1      ! QA records\n" );
-  fprintf( f_out, "exo2txt                         \n" );
-  fprintf( f_out, " 1.13                           \n" );
-  fprintf( f_out, "20050506                        \n" );
-  fprintf( f_out, "16:54:44                        \n" );
-  fprintf( f_out, "! Information Records\n" );
-  fprintf( f_out, "         0      ! information records\n" );
-  fprintf( f_out, "! Variable names\n" );
-  fprintf( f_out, "         0         0         0      ! global, nodal, element variables\n" );
-
-  fclose(f_out);
-
-  return (true);
-}
-
-bool SCIRun::TriSurfFieldToExotxtBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
-{
-  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
-      std::string::npos)
-  {
-    if (pr) pr->error("input field wasn't a TriSurfField (type_name="
-      + fh->get_type_description(Field::MESH_TD_E)->get_name() + ")");
-    return (false);
-  }
-
-  VMesh *mesh = fh->vmesh();
-  VMesh::Node::iterator niter;
-  VMesh::Node::iterator niter_end;
-  VMesh::Node::size_type nsize;
-  mesh->begin(niter);
-  mesh->end(niter_end);
-  mesh->size(nsize);
-  VMesh::Face::size_type fsize;
-  VMesh::Face::iterator fiter;
-  VMesh::Face::iterator fiter_end;
-  VMesh::Node::array_type fac_nodes(3);
-  mesh->size(fsize);
-  mesh->begin(fiter);
-  mesh->end(fiter_end);
-
-  FILE *f_out = fopen(filename, "wt");
-  if (!f_out) {
-    if (pr) pr->error("opening output file " + std::string(filename));
-    return false;
-  }
-
-  int node_size = (unsigned)(nsize);
-  int tri_size = (unsigned)(fsize);
-  //cerr << "Number of points = "<< nsize <<"\n";
-
-  fprintf( f_out, "! Database Title                             exo2txt                                                                 \n" );
-  fprintf( f_out, "cubit(temp.g): 05/06/2005: 16:52:36                                             \n" );
-  fprintf( f_out, "! Database initial variables\n" );
-  fprintf( f_out, "         3      3.01               ! dimensions, version number\n" );
-  fprintf( f_out, "      %d      %d         1     ! nodes, elements, element blocks\n", node_size, tri_size );
-  fprintf( f_out, "           0         0               ! #node sets, #side sets\n" );
-  fprintf( f_out, "         0         0               ! len: node set list, dist fact length\n" );
-  fprintf( f_out, "         0         0         0     ! side sets len: element, node , dist fact\n" );
-  fprintf( f_out, "! Coordinate names\n" );
-  fprintf( f_out, "x                                y                                z                               \n" );
-  fprintf( f_out, "! Coordinates\n" );
-
-  while(niter != niter_end) {
-    Point p;
-    mesh->get_center(p, *niter);
-    fprintf(f_out, "%lf %lf %lf\n", p.x(), p.y(), p.z());
-    ++niter;
-  }
-  fprintf( f_out, "! Node number map\n" );
-  fprintf( f_out, "sequence 1..numnp\n" );
-  fprintf( f_out, "! Element number map\n" );
-  fprintf( f_out, "sequence 1..numel\n" );
-  fprintf( f_out, "! Element order map\n" );
-  fprintf( f_out, "sequence 1..numel\n" );
-  fprintf( f_out, "! Element block    1\n" );
-  fprintf( f_out, "         1%10d      TRI3      ! ID, elements, name\n", tri_size );
-  fprintf( f_out, "         3         0      ! nodes per element, attributes\n" );
-  fprintf( f_out, "! Connectivity\n" );
-
-  //cerr << "Number of tris = "<< fsize <<"\n";
-  int baseIndex = 1;
   while(fiter != fiter_end) {
     mesh->get_nodes(fac_nodes, *fiter);
     fprintf(f_out, "%d %d %d\n",
@@ -1096,8 +984,31 @@ bool SCIRun::TriSurfFieldToExotxtBaseIndexOne_writer(LoggerHandle pr, FieldHandl
   fprintf( f_out, "         0         0         0      ! global, nodal, element variables\n" );
 
   fclose(f_out);
+  return true;
+}
 
-  return (true);
+bool SCIRun::TriSurfFieldToExotxt_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
+{
+  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
+      std::string::npos)
+  {
+    if (pr) pr->error("input field wasn't a TriSurfField (type_name="
+      + fh->get_type_description(Field::MESH_TD_E)->get_name() + ")");
+    return false;
+  }
+  return writeExotxtBody(pr, fh->vmesh(), filename, 0);
+}
+
+bool SCIRun::TriSurfFieldToExotxtBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
+{
+  if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
+      std::string::npos)
+  {
+    if (pr) pr->error("input field wasn't a TriSurfField (type_name="
+      + fh->get_type_description(Field::MESH_TD_E)->get_name() + ")");
+    return false;
+  }
+  return writeExotxtBody(pr, fh->vmesh(), filename, 1);
 }
 
 FieldHandle SCIRun::TriSurfFieldSTLASCII_reader(LoggerHandle pr, const char *filename)

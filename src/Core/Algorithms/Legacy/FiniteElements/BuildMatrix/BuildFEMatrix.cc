@@ -466,6 +466,46 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
   }
   else
   {
+    auto local_dimension2 = 2*local_dimension;
+
+    // Accumulate the stiffness contribution for one Gaussian quadrature point i.
+    // Requires precompute[i] to already hold {Ji[0..8], detJ*w*vol} in pc[0..9].
+    auto accumStiffness = [&](size_t i) {
+      const auto& pc = precompute[i];
+      // Build local stiffness matrix
+      // Get the local derivatives of the basis functions in the basis element
+      // They are all the same and are thus precomputed in matrix d
+      auto Nxi = &d[i][0];
+      auto Nyi = &d[i][local_dimension];
+      auto Nzi = &d[i][local_dimension2];
+      // Gradients associated with the node we are calculating
+      const auto &Nxip = Nxi[row];
+      const auto &Nyip = Nyi[row];
+      const auto &Nzip = Nzi[row];
+      // Calculating gradient shape function * inverse Jacobian * volume scaling factor
+      const auto uxp = pc[9]*(Nxip*pc[0]+Nyip*pc[1]+Nzip*pc[2]);
+      const auto uyp = pc[9]*(Nxip*pc[3]+Nyip*pc[4]+Nzip*pc[5]);
+      const auto uzp = pc[9]*(Nxip*pc[6]+Nyip*pc[7]+Nzip*pc[8]);
+      // Matrix multiplication with conductivity tensor :
+      const auto uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
+      const auto uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
+      const auto uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
+      // The above is constant for this node. Now multiply with the weight function
+      // We assume the weight factors are the same as the local gradients
+      // Galerkin approximation:
+      for (int j = 0; j<local_dimension; j++)
+      {
+        const auto &Nxj = Nxi[j];
+        const auto &Nyj = Nyi[j];
+        const auto &Nzj = Nzi[j];
+        // Matrix multiplication Gradient with inverse Jacobian:
+        const auto ux = Nxj*pc[0]+Nyj*pc[1]+Nzj*pc[2];
+        const auto uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
+        const auto uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
+        // Add everything together into one coefficient of the matrix
+        l_stiff[j] += ux*uxyzpabc+uy*uxyzpbde+uz*uxyzpcef;
+      }
+    };
 
     if (precompute.empty())
     {
@@ -477,8 +517,6 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
 
       for(int i=0; i<local_dimension; i++)
         l_stiff[i] = 0.0;
-
-      auto local_dimension2=2*local_dimension;
 
       auto vol = mesh_->get_element_size();
 
@@ -513,43 +551,7 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         pc[8] = Ji[8];
         pc[9] = detJ;
 
-        // Build local stiffness matrix
-        // Get the local derivatives of the basis functions in the basis element
-        // They are all the same and are thus precomputed in matrix d
-        auto Nxi = &d[i][0];
-        auto Nyi = &d[i][local_dimension];
-        auto Nzi = &d[i][local_dimension2];
-        // Gradients associated with the node we are calculating
-        const auto &Nxip = Nxi[row];
-        const auto &Nyip = Nyi[row];
-        const auto &Nzip = Nzi[row];
-        // Calculating gradient shape function * inverse Jacobian * volume scaling factor
-        const auto uxp = pc[9]*(Nxip*pc[0]+Nyip*pc[1]+Nzip*pc[2]);
-        const auto uyp = pc[9]*(Nxip*pc[3]+Nyip*pc[4]+Nzip*pc[5]);
-        const auto uzp = pc[9]*(Nxip*pc[6]+Nyip*pc[7]+Nzip*pc[8]);
-        // Matrix multiplication with conductivity tensor :
-        const auto uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
-        const auto uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
-        const auto uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
-
-        // The above is constant for this node. Now multiply with the weight function
-        // We assume the weight factors are the same as the local gradients
-        // Galerkin approximation:
-
-        for (int j = 0; j<local_dimension; j++)
-        {
-          const auto &Nxj = Nxi[j];
-          const auto &Nyj = Nyi[j];
-          const auto &Nzj = Nzi[j];
-
-          // Matrix multiplication Gradient with inverse Jacobian:
-          const auto ux = Nxj*pc[0]+Nyj*pc[1]+Nzj*pc[2];
-          const auto uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
-          const auto uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
-
-          // Add everything together into one coefficient of the matrix
-          l_stiff[j] += ux*uxyzpabc+uy*uxyzpbde+uz*uxyzpcef;
-        }
+        accumStiffness(i);
       }
     }
     else
@@ -557,50 +559,8 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       for(int i=0; i<local_dimension; i++)
         l_stiff[i] = 0.0;
 
-      auto local_dimension2=2*local_dimension;
-
       for (size_t i = 0; i < d.size(); i++)
-      {
-        auto& pc = precompute[i];
-
-        // Build local stiffness matrix
-        // Get the local derivatives of the basis functions in the basis element
-        // They are all the same and are thus precomputed in matrix d
-        auto Nxi = &d[i][0];
-        auto Nyi = &d[i][local_dimension];
-        auto Nzi = &d[i][local_dimension2];
-        // Gradients associated with the node we are calculating
-        const auto &Nxip = Nxi[row];
-        const auto &Nyip = Nyi[row];
-        const auto &Nzip = Nzi[row];
-        // Calculating gradient shape function * inverse Jacobian * volume scaling factor
-        const auto uxp = pc[9]*(Nxip*pc[0]+Nyip*pc[1]+Nzip*pc[2]);
-        const auto uyp = pc[9]*(Nxip*pc[3]+Nyip*pc[4]+Nzip*pc[5]);
-        const auto uzp = pc[9]*(Nxip*pc[6]+Nyip*pc[7]+Nzip*pc[8]);
-        // Matrix multiplication with conductivity tensor :
-        const auto uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
-        const auto uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
-        const auto uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
-
-        // The above is constant for this node. Now multiply with the weight function
-        // We assume the weight factors are the same as the local gradients
-        // Galerkin approximation:
-
-        for (int j = 0; j<local_dimension; j++)
-        {
-          const auto &Nxj = Nxi[j];
-          const auto &Nyj = Nyi[j];
-          const auto &Nzj = Nzi[j];
-
-          // Matrix multiplication Gradient with inverse Jacobian:
-          const auto ux = Nxj*pc[0]+Nyj*pc[1]+Nzj*pc[2];
-          const auto uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
-          const auto uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
-
-          // Add everything together into one coefficient of the matrix
-          l_stiff[j] += ux*uxyzpabc+uy*uxyzpbde+uz*uxyzpcef;
-        }
-      }
+        accumStiffness(i);
     }
   }
   return true;

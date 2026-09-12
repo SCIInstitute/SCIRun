@@ -55,8 +55,6 @@ class UHexMC : public BaseMC
 			   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
                             triangles_(0),
 			   #endif
-                            trisurf_(nullptr),
-                            trisurf_handle_(nullptr),
                             quadsurf_(nullptr),
                             quadsurf_handle_(nullptr) { }
 
@@ -71,8 +69,6 @@ class UHexMC : public BaseMC
     void extract_c( VMesh::Elem::index_type, double);
     void extract_n( VMesh::Elem::index_type, double);
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
-
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type& );
 
     void find_or_add_parent(index_type u0, index_type u1, double d0, index_type face);
@@ -85,8 +81,6 @@ class UHexMC : public BaseMC
     //GeomFastTriangles *triangles_;
    #endif
 
-    VMesh*      trisurf_;
-    FieldHandle trisurf_handle_;
     VMesh*      quadsurf_;
     FieldHandle quadsurf_handle_;
 };

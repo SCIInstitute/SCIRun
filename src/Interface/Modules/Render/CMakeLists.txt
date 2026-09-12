@@ -91,6 +91,7 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
   ES/systems/RenderBasicSys.h
   ES/systems/RenderTransBasicSys.h
   ES/systems/RenderTransText.h
+  ES/systems/RenderTransCommon.h
 )
 
 SET(Interface_Modules_Render_SOURCES
