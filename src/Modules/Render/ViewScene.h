@@ -130,6 +130,10 @@ namespace SCIRun
 
         ALGORITHM_PARAMETER_DECL(ScreenshotDirectory);
 
+        ALGORITHM_PARAMETER_DECL(MovieOutputPath);
+        ALGORITHM_PARAMETER_DECL(MovieFormat);
+        ALGORITHM_PARAMETER_DECL(MovieFrameRate);
+
         // not used--GUI hidden/never implemented
         //ALGORITHM_PARAMETER_DECL(Lighting);
         //ALGORITHM_PARAMETER_DECL(ShowBBox);
