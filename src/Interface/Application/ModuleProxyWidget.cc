@@ -644,7 +644,7 @@ void ModuleProxyWidget::createPortPositionProviders()
 #endif
 
   const int firstPortXPos = 5;
-  Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
+  for (auto* p : module_->ports().getAllPorts())
   {
 #ifdef MODULE_POSITION_LOGGING
     qDebug() << "Setting position provider for port " << QString::fromStdString(p->realId().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
