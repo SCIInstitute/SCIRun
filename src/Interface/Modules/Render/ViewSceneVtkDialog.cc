@@ -291,6 +291,14 @@ void ViewSceneVtkDialog::addControlLockButton()
   controlLock_->setDisabled(true);
 }
 
+void ViewSceneVtkDialog::addClippingPlaneButton()
+{
+  //auto* clippingPlaneButton = new QPushButton();
+  //clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
+  //clippingPlaneControls_ = new ClippingPlaneControls(this, clippingPlaneButton);
+  //addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea, clippingPlaneControls_);
+}
+
 void ViewSceneVtkDialog::toggleLockColor(bool locked)
 {
   QString color = locked ? "red" : "rgb(66,66,69)";

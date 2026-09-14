@@ -39,7 +39,7 @@
 #include <Core/Datatypes/Feedback.h>
 #include <Interface/Modules/Render/share.h>
 
-
+#include <Interface/Modules/Render/ViewSceneVtkControlsDock.h>
 
 namespace SCIRun {
 
@@ -84,7 +84,17 @@ private Q_SLOTS:
   void setBGColor();
   void setCameraWidgets();
 
-private:
+      //---------------- Clipping Planes -----------------------------------------------------------
+  void setClippingPlaneIndex(int index);
+  void setClippingPlaneVisible(bool value);
+  void setClippingPlaneFrameOn(bool value);
+  void reverseClippingPlaneNormal(bool value);
+  void setClippingPlaneX(int index);
+  void setClippingPlaneY(int index);
+  void setClippingPlaneZ(int index);
+  void setClippingPlaneD(int index);
+
+ private:
   void addToolBar();
   void addConfigurationButton();
   void addConfigurationDialog();
@@ -94,6 +104,7 @@ private:
   void addTimestepButtons();
   void addScreenshotButton();
   void addControlLockButton();
+  void addClippingPlaneButton();
   void addToolbarButton(QPushButton* button);
   void toggleLockColor(bool locked);
   void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
@@ -116,6 +127,10 @@ private:
   QPushButton* autoViewButton_;
   QPushButton* autoRotateButton_;
   QPushButton* playTimestepsButton_;
+
+  ClippingPlaneControlsVtk* clippingPlaneControls_{nullptr};
+  
+  friend class ClippingPlaneControlsVtk;
 };
 }}
 

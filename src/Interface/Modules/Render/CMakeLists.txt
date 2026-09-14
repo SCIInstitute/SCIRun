@@ -66,6 +66,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   Screenshot.h
   OsprayViewerDialog.h
   ViewSceneVtkDialog.h
+  ViewSceneVtkControlsDock.h
 )
 
 SET(Interface_Modules_Render_HEADERS_NO_MOC
@@ -104,6 +105,7 @@ SET(Interface_Modules_Render_SOURCES
   OsprayViewerDialog.cc
   ViewOspraySceneConfig.cc
   ViewSceneVtkDialog.cc
+  ViewSceneVtkControlsDock.cc
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc
