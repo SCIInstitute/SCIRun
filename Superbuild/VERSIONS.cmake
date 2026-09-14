@@ -157,8 +157,8 @@ sci_dep_version(LIBXML2_GIT_TAG "v2.15.3" "libxml2 pinned tag")
 #     ExternalProject is disabled. Re-add its pin here if it is ever re-enabled.
 #   - Qt — provided by the system / CI toolchain via find_package, not built by
 #     the Superbuild (min version SCIRUN_QT_MIN_VERSION in Superbuild.cmake).
-#   - SCIRunTestData / CIBCData — test fixtures fetched by TestDataConfig.cmake
-#     and SCIRunDataExternal.cmake (the latter over SVN); data, not code deps.
+#   - SCIRunTestData / CIBCData — test fixtures fetched by TestDataConfig.cmake;
+#     data, not code deps.
 
 # =============================================================================
 # REPRODUCIBILITY NOTE
