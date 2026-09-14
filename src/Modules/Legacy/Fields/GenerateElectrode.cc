@@ -55,12 +55,6 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 MODULE_INFO_DEF(GenerateElectrode, NewField, SCIRun)
 
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeLength);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeThickness);
-ALGORITHM_PARAMETER_DEF(Fields, NumberOfControlPoints);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeType);
-ALGORITHM_PARAMETER_DEF(Fields, ElectrodeResolution);
-
 //TODO: move to algorithm layer
 namespace impl
 {
