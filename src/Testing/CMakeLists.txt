@@ -98,7 +98,7 @@ ENDIF()
 
 IF(RUN_UNIT_TESTS)
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     EXECUTE_PROCESS(COMMAND "python" ${CMAKE_SOURCE_DIR}/Testing/Python/list_tests.py
       ${CMAKE_SOURCE_DIR}/Testing/Python/
       OUTPUT_VARIABLE STR_TESTS
@@ -155,7 +155,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     set(scirun_srns ${scirun_srns} ${scirun_srns_renderer})
   ENDIF()
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     FILE(GLOB_RECURSE scirun_srns_python "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Python/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_python})
   ENDIF()

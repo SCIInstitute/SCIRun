@@ -42,7 +42,7 @@
 #include <QtGui>
 #include <boost/algorithm/string.hpp>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 

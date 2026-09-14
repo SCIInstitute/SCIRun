@@ -35,7 +35,7 @@
 #include <Core/Utils/Legacy/Environment.h>
 #include <iostream>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
@@ -56,7 +56,7 @@ int mainImpl(int argc, const char* argv[], char **environment)
 
   Application::Instance().readCommandLine(argc, argv);
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   SCIRun::Core::PythonInterpreter::Instance().initialize(true,
     Application::Instance().parameters()->entireCommandLine(),
     Application::Instance().executablePath());
