@@ -39,6 +39,7 @@ SET(Core_Thread_HEADERS
   Mutex.h
   Parallel.h
   share.h
+  ThreadGroup.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Thread
