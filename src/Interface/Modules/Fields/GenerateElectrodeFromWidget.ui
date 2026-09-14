@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GenerateElectrodeFromPoints</class>
- <widget class="QDialog" name="GenerateElectrodeFromPoints">
+ <class>GenerateElectrodeFromWidget</class>
+ <widget class="QDialog" name="GenerateElectrodeFromWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -140,12 +140,6 @@
       </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="TypeComboBox_">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -193,7 +187,7 @@
       <item row="3" column="1">
        <widget class="QCheckBox" name="MoveAllCheckBox_">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="minimumSize">
          <size>
@@ -229,12 +223,6 @@
        <widget class="QComboBox" name="ProjectionComboBox_">
         <property name="enabled">
          <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
@@ -300,7 +288,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -399,7 +387,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_1">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="minimumSize">
       <size>
@@ -426,7 +414,7 @@
       <item>
        <widget class="QPushButton" name="AddPointPushButton_">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="minimumSize">
          <size>
@@ -442,7 +430,7 @@
       <item>
        <widget class="QPushButton" name="RemovePointPushButton_">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="minimumSize">
          <size>
