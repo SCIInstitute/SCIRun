@@ -108,7 +108,7 @@ Pass these as `-DOPTION=ON|OFF` to the Superbuild (`cmake -DBUILD_TESTING=ON ../
 | `BUILD_TESTING` | OFF | Build unit and regression tests |
 | `BUILD_DOCUMENTATION` | OFF | Build the documentation |
 | `WITH_PYTHON` | ON | Python API and the Python modules |
-| `BUILD_HEADLESS` | OFF | Build without Qt / the GUI |
+| `WITH_GUI` | ON | The Qt GUI. `OFF` is a headless build and needs no Qt |
 | `WITH_TETGEN` | ON | TetGen mesh generation (GPL; see the InterfaceWithTetGen module) |
 | `WITH_OSPRAY` | OFF | OSPRay for the OsprayViewer module (downloaded and built by the Superbuild) |
 | `PREBUILT_OSPRAY` | OFF | With `WITH_OSPRAY`: use an already-installed OSPRay instead of building one |
@@ -122,7 +122,7 @@ Option names follow one rule: the prefix says what kind of knob it is.
 - `BUILD_<THING>` — an extra artifact SCIRun emits, consistent with CMake's own `BUILD_TESTING` and `BUILD_SHARED_LIBS`.
 - `ENABLE_`, `RUN_`, `GENERATE_`, `DOWNLOAD_` — behavior knobs.
 
-`BUILD_WITH_` is retired and no new options use it. `BUILD_HEADLESS` predates the rule and is being renamed to `WITH_GUI`. The old `BUILD_WITH_PYTHON` and `BUILD_OSPRAY` spellings keep working for one release with a deprecation warning.
+`BUILD_WITH_` is retired and no new options use it. The old `BUILD_WITH_PYTHON` and `BUILD_OSPRAY` spellings keep working for one release with a deprecation warning. `BUILD_HEADLESS` is a hard error: it was replaced by `WITH_GUI` with the opposite sense, so a stale `-DBUILD_HEADLESS=ON` would otherwise silently produce a GUI build. Use `-DWITH_GUI=OFF`.
 
 ### Configuring SCIRun with Qt 5
 

@@ -71,7 +71,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   collabs_.algoFactory_ = af;
   collabs_.reexFactory_ = reex;
   collabs_.executorFactory_ = executorFactory;
-  #ifndef BUILD_HEADLESS
+  #ifdef WITH_GUI
   collabs_.executionManager_.reset(new ExecutionQueueManager);
   #else
   collabs_.executionManager_.reset(new SimpleExecutionManager);
@@ -604,7 +604,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       else
       {
-#ifndef BUILD_HEADLESS
+#ifdef WITH_GUI
         logInfo("module position editor unavailable, module positions at default");
 #endif
       }

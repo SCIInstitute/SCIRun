@@ -201,7 +201,7 @@ jobs:
             fi
           fi
           if [ "${{ inputs.variant }}" = "headless" ]; then
-            CMD+=("-DBUILD_HEADLESS:BOOL=ON")
+            CMD+=("-DWITH_GUI:BOOL=OFF")
           fi
           if [ "${{ inputs.build-with-python }}" = "false" ]; then
             CMD+=("-DWITH_PYTHON=OFF")
@@ -265,7 +265,7 @@ jobs:
             }
           }
 
-          if ('${{ inputs.variant }}' -eq 'headless') { $cmakeArgs += "-DBUILD_HEADLESS:BOOL=ON" }
+          if ('${{ inputs.variant }}' -eq 'headless') { $cmakeArgs += "-DWITH_GUI:BOOL=OFF" }
           if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DWITH_PYTHON=OFF" }
           if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
