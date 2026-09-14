@@ -110,6 +110,21 @@ jobs:
             2>/dev/null || true)"
           export WF_FAILED_JOBS
 
+          # mac.yml and windows.yml both publish installers to the shared
+          # `nightly` release (publish-release.yml). Link it only when the tag
+          # actually points at this run's commit: publish-nightly also fires on
+          # master pushes, so an unconditional link would happily advertise a
+          # build from six hours before the one being reported.
+          WF_INSTALLER_URL=""
+          if [ "$WF_NAME" = "mac-build" ] || [ "$WF_NAME" = "windows-build" ]; then
+            tag_sha="$(gh api "repos/${REPO}/git/ref/tags/nightly" \
+              -q '.object.sha' 2>/dev/null || true)"
+            if [ -n "$tag_sha" ] && [ "$tag_sha" = "$WF_SHA" ]; then
+              WF_INSTALLER_URL="https://github.com/${REPO}/releases/tag/nightly"
+            fi
+          fi
+          export WF_INSTALLER_URL
+
           python3 scripts/ci/slack_test_summary.py artifacts > payload.json
           echo "Payload:"
           cat payload.json

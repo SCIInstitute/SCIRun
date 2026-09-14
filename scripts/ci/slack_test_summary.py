@@ -131,6 +131,11 @@ def build(reports, env):
     # still green. Set by nightly-slack.yml.
     failed_jobs = env.get("WF_FAILED_JOBS", "").strip()
 
+    # Release URL, set by nightly-slack.yml only when this run's own installers
+    # are the ones on the nightly tag. Empty means publish-nightly did not run
+    # or did not win the tag, so linking would point at someone else's build.
+    installer_url = env.get("WF_INSTALLER_URL", "").strip()
+
     any_failed = any(r.failed for r in reports)
     header = (f"{emoji_for(conclusion, any_failed, failed_jobs)} "
               f"*{name}* nightly — {conclusion}")
@@ -146,6 +151,16 @@ def build(reports, env):
             "type": "context",
             "elements": [{"type": "mrkdwn",
                           "text": f"*failed, non-blocking:* {failed_jobs}"}],
+        })
+
+    # Also above the fields, for the same reason: this is the one line a reader
+    # might actually want to click, so the trim must not be able to reach it.
+    if installer_url:
+        blocks.append({
+            "type": "context",
+            "elements": [{"type": "mrkdwn",
+                          "text": f":package: <{installer_url}|Installers from "
+                                  "this run> — unsigned, see #1663"}],
         })
 
     # One field per report, two columns. Slack caps a section at 10 fields, so

@@ -229,6 +229,12 @@ INCLUDE(${FREETYPE_USE_FILE})
 CONFIG_STANDARD_EXTERNAL( Cleaver2 Cleaver2Config.cmake ${CLEAVER2_DIR} )
 INCLUDE(${CLEAVER2_USE_FILE})
 
+CONFIG_STANDARD_EXTERNAL( LibXml2 libxml2-config.cmake ${LibXML2_DIR} )
+
+message(STATUS "LibXml2_FOUND=${LibXml2_FOUND}")
+message(STATUS "LibXml2_DIR=${LibXml2_DIR}")
+message(STATUS "LIBXml2_USE_FILE=${LIBXml2_USE_FILE}")
+
 IF(BUILD_WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
   INCLUDE(${SCI_PYTHON_USE_FILE})
@@ -311,6 +317,19 @@ ENDIF()
 IF(WITH_OSPRAY)
   set(ospray_DIR ${Ospray_External_Dir}/install/ospray/lib/cmake/ospray-2.0.1)
   find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
+ENDIF()
+
+IF(WITH_VTK)
+  set(VTK_DIR ${VTK_External_Dir}/lib/cmake/vtk-9.6)
+  find_package(VTK REQUIRED COMPONENTS
+    CommonCore
+    RenderingCore
+    RenderingOpenGL2
+    FiltersCore
+    FiltersSources
+    InteractionStyle
+    HINTS ${VTK_DIR}
+  )
 ENDIF()
 
 IF(WIN32)
@@ -397,6 +416,11 @@ ENDIF()
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
   SET(OSPRAY_LIBRARIES ospray)
+ENDIF()
+
+# Configure VTK
+IF(WITH_VTK)
+  add_definitions(-DWITH_VTK)
 ENDIF()
 
 ########################################################################
@@ -560,11 +584,9 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
   ${SCIRun_SOURCE_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/spire/
   ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googletest/include
   ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googlemock/include
-  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
@@ -787,6 +809,7 @@ SET_PROPERTY(TARGET Core_Datatypes_Legacy_Base         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Nrrd         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Bundle         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Datatypes_VTK PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Basis         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Persistent         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_DatabaseManager         PROPERTY FOLDER "Core")
@@ -835,6 +858,9 @@ IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Teem   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
+  IF(WITH_VTK)
+    SET_PROPERTY(TARGET Interface_Modules_Render_Vtk PROPERTY FOLDER "Interface/Modules")
+  ENDIF()
 ENDIF()
 
 SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")
@@ -946,7 +972,7 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")

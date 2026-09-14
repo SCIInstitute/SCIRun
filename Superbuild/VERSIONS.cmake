@@ -130,6 +130,14 @@ sci_dep_version(SPDLOG_GIT_TAG "v1.10.0"                                      "s
 sci_dep_version(TNY_GIT_URL    "https://github.com/CIBC-Internal/Tny.git"     "Tny repository")
 sci_dep_version(TNY_GIT_TAG    "scirun-pin-2026.07.27"     "Tny pin -> commit 08cb2652 (branch scirun-5.0.0)")
 
+# libiconv
+sci_dep_version(LIBICONV_GIT_URL "https://git.savannah.gnu.org/git/libiconv.git" "libiconv repository")
+sci_dep_version(LIBICONV_GIT_TAG "v1.18" "libiconv pinned tag")
+
+# libxml2
+sci_dep_version(LIBXML2_GIT_URL "https://gitlab.gnome.org/GNOME/libxml2.git" "libxml2 repository")
+sci_dep_version(LIBXML2_GIT_TAG "v2.15.3" "libxml2 pinned tag")
+
 # =============================================================================
 # NOT MANIFEST-MANAGED
 # =============================================================================

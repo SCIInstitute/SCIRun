@@ -147,6 +147,10 @@ ENDIF()
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
 ###########################################
+# Configure vtk
+OPTION(WITH_VTK "build VTK" OFF)
+
+###########################################
 # Configure Windows executable to run with
 # or without the console
 
@@ -260,6 +264,7 @@ ADD_EXTERNAL( ${SUPERBUILD_DIR}/SpdLogExternal.cmake SpdLog_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/Cleaver2External.cmake Cleaver2_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/Libxml2External.cmake Libxml2_external )
 
 IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
@@ -303,6 +308,10 @@ ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
+IF(WITH_VTK)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+ENDIF()
+
 ###########################################
 # Download external data sources
 OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
@@ -330,6 +339,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
     "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
+    "-DWITH_VTK:BOOL=${WITH_VTK}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DEigen_DIR:PATH=${Eigen_DIR}"
@@ -338,13 +348,14 @@ SET(SCIRUN_CACHE_ARGS
     "-DBoost_DIR:PATH=${Boost_DIR}"
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
-	  "-DGLM_DIR:PATH=${GLM_DIR}"
+    "-DGLM_DIR:PATH=${GLM_DIR}"
     "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
     "-DTNY_DIR:PATH=${TNY_DIR}"
-	  "-DGLEW_DIR:PATH=${Glew_DIR}"
+    "-DGLEW_DIR:PATH=${Glew_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
+    "-DLibXML2_DIR:PATH=${LibXML2_DIR}"
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
 
@@ -364,6 +375,12 @@ ENDIF()
 IF(WITH_OSPRAY)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DOspray_External_Dir:PATH=${OSPRAY_BUILD_DIR}"
+  )
+ENDIF()
+
+IF(WITH_VTK)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DVTK_External_Dir:PATH=${VTK_INSTALL_DIR}"
   )
 ENDIF()
 

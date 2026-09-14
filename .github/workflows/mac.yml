@@ -26,6 +26,11 @@ jobs:
   # ---------------------------------------------------------------------------
   # GUI builds
   # ---------------------------------------------------------------------------
+  # Canary for the next macOS image: macOS-latest resolves to macos-26 today, so
+  # this builds exactly what mac-gui-26 does and publishes nothing. It exists to
+  # go red early when GitHub rolls the label forward. Give it an artifact only if
+  # you also intend the published installer's OS floor to follow the newest image
+  # -- which is the bug this arrangement fixes, so probably not.
   mac-gui:
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -34,7 +39,6 @@ jobs:
       scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: true
-      artifact-name: SCIRunMacInstaller
 
   mac-gui-26:
     uses: ./.github/workflows/reusable-build.yml
@@ -44,7 +48,8 @@ jobs:
       scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: true
-      artifact-name: SCIRunMacInstaller-26
+      artifact-name: installer-macos-26-arm64
+      max-os-floor: '14'
 
   mac-gui-26-intel:
     uses: ./.github/workflows/reusable-build.yml
@@ -54,7 +59,8 @@ jobs:
       scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: true
-      artifact-name: SCIRunMacInstaller-26-intel
+      artifact-name: installer-macos-26-intel
+      max-os-floor: '14'
 
   # Oldest available macOS image, built with the GUI. Every other mac-gui job runs
   # on macOS-latest (currently the macos-26 image), and the only macOS 14 jobs are
@@ -67,6 +73,12 @@ jobs:
   # newest macOS is already covered several times over, and only the oldest one
   # exercises the lower deployment target. macOS-14 is deprecated by GitHub, so when
   # it is retired this should be bumped to the next-oldest image, not deleted.
+  # Also the only mac installer most users can actually run. Clang's default
+  # deployment target is the host OS version and nothing overrides it, so each
+  # job's binaries inherit their runner's minimum -- the macos-26 installers
+  # above refuse to launch on macOS 14 or 15. This job is built on the oldest
+  # image, so it is the one with a usable floor. Publishing it costs nothing;
+  # it was already being built and thrown away.
   mac-gui-14-arm:
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -76,6 +88,8 @@ jobs:
       variant: gui
       build-with-python: true
       run-smoke-test: true
+      artifact-name: installer-macos-14-arm64
+      max-os-floor: '14'
 
   mac-gui-nonpython:
     uses: ./.github/workflows/reusable-build.yml
@@ -85,7 +99,8 @@ jobs:
       scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: false
-      artifact-name: SCIRunMacNPInstaller
+      artifact-name: installer-macos-26-arm64-nopython
+      max-os-floor: '14'
 
   mac-gui-ospray:
     if: false
@@ -96,15 +111,17 @@ jobs:
       scirun-qt-min-version: '6.3.1'
       variant: gui
       with-ospray: true
-      artifact-name: SCIRunMacOsprayInstaller
+      artifact-name: installer-macos-ospray
 
   # ---------------------------------------------------------------------------
   # Publish installers to a GitHub Release (issue #2398). Nightly on cron/master
   # push; a draft versioned release on a v* tag. Windows publishes to the same
   # releases from windows.yml. mac-gui-ospray is if:false, so it is not a dep.
+  # mac-gui is the macOS-latest canary and publishes nothing, so it is not one
+  # either -- see its comment above.
   # ---------------------------------------------------------------------------
   publish-nightly:
-    needs: [mac-gui, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
+    needs: [mac-gui-14-arm, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
     if: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
     permissions:
       contents: write
@@ -113,7 +130,7 @@ jobs:
       channel: nightly
 
   publish-stable:
-    needs: [mac-gui, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
+    needs: [mac-gui-14-arm, mac-gui-26, mac-gui-26-intel, mac-gui-nonpython]
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     permissions:
       contents: write

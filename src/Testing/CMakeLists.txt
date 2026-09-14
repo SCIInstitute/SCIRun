@@ -177,8 +177,8 @@ IF(RUN_BASIC_REGRESSION_TESTS)
       SET_TESTS_PROPERTIES("${test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
     ENDIF()
 
-    # Networks that instantiate a ViewScene render through an offscreen GL
-    # context in regression mode. macOS serializes GPU command submission
+    # Networks that instantiate a ViewScene render through a real windowed GL
+    # context, in regression mode too. macOS serializes GPU command submission
     # across contexts, so running several ViewScene networks concurrently can
     # slow rendering enough to trip the in-app regression timeout. Give these
     # tests a shared RESOURCE_LOCK so CTest never schedules two of them at once,

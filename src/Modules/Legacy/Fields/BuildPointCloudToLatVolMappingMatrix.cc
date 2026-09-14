@@ -163,7 +163,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
         if (d > 0.0)
         {
           // Insert it and increase the normalization total
-          point2dist.insert(std::make_pair((*pcmn).index_, d));
+          point2dist.emplace((*pcmn).index_, d);
           total += d;
         }
         // Next PCMeshNode please

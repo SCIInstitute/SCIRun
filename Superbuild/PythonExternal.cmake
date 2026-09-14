@@ -113,6 +113,12 @@ ELSE()
     # PlatformToolset when unset, so pass it through the environment instead.
     SET(python_MSBUILD_TOOLSET_ENV "PlatformToolset=${CMAKE_VS_PLATFORM_TOOLSET}")
   ENDIF()
+
+  # PC/python_uwp.cpp pulls <experimental/coroutine> through C++/WinRT, which is
+  # a hard error (STL1011) in the v145 STL. Nothing selects projects out of
+  # pcbuild.sln, and SCIRun ships none of the UWP launchers, so take the escape
+  # hatch the assert names. cl.exe reads options out of CL.
+  SET(python_MSVC_ENV "CL=/D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS")
 ENDIF()
 
 # CPython's install: runs frameworkinstallmaclib (symlinks into $(LIBPL)) as a
@@ -163,9 +169,9 @@ ELSE()
     # through cmd, which reads the "/" in "PCbuild/build.bat" as a switch and
     # fails with "'PCbuild' is not recognized as an internal or external command".
     # build.bat forwards any argument it doesn't recognize straight to MSBuild.
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" ${python_MSBUILD_TOOLSET_ENV} "PCbuild\\build.bat"
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" ${python_MSBUILD_TOOLSET_ENV} ${python_MSVC_ENV} "PCbuild\\build.bat"
     BUILD_IN_SOURCE ON
-    BUILD_COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
+    BUILD_COMMAND ${CMAKE_COMMAND} -E env ${python_MSVC_ENV} ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E
       copy_if_different
       <SOURCE_DIR>/PCbuild/${python_WIN32_64BIT_DIR}/pyconfig.h
@@ -173,7 +179,7 @@ ELSE()
   )
   # build both Release and Debug versions
   ExternalProject_Add_Step(Python_external debug_build
-    COMMAND ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
+    COMMAND ${CMAKE_COMMAND} -E env ${python_MSVC_ENV} ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
       DEPENDEES build
       DEPENDERS install
       WORKING_DIRECTORY <SOURCE_DIR>
