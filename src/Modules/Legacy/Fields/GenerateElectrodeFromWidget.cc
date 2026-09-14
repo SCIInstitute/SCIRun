@@ -122,6 +122,7 @@ public:
   
   std::vector<WidgetHandle> widget_;
   BBox bbox_;
+  std::vector<Transform> previousTransforms_;
   
   
 private:
@@ -136,7 +137,7 @@ private:
 //  std::vector<GeometryHandle> geoms_;
   
 //  std::vector<Point>& Previous_points_;
-  Transform previousTransform_;
+//  Transform previousTransform_;
 
   
 };
@@ -168,11 +169,12 @@ void GenerateElectrodeFromWidgetImpl::createWidgets(std::vector<Point>& points)
   
   bbox_=BBox(points);
   
-  for (size_t i = 0; i < points.size() - 1; i++)
+  for (size_t i = 0; i < points.size(); i++)
   {
     widget_.push_back(createPointWidget(points[i], i));
   }
   
+  previousTransforms_.resize(widget_.size());
   setPointsToState();
 }
 
@@ -194,10 +196,13 @@ WidgetHandle GenerateElectrodeFromWidgetImpl::createPointWidget(Point& point, si
   std::string probename = state_()->getValue(Parameters::ProbeLabel).toString();
   std::string widgetName = probename + "(" + std::to_string(id) + ")";
   
+  double pscale=state_()->getValue(Parameters::ProbeSize).toDouble();
+  double thick = state_()->getValue(Parameters::ElectrodeThickness).toDouble();
+  
   auto sphere = SphereWidgetBuilder(*module_)
     .tag(widgetName)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE)}})
-    .scale(state_()->getValue(Parameters::ProbeSize).toDouble())
+    .scale(pscale*thick*0.5)
     .defaultColor(state_()->getValue(Parameters::ProbeColor).toString())
     .origin(point)
     .boundingBox(bbox_)
@@ -269,9 +274,11 @@ void GenerateElectrodeFromWidget::processWidgetFeedback(const ModuleFeedback& va
         logWarning("Failure parsing widget id");
         return;
       }
-      
-      adjustPositionFromTransform(vsf.transform, widgetIndex);
-      enqueueExecuteAgain(false);
+      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
+      {
+        adjustPositionFromTransform(vsf.transform, widgetIndex);
+        enqueueExecuteAgain(false);
+      }
 
     }
   }
@@ -295,6 +302,7 @@ void GenerateElectrodeFromWidget::adjustPositionFromTransform(const Transform& t
     newTransform(2, 0) / newTransform(3, 0));
 
   impl_->widget_[index]->setPosition(newLocation);
+  impl_->previousTransforms_[index] = transformMatrix;
   
 }
 
@@ -336,19 +344,28 @@ void GenerateElectrodeFromWidget::execute()
 //    error("False returned on legacy run call.");
   
 //
-  std::vector<Point> orig_points = defaultPoints();
+  std::vector<Point> orig_points;
   
-  std::cout<<"points ("<<orig_points.size()<<") = "<<std::endl;
-  std::cout<<"   "<<orig_points<<std::endl;
-//  for(auto p : orig_points)
-//    std::cout<<"   "<<p<<std::endl;
-//    std::cout<<"   "<<p.x()<<", "<<p.y()<<", "<<p.z()<<std::endl;
+  std::cout<<"widgets ("<<impl_->widget_.size()<<") = "<<std::endl;
+  for(auto w : impl_->widget_)
+    std::cout<<"   "<<w->position()<<std::endl;
   
+//  if ((!input || !use_field) && (moveto == "default" || widget_.size() == 0))
+  if (impl_->widget_.size() == 0)
+  {
+    orig_points = defaultPoints();
+    std::cout<<"points ("<<orig_points.size()<<") = "<<std::endl;
+    std::cout<<"   "<<orig_points<<std::endl;
+  //  for(auto p : orig_points)
+  //    std::cout<<"   "<<p<<std::endl;
+  //    std::cout<<"   "<<p.x()<<", "<<p.y()<<", "<<p.z()<<std::endl;
+    
+    impl_->createWidgets(orig_points);
+  }
   
-  impl_->createWidgets(orig_points);
-  
-
-  
+  std::cout<<"widgets ("<<impl_->widget_.size()<<") = "<<std::endl;
+  for(auto w : impl_->widget_)
+    std::cout<<"   "<<w->position()<<std::endl;
   
   std::vector<GeometryHandle> geom_list;
   for(auto w : impl_->widget_)
