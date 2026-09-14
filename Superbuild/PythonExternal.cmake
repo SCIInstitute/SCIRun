@@ -133,12 +133,20 @@ ENDIF()
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 IF(UNIX)
+  # CPython's configure bakes MACOSX_DEPLOYMENT_TARGET into its Makefile, so
+  # setting it for the configure step covers the build steps as well.
+  IF(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET)
+    SET(python_CONFIGURE_ENV ${CMAKE_COMMAND} -E env
+        "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+  ELSE()
+    SET(python_CONFIGURE_ENV)
+  ENDIF()
   ExternalProject_Add(Python_external
     GIT_REPOSITORY ${python_GIT_URL}
     GIT_TAG ${python_GIT_TAG}
   UPDATE_COMMAND ""
     BUILD_IN_SOURCE ON
-    CONFIGURE_COMMAND ./configure ${python_CONFIGURE_FLAGS}
+    CONFIGURE_COMMAND ${python_CONFIGURE_ENV} ./configure ${python_CONFIGURE_FLAGS}
     PATCH_COMMAND ""
     ${python_INSTALL_COMMAND}
   )
