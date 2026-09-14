@@ -28,6 +28,9 @@
 
 /// @todo Documentation Modules/Math/CreateMatrix.cc
 
+#include <algorithm>
+#include <map>
+
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
@@ -39,6 +42,7 @@ using namespace SCIRun::Dataflow::Networks;
 MODULE_INFO_DEF(CreateMatrix, Math, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Math, TextEntry);
+ALGORITHM_PARAMETER_DEF(Math, MatrixTextDelimiter);
 
 CreateMatrix::CreateMatrix() : Module(staticInfo_)
 {
@@ -49,6 +53,7 @@ void CreateMatrix::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Core::Algorithms::Math::Parameters::TextEntry, std::string());
+  state->setValue(Core::Algorithms::Math::Parameters::MatrixTextDelimiter, std::string("Space"));
 }
 
 void CreateMatrix::execute()
@@ -58,10 +63,22 @@ void CreateMatrix::execute()
     auto matrix(makeShared<DenseMatrix>());
     try
     {
-      auto matrixString = get_state()->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString();
+      auto state = get_state();
+      auto matrixString = state->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString();
 
       if (!matrixString.empty())
       {
+        // The stream parser splits values on whitespace, so a non-space
+        // delimiter is normalized to spaces first. Unknown or empty delimiter
+        // names (e.g. networks saved before this option existed) fall through
+        // to the historical space-delimited behavior.
+        static const std::map<std::string, char> delimiters =
+          {{"Space", ' '}, {"Comma", ','}, {"Semicolon", ';'}, {"Tab", '\t'}};
+        const auto delimiterName = state->getValue(Core::Algorithms::Math::Parameters::MatrixTextDelimiter).toString();
+        const auto delimiter = delimiters.find(delimiterName);
+        if (delimiter != delimiters.end() && delimiter->second != ' ')
+          std::replace(matrixString.begin(), matrixString.end(), delimiter->second, ' ');
+
         matrixString += "\n";
         std::istringstream reader(matrixString);
 
