@@ -235,7 +235,7 @@ message(STATUS "LibXml2_FOUND=${LibXml2_FOUND}")
 message(STATUS "LibXml2_DIR=${LibXml2_DIR}")
 message(STATUS "LIBXml2_USE_FILE=${LIBXml2_USE_FILE}")
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
@@ -257,7 +257,7 @@ set(_scirun_boost_components
   thread
 )
 
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   list(APPEND _scirun_boost_components
        python${SCI_PYTHON_VERSION_SHORT_WIN32})
 endif()
@@ -965,7 +965,7 @@ IF(BUILD_TESTING)
     SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 	SET_PROPERTY(TARGET Modules_Dialog_Factory_Tests PROPERTY FOLDER "Interface/Tests")
   ENDIF()
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")
     SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 	SET_PROPERTY(TARGET Modules_Python_Tests   PROPERTY FOLDER "Modules/Python")
@@ -974,7 +974,7 @@ ENDIF()
 
 #SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
   SET_PROPERTY(TARGET Modules_Python   PROPERTY FOLDER "Modules/Python")

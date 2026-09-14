@@ -46,7 +46,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #endif
@@ -86,7 +86,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 
   /// @todo should this class own the network or just keep a reference?
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, collabs_.cmdFactory_));
 #endif
 
@@ -122,7 +122,7 @@ NetworkEditorController::NetworkEditorController(NetworkStateHandle network, Exe
 
 NetworkEditorController::~NetworkEditorController()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
   collabs_.executionManager_->stopExecution();
