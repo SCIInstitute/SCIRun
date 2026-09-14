@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
+//#include <Core/GeometryPrimitives/Point.h>
 #include <Modules/Legacy/Fields/share.h>
 
 
@@ -57,7 +58,7 @@ namespace SCIRun
 //        ALGORITHM_PARAMETER_DECL(ProbeSize);
       
       ALGORITHM_PARAMETER_DECL(Reset);
-      ALGORITHM_PARAMETER_DECL(PointPositions);
+//      ALGORITHM_PARAMETER_DECL(PointPositions);
       ALGORITHM_PARAMETER_DECL(DipoleDirection);
       
       }
@@ -74,7 +75,8 @@ namespace SCIRun
 
       class SCISHARE GenerateElectrodeFromWidget : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
-        public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
+        public Has2OutputPorts<GeometryPortTag, FieldPortTag>
+//        public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
       {
       public:
         GenerateElectrodeFromWidget();
@@ -87,14 +89,18 @@ namespace SCIRun
 //        static const Core::Algorithms::AlgorithmParameterName MoveAll;
 
         INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, ElectrodeMesh, Field);
-        OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
-        OUTPUT_PORT(2, ControlPoints, Field);
+//        OUTPUT_PORT(0, ElectrodeMesh, Field);
+        OUTPUT_PORT(0, ElectrodeWidget, GeometryObject);
+        OUTPUT_PORT(1, ControlPoints, Field);
           
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI);
       private:
         SharedPointer<class GenerateElectrodeFromWidgetImpl> impl_;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);
+//        void GenerateWidgets(std::vector<Point>& points);
+        std::vector<Core::Geometry::Point> defaultPoints();
+
 
       };
     }

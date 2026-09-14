@@ -28,8 +28,12 @@
 
 #include <Interface/Modules/Fields/GenerateElectrodeFromWidgetDialog.h>
 //#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromWidgetAlgo.h>
+
 #include <Modules/Legacy/Fields/GenerateElectrodeFromWidget.h>
 #include <Modules/Legacy/Fields/GenerateElectrode.h>
+#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+#include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
+
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 //#include <QColorDialog>
