@@ -240,7 +240,7 @@ PythonInterpreter::~PythonInterpreter()
 
 bool needsSpecialPythonPathTreatment(const std::string& commandLine)
 {
-#if defined(BUILD_HEADLESS) && defined(__APPLE__)
+#if !defined(WITH_GUI) && defined(__APPLE__)
   (void)commandLine;
   return true;
 #else
