@@ -29,8 +29,11 @@
 #define CORE_DATATYPES_VTKGEOMETRY_H
 
 #ifdef WITH_VTK
+#pragma push_macro("INPUT_PORT")
+#undef INPUT_PORT
 #include <vtkSmartPointer.h>
 #include <vtkDataObject.h>
+#pragma pop_macro("INPUT_PORT")
 #endif
 
 #include <Core/Datatypes/Datatype.h>

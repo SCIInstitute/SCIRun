@@ -32,6 +32,8 @@
 
 
 #ifdef WITH_VTK
+#pragma push_macro("INPUT_PORT")
+#undef INPUT_PORT
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
@@ -40,6 +42,7 @@
 #include <vtkActor.h>
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
+#pragma pop_macro("INPUT_PORT")
 
 #include "VtkCameraController.h"
 

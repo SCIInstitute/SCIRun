@@ -25,7 +25,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <vtkAxesActor.h>
+#pragma push_macro("INPUT_PORT")
+#undef INPUT_PORT
+// #include <vtkAxesActor.h>
 #include <vtkDataSetMapper.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkDataObject.h>
@@ -38,6 +40,7 @@
 #include <vtkTubeFilter.h>
 #include <vtkSphereSource.h>
 #include <vtkGlyph3DMapper.h>
+#pragma pop_macro("INPUT_PORT")
 
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>

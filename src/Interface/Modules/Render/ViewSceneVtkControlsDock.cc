@@ -26,14 +26,18 @@
 */
 
 
+#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneVtkControlsDock.h>
+#include <Interface/Modules/Render/ViewSceneVtkDialog.h>
+#include <Core/Application/Preferences/Preferences.h>
+#include <Modules/Visualization/ShowFieldVtk.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Visualization;
+//using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
 using namespace SCIRun::Dataflow::Networks;
@@ -43,7 +47,7 @@ using namespace SCIRun::Modules::Visualization;
 ViewSceneVtkControlPopupWidget::ViewSceneVtkControlPopupWidget(ViewSceneVtkDialog* parent) : QWidget(parent)
 {
 	setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(this, &QWidget::customContextMenuRequested, this, &ViewSceneControlPopupWidget::showContextMenu);
+	connect(this, &QWidget::customContextMenuRequested, this, &ViewSceneVtkControlPopupWidget::showContextMenu);
 	pinToggleAction_ = new QAction("Pin popup", this);
 	pinToggleAction_->setCheckable(true);
 	closeAction_ = new QAction("Close popup", this);
@@ -115,9 +119,8 @@ void ClippingPlaneControlsVtk::updatePlaneControlDisplay(double x, double y, dou
 	dValueHorizontalSlider_->setSliderPosition(d * 100);
 }
 
-ClippingPlaneControlsVtk::ClippingPlaneControlsVtk(ViewSceneDialog* parent, QPushButton* toolbarButton)
-	: ViewSceneControlPopupWidget(parent),
-	ButtonStylesheetToggler(toolbarButton, [this]() { toggleVisible(); })
+ClippingPlaneControlsVtk::ClippingPlaneControlsVtk(ViewSceneVtkDialog* parent, QPushButton* toolbarButton)
+	: ViewSceneVtkControlPopupWidget(parent), ButtonStylesheetTogglerVtk(toolbarButton, [this]() { toggleVisible(); })
 {
 	setupUi(this);
 
@@ -135,18 +138,26 @@ ClippingPlaneControlsVtk::ClippingPlaneControlsVtk(ViewSceneDialog* parent, QPus
 	plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(126, 195, 237) }");
 	plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(189, 54, 191) }");
 
-	connect(planeButtonGroup_, BUTTON_GROUP_SIGNAL, parent, &ViewSceneDialog::setClippingPlaneIndex);
+	connect(planeButtonGroup_, BUTTON_GROUP_SIGNAL, parent, &ViewSceneVtkDialog::setClippingPlaneIndex);
 	connect(planeVisibleCheckBox_, &QCheckBox::toggled,
 		[parent, this](bool b) {
 			parent->setClippingPlaneVisible(b); updateToolbarButton("lightGray"); }
 	);
 	linkedCheckable_ = [this]() { return planeVisibleCheckBox_->isChecked(); };
-	connect(showPlaneFrameCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::setClippingPlaneFrameOn);
-	connect(reversePlaneNormalCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::reverseClippingPlaneNormal);
-	connect(xValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneX);
-	connect(yValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneY);
-	connect(zValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneZ);
-	connect(dValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::setClippingPlaneD);
+	connect(showPlaneFrameCheckBox_, &QCheckBox::clicked, parent, &ViewSceneVtkDialog::setClippingPlaneFrameOn);
+	connect(reversePlaneNormalCheckBox_, &QCheckBox::clicked, parent, &ViewSceneVtkDialog::reverseClippingPlaneNormal);
+	connect(xValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneVtkDialog::setClippingPlaneX);
+	connect(yValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneVtkDialog::setClippingPlaneY);
+	connect(zValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneVtkDialog::setClippingPlaneZ);
+	connect(dValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneVtkDialog::setClippingPlaneD);
+}
+
+namespace {
+template <typename Checkable>
+void toggleCheckable(Checkable* box)
+{
+  box->setChecked(!box->isChecked());
+}
 }
 
 void ClippingPlaneControlsVtk::toggleVisible()

@@ -30,12 +30,17 @@
 
 #include "Interface/Modules/Render/ui_ClippingPlanes.h"
 
+#ifndef Q_MOC_RUN
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Modules/Render/ViewSceneVtk.h>
+#endif
 #include <Interface/Modules/Render/share.h>
 
 class QwtKnob;
 class ctkColorPickerButton;
 class QToolBar;
 class ctkPopupWidget;
+class QPushButton;
 
 namespace SCIRun {
 namespace Gui {
@@ -56,7 +61,19 @@ namespace Gui {
         QAction* closeAction_{ nullptr };
     };
 
-    class SCISHARE ClippingPlaneControlsVtk : public ViewSceneVtkControlPopupWidget, public Ui::ClippingPlanes, public ButtonStylesheetToggler
+  class SCISHARE ButtonStylesheetTogglerVtk
+    {
+     public:
+      ButtonStylesheetTogglerVtk(QPushButton* toolbarButton, std::function<void()> whatToToggle);
+      void updateToolbarButton(const QColor& color);
+
+     protected:
+      QPushButton* toolbarButton_{nullptr};
+      std::function<bool()> linkedCheckable_;
+      std::function<void()> whatToToggle_;
+    };
+
+    class SCISHARE ClippingPlaneControlsVtk : public ViewSceneVtkControlPopupWidget, public Ui::ClippingPlanes, public ButtonStylesheetTogglerVtk
     {
         Q_OBJECT
 
@@ -71,3 +88,5 @@ namespace Gui {
     };
 }
 }
+
+#endif
