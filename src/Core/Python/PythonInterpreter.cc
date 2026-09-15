@@ -97,6 +97,7 @@ namespace Core {
     boost::python::object globals_;
     // Whether the Python interpreter has been initialized.
     bool initialized_;
+    bool scirunLibraryImported_{ false };
     bool terminal_running_;
     // The input buffer
     std::string input_buffer_;
@@ -734,9 +735,10 @@ bool PythonInterpreter::run_string(const std::string& command)
   return true;
 }
 
-void PythonInterpreter::run_script(const std::string& script)
+bool PythonInterpreter::run_script(const std::string& script)
 {
   LOG_DEBUG("Python::run_script( {} )", script);
+  bool succeeded = true;
   {
     PythonInterpreterPrivate::lock_type lock(this->private_->get_mutex());
     if (!this->private_->initialized_)
@@ -768,6 +770,7 @@ void PythonInterpreter::run_script(const std::string& script)
     if (PyErr_Occurred())
     {
       PyErr_Print();
+      succeeded = false;
     }
     // If compilation succeeded and the code object is not Py_None
     else if (code_obj)
@@ -778,6 +781,7 @@ void PythonInterpreter::run_script(const std::string& script)
       if (PyErr_Occurred())
       {
         PyErr_Print();
+        succeeded = false;
       }
     }
   }
@@ -787,6 +791,7 @@ void PythonInterpreter::run_script(const std::string& script)
 
   this->private_->command_buffer_.clear();
   this->prompt_signal_(this->private_->prompt1_);
+  return succeeded;
 }
 
 bool PythonInterpreter::run_file(const std::string& file_name)
@@ -875,6 +880,11 @@ std::string PythonInterpreter::EscapeSingleQuotedString(const std::string& str)
 
 void PythonInterpreter::importSCIRunLibrary()
 {
+  // Idempotent: the GUI imports at console construction, InterfaceWithPython on
+  // every execute (headless has no other import point, #2699).
+  if (this->private_->scirunLibraryImported_)
+    return;
+  this->private_->scirunLibraryImported_ = true;
   run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
 
 #ifdef BUILD_TESTING
