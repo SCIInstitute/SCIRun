@@ -147,6 +147,10 @@ ENDIF()
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
 ###########################################
+# Configure vtk
+OPTION(WITH_VTK "build VTK" OFF)
+
+###########################################
 # Configure Windows executable to run with
 # or without the console
 
@@ -180,6 +184,9 @@ IF(NOT BUILD_HEADLESS)
   # Qt package discovery
   # ------------------------------------------------------------
   IF(IS_DIRECTORY "${Qt_PATH}")
+    # HINTS reaches Qt6Config but not its nested find_dependency() calls, so
+    # Qt 6.3 fails on Qt6CoreTools unless the prefix is on CMAKE_PREFIX_PATH.
+    LIST(APPEND CMAKE_PREFIX_PATH "${Qt_PATH}")
     if (QT_VERSION_MAJOR STREQUAL "6")
       FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
         COMPONENTS
@@ -304,6 +311,10 @@ ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
+IF(WITH_VTK)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+ENDIF()
+
 ###########################################
 # Download external data sources
 OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
@@ -331,6 +342,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
     "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
+    "-DWITH_VTK:BOOL=${WITH_VTK}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DEigen_DIR:PATH=${Eigen_DIR}"
@@ -369,6 +381,12 @@ IF(WITH_OSPRAY)
   )
 ENDIF()
 
+IF(WITH_VTK)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DVTK_External_Dir:PATH=${VTK_INSTALL_DIR}"
+  )
+ENDIF()
+
 IF(WIN32)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}"
@@ -378,6 +396,7 @@ ENDIF()
 IF(NOT BUILD_HEADLESS)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DQt_PATH:PATH=${Qt_PATH}"
+    "-DCMAKE_PREFIX_PATH:PATH=${Qt_PATH}"
     "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
     "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
     "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"

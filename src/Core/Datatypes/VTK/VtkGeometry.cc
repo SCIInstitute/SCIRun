@@ -25,56 +25,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Datatypes/VTK/VtkGeometry.h>
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H
+using namespace SCIRun::Core;
+using namespace Datatypes;
 
-#include <vector>
-#include <optional>
-#include <Core/Utils/SmartPointers.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Datatypes/MatrixFwd.h>
-
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  class Datatype;
-  typedef SharedPointer<Datatype> DatatypeHandle;
-  typedef SharedPointer<const Datatype> DatatypeConstHandle;
-  typedef std::optional<DatatypeHandle> DatatypeHandleOption;
-
-  class Scalar;
-  class Double;
-  class Int32;
-  class String;
-  class GeometryObject;
-  class VtkGeometryObject;
-  class ColorMap;
-  class Bundle;
-  class MetadataObject;
-
-  typedef SharedPointer<String> StringHandle;
-  typedef SharedPointer<GeometryObject> GeometryBaseHandle;
-  typedef SharedPointer<ColorMap> ColorMapHandle;
-  typedef SharedPointer<Bundle> BundleHandle;
-}}
-
-  class Field;
-  class Mesh;
-  typedef SharedPointer<Field> FieldHandle;
-  typedef SharedPointer<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
-
-  class NrrdData;
-  typedef SharedPointer<NrrdData> NrrdDataHandle;
-
-  namespace Core {
-  namespace Datatypes {
-    typedef NrrdData NrrdDataType;
-  }}
+VtkGeometryObject* VtkGeometryObject::clone() const
+{
+    return nullptr;  // TODO
 }
 
-
-#endif
+CompositeVtkGeometryObject::CompositeVtkGeometryObject(const std::vector<VtkGeometryObjectHandle>& objs) : objs_(objs)
+{
+    for (const auto& obj : objs_)
+    {
+        if (obj) box.extend(obj->box);
+    }
+}
