@@ -9,7 +9,7 @@
     and installing missing prerequisites (Git, CMake, Visual Studio Build Tools, Qt).
 
     WHAT IT DOES
-      1. Checks for Git, CMake 3.20+, Visual Studio C++ Build Tools, and Qt
+      1. Checks for Git, CMake 3.21+, Visual Studio C++ Build Tools, and Qt
       2. Offers to download and install anything missing (internet required)
       3. Configures the Superbuild with CMake
       4. Compiles SCIRun and all its dependencies
@@ -153,7 +153,7 @@ $ErrorActionPreference = "Stop"
 
 # --- Constants ---
 
-$MIN_CMAKE_VERSION   = [Version]"3.20.0"
+$MIN_CMAKE_VERSION   = [Version]"3.21.0"
 $DL_CMAKE_VERSION    = "3.31.4"
 $DL_CMAKE_URL        = "https://github.com/Kitware/CMake/releases/download/v$DL_CMAKE_VERSION/cmake-$DL_CMAKE_VERSION-windows-x86_64.msi"
 $DL_VS_BUILDTOOLS_URL = "https://aka.ms/vs/17/release/vs_buildtools.exe"
