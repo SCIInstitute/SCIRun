@@ -40,6 +40,7 @@
 #include <Interface/Modules/Render/share.h>
 
 #include <Interface/Modules/Render/ViewSceneVtkControlsDock.h>
+#include <Interface/Modules/Render/ES/RendererCollaborators.h>
 
 namespace SCIRun {
 
@@ -57,9 +58,12 @@ public:
     QWidget* parent = nullptr);
   ~ViewSceneVtkDialog();
   void adjustToolbar(double factor) override;
+  Qt::ToolBarArea whereIs(QToolBar* toolbar) const;
 
 Q_SIGNALS:
   void newGeometryValueForwarder();
+  void closeAllNonPinnedPopups();
+  void fullScreenChanged();
 
 protected:
   void pullSpecial() override;
@@ -85,6 +89,11 @@ private Q_SLOTS:
   void setCameraWidgets();
 
       //---------------- Clipping Planes -----------------------------------------------------------
+  void updateClippingPlaneDisplay();
+  //void buildGeomClippingPlanes();
+  void initializeClippingPlaneDisplay();
+  void doClippingPlanes();
+
   void setClippingPlaneIndex(int index);
   void setClippingPlaneVisible(bool value);
   void setClippingPlaneFrameOn(bool value);
@@ -106,9 +115,11 @@ private Q_SLOTS:
   void addControlLockButton();
   void addClippingPlaneButton();
   void addToolbarButton(QPushButton* button);
+  void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneVtkControlPopupWidget* widgetToPopup = nullptr);
   void toggleLockColor(bool locked);
   void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
   MouseButton getRenderButton(QMouseEvent* event);
+  void setupPopupWidget(QPushButton* button, ViewSceneVtkControlPopupWidget* underlyingWidget, QToolBar* toolbar);
 
   float getFloat(const Core::Algorithms::Name& name) const;
 
@@ -117,7 +128,9 @@ private Q_SLOTS:
   Render::VtkRenderer* renderer_{nullptr};
 
   QStatusBar* statusBar_ {nullptr};
-  QToolBar* toolBar_ {nullptr};
+  QToolBar* toolBar1_ {nullptr};
+  QToolBar* toolBar2_{nullptr};
+  ViewSceneVtkToolBarController* toolBarController_{nullptr};
 
   //ViewOspraySceneConfigDialog* configDialog_;
   QAction* lockRotation_;
@@ -129,7 +142,8 @@ private Q_SLOTS:
   QPushButton* playTimestepsButton_;
 
   ClippingPlaneControlsVtk* clippingPlaneControls_{nullptr};
-  
+  Render::ClippingPlaneManagerPtr clippingPlaneManager_;
+
   friend class ClippingPlaneControlsVtk;
 };
 }}

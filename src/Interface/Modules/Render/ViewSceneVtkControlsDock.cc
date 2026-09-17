@@ -31,6 +31,8 @@
 #include <Interface/Modules/Render/ViewSceneVtkDialog.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Modules/Visualization/ShowFieldVtk.h>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -43,6 +45,25 @@ using namespace SCIRun::Render;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Modules::Visualization;
+
+ButtonStylesheetTogglerVtk::ButtonStylesheetTogglerVtk(QPushButton* toolbarButton, std::function<void()> whatToToggle) : toolbarButton_(toolbarButton), whatToToggle_(whatToToggle)
+{
+  QObject::connect(toolbarButton, &QPushButton::clicked, whatToToggle_);
+}
+
+void ButtonStylesheetTogglerVtk::updateToolbarButton(const QColor& color)
+{
+  if (!linkedCheckable_) return;
+  if (linkedCheckable_())
+  {
+    const QColor complimentary(255 - color.red(), 255 - color.green(), 255 - color.blue());
+    toolbarButton_->setStyleSheet("QPushButton { background-color: " + color.name() + "; color: " + complimentary.name() + " }");
+  }
+  else
+  {
+    toolbarButton_->setStyleSheet("");
+  }
+}
 
 ViewSceneVtkControlPopupWidget::ViewSceneVtkControlPopupWidget(ViewSceneVtkDialog* parent) : QWidget(parent)
 {
@@ -165,3 +186,135 @@ void ClippingPlaneControlsVtk::toggleVisible()
 	toggleCheckable(planeVisibleCheckBox_);
 }
 
+namespace {
+struct PopupProperties
+{
+  Qt::Alignment alignment;
+  Qt::Orientation orientation;
+  ctkBasePopupWidget::VerticalDirection verticalDirection;
+  Qt::LayoutDirection horizontalDirection;
+};
+
+constexpr PopupProperties bottomOutHorizontal{Qt::AlignBottom | Qt::AlignHCenter, Qt::Vertical, ctkBasePopupWidget::VerticalDirection::TopToBottom, Qt::LayoutDirectionAuto};
+constexpr PopupProperties topOutHorizontal{Qt::AlignTop | Qt::AlignHCenter, Qt::Vertical, ctkBasePopupWidget::VerticalDirection::BottomToTop, Qt::LayoutDirectionAuto};
+constexpr PopupProperties leftOutVertical{Qt::AlignLeft | Qt::AlignVCenter, Qt::Horizontal, ctkBasePopupWidget::VerticalDirection::TopToBottom, Qt::LayoutDirectionAuto};
+constexpr PopupProperties rightOutVertical{Qt::AlignRight | Qt::AlignVCenter, Qt::Horizontal, ctkBasePopupWidget::VerticalDirection::TopToBottom, Qt::LeftToRight};
+
+PopupProperties popupPropertiesFor(Qt::Orientation toolbarOrientation, Qt::ToolBarArea area, bool flipped)
+{
+  switch (toolbarOrientation)
+  {
+  case Qt::Horizontal:
+  {
+    switch (area)
+    {
+    case Qt::BottomToolBarArea: return flipped ? topOutHorizontal : bottomOutHorizontal;
+    default: return flipped ? bottomOutHorizontal : topOutHorizontal;
+    }
+  }
+  case Qt::Vertical:
+  {
+    switch (area)
+    {
+    case Qt::LeftToolBarArea: return flipped ? rightOutVertical : leftOutVertical;
+    default: return flipped ? leftOutVertical : rightOutVertical;
+    }
+  }
+  }
+  return {};
+}
+
+QStyle::StandardPixmap oppositeArrow(const QPushButton* button)
+{
+  switch (static_cast<QStyle::StandardPixmap>(button->property(ViewSceneVtkToolBarController::DirectionProperty).toInt()))
+  {
+  case QStyle::SP_ArrowRight: return QStyle::SP_ArrowLeft;
+  case QStyle::SP_ArrowLeft: return QStyle::SP_ArrowRight;
+  case QStyle::SP_ArrowUp: return QStyle::SP_ArrowDown;
+  case QStyle::SP_ArrowDown: return QStyle::SP_ArrowUp;
+  default: return QStyle::SP_BrowserStop;
+  }
+}
+
+QStyle::StandardPixmap outArrowForBarAt(Qt::ToolBarArea area)
+{
+  switch (area)
+  {
+  case Qt::LeftToolBarArea: return QStyle::SP_ArrowLeft;
+  case Qt::RightToolBarArea: return QStyle::SP_ArrowRight;
+  case Qt::BottomToolBarArea: return QStyle::SP_ArrowDown;
+  case Qt::TopToolBarArea: return QStyle::SP_ArrowUp;
+  default: return QStyle::SP_BrowserStop;
+  }
+}
+
+}
+
+ViewSceneVtkToolBarController::ViewSceneVtkToolBarController(ViewSceneVtkDialog* dialog) : QObject(dialog), dialog_(dialog)
+{
+  SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay.connectValueChanged([this](int) { updateDelays(); });
+  SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay.connectValueChanged([this](int) { updateDelays(); });
+}
+
+void ViewSceneVtkToolBarController::setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup)
+{
+  updatePopupProperties(toolbar, popup, false);
+
+  popup->setShowDelay(SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay);
+  popup->setHideDelay(SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay);
+}
+
+void ViewSceneVtkToolBarController::updateDelays()
+{
+  for (const auto& [toolbar, popups] : toolBarPopups_)
+  {
+    for (auto& popup : popups)
+    {
+      popup->setShowDelay(SCIRun::Core::Preferences::Instance().toolBarPopupShowDelay);
+      popup->setHideDelay(SCIRun::Core::Preferences::Instance().toolBarPopupHideDelay);
+    }
+  }
+}
+
+void ViewSceneVtkToolBarController::registerPopup(QToolBar* toolbar, ctkPopupWidget* popup)
+{
+  connect(toolbar, &QToolBar::orientationChanged, [this, popup, toolbar](Qt::Orientation /*orientation*/) { updatePopupProperties(toolbar, popup, false); });
+  connect(toolbar, &QToolBar::topLevelChanged, [this, popup, toolbar](bool /*topLevel*/) { updatePopupProperties(toolbar, popup, false); });
+  connect(dialog_, &ViewSceneVtkDialog::fullScreenChanged, [this, popup, toolbar]() { updatePopupProperties(toolbar, popup, false); });
+  toolBarPopups_[toolbar].push_back(popup);
+}
+
+void ViewSceneVtkToolBarController::updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup, bool flipped)
+{
+  const auto props = popupPropertiesFor(toolbar->orientation(), dialog_->whereIs(toolbar), dialog_->isFullScreen() || flipped);
+  popup->setAlignment(props.alignment);
+  popup->setOrientation(props.orientation);
+  popup->setVerticalDirection(props.verticalDirection);
+  popup->setHorizontalDirection(props.horizontalDirection);
+}
+
+void ViewSceneVtkToolBarController::registerDirectionButton(QToolBar* toolbar, QPushButton* button)
+{
+  button->setProperty(FlipProperty, true);
+
+  auto arrow = outArrowForBarAt(dialog_->whereIs(toolbar));
+  button->setIcon(QApplication::style()->standardIcon(arrow));
+  button->setProperty(DirectionProperty, static_cast<int>(arrow));
+
+  connect(button, &QPushButton::clicked, [button, toolbar, this]() {
+    const auto opp = oppositeArrow(button);
+    button->setIcon(QApplication::style()->standardIcon(opp));
+    button->setProperty(DirectionProperty, static_cast<int>(opp));
+    bool flip = button->property(FlipProperty).toBool();
+    for (auto& pop : toolBarPopups_[toolbar])
+      updatePopupProperties(toolbar, pop, flip);
+    button->setProperty(FlipProperty, !flip);
+  });
+
+  connect(toolbar, &QToolBar::topLevelChanged, [button, toolbar, this](bool /*topLevel*/) {
+    button->setProperty(FlipProperty, true);
+    auto outArrow = outArrowForBarAt(dialog_->whereIs(toolbar));
+    button->setIcon(QApplication::style()->standardIcon(outArrow));
+    button->setProperty(DirectionProperty, static_cast<int>(outArrow));
+  });
+}

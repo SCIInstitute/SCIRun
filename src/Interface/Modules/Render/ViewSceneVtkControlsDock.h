@@ -86,6 +86,24 @@ namespace Gui {
         /// which propagates to the dialog and the toolbar button.
         void toggleVisible();
     };
+
+  class SCISHARE ViewSceneVtkToolBarController : public QObject
+    {
+      Q_OBJECT
+     public:
+      explicit ViewSceneVtkToolBarController(ViewSceneVtkDialog* dialog);
+      void setDefaultProperties(QToolBar* toolbar, ctkPopupWidget* popup);
+      void registerPopup(QToolBar* toolbar, ctkPopupWidget* popup);
+      void registerDirectionButton(QToolBar* toolbar, QPushButton* button);
+      void updateDelays();
+      static constexpr const char* DirectionProperty = "dir";
+      static constexpr const char* FlipProperty = "flip";
+
+     private:
+      ViewSceneVtkDialog* dialog_;
+      void updatePopupProperties(QToolBar* toolbar, ctkPopupWidget* popup, bool flipped);
+      std::map<QToolBar*, std::vector<ctkPopupWidget*>> toolBarPopups_;
+    };
 }
 }
 

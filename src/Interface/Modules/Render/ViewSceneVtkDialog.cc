@@ -29,6 +29,8 @@
 #include <Interface/Modules/Render/ViewSceneVtkDialog.h>
 #include <Interface/Modules/Render/ES/RendererInterfaceCollaborators.h>
 #include <boost/algorithm/string/predicate.hpp>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
+#include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
 #ifdef WITH_VTK
 //#include <ospray/ospray.h>
@@ -170,8 +172,8 @@ void ViewSceneVtkDialog::setWidth(int w)
 
 void ViewSceneVtkDialog::addToolBar()
 {
-  toolBar_ = new QToolBar(this);
-  WidgetStyleMixin::toolbarStyle(toolBar_);
+  toolBar1_ = new QToolBar(this);
+  WidgetStyleMixin::toolbarStyle(toolBar1_);
 
   addConfigurationButton();
   addAutoViewButton();
@@ -179,15 +181,33 @@ void ViewSceneVtkDialog::addToolBar()
   addTimestepButtons();
   addScreenshotButton();
 
-  vtkLayout->addWidget(toolBar_);
+  vtkLayout->addWidget(toolBar1_);
+
+  toolBar2_ = new QToolBar(this);
+  WidgetStyleMixin::toolbarStyle(toolBar2_);
+
+  addClippingPlaneButton();
+
+  vtkLayout->addWidget(toolBar2_);
 
   addControlLockButton();
 }
 
 void ViewSceneVtkDialog::adjustToolbar(double factor)
 {
-  if (toolBar_)
-    adjustToolbarForHighResolution(toolBar_, factor);
+  if (toolBar1_)
+    adjustToolbarForHighResolution(toolBar1_, factor);
+  if (toolBar2_)
+    adjustToolbarForHighResolution(toolBar2_, factor);
+}
+
+Qt::ToolBarArea ViewSceneVtkDialog::whereIs(QToolBar* toolbar) const
+{
+  if (toolbar == toolBar1_)
+    return Qt::ToolBarArea::TopToolBarArea;
+  else if (toolbar == toolBar2_)
+    return Qt::ToolBarArea::LeftToolBarArea;
+  return Qt::ToolBarArea::AllToolBarAreas;
 }
 
 void ViewSceneVtkDialog::addConfigurationButton()
@@ -219,7 +239,43 @@ void ViewSceneVtkDialog::addToolbarButton(QPushButton* button)
 {
   button->setFixedSize(35,35);
   button->setIconSize(QSize(25,25));
-  toolBar_->addWidget(button);
+  toolBar1_->addWidget(button);
+}
+
+void ViewSceneVtkDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which, ViewSceneVtkControlPopupWidget* widgetToPopup)
+{
+  static const auto buttonSize = 30;
+  static const auto iconSize = 22;
+  widget->setFixedSize(buttonSize, buttonSize);
+  auto toolbar = (which == Qt::TopToolBarArea ? toolBar1_ : toolBar2_);  // TODO refactor obviously
+
+  if (auto* button = qobject_cast<QPushButton*>(widget))
+  {
+    button->setIconSize(QSize(iconSize, iconSize));
+    if (widgetToPopup) setupPopupWidget(button, widgetToPopup, toolbar);
+  }
+
+  toolbar->addWidget(widget);
+}
+
+void ViewSceneVtkDialog::setupPopupWidget(QPushButton* button, ViewSceneVtkControlPopupWidget* underlyingWidget, QToolBar* toolbar)
+{
+  auto* popup = new ctkPopupWidget(button);
+  button->setObjectName("Button: " + underlyingWidget->objectName());
+
+  toolBarController_->setDefaultProperties(toolbar, popup);
+
+  connect(this, &ViewSceneVtkDialog::closeAllNonPinnedPopups, [popup, underlyingWidget]() {
+    if (!underlyingWidget->pinToggleAction()->isChecked()) popup->close();
+  });
+  connect(underlyingWidget->pinToggleAction(), &QAction::toggled, popup, &ctkPopupWidget::pinPopup);
+  connect(underlyingWidget->closeAction(), &QAction::triggered, popup, &QWidget::close);
+
+  toolBarController_->registerPopup(toolbar, popup);
+
+  auto* popupLayout = new QVBoxLayout(popup);
+  popupLayout->addWidget(underlyingWidget);
+  popupLayout->setContentsMargins(4, 4, 4, 4);
 }
 
 void ViewSceneVtkDialog::addAutoViewButton()
@@ -293,10 +349,10 @@ void ViewSceneVtkDialog::addControlLockButton()
 
 void ViewSceneVtkDialog::addClippingPlaneButton()
 {
-  //auto* clippingPlaneButton = new QPushButton();
-  //clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
-  //clippingPlaneControls_ = new ClippingPlaneControls(this, clippingPlaneButton);
-  //addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea, clippingPlaneControls_);
+  auto* clippingPlaneButton = new QPushButton();
+  clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
+  clippingPlaneControls_ = new ClippingPlaneControlsVtk(this, clippingPlaneButton);
+  addToolbarButton(clippingPlaneButton);
 }
 
 void ViewSceneVtkDialog::toggleLockColor(bool locked)
@@ -454,4 +510,82 @@ void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
   #ifdef WITH_VTK
   renderer_->mouseWheel(event->angleDelta().y());
   #endif
+}
+
+void ViewSceneVtkDialog::initializeClippingPlaneDisplay()
+{
+  clippingPlaneManager_->setActive(0);
+
+  const auto& activePlane = clippingPlaneManager_->active();
+  clippingPlaneControls_->updatePlaneSettingsDisplay(activePlane.visible, activePlane.showFrame, activePlane.reverseNormal);
+  clippingPlaneControls_->updatePlaneControlDisplay(activePlane.x, activePlane.y, activePlane.z, activePlane.d);
+}
+
+void ViewSceneVtkDialog::setClippingPlaneIndex(int index)
+{
+  clippingPlaneManager_->setActive(index);
+
+  doClippingPlanes();
+}
+
+void ViewSceneVtkDialog::doClippingPlanes()
+{
+  const auto& activePlane = clippingPlaneManager_->active();
+  clippingPlaneControls_->updatePlaneSettingsDisplay(activePlane.visible, activePlane.showFrame, activePlane.reverseNormal);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::setClippingPlaneVisible(bool value)
+{
+  clippingPlaneManager_->setActiveVisibility(value);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::setClippingPlaneFrameOn(bool value)
+{
+  //updateModifiedGeometries();
+  clippingPlaneManager_->setActiveFrameOn(value);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::reverseClippingPlaneNormal(bool value)
+{
+  clippingPlaneManager_->setActiveNormalReversed(value);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::setClippingPlaneX(int index)
+{
+  clippingPlaneManager_->setActiveX(index);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::setClippingPlaneY(int index)
+{
+  clippingPlaneManager_->setActiveY(index);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::setClippingPlaneZ(int index)
+{
+  clippingPlaneManager_->setActiveZ(index);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::setClippingPlaneD(int index)
+{
+  clippingPlaneManager_->setActiveD(index);
+  updateClippingPlaneDisplay();
+}
+
+void ViewSceneVtkDialog::updateClippingPlaneDisplay()
+{
+  //newGeometryValue(false, true);
+
+  //impl_->delayGC_ = true;
+  //if (!impl_->delayedGCRequested_)
+  //{
+  //  impl_->delayedGCRequested_ = true;
+  //  runDelayedGC();
+  //}
 }
