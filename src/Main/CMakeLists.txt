@@ -104,7 +104,7 @@ ELSEIF(WIN32)
     # ------------------------
     # Python (only if enabled)
     # ------------------------
-    IF(BUILD_WITH_PYTHON)
+    IF(WITH_PYTHON)
       # Use release DLL path by default
       get_filename_component(_python_bin_dir
         ${SCI_PYTHON_DLL_PATH}
@@ -203,7 +203,7 @@ FOREACH(app ${APPS})
     )
   ENDIF()
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     TARGET_LINK_LIBRARIES(${app}
       Core_Python
     )
@@ -229,7 +229,7 @@ ELSE()
     # ------------------------
     # Python
     # ------------------------
-    IF(BUILD_WITH_PYTHON)
+    IF(WITH_PYTHON)
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<CONFIGURATION>/Lib
@@ -287,7 +287,7 @@ ELSE()
     # ------------------------
     # Python install
     # ------------------------
-    IF(BUILD_WITH_PYTHON)
+    IF(WITH_PYTHON)
       INSTALL(PROGRAMS
         ${SCI_PYTHON_DLL_PATH}
         DESTINATION bin)
@@ -313,7 +313,7 @@ ELSE()
     # ------------------------
     # Python install
     # ------------------------
-    IF(BUILD_WITH_PYTHON)
+    IF(WITH_PYTHON)
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Lib

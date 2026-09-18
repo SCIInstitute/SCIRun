@@ -107,11 +107,11 @@ Pass these as `-DOPTION=ON|OFF` to the Superbuild (`cmake -DBUILD_TESTING=ON ../
 |---|---|---|
 | `BUILD_TESTING` | OFF | Build unit and regression tests |
 | `BUILD_DOCUMENTATION` | OFF | Build the documentation |
-| `BUILD_WITH_PYTHON` | ON | Python API and the Python modules |
+| `WITH_PYTHON` | ON | Python API and the Python modules |
 | `BUILD_HEADLESS` | OFF | Build without Qt / the GUI |
 | `WITH_TETGEN` | ON | TetGen mesh generation (GPL; see the InterfaceWithTetGen module) |
-| `BUILD_OSPRAY` | OFF | Download and build OSPRay for the OsprayViewer module |
-| `PREBUILT_OSPRAY` | OFF | Use an already-installed OSPRay instead of building one |
+| `WITH_OSPRAY` | OFF | OSPRay for the OsprayViewer module (downloaded and built by the Superbuild) |
+| `PREBUILT_OSPRAY` | OFF | With `WITH_OSPRAY`: use an already-installed OSPRay instead of building one |
 | `WITH_VTK` | OFF | VTK renderer backend |
 | `Qt_PATH` | | Location of the Qt installation (see below) |
 | `SCIRUN_QT_MIN_VERSION` | 5.15.2 | Set to `6.3.1` to build against Qt 6 |
@@ -122,7 +122,7 @@ Option names follow one rule: the prefix says what kind of knob it is.
 - `BUILD_<THING>` — an extra artifact SCIRun emits, consistent with CMake's own `BUILD_TESTING` and `BUILD_SHARED_LIBS`.
 - `ENABLE_`, `RUN_`, `GENERATE_`, `DOWNLOAD_` — behavior knobs.
 
-`BUILD_WITH_` is retired and no new options use it. `BUILD_WITH_PYTHON`, `BUILD_HEADLESS` and `BUILD_OSPRAY` predate the rule and are being renamed to `WITH_PYTHON`, `WITH_GUI` and `WITH_OSPRAY`; the old spellings will keep working for one release with a deprecation warning.
+`BUILD_WITH_` is retired and no new options use it. `BUILD_HEADLESS` predates the rule and is being renamed to `WITH_GUI`. The old `BUILD_WITH_PYTHON` and `BUILD_OSPRAY` spellings keep working for one release with a deprecation warning.
 
 ### Configuring SCIRun with Qt 5
 
@@ -152,9 +152,9 @@ cmake -DQt_PATH=path_to_Qt6/6.4.2/clang_64/ -DSCIRUN_QT_MIN_VERSION="6.3.1" ../S
 
 
 ### Configuring SCIRun with OSPRay
-To use the OsprayViewer module, SCIRun needs to download and install Ospray during the build process, which is off by default. This is enabled with the `BUILD_OSPRAY` flag. In the command line, it would look like:
+To use the OsprayViewer module, SCIRun needs to download and install Ospray during the build process, which is off by default. This is enabled with the `WITH_OSPRAY` flag. In the command line, it would look like:
 ```
-cmake -DBUILD_OSPRAY=True ../Superbuild/
+cmake -DWITH_OSPRAY=ON ../Superbuild/
 ```
 
 ## Building SCIRun
