@@ -189,6 +189,9 @@ IF(NOT BUILD_HEADLESS)
   # Qt package discovery
   # ------------------------------------------------------------
   IF(IS_DIRECTORY "${Qt_PATH}")
+    # HINTS reaches Qt6Config but not its nested find_dependency() calls, so
+    # Qt 6.3 fails on Qt6CoreTools unless the prefix is on CMAKE_PREFIX_PATH.
+    LIST(APPEND CMAKE_PREFIX_PATH "${Qt_PATH}")
     if (QT_VERSION_MAJOR STREQUAL "6")
       FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
         COMPONENTS
@@ -398,6 +401,7 @@ ENDIF()
 IF(NOT BUILD_HEADLESS)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DQt_PATH:PATH=${Qt_PATH}"
+    "-DCMAKE_PREFIX_PATH:PATH=${Qt_PATH}"
     "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
     "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
     "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"
