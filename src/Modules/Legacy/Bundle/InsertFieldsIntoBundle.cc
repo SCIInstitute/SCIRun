@@ -99,10 +99,9 @@ void InsertFieldsIntoBundle::execute()
     for (int i = 0; i < fields.size(); ++i)
     {
       auto field = fields[i];
-      auto stateName = state->getValue(Name((*fieldPortNameIterator++)->internalId().toString())).toString();
+      auto name = dynamicPortLabel(*state, (*fieldPortNameIterator++)->internalId());
       if (field)
       {
-        auto name = !stateName.empty() ? stateName : ("field" + boost::lexical_cast<std::string>(i));
         auto replaceField = i < replace.size() ? replace[i].toBool() : true;
         if (replaceField || !bundle->isField(name))
         {

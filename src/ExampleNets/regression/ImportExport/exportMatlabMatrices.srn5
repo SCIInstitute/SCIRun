@@ -418,7 +418,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>11</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ImportMatricesFromMatlab:0</moduleId1_>
@@ -549,6 +549,18 @@
 				<moduleId2_>ReportMatrixInfo:7</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ExportMatricesToMatlab:0</moduleId1_>
+				<port1_>
+					<name>FilenameOut</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ImportMatricesFromMatlab:1</moduleId2_>
+				<port2_>
+					<name>Filename</name>
 					<id>0</id>
 				</port2_>
 			</item>
