@@ -35,9 +35,9 @@
       </size>
      </property>
      <property name="text">
-      <string>Format: 
+      <string>Format:
 * one row per line
-* space-delimited
+* values separated by the chosen delimiter
 * new line at end of each row</string>
      </property>
     </widget>
@@ -52,6 +52,48 @@
 use this for row notes.</string>
      </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="delimiterLayout">
+     <item>
+      <widget class="QLabel" name="delimiterLabel_">
+       <property name="text">
+        <string>Value delimiter:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="delimiterComboBox_">
+       <item>
+        <property name="text">
+         <string>Space</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Comma</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Semicolon</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tab</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <spacer name="delimiterSpacer_">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QCheckBox" name="editCheckBox_">
