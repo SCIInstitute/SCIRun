@@ -90,6 +90,8 @@ jobs:
     permissions:
       checks: write
       contents: read
+    env:
+      SCCACHE_GHA_ENABLED: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -108,7 +110,7 @@ jobs:
         run: echo "QT_ROOT_DIR=${QT_ROOT_DIR:-(unset)}"
 
       - name: Set up sccache
-        uses: mozilla-actions/sccache-action@v0.0.9
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       - name: Checkout SCIRunTestData
         if: ${{ inputs.run-regression-tests || inputs.coverage }}
@@ -288,6 +290,17 @@ jobs:
           & cmake --build . --config Release --parallel
 
           Pop-Location
+
+      - name: Show sccache statistics (Unix)
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          "${SCCACHE_PATH}" --show-stats
+
+      - name: Show sccache statistics (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: '& $env:SCCACHE_PATH --show-stats'
 
       - name: Smoke test - executable loads and runs (Unix)
         if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
