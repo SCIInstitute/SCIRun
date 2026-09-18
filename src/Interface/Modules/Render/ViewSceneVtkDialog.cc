@@ -75,12 +75,28 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   addConfigurationDialog();
+
+  {
+    toolbarHolder_ = new QMainWindow;
+    toolbarHolder_->setCentralWidget(static_cast<QWidget*>(viewer_));
+
+    toolBar1_ = new QToolBar(this);
+    toolBar1_->setMovable(true);
+    toolBar1_->setFloatable(true);
+
+    toolBar2_ = new QToolBar(this);
+    toolBar2_->setMovable(true);
+    toolBar2_->setFloatable(true);
+
+    toolBarController_ = new ViewSceneVtkToolBarController(this);
+  }
   addToolBar();
+  setToolBarPositions();
   setMinimumSize(200, 200);
 
   statusBar_->setMaximumHeight(20);
 
-  vtkLayout->addWidget(viewer_);
+  vtkLayout->addWidget(toolbarHolder_);
   vtkLayout->addWidget(statusBar_);
 
 /* addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
@@ -172,8 +188,14 @@ void ViewSceneVtkDialog::setWidth(int w)
 
 void ViewSceneVtkDialog::addToolBar()
 {
-  toolBar1_ = new QToolBar(this);
+  toolBar1_->setContextMenuPolicy(Qt::CustomContextMenu);
   WidgetStyleMixin::toolbarStyle(toolBar1_);
+
+  toolBar2_->setOrientation(Qt::Vertical);
+  WidgetStyleMixin::toolbarStyle(toolBar2_);
+
+  //vtkLayout->addWidget(toolBar1_);
+  //vtkLayout->addWidget(toolBar2_);
 
   addConfigurationButton();
   addAutoViewButton();
@@ -181,16 +203,20 @@ void ViewSceneVtkDialog::addToolBar()
   addTimestepButtons();
   addScreenshotButton();
 
-  vtkLayout->addWidget(toolBar1_);
-
-  toolBar2_ = new QToolBar(this);
-  WidgetStyleMixin::toolbarStyle(toolBar2_);
-
   addClippingPlaneButton();
 
-  vtkLayout->addWidget(toolBar2_);
-
   addControlLockButton();
+
+  {
+    toolBar1Position_ = new QPushButton();
+    toolBar1Position_->setToolTip("Switch toolbar 1 popup direction");
+    addToolbarButton(toolBar1Position_, Qt::TopToolBarArea);
+  }
+  {
+    toolBar2Position_ = new QPushButton();
+    toolBar2Position_->setToolTip("Switch toolbar 2 popup direction");
+    addToolbarButton(toolBar2Position_, Qt::LeftToolBarArea);
+  }
 }
 
 void ViewSceneVtkDialog::adjustToolbar(double factor)
@@ -199,6 +225,20 @@ void ViewSceneVtkDialog::adjustToolbar(double factor)
     adjustToolbarForHighResolution(toolBar1_, factor);
   if (toolBar2_)
     adjustToolbarForHighResolution(toolBar2_, factor);
+}
+
+void ViewSceneVtkDialog::setToolBarPositions()
+{
+  auto toolBar1Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarMainPosition).toInt());
+  auto toolBar2Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarRenderPosition).toInt());
+  auto toolBar3Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarAdvancedPosition).toInt());
+  toolbarHolder_->addToolBar(toolBar1Position, toolBar1_);
+  toolbarHolder_->addToolBar(toolBar2Position, toolBar2_);
+  connect(toolBar1_, &QToolBar::topLevelChanged, [this](bool /*topLevel*/) { state_->setValue(Parameters::ToolBarMainPosition, static_cast<int>(whereIs(toolBar1_))); });
+  connect(toolBar2_, &QToolBar::topLevelChanged, [this](bool /*topLevel*/) { state_->setValue(Parameters::ToolBarRenderPosition, static_cast<int>(whereIs(toolBar2_))); });
+
+  toolBarController_->registerDirectionButton(toolBar1_, toolBar1Position_);
+  toolBarController_->registerDirectionButton(toolBar2_, toolBar2Position_);
 }
 
 Qt::ToolBarArea ViewSceneVtkDialog::whereIs(QToolBar* toolbar) const
@@ -352,7 +392,7 @@ void ViewSceneVtkDialog::addClippingPlaneButton()
   auto* clippingPlaneButton = new QPushButton();
   clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
   clippingPlaneControls_ = new ClippingPlaneControlsVtk(this, clippingPlaneButton);
-  addToolbarButton(clippingPlaneButton);
+  addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea);
 }
 
 void ViewSceneVtkDialog::toggleLockColor(bool locked)

@@ -171,6 +171,8 @@ ClippingPlaneControlsVtk::ClippingPlaneControlsVtk(ViewSceneVtkDialog* parent, Q
 	connect(yValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneVtkDialog::setClippingPlaneY);
 	connect(zValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneVtkDialog::setClippingPlaneZ);
 	connect(dValueHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneVtkDialog::setClippingPlaneD);
+
+	//hide();
 }
 
 namespace {

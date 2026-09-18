@@ -88,6 +88,10 @@ void ViewSceneVtk::setStateDefaults()
   state->setValue(Parameters::ProbeZ, 0.0);
   state->setValue(Parameters::InvertZoom, false);
   state->setValue(Parameters::ZoomSpeed, 1.0);
+
+  state->setValue(Parameters::ToolBarMainPosition, 4);      // TopToolBarArea
+  state->setValue(Parameters::ToolBarRenderPosition, 1);    // LeftToolBarArea
+  state->setValue(Parameters::ToolBarAdvancedPosition, 2);  // RightToolBarArea
 }
 
 void ViewSceneVtk::portRemovedSlotImpl(const PortId&)

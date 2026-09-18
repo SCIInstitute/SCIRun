@@ -103,6 +103,8 @@ private Q_SLOTS:
   void setClippingPlaneZ(int index);
   void setClippingPlaneD(int index);
 
+  void setToolBarPositions();
+
  private:
   void addToolBar();
   void addConfigurationButton();
@@ -131,6 +133,7 @@ private Q_SLOTS:
   QToolBar* toolBar1_ {nullptr};
   QToolBar* toolBar2_{nullptr};
   ViewSceneVtkToolBarController* toolBarController_{nullptr};
+  QMainWindow* toolbarHolder_{nullptr};
 
   //ViewOspraySceneConfigDialog* configDialog_;
   QAction* lockRotation_;
@@ -143,6 +146,9 @@ private Q_SLOTS:
 
   ClippingPlaneControlsVtk* clippingPlaneControls_{nullptr};
   Render::ClippingPlaneManagerPtr clippingPlaneManager_;
+
+  QPushButton* toolBar1Position_{nullptr};
+  QPushButton* toolBar2Position_{nullptr};
 
   friend class ClippingPlaneControlsVtk;
 };
