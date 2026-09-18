@@ -47,7 +47,7 @@ BuildMappingMatrixDialog::BuildMappingMatrixDialog(const std::string& name, Modu
     { "Constant mapping: each destination gets nearest source value", "closestdata" },
     { "Constant mapping: each source projects to just one destination", "singledestination" } });
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
-  connect(noMaxCheckBox_, &QCheckBox::stateChanged, this, &BuildMappingMatrixDialog::setNoMaximumValue);
+  connect(noMaxCheckBox_, &QCheckBox::toggled, this, &BuildMappingMatrixDialog::setNoMaximumValue);
 }
 
 void BuildMappingMatrixDialog::pullSpecial()
@@ -58,11 +58,11 @@ void BuildMappingMatrixDialog::pullSpecial()
   }
 }
 
-void BuildMappingMatrixDialog::setNoMaximumValue(int state)
+void BuildMappingMatrixDialog::setNoMaximumValue(bool state)
 {
   if (!pulling_)
   {
-    if (0 != state)
+    if (state)
       state_->setValue(Parameters::MaxDistance, -1.0);
   }
 }

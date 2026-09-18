@@ -57,8 +57,8 @@ private Q_SLOTS:
   void updateStimTypeColumn();
   void updateInvertNormals();
   void updatePrototypeColumnValues(int index);
-  void togglePrototypeColumnReadOnly(int state);
-  void toggleThicknessColumnReadOnly(int state);
+  void togglePrototypeColumnReadOnly(bool state);
+  void toggleThicknessColumnReadOnly(bool state);
   void updateThicknessColumnValues(double value);
 
 private:
