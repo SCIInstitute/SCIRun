@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MappingCommon.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -226,86 +227,9 @@ MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel(int proc)
   }
 
   barrier_.wait();
-  int cnt = 0;
 
-  if (sfield_->basis_order() == 0 && dfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          cc_[idx] = didx;
-        }
-        else cc_[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
-    }
-  }
-  else if (sfield_->basis_order() == 1 && dfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          cc_[idx] = didx;
-        }
-        else cc_[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
-    }
-  }
-  else if (sfield_->basis_order() == 0 && dfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::Node::index_type didx;
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_node(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          cc_[idx] = didx;
-        }
-        else cc_[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
-    }
-  }
-  else if (sfield_->basis_order() == 1 && dfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::Node::index_type didx;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_node(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          cc_[idx] = didx;
-        }
-        else cc_[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
-    }
-  }
+  fillSingleDestinationMapping(sfield_, dfield_, smesh_, dmesh_,
+    maxdist_, start, end, cc_, proc, algo_);
 
   barrier_.wait();
 

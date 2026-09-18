@@ -43,6 +43,8 @@
 
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <unordered_map>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -59,7 +61,7 @@ namespace SCIRun {
   public:
 
     BaseMC() : build_field_(false), build_geom_(false), basis_order_(-1),
-      nnodes_(0), ncells_(0) {}
+      nnodes_(0), ncells_(0), trisurf_(nullptr) {}
 
     virtual ~BaseMC() {}
 
@@ -106,6 +108,21 @@ namespace SCIRun {
     SCIRun::size_type ncells_;
 
     edge_hash_type edge_map_;  // Unique edge cuts when surfacing node data
+
+    FieldHandle trisurf_handle_;
+    VMesh*      trisurf_;
+
+    // Shared helper: hash-map-based edge point lookup, adds to trisurf_ on miss.
+    VMesh::Node::index_type find_or_add_edgepoint(index_type u0, index_type u1,
+        double d0, const SCIRun::Core::Geometry::Point& p);
+
+    // Shared helper: interpolates edge intersection points then builds triangles
+    // into trisurf_ / cell_map_. edge_table[i][2] gives the two vertex indices
+    // for each edge i (table layout varies by cell type, passed by caller).
+    void interpolateAndBuildTriangles(int* vertex, const int (*edge_table)[2],
+        const SCIRun::Core::Geometry::Point* p, const double* value,
+        const VMesh::Node::index_type* node, double iso,
+        VMesh::Elem::index_type cell);
   };
 
   inline bool operator==(const BaseMC::edgepair_t& lhs, const BaseMC::edgepair_t& rhs)

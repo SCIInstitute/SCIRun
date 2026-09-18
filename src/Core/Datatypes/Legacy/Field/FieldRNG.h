@@ -26,37 +26,15 @@
 */
 
 
-/// @todo Documentation Core/Datatypes/Legacy/Field/FieldRNG.h
-
 #ifndef CORE_DATATYPES_FIELDRNG_H
 #define CORE_DATATYPES_FIELDRNG_H 1
 
-#include <Core/Datatypes/Legacy/Field/share.h>
+// FieldRNG is the same Musil random-number generator as MusilRNG; it exists
+// only as a type alias so that legacy mesh code keeps compiling unchanged.
+#include <Core/Math/MusilRNG.h>
 
 namespace SCIRun {
-
-class SCISHARE FieldRNG {
-  int n[16];
-  int stab[2][32];
-  int point;
-  int d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12;
-  int a1,b1;
-  int a2,b2;
-  int a3,b3;
-  int a4,b4;
-  int a5,b5;
-  int a6,b6;
-  int a7,b7;
-  int a8,b8;
-  int a9,b9;
-  int a10,b10;
-  int a11,b11;
-  int a12,b12;
-public:
-  FieldRNG( int seed = 0 );
-  double operator()();
-};
-
-} // end namespace
+  using FieldRNG = ::MusilRNG;
+}
 
 #endif

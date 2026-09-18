@@ -151,44 +151,13 @@ ConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
 
       // adding points to mesh here ensures points get added in order
       // (very important)
-      PointTable::iterator it = pointsLookupTable.find(p1);
-      if ( it == pointsLookupTable.end() )
-      {
-        pointsLookupTable[p1] = pointIndex++;
-        vmesh->add_point(p1);
-      }
-
-      it = pointsLookupTable.find(p2);
-      if ( it == pointsLookupTable.end() )
-      {
-        pointsLookupTable[p2] = pointIndex++;
-        vmesh->add_point(p2);
-      }
-
-      it = pointsLookupTable.find(p3);
-      if ( it == pointsLookupTable.end() )
-      {
-        pointsLookupTable[p3] = pointIndex++;
-        vmesh->add_point(p3);
-      }
+      addPointIfNew(p1, pointsLookupTable, pointIndex, vmesh);
+      addPointIfNew(p2, pointsLookupTable, pointIndex, vmesh);
+      addPointIfNew(p3, pointsLookupTable, pointIndex, vmesh);
     }
     inputfile.close();
 
-    FacetList::iterator listIter;
-    for (listIter = facetList.begin(); listIter != facetList.end(); ++listIter)
-    {
-      // use the facet list and point lookup table to match points and element indices
-      VMesh::Node::array_type vdata;
-      vdata.resize(CELL_SIZE);
-
-      PointTable::iterator it = pointsLookupTable.find(listIter->point1_);
-      vdata[0] = it->second;
-      it = pointsLookupTable.find(listIter->point2_);
-      vdata[1] = it->second;
-      it = pointsLookupTable.find(listIter->point3_);
-      vdata[2] = it->second;
-      vmesh->add_elem(vdata);
-    }
+    buildMeshFromFacets(facetList, pointsLookupTable, vmesh);
   }
   catch (std::ifstream::failure& e)
   {

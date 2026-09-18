@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshCurveAlgoV.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshCommon.h>
 
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -74,105 +75,16 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
   VMesh*  refined = output->vmesh();
   VField* rfield  = output->vfield();
 
-  VMesh::Node::array_type onodes(2);
-
-  // get all values, make computation easier
-  VMesh::size_type num_nodes = mesh->num_nodes();
-  VMesh::size_type num_elems = mesh->num_elems();
-
-  std::vector<bool> values(num_nodes,false);
-
   // Deal with data stored at different locations
   // If data is on the elements make sure that all nodes
   // of that element pass requirement.
 
+  std::vector<bool> values;
   std::vector<double> ivalues;
   std::vector<double> evalues;
 
-  if (field->basis_order() == 0)
-  {
-    field->get_values(ivalues);
-
-    if (select == "equal")
-    {
-      for (VMesh::Elem::index_type i=0; i<num_elems; i++)
-      {
-        mesh->get_nodes(onodes,i);
-        if (ivalues[i] == isoval)
-          for (size_t j=0; j< onodes.size(); j++)
-            values[onodes[j]] = true;
-      }
-    }
-    else if (select == "lessthan")
-    {
-      for (VMesh::Elem::index_type i=0; i<num_elems; i++)
-      {
-        mesh->get_nodes(onodes,i);
-        if (ivalues[i] < isoval)
-          for (size_t j=0; j< onodes.size(); j++)
-            values[onodes[j]] = true;
-      }
-    }
-    else if (select == "greaterthan")
-    {
-      for (VMesh::Elem::index_type i=0; i<num_elems; i++)
-      {
-        mesh->get_nodes(onodes,i);
-        if (ivalues[i] > isoval)
-          for (size_t j=0; j< onodes.size(); j++)
-            values[onodes[j]] = true;
-      }
-    }
-    else if (select == "all")
-    {
-      for (size_t j=0;j<values.size();j++) values[j] = true;
-    }
-    else
-    {
-      error("RefineMesh: Unknown region selection method encountered");
-      return (false);
-    }
-  }
-  else if (field->basis_order() == 1)
-  {
-    field->get_values(ivalues);
-
-    if (select == "equal")
-    {
-      for (VMesh::Elem::index_type i=0; i<num_nodes; i++)
-      {
-        if (ivalues[i] == isoval) values[i] = true;
-      }
-    }
-    else if (select == "lessthan")
-    {
-      for (VMesh::Elem::index_type i=0; i<num_nodes; i++)
-      {
-        if (ivalues[i] < isoval) values[i] = true;
-      }
-    }
-    else if (select == "greaterthan")
-    {
-      for (VMesh::Elem::index_type i=0; i<num_nodes; i++)
-      {
-        if (ivalues[i] > isoval) values[i] = true;
-      }
-    }
-    else if (select == "all")
-    {
-      for (size_t j=0;j<values.size();j++) values[j] = true;
-    }
-    else
-    {
-      error("RefineMesh: Unknown region selection method encountered");
-      return (false);
-    }
-
-  }
-  else
-  {
-    for (size_t j=0;j<values.size();j++) values[j] = true;
-  }
+  if (!computeRefinementMask(field, mesh, select, isoval, values, ivalues, *this))
+    return false;
 
   // Copy all of the nodes from mesh to refined.  They won't change,
   // we only add nodes.

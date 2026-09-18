@@ -103,6 +103,7 @@ class QuadSurfMesh : public Mesh
 
 /// Make sure the virtual interface has access
 template<class MESH> friend class VQuadSurfMesh;
+template<class MESH> friend class VSurfMesh;
 template<class MESH> friend class VMeshShared;
 template<class MESH> friend class VUnstructuredMesh;
 

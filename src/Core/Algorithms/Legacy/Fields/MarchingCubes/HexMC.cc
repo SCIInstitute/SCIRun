@@ -226,58 +226,7 @@ void  HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
   TRIANGLE_CASES *tcase= &triCases[code];
   int *vertex = tcase->edges;
 
-  Point q[12];
-  VMesh::Node::index_type surf_node[12];
-
-  // interpolate and project vertices
-  index_type v = 0;
-  bool visited[12];
-  for (int i=0;i<12;i++) visited[i] = false;
-
-  while (vertex[v] != -1)
-  {
-    index_type i = vertex[v++];
-    if (visited[i]) continue;
-    visited[i]=true;
-    index_type v1 = edge_tab[i][0];
-    index_type v2 = edge_tab[i][1];
-    const double d = (value[v1]-iso) / double(value[v1]-value[v2]);
-    q[i] = Interpolate(p[v1], p[v2], d);
-    if (build_field_)
-    {
-      surf_node[i] = find_or_add_edgepoint(node[v1], node[v2], d, q[i]);
-    }
-  }
-
-  v = 0;
-  while(vertex[v] != -1)
-  {
-    index_type v0 = vertex[v++];
-    index_type v1 = vertex[v++];
-    index_type v2 = vertex[v++];
-
-   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    if (build_geom_)
-    {
-      triangles_->add(q[v0], q[v1], q[v2]);
-    }
-   #endif
-
-    if (build_field_)
-    {
-      if (surf_node[v0] != surf_node[v1] &&
-          surf_node[v1] != surf_node[v2] &&
-          surf_node[v2] != surf_node[v0])
-      {
-        VMesh::Node::array_type nodes(3);
-        nodes[0] = surf_node[v0];
-        nodes[1] = surf_node[v1];
-        nodes[2] = surf_node[v2];
-        trisurf_->add_elem(nodes);
-        cell_map_.push_back( cell );
-      }
-    }
-  }
+  interpolateAndBuildTriangles(vertex, edge_tab, p, value, &node[0], iso, cell);
 }
 
 FieldHandle HexMC::get_field(double value)
@@ -296,24 +245,3 @@ FieldHandle HexMC::get_field(double value)
   }
 }
 
-VMesh::Node::index_type HexMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p)
-{
-  if (d0 < 0.0) { u1 = -1; }
-  if (d0 > 1.0) { u0 = -1; }
-  edgepair_t np;
-
-  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
-  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  const edge_hash_type::iterator loc = edge_map_.find(np);
-
-  if (loc == edge_map_.end())
-  {
-    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
-    edge_map_[np] = nodeindex;
-    return (nodeindex);
-  }
-  else
-  {
-    return ((*loc).second);
-  }
-}

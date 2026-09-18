@@ -27,7 +27,6 @@
 
 
 #include <Core/IEPlugin/ObjToField_Plugin.h>
-#include <Core/IEPlugin/G3DToField_Plugin.h>
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>

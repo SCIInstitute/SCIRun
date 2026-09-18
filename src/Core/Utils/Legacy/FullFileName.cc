@@ -412,6 +412,75 @@ FullFileName::make_absolute_filename(std::string name)
 }
 
 
+// Factor out the shared relative-path computation used by both the
+// Unix and Windows branches of make_relative_filename.
+static std::string makeScisub(const std::string& path, std::string name)
+{
+	std::string npath = path;
+  std::string nname = name;
+	std::string::size_type slashpos = path.find("/");
+	bool backtrack = false;
+	while(slashpos != std::string::npos)
+	{
+		if (npath.substr(0,slashpos) == nname.substr(0,slashpos) && backtrack == false)
+		{
+			npath = npath.substr(slashpos+1);
+			nname = nname.substr(slashpos+1);
+		}
+		else
+		{
+			backtrack = true;
+			npath = npath.substr(slashpos+1);
+			nname = "../" + nname;
+		}
+		slashpos = npath.find("/");
+	}
+
+	// collapse name further
+
+	std::string::size_type ddpos = nname.find("../");
+
+	while (ddpos != std::string::npos)
+	{
+		if (ddpos > 2 && nname[ddpos-1] == '/')
+		{
+			std::string::size_type slashpos = nname.find_last_of("/",ddpos-2);
+			if (slashpos == std::string::npos)
+			{
+				if ((nname.substr(0,ddpos-1) != "..")&&(nname.substr(0,ddpos-1) != "."))
+				{
+					nname = nname.substr(ddpos+3);
+					ddpos = nname.find("../");
+				}
+				else
+				{
+					ddpos = nname.find("../",ddpos+3);
+				}
+			}
+			else
+			{
+				if ((nname.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(nname.substr(slashpos+1,ddpos-slashpos-2)!="."))
+				{
+					nname = nname.substr(0,slashpos+1)+nname.substr(ddpos+3);
+					ddpos = nname.find("../");
+				}
+				else
+				{
+					ddpos = nname.find("../",ddpos+3);
+				}
+			}
+
+		}
+		else
+		{
+			ddpos = nname.find("../",ddpos+3);
+		}
+	}
+
+	nname = "scisub_networkdir/"+nname;
+	return nname;
+}
+
 std::string
 FullFileName::make_relative_filename(std::string name, std::string path)
 {
@@ -432,69 +501,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 
 	if ( name.size() > 0 && name[0] == '/')
 	{
-		std::string npath = path;
-	  std::string nname = name;
-		std::string::size_type slashpos = path.find("/");
-		bool backtrack = false;
-		while(slashpos != std::string::npos)
-		{
-			if (npath.substr(0,slashpos) == nname.substr(0,slashpos) && backtrack == false)
-			{
-				npath = npath.substr(slashpos+1);
-				nname = nname.substr(slashpos+1);
-			}
-			else
-			{
-				backtrack = true;
-				npath = npath.substr(slashpos+1);
-				nname = "../" + nname;
-			}
-			slashpos = npath.find("/");
-		}
-
-		// collapse name further
-
-		std::string::size_type ddpos = nname.find("../");
-
-		while (ddpos != std::string::npos)
-		{
-			if (ddpos > 2 && nname[ddpos-1] == '/')
-			{
-				std::string::size_type slashpos = nname.find_last_of("/",ddpos-2);
-				if (slashpos == std::string::npos)
-				{
-					if ((nname.substr(0,ddpos-1) != "..")&&(nname.substr(0,ddpos-1) != "."))
-					{
-						nname = nname.substr(ddpos+3);
-						ddpos = nname.find("../");
-					}
-					else
-					{
-						ddpos = nname.find("../",ddpos+3);
-					}
-				}
-				else
-				{
-					if ((nname.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(nname.substr(slashpos+1,ddpos-slashpos-2)!="."))
-					{
-						nname = nname.substr(0,slashpos+1)+nname.substr(ddpos+3);
-						ddpos = nname.find("../");
-					}
-					else
-					{
-						ddpos = nname.find("../",ddpos+3);
-					}
-				}
-
-			}
-			else
-			{
-				ddpos = nname.find("../",ddpos+3);
-			}
-		}
-
-		nname = "scisub_networkdir/"+nname;
-		return (nname);
+		return makeScisub(path, name);
 	}
 	else if ( name.size() > 2 && name[1] == ':' && ((name[2] == '\\')||(name[2] == '/' )))
 	{
@@ -515,68 +522,7 @@ FullFileName::make_relative_filename(std::string name, std::string path)
 			return (name);
 		}
 
-		std::string npath = path;
-	  std::string nname = name;
-		std::string::size_type slashpos = path.find("/");
-		bool backtrack = false;
-		while(slashpos != std::string::npos)
-		{
-			if (npath.substr(0,slashpos) == nname.substr(0,slashpos) && backtrack == false)
-			{
-				npath = npath.substr(slashpos+1);
-				nname = nname.substr(slashpos+1);
-			}
-			else
-			{
-				backtrack = true;
-				npath = npath.substr(slashpos+1);
-				nname = "../" + nname;
-			}
-			slashpos = npath.find("/");
-		}
-
-		// collapse name further
-
-		std::string::size_type ddpos = nname.find("../");
-
-
-		while (ddpos != std::string::npos)
-		{
-			if (ddpos > 2 && nname[ddpos-1] == '/')
-			{
-				std::string::size_type slashpos = nname.find_last_of("/",ddpos-2);
-				if (slashpos == std::string::npos)
-				{
-					if ((nname.substr(0,ddpos-1) != "..")&&(nname.substr(0,ddpos-1) != "."))
-					{
-						nname = nname.substr(ddpos+3);
-						ddpos = nname.find("../");
-					}
-					else
-					{
-						ddpos = nname.find("../",ddpos+3);
-					}
-				}
-				else
-				{
-					if ((nname.substr(slashpos+1,ddpos-slashpos-2)!="..")&&(nname.substr(slashpos+1,ddpos-slashpos-2)!="."))
-					{
-						nname = nname.substr(0,slashpos+1)+nname.substr(ddpos+3);
-						ddpos = nname.find("../");
-					}
-					else
-					{
-						ddpos = nname.find("../",ddpos+3);
-					}
-				}
-			}
-			else
-			{
-				ddpos = nname.find("../",ddpos+3);
-			}
-		}
-    nname = "scisub_networkdir/"+nname;
-		return (nname);
+		return makeScisub(path, name);
 	}
 
 	std::cerr << "WARNING: Could not convert filename into a relative filename\n";

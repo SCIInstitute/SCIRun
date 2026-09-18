@@ -140,6 +140,60 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
   // 0, so force it to run through the element method.
   if (imesh->is_pointcloudmesh()) method = "Element Center";
 
+  // Shared post-loop work: copy field values and optionally build the mapping matrix.
+  // Both branches below populate node_mapping2 and elem_mapping2 then call this.
+  auto finishClip = [&](const std::vector<index_type>& node_mapping2,
+                         const std::vector<index_type>& elem_mapping2) {
+    ofield->resize_values();
+    VMesh::size_type num_oelems = omesh->num_elems();
+    VMesh::size_type num_onodes = omesh->num_nodes();
+
+    if (ofield->basis_order() == 0)
+    {
+      for (VMesh::Elem::index_type idx = 0; idx < num_oelems; idx++)
+        ofield->copy_value(ifield, elem_mapping2[idx], idx);
+    }
+    else if (ofield->basis_order() == 1)
+    {
+      for (VMesh::Node::index_type idx = 0; idx < num_onodes; idx++)
+        ofield->copy_value(ifield, node_mapping2[idx], idx);
+    }
+
+    bool build_mapping = get(Parameters::BuildMapping).toBool();
+    if (build_mapping)
+    {
+      size_type m, n;
+
+      if (ofield->basis_order() == 0)
+      {
+        if (num_elems > 0 && num_oelems > 0)
+        {
+          SparseRowMatrixFromMap::Values map;
+          n = num_elems;
+          m = num_oelems;
+          for (index_type idx = 0; idx < m; idx++)
+            map[idx][elem_mapping2[idx]] = 1.0;
+          mapping = SparseRowMatrixFromMap::make(m, n, map);
+        }
+      }
+      else if (ofield->basis_order() == 1)
+      {
+        if (num_nodes > 0 && num_onodes > 0)
+        {
+          SparseRowMatrixFromMap::Values map;
+          n = num_nodes;
+          m = num_onodes;
+          for (index_type idx = 0; idx < m; idx++)
+            map[idx][node_mapping2[idx]] = 1.0;
+          mapping = SparseRowMatrixFromMap::make(m, n, map);
+        }
+      }
+      // provide an empty matrix
+      if (!mapping)
+        mapping.reset(new DenseMatrix(0, 0));
+    }
+  };
+
   if (method == "Element Center")
   {
     LOG_DEBUG("Num Elems {}; Num Tets {}", imesh->num_elems(), sfield->num_values());
@@ -185,68 +239,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
       cnt++; if (cnt == 100) { cnt=0; update_progress_max(idx,num_elems);}
     }
 
-    ofield->resize_values();
-    VMesh::size_type num_oelems = omesh->num_elems();
-    VMesh::size_type num_onodes = omesh->num_nodes();
-
-    if (ofield->basis_order() == 0)
-    {
-      for(VMesh::Elem::index_type idx=0; idx<num_oelems; idx++)
-      {
-        ofield->copy_value(ifield,elem_mapping2[idx],idx);
-      }
-    }
-    else if (ofield->basis_order() == 1)
-    {
-      for(VMesh::Node::index_type idx=0; idx<num_onodes; idx++)
-      {
-        ofield->copy_value(ifield,node_mapping2[idx],idx);
-      }
-    }
-
-    bool build_mapping = get(Parameters::BuildMapping).toBool();
-    if (build_mapping)
-    {
-      size_type m,n;
-
-      if (ofield->basis_order() == 0)
-      {
-        if (num_elems > 0 && num_oelems > 0)
-        {
-          SparseRowMatrixFromMap::Values map;
-
-          n =   num_elems;
-          m =   num_oelems;
-
-          for (index_type idx=0;idx<m;idx++)
-          {
-            map[idx][elem_mapping2[idx]] = 1.0;
-          }
-
-          mapping = SparseRowMatrixFromMap::make(m, n, map);
-        }
-      }
-      else if (ofield->basis_order() == 1)
-      {
-        if (num_nodes > 0 && num_onodes >0)
-        {
-          SparseRowMatrixFromMap::Values map;
-
-          n =   num_nodes;
-          m =   num_onodes;
-
-          for (index_type idx=0;idx<m;idx++)
-          {
-            map[idx][node_mapping2[idx]] = 1.0;
-          }
-
-          mapping = SparseRowMatrixFromMap::make(m, n, map);
-        }
-      }
-      // provide an empty matrix
-      if (!mapping)
-        mapping.reset(new DenseMatrix(0,0));
-    }
+    finishClip(node_mapping2, elem_mapping2);
   }
   else
   {
@@ -302,67 +295,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
       cnt++; if (cnt == 100) { cnt=0; update_progress_max(idx,num_elems);}
     }
 
-    ofield->resize_values();
-    VMesh::size_type num_oelems = omesh->num_elems();
-    VMesh::size_type num_onodes = omesh->num_nodes();
-
-    if (ofield->basis_order() == 0)
-    {
-      for(VMesh::Elem::index_type idx=0; idx<num_oelems; idx++)
-      {
-        ofield->copy_value(ifield,elem_mapping2[idx],idx);
-      }
-    }
-    else if (ofield->basis_order() == 1)
-    {
-      for(VMesh::Node::index_type idx=0; idx<num_onodes; idx++)
-      {
-        ofield->copy_value(ifield,node_mapping2[idx],idx);
-      }
-    }
-
-    bool build_mapping = get(Parameters::BuildMapping).toBool();
-    if (build_mapping)
-    {
-      size_type m,n;
-
-      if (ofield->basis_order() == 0)
-      {
-        if (num_elems > 0 && num_oelems > 0)
-        {
-          SparseRowMatrixFromMap::Values map;
-
-          n =   num_elems;
-          m =   num_oelems;
-
-          for (index_type idx=0;idx<m;idx++)
-          {
-            map[idx][elem_mapping2[idx]] = 1.0;
-          }
-
-          mapping = SparseRowMatrixFromMap::make(m, n, map);
-        }
-      }
-      else if (ofield->basis_order() == 1)
-      {
-        if (num_nodes > 0 && num_onodes > 0)
-        {
-          SparseRowMatrixFromMap::Values map;
-
-          n =   num_nodes;
-          m =   num_onodes;
-
-          for (index_type idx=0;idx<m;idx++)
-          {
-            map[idx][node_mapping2[idx]] = 1.0;
-          }
-
-          mapping = SparseRowMatrixFromMap::make(m, n, map);
-        }
-      }
-      // provide an empty matrix
-      if (!mapping) mapping.reset(new DenseMatrix(0,0));
-    }
+    finishClip(node_mapping2, elem_mapping2);
   }
 
   /// Copy properties of the property manager
