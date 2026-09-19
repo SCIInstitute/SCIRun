@@ -119,6 +119,11 @@ ENDIF()
 ###########################################
 # Configure test support
 OPTION(BUILD_TESTING "Build with tests." OFF)
+IF(BUILD_TESTING)
+  # Tests live in the inner SCIRun project. Let "ctest" (and ctest --preset)
+  # run from this directory too, as it would after add_subdirectory().
+  FILE(WRITE "${CMAKE_BINARY_DIR}/CTestTestfile.cmake" "subdirs(\"SCIRun\")\n")
+ENDIF()
 
 ###########################################
 # Configure code coverage (forwarded to the inner SCIRun build)
