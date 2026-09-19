@@ -150,16 +150,9 @@ jobs:
       build-with-python: false
       artifact-name: SCIRunWindowsInstaller_qt6
 
-  # Unit tests. The ctest step in reusable-build.yml carries
-  # `continue-on-error: true`, so a failing test does NOT fail this job today --
-  # master currently has 4 failing unit suites plus a large body of failing
-  # .Test.ImportNetwork.* cases. What this job does gate on is the build: test
-  # code that no longer compiles will fail the job, and hence ci-gate. The test
-  # results themselves are visible in the log and the uploaded artifact.
-  #
-  # Once the outstanding failures are fixed, drop `continue-on-error` from the
-  # "Run unit tests" steps in reusable-build.yml and this becomes a real gate
-  # with no change needed here.
+  # Unit tests. Blocking: a failing test fails this job and hence ci-gate
+  # (#2711). This is the only test job on the PR tier, so it is the one gate
+  # that keeps the suite green.
   linux-unit-tests:
     needs: changes
     if: needs.changes.outputs.docs_only == 'false'
@@ -169,6 +162,7 @@ jobs:
       variant: headless
       build-testing: true
       run-unit-tests: true
+      unit-tests-blocking: true
 
   # The single required check. `if: always()` is what lets it report even when
   # every build above was skipped, which is the case that unblocks docs-only PRs.
