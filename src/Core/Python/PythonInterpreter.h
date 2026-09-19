@@ -89,9 +89,9 @@ public:
 	bool run_string( const std::string& command ) override;
 
 	// RUN_SCRIPT:
-	/// Execute a python script.
+	/// Execute a python script. Returns false if it failed to compile or raised.
 	/// NOTE: The script is run in its own local namespace.
-	void run_script( const std::string& script );
+	bool run_script( const std::string& script );
 
 	// RUN_FILE:
 	/// Execute a python script from file.
