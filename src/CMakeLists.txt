@@ -590,6 +590,13 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
+)
+
+# SYSTEM: header-only externals (Eigen above all) otherwise diagnose inside our
+# translation units, which is what broke -Werror on Apple (#2432) and is ~43%
+# of CI warning volume. Boost is not here: it arrives as the Boost::headers
+# imported target (already SYSTEM) or via Superbuild/UseBoost.cmake (#2197).
+INCLUDE_DIRECTORIES(SYSTEM
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${GLM_DIR}
@@ -600,8 +607,6 @@ INCLUDE_DIRECTORIES(
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
-
-#INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
