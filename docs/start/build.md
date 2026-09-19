@@ -64,21 +64,50 @@
 
 #### All Platforms
   - [CMake](https://cmake.org/) (platform independent configuring system that is used for generating Makefiles, Visual Studio project files, or Xcode project files)
-    + Tested with 3.4 and newer
+    + 3.21 or newer
     + Root cmake file is Superbuild/CMakeLists.txt.
     + Building in source directories is not permitted.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
 
 ### CMake Build Generators
 * Windows
-  - Visual Studio 2017 & 2019
+  - Visual Studio 2019 & 2022
 * OS X
   - Unix Makefiles
+  - Ninja
   - Xcode
 * Linux
   - Unix Makefiles
-  
-## Configuring CMake
+  - Ninja
+
+## Configuring with presets (recommended)
+
+`Superbuild/CMakePresets.json` ships the configurations we build, so the only thing you have to write down is where Qt is. Put that in `Superbuild/CMakeUserPresets.json` -- it is ignored by git and never committed -- starting from the example:
+
+```
+cp Superbuild/CMakeUserPresets.json.example Superbuild/CMakeUserPresets.json
+```
+
+Edit it to point `Qt_PATH` at your Qt install (see the Qt install steps above for the directory) and pick which shipped presets to inherit. `cmake --list-presets` in `Superbuild/` shows what is available:
+
+* `release`, `debug`, `headless` -- CMake's default generator for your platform
+* `make-*`, `ninja-*`, `vs2022-*`, `vs2019-*` -- the same, with an explicit generator
+* `qt6` -- add to `inherits` to build against Qt 6 (the shipped presets default to Qt 5)
+* `testing` -- add to `inherits` to build the unit and regression tests
+
+Earlier entries in `inherits` win, so list `qt6` / `testing` before the generator preset, or set the variables directly in your preset's `cacheVariables`, which always take precedence.
+
+Then, from `Superbuild/`:
+
+```
+cmake --preset mine
+cmake --build --preset mine
+ctest --preset mine
+```
+
+The build directory defaults to `bin/<preset name>` under the repository root. On Windows override `binaryDir` in your user preset with something short such as `C:/SR`: the Superbuild nests deeply and the default location can exceed the 260-character path limit.
+
+## Configuring CMake by hand
 Run CMake from your build (bin or other build directory of your choice) directory and give a path to the CMake Superbuild directory containing the master CMakeLists.txt file.
 
 A bash build script (`build.sh`) is also available for Linux and Mac OS X to simplify the process.
