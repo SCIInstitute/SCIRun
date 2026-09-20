@@ -39,8 +39,8 @@ namespace ren {
 struct SkinnedGeom
 {
   // -- Data --
-  GLuint vbo;
-  GLuint ibo;
+  GLuint vbo = 0;
+  GLuint ibo = 0;
 
   // -- Functions --
   static const char* getName() {return "ren:SkinnedGeom";}

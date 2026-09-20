@@ -39,7 +39,19 @@ Key CMake options (pass as `-DOPTION=VALUE` to the Superbuild):
 - `BUILD_WITH_PYTHON=ON` — Python API support (on by default)
 - `BUILD_HEADLESS=ON` — skip Qt/GUI
 - `WITH_TETGEN=ON` — Tetgen mesh library
-- `WITH_OSPRAY=ON` — OSPRay ray-tracing renderer
+- `BUILD_OSPRAY=ON` — OSPRay ray-tracing renderer (`PREBUILT_OSPRAY=ON` to use an installed copy instead)
+- `WITH_VTK=ON` — VTK renderer backend (off by default)
+
+### Option naming rule
+
+The prefix says what kind of knob it is (#2668):
+- `WITH_<DEP>` — an optional third-party dependency. The Superbuild fetches and builds it; the inner build compiles the code that uses it. `WITH_TETGEN`, `WITH_VTK`.
+- `BUILD_<THING>` — an extra artifact this project emits. `BUILD_TESTING`, `BUILD_DOCUMENTATION`, `BUILD_BUNDLE`. Matches what CMake already means by `BUILD_TESTING` / `BUILD_SHARED_LIBS`.
+- `ENABLE_` / `RUN_` / `GENERATE_` / `DOWNLOAD_` — behavior knobs; leave as they are.
+- `BUILD_WITH_` is retired. Do not add new flags with it. `BUILD_WITH_PYTHON`, `BUILD_HEADLESS` and `BUILD_OSPRAY` predate the rule and are being renamed (#2670, #2671, #2749).
+- No `SCIRUN_` prefix on options: SCIRun is a terminal application, never a subproject, so there is nothing to collide with.
+
+New flag: pick the prefix by the rule above, add `OPTION()` in `Superbuild/Superbuild.cmake` and the matching `SCIRUN_CACHE_ARGS` entry that forwards it to the inner build. Renaming one: shim the old name with `scirun_renamed_option` / `scirun_removed_option` from `Superbuild/DeprecatedFlags.cmake` for one release.
 
 First build requires ~15 GB disk space and 30–90 minutes.
 
