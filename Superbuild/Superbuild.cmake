@@ -25,6 +25,12 @@
 #  DEALINGS IN THE SOFTWARE.
 
 ###########################################
+# Shims for renamed/removed options. Must run before any option is read.
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/DeprecatedFlags.cmake)
+scirun_removed_option(BUILD_WITH_SCIRUN_DATA  # removed 2026-09; drop shim after next release
+  "Its SVN source (gforge.sci.utah.edu) is gone and nothing read the result; see #2672.")
+
+###########################################
 # TODO: build from archive - Git not used
 SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
@@ -113,6 +119,11 @@ ENDIF()
 ###########################################
 # Configure test support
 OPTION(BUILD_TESTING "Build with tests." OFF)
+IF(BUILD_TESTING)
+  # Tests live in the inner SCIRun project. Let "ctest" (and ctest --preset)
+  # run from this directory too, as it would after add_subdirectory().
+  FILE(WRITE "${CMAKE_BINARY_DIR}/CTestTestfile.cmake" "subdirs(\"SCIRun\")\n")
+ENDIF()
 
 ###########################################
 # Configure code coverage (forwarded to the inner SCIRun build)
@@ -141,10 +152,6 @@ OPTION(PREBUILT_OSPRAY "Use prebuilt copy of Ospray." OFF)
 IF (BUILD_OSPRAY AND PREBUILT_OSPRAY)
   MESSAGE(SEND_ERROR "Cannot set both building and prebuilt Ospray.")
 ENDIF()
-
-###########################################
-# Configure data
-OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
 ###########################################
 # Configure vtk
@@ -277,14 +284,6 @@ IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
 ENDIF()
 
-FIND_PACKAGE(Subversion)
-IF(NOT Subversion_FOUND)
-  SET(BUILD_WITH_SCIRUN_DATA OFF)
-ENDIF()
-IF(BUILD_WITH_SCIRUN_DATA)
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/SCIRunDataExternal.cmake SCI_data_external)
-ENDIF()
-
 IF(WITH_TETGEN)
   MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
@@ -357,7 +356,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DGLEW_DIR:PATH=${Glew_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
-    "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
     "-DLibXML2_DIR:PATH=${LibXML2_DIR}"
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
