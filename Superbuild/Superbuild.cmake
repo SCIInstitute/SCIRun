@@ -25,6 +25,12 @@
 #  DEALINGS IN THE SOFTWARE.
 
 ###########################################
+# Shims for renamed/removed options. Must run before any option is read.
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/DeprecatedFlags.cmake)
+scirun_removed_option(BUILD_WITH_SCIRUN_DATA  # removed 2026-09; drop shim after next release
+  "Its SVN source (gforge.sci.utah.edu) is gone and nothing read the result; see #2672.")
+
+###########################################
 # TODO: build from archive - Git not used
 SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
@@ -113,6 +119,11 @@ ENDIF()
 ###########################################
 # Configure test support
 OPTION(BUILD_TESTING "Build with tests." OFF)
+IF(BUILD_TESTING)
+  # Tests live in the inner SCIRun project. Let "ctest" (and ctest --preset)
+  # run from this directory too, as it would after add_subdirectory().
+  FILE(WRITE "${CMAKE_BINARY_DIR}/CTestTestfile.cmake" "subdirs(\"SCIRun\")\n")
+ENDIF()
 
 ###########################################
 # Configure code coverage (forwarded to the inner SCIRun build)
@@ -143,8 +154,8 @@ IF (BUILD_OSPRAY AND PREBUILT_OSPRAY)
 ENDIF()
 
 ###########################################
-# Configure data
-OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
+# Configure vtk
+OPTION(WITH_VTK "build VTK" OFF)
 
 ###########################################
 # Configure Windows executable to run with
@@ -180,6 +191,9 @@ IF(NOT BUILD_HEADLESS)
   # Qt package discovery
   # ------------------------------------------------------------
   IF(IS_DIRECTORY "${Qt_PATH}")
+    # HINTS reaches Qt6Config but not its nested find_dependency() calls, so
+    # Qt 6.3 fails on Qt6CoreTools unless the prefix is on CMAKE_PREFIX_PATH.
+    LIST(APPEND CMAKE_PREFIX_PATH "${Qt_PATH}")
     if (QT_VERSION_MAJOR STREQUAL "6")
       FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
         COMPONENTS
@@ -270,14 +284,6 @@ IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
 ENDIF()
 
-FIND_PACKAGE(Subversion)
-IF(NOT Subversion_FOUND)
-  SET(BUILD_WITH_SCIRUN_DATA OFF)
-ENDIF()
-IF(BUILD_WITH_SCIRUN_DATA)
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/SCIRunDataExternal.cmake SCI_data_external)
-ENDIF()
-
 IF(WITH_TETGEN)
   MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
@@ -303,6 +309,10 @@ IF(NOT BUILD_HEADLESS)
 ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
+
+IF(WITH_VTK)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+ENDIF()
 
 ###########################################
 # Download external data sources
@@ -331,6 +341,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
     "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
+    "-DWITH_VTK:BOOL=${WITH_VTK}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DEigen_DIR:PATH=${Eigen_DIR}"
@@ -345,7 +356,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DGLEW_DIR:PATH=${Glew_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
-    "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
     "-DLibXML2_DIR:PATH=${LibXML2_DIR}"
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
@@ -369,6 +379,12 @@ IF(WITH_OSPRAY)
   )
 ENDIF()
 
+IF(WITH_VTK)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DVTK_External_Dir:PATH=${VTK_INSTALL_DIR}"
+  )
+ENDIF()
+
 IF(WIN32)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}"
@@ -378,6 +394,7 @@ ENDIF()
 IF(NOT BUILD_HEADLESS)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DQt_PATH:PATH=${Qt_PATH}"
+    "-DCMAKE_PREFIX_PATH:PATH=${Qt_PATH}"
     "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
     "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
     "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"

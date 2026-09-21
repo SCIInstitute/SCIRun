@@ -63,8 +63,8 @@ struct SCISHARE CommonUniforms
   };
 
   int uniformSize; ///< How many elements in 'uniformType' and 'uniformLocation' are valid.
-  COMMON_UNIFORMS uniformType[MaxNumCommonUniforms];
-  GLint uniformLocation[MaxNumCommonUniforms];
+  COMMON_UNIFORMS uniformType[MaxNumCommonUniforms] = {UNIFORM_NONE};
+  GLint uniformLocation[MaxNumCommonUniforms] = {-1};
 
   // -- Functions --
 

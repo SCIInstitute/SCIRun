@@ -47,7 +47,7 @@ struct SCISHARE MatUniform
     NONE
   };
 
-  glm::mat4       uniform;
+  glm::mat4       uniform {1.0f};
   MatUniformType  type;
   GLint           uniformLocation;
   char            uniformName[MaxUniformNameSize];

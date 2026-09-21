@@ -8,7 +8,7 @@ This document lists the key build and external dependency requirements introduce
 
 | Dependency | Version | Source |
 |---|---|---|
-| CMake | 3.20 minimum | `Superbuild/CMakeLists.txt` |
+| CMake | 3.21 minimum | `Superbuild/CMakeLists.txt` |
 | Boost | v1.90.0 | `Superbuild/BoostExternal.cmake` |
 | Qt | 5.15.2 minimum; Qt 6.3.1+ and Qt 6.10 known to work | `Superbuild/Superbuild.cmake` |
 | Qwt | wrapper v0.1.1 → Qwt v6.3.0 | `Superbuild/QwtExternal.cmake` |

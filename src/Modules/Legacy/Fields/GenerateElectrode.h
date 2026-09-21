@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Core/Algorithms/Legacy/Fields/GenerateElectrodeFromPointsAlgo.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun
@@ -40,11 +41,6 @@ namespace SCIRun
     {
       namespace Fields
       {
-        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
-        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
-        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
-        ALGORITHM_PARAMETER_DECL(ElectrodeType);
-        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
         class GenerateElectrodeImpl;
       }
     }

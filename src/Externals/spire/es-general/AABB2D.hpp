@@ -94,8 +94,8 @@ struct AABB2D
 
   //bool RayCast(b2RayCastOutput* output, const b2RayCastInput& input) const;
 
-  glm::vec2 lowerBound;  ///< the lower vertex
-  glm::vec2 upperBound;  ///< the upper vertex
+  glm::vec2 lowerBound {0.0f, 0.0f};  ///< the lower vertex
+  glm::vec2 upperBound {0.0f, 0.0f};  ///< the upper vertex
 };
 
 inline bool aabb2DTestOverlap(const AABB2D& a, const AABB2D& b)
