@@ -99,7 +99,9 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   vtkLayout->addWidget(toolbarHolder_);
   vtkLayout->addWidget(statusBar_);
 
-/* addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
+  clippingPlaneManager_.reset(new ClippingPlaneManager(state));
+
+  /* addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
   addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
   addCheckBoxManager(configDialog_->renderAnnotationsCheckBox_, Parameters::ShowRenderAnnotations);
   addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
@@ -476,17 +478,42 @@ void ViewSceneVtkDialog::setBGColor()
 
 void ViewSceneVtkDialog::pullSpecial()
 {
-  #ifdef WITH_VTK
-  /*auto ambient = colorFromState(Parameters::AmbientLightColor);
-  configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
-  configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
-  configDialog_->ambientLightColorBDoubleSpinBox_->setValue(ambient.blueF());
+  if (!pulledSavedVisibility_)
+  {
+    //pullCameraState();
+    //const auto show = state_->getValue(Parameters::ShowViewer).toBool();
+    //if (show && parentWidget())
+    //{
+    //  parentWidget()->show();
+    //}
 
-  auto directional = colorFromState(Parameters::DirectionalLightColor);
-  configDialog_->directionalLightColorRDoubleSpinBox_->setValue(directional.redF());
-  configDialog_->directionalLightColorGDoubleSpinBox_->setValue(directional.greenF());
-  configDialog_->directionalLightColorBDoubleSpinBox_->setValue(directional.blueF());*/
-  #endif
+    //adjustSizeFromState();
+
+    //if (parentWidget())
+    //{
+    //  auto dock = qobject_cast<QDockWidget*>(parentWidget());
+    //  const auto isFloating = state_->getValue(Parameters::IsFloating).toBool();
+    //  if (dock) dock->setFloating(isFloating);
+
+    //  if (isFloating)
+    //  {
+    //    if (savedPos_)
+    //    {
+    //      parentWidget()->move(*savedPos_);
+    //    }
+    //    else
+    //    {
+    //      adjustPositionFromState();
+    //    }
+    //  }
+    //}
+    //clippingPlaneManager_->loadFromState();
+    initializeClippingPlaneDisplay();
+    //initializeAxes();
+    //initializeVisibleObjects();
+    //setInitialLightValues();
+    pulledSavedVisibility_ = true;
+  }
 }
 
 void ViewSceneVtkDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)

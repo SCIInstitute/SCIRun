@@ -134,6 +134,7 @@ private Q_SLOTS:
   QToolBar* toolBar2_{nullptr};
   ViewSceneVtkToolBarController* toolBarController_{nullptr};
   QMainWindow* toolbarHolder_{nullptr};
+  bool pulledSavedVisibility_{false};
 
   //ViewOspraySceneConfigDialog* configDialog_;
   QAction* lockRotation_;
