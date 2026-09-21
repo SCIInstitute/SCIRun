@@ -32,27 +32,18 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
-#ifdef WITH_VTK
-//#include <ospray/ospray.h>
-
 #include <Modules/Render/ViewScene.h>
 #include "Modules/Render/ViewSceneVtk.h"
-//#include "Interface/Modules/Render/Ospray/QOSPRayWidget.h"
-//#include "Interface/Modules/Render/Ospray/OSPRayRenderer.h"
-//#include "Interface/Modules/Render/ViewOspraySceneConfig.h"
 
 #include <Core/Datatypes/Feedback.h>
 #include "Core/Datatypes/Color.h"
 #include "Core/Logging/Log.h"
-#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-  #ifdef WITH_VTK
 using namespace SCIRun::Core::Algorithms::Render;
-#endif
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Render;
@@ -63,7 +54,6 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   QWidget* parent)
   : ModuleDialogGeneric(state, parent)
 {
-  #ifdef WITH_VTK
   statusBar_ = new QStatusBar(this);
 
   renderer_ = new VtkRenderer();
@@ -149,22 +139,16 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   //float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
   //float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
   //uint32_t ind[3] = { 0, 1, 2};
-
-  #endif
 }
 
 ViewSceneVtkDialog::~ViewSceneVtkDialog()
 {
-#ifdef WITH_VTK
   delete viewer_;
   delete renderer_;
-#endif
 }
 
 void ViewSceneVtkDialog::newGeometryValue()
 {
-#ifdef WITH_VTK
-
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (!geomDataTransient || geomDataTransient->empty()) return;
 
@@ -175,7 +159,6 @@ void ViewSceneVtkDialog::newGeometryValue()
 
   //TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
   renderer_->updateGeometries(compGeom.get()->objects());
-#endif
 }
 
 void ViewSceneVtkDialog::setHeight(int h)
@@ -264,17 +247,13 @@ void ViewSceneVtkDialog::addConfigurationButton()
 
 void ViewSceneVtkDialog::configButtonClicked()
 {
-#ifdef WITH_VTK
   //configDialog_->setVisible(!configDialog_->isVisible());
-#endif
 }
 
 void ViewSceneVtkDialog::addConfigurationDialog()
 {
-#ifdef WITH_VTK
   //auto name = windowTitle() + " Configuration";
   //configDialog_ = new ViewOspraySceneConfigDialog(name, this);
-#endif
 }
 
 void ViewSceneVtkDialog::addToolbarButton(QPushButton* button)
@@ -406,73 +385,44 @@ void ViewSceneVtkDialog::toggleLockColor(bool locked)
 
 void ViewSceneVtkDialog::autoRotateClicked()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 void ViewSceneVtkDialog::autoViewClicked()
 {
-#ifdef WITH_VTK
   renderer_->autoView();
-#endif
 }
 
 void ViewSceneVtkDialog::screenshotClicked()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 void ViewSceneVtkDialog::nextTimestepClicked()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 void ViewSceneVtkDialog::playTimestepsClicked()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 void ViewSceneVtkDialog::setViewportCamera()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 float ViewSceneVtkDialog::getFloat(const Name& name) const
 {
-#ifdef WITH_VTK
   return static_cast<float>(state_->getValue(name).toDouble());
-#endif
-  return 0;
 }
 
 void ViewSceneVtkDialog::setCameraWidgets()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 void ViewSceneVtkDialog::setLightColor()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 void ViewSceneVtkDialog::setBGColor()
 {
-#ifdef WITH_VTK
-
-#endif
 }
 
 
@@ -518,65 +468,48 @@ void ViewSceneVtkDialog::pullSpecial()
 
 void ViewSceneVtkDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
 {
-#ifdef WITH_VTK
   int xWindow = xIn - viewer_->pos().x();
   int yWindow = yIn - viewer_->pos().y();
 
   xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
   yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
-#endif
 }
 
 MouseButton ViewSceneVtkDialog::getRenderButton(QMouseEvent* event)
 {
-#ifdef WITH_VTK
   auto btn = MouseButton::NONE;
   if      (event->buttons() & Qt::LeftButton)  btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
   else if (event->buttons() & Qt::MiddleButton)   btn = MouseButton::MIDDLE;
   return btn;
-#endif
-  return MouseButton::NONE;
 }
 
 void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
 {
-#ifdef WITH_VTK
-
   const float x = static_cast<float>(event->x() - viewer_->pos().x());
 
   const float y = static_cast<float>(event->y() - viewer_->pos().y());
 
   renderer_->mousePress(x, y, getRenderButton(event));
-
-#endif
 }
 
 void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
 {
-#ifdef WITH_VTK
-
   const float x = static_cast<float>(event->x() - viewer_->pos().x());
 
   const float y = static_cast<float>(event->y() - viewer_->pos().y());
 
   renderer_->mouseMove(x, y, getRenderButton(event));
-
-#endif
 }
 
 void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
 {
-#ifdef WITH_VTK
   renderer_->mouseRelease();
-#endif
 }
 
 void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
 {
-  #ifdef WITH_VTK
   renderer_->mouseWheel(event->angleDelta().y());
-  #endif
 }
 
 void ViewSceneVtkDialog::initializeClippingPlaneDisplay()
@@ -647,12 +580,5 @@ void ViewSceneVtkDialog::setClippingPlaneD(int index)
 
 void ViewSceneVtkDialog::updateClippingPlaneDisplay()
 {
-  //newGeometryValue(false, true);
-
-  //impl_->delayGC_ = true;
-  //if (!impl_->delayedGCRequested_)
-  //{
-  //  impl_->delayedGCRequested_ = true;
-  //  runDelayedGC();
-  //}
+  renderer_->updateClippingPlanes(clippingPlaneManager_->allPlanes());
 }
