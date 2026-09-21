@@ -392,7 +392,7 @@ void ViewSceneVtkDialog::addClippingPlaneButton()
   auto* clippingPlaneButton = new QPushButton();
   clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
   clippingPlaneControls_ = new ClippingPlaneControlsVtk(this, clippingPlaneButton);
-  addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea);
+  addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea, clippingPlaneControls_);
 }
 
 void ViewSceneVtkDialog::toggleLockColor(bool locked)
