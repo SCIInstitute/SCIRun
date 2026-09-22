@@ -30,13 +30,9 @@ SET(SCIRunMain_SOURCES
   scirunMain.cc
 )
 
-IF(BUILD_HEADLESS)
-  ADD_DEFINITIONS(-DBUILD_HEADLESS)
-ENDIF(BUILD_HEADLESS)
-
 ADD_DEFINITIONS(-DAPPLICATION_NAME=${APPLICATION_NAME})
 
-IF(BUILD_HEADLESS)
+IF(NOT WITH_GUI)
   SET(BUILD_BUNDLE FALSE)
 ENDIF()
 
@@ -60,7 +56,7 @@ IF(APPLE)
     ${SCIRunMain_SOURCES}
   )
 
-  IF(BUILD_HEADLESS)
+  IF(NOT WITH_GUI)
     ADD_EXECUTABLE(${APPLICATION_NAME}
       ${SCIRunMain_SOURCES}
     )
@@ -84,7 +80,7 @@ ELSEIF(WIN32)
     # ------------------------
     # Qt (only if GUI enabled)
     # ------------------------
-    IF(NOT BUILD_HEADLESS)
+    IF(WITH_GUI)
       if(TARGET Qt::qmake)
         set(_qt_qmake_target Qt::qmake)
       else()
@@ -181,7 +177,7 @@ ENDIF()
 
 IF(APPLE)
   SET(APPS ${TEST_APPLICATION_NAME})
-  IF(BUILD_HEADLESS)
+  IF(NOT WITH_GUI)
     LIST(APPEND APPS ${APPLICATION_NAME})
   ENDIF()
 ELSE()
@@ -193,7 +189,7 @@ FOREACH(app ${APPS})
     Core_Util_Legacy
   )
 
-  IF(BUILD_HEADLESS)
+  IF(NOT WITH_GUI)
     TARGET_LINK_LIBRARIES(${app}
       Core_ConsoleApplication
     )
@@ -242,7 +238,7 @@ ELSE()
     # ------------------------
     # Qt install
     # ------------------------
-    IF(NOT BUILD_HEADLESS)
+    IF(WITH_GUI)
       GET_TARGET_PROPERTY(QTCORENAME Qt${QT_VERSION_MAJOR}::Core LOCATION)
       GET_TARGET_PROPERTY(QTGUINAME Qt${QT_VERSION_MAJOR}::Gui LOCATION)
       GET_TARGET_PROPERTY(QTOPENGLNAME Qt${QT_VERSION_MAJOR}::OpenGL LOCATION)
@@ -260,7 +256,7 @@ ELSE()
 
     INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION bin)
 
-    IF(NOT BUILD_HEADLESS)
+    IF(WITH_GUI)
       INSTALL(PROGRAMS
         ${QTCORENAME}
         ${QTGUINAME}
@@ -306,7 +302,7 @@ ELSE()
 
   ELSE()  # Linux / non-Windows
 
-    IF(BUILD_HEADLESS)
+    IF(NOT WITH_GUI)
       MESSAGE(STATUS "Building headless SCIRun")
     ENDIF()
 

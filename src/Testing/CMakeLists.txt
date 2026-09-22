@@ -150,7 +150,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   FILE(GLOB_RECURSE scirun_srns_io "${SCIRun_SOURCE_DIR}/ExampleNets/regression/ImportExport/*.srn5")
   set(scirun_srns ${scirun_srns_modules} ${scirun_srns_network} ${scirun_srns_io})
 
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     FILE(GLOB_RECURSE scirun_srns_renderer "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Renderer/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_renderer})
   ENDIF()

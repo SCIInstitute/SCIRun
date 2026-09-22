@@ -64,7 +64,7 @@ int mainImpl(int argc, const char* argv[], char **environment)
 
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
   //TODO: https://doc.qt.io/qt-5/qapplication.html#details
-#ifndef BUILD_HEADLESS
+#ifdef WITH_GUI
   if (Application::Instance().parameters()->disableGui()
     || Application::Instance().parameters()->help()
     || Application::Instance().parameters()->version())

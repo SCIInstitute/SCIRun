@@ -31,6 +31,8 @@ scirun_removed_option(BUILD_WITH_SCIRUN_DATA  # removed 2026-09; drop shim after
   "Its SVN source (gforge.sci.utah.edu) is gone and nothing read the result; see #2672.")
 scirun_renamed_option(BUILD_WITH_PYTHON WITH_PYTHON)  # renamed 2026-09 (#2670)
 scirun_renamed_option(BUILD_OSPRAY WITH_OSPRAY)        # renamed 2026-09 (#2749)
+scirun_removed_option(BUILD_HEADLESS                    # inverted 2026-09 (#2671); FATAL because a stale ON would silently build the GUI
+  "It was replaced by WITH_GUI with the opposite sense. Use -DWITH_GUI=OFF for a headless build." FATAL)
 
 ###########################################
 # TODO: build from archive - Git not used
@@ -167,8 +169,8 @@ IF(WIN32)
 ENDIF()
 
 ###########################################
-# Configure headless build
-OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
+# Configure GUI (OFF = headless build, no Qt required)
+OPTION(WITH_GUI "Build the SCIRun GUI." ON)
 
 ###########################################
 # Configure Qt
@@ -182,7 +184,7 @@ list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
 list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
 list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
 
   SET(Qt_PATH "" CACHE PATH
       "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
@@ -211,7 +213,7 @@ IF(NOT BUILD_HEADLESS)
     endif()
   ELSE()
     MESSAGE(SEND_ERROR
-      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or enable BUILD_HEADLESS.")
+      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or set WITH_GUI=OFF.")
   ENDIF()
 
   # ------------------------------------------------------------
@@ -223,8 +225,6 @@ IF(NOT BUILD_HEADLESS)
     MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
   ENDIF()
 
-ELSE()
-  ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF()
 
 ###########################################
@@ -300,7 +300,7 @@ IF(WITH_OSPRAY)
   ENDIF()
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
   #ADD_EXTERNAL( ${SUPERBUILD_DIR}/deprecated/CtkExternal.cmake Ctk_external )
 ENDIF()
@@ -329,7 +329,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
     "-DENABLE_COVERAGE:BOOL=${ENABLE_COVERAGE}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
-    "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
+    "-DWITH_GUI:BOOL=${WITH_GUI}"
     "-DQT_VERSION_MAJOR:STRING=${QT_VERSION_MAJOR}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DWITH_PYTHON:BOOL=${WITH_PYTHON}"
@@ -388,7 +388,7 @@ IF(WIN32)
   )
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DQt_PATH:PATH=${Qt_PATH}"
     "-DCMAKE_PREFIX_PATH:PATH=${Qt_PATH}"
