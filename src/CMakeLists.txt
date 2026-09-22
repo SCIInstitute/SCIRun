@@ -590,6 +590,10 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
+  # Not SYSTEM: a SYSTEM dir is searched after every -I, which hands <zlib.h>
+  # to the copy Qt ships in include/QtZlib; its zconf.h pulls in qglobal.h and
+  # that is a hard error wherever Qt isn't linked (Core_Matlab on MSVC, #2758).
+  ${SCI_ZLIB_INCLUDE}
 )
 
 # SYSTEM: header-only externals (Eigen above all) otherwise diagnose inside our
@@ -598,7 +602,6 @@ INCLUDE_DIRECTORIES(
 # imported target (already SYSTEM) or via Superbuild/UseBoost.cmake (#2197).
 INCLUDE_DIRECTORIES(SYSTEM
   ${SCI_TEEM_INCLUDE}
-  ${SCI_ZLIB_INCLUDE}
   ${GLM_DIR}
   ${SPDLOG_DIR}/include
   ${Eigen_DIR}
