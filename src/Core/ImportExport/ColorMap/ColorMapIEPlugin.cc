@@ -28,23 +28,36 @@
 #include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <pugixml/pugixml.hpp>
+#include <algorithm>
 
 using namespace SCIRun::ColorXml;
 using namespace SCIRun::Core::Datatypes;
+
+// Exporters spell the point element <Point> (SCIRun/ParaView), <color>, and
+// <ColorMapNode> (issue #2578), all carrying the same x/o/r/g/b attributes.
+// Match on the attributes rather than the tag name so the next dialect does not
+// need another special case.
+static bool isPointElement(const pugi::xml_node& p)
+{
+  return p.attribute("r") && p.attribute("g") && p.attribute("b");
+}
+
+static bool hasPointElements(const pugi::xml_node& n)
+{
+  return std::any_of(n.begin(), n.end(), isPointElement);
+}
 
 static SCIRun::ColorXml::ColorMap parseColorMapNode(const pugi::xml_node& cm)
 {
   SCIRun::ColorXml::ColorMap colorMap;
   colorMap.name = cm.attribute("name").as_string();
   colorMap.space = cm.attribute("space").as_string();
-  // Accept both the modern SCIRun/ParaView point element (<Point x o r g b/>)
-  // and the alternate dialect some tools export (<color x a r g b/>), where the
-  // opacity is spelled "a" (alpha). The "o"/"a" attribute is optional.
   for (const auto& p : cm.children())
   {
-    const std::string tag = p.name();
-    if (tag != "Point" && tag != "color")
+    if (!isPointElement(p))
       continue;
+    // Opacity is spelled "o" in the SCIRun/ParaView schema and "a" elsewhere;
+    // both are optional.
     const auto opacity = p.attribute("o") ? p.attribute("o") : p.attribute("a");
     colorMap.points.push_back({
       p.attribute("x").as_double(),
@@ -80,6 +93,19 @@ ColorMaps ColorMapXmlIO::readColorMapXml(const std::string& filename)
   {
     // Alternate dialect: <colormap name="..."><color x a r g b/></colormap>.
     colorMaps.maps.push_back(parseColorMapNode(lower));
+  }
+  else if (const auto other = doc.document_element())
+  {
+    // Unknown wrapper element: fall back to structure. The root is the colormap
+    // if it holds point elements directly, otherwise look one level down.
+    if (hasPointElements(other))
+      colorMaps.maps.push_back(parseColorMapNode(other));
+    else
+    {
+      for (const auto& cm : other.children())
+        if (hasPointElements(cm))
+          colorMaps.maps.push_back(parseColorMapNode(cm));
+    }
   }
   return colorMaps;
 }

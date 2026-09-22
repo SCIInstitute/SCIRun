@@ -1,10 +1,10 @@
+#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2020 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
@@ -23,25 +23,34 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+#
 
-SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-SET(data_SVN_URL "https://gforge.sci.utah.edu/svn/CIBCData")
-SET(sci_data_DIR "${CMAKE_BINARY_DIR}/SCIRunData")
-
-ExternalProject_Add(SCI_data_external
-  SVN_REPOSITORY "${data_SVN_URL}"
-  SVN_TRUST_CERT 1
-  SVN_USERNAME "anonymous"
-  SVN_PASSWORD ""
-  DOWNLOAD_DIR "${sci_data_DIR}"
-  PATCH_COMMAND ""
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
-  CONFIGURE_COMMAND ""
-  CMAKE_COMMAND ""
-  BUILD_COMMAND ""
+SET(Core_Datatypes_VTK_SRCS
+  VtkGeometry.cc
 )
 
-ExternalProject_Get_Property(SCI_data_external BINARY_DIR)
-SET(SCI_DATA_DIR ${sci_data_DIR} CACHE PATH "")
+SET(Core_Datatypes_VTK_HEADERS
+  VtkGeometry.h
+  share.h
+  )
+
+SCIRUN_ADD_LIBRARY(Core_Datatypes_VTK
+  ${Core_Datatypes_VTK_HEADERS}
+  ${Core_Datatypes_VTK_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
+  Core_Datatypes
+)
+
+IF (WITH_VTK)
+TARGET_LINK_LIBRARIES(Core_Datatypes_VTK
+  VTK::CommonCore
+)
+ENDIF (WITH_VTK)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_VTK)
+ENDIF(BUILD_SHARED_LIBS)
+

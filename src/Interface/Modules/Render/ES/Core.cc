@@ -43,7 +43,7 @@
 namespace SCIRun {
 namespace Render {
 
-ESCore::ESCore() : mCurrentTime(0.0f), r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
+ESCore::ESCore()
 {
   // Register common systems.
   gen::registerAll(*this);
