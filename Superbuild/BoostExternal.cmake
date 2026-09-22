@@ -208,9 +208,26 @@ ExternalProject_Add(Boost_external
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
 ExternalProject_Get_Property(Boost_external SOURCE_DIR)
 
+SET(_B2_BOOTSTRAP_ENV)
+SET(_B2_BOOTSTRAP_ARGS)
+SET(_B2_TOOLSET_ARG)
 IF(WIN32)
   SET(_B2_CMD ${SOURCE_DIR}/b2.exe)
-  SET(_B2_BOOTSTRAP_CMD bootstrap.bat)
+  # Full path: with NoDefaultCurrentDirectoryInExePath=1 (set by some shells)
+  # cmd does not search the working directory for a bare "bootstrap.bat".
+  FILE(TO_NATIVE_PATH "${SOURCE_DIR}/bootstrap.bat" _B2_BOOTSTRAP_CMD)
+  # b2 auto-detects the newest MSVC on the machine, not the one CMake is
+  # generating for, and its bootstrap dies with "Unknown toolset: vcunk" when
+  # that is newer than it knows (#2657). Pin both to CMake's instance/toolset.
+  # Trailing "/" is required: config_toolset.bat appends "Auxiliary\Build".
+  IF(CMAKE_VS_PLATFORM_TOOLSET MATCHES "^v14([0-9])$")
+    SET(_B2_BOOTSTRAP_ARGS "vc14${CMAKE_MATCH_1}")
+    SET(_B2_TOOLSET_ARG "toolset=msvc-14.${CMAKE_MATCH_1}")
+  ENDIF()
+  IF(CMAKE_GENERATOR_INSTANCE)
+    SET(_B2_BOOTSTRAP_ENV ${CMAKE_COMMAND} -E env
+        "B2_TOOLSET_ROOT=${CMAKE_GENERATOR_INSTANCE}/VC/")
+  ENDIF()
 ELSE()
   SET(_B2_CMD ${SOURCE_DIR}/b2)
   SET(_B2_BOOTSTRAP_CMD ./bootstrap.sh)
@@ -220,7 +237,7 @@ ENDIF()
 # Step: bootstrap b2
 # --------------------------------------------------------------
 ExternalProject_Add_Step(Boost_external bootstrap_b2
-  COMMAND ${_B2_BOOTSTRAP_CMD}
+  COMMAND ${_B2_BOOTSTRAP_ENV} ${_B2_BOOTSTRAP_CMD} ${_B2_BOOTSTRAP_ARGS}
   WORKING_DIRECTORY ${SOURCE_DIR}
   DEPENDEES update
   INDEPENDENT 1
@@ -352,6 +369,7 @@ set(_BOOST_B2_ARGS
   ${BOOST_PYTHON_WITH_FLAG}
   ${BOOST_PYTHON_DEBUGGING_FLAG}
 
+  ${_B2_TOOLSET_ARG}
   link=static
   runtime-link=shared
   ${_BOOST_VARIANT}
