@@ -64,21 +64,50 @@
 
 #### All Platforms
   - [CMake](https://cmake.org/) (platform independent configuring system that is used for generating Makefiles, Visual Studio project files, or Xcode project files)
-    + Tested with 3.4 and newer
+    + 3.21 or newer
     + Root cmake file is Superbuild/CMakeLists.txt.
     + Building in source directories is not permitted.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
 
 ### CMake Build Generators
 * Windows
-  - Visual Studio 2017 & 2019
+  - Visual Studio 2019 & 2022
 * OS X
   - Unix Makefiles
+  - Ninja
   - Xcode
 * Linux
   - Unix Makefiles
-  
-## Configuring CMake
+  - Ninja
+
+## Configuring with presets (recommended)
+
+`Superbuild/CMakePresets.json` ships the configurations we build, so the only thing you have to write down is where Qt is. Put that in `Superbuild/CMakeUserPresets.json` -- it is ignored by git and never committed -- starting from the example:
+
+```
+cp Superbuild/CMakeUserPresets.json.example Superbuild/CMakeUserPresets.json
+```
+
+Edit it to point `Qt_PATH` at your Qt install (see the Qt install steps above for the directory) and pick which shipped presets to inherit. `cmake --list-presets` in `Superbuild/` shows what is available:
+
+* `release`, `debug`, `headless` -- CMake's default generator for your platform
+* `make-*`, `ninja-*`, `vs2022-*`, `vs2019-*` -- the same, with an explicit generator
+* `qt6` -- add to `inherits` to build against Qt 6 (the shipped presets default to Qt 5)
+* `testing` -- add to `inherits` to build the unit and regression tests
+
+Earlier entries in `inherits` win, so list `qt6` / `testing` before the generator preset, or set the variables directly in your preset's `cacheVariables`, which always take precedence.
+
+Then, from `Superbuild/`:
+
+```
+cmake --preset mine
+cmake --build --preset mine
+ctest --preset mine
+```
+
+The build directory defaults to `bin/<preset name>` under the repository root. On Windows override `binaryDir` in your user preset with something short such as `C:/SR`: the Superbuild nests deeply and the default location can exceed the 260-character path limit.
+
+## Configuring CMake by hand
 Run CMake from your build (bin or other build directory of your choice) directory and give a path to the CMake Superbuild directory containing the master CMakeLists.txt file.
 
 A bash build script (`build.sh`) is also available for Linux and Mac OS X to simplify the process.
@@ -98,6 +127,31 @@ cmake ../Superbuild
 The console version `ccmake`, or GUI version can also be used.
 You may be prompted to specify your location of the Qt installation.
 If you installed Qt in the default location, it should find Qt automatically.
+
+### Build options
+
+Pass these as `-DOPTION=ON|OFF` to the Superbuild (`cmake -DBUILD_TESTING=ON ../Superbuild`).
+
+| Option | Default | What it does |
+|---|---|---|
+| `BUILD_TESTING` | OFF | Build unit and regression tests |
+| `BUILD_DOCUMENTATION` | OFF | Build the documentation |
+| `BUILD_WITH_PYTHON` | ON | Python API and the Python modules |
+| `BUILD_HEADLESS` | OFF | Build without Qt / the GUI |
+| `WITH_TETGEN` | ON | TetGen mesh generation (GPL; see the InterfaceWithTetGen module) |
+| `BUILD_OSPRAY` | OFF | Download and build OSPRay for the OsprayViewer module |
+| `PREBUILT_OSPRAY` | OFF | Use an already-installed OSPRay instead of building one |
+| `WITH_VTK` | OFF | VTK renderer backend |
+| `Qt_PATH` | | Location of the Qt installation (see below) |
+| `SCIRUN_QT_MIN_VERSION` | 5.15.2 | Set to `6.3.1` to build against Qt 6 |
+
+Option names follow one rule: the prefix says what kind of knob it is.
+
+- `WITH_<DEP>` — an optional third-party dependency. The Superbuild fetches and builds it; the inner build compiles the code that uses it.
+- `BUILD_<THING>` — an extra artifact SCIRun emits, consistent with CMake's own `BUILD_TESTING` and `BUILD_SHARED_LIBS`.
+- `ENABLE_`, `RUN_`, `GENERATE_`, `DOWNLOAD_` — behavior knobs.
+
+`BUILD_WITH_` is retired and no new options use it. `BUILD_WITH_PYTHON`, `BUILD_HEADLESS` and `BUILD_OSPRAY` predate the rule and are being renamed to `WITH_PYTHON`, `WITH_GUI` and `WITH_OSPRAY`; the old spellings will keep working for one release with a deprecation warning.
 
 ### Configuring SCIRun with Qt 5
 
@@ -127,9 +181,9 @@ cmake -DQt_PATH=path_to_Qt6/6.4.2/clang_64/ -DSCIRUN_QT_MIN_VERSION="6.3.1" ../S
 
 
 ### Configuring SCIRun with OSPRay
-To use the OsprayViewer module, SCIRun needs to download and install Ospray during the build process, which is off by default. This is enabled with the `WITH_OSPRAY` flag. In the command line, it would look like:
+To use the OsprayViewer module, SCIRun needs to download and install Ospray during the build process, which is off by default. This is enabled with the `BUILD_OSPRAY` flag. In the command line, it would look like:
 ```
-cmake -DWITH_OSPRAY=True ../Superbuild/
+cmake -DBUILD_OSPRAY=True ../Superbuild/
 ```
 
 ## Building SCIRun

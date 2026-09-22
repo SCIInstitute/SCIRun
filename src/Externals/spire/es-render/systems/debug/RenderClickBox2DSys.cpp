@@ -76,7 +76,7 @@ public:
   RenderSimpleGeom  mAttribs;
   CommonUniforms    mCommonUniforms;
 
-  GLuint mShader;
+  GLuint mShader = 0;
 
   bool isComponentOptional(uint64_t type) override
   {
@@ -142,7 +142,7 @@ public:
     for (const gen::ClickBox2D& box : clickBox)
     {
       // Bind any common uniforms.
-      glm::mat4 xformToUse;
+      glm::mat4 xformToUse {1.0f};
       if (trafo.size() > 0)
         xformToUse = trafo.front().transform;
 
