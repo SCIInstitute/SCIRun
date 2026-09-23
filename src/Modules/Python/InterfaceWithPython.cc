@@ -142,6 +142,8 @@ void InterfaceWithPython::execute()
     {
       Guard g(lock_.get());
 
+      // Headless runs have no Python console to bind the scirun_* API (#2699).
+      PythonInterpreter::Instance().importSCIRunLibrary();
       runTopLevelCode();
 
       translator_->updatePorts(connectedPortIds());
@@ -155,7 +157,12 @@ void InterfaceWithPython::execute()
         PythonInterpreter::Instance().run_string("from MatlabConversion import *");
         matlabInitialized_ = true;
       }
-      PythonInterpreter::Instance().run_script(convertedCode.code);
+      if (!PythonInterpreter::Instance().run_script(convertedCode.code))
+      {
+        // The traceback is already on the Python error stream; without this the
+        // module reported success and sat out the full output-wait timeout.
+        MODULE_ERROR_WITH_TYPE(GeneralModuleError, "Python script failed; see the traceback above.");
+      }
     }
 
     PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);

@@ -157,6 +157,10 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 
   IF(WITH_PYTHON)
     FILE(GLOB_RECURSE scirun_srns_python "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Python/*.srn5")
+    # Python/Optional needs packages the bundled interpreter doesn't ship
+    # (numpy, matlab.engine); those networks only ever passed because Python
+    # errors were swallowed (#2699).
+    LIST(FILTER scirun_srns_python EXCLUDE REGEX "/Python/Optional/")
     set(scirun_srns ${scirun_srns} ${scirun_srns_python})
   ENDIF()
 
