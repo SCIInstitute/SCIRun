@@ -191,8 +191,17 @@ ExternalProject_Add(Boost_external
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
 
-    # ---------- Python strictly controlled by SCIRun option ----------
-    -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
+    # Boost's own CMake build (run by ExternalProject_Add's standard configure
+    # and build steps, alongside the b2 steps below) defaults to building all
+    # ~37 libraries; SCIRun only ever linked 8 of them plus Boost.Python (see
+    # #2629). Restrict it to what's actually needed. "python" must NOT be in
+    # this list: BOOST_ENABLE_PYTHON is never turned on here (python keeps
+    # coming from the b2 steps instead), and Boost's CMake build treats an
+    # explicitly-requested python with BOOST_ENABLE_PYTHON off as a hard
+    # configure error rather than silently skipping it -- so this is a
+    # deliberately separate, non-cache list rather than a reuse of
+    # boost_Libraries, which has "python" appended when BUILD_WITH_PYTHON is on.
+    "-DBOOST_INCLUDE_LIBRARIES:STRING=atomic;chrono;date_time;exception;filesystem;program_options;regex;serialization;thread"
 
     ${_BOOST_PYTHON_CACHE_ARGS}
 
@@ -370,6 +379,10 @@ set(_BOOST_B2_ARGS
   ${BOOST_PYTHON_DEBUGGING_FLAG}
 
   ${_B2_TOOLSET_ARG}
+  # Without this, b2's msvc toolset builds its default set, which includes
+  # x86 (address-model=32) alongside x64 -- 26 extra libraries nothing links
+  # against (#2629). SCIRun is x64-only everywhere, so pin it explicitly.
+  address-model=64
   link=static
   runtime-link=shared
   ${_BOOST_VARIANT}
