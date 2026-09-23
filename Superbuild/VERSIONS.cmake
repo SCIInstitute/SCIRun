@@ -55,8 +55,11 @@ sci_dep_version(EIGEN_VERSION  "3.4.0"  "Eigen release version")
 sci_dep_version(EIGEN_URL
   "https://gitlab.com/libeigen/eigen/-/archive/${EIGEN_VERSION}/eigen-${EIGEN_VERSION}.tar.gz"
   "Eigen source tarball URL")
-# TODO: add EIGEN_URL_HASH (SHA256) so downloads are integrity-checked.
-sci_dep_version(EIGEN_URL_HASH "" "Eigen tarball SHA256 (URL_HASH SHA256=...)")
+# Bumping EIGEN_VERSION means recomputing this. An empty value skips the check,
+# which is also what makes a local -DEIGEN_URL override work.
+sci_dep_version(EIGEN_URL_HASH
+  "8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72"
+  "Eigen tarball SHA256 (URL_HASH SHA256=...)")
 
 # -----------------------------------------------------------------------------
 # I/O, compression, imaging
@@ -186,8 +189,9 @@ sci_dep_version(LIBXML2_GIT_TAG "v2.15.3" "libxml2 pinned tag")
 # this class of mistake is caught automatically rather than by inspection.
 #
 # Remaining hardening (follow-up work):
-#   - Add EIGEN_URL_HASH (and hashes for any future tarball deps) so downloads
-#     are integrity-checked, not just version-pinned.
+#   - Give any future tarball dep a *_URL_HASH, as EIGEN_URL_HASH has. Without
+#     one a truncated or error-page "tarball" is accepted and only fails later,
+#     during extraction; with one CMake re-downloads it.
 #
 # The check-dependencies CI job (.github/workflows/dependency-check.yml) diffs
 # these pins against upstream tags/releases and reports when newer versions are

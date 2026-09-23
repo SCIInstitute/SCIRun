@@ -109,6 +109,11 @@ jobs:
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
+        # A compiler cache is an optimization, so don't let it decide whether the
+        # nightly is red: the action downloads sccache from github.com and gives
+        # up after two retries (run 35613949360 died on a 504). The build steps
+        # below only pass the launcher flags if sccache actually showed up.
+        continue-on-error: true
 
       - name: Checkout SCIRunTestData
         if: ${{ inputs.run-regression-tests || inputs.coverage }}
@@ -159,8 +164,12 @@ jobs:
         run: |
           set -eux
           CMD=(./build.sh)
-          CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
-          CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
+          if command -v sccache >/dev/null 2>&1; then
+            CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
+            CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
+          else
+            echo "::warning::sccache unavailable; building without a compiler cache."
+          fi
           # Default ON deletes the generated factory sources after each build, so every
           # later `make` relinks up to SCIRun.app and re-runs its macdeployqt POST_BUILD
           # chain -- 4x in the mac package step. Only helps incremental local builds
@@ -231,8 +240,12 @@ jobs:
 
           # Build arguments for cmake
           $cmakeArgs = @()
-          $cmakeArgs += "-DCMAKE_C_COMPILER_LAUNCHER=sccache"
-          $cmakeArgs += "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+          if (Get-Command sccache -ErrorAction SilentlyContinue) {
+            $cmakeArgs += "-DCMAKE_C_COMPILER_LAUNCHER=sccache"
+            $cmakeArgs += "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+          } else {
+            Write-Output "::warning::sccache unavailable; building without a compiler cache."
+          }
 
           # As in the Linux/macOS step above: avoids a needless relink cascade. See #2664.
           $cmakeArgs += "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=OFF"
