@@ -32,8 +32,9 @@
 .PARAMETER BuildVerbose
     Show full compiler command lines during the build.
 
-.PARAMETER WithTetgen
-    Include the Tetgen mesh generation library (GPL license).
+.PARAMETER WithoutTetgen
+    Exclude the Tetgen mesh generation library. Tetgen is GPL-licensed and
+    included by default, matching the Superbuild's default.
     See https://tetgen.org for license details.
 
 .PARAMETER Headless
@@ -131,7 +132,7 @@ param(
     [switch]$Debug,
     [switch]$Release,
     [switch]$BuildVerbose,
-    [switch]$WithTetgen,
+    [switch]$WithoutTetgen,
     [switch]$Headless,
     [switch]$Documentation,
     [string]$CMakePath    = "",
@@ -559,7 +560,7 @@ function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildT
         "-DCMAKE_BUILD_TYPE:STRING=$buildType",
         "-DCMAKE_VERBOSE_MAKEFILE:BOOL=$(if ($BuildVerbose) {'ON'} else {'OFF'})",
         "-DBUILD_HEADLESS:BOOL=$(if ($Headless) {'ON'} else {'OFF'})",
-        "-DWITH_TETGEN:BOOL=$(if ($WithTetgen) {'ON'} else {'OFF'})",
+        "-DWITH_TETGEN:BOOL=$(if ($WithoutTetgen) {'OFF'} else {'ON'})",
         "-DBUILD_DOCUMENTATION:BOOL=$(if ($Documentation) {'ON'} else {'OFF'})",
         "-DSCIRUN_QT_MIN_VERSION:STRING=$QtVersion"
     )
@@ -773,7 +774,7 @@ Write-Host "  Build type   : $buildType" -ForegroundColor White
 Write-Host "  Parallel jobs: $numJobs" -ForegroundColor White
 Write-Host "  Qt version   : $QtVersion$(if ($Headless) {' (N/A -- headless build)'})" -ForegroundColor White
 Write-Host "  Headless     : $Headless" -ForegroundColor White
-Write-Host "  With Tetgen  : $WithTetgen" -ForegroundColor White
+Write-Host "  With Tetgen  : $(-not $WithoutTetgen)" -ForegroundColor White
 Write-Host ""
 
 # Verify the Superbuild is where we expect it

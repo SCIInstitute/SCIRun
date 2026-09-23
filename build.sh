@@ -49,7 +49,7 @@ printhelp() {
     echo -e "--verbose\t\tTurn on verbose build"
 #    echo -e "--set-osx-version-min\tTarget a minimum Mac OS X version (currently ${OSX_TARGET_VERSION}, ${OSX_TARGET_ARCH}) [OS X only]"
 #    echo -e "--xcode-build\t\tConfigure and build Xcode project against ALL_BUILD target [OS X only]"
-    echo -e "--with-tetgen\t\tBuild SCIRun with Tetgen library"
+    echo -e "--without-tetgen\tBuild SCIRun without the Tetgen library [Tetgen is GPL-licensed; on by default]"
     echo -e "--cmake=<path to cmake>\t\tUse given CMake"
     echo -e "--cmake-args=<cmake args>\t\tUse given CMake args"
     echo -e "--documentation\t\tEnable building documentation (requires LaTeX)"
@@ -213,8 +213,8 @@ verbosebuild="OFF"
 builddir="$DIR/bin"
 xcodebuild=0
 documentation="OFF"
-# currently off by default
-tetgenbuild="OFF"
+# matches the Superbuild default; Tetgen is GPL-licensed, see --without-tetgen
+tetgenbuild="ON"
 headless="OFF"
 
 echo "Parsing arguments..."
@@ -242,8 +242,8 @@ while [[ $1 != "" ]]; do
                     builddir="${DIR}/${dirarg}"
                 fi
             fi;;
-        --with-tetgen)
-            tetgenbuild="ON";;
+        --without-tetgen)
+            tetgenbuild="OFF";;
         --headless)
             headless="ON";;
         --documentation)
