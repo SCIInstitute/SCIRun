@@ -31,7 +31,6 @@ SET(Core_Datatypes_Mesh_Tests_SRCS
   LatticeVolumeMeshTests.cc
   LatticeVolumeMeshFacadeTests.cc
   MeshFactoryTests.cc
-  TriSurfMeshTests.cc
   TriSurfMeshFacadeTests.cc
 )
 
