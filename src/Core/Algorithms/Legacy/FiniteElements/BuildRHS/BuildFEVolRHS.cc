@@ -81,7 +81,7 @@ class FEMVolRHSBuilder
 
   DenseMatrixHandle rhsmatrix_;
 
-  std::vector<bool> success_;
+  ParallelSuccessFlags success_;
 
   index_type domain_dimension;
 

@@ -71,14 +71,10 @@ SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Modul
 
 void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 {
-	setStateStringFromAlgo(Parameters::TikhonovImplementation);
 	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
-	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-	setStateDoubleFromAlgo(Parameters::LambdaMin);
-	setStateDoubleFromAlgo(Parameters::LambdaMax);
-	setStateIntFromAlgo(Parameters::LambdaNum);
-	setStateDoubleFromAlgo(Parameters::LambdaResolution);
-	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
+	copyAlgoToState({Parameters::TikhonovImplementation, Parameters::LambdaFromDirectEntry,
+		Parameters::LambdaMin, Parameters::LambdaMax, Parameters::LambdaNum,
+		Parameters::LambdaResolution, Parameters::LambdaSliderValue});
 }
 
 // execute function
@@ -106,12 +102,8 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 		state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovSVD") );
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
-		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
-		setAlgoDoubleFromState(Parameters::LambdaMin);
-		setAlgoDoubleFromState(Parameters::LambdaMax);
-		setAlgoIntFromState(Parameters::LambdaNum);
-		setAlgoDoubleFromState(Parameters::LambdaResolution);
-		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+		copyStateToAlgo({Parameters::LambdaFromDirectEntry, Parameters::LambdaMin, Parameters::LambdaMax,
+			Parameters::LambdaNum, Parameters::LambdaResolution, Parameters::LambdaSliderValue});
 
 		// run
 		auto output = algo().run(

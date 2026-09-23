@@ -570,8 +570,8 @@ void GeometryBuilder::renderFacesLinear(
     // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
     size_t iboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(uint32_t) * (numNodesPerFace - 2) * 3);
     size_t vboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(float) * numNodesPerFace * numAttributes);
-    std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
-    std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+    auto iboBufferSPtr = std::make_shared<spire::VarBuffer>(iboSize);
+    auto vboBufferSPtr = std::make_shared<spire::VarBuffer>(vboSize);
     auto iboBuffer = iboBufferSPtr.get();
     auto vboBuffer = vboBufferSPtr.get();
 
@@ -644,7 +644,8 @@ void GeometryBuilder::renderFacesLinear(
 
       if(useColorMap)
       {
-        // Element data (Cells) so two sided faces.
+        // Element data (Cells) so two sided faces. Boundary faces have only one
+        // adjacent cell, so both sides get its value.
         if (isCellData)
         {
           VMesh::Elem::array_type cells;
@@ -666,7 +667,7 @@ void GeometryBuilder::renderFacesLinear(
           {
             fld->get_value(vvals[0], cells[0]);
             if (cells.size() > 1) fld->get_value(vvals[1], cells[1]);
-            else svals[1] = svals[0];
+            else vvals[1] = vvals[0];
 
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
@@ -678,7 +679,7 @@ void GeometryBuilder::renderFacesLinear(
           {
             fld->get_value(tvals[0], cells[0]);
             if (cells.size() > 1) fld->get_value(tvals[1], cells[1]);
-            else svals[1] = svals[0];
+            else tvals[1] = tvals[0];
 
             for (size_t i = 0; i < numNodesPerFace; ++i)
             {
@@ -767,24 +768,24 @@ void GeometryBuilder::renderFacesLinear(
     std::vector<SpireVBO::AttributeData> attribs;
     std::vector<SpireSubPass::Uniform> uniforms;
 
-    attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-    uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", true));
-    uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
-    uniforms.push_back(SpireSubPass::Uniform("uTransparency", faceTransparencyValue_));
+    attribs.emplace_back("aPos", 3 * sizeof(float));
+    uniforms.emplace_back("uUseClippingPlanes", true);
+    uniforms.emplace_back("uUseFog", true);
+    uniforms.emplace_back("uTransparency", faceTransparencyValue_);
 
     if (useNormals)
     {
-      attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      attribs.emplace_back("aNormal", 3 * sizeof(float));
+      uniforms.emplace_back("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+      uniforms.emplace_back("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
+      uniforms.emplace_back("uSpecularPower", 32.0f);
     }
 
     SpireTexture2D texture;
     if (useColorMap)
     {
       shader += "_ColorMap";
-      attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
+      attribs.emplace_back("aTexCoords", 2 * sizeof(float));
 
       const static int colorMapResolution = 256;
       for(int i = 0; i < colorMapResolution; ++i)
@@ -801,8 +802,8 @@ void GeometryBuilder::renderFacesLinear(
     }
     else
     {
-      uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
-        glm::vec4(state.defaultColor.r(), state.defaultColor.g(), state.defaultColor.b(), 1.0f)));
+      uniforms.emplace_back("uDiffuseColor",
+        glm::vec4(state.defaultColor.r(), state.defaultColor.g(), state.defaultColor.b(), 1.0f));
     }
 
     //numVBOElements is only used in dead code and should be removed which is why its hard coded to 0

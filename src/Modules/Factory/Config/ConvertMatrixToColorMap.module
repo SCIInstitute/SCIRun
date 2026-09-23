@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertMatrixToColorMap",
+    "namespace": "Visualization",
+    "status": "New module",
+    "description": "Converts a matrix of color values into a ColorMap. Columns are assigned roles (position/R/G/B/alpha) automatically or in the UI.",
+    "header": "Modules/Visualization/ConvertMatrixToColorMap.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ConvertMatrixToColorMapDialog",
+    "header": "Interface/Modules/Visualization/ConvertMatrixToColorMapDialog.h"
+  }
+}

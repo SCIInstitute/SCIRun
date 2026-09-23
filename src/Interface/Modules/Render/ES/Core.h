@@ -56,9 +56,9 @@ private:
   bool hasGeomPromise() const;
 
   spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
+  double          mCurrentTime {0.0};     ///< Current system time calculated from constant frame time.
   bool            runGC {false};
-  float           r_, g_, b_, a_;
+  float           r_ {0.0f}, g_ {0.0f}, b_ {0.0f}, a_ {0.0f};
 };
 
 } // namespace Render

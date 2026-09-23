@@ -147,11 +147,13 @@ namespace SCIRun {
 
       //---------------- Camera --------------------------------------------------------------------
       void autoViewClicked();
+      void autoViewNoScaleClicked();
       void lockRotationToggled();
       void lockPanningToggled();
       void lockZoomToggled();
       void lockAllTriggered();
       void unlockAllTriggered();
+      void toggleAllLocks();
       void toggleLockColor(bool locked);
       void setAutoRotateSpeed(double speed);
       void autoRotateRight();
@@ -202,6 +204,7 @@ namespace SCIRun {
       void toggleLight(int index, bool value);
       void setLightAzimuth(int index, int value);
       void setLightInclination(int index, int value);
+      void toggleAllLights();
 
       //---------------- Material Settings ---------------------------------------------------------
       void setAmbientValue(double value);
@@ -235,6 +238,7 @@ namespace SCIRun {
       //---------------- Initialization ------------------------------------------------------------
       void pullSpecial() override;
       bool eventFilter(QObject* obj, QEvent* event) override;
+      bool event(QEvent* event) override;
 
       void newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated);
       void updateAllGeometries();
@@ -282,6 +286,7 @@ namespace SCIRun {
       void addShortcutsHelpButton();
       static const ShortcutTable& shortcutTable();
       bool dispatchShortcutKey(QKeyEvent* event);
+      bool handlesShortcutKey(QKeyEvent* event) const;
       void setAxisView(int n);         // n=1..6 → +X,-X,+Y,-Y,+Z,-Z
       void setClosestAxisView();       // snap to nearest cardinal axis
       void flashShortcutTooltip(const QString& msg);

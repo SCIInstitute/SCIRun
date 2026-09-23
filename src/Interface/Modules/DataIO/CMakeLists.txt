@@ -36,6 +36,7 @@ SET(Interface_Modules_DataIO_FORMS
   WriteMatrix.ui
   WriteBundle.ui
   ReadColorMapXml.ui
+  WriteColorMapXml.ui
 )
 
 SET(Interface_Modules_DataIO_HEADERS
@@ -45,6 +46,7 @@ SET(Interface_Modules_DataIO_HEADERS
   ReadNrrdDialog.h
   ReadFileDialog.h
   ReadColorMapXmlDialog.h
+  WriteColorMapXmlDialog.h
   WriteBundleDialog.h
   WriteFieldDialog.h
   WriteMatrixDialog.h
@@ -58,6 +60,7 @@ SET(Interface_Modules_DataIO_SOURCES
   ReadFileDialog.cc
   ReadMatrixClassicDialog.cc
   ReadColorMapXmlDialog.cc
+  WriteColorMapXmlDialog.cc
   WriteBundleDialog.cc
   WriteFieldDialog.cc
   WriteMatrixDialog.cc

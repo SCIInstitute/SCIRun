@@ -454,7 +454,7 @@ class SCISHARE ArrayMathProgramSource {
 
     // Error reporting parallel code
     std::vector<size_type>  error_line_;
-    std::vector<bool>       success_;
+    Core::Thread::ParallelSuccessFlags success_;
 
     Core::Thread::Barrier barrier_;
 };

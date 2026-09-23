@@ -49,11 +49,8 @@ JoinFields::JoinFields() : Module(staticInfo_)
 
 void JoinFields::setStateDefaults()
 {
-  setStateBoolFromAlgo(Parameters::merge_elems);
-  setStateBoolFromAlgo(Parameters::merge_nodes);
-  setStateBoolFromAlgo(Parameters::match_node_values);
-  setStateBoolFromAlgo(Parameters::make_no_data);
-  setStateDoubleFromAlgo(Parameters::tolerance);
+  copyAlgoToState({Parameters::merge_elems, Parameters::merge_nodes, Parameters::match_node_values,
+    Parameters::make_no_data, Parameters::tolerance});
   get_state()->setValue(Parameters::ForcePointCloud, false);
 }
 
@@ -65,11 +62,8 @@ void JoinFields::execute()
   {
     bool forcepointcloud = get_state()->getValue(Parameters::ForcePointCloud).toBool();
 
-    setAlgoBoolFromState(Parameters::merge_elems);
-    setAlgoBoolFromState(Parameters::match_node_values);
-    setAlgoBoolFromState(Parameters::merge_nodes);
-    setAlgoBoolFromState(Parameters::make_no_data);
-    setAlgoDoubleFromState(Parameters::tolerance);
+    copyStateToAlgo({Parameters::merge_elems, Parameters::match_node_values, Parameters::merge_nodes,
+      Parameters::make_no_data, Parameters::tolerance});
 
     auto output = algo().run(withInputData((InputFields, fields)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));

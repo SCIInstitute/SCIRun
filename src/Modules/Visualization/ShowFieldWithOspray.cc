@@ -47,14 +47,9 @@ MODULE_INFO_DEF(ShowFieldWithOspray, Visualization, SCIRun)
 
 void ShowFieldWithOspray::setStateDefaults()
 {
-  setStateDoubleFromAlgo(Parameters::DefaultColorR);
-  setStateDoubleFromAlgo(Parameters::DefaultColorG);
-  setStateDoubleFromAlgo(Parameters::DefaultColorB);
-  setStateDoubleFromAlgo(Parameters::DefaultColorA);
-  setStateDoubleFromAlgo(Parameters::Radius);
-  setStateBoolFromAlgo(Parameters::UseNormals);
-  setStateBoolFromAlgo(Parameters::ShowEdges);
-  setStateIntFromAlgo(Parameters::ModuleID);
+  copyAlgoToState({Parameters::DefaultColorR, Parameters::DefaultColorG, Parameters::DefaultColorB,
+    Parameters::DefaultColorA, Parameters::Radius, Parameters::UseNormals, Parameters::ShowEdges,
+    Parameters::ModuleID});
 }
 
 ShowFieldWithOspray::ShowFieldWithOspray() : Module(staticInfo_)
@@ -79,13 +74,8 @@ void ShowFieldWithOspray::execute()
   {
 
 
-    setAlgoDoubleFromState(Parameters::DefaultColorR);
-    setAlgoDoubleFromState(Parameters::DefaultColorG);
-    setAlgoDoubleFromState(Parameters::DefaultColorB);
-    setAlgoDoubleFromState(Parameters::DefaultColorA);
-    setAlgoDoubleFromState(Parameters::Radius);
-    setAlgoBoolFromState(Parameters::UseNormals);
-    setAlgoBoolFromState(Parameters::ShowEdges);
+    copyStateToAlgo({Parameters::DefaultColorR, Parameters::DefaultColorG, Parameters::DefaultColorB,
+      Parameters::DefaultColorA, Parameters::Radius, Parameters::UseNormals, Parameters::ShowEdges});
 
     // this is mostly for user feedback for now.
     auto state = get_state();

@@ -68,6 +68,10 @@ namespace SCIRun{
       /// Perform autoview.
       void doAutoView();
 
+      /// Move the look-at point to the centre of the scene bounding box without
+      /// touching the camera distance -- autoview without the zoom.
+      void centerView();
+
       //set zNear and zFar using scene bounding box
       void setClippingPlanes();
 
