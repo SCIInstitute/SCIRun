@@ -128,7 +128,6 @@ public:
   void addAmbientLight(glm::vec3 color, float intensity);
 
   //clipping planes
-  vtkSmartPointer<vtkPlane> buildPlane(const Core::Datatypes::ClippingPlane& clip);
   void rebuildClippingPlanes();
   void applyClippingPlanesToScene();
 

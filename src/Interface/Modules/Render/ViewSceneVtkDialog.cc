@@ -581,4 +581,7 @@ void ViewSceneVtkDialog::setClippingPlaneD(int index)
 void ViewSceneVtkDialog::updateClippingPlaneDisplay()
 {
   renderer_->updateClippingPlanes(clippingPlaneManager_->allPlanes());
+  const auto& activePlane = clippingPlaneManager_->active();
+  clippingPlaneControls_->updatePlaneControlDisplay(activePlane.x, activePlane.y, activePlane.z, activePlane.d);
+
 }

@@ -190,31 +190,22 @@ void VtkRenderer::updateClippingPlanes(const std::vector<Core::Datatypes::Clippi
   renderFrame();
 }
 
-vtkSmartPointer<vtkPlane> VtkRenderer::buildPlane(const Core::Datatypes::ClippingPlane& clip)
-{
-  auto plane = vtkSmartPointer<vtkPlane>::New();
-
-  double nx = clip.x;
-  double ny = clip.y;
-  double nz = clip.z;
-
-  if (clip.reverseNormal)
-  {
-    nx = -nx;
-    ny = -ny;
-    nz = -nz;
-  }
-
-  plane->SetNormal(nx, ny, nz);
-
-  plane->SetOrigin(nx * clip.d, ny * clip.d, nz * clip.d);
-
-  return plane;
-}
-
 void VtkRenderer::rebuildClippingPlanes()
 {
   vtkClippingPlanes_.clear();
+
+  double bounds[6];
+  renderer_->ComputeVisiblePropBounds(bounds);
+
+  double sx = bounds[1] - bounds[0];
+  double sy = bounds[3] - bounds[2];
+  double sz = bounds[5] - bounds[4];
+
+  double cx = 0.5 * (bounds[0] + bounds[1]);
+  double cy = 0.5 * (bounds[2] + bounds[3]);
+  double cz = 0.5 * (bounds[4] + bounds[5]);
+
+  double sceneDiag = std::sqrt(sx * sx + sy * sy + sz * sz);
 
   for (const auto& clip : clippingPlanes_)
   {
@@ -233,9 +224,26 @@ void VtkRenderer::rebuildClippingPlanes()
       nz = -nz;
     }
 
+    double len = std::sqrt(nx * nx + ny * ny + nz * nz);
+
+    if (len < 1e-10)
+    {
+      nx = 1.0;
+      ny = 0.0;
+      nz = 0.0;
+    }
+    else
+    {
+      nx /= len;
+      ny /= len;
+      nz /= len;
+    }
+
+    double worldD = clip.d * 0.5 * sceneDiag;
+
     plane->SetNormal(nx, ny, nz);
 
-    plane->SetOrigin(nx * clip.d, ny * clip.d, nz * clip.d);
+    plane->SetOrigin(cx + nx * worldD, cy + ny * worldD, cz + nz * worldD);
 
     vtkClippingPlanes_.push_back(plane);
   }
