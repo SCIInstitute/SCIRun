@@ -13,7 +13,7 @@ SCIRun uses a **two-level CMake Superbuild**. The outer Superbuild (in `Superbui
 .\build.ps1                        # Release build (default)
 .\build.ps1 -Debug                 # Debug build
 .\build.ps1 -Headless              # No Qt/GUI required
-.\build.ps1 -WithTetgen            # Include Tetgen mesh generation
+.\build.ps1 -WithoutTetgen         # Exclude Tetgen (GPL); included by default
 .\build.ps1 -Jobs 8                # Parallel jobs
 .\build.ps1 -BuildDir "C:\MyBuild" # Custom build dir
 ```
@@ -22,7 +22,7 @@ SCIRun uses a **two-level CMake Superbuild**. The outer Superbuild (in `Superbui
 ```bash
 ./build.sh                         # Release build
 ./build.sh --debug
-./build.sh --with-tetgen
+./build.sh --without-tetgen        # Exclude Tetgen (GPL); included by default
 ./build.sh -DBUILD_HEADLESS=ON
 ```
 
