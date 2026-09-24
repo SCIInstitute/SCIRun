@@ -1,5 +1,5 @@
 # Warm-cache measurement commit for PR #2780 -- no functional change, just
-# forces a new run to compare against the cold run's timings.
+# forces a new run to compare against the v5 cold run's timings.
 name: Reusable build
 
 on:
