@@ -25,54 +25,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_VISUALIZATION_CONVERTMATRIXTOCOLORMAPDIALOG_H
+#define INTERFACE_MODULES_VISUALIZATION_CONVERTMATRIXTOCOLORMAPDIALOG_H
 
-#ifndef INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
-#define INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
+#include "Interface/Modules/Visualization/ui_ConvertMatrixToColorMap.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
-#include <Core/Utils/SmartPointers.h>
-#include <QDockWidget>
+namespace SCIRun {
+namespace Gui {
 
-#ifdef WITH_PYTHON
-class PythonConsoleWidgetPrivate;
-typedef SCIRun::SharedPointer< PythonConsoleWidgetPrivate > PythonConsoleWidgetPrivateHandle;
-
-namespace SCIRun
-{
-namespace Gui
-{
-
-class PythonConsoleWidget : public QDockWidget
+class SCISHARE ConvertMatrixToColorMapDialog : public ModuleDialogGeneric,
+  public Ui::ConvertMatrixToColorMapDialog
 {
 	Q_OBJECT
 
 public:
-  explicit PythonConsoleWidget(class NetworkEditor* rootNetworkEditor, QWidget* parent = nullptr);
-	virtual ~PythonConsoleWidget();
+  ConvertMatrixToColorMapDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  void pullSpecial() override;
 
-	void runWizardCommand(const QString& code);
-
-public Q_SLOTS:
-  void showBanner();
+private Q_SLOTS:
+  void pushColumnRoles();
+  void autoDetectChanged(bool autoDetect);
 
 private:
-	PythonConsoleWidgetPrivateHandle private_;
+  void setRowCount(int columns);
+  void setRoles(const std::vector<std::string>& roles);
+  QComboBox* makeRoleComboBox() const;
 };
 
-}}
-
-#else
-namespace SCIRun
-{
-namespace Gui
-{
-class PythonConsoleWidget : public QDockWidget
-{
-  Q_OBJECT
-public:
-  PythonConsoleWidget() {}
-};
 }
 }
-#endif
 
 #endif

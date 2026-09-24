@@ -31,7 +31,7 @@
 #include <string>
 #include <sstream>
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #endif
 #include <Core/Logging/Log.h>
@@ -62,7 +62,7 @@ std::string ModuleAddedProvenanceItem::name() const
 
 std::string ModuleAddedProvenanceItem::undoCode() const
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   if (redone_ && nedPy_)
   {
     // logCritical("here is where i need to pull the most recently added id");

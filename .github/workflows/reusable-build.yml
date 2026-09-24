@@ -201,10 +201,10 @@ jobs:
             fi
           fi
           if [ "${{ inputs.variant }}" = "headless" ]; then
-            CMD+=("-DBUILD_HEADLESS:BOOL=ON")
+            CMD+=("-DWITH_GUI:BOOL=OFF")
           fi
           if [ "${{ inputs.build-with-python }}" = "false" ]; then
-            CMD+=("-DBUILD_WITH_PYTHON=OFF")
+            CMD+=("-DWITH_PYTHON=OFF")
           fi
           if [ "${{ inputs.with-ospray }}" = "true" ]; then
             CMD+=("-DWITH_OSPRAY:BOOL=ON")
@@ -265,8 +265,8 @@ jobs:
             }
           }
 
-          if ('${{ inputs.variant }}' -eq 'headless') { $cmakeArgs += "-DBUILD_HEADLESS:BOOL=ON" }
-          if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DBUILD_WITH_PYTHON=OFF" }
+          if ('${{ inputs.variant }}' -eq 'headless') { $cmakeArgs += "-DWITH_GUI:BOOL=OFF" }
+          if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DWITH_PYTHON=OFF" }
           if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
           if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }

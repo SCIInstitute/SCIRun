@@ -98,7 +98,7 @@ ENDIF()
 
 IF(RUN_UNIT_TESTS)
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     EXECUTE_PROCESS(COMMAND "python" ${CMAKE_SOURCE_DIR}/Testing/Python/list_tests.py
       ${CMAKE_SOURCE_DIR}/Testing/Python/
       OUTPUT_VARIABLE STR_TESTS
@@ -150,13 +150,17 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   FILE(GLOB_RECURSE scirun_srns_io "${SCIRun_SOURCE_DIR}/ExampleNets/regression/ImportExport/*.srn5")
   set(scirun_srns ${scirun_srns_modules} ${scirun_srns_network} ${scirun_srns_io})
 
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     FILE(GLOB_RECURSE scirun_srns_renderer "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Renderer/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_renderer})
   ENDIF()
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     FILE(GLOB_RECURSE scirun_srns_python "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Python/*.srn5")
+    # Python/Optional needs packages the bundled interpreter doesn't ship
+    # (numpy, matlab.engine); those networks only ever passed because Python
+    # errors were swallowed (#2699).
+    LIST(FILTER scirun_srns_python EXCLUDE REGEX "/Python/Optional/")
     set(scirun_srns ${scirun_srns} ${scirun_srns_python})
   ENDIF()
 
