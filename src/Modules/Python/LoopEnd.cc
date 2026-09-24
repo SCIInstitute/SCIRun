@@ -30,7 +30,7 @@
 #include <Modules/Python/LoopStart.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
@@ -59,7 +59,7 @@ LoopEnd::LoopEnd() : Module(staticInfo_)
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputString);
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(),
     { Parameters::LoopWhileCondition }));
 #else
@@ -85,7 +85,7 @@ void LoopEnd::postStateChangeInternalSignalHookup()
 
 void LoopEnd::execute()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   auto matrices = getOptionalDynamicInputs(InputMatrix);
   auto fields = getOptionalDynamicInputs(InputField);
   auto strings = getOptionalDynamicInputs(InputString);
@@ -136,7 +136,7 @@ void LoopEnd::execute()
       logCritical("End condition not generated.");
   }
 #else
-  error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
+  error("This module does nothing, turn on WITH_PYTHON to enable.");
 #endif
 }
 

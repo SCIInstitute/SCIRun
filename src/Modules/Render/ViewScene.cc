@@ -371,7 +371,7 @@ void ViewScene::execute()
   auto executionReporter = ScopedExecutionReporter(state);
 
   fireTransientStateChangeSignalForGeomData();
-#ifdef BUILD_HEADLESS
+#ifndef WITH_GUI
   sendOutput(ScreenshotDataRed, makeShared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataGreen, makeShared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataBlue, makeShared<DenseMatrix>(0, 0));
