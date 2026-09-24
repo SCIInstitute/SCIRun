@@ -378,9 +378,17 @@ void ViewScene::execute()
 #else
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
-    auto lock = makeLoggedGuard(ViewSceneLockManager::get(get_state().get())->screenShotMutex().get(), "screenShotMutex -- execute()");
-    const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+    // The dialog releases this once it has rendered the new geometry. A dialog
+    // that cannot paint (unexposed window) used to hold it forever and stall the
+    // whole network (#2760); now we go on without the screenshot.
+    std::unique_lock<std::timed_mutex> lock(ViewSceneLockManager::get(get_state().get())->screenShotMutex(), std::chrono::seconds(10));
+    if (!lock.owns_lock())
     {
+      warning("ViewScene window did not render within 10 s (hidden or minimized?); continuing without screenshot data.");
+    }
+    else
+    {
+      const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
       const auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
       if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
       if (screenshotData.green) sendOutput(ScreenshotDataGreen, screenshotData.green);
