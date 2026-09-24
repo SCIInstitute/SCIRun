@@ -123,10 +123,20 @@ jobs:
       # SCIRun never reads from there (BoostExternal.cmake already copies them
       # into Install/include/boost) and libraries it only needs one part of:
       # SCI_BOOST_LIBRARY_DIR is hardcoded to Source/Boost_external/stage/lib.
-      # So: cache all of Source/ *except* Boost_external, plus just Boost's
-      # stage/lib. Scoped to these 3 Linux jobs only (not the 13 mac+windows
-      # jobs #2576 tried to cover) is what keeps this under the cap now that
-      # most PRs run only these jobs (#2747).
+      #
+      # v3 tried excluding it with a bare `!bin/Externals/Source/Boost_external`
+      # and saw *no* size change (still 2.77 GiB) -- @actions/glob's exclude
+      # patterns are minimatch string matches against each enumerated file
+      # path, so a wildcard-free pattern only matches that exact path, never
+      # a deeper file under it. (Plain positive patterns work differently:
+      # they're treated as filesystem roots and walked recursively, which is
+      # why v1/v2's bare `bin/Externals/Build` etc. worked fine for inclusion.)
+      # v4 adds the trailing /** the exclude needs to actually match nested
+      # files, and re-includes stage/lib the same way for symmetry.
+      #
+      # Scoped to these 3 Linux jobs only (not the 13 mac+windows jobs #2576
+      # tried to cover) is what keeps this under the cap now that most PRs
+      # run only these jobs (#2747).
       - name: Compute externals cache key
         if: ${{ inputs.cache-externals }}
         id: ext-key
@@ -142,7 +152,7 @@ jobs:
               *) qt_bucket=$(echo "${{ inputs.qt-version }}" | tr -c 'a-zA-Z0-9' '-') ;;
             esac
           fi
-          key="superbuild-ext-v3-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
+          key="superbuild-ext-v4-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
           echo "key=$key" >> "$GITHUB_OUTPUT"
           echo "Externals cache key: $key"
 
@@ -153,8 +163,8 @@ jobs:
         with:
           path: |
             bin/Externals
-            !bin/Externals/Source/Boost_external
-            bin/Externals/Source/Boost_external/stage/lib
+            !bin/Externals/Source/Boost_external/**
+            bin/Externals/Source/Boost_external/stage/lib/**
           key: ${{ steps.ext-key.outputs.key }}
 
       # CMake's ExternalProject steps are gated by comparing each stamp file's
@@ -372,7 +382,14 @@ jobs:
       - name: Report externals directory sizes
         if: ${{ always() && inputs.cache-externals && runner.os != 'Windows' }}
         shell: bash
-        run: du -sh bin/Externals bin/Externals/*/ bin/Externals/Source/*/ 2>/dev/null || true
+        # find | xargs instead of a du glob: du's own '*/' globs produced no
+        # output at all here once (v3 run, job 107584798723) -- nullglob is
+        # off, and if a pattern matched nothing early it apparently ate the
+        # rest of the argument list under -e. -print0/xargs -0 can't do that.
+        run: |
+          du -sh bin/Externals 2>/dev/null || true
+          find bin/Externals -mindepth 1 -maxdepth 1 -print0 2>/dev/null | xargs -0 du -sh 2>/dev/null || true
+          find bin/Externals/Source -mindepth 1 -maxdepth 1 -print0 2>/dev/null | xargs -0 du -sh 2>/dev/null | sort -rh || true
 
       - name: Save Superbuild externals cache
         if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && steps.restore-ext-cache.outputs.cache-hit != 'true' }}
@@ -380,8 +397,8 @@ jobs:
         with:
           path: |
             bin/Externals
-            !bin/Externals/Source/Boost_external
-            bin/Externals/Source/Boost_external/stage/lib
+            !bin/Externals/Source/Boost_external/**
+            bin/Externals/Source/Boost_external/stage/lib/**
           key: ${{ steps.ext-key.outputs.key }}
 
       - name: Smoke test - executable loads and runs (Unix)
