@@ -1,5 +1,3 @@
-# Warm-cache measurement commit for PR #2780 -- no functional change, just
-# forces a new run to compare against the v5 cold run's timings.
 name: Reusable build
 
 on:
@@ -107,47 +105,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Two prior attempts at this failed for opposite reasons: #2513 cached
-      # only Install/+Stamp/ and captured 17-66 KB, because 20 of 23 externals
-      # use INSTALL_COMMAND "" and their real artifacts live in Build/; #2576
-      # cached the whole Externals/ tree across 13 mac+windows jobs and blew
-      # the repo's 10 GB cache cap, so nothing ever stayed warm.
+      # Caches the Superbuild's compiled externals so most PRs skip rebuilding
+      # them. Two prior attempts (#2513, #2576) and this PR's own v1-v4 are
+      # why the path list below looks the way it does -- see #2780 for the
+      # full history. In short:
       #
-      # v1 of this POC excluded Source/ on the theory that it's just a
-      # reclonable checkout -- wrong: several externals (Zlib, SQLite, Teem,
-      # Freetype, Cleaver2, and the header-only Eigen/GLM/SpdLog/Tetgen) point
-      # their CMake consumers straight at Source/, never Build/ or Install/.
-      # v2 cached the whole tree to fix that, and hit #2576's cap problem
-      # again on a single job: ~2.77 GiB, almost all of it Boost's full
-      # checkout (~180 submodules) under Source/Boost_external -- headers
-      # SCIRun never reads from there (BoostExternal.cmake already copies them
-      # into Install/include/boost) and libraries it only needs one part of:
-      # SCI_BOOST_LIBRARY_DIR is hardcoded to Source/Boost_external/stage/lib.
-      #
-      # v3 tried excluding it with a bare `!bin/Externals/Source/Boost_external`
-      # (no size change) and v4 tried the same with a trailing `/**` (also no
-      # size change -- still 2.77 GiB both times). Root cause, confirmed via
-      # actions/toolkit#713: actions/cache restores/saves with
-      # `implicitDescendants: false`, so it never enumerates a directory's
-      # contents to apply a negation against in the first place -- `!` exclude
-      # patterns are simply inert here, no syntax fixes it.
-      #
-      # v5 drops negation entirely and lists Source/ subdirectories by name.
-      # Per-external du from the v4 run (job 107602188201) showed exactly two
-      # dominate: Boost_external (2.7 GiB, only stage/lib is ever read --
-      # headers are already duplicated into Install/include/boost) and
-      # Python_external (575 MiB; Linux does a real Python install, so nothing
-      # under its Source/ is read at all -- that path is Windows-only in
-      # PythonExternal.cmake). Libxml2_external (63 MiB) is also Install/-only
-      # (confirmed by its logged Libxml2_DIR). All three are simply omitted;
-      # everything else stayed in Source/ because it's genuinely read from
-      # there (Zlib/SQLite/Teem/Freetype/Cleaver2 ship a vendored UseXxx.cmake
-      # there; Eigen/GLM/SpdLog are header-only with their _DIR set straight to
-      # SOURCE_DIR).
+      # - Build/+Install/ alone isn't enough: several externals (Zlib, SQLite,
+      #   Teem, Freetype, Cleaver2) ship a vendored UseXxx.cmake read straight
+      #   from Source/ at configure time, and Eigen/GLM/SpdLog are header-only
+      #   with their CMake _DIR pointed directly at SOURCE_DIR. So most of
+      #   Source/ has to be cached too.
+      # - Caching all of Source/ works but is ~2.77 GiB/job, mostly Boost's
+      #   full checkout (~180 submodules) -- SCIRun only ever reads its
+      #   compiled stage/lib from there (headers are duplicated into
+      #   Install/include/boost by BoostExternal.cmake), plus Python's and
+      #   Libxml2's Source/ (both do a real install on Linux, so nothing
+      #   under Source/ is read at all). Excluding those three brings a job's
+      #   cache down to ~550 MiB.
+      # - actions/cache's `!` exclude patterns don't work for this: it runs
+      #   with `implicitDescendants: false` (actions/toolkit#713), so it never
+      #   enumerates a directory to exclude from -- no syntax fixes that. The
+      #   list below is deliberately all-positive, naming Source/ subdirs
+      #   individually instead of excluding Boost/Python/Libxml2 from a
+      #   wholesale `bin/Externals` include.
       #
       # Scoped to these 3 Linux jobs only (not the 13 mac+windows jobs #2576
-      # tried to cover) is what keeps this under the cap now that most PRs
-      # run only these jobs (#2747).
+      # tried to cover) is what keeps total cache usage under the repo's
+      # 10 GB cap, now that most PRs run only these jobs (#2747).
       - name: Compute externals cache key
         if: ${{ inputs.cache-externals }}
         id: ext-key
