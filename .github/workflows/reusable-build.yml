@@ -125,14 +125,25 @@ jobs:
       # SCI_BOOST_LIBRARY_DIR is hardcoded to Source/Boost_external/stage/lib.
       #
       # v3 tried excluding it with a bare `!bin/Externals/Source/Boost_external`
-      # and saw *no* size change (still 2.77 GiB) -- @actions/glob's exclude
-      # patterns are minimatch string matches against each enumerated file
-      # path, so a wildcard-free pattern only matches that exact path, never
-      # a deeper file under it. (Plain positive patterns work differently:
-      # they're treated as filesystem roots and walked recursively, which is
-      # why v1/v2's bare `bin/Externals/Build` etc. worked fine for inclusion.)
-      # v4 adds the trailing /** the exclude needs to actually match nested
-      # files, and re-includes stage/lib the same way for symmetry.
+      # (no size change) and v4 tried the same with a trailing `/**` (also no
+      # size change -- still 2.77 GiB both times). Root cause, confirmed via
+      # actions/toolkit#713: actions/cache restores/saves with
+      # `implicitDescendants: false`, so it never enumerates a directory's
+      # contents to apply a negation against in the first place -- `!` exclude
+      # patterns are simply inert here, no syntax fixes it.
+      #
+      # v5 drops negation entirely and lists Source/ subdirectories by name.
+      # Per-external du from the v4 run (job 107602188201) showed exactly two
+      # dominate: Boost_external (2.7 GiB, only stage/lib is ever read --
+      # headers are already duplicated into Install/include/boost) and
+      # Python_external (575 MiB; Linux does a real Python install, so nothing
+      # under its Source/ is read at all -- that path is Windows-only in
+      # PythonExternal.cmake). Libxml2_external (63 MiB) is also Install/-only
+      # (confirmed by its logged Libxml2_DIR). All three are simply omitted;
+      # everything else stayed in Source/ because it's genuinely read from
+      # there (Zlib/SQLite/Teem/Freetype/Cleaver2 ship a vendored UseXxx.cmake
+      # there; Eigen/GLM/SpdLog are header-only with their _DIR set straight to
+      # SOURCE_DIR).
       #
       # Scoped to these 3 Linux jobs only (not the 13 mac+windows jobs #2576
       # tried to cover) is what keeps this under the cap now that most PRs
@@ -152,7 +163,7 @@ jobs:
               *) qt_bucket=$(echo "${{ inputs.qt-version }}" | tr -c 'a-zA-Z0-9' '-') ;;
             esac
           fi
-          key="superbuild-ext-v4-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
+          key="superbuild-ext-v5-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
           echo "key=$key" >> "$GITHUB_OUTPUT"
           echo "Externals cache key: $key"
 
@@ -162,9 +173,22 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            bin/Externals
-            !bin/Externals/Source/Boost_external/**
-            bin/Externals/Source/Boost_external/stage/lib/**
+            bin/Externals/Build
+            bin/Externals/Install
+            bin/Externals/Stamp
+            bin/Externals/Download
+            bin/Externals/Source/Boost_external/stage/lib
+            bin/Externals/Source/Zlib_external
+            bin/Externals/Source/SQLite_external
+            bin/Externals/Source/Teem_external
+            bin/Externals/Source/Freetype_external
+            bin/Externals/Source/Cleaver2_external
+            bin/Externals/Source/GLM_external
+            bin/Externals/Source/Eigen_external
+            bin/Externals/Source/SpdLog_external
+            bin/Externals/Source/LodePng_external
+            bin/Externals/Source/Tny_external
+            bin/Externals/Source/Qwt_external
           key: ${{ steps.ext-key.outputs.key }}
 
       # CMake's ExternalProject steps are gated by comparing each stamp file's
@@ -396,9 +420,22 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            bin/Externals
-            !bin/Externals/Source/Boost_external/**
-            bin/Externals/Source/Boost_external/stage/lib/**
+            bin/Externals/Build
+            bin/Externals/Install
+            bin/Externals/Stamp
+            bin/Externals/Download
+            bin/Externals/Source/Boost_external/stage/lib
+            bin/Externals/Source/Zlib_external
+            bin/Externals/Source/SQLite_external
+            bin/Externals/Source/Teem_external
+            bin/Externals/Source/Freetype_external
+            bin/Externals/Source/Cleaver2_external
+            bin/Externals/Source/GLM_external
+            bin/Externals/Source/Eigen_external
+            bin/Externals/Source/SpdLog_external
+            bin/Externals/Source/LodePng_external
+            bin/Externals/Source/Tny_external
+            bin/Externals/Source/Qwt_external
           key: ${{ steps.ext-key.outputs.key }}
 
       - name: Smoke test - executable loads and runs (Unix)
