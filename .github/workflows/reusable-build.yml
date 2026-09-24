@@ -113,15 +113,20 @@ jobs:
       # cached the whole Externals/ tree across 13 mac+windows jobs and blew
       # the repo's 10 GB cache cap, so nothing ever stayed warm.
       #
-      # v1 of this POC also excluded Source/ on the theory that it's just a
-      # reclonable checkout -- wrong: Boost's b2 stages its compiled libs into
-      # Source/Boost_external/stage/lib (never Build/ or Install/), and several
-      # externals (Zlib, SQLite, Teem, Freetype, Cleaver2) ship a vendored
-      # UseXxx.cmake that the inner build INCLUDEs straight from Source/ at
-      # configure time. Both are load-bearing, so this now caches the whole
-      # Externals/ tree, scoped to just these 3 Linux jobs (not the 13
-      # mac+windows jobs #2576 tried to cover) is what keeps this under the cap
-      # now that most PRs run only these jobs (#2747).
+      # v1 of this POC excluded Source/ on the theory that it's just a
+      # reclonable checkout -- wrong: several externals (Zlib, SQLite, Teem,
+      # Freetype, Cleaver2, and the header-only Eigen/GLM/SpdLog/Tetgen) point
+      # their CMake consumers straight at Source/, never Build/ or Install/.
+      # v2 cached the whole tree to fix that, and hit #2576's cap problem
+      # again on a single job: ~2.77 GiB, almost all of it Boost's full
+      # checkout (~180 submodules) under Source/Boost_external -- headers
+      # SCIRun never reads from there (BoostExternal.cmake already copies them
+      # into Install/include/boost) and libraries it only needs one part of:
+      # SCI_BOOST_LIBRARY_DIR is hardcoded to Source/Boost_external/stage/lib.
+      # So: cache all of Source/ *except* Boost_external, plus just Boost's
+      # stage/lib. Scoped to these 3 Linux jobs only (not the 13 mac+windows
+      # jobs #2576 tried to cover) is what keeps this under the cap now that
+      # most PRs run only these jobs (#2747).
       - name: Compute externals cache key
         if: ${{ inputs.cache-externals }}
         id: ext-key
@@ -137,7 +142,7 @@ jobs:
               *) qt_bucket=$(echo "${{ inputs.qt-version }}" | tr -c 'a-zA-Z0-9' '-') ;;
             esac
           fi
-          key="superbuild-ext-v2-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
+          key="superbuild-ext-v3-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
           echo "key=$key" >> "$GITHUB_OUTPUT"
           echo "Externals cache key: $key"
 
@@ -146,7 +151,10 @@ jobs:
         id: restore-ext-cache
         uses: actions/cache/restore@v4
         with:
-          path: bin/Externals
+          path: |
+            bin/Externals
+            !bin/Externals/Source/Boost_external
+            bin/Externals/Source/Boost_external/stage/lib
           key: ${{ steps.ext-key.outputs.key }}
 
       # CMake's ExternalProject steps are gated by comparing each stamp file's
@@ -361,11 +369,19 @@ jobs:
       # Save-on-success only, and only when we didn't already restore this
       # exact key: an incomplete/broken build must never overwrite a good
       # cache, and there's nothing to save on a hit since content is identical.
+      - name: Report externals directory sizes
+        if: ${{ always() && inputs.cache-externals && runner.os != 'Windows' }}
+        shell: bash
+        run: du -sh bin/Externals bin/Externals/*/ bin/Externals/Source/*/ 2>/dev/null || true
+
       - name: Save Superbuild externals cache
         if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && steps.restore-ext-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with:
-          path: bin/Externals
+          path: |
+            bin/Externals
+            !bin/Externals/Source/Boost_external
+            bin/Externals/Source/Boost_external/stage/lib
           key: ${{ steps.ext-key.outputs.key }}
 
       - name: Smoke test - executable loads and runs (Unix)
