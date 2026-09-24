@@ -133,6 +133,10 @@ def main() -> int:
     ap.add_argument("--existing-body", type=Path)
     ap.add_argument("--asset-names", type=Path,
                     help="JSON map of slug -> final asset filename")
+    ap.add_argument("--updated",
+                    help="Human-readable UTC timestamp of this run, shown at "
+                         "the top of the body since GitHub's own 'released "
+                         "this ... ago' header freezes at the first publish")
     args = ap.parse_args()
 
     existing = ""
@@ -191,6 +195,7 @@ def main() -> int:
         changes = "_First nightly with generated notes; no previous build to compare against._"
 
     body = "\n\n".join([
+        *([f"**Last updated:** {args.updated}"] if args.updated else []),
         "Automated nightly build of `master`. Asset URLs are stable &mdash; each "
         "run overwrites them in place.",
         f"<!-- nightly-sha: {args.sha} -->",

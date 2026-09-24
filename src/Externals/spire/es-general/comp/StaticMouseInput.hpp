@@ -60,12 +60,12 @@ struct StaticMouseInput
 
   struct MouseEvent
   {
-    MouseEventID  event;      // Always populated
-    MouseButton   button;     // Only valid on DOWN and UP events.
-    glm::vec2     mousePos;   // Always populated
-    int           mouseWheel; // Only valid on wheel event.
-    MouseEventID  btnState[NUM_BUTTONS]; // Always populated.
-    bool          handled;    // Set to true by any system that has handled the
+    MouseEventID  event {MOUSE_UP};      // Always populated
+    MouseButton   button {NO_BUTTON};     // Only valid on DOWN and UP events.
+    glm::vec2     mousePos {0.0f, 0.0f};   // Always populated
+    int           mouseWheel {0}; // Only valid on wheel event.
+    MouseEventID  btnState[NUM_BUTTONS] {MOUSE_UP, MOUSE_UP, MOUSE_UP, MOUSE_UP}; // Always populated.
+    bool          handled {false};    // Set to true by any system that has handled the
                               // event. No further processing should be done.
 
     void clear()

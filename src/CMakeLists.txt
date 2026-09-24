@@ -235,7 +235,7 @@ message(STATUS "LibXml2_FOUND=${LibXml2_FOUND}")
 message(STATUS "LibXml2_DIR=${LibXml2_DIR}")
 message(STATUS "LIBXml2_USE_FILE=${LIBXml2_USE_FILE}")
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
@@ -257,7 +257,7 @@ set(_scirun_boost_components
   thread
 )
 
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   list(APPEND _scirun_boost_components
        python${SCI_PYTHON_VERSION_SHORT_WIN32})
 endif()
@@ -319,12 +319,25 @@ IF(WITH_OSPRAY)
   find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
 ENDIF()
 
+IF(WITH_VTK)
+  set(VTK_DIR ${VTK_External_Dir}/lib/cmake/vtk-9.6)
+  find_package(VTK REQUIRED COMPONENTS
+    CommonCore
+    RenderingCore
+    RenderingOpenGL2
+    FiltersCore
+    FiltersSources
+    InteractionStyle
+    HINTS ${VTK_DIR}
+  )
+ENDIF()
+
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
 # QWT variables come directly from superbuild
   set(SCI_QWT_INCLUDE "${QWT_INCLUDE}")
   set(SCI_QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}")
@@ -405,6 +418,11 @@ IF(WITH_OSPRAY)
   SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
+# Configure VTK
+IF(WITH_VTK)
+  add_definitions(-DWITH_VTK)
+ENDIF()
+
 ########################################################################
 # Detailed renderer logging
 
@@ -483,7 +501,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 ########################################################################
 # Find and configure Qt
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   if (${QT_VERSION_MAJOR} STREQUAL "6")
     FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
   else()
@@ -491,7 +509,7 @@ IF(NOT BUILD_HEADLESS)
   endif()
 
   IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
-    MESSAGE(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}")
+    MESSAGE(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}Core_VERSION}")
     INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Core_INCLUDE_DIRS})
 	  INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Widgets_INCLUDE_DIRS})
     INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Gui_INCLUDE_DIRS})
@@ -677,10 +695,9 @@ ENDIF()
 ########################################################################
 
 ADD_SUBDIRECTORY(Externals)
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
+  ADD_DEFINITIONS(-DWITH_GUI=1)
   ADD_SUBDIRECTORY(Interface)
-ELSE()
-  ADD_DEFINITIONS(-DBUILD_HEADLESS=1)
 ENDIF()
 ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
@@ -791,6 +808,7 @@ SET_PROPERTY(TARGET Core_Datatypes_Legacy_Base         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Nrrd         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Bundle         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Datatypes_VTK PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Basis         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Persistent         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_DatabaseManager         PROPERTY FOLDER "Core")
@@ -822,7 +840,7 @@ SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
 SET_PROPERTY(TARGET ${SPIRE_LIBRARY_NAME} PROPERTY FOLDER "Graphics")
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_DataIO   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_Math   PROPERTY FOLDER "Interface/Modules")
@@ -839,6 +857,9 @@ IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Teem   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
+  IF(WITH_VTK)
+    SET_PROPERTY(TARGET Interface_Modules_Render_Vtk PROPERTY FOLDER "Interface/Modules")
+  ENDIF()
 ENDIF()
 
 SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")
@@ -939,11 +960,11 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
 
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 	SET_PROPERTY(TARGET Modules_Dialog_Factory_Tests PROPERTY FOLDER "Interface/Tests")
   ENDIF()
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")
     SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 	SET_PROPERTY(TARGET Modules_Python_Tests   PROPERTY FOLDER "Modules/Python")
@@ -952,11 +973,11 @@ ENDIF()
 
 #SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
   SET_PROPERTY(TARGET Modules_Python   PROPERTY FOLDER "Modules/Python")
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     SET_PROPERTY(TARGET Interface_Modules_Python   PROPERTY FOLDER "Interface/Modules")
   ENDIF()
 ENDIF()

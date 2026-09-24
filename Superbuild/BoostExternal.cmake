@@ -59,7 +59,7 @@ SET(boost_Libraries
   CACHE INTERNAL "Boost library names."
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB=1)
   LIST(APPEND boost_Libraries python)
   LIST(APPEND boost_DEPENDENCIES Python_external)
@@ -100,7 +100,7 @@ endif()
 # ------------------------------------------------------------------------------
 # Compute b2 Python flags (MUST be separate arguments)
 # ------------------------------------------------------------------------------
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   SET(BOOST_PYTHON_WITH_FLAG  --with-python)
   #SET(BOOST_PYTHON_EXE_FLAG   python=${SCI_PYTHON_EXE})
   #SET(BOOST_PYTHON_INC_FLAG   include=${SCI_PYTHON_INCLUDE})
@@ -125,7 +125,7 @@ endif()
 # ------------------------------------------------------------------------------
 # Compute Python-related CMake cache arguments for Boost
 # ------------------------------------------------------------------------------
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   if(WIN32 AND MSVC)
     set(_BOOST_PYTHON_CACHE_ARGS
       -DPython3_FIND_FRAMEWORK:STRING=NEVER
@@ -158,7 +158,7 @@ endif()
 # ------------------------------------------------------------------------------
 # Compute Python-related environment variables for Boost/b2
 # ------------------------------------------------------------------------------
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   set(_BOOST_PYTHON_ENV
     "PYTHONHOME=${SCI_PYTHON_ROOT_DIR}"
     "PYTHONPATH="
@@ -192,7 +192,7 @@ ExternalProject_Add(Boost_external
     -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
 
     # ---------- Python strictly controlled by SCIRun option ----------
-    -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
+    -DBUILD_PYTHON:BOOL=${WITH_PYTHON}
 
     ${_BOOST_PYTHON_CACHE_ARGS}
 
@@ -208,9 +208,26 @@ ExternalProject_Add(Boost_external
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
 ExternalProject_Get_Property(Boost_external SOURCE_DIR)
 
+SET(_B2_BOOTSTRAP_ENV)
+SET(_B2_BOOTSTRAP_ARGS)
+SET(_B2_TOOLSET_ARG)
 IF(WIN32)
   SET(_B2_CMD ${SOURCE_DIR}/b2.exe)
-  SET(_B2_BOOTSTRAP_CMD bootstrap.bat)
+  # Full path: with NoDefaultCurrentDirectoryInExePath=1 (set by some shells)
+  # cmd does not search the working directory for a bare "bootstrap.bat".
+  FILE(TO_NATIVE_PATH "${SOURCE_DIR}/bootstrap.bat" _B2_BOOTSTRAP_CMD)
+  # b2 auto-detects the newest MSVC on the machine, not the one CMake is
+  # generating for, and its bootstrap dies with "Unknown toolset: vcunk" when
+  # that is newer than it knows (#2657). Pin both to CMake's instance/toolset.
+  # Trailing "/" is required: config_toolset.bat appends "Auxiliary\Build".
+  IF(CMAKE_VS_PLATFORM_TOOLSET MATCHES "^v14([0-9])$")
+    SET(_B2_BOOTSTRAP_ARGS "vc14${CMAKE_MATCH_1}")
+    SET(_B2_TOOLSET_ARG "toolset=msvc-14.${CMAKE_MATCH_1}")
+  ENDIF()
+  IF(CMAKE_GENERATOR_INSTANCE)
+    SET(_B2_BOOTSTRAP_ENV ${CMAKE_COMMAND} -E env
+        "B2_TOOLSET_ROOT=${CMAKE_GENERATOR_INSTANCE}/VC/")
+  ENDIF()
 ELSE()
   SET(_B2_CMD ${SOURCE_DIR}/b2)
   SET(_B2_BOOTSTRAP_CMD ./bootstrap.sh)
@@ -220,7 +237,7 @@ ENDIF()
 # Step: bootstrap b2
 # --------------------------------------------------------------
 ExternalProject_Add_Step(Boost_external bootstrap_b2
-  COMMAND ${_B2_BOOTSTRAP_CMD}
+  COMMAND ${_B2_BOOTSTRAP_ENV} ${_B2_BOOTSTRAP_CMD} ${_B2_BOOTSTRAP_ARGS}
   WORKING_DIRECTORY ${SOURCE_DIR}
   DEPENDEES update
   INDEPENDENT 1
@@ -230,7 +247,7 @@ ExternalProject_Add_Step(Boost_external bootstrap_b2
 # --------------------------------------------------------------
 # Step: write project-config.jam (AFTER bootstrap)
 # --------------------------------------------------------------
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   ExternalProject_Add_Step(Boost_external write_project_config
     COMMAND ${CMAKE_COMMAND}
         -DOUTPUT_FILE=${SOURCE_DIR}/project-config.jam
@@ -302,7 +319,7 @@ endif()
 # ------------------------------------------------------------------
 # Boost.Python debug ABI (Windows requires this for python313_d + 'y')
 # ------------------------------------------------------------------
-if(WIN32 AND MSVC AND BUILD_WITH_PYTHON)
+if(WIN32 AND MSVC AND WITH_PYTHON)
   set(BOOST_PYTHON_DEBUGGING_FLAG python-debugging=on)
 else()
   set(BOOST_PYTHON_DEBUGGING_FLAG "")
@@ -352,6 +369,7 @@ set(_BOOST_B2_ARGS
   ${BOOST_PYTHON_WITH_FLAG}
   ${BOOST_PYTHON_DEBUGGING_FLAG}
 
+  ${_B2_TOOLSET_ARG}
   link=static
   runtime-link=shared
   ${_BOOST_VARIANT}

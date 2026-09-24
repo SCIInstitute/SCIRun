@@ -25,6 +25,16 @@
 #  DEALINGS IN THE SOFTWARE.
 
 ###########################################
+# Shims for renamed/removed options. Must run before any option is read.
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/DeprecatedFlags.cmake)
+scirun_removed_option(BUILD_WITH_SCIRUN_DATA  # removed 2026-09; drop shim after next release
+  "Its SVN source (gforge.sci.utah.edu) is gone and nothing read the result; see #2672.")
+scirun_renamed_option(BUILD_WITH_PYTHON WITH_PYTHON)  # renamed 2026-09 (#2670)
+scirun_renamed_option(BUILD_OSPRAY WITH_OSPRAY)        # renamed 2026-09 (#2749)
+scirun_removed_option(BUILD_HEADLESS                    # inverted 2026-09 (#2671); FATAL because a stale ON would silently build the GUI
+  "It was replaced by WITH_GUI with the opposite sense. Use -DWITH_GUI=OFF for a headless build." FATAL)
+
+###########################################
 # TODO: build from archive - Git not used
 SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
@@ -32,10 +42,14 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET_PROPERTY(DIRECTORY PROPERTY "EP_UPDATE_DISCONNECTED" TRUE)
 
 ###########################################
+# Configure python
+OPTION(WITH_PYTHON "Build with python support." ON)
+
+###########################################
 # Force superbuild Python, prevent system Python binding
 ###########################################
 
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
 
   # This is where PythonExternal.cmake will install Python
   set(_SB_PYTHON_PREFIX "${ep_base}/Python_external")
@@ -113,6 +127,11 @@ ENDIF()
 ###########################################
 # Configure test support
 OPTION(BUILD_TESTING "Build with tests." OFF)
+IF(BUILD_TESTING)
+  # Tests live in the inner SCIRun project. Let "ctest" (and ctest --preset)
+  # run from this directory too, as it would after add_subdirectory().
+  FILE(WRITE "${CMAKE_BINARY_DIR}/CTestTestfile.cmake" "subdirs(\"SCIRun\")\n")
+ENDIF()
 
 ###########################################
 # Configure code coverage (forwarded to the inner SCIRun build)
@@ -123,28 +142,22 @@ OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentat
 OPTION(GENERATE_COMPILATION_DATABASE "Generate Compilation Database." ON)
 
 ###########################################
-# Configure python
-OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
-
-###########################################
 # Configure tetgen
 OPTION(WITH_TETGEN "Build Tetgen." ON)
 
 ###########################################
 # Configure ospray
-OPTION(BUILD_OSPRAY "Build Ospray." OFF)
+OPTION(WITH_OSPRAY "Build with OSPRay support (OsprayViewer module)." OFF)
+OPTION(PREBUILT_OSPRAY "With WITH_OSPRAY: use an installed OSPRay (find_package) instead of building the external." OFF)
 
-###########################################
-# Use local ospray
-OPTION(PREBUILT_OSPRAY "Use prebuilt copy of Ospray." OFF)
-
-IF (BUILD_OSPRAY AND PREBUILT_OSPRAY)
-  MESSAGE(SEND_ERROR "Cannot set both building and prebuilt Ospray.")
+# PREBUILT_OSPRAY alone used to imply the dependency; keep that working.
+IF(PREBUILT_OSPRAY AND NOT WITH_OSPRAY)
+  SET(WITH_OSPRAY ON CACHE BOOL "Build with OSPRay support (OsprayViewer module)." FORCE)
 ENDIF()
 
 ###########################################
-# Configure data
-OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
+# Configure vtk
+OPTION(WITH_VTK "build VTK" OFF)
 
 ###########################################
 # Configure Windows executable to run with
@@ -156,8 +169,8 @@ IF(WIN32)
 ENDIF()
 
 ###########################################
-# Configure headless build
-OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
+# Configure GUI (OFF = headless build, no Qt required)
+OPTION(WITH_GUI "Build the SCIRun GUI." ON)
 
 ###########################################
 # Configure Qt
@@ -171,7 +184,7 @@ list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
 list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
 list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
 
   SET(Qt_PATH "" CACHE PATH
       "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
@@ -180,6 +193,9 @@ IF(NOT BUILD_HEADLESS)
   # Qt package discovery
   # ------------------------------------------------------------
   IF(IS_DIRECTORY "${Qt_PATH}")
+    # HINTS reaches Qt6Config but not its nested find_dependency() calls, so
+    # Qt 6.3 fails on Qt6CoreTools unless the prefix is on CMAKE_PREFIX_PATH.
+    LIST(APPEND CMAKE_PREFIX_PATH "${Qt_PATH}")
     if (QT_VERSION_MAJOR STREQUAL "6")
       FIND_PACKAGE(Qt${QT_VERSION_MAJOR} ${SCIRUN_QT_MIN_VERSION}
         COMPONENTS
@@ -197,7 +213,7 @@ IF(NOT BUILD_HEADLESS)
     endif()
   ELSE()
     MESSAGE(SEND_ERROR
-      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or enable BUILD_HEADLESS.")
+      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or set WITH_GUI=OFF.")
   ENDIF()
 
   # ------------------------------------------------------------
@@ -209,8 +225,6 @@ IF(NOT BUILD_HEADLESS)
     MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
   ENDIF()
 
-ELSE()
-  ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF()
 
 ###########################################
@@ -266,16 +280,8 @@ IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
 ENDIF()
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
-ENDIF()
-
-FIND_PACKAGE(Subversion)
-IF(NOT Subversion_FOUND)
-  SET(BUILD_WITH_SCIRUN_DATA OFF)
-ENDIF()
-IF(BUILD_WITH_SCIRUN_DATA)
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/SCIRunDataExternal.cmake SCI_data_external)
 ENDIF()
 
 IF(WITH_TETGEN)
@@ -283,26 +289,27 @@ IF(WITH_TETGEN)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
 ENDIF()
 
-IF(PREBUILT_OSPRAY)
-  find_package(ospray 2.10.0 REQUIRED)
-ELSEIF(BUILD_OSPRAY)
-  #INCLUDE(${SUPERBUILD_DIR}/TBBExternal.cmake)
-  #INCLUDE(${SUPERBUILD_DIR}/RKCommonExternal.cmake)
-  #INCLUDE(${SUPERBUILD_DIR}/EmbreeExternal.cmake)
-  ADD_EXTERNAL(${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external)
-ENDIF()
-IF(BUILD_OSPRAY OR PREBUILT_OSPRAY)
-  SET(WITH_OSPRAY ON)
-ELSE()
-  SET(WITH_OSPRAY OFF)
+IF(WITH_OSPRAY)
+  IF(PREBUILT_OSPRAY)
+    find_package(ospray 2.10.0 REQUIRED)
+  ELSE()
+    #INCLUDE(${SUPERBUILD_DIR}/TBBExternal.cmake)
+    #INCLUDE(${SUPERBUILD_DIR}/RKCommonExternal.cmake)
+    #INCLUDE(${SUPERBUILD_DIR}/EmbreeExternal.cmake)
+    ADD_EXTERNAL(${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external)
+  ENDIF()
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
   #ADD_EXTERNAL( ${SUPERBUILD_DIR}/deprecated/CtkExternal.cmake Ctk_external )
 ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
+
+IF(WITH_VTK)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+ENDIF()
 
 ###########################################
 # Download external data sources
@@ -322,15 +329,16 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
     "-DENABLE_COVERAGE:BOOL=${ENABLE_COVERAGE}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
-    "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
+    "-DWITH_GUI:BOOL=${WITH_GUI}"
     "-DQT_VERSION_MAJOR:STRING=${QT_VERSION_MAJOR}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
-    "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
+    "-DWITH_PYTHON:BOOL=${WITH_PYTHON}"
     "-DUSER_PYTHON_VERSION:STRING=${USER_PYTHON_VERSION}"
     "-DUSER_PYTHON_VERSION_MAJOR:STRING=${USER_PYTHON_VERSION_MAJOR}"
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
     "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
+    "-DWITH_VTK:BOOL=${WITH_VTK}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DEigen_DIR:PATH=${Eigen_DIR}"
@@ -345,12 +353,11 @@ SET(SCIRUN_CACHE_ARGS
     "-DGLEW_DIR:PATH=${Glew_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
-    "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
     "-DLibXML2_DIR:PATH=${LibXML2_DIR}"
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DPython_DIR:PATH=${Python_DIR}"
     "-DPYTHON_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}"
@@ -369,15 +376,22 @@ IF(WITH_OSPRAY)
   )
 ENDIF()
 
+IF(WITH_VTK)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DVTK_External_Dir:PATH=${VTK_INSTALL_DIR}"
+  )
+ENDIF()
+
 IF(WIN32)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}"
   )
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DQt_PATH:PATH=${Qt_PATH}"
+    "-DCMAKE_PREFIX_PATH:PATH=${Qt_PATH}"
     "-DQt${QT_VERSION_MAJOR}Core_DIR:PATH=${Qt${QT_VERSION_MAJOR}Core_DIR}"
     "-DQt${QT_VERSION_MAJOR}CoreTools_DIR:PATH=${Qt${QT_VERSION_MAJOR}CoreTools_DIR}"
     "-DQt${QT_VERSION_MAJOR}Gui_DIR:PATH=${Qt${QT_VERSION_MAJOR}Gui_DIR}"
