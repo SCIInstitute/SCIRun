@@ -53,6 +53,15 @@ on:
         required: false
         type: boolean
         default: false
+      cache-externals:
+        # POC (issue #2627/#2677 lineage): cache the Superbuild's compiled
+        # externals (Externals/Build + Externals/Install + Externals/Stamp)
+        # across runs, Linux-only for now. Opt-in per caller so it stays
+        # scoped to the pr.yml jobs that now run on almost every PR (#2747)
+        # instead of every reusable-build.yml caller at once.
+        required: false
+        type: boolean
+        default: false
       coverage:
         required: false
         type: boolean
@@ -95,6 +104,60 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      # Two prior attempts at this failed for opposite reasons: #2513 cached
+      # only Install/+Stamp/ and captured 17-66 KB, because 20 of 23 externals
+      # use INSTALL_COMMAND "" and their real artifacts live in Build/; #2576
+      # cached the whole Externals/ tree (incl. Source/) across 13 mac+windows
+      # jobs and blew the repo's 10 GB cache cap, so nothing ever stayed warm.
+      # This POC caches Build/+Install/+Stamp/ (not Source/ -- re-cloning is
+      # cheap after #2630) on Linux only, one job at a time, now that most PRs
+      # run just the 3 Linux jobs here (#2747) instead of the full matrix.
+      - name: Compute externals cache key
+        if: ${{ inputs.cache-externals }}
+        id: ext-key
+        shell: bash
+        run: |
+          if [ "${{ inputs.variant }}" = "headless" ]; then
+            qt_bucket=noqt
+          else
+            case "${{ inputs.qt-version }}" in
+              6.*) qt_bucket=qt6 ;;
+              5.*) qt_bucket=qt5 ;;
+              "") qt_bucket=qt5-system ;;
+              *) qt_bucket=$(echo "${{ inputs.qt-version }}" | tr -c 'a-zA-Z0-9' '-') ;;
+            esac
+          fi
+          key="superbuild-ext-v1-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
+          echo "key=$key" >> "$GITHUB_OUTPUT"
+          echo "Externals cache key: $key"
+
+      - name: Restore Superbuild externals cache
+        if: ${{ inputs.cache-externals }}
+        id: restore-ext-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            bin/Externals/Build
+            bin/Externals/Install
+            bin/Externals/Stamp
+          key: ${{ steps.ext-key.outputs.key }}
+
+      # CMake's ExternalProject steps are gated by comparing each stamp file's
+      # mtime against freshly-regenerated files under Externals/tmp/ (rewritten
+      # on every configure). A tar-based cache restore sets every file's mtime
+      # to extraction time, which is *older* than that fresh regenerate, so
+      # without this every step looks stale and reruns against a Source/ dir
+      # we deliberately didn't cache. Future-dating make the stamps look done
+      # forever until the cache key itself changes (see revert 431dd8246 /
+      # commit f47d0a37a, which had this right before the Build/ miss sank it).
+      - name: Touch cached externals stamps to the future
+        if: ${{ inputs.cache-externals && steps.restore-ext-cache.outputs.cache-hit == 'true' }}
+        shell: bash
+        run: |
+          echo "Restored externals cache (key: ${{ steps.ext-key.outputs.key }})"
+          du -sh bin/Externals/Build bin/Externals/Install 2>/dev/null || true
+          find bin/Externals/Stamp -type f -exec touch -d "2100-01-01" {} \;
 
       - name: Install Qt (if requested)
         if: ${{ inputs.qt-version != '' }}
@@ -288,6 +351,19 @@ jobs:
           & cmake --build . --config Release --parallel
 
           Pop-Location
+
+      # Save-on-success only, and only when we didn't already restore this
+      # exact key: an incomplete/broken build must never overwrite a good
+      # cache, and there's nothing to save on a hit since content is identical.
+      - name: Save Superbuild externals cache
+        if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && steps.restore-ext-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            bin/Externals/Build
+            bin/Externals/Install
+            bin/Externals/Stamp
+          key: ${{ steps.ext-key.outputs.key }}
 
       - name: Smoke test - executable loads and runs (Unix)
         if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
