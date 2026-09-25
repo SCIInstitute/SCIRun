@@ -215,11 +215,26 @@ function Enable-TLS12 {
 function Invoke-Download([string]$url, [string]$dest, [string]$label) {
     Enable-TLS12
     Write-Info "Downloading $label..."
-    try {
-        Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
-    } catch {
-        Exit-WithError "Download failed for $label.`n    URL: $url`n    Error: $_"
+    # These come from github.com and friends, which serve the odd 504; a prereq
+    # installer is not worth failing a 90-minute build over. Retry rather than
+    # abort, as the CI workflows do for apt (#2731).
+    $attempts = 3
+    for ($i = 1; $i -le $attempts; $i++) {
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
+            return
+        } catch {
+            $err = $_
+            # A failed attempt can leave a truncated file that the next one would
+            # otherwise be asked to append to or that a caller might install.
+            if (Test-Path $dest) { Remove-Item $dest -Force -ErrorAction SilentlyContinue }
+            if ($i -lt $attempts) {
+                Write-Info "Download of $label failed (attempt $i of $attempts); retrying..."
+                Start-Sleep -Seconds ($i * 5)
+            }
+        }
     }
+    Exit-WithError "Download failed for $label after $attempts attempts.`n    URL: $url`n    Error: $err"
 }
 
 function Sync-EnvPath {

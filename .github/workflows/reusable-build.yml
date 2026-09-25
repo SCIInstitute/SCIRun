@@ -53,6 +53,15 @@ on:
         required: false
         type: boolean
         default: false
+      cache-externals:
+        # POC (issue #2627/#2677 lineage): cache the Superbuild's compiled
+        # externals (Externals/Build + Externals/Install + Externals/Stamp)
+        # across runs, Linux-only for now. Opt-in per caller so it stays
+        # scoped to the pr.yml jobs that now run on almost every PR (#2747)
+        # instead of every reusable-build.yml caller at once.
+        required: false
+        type: boolean
+        default: false
       coverage:
         required: false
         type: boolean
@@ -96,6 +105,92 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Caches the Superbuild's compiled externals so most PRs skip rebuilding
+      # them. Two prior attempts (#2513, #2576) and this PR's own v1-v4 are
+      # why the path list below looks the way it does -- see #2780 for the
+      # full history. In short:
+      #
+      # - Build/+Install/ alone isn't enough: several externals (Zlib, SQLite,
+      #   Teem, Freetype, Cleaver2) ship a vendored UseXxx.cmake read straight
+      #   from Source/ at configure time, and Eigen/GLM/SpdLog are header-only
+      #   with their CMake _DIR pointed directly at SOURCE_DIR. So most of
+      #   Source/ has to be cached too.
+      # - Caching all of Source/ works but is ~2.77 GiB/job, mostly Boost's
+      #   full checkout (~180 submodules) -- SCIRun only ever reads its
+      #   compiled stage/lib from there (headers are duplicated into
+      #   Install/include/boost by BoostExternal.cmake), plus Python's and
+      #   Libxml2's Source/ (both do a real install on Linux, so nothing
+      #   under Source/ is read at all). Excluding those three brings a job's
+      #   cache down to ~550 MiB.
+      # - actions/cache's `!` exclude patterns don't work for this: it runs
+      #   with `implicitDescendants: false` (actions/toolkit#713), so it never
+      #   enumerates a directory to exclude from -- no syntax fixes that. The
+      #   list below is deliberately all-positive, naming Source/ subdirs
+      #   individually instead of excluding Boost/Python/Libxml2 from a
+      #   wholesale `bin/Externals` include.
+      #
+      # Scoped to these 3 Linux jobs only (not the 13 mac+windows jobs #2576
+      # tried to cover) is what keeps total cache usage under the repo's
+      # 10 GB cap, now that most PRs run only these jobs (#2747).
+      - name: Compute externals cache key
+        if: ${{ inputs.cache-externals }}
+        id: ext-key
+        shell: bash
+        run: |
+          if [ "${{ inputs.variant }}" = "headless" ]; then
+            qt_bucket=noqt
+          else
+            case "${{ inputs.qt-version }}" in
+              6.*) qt_bucket=qt6 ;;
+              5.*) qt_bucket=qt5 ;;
+              "") qt_bucket=qt5-system ;;
+              *) qt_bucket=$(echo "${{ inputs.qt-version }}" | tr -c 'a-zA-Z0-9' '-') ;;
+            esac
+          fi
+          key="superbuild-ext-v5-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
+          echo "key=$key" >> "$GITHUB_OUTPUT"
+          echo "Externals cache key: $key"
+
+      - name: Restore Superbuild externals cache
+        if: ${{ inputs.cache-externals }}
+        id: restore-ext-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            bin/Externals/Build
+            bin/Externals/Install
+            bin/Externals/Stamp
+            bin/Externals/Download
+            bin/Externals/Source/Boost_external/stage/lib
+            bin/Externals/Source/Zlib_external
+            bin/Externals/Source/SQLite_external
+            bin/Externals/Source/Teem_external
+            bin/Externals/Source/Freetype_external
+            bin/Externals/Source/Cleaver2_external
+            bin/Externals/Source/GLM_external
+            bin/Externals/Source/Eigen_external
+            bin/Externals/Source/SpdLog_external
+            bin/Externals/Source/LodePng_external
+            bin/Externals/Source/Tny_external
+            bin/Externals/Source/Qwt_external
+          key: ${{ steps.ext-key.outputs.key }}
+
+      # CMake's ExternalProject steps are gated by comparing each stamp file's
+      # mtime against freshly-regenerated files under Externals/tmp/ (rewritten
+      # on every configure). A tar-based cache restore sets every file's mtime
+      # to extraction time, which is *older* than that fresh regenerate, so
+      # without this every step looks stale and reruns. Future-dating makes
+      # the stamps look done forever until the cache key itself changes (see
+      # revert 431dd8246 / commit f47d0a37a, which had this right before the
+      # Build/-only miss sank it).
+      - name: Touch cached externals stamps to the future
+        if: ${{ inputs.cache-externals && steps.restore-ext-cache.outputs.cache-hit == 'true' }}
+        shell: bash
+        run: |
+          echo "Restored externals cache (key: ${{ steps.ext-key.outputs.key }})"
+          du -sh bin/Externals/* 2>/dev/null || true
+          find bin/Externals/Stamp -type f -exec touch -d "2100-01-01" {} \;
+
       - name: Install Qt (if requested)
         if: ${{ inputs.qt-version != '' }}
         uses: jurplel/install-qt-action@v4
@@ -109,6 +204,11 @@ jobs:
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.9
+        # A compiler cache is an optimization, so don't let it decide whether the
+        # nightly is red: the action downloads sccache from github.com and gives
+        # up after two retries (run 35613949360 died on a 504). The build steps
+        # below only pass the launcher flags if sccache actually showed up.
+        continue-on-error: true
 
       - name: Checkout SCIRunTestData
         if: ${{ inputs.run-regression-tests || inputs.coverage }}
@@ -159,8 +259,12 @@ jobs:
         run: |
           set -eux
           CMD=(./build.sh)
-          CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
-          CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
+          if command -v sccache >/dev/null 2>&1; then
+            CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
+            CMD+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
+          else
+            echo "::warning::sccache unavailable; building without a compiler cache."
+          fi
           # Default ON deletes the generated factory sources after each build, so every
           # later `make` relinks up to SCIRun.app and re-runs its macdeployqt POST_BUILD
           # chain -- 4x in the mac package step. Only helps incremental local builds
@@ -231,8 +335,12 @@ jobs:
 
           # Build arguments for cmake
           $cmakeArgs = @()
-          $cmakeArgs += "-DCMAKE_C_COMPILER_LAUNCHER=sccache"
-          $cmakeArgs += "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+          if (Get-Command sccache -ErrorAction SilentlyContinue) {
+            $cmakeArgs += "-DCMAKE_C_COMPILER_LAUNCHER=sccache"
+            $cmakeArgs += "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+          } else {
+            Write-Output "::warning::sccache unavailable; building without a compiler cache."
+          }
 
           # As in the Linux/macOS step above: avoids a needless relink cascade. See #2664.
           $cmakeArgs += "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=OFF"
@@ -288,6 +396,44 @@ jobs:
           & cmake --build . --config Release --parallel
 
           Pop-Location
+
+      # Save-on-success only, and only when we didn't already restore this
+      # exact key: an incomplete/broken build must never overwrite a good
+      # cache, and there's nothing to save on a hit since content is identical.
+      - name: Report externals directory sizes
+        if: ${{ always() && inputs.cache-externals && runner.os != 'Windows' }}
+        shell: bash
+        # find | xargs instead of a du glob: du's own '*/' globs produced no
+        # output at all here once (v3 run, job 107584798723) -- nullglob is
+        # off, and if a pattern matched nothing early it apparently ate the
+        # rest of the argument list under -e. -print0/xargs -0 can't do that.
+        run: |
+          du -sh bin/Externals 2>/dev/null || true
+          find bin/Externals -mindepth 1 -maxdepth 1 -print0 2>/dev/null | xargs -0 du -sh 2>/dev/null || true
+          find bin/Externals/Source -mindepth 1 -maxdepth 1 -print0 2>/dev/null | xargs -0 du -sh 2>/dev/null | sort -rh || true
+
+      - name: Save Superbuild externals cache
+        if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && steps.restore-ext-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            bin/Externals/Build
+            bin/Externals/Install
+            bin/Externals/Stamp
+            bin/Externals/Download
+            bin/Externals/Source/Boost_external/stage/lib
+            bin/Externals/Source/Zlib_external
+            bin/Externals/Source/SQLite_external
+            bin/Externals/Source/Teem_external
+            bin/Externals/Source/Freetype_external
+            bin/Externals/Source/Cleaver2_external
+            bin/Externals/Source/GLM_external
+            bin/Externals/Source/Eigen_external
+            bin/Externals/Source/SpdLog_external
+            bin/Externals/Source/LodePng_external
+            bin/Externals/Source/Tny_external
+            bin/Externals/Source/Qwt_external
+          key: ${{ steps.ext-key.outputs.key }}
 
       - name: Smoke test - executable loads and runs (Unix)
         if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
