@@ -32,6 +32,8 @@
 
 
 #ifdef WITH_VTK
+#pragma push_macro("INPUT_PORT")
+#undef INPUT_PORT
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
@@ -40,12 +42,19 @@
 #include <vtkActor.h>
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
+#include <vtkDataSetMapper.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkSmartVolumeMapper.h>
+#include <vtkGlyph3DMapper.h>
+#include <vtkPlane.h>
+#pragma pop_macro("INPUT_PORT")
 
 #include "VtkCameraController.h"
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
+
 #include <glm/glm.hpp>
 #include <QImage>
 
@@ -70,6 +79,8 @@ public:
 
   //Data--------------------------------------------------------------------------------------------
   void updateGeometries(const std::vector<Core::Datatypes::VtkGeometryObjectHandle>& geometries);
+  //clipping planes
+  void updateClippingPlanes(const std::vector<Core::Datatypes::ClippingPlane>& planes);
 
   //Getters-----------------------------------------------------------------------------------------
   uint32_t width() {return width_;}
@@ -116,7 +127,23 @@ public:
   void addDirectionalLight(glm::vec3 color, glm::vec3 direction);
   void addAmbientLight(glm::vec3 color, float intensity);
 
+  //clipping planes
+  void rebuildClippingPlanes();
+  void applyClippingPlanesToScene();
+
+  template <class MapperT>
+  void applyCurrentClippingPlanes(MapperT* mapper)
+  {
+    if (!mapper) return;
+
+    for (const auto& plane : vtkClippingPlanes_)
+    {
+      mapper->AddClippingPlane(plane);
+    }
+  }
+
   bool initialized_ = false;
+  bool first_update_ = true;
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
   vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
@@ -124,6 +151,13 @@ public:
   vtkSmartPointer<vtkWindowToImageFilter> w2i_;
 
   VtkCameraController cameraController_;
+
+  //mappers
+  std::vector<vtkSmartPointer<vtkMapper>> surfaceMappers_;
+  std::vector<vtkSmartPointer<vtkAbstractMapper3D>> volumeMappers_;
+
+  std::vector<Core::Datatypes::ClippingPlane> clippingPlanes_;
+  std::vector<vtkSmartPointer<vtkPlane>> vtkClippingPlanes_;
 
   unsigned char* imagePixels_ = nullptr;
   QImage image_;

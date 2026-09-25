@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
@@ -73,7 +74,6 @@ void ViewSceneVtk::setStateDefaults()
   state->setValue(Parameters::CameraViewUpY, 0.0);
   state->setValue(Parameters::CameraViewUpZ, 1.0);
   state->setValue(Parameters::FrameWriterFilename, std::string("frames.png"));
-  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Parameters::ShowAmbientLight, true);
   state->setValue(Parameters::AmbientLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(Parameters::AmbientLightIntensity, 0.1);
@@ -88,6 +88,34 @@ void ViewSceneVtk::setStateDefaults()
   state->setValue(Parameters::ProbeZ, 0.0);
   state->setValue(Parameters::InvertZoom, false);
   state->setValue(Parameters::ZoomSpeed, 1.0);
+
+  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::Ambient, 0.2);
+  state->setValue(Parameters::Diffuse, 1.0);
+  state->setValue(Parameters::Specular, 0.3);
+  state->setValue(Parameters::Shine, 0.5);
+  state->setValue(Parameters::Emission, 0.0);  // not connected yet
+  state->setValue(Parameters::FogOn, false);
+  state->setValue(Parameters::ObjectsOnly, true);
+  state->setValue(Parameters::UseBGColor, true);
+  state->setValue(Parameters::FogStart, 0.0);
+  state->setValue(Parameters::FogEnd, 0.71);
+  state->setValue(Parameters::FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
+  state->setValue(Parameters::ShowScaleBar, false);
+  state->setValue(Parameters::ScaleBarUnitValue, std::string("mm"));
+  state->setValue(Parameters::ScaleBarLength, 1.0);
+  state->setValue(Parameters::ScaleBarHeight, 1.0);
+  state->setValue(Parameters::ScaleBarMultiplier, 1.0);
+  state->setValue(Parameters::ScaleBarNumTicks, 11);
+  state->setValue(Parameters::ScaleBarLineWidth, 1.0);
+  state->setValue(Parameters::ScaleBarFontSize, 8);
+  state->setValue(Parameters::ScaleBarLineColor, 1.0);
+
+  state->setValue(Parameters::ToolBarMainPosition, 4);      // TopToolBarArea
+  state->setValue(Parameters::ToolBarRenderPosition, 1);    // LeftToolBarArea
+  state->setValue(Parameters::ToolBarAdvancedPosition, 2);  // RightToolBarArea
+
+  state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
 }
 
 void ViewSceneVtk::portRemovedSlotImpl(const PortId&)

@@ -25,19 +25,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <vtkAxesActor.h>
-#include <vtkDataSetMapper.h>
-#include <vtkPolyDataMapper.h>
+#pragma push_macro("INPUT_PORT")
+#undef INPUT_PORT
 #include <vtkDataObject.h>
 #include <vtkLookupTable.h>
 #include <vtkProperty.h>
-#include <vtkSmartVolumeMapper.h>
 #include <vtkVolumeProperty.h>
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkTubeFilter.h>
 #include <vtkSphereSource.h>
-#include <vtkGlyph3DMapper.h>
+#pragma pop_macro("INPUT_PORT")
 
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
@@ -166,16 +164,112 @@ void VtkRenderer::updateGeometries(const std::vector<VtkGeometryObjectHandle>& g
   renderer_->RemoveAllViewProps();
   actors_.clear();
 
+  surfaceMappers_.clear();
+  volumeMappers_.clear();
+
   for (const auto& geo : geometries)
   {
     addGeometry(geo);
   }
 
-  renderer_->ResetCamera();
+  if (first_update_)
+  {
+    renderer_->ResetCamera();
+    first_update_ = false;
+  }
+}
+
+void VtkRenderer::updateClippingPlanes(const std::vector<Core::Datatypes::ClippingPlane>& planes)
+{
+  clippingPlanes_ = planes;
+
+  rebuildClippingPlanes();
+
+  applyClippingPlanesToScene();
+
+  renderFrame();
+}
+
+void VtkRenderer::rebuildClippingPlanes()
+{
+  vtkClippingPlanes_.clear();
+
+  double bounds[6];
+  renderer_->ComputeVisiblePropBounds(bounds);
+
+  double sx = bounds[1] - bounds[0];
+  double sy = bounds[3] - bounds[2];
+  double sz = bounds[5] - bounds[4];
+
+  double cx = 0.5 * (bounds[0] + bounds[1]);
+  double cy = 0.5 * (bounds[2] + bounds[3]);
+  double cz = 0.5 * (bounds[4] + bounds[5]);
+
+  double sceneDiag = std::sqrt(sx * sx + sy * sy + sz * sz);
+
+  for (const auto& clip : clippingPlanes_)
+  {
+    if (!clip.visible) continue;
+
+    auto plane = vtkSmartPointer<vtkPlane>::New();
+
+    double nx = clip.x;
+    double ny = clip.y;
+    double nz = clip.z;
+
+    double len = std::sqrt(nx * nx + ny * ny + nz * nz);
+
+    if (len < 1e-10)
+    {
+      nx = 1.0;
+      ny = 0.0;
+      nz = 0.0;
+    }
+    else
+    {
+      nx /= len;
+      ny /= len;
+      nz /= len;
+    }
+
+    if (clip.reverseNormal)
+    {
+      nx = -nx;
+      ny = -ny;
+      nz = -nz;
+    }
+
+    double worldD = clip.d * 0.5 * sceneDiag;
+
+    plane->SetNormal(nx, ny, nz);
+
+    plane->SetOrigin(cx + nx * worldD, cy + ny * worldD, cz + nz * worldD);
+
+    vtkClippingPlanes_.push_back(plane);
+  }
+}
+
+void VtkRenderer::applyClippingPlanesToScene()
+{
+  for (auto& mapper : surfaceMappers_)
+  {
+    mapper->RemoveAllClippingPlanes();
+
+    for (auto& plane : vtkClippingPlanes_)
+      mapper->AddClippingPlane(plane);
+  }
+
+  for (auto& mapper : volumeMappers_)
+  {
+    mapper->RemoveAllClippingPlanes();
+
+    for (auto& plane : vtkClippingPlanes_)
+      mapper->AddClippingPlane(plane);
+  }
 }
 
 void VtkRenderer::initialize()
-{
+  {
   renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
   renderWindow_->SetOffScreenRendering(1);
 
@@ -243,6 +337,10 @@ void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandl
 
   mapper->SetInputData(poly);
 
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
   auto actor = vtkSmartPointer<vtkActor>::New();
 
   actor->SetMapper(mapper);
@@ -274,6 +372,10 @@ void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGe
 
   mapper->SetLookupTable(lut);
 
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
   auto actor = vtkSmartPointer<vtkActor>::New();
 
   actor->SetMapper(mapper);
@@ -289,6 +391,10 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
 {
   auto mapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
   mapper->SetInputData(image);
+
+  volumeMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
 
   auto volumeProperty = vtkSmartPointer<vtkVolumeProperty>::New();
   volumeProperty->ShadeOff();
@@ -391,6 +497,10 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
     applyMaterial(actor, geo->material);
   }
 
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
   actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
@@ -427,6 +537,10 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
     applyMaterial(actor, geo->material);
   }
 
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
   actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
@@ -461,6 +575,10 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
     mapper->ScalarVisibilityOff();
     applyMaterial(actor, geo->material);
   }
+
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
 
   actor->SetMapper(mapper);
 

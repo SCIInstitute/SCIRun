@@ -26,6 +26,8 @@
 */
 
 #ifdef WITH_VTK
+#pragma push_macro("INPUT_PORT")
+#undef INPUT_PORT
 #include <vtkUnstructuredGrid.h>
 #include <vtkPoints.h>
 #include <vtkDoubleArray.h>
@@ -40,6 +42,7 @@
 #include <vtkQuad.h>
 #include <vtkLine.h>
 #include <vtkTetra.h>
+#pragma pop_macro("INPUT_PORT")
 #endif
 
 #include <Core/Algorithms/Visualization/VtkGeometryBuilder.h>
