@@ -178,6 +178,11 @@ ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
   GIT_REPOSITORY ${_boost_git_url}
   GIT_TAG ${_boost_git_tag}
+  # 172 submodules cloned serially cost ~5 of the ~12 minutes CI spends on
+  # Boost; the bottleneck is per-submodule round-trips, not bytes on the wire,
+  # so parallel fetch is the fix (measured 3.6x -- see #2630). GIT_SHALLOW
+  # makes this *worse* (more server-side work per fetch) and is not used here.
+  GIT_CONFIG submodule.fetchJobs=${SUPERBUILD_PARALLEL_JOBS}
   # EP_UPDATE_DISCONNECTED emits update and update_disconnected as siblings; under
   # -j they race on the submodule config locks. Lost from c552399bb in a merge.
   UPDATE_COMMAND ""
