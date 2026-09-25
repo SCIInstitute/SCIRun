@@ -32,6 +32,7 @@ SET(Interface_Modules_Render_Tests_SRCS
   ObjectTranslationTests.cc
   ObjectRotationTests.cc
   ObjectScalingTests.cc
+  MovieRecorderTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Interface_Modules_Render_Tests
