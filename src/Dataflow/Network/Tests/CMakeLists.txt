@@ -52,6 +52,7 @@ SCIRUN_ADD_UNIT_TEST(Dataflow_Network_Tests
 
 TARGET_LINK_LIBRARIES(Dataflow_Network_Tests
   Dataflow_Network
+  Dataflow_State
   Core_Datatypes
   gtest_main
   gtest
