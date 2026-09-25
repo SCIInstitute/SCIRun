@@ -55,7 +55,7 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Utils/CurrentFileName.h>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
@@ -208,7 +208,7 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 
 void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   NetworkEditor::InEditingContext iec(networkEditor_);
   GuiLogger::logInfoQ("RUNNING PYTHON SCRIPT: " + scriptFileName);
   PythonInterpreter::Instance().importSCIRunLibrary();
