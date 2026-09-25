@@ -573,7 +573,7 @@ function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildT
         "-A", "x64",
         "-DCMAKE_BUILD_TYPE:STRING=$buildType",
         "-DCMAKE_VERBOSE_MAKEFILE:BOOL=$(if ($BuildVerbose) {'ON'} else {'OFF'})",
-        "-DBUILD_HEADLESS:BOOL=$(if ($Headless) {'ON'} else {'OFF'})",
+        "-DWITH_GUI:BOOL=$(if ($Headless) {'OFF'} else {'ON'})",
         "-DWITH_TETGEN:BOOL=$(if ($WithTetgen) {'ON'} else {'OFF'})",
         "-DBUILD_DOCUMENTATION:BOOL=$(if ($Documentation) {'ON'} else {'OFF'})",
         "-DSCIRUN_QT_MIN_VERSION:STRING=$QtVersion"

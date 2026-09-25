@@ -28,7 +28,7 @@
 
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
@@ -81,7 +81,7 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
   INITIALIZE_PORT(PythonField3);
   INITIALIZE_PORT(PythonString3);
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(), outputNameParameters()));
 #endif
 }
@@ -132,7 +132,7 @@ std::vector<std::string> InterfaceWithPython::connectedPortIds() const
 
 void InterfaceWithPython::execute()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   auto matrices = getOptionalDynamicInputs(InputMatrix);
   auto fields = getOptionalDynamicInputs(InputField);
   auto strings = getOptionalDynamicInputs(InputString);
@@ -188,13 +188,13 @@ void InterfaceWithPython::execute()
       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), nil, nil, PythonField3);
   }
 #else
-  error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
+  error("This module does nothing, turn on WITH_PYTHON to enable.");
 #endif
 }
 
 void InterfaceWithPython::runTopLevelCode() const
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   auto topLevelCode = cstate()->getValue(Parameters::PythonTopLevelCode).toString();
   std::vector<std::string> lines;
   boost::split(lines, topLevelCode, boost::is_any_of("\n"));
