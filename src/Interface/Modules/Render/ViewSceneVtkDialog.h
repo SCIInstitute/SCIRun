@@ -115,6 +115,11 @@ public:
 
 Q_SIGNALS:
   void newGeometryValueForwarder();
+  void cameraRotationChangeForwarder();
+  void cameraLookAtChangeForwarder();
+  void cameraDistanceChangeForwarder();
+  void lockMutexForwarder();
+  void mousePressSignalForGeometryObjectFeedback(int x, int y, const std::string& selName);
   void closeAllNonPinnedPopups();
   void fullScreenChanged();
 
@@ -148,6 +153,7 @@ public Q_SLOTS:
   void setLightColor();
   void setBGColor();
   void setCameraWidgets();
+  void lockMutex();
 
       //---------------- Input ---------------------------------------------------------------------
   void resizingDone();
@@ -243,20 +249,35 @@ public Q_SLOTS:
 
  private:
   void addToolBar();
-  void addConfigurationButton();
-  void addConfigurationDialog();
+  void setupScaleBar();
+  void setupMaterials();
+
   void addAutoViewButton();
+  void addObjectSelectionButton();
   void addViewBarButton();
-  void addAutoRotateButton();
-  void addTimestepButtons();
-  void addScreenshotButton();
   void addControlLockButton();
+  void addScreenshotButton();
+  void addAutoRotateButton();
+  void addShortcutsHelpButton();
+
+  void addColorOptionsButton();
+  void addOrientationAxesButton();
   void addClippingPlaneButton();
-  void addToolbarButton(QPushButton* button);
+  void addFogOptionsButton();
+  void addMaterialOptionsButton();
+
+  void addLightButtons();
+  void addScaleBarButton();
+
+  void addCameraLocksButton();
+  void addInputControlButton();
+  void addDeveloperControlButton();
+
   void addToolbarButton(QWidget* w, Qt::ToolBarArea area, ViewSceneVtkControlPopupWidget* widgetToPopup = nullptr);
   void mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut);
   MouseButton getRenderButton(QMouseEvent* event);
   void setupPopupWidget(QPushButton* button, ViewSceneVtkControlPopupWidget* underlyingWidget, QToolBar* toolbar);
+  QColor checkColorSetting(const std::string& rgb, const QColor& defaultColor);
 
   float getFloat(const Core::Algorithms::Name& name) const;
 
@@ -277,16 +298,47 @@ public Q_SLOTS:
 
   static const ShortcutTable& shortcutTable();
 
+  std::unique_ptr<Core::GeometryIDGenerator> gid_;
   std::string name_;
 
   Render::VtkQWidget* viewer_ {nullptr};
-
   Render::VtkRenderer* renderer_{nullptr};
 
-  QStatusBar* statusBar_ {nullptr};
-  QToolBar* toolBar1_ {nullptr};
+  QToolBar* toolBar1_{nullptr};
   QToolBar* toolBar2_{nullptr};
-  ViewSceneVtkToolBarController* toolBarController_{nullptr};
+  QToolBar* toolBar3_{nullptr};
+
+  QComboBox* mDownViewBox{nullptr};  ///< Combo box for Down axis options.
+  QComboBox* mUpVectorBox{nullptr};  ///< Combo box for Up Vector options.
+
+  ColorOptionsVtk* colorOptions_{nullptr};
+  FogControlsVtk* fogControls_{nullptr};
+  MaterialsControlsVtk* materialsControls_{nullptr};
+  ViewAxisChooserControlsVtk* viewAxisChooser_{nullptr};
+  ObjectSelectionControlsVtk* objectSelectionControls_{nullptr};
+  OrientationAxesControlsVtk* orientationAxesControls_{nullptr};
+  ScreenshotControlsVtk* screenshotControls_{nullptr};
+  ScaleBarControlsVtk* scaleBarControls_{nullptr};
+  ClippingPlaneControlsVtk* clippingPlaneControls_{nullptr};
+  InputControlsVtk* inputControls_{nullptr};
+  CameraLockControlsVtk* cameraLockControls_{nullptr};
+  DeveloperControlsVtk* developerControls_{nullptr};
+  CompositeLightControlsVtk* secondaryLightControlContainer_{nullptr};
+
+  static constexpr int NUM_LIGHTS = 4;
+  std::array<LightControlsVtk*, NUM_LIGHTS> lightControls_;
+  std::array<bool, NUM_LIGHTS> lightStateBeforeAllOff_{{true, false, false, false}};
+  std::array<bool, 3> lockStateBeforeAllOff_{{true, true, true}};
+
+  QStatusBar* statusBar_{nullptr};
+
+  QPushButton* controlLock_;
+  QPushButton* autoViewButton_;
+  QPushButton* playTimestepsButton_;
+  QPushButton* autoRotateButton_{nullptr};
+  QPushButton* fogButton_{nullptr};
+  QPushButton* viewBarBtn_{nullptr};
+
   QMainWindow* toolbarHolder_{nullptr};
   bool pulledSavedVisibility_{false};
   QLabel* statusLabel_{nullptr};
@@ -294,42 +346,28 @@ public Q_SLOTS:
   QTableWidget* shortcutsTable_{nullptr};
   std::optional<QPoint> shortcutsDialogPos_{};
 
-  //ViewOspraySceneConfigDialog* configDialog_;
   QAction* lockRotation_;
   QAction* lockPan_;
   QAction* lockZoom_;
-  QPushButton* controlLock_;
-  QPushButton* autoViewButton_;
-  QPushButton* autoRotateButton_;
-  QPushButton* playTimestepsButton_;
 
-  ClippingPlaneControlsVtk* clippingPlaneControls_{nullptr};
+  ViewSceneVtkToolBarController* toolBarController_{nullptr};
   Render::ClippingPlaneManagerPtr clippingPlaneManager_;
-  InputControlsVtk* inputControls_{nullptr};
-
-  ColorOptionsVtk* colorOptions_{nullptr};
-  FogControlsVtk* fogControls_{nullptr};
 
   QPushButton* toolBar1Position_{nullptr};
   QPushButton* toolBar2Position_{nullptr};
+  QPushButton* toolBar3Position_{nullptr};
 
   std::vector<ViewSceneVtkDialog*> viewScenesToUpdate{};
 
   bool saveScreenshotOnNewGeometry_{false};
 
-  std::array<bool, 3> lockStateBeforeAllOff_{{true, true, true}};
-
   ScaleBarDataVtk scaleBar_{};
-
-  static constexpr int NUM_LIGHTS = 4;
-  std::array<LightControlsVtk*, NUM_LIGHTS> lightControls_;
-  std::array<bool, NUM_LIGHTS> lightStateBeforeAllOff_{{true, false, false, false}};
 
   QColor bgColor_{};
 
-  OrientationAxesControlsVtk* orientationAxesControls_{nullptr};
-
   bool isFullScreen_{false};
+
+  QTimer resizeTimer_{};
 
   friend class ViewSceneControlsDockVtk;
   friend class AutoRotateControlsVtk;

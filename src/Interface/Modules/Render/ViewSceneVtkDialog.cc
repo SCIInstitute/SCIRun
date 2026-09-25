@@ -55,24 +55,74 @@ using namespace SCIRun::Render;
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+namespace {
+class DialogIdGenerator : public GeometryIDGenerator
+{
+ public:
+  explicit DialogIdGenerator(const std::string& name) : moduleName_(name) {}
+  std::string generateGeometryID(const std::string& tag) const override { return moduleName_ + "::" + tag; }
+
+ private:
+  std::string moduleName_;
+};
+
+Transform toSciTransform(const glm::mat4& mat)
+{
+  // needs transposing
+  Transform t;
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      t.set_mat_val(i, j, mat[j][i]);
+  return t;
+}
+}
+
 ViewSceneVtkManager ViewSceneVtkDialog::viewSceneManager;
 
 ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent)
   : ModuleDialogGeneric(state, parent)
 {
+  clippingPlaneManager_.reset(new ClippingPlaneManager(state));
+  gid_.reset(new DialogIdGenerator(name));
   name_ = name;
-  statusBar_ = new QStatusBar(this);
+
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  setFocusPolicy(Qt::StrongFocus);
+
+  setupScaleBar();
 
   renderer_ = new VtkRenderer();
   viewer_ = new VtkQWidget(this, renderer_);
 
+  // Set background Color
+  const auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
+  bgColor_ = checkColorSetting(colorStr, Qt::black);
+
   state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, &ViewSceneVtkDialog::newGeometryValueForwarder, this, &ViewSceneVtkDialog::newGeometryValue);
 
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  addConfigurationDialog();
+  state->connectSpecificStateChanged(Parameters::CameraRotation, [this]() { Q_EMIT cameraRotationChangeForwarder(); });
+  connect(this, &ViewSceneVtkDialog::cameraRotationChangeForwarder, this, &ViewSceneVtkDialog::pullCameraRotation);
+
+  state->connectSpecificStateChanged(Parameters::CameraLookAt, [this]() { Q_EMIT cameraLookAtChangeForwarder(); });
+  connect(this, &ViewSceneVtkDialog::cameraLookAtChangeForwarder, this, &ViewSceneVtkDialog::pullCameraLookAt);
+
+  state->connectSpecificStateChanged(Parameters::CameraDistance, [this]() { Q_EMIT cameraDistanceChangeForwarder(); });
+  connect(this, &ViewSceneVtkDialog::cameraDistanceChangeForwarder, this, &ViewSceneVtkDialog::pullCameraDistance);
+
+  lockMutex();
+
+  //const std::string filesystemRoot = Application::Instance().executablePath().string();
+  //std::string sep;
+  //sep += boost::filesystem::path::preferred_separator;
+  //Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
+
+  resizeTimer_.setSingleShot(true);
+  connect(&resizeTimer_, &QTimer::timeout, this, &ViewSceneVtkDialog::resizingDone);
+
+  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   {
     toolbarHolder_ = new QMainWindow;
@@ -86,73 +136,31 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
     toolBar2_->setMovable(true);
     toolBar2_->setFloatable(true);
 
+    toolBar3_ = new QToolBar;
+    toolBar3_->setMovable(true);
+    toolBar3_->setFloatable(true);
+
     toolBarController_ = new ViewSceneVtkToolBarController(this);
   }
   addToolBar();
+  setupMaterials();
   setToolBarPositions();
-  setMinimumSize(200, 200);
+  addLineEditManager(screenshotControls_->defaultScreenshotPath_, Parameters::ScreenshotDirectory);
 
+  statusBar_ = new QStatusBar(this);
   statusBar_->setMaximumHeight(20);
 
   vtkLayout->addWidget(toolbarHolder_);
   vtkLayout->addWidget(statusBar_);
 
-  clippingPlaneManager_.reset(new ClippingPlaneManager(state));
-
-  /* addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
-  addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
-  addCheckBoxManager(configDialog_->renderAnnotationsCheckBox_, Parameters::ShowRenderAnnotations);
-  addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
-  addCheckBoxManager(configDialog_->showFrameRateCheckBox_, Parameters::ShowFrameRate);
-  addCheckBoxManager(configDialog_->separateModelPerObjectCheckBox_, Parameters::SeparateModelPerObject);
-  addCheckBoxManager(configDialog_->ambientVisibleCheckBox_, Parameters::ShowAmbientLight);
-  addCheckBoxManager(configDialog_->directionalVisibleCheckBox_, Parameters::ShowDirectionalLight);
-  addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
-  addDoubleSpinBoxManager(configDialog_->cameraViewAtXDoubleSpinBox_, Parameters::CameraViewAtX);
-  addDoubleSpinBoxManager(configDialog_->cameraViewAtYDoubleSpinBox_, Parameters::CameraViewAtY);
-  addDoubleSpinBoxManager(configDialog_->cameraViewAtZDoubleSpinBox_, Parameters::CameraViewAtZ);
-  addDoubleSpinBoxManager(configDialog_->cameraViewFromXDoubleSpinBox_, Parameters::CameraViewFromX);
-  addDoubleSpinBoxManager(configDialog_->cameraViewFromYDoubleSpinBox_, Parameters::CameraViewFromY);
-  addDoubleSpinBoxManager(configDialog_->cameraViewFromZDoubleSpinBox_, Parameters::CameraViewFromZ);
-  addDoubleSpinBoxManager(configDialog_->cameraViewUpXDoubleSpinBox_, Parameters::CameraViewUpX);
-  addDoubleSpinBoxManager(configDialog_->cameraViewUpYDoubleSpinBox_, Parameters::CameraViewUpY);
-  addDoubleSpinBoxManager(configDialog_->cameraViewUpZDoubleSpinBox_, Parameters::CameraViewUpZ);
-  addDoubleSpinBoxManager(configDialog_->directionalLightIntensityDoubleSpinBox_, Parameters::DirectionalLightIntensity);
-  addDoubleSpinBoxManager(configDialog_->ambientLightIntensityDoubleSpinBox_, Parameters::AmbientLightIntensity);
-
-  addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
-  addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
-  addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
-
-  connect(configDialog_->viewerHeightSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &ViewSceneVtkDialog::setHeight);
-  connect(configDialog_->viewerWidthSpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &ViewSceneVtkDialog::setWidth);
-
-  connect(configDialog_->cameraViewAtXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewAtYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewAtZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewFromXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewFromYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewFromZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewUpXDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewUpYDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-  connect(configDialog_->cameraViewUpZDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setViewportCamera);
-
-  connect(configDialog_->ambientLightColorRDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
-  connect(configDialog_->ambientLightColorGDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
-  connect(configDialog_->ambientLightColorBDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
-  connect(configDialog_->directionalLightColorRDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
-  connect(configDialog_->directionalLightColorGDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
-  connect(configDialog_->directionalLightColorBDoubleSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ViewSceneVtkDialog::setLightColor);
-*/
-  //float tvp[] = {-1.0f,-1.0f, 0.0f, 1.0f,-1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
-  //float tvc[9] = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-  //uint32_t ind[3] = { 0, 1, 2};
+  viewSceneManager.addViewScene(this);
 }
 
 ViewSceneVtkDialog::~ViewSceneVtkDialog()
 {
   delete viewer_;
   delete renderer_;
+  viewSceneManager.removeViewScene(this);
 }
 
 void ViewSceneVtkDialog::newGeometryValue()
@@ -184,21 +192,37 @@ void ViewSceneVtkDialog::addToolBar()
   toolBar1_->setContextMenuPolicy(Qt::CustomContextMenu);
   WidgetStyleMixin::toolbarStyle(toolBar1_);
 
+  toolBar2_->setContextMenuPolicy(Qt::CustomContextMenu);
   toolBar2_->setOrientation(Qt::Vertical);
   WidgetStyleMixin::toolbarStyle(toolBar2_);
 
-  //vtkLayout->addWidget(toolBar1_);
-  //vtkLayout->addWidget(toolBar2_);
+  toolBar3_->setContextMenuPolicy(Qt::CustomContextMenu);
+  toolBar3_->setOrientation(Qt::Vertical);
+  WidgetStyleMixin::toolbarStyle(toolBar3_);
 
-  addConfigurationButton();
+  // TODO: main toolbar members
   addAutoViewButton();
-  addAutoRotateButton();
-  addTimestepButtons();
-  addScreenshotButton();
-
-  addClippingPlaneButton();
-
+  addObjectSelectionButton();
+  addViewBarButton();
   addControlLockButton();
+  addScreenshotButton();
+  addAutoRotateButton();
+  addShortcutsHelpButton();
+
+  // TODO: render toolbar members
+  addColorOptionsButton();
+  addOrientationAxesButton();
+  addClippingPlaneButton();
+  addFogOptionsButton();
+  addMaterialOptionsButton();
+
+  addLightButtons();
+  addScaleBarButton();
+
+  // TODO: advanced tool bar members
+  addCameraLocksButton();
+  addInputControlButton();
+  addDeveloperControlButton();
 
   {
     toolBar1Position_ = new QPushButton();
@@ -210,6 +234,68 @@ void ViewSceneVtkDialog::addToolBar()
     toolBar2Position_->setToolTip("Switch toolbar 2 popup direction");
     addToolbarButton(toolBar2Position_, Qt::LeftToolBarArea);
   }
+  {
+    toolBar3Position_ = new QPushButton();
+    toolBar3Position_->setToolTip("Switch toolbar 3 popup direction");
+    addToolbarButton(toolBar3Position_, Qt::RightToolBarArea);
+  }
+}
+
+void ViewSceneVtkDialog::setupScaleBar()
+{
+  if (!state_->getValue(Parameters::ScaleBarUnitValue).toString().empty())
+  {
+    scaleBar_.visible = state_->getValue(Parameters::ShowScaleBar).toBool();
+    scaleBar_.unit = state_->getValue(Parameters::ScaleBarUnitValue).toString();
+    scaleBar_.length = state_->getValue(Parameters::ScaleBarLength).toDouble();
+    scaleBar_.height = state_->getValue(Parameters::ScaleBarHeight).toDouble();
+    scaleBar_.multiplier = state_->getValue(Parameters::ScaleBarMultiplier).toDouble();
+    scaleBar_.numTicks = state_->getValue(Parameters::ScaleBarNumTicks).toInt();
+    scaleBar_.lineWidth = state_->getValue(Parameters::ScaleBarLineWidth).toDouble();
+    scaleBar_.fontSize = state_->getValue(Parameters::ScaleBarFontSize).toInt();
+    scaleBar_.lineColor = state_->getValue(Parameters::ScaleBarLineColor).toDouble();
+  }
+  else
+  {
+    scaleBar_.visible = false;
+    scaleBar_.unit = "mm";
+    scaleBar_.length = 1.0;
+    scaleBar_.height = 1.0;
+    scaleBar_.multiplier = 1.0;
+    scaleBar_.numTicks = 11;
+    scaleBar_.lineWidth = 1.0;
+    scaleBar_.fontSize = 8;
+    scaleBar_.lineColor = 1.0;
+  }
+}
+
+void ViewSceneVtkDialog::setupMaterials()
+{
+  double ambient = state_->getValue(Parameters::Ambient).toDouble();
+  double diffuse = state_->getValue(Parameters::Diffuse).toDouble();
+  double specular = state_->getValue(Parameters::Specular).toDouble();
+  double shine = state_->getValue(Parameters::Shine).toDouble();
+  bool fogOn = state_->getValue(Parameters::FogOn).toBool();
+  bool useBGColor = state_->getValue(Parameters::UseBGColor).toBool();
+  double fogStart = state_->getValue(Parameters::FogStart).toDouble();
+  double fogEnd = state_->getValue(Parameters::FogEnd).toDouble();
+  auto colorStr = state_->getValue(Parameters::FogColor).toString();
+
+  ColorRGB color(colorStr);
+
+  fogControls_->setColor(QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized()));
+
+  materialsControls_->setMaterialValues(ambient, diffuse, specular, shine, 0.0);
+  fogControls_->setFogValues(fogOn, false, useBGColor, fogStart, fogEnd);
+
+  setAmbientValue(ambient);
+  setDiffuseValue(diffuse);
+  setSpecularValue(specular);
+  setShininessValue(shine);
+  setFogUseBGColor(useBGColor);
+  setFogStartValue(fogStart);
+  setFogEndValue(fogEnd);
+  setFogOn(fogOn);
 }
 
 std::string ViewSceneVtkDialog::toString(std::string prefix) const
@@ -228,10 +314,9 @@ std::string ViewSceneVtkDialog::toString(std::string prefix) const
 
 void ViewSceneVtkDialog::adjustToolbar(double factor)
 {
-  if (toolBar1_)
-    adjustToolbarForHighResolution(toolBar1_, factor);
-  if (toolBar2_)
-    adjustToolbarForHighResolution(toolBar2_, factor);
+  adjustToolbarForHighResolution(toolBar1_, factor);
+  adjustToolbarForHighResolution(toolBar2_, factor);
+  adjustToolbarForHighResolution(toolBar3_, factor);
 }
 
 void ViewSceneVtkDialog::vsLog(const QString& msg) const
@@ -258,32 +343,9 @@ std::string ViewSceneVtkDialog::getName() const
   return name_;
 }
 
-void ViewSceneVtkDialog::addConfigurationButton()
-{
-  auto configurationButton = new QPushButton();
-  configurationButton->setToolTip("Open/Close Configuration Menu");
-  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
-  configurationButton->setShortcut(Qt::Key_F5);
-  connect(configurationButton, &QPushButton::clicked, this, &ViewSceneVtkDialog::configButtonClicked);
-  addToolbarButton(configurationButton);
-}
-
 void ViewSceneVtkDialog::configButtonClicked()
 {
   //configDialog_->setVisible(!configDialog_->isVisible());
-}
-
-void ViewSceneVtkDialog::addConfigurationDialog()
-{
-  //auto name = windowTitle() + " Configuration";
-  //configDialog_ = new ViewOspraySceneConfigDialog(name, this);
-}
-
-void ViewSceneVtkDialog::addToolbarButton(QPushButton* button)
-{
-  button->setFixedSize(35,35);
-  button->setIconSize(QSize(25,25));
-  toolBar1_->addWidget(button);
 }
 
 void ViewSceneVtkDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which, ViewSceneVtkControlPopupWidget* widgetToPopup)
@@ -291,7 +353,7 @@ void ViewSceneVtkDialog::addToolbarButton(QWidget* widget, Qt::ToolBarArea which
   static const auto buttonSize = 30;
   static const auto iconSize = 22;
   widget->setFixedSize(buttonSize, buttonSize);
-  auto toolbar = (which == Qt::TopToolBarArea ? toolBar1_ : toolBar2_);  // TODO refactor obviously
+  auto toolbar = (which == Qt::TopToolBarArea ? toolBar1_ : (which == Qt::LeftToolBarArea ? toolBar2_ : toolBar3_));  // TODO refactor obviously
 
   if (auto* button = qobject_cast<QPushButton*>(widget))
   {
@@ -322,46 +384,81 @@ void ViewSceneVtkDialog::setupPopupWidget(QPushButton* button, ViewSceneVtkContr
   popupLayout->setContentsMargins(4, 4, 4, 4);
 }
 
+QColor ViewSceneVtkDialog::checkColorSetting(const std::string& rgb, const QColor& defaultColor)
+{
+  QColor newColor;
+  if (!rgb.empty())
+  {
+    ColorRGB color(rgb);
+    newColor = QColor(color.redNormalized(), color.greenNormalized(), color.blueNormalized());
+  }
+  else
+  {
+    newColor = defaultColor;
+  }
+  return newColor;
+}
+
 void ViewSceneVtkDialog::addAutoViewButton()
 {
   autoViewButton_ = new QPushButton(this);
-
   autoViewButton_->setToolTip("Auto View");
   autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   autoViewButton_->setShortcut(Qt::Key_0);
   connect(autoViewButton_, &QPushButton::clicked, this, &ViewSceneVtkDialog::autoViewClicked);
-  addToolbarButton(autoViewButton_);
+  addToolbarButton(autoViewButton_, Qt::TopToolBarArea);
 }
 
-void ViewSceneVtkDialog::addAutoRotateButton()
+void ViewSceneVtkDialog::addObjectSelectionButton()
 {
-  autoRotateButton_ = new QPushButton(this);
-  autoRotateButton_->setToolTip("Auto Rotate");
-  autoRotateButton_->setCheckable(true);
-  autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate.png"));
-  //autoRotateButton->setShortcut(Qt::Key_0);
-  connect(autoRotateButton_, &QPushButton::clicked, this, &ViewSceneVtkDialog::autoRotateClicked);
-  addToolbarButton(autoRotateButton_);
+  auto* objectSelectionButton = new QPushButton();
+  objectSelectionButton->setIcon(QPixmap(":/general/Resources/ViewScene/selection.png"));
+  objectSelectionControls_ = new ObjectSelectionControlsVtk(this);
+  addToolbarButton(objectSelectionButton, Qt::TopToolBarArea, objectSelectionControls_);
 }
 
-void ViewSceneVtkDialog::addTimestepButtons()
+void ViewSceneVtkDialog::addViewBarButton()
 {
-  auto nextTimestep = new QPushButton(this);
-  nextTimestep->setText("Next");
-  nextTimestep->setToolTip("Next timestep");
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
-  //autoRotateButton->setShortcut(Qt::Key_0);
-  connect(nextTimestep, &QPushButton::clicked, this, &ViewSceneVtkDialog::nextTimestepClicked);
-  addToolbarButton(nextTimestep);
+  viewBarBtn_ = new QPushButton();
+  viewBarBtn_->setToolTip("Show View Options");
+  viewBarBtn_->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
+  viewAxisChooser_ = new ViewAxisChooserControlsVtk(this);
+  addToolbarButton(viewBarBtn_, Qt::TopToolBarArea, viewAxisChooser_);
+  connect(viewBarBtn_, &QPushButton::clicked, this, &ViewSceneVtkDialog::snapToViewAxis);
+}
 
-  playTimestepsButton_ = new QPushButton(this);
-  playTimestepsButton_->setText("Play");
-  playTimestepsButton_->setToolTip("Play timesteps");
-  playTimestepsButton_->setCheckable(true);
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
-  //autoRotateButton->setShortcut(Qt::Key_0);
-  connect(playTimestepsButton_, &QPushButton::clicked, this, &ViewSceneVtkDialog::playTimestepsClicked);
-  addToolbarButton(playTimestepsButton_);
+void ViewSceneVtkDialog::addControlLockButton()
+{
+  controlLock_ = new QPushButton();
+  controlLock_->setToolTip("Lock specific view controls");
+  controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
+  auto menu = new QMenu;
+
+  lockRotation_ = menu->addAction("Lock Rotation");
+  lockRotation_->setCheckable(true);
+  connect(lockRotation_, &QAction::triggered, this, &ViewSceneVtkDialog::lockRotationToggled);
+
+  lockPan_ = menu->addAction("Lock Panning");
+  lockPan_->setCheckable(true);
+  connect(lockPan_, &QAction::triggered, this, &ViewSceneVtkDialog::lockPanningToggled);
+
+  lockZoom_ = menu->addAction("Lock Zoom");
+  lockZoom_->setCheckable(true);
+  connect(lockZoom_, &QAction::triggered, this, &ViewSceneVtkDialog::lockZoomToggled);
+
+  menu->addSeparator();
+
+  auto lockAll = menu->addAction("Lock All");
+  connect(lockAll, &QAction::triggered, this, &ViewSceneVtkDialog::lockAllTriggered);
+
+  auto unlockAll = menu->addAction("Unlock All");
+  connect(unlockAll, &QAction::triggered, this, &ViewSceneVtkDialog::unlockAllTriggered);
+
+  controlLock_->setMenu(menu);
+
+  addToolbarButton(controlLock_, Qt::TopToolBarArea);
+  controlLock_->setFixedWidth(45);
+  toggleLockColor(false);
 }
 
 void ViewSceneVtkDialog::addScreenshotButton()
@@ -371,32 +468,137 @@ void ViewSceneVtkDialog::addScreenshotButton()
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, &QPushButton::clicked, this, &ViewSceneVtkDialog::screenshotClicked);
-  addToolbarButton(screenshotButton);
+  screenshotControls_ = new ScreenshotControlsVtk(this);
+  addToolbarButton(screenshotButton, Qt::TopToolBarArea, screenshotControls_);
 }
 
-void ViewSceneVtkDialog::addViewBarButton()
+void ViewSceneVtkDialog::addAutoRotateButton()
 {
-  auto viewBarBtn = new QPushButton();
-  viewBarBtn->setToolTip("Show View Options");
-  viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
-  //connect(viewBarBtn, &QPushButton::clicked, this, &ViewSceneVtkDialog::viewBarButtonClicked);
-  addToolbarButton(viewBarBtn);
+  autoRotateButton_ = new QPushButton(this);
+  autoRotateButton_->setToolTip("Auto Rotate");
+  autoRotateButton_->setCheckable(true);
+  autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate.png"));
+  connect(autoRotateButton_, &QPushButton::clicked, this, &ViewSceneVtkDialog::toggleAutoRotate);
+  auto arctrls = new AutoRotateControlsVtk(this);
+  addToolbarButton(autoRotateButton_, Qt::TopToolBarArea, arctrls);
 }
 
-void ViewSceneVtkDialog::addControlLockButton()
+void ViewSceneVtkDialog::addShortcutsHelpButton()
 {
-  controlLock_ = new QPushButton();
+  auto helpButton = new QPushButton(this);
+  helpButton->setToolTip("Keyboard Shortcuts (I)");
+  {
+    // Draw a white "?" on a transparent pixmap to match the dark toolbar icon style
+    QPixmap px(24, 24);
+    px.fill(Qt::transparent);
+    QPainter p(&px);
+    p.setPen(Qt::white);
+    QFont f = p.font();
+    f.setBold(true);
+    f.setPixelSize(18);
+    p.setFont(f);
+    p.drawText(px.rect(), Qt::AlignCenter, "?");
+    helpButton->setIcon(QIcon(px));
+  }
+  connect(helpButton, &QPushButton::clicked, this, &ViewSceneVtkDialog::showShortcutsDialog);
+  addToolbarButton(helpButton, Qt::TopToolBarArea);
+}
 
-  //TODO
-  controlLock_->setDisabled(true);
+void ViewSceneVtkDialog::addColorOptionsButton()
+{
+  auto colorOptionsButton = new QPushButton();
+  colorOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/fillColor.png"));
+  colorOptions_ = new ColorOptionsVtk(this);
+  colorOptions_->setSampleColor(bgColor_);
+  addToolbarButton(colorOptionsButton, Qt::LeftToolBarArea, colorOptions_);
+}
+
+void ViewSceneVtkDialog::addOrientationAxesButton()
+{
+  auto orientationAxesButton = new QPushButton();
+  orientationAxesButton->setIcon(QPixmap(":/general/Resources/ViewScene/axes.png"));
+  orientationAxesControls_ = new OrientationAxesControlsVtk(this, orientationAxesButton);
+  addToolbarButton(orientationAxesButton, Qt::LeftToolBarArea, orientationAxesControls_);
 }
 
 void ViewSceneVtkDialog::addClippingPlaneButton()
 {
-  auto* clippingPlaneButton = new QPushButton();
+  auto clippingPlaneButton = new QPushButton();
   clippingPlaneButton->setIcon(QPixmap(":/general/Resources/ViewScene/clipping.png"));
   clippingPlaneControls_ = new ClippingPlaneControlsVtk(this, clippingPlaneButton);
   addToolbarButton(clippingPlaneButton, Qt::LeftToolBarArea, clippingPlaneControls_);
+}
+
+void ViewSceneVtkDialog::addFogOptionsButton()
+{
+  fogButton_ = new QPushButton();
+  fogButton_->setIcon(QPixmap(":/general/Resources/ViewScene/fog.png"));
+  fogControls_ = new FogControlsVtk(this, fogButton_);
+  addToolbarButton(fogButton_, Qt::LeftToolBarArea, fogControls_);
+}
+
+void ViewSceneVtkDialog::addMaterialOptionsButton()
+{
+  auto materialOptionsButton = new QPushButton();
+  materialOptionsButton->setIcon(QPixmap(":/general/Resources/ViewScene/materials.png"));
+  materialsControls_ = new MaterialsControlsVtk(this);
+  addToolbarButton(materialOptionsButton, Qt::LeftToolBarArea, materialsControls_);
+}
+
+void ViewSceneVtkDialog::addLightButtons()
+{
+  for (int i = 0; i < ViewSceneVtkDialog::NUM_LIGHTS; ++i)
+  {
+    auto lightButton = new QPushButton();
+    lightControls_[i] = new LightControlsVtk(this, i, lightButton);
+    fixSize(lightControls_[i]);
+
+    if (0 == i)
+    {
+      lightButton->setIcon(QPixmap(":/general/Resources/ViewScene/headlight.png"));
+      addToolbarButton(lightButton, Qt::LeftToolBarArea, lightControls_[i]);
+    }
+  }
+  auto* secondaryLightButton = new QPushButton();
+  secondaryLightButton->setIcon(QPixmap(":/general/Resources/ViewScene/light.png"));
+  secondaryLightControlContainer_ = new CompositeLightControlsVtk(this, {lightControls_.begin() + 1, lightControls_.end()});
+  addToolbarButton(secondaryLightButton, Qt::LeftToolBarArea, secondaryLightControlContainer_);
+}
+
+void ViewSceneVtkDialog::addScaleBarButton()
+{
+  auto* scaleBarButton = new QPushButton();
+  scaleBarButton->setIcon(QPixmap(":/general/Resources/ViewScene/scaleBar.png"));
+  scaleBarControls_ = new ScaleBarControlsVtk(this, scaleBarButton);
+  fixSize(scaleBarControls_);
+  addToolbarButton(scaleBarButton, Qt::LeftToolBarArea, scaleBarControls_);
+
+  scaleBarControls_->setScaleBarValues(scaleBar_);
+}
+
+void ViewSceneVtkDialog::addCameraLocksButton()
+{
+  auto* cameraLocksButton = new QPushButton();
+  cameraLocksButton->setIcon(QPixmap(":/general/Resources/ViewScene/link.png"));
+  cameraLockControls_ = new CameraLockControlsVtk(this);
+  fixSize(cameraLockControls_);
+  addToolbarButton(cameraLocksButton, Qt::RightToolBarArea, cameraLockControls_);
+}
+
+void ViewSceneVtkDialog::addInputControlButton()
+{
+  auto* inputControlButton = new QPushButton();
+  inputControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/mouse.png"));
+  inputControls_ = new InputControlsVtk(this);
+  addToolbarButton(inputControlButton, Qt::RightToolBarArea, inputControls_);
+}
+
+void ViewSceneVtkDialog::addDeveloperControlButton()
+{
+  auto* devControlButton = new QPushButton();
+  devControlButton->setIcon(QPixmap(":/general/Resources/ViewScene/devel.png"));
+  developerControls_ = new DeveloperControlsVtk(this);
+  addToolbarButton(devControlButton, Qt::RightToolBarArea, developerControls_);
 }
 
 void ViewSceneVtkDialog::sendBugReport()
@@ -1196,11 +1398,14 @@ void ViewSceneVtkDialog::setToolBarPositions()
   auto toolBar3Position = static_cast<Qt::ToolBarArea>(state_->getValue(Parameters::ToolBarAdvancedPosition).toInt());
   toolbarHolder_->addToolBar(toolBar1Position, toolBar1_);
   toolbarHolder_->addToolBar(toolBar2Position, toolBar2_);
+  toolbarHolder_->addToolBar(toolBar3Position, toolBar3_);
   connect(toolBar1_, &QToolBar::topLevelChanged, [this](bool /*topLevel*/) { state_->setValue(Parameters::ToolBarMainPosition, static_cast<int>(whereIs(toolBar1_))); });
   connect(toolBar2_, &QToolBar::topLevelChanged, [this](bool /*topLevel*/) { state_->setValue(Parameters::ToolBarRenderPosition, static_cast<int>(whereIs(toolBar2_))); });
+  connect(toolBar3_, &QToolBar::topLevelChanged, [this](bool /*topLevel*/) { state_->setValue(Parameters::ToolBarAdvancedPosition, static_cast<int>(whereIs(toolBar3_))); });
 
   toolBarController_->registerDirectionButton(toolBar1_, toolBar1Position_);
   toolBarController_->registerDirectionButton(toolBar2_, toolBar2Position_);
+  toolBarController_->registerDirectionButton(toolBar3_, toolBar3Position_);
 }
 
 void ViewSceneVtkDialog::screenshotClicked() {}
@@ -1298,8 +1503,13 @@ void ViewSceneVtkDialog::setClosestAxisView()
 
 void ViewSceneVtkDialog::setCameraWidgets() {}
 
-void ViewSceneVtkDialog::setLightColor()
+void ViewSceneVtkDialog::lockMutex()
 {
+  // logCritical("locking screenShotMutex--Dialog::lockMutex");
+  //Modules::Render::ViewSceneVtkLockManager::get(state_.get())->screenShotMutex().lock();
+}
+
+void ViewSceneVtkDialog::setLightColor() {
 }
 
 void ViewSceneVtkDialog::setBGColor()
