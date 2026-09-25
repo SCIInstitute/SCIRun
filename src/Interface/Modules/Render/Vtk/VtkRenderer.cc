@@ -217,13 +217,6 @@ void VtkRenderer::rebuildClippingPlanes()
     double ny = clip.y;
     double nz = clip.z;
 
-    if (clip.reverseNormal)
-    {
-      nx = -nx;
-      ny = -ny;
-      nz = -nz;
-    }
-
     double len = std::sqrt(nx * nx + ny * ny + nz * nz);
 
     if (len < 1e-10)
@@ -237,6 +230,13 @@ void VtkRenderer::rebuildClippingPlanes()
       nx /= len;
       ny /= len;
       nz /= len;
+    }
+
+    if (clip.reverseNormal)
+    {
+      nx = -nx;
+      ny = -ny;
+      nz = -nz;
     }
 
     double worldD = clip.d * 0.5 * sceneDiag;
