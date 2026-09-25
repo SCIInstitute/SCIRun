@@ -883,6 +883,12 @@ public:
   virtual void get_neighbors(Node::array_type &nodes,
                              Node::index_type i) const;
 
+  /// Every element on a delem, i.e. the ones get_neighbor() picks between.
+  /// Unlike the calls above this does not need one of them as input, so it
+  /// works when walking the delems of a mesh rather than the elems.
+  virtual void get_all_neighbors(Elem::array_type &elems,
+                                 DElem::index_type delem) const;
+
   /// Draw non linear elements
   virtual void pwl_approx_edge(coords_array_type &coords,
                                Elem::index_type ci, unsigned int which_edge,
