@@ -27,7 +27,7 @@
 
 /// @todo Documentation Core/Python/PythonInterpreter.cc
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #ifdef _MSC_VER
 // #pragma warning( push )
 #pragma warning(disable : 4244)
@@ -241,7 +241,7 @@ PythonInterpreter::~PythonInterpreter()
 
 bool needsSpecialPythonPathTreatment(const std::string& commandLine)
 {
-#if defined(BUILD_HEADLESS) && defined(__APPLE__)
+#if !defined(WITH_GUI) && defined(__APPLE__)
   (void)commandLine;
   return true;
 #else
