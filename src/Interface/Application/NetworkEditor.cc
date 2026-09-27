@@ -49,7 +49,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/ProvenanceWindow.h>
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
 
@@ -96,7 +96,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 
   setMouseAsDragMode();
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);
 #endif
 

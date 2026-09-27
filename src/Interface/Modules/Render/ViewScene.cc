@@ -48,6 +48,7 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 #include <es-log/trace-log.h>
 #include <QOpenGLContext>
+#include <QWindow>
 #include <QPainter>
 #include <QToolTip>
 #include <gl-platform/GLPlatform.hpp>
@@ -1419,10 +1420,25 @@ void ViewSceneDialog::updateModifiedGeometries()
   spire->runGCOnNextExecution();
 }
 
+// isVisible() alone is not enough: Qt never paints an unexposed window (behind
+// others, minimized, another Space), so a requested frame would never finish
+// and the module would wait on screenShotMutex forever (#2760).
+bool ViewSceneDialog::glWidgetCanPaint() const
+{
+  const auto* gl = impl_->mGLWidget;
+  if (!gl->isVisible() || !gl->isValid())
+    return false;
+  const auto* top = gl->window();
+  if (top->windowState() & Qt::WindowMinimized)
+    return false;
+  const auto* handle = top->windowHandle();
+  return !handle || handle->isExposed();
+}
+
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
   newGeometryValue(false, false);
-  if (impl_->mGLWidget->isVisible() && impl_->mGLWidget->isValid())
+  if (glWidgetCanPaint())
     impl_->mGLWidget->requestFrame();
   else
     unblockExecution();
@@ -1613,6 +1629,11 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
     ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Parameters::ShowViewer, false);
   }
+
+  // A frame requested just before hiding will never paint; don't leave the
+  // module waiting on it (#2760).
+  if (impl_->mGLWidget->frameRequested())
+    unblockExecution();
 
   ModuleDialogGeneric::hideEvent(evt);
 }
