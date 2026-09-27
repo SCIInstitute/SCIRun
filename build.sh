@@ -155,7 +155,7 @@ configure_scirun() {
     fi
     try cd $builddir
 
-    local COMMON_BUILD_OPTS="-DBUILD_HEADLESS:BOOL=$headless -DWITH_TETGEN:BOOL=$tetgenbuild -DBUILD_DOCUMENTATION:BOOL=$documentation"
+    local COMMON_BUILD_OPTS="-DWITH_GUI:BOOL=$gui -DWITH_TETGEN:BOOL=$tetgenbuild -DBUILD_DOCUMENTATION:BOOL=$documentation"
 
     configure_scirun_make $COMMON_BUILD_OPTS
 }
@@ -215,7 +215,7 @@ xcodebuild=0
 documentation="OFF"
 # matches the Superbuild default; Tetgen is GPL-licensed, see --without-tetgen
 tetgenbuild="ON"
-headless="OFF"
+gui="ON"
 
 echo "Parsing arguments..."
 while [[ $1 != "" ]]; do
@@ -245,7 +245,7 @@ while [[ $1 != "" ]]; do
         --without-tetgen)
             tetgenbuild="OFF";;
         --headless)
-            headless="ON";;
+            gui="OFF";;
         --documentation)
             documentation="ON";;
         -j*)

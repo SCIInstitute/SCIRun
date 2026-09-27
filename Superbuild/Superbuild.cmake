@@ -29,6 +29,10 @@
 INCLUDE(${CMAKE_CURRENT_LIST_DIR}/DeprecatedFlags.cmake)
 scirun_removed_option(BUILD_WITH_SCIRUN_DATA  # removed 2026-09; drop shim after next release
   "Its SVN source (gforge.sci.utah.edu) is gone and nothing read the result; see #2672.")
+scirun_renamed_option(BUILD_WITH_PYTHON WITH_PYTHON)  # renamed 2026-09 (#2670)
+scirun_renamed_option(BUILD_OSPRAY WITH_OSPRAY)        # renamed 2026-09 (#2749)
+scirun_removed_option(BUILD_HEADLESS                    # inverted 2026-09 (#2671); FATAL because a stale ON would silently build the GUI
+  "It was replaced by WITH_GUI with the opposite sense. Use -DWITH_GUI=OFF for a headless build." FATAL)
 
 ###########################################
 # TODO: build from archive - Git not used
@@ -38,10 +42,14 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET_PROPERTY(DIRECTORY PROPERTY "EP_UPDATE_DISCONNECTED" TRUE)
 
 ###########################################
+# Configure python
+OPTION(WITH_PYTHON "Build with python support." ON)
+
+###########################################
 # Force superbuild Python, prevent system Python binding
 ###########################################
 
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
 
   # This is where PythonExternal.cmake will install Python
   set(_SB_PYTHON_PREFIX "${ep_base}/Python_external")
@@ -134,23 +142,17 @@ OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentat
 OPTION(GENERATE_COMPILATION_DATABASE "Generate Compilation Database." ON)
 
 ###########################################
-# Configure python
-OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
-
-###########################################
 # Configure tetgen
 OPTION(WITH_TETGEN "Build Tetgen." ON)
 
 ###########################################
 # Configure ospray
-OPTION(BUILD_OSPRAY "Build Ospray." OFF)
+OPTION(WITH_OSPRAY "Build with OSPRay support (OsprayViewer module)." OFF)
+OPTION(PREBUILT_OSPRAY "With WITH_OSPRAY: use an installed OSPRay (find_package) instead of building the external." OFF)
 
-###########################################
-# Use local ospray
-OPTION(PREBUILT_OSPRAY "Use prebuilt copy of Ospray." OFF)
-
-IF (BUILD_OSPRAY AND PREBUILT_OSPRAY)
-  MESSAGE(SEND_ERROR "Cannot set both building and prebuilt Ospray.")
+# PREBUILT_OSPRAY alone used to imply the dependency; keep that working.
+IF(PREBUILT_OSPRAY AND NOT WITH_OSPRAY)
+  SET(WITH_OSPRAY ON CACHE BOOL "Build with OSPRay support (OsprayViewer module)." FORCE)
 ENDIF()
 
 ###########################################
@@ -167,8 +169,8 @@ IF(WIN32)
 ENDIF()
 
 ###########################################
-# Configure headless build
-OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
+# Configure GUI (OFF = headless build, no Qt required)
+OPTION(WITH_GUI "Build the SCIRun GUI." ON)
 
 ###########################################
 # Configure Qt
@@ -182,7 +184,7 @@ list(GET SCIRUN_QT_MIN_VERSION_LIST 0 QT_VERSION_MAJOR)
 list(GET SCIRUN_QT_MIN_VERSION_LIST 1 QT_VERSION_MINOR)
 list(GET SCIRUN_QT_MIN_VERSION_LIST 2 QT_VERSION_PATCH)
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
 
   SET(Qt_PATH "" CACHE PATH
       "Path to directory where Qt is installed. Directory should contain lib and bin subdirectories.")
@@ -211,7 +213,7 @@ IF(NOT BUILD_HEADLESS)
     endif()
   ELSE()
     MESSAGE(SEND_ERROR
-      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or enable BUILD_HEADLESS.")
+      "Set Qt_PATH to the Qt install prefix (with bin/ and lib/) or set WITH_GUI=OFF.")
   ENDIF()
 
   # ------------------------------------------------------------
@@ -223,8 +225,6 @@ IF(NOT BUILD_HEADLESS)
     MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
   ENDIF()
 
-ELSE()
-  ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF()
 
 ###########################################
@@ -280,7 +280,7 @@ IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
 ENDIF()
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
 ENDIF()
 
@@ -289,21 +289,18 @@ IF(WITH_TETGEN)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
 ENDIF()
 
-IF(PREBUILT_OSPRAY)
-  find_package(ospray 2.10.0 REQUIRED)
-ELSEIF(BUILD_OSPRAY)
-  #INCLUDE(${SUPERBUILD_DIR}/TBBExternal.cmake)
-  #INCLUDE(${SUPERBUILD_DIR}/RKCommonExternal.cmake)
-  #INCLUDE(${SUPERBUILD_DIR}/EmbreeExternal.cmake)
-  ADD_EXTERNAL(${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external)
-ENDIF()
-IF(BUILD_OSPRAY OR PREBUILT_OSPRAY)
-  SET(WITH_OSPRAY ON)
-ELSE()
-  SET(WITH_OSPRAY OFF)
+IF(WITH_OSPRAY)
+  IF(PREBUILT_OSPRAY)
+    find_package(ospray 2.10.0 REQUIRED)
+  ELSE()
+    #INCLUDE(${SUPERBUILD_DIR}/TBBExternal.cmake)
+    #INCLUDE(${SUPERBUILD_DIR}/RKCommonExternal.cmake)
+    #INCLUDE(${SUPERBUILD_DIR}/EmbreeExternal.cmake)
+    ADD_EXTERNAL(${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external)
+  ENDIF()
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
   #ADD_EXTERNAL( ${SUPERBUILD_DIR}/deprecated/CtkExternal.cmake Ctk_external )
 ENDIF()
@@ -332,10 +329,10 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
     "-DENABLE_COVERAGE:BOOL=${ENABLE_COVERAGE}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
-    "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
+    "-DWITH_GUI:BOOL=${WITH_GUI}"
     "-DQT_VERSION_MAJOR:STRING=${QT_VERSION_MAJOR}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
-    "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
+    "-DWITH_PYTHON:BOOL=${WITH_PYTHON}"
     "-DUSER_PYTHON_VERSION:STRING=${USER_PYTHON_VERSION}"
     "-DUSER_PYTHON_VERSION_MAJOR:STRING=${USER_PYTHON_VERSION_MAJOR}"
     "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
@@ -360,7 +357,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DPython_DIR:PATH=${Python_DIR}"
     "-DPYTHON_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}"
@@ -391,7 +388,7 @@ IF(WIN32)
   )
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DQt_PATH:PATH=${Qt_PATH}"
     "-DCMAKE_PREFIX_PATH:PATH=${Qt_PATH}"
