@@ -1455,7 +1455,7 @@ void ViewSceneVtkDialog::setClosestAxisView()
   // The camera rotation quaternion is from glm::lookAt (world→camera).
   // Transposing its mat3 gives the camera axes in world space:
   //   Rt[0] = right,  Rt[1] = up,  Rt[2] = -forward  (all in world coords)
-  const glm::mat3 Rt;// = glm::transpose(glm::mat3_cast(spire->getCameraRotation()));
+  const glm::mat3 Rt(1.0f);// = glm::transpose(glm::mat3_cast(spire->getCameraRotation()));
   const glm::vec3 viewDir = -Rt[2];  // current look direction (world space)
   const glm::vec3 upDir = Rt[1];     // current up direction  (world space)
 
