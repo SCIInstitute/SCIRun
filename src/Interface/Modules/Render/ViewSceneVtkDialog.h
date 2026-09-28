@@ -33,8 +33,10 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#ifdef WITH_VTK
 #include <Interface/Modules/Render/Vtk/VtkRenderer.h>
 #include <Interface/Modules/Render/Vtk/VtkQWidget.h>
+#endif
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Interface/Modules/Render/ViewSceneVtkManager.h>
@@ -301,8 +303,10 @@ public Q_SLOTS:
   std::unique_ptr<Core::GeometryIDGenerator> gid_;
   std::string name_;
 
+#ifdef WITH_VTK
   Render::VtkQWidget* viewer_ {nullptr};
   Render::VtkRenderer* renderer_{nullptr};
+#endif
 
   QToolBar* toolBar1_{nullptr};
   QToolBar* toolBar2_{nullptr};

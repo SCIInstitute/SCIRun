@@ -93,8 +93,10 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
 
   setupScaleBar();
 
+#ifdef WITH_VTK
   renderer_ = new VtkRenderer();
   viewer_ = new VtkQWidget(this, renderer_);
+#endif
 
   // Set background Color
   const auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
@@ -126,7 +128,9 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
 
   {
     toolbarHolder_ = new QMainWindow;
+  #ifdef WITH_VTK
     toolbarHolder_->setCentralWidget(static_cast<QWidget*>(viewer_));
+  #endif
 
     toolBar1_ = new QToolBar(this);
     toolBar1_->setMovable(true);
@@ -158,13 +162,16 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
 
 ViewSceneVtkDialog::~ViewSceneVtkDialog()
 {
+#ifdef WITH_VTK
   delete viewer_;
   delete renderer_;
+#endif
   viewSceneManager.removeViewScene(this);
 }
 
 void ViewSceneVtkDialog::newGeometryValue()
 {
+#ifdef WITH_VTK
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (!geomDataTransient || geomDataTransient->empty()) return;
 
@@ -175,6 +182,7 @@ void ViewSceneVtkDialog::newGeometryValue()
 
   //TODO pass geometry to the renderer_ in a renderer_ agnostic fashion
   renderer_->updateGeometries(compGeom.get()->objects());
+#endif
 }
 
 void ViewSceneVtkDialog::setHeight(int h)
@@ -708,7 +716,9 @@ void ViewSceneVtkDialog::resizingDone()
 
 void ViewSceneVtkDialog::autoViewClicked()
 {
+#ifdef WITH_VTK
   renderer_->autoView();
+#endif
 }
 
 void ViewSceneVtkDialog::autoViewNoScaleClicked()
@@ -1678,11 +1688,13 @@ void ViewSceneVtkDialog::pullSpecial()
 
 void ViewSceneVtkDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
 {
+#ifdef WITH_VTK
   int xWindow = xIn - viewer_->pos().x();
   int yWindow = yIn - viewer_->pos().y();
 
   xOut = (      static_cast<float>(xWindow) / renderer_->width() ) * 2.0f - 1.0f;
   yOut = (1.0 - static_cast<float>(yWindow) / renderer_->height()) * 2.0f - 1.0f;
+#endif
 }
 
 MouseButton ViewSceneVtkDialog::getRenderButton(QMouseEvent* event)
@@ -1696,30 +1708,38 @@ MouseButton ViewSceneVtkDialog::getRenderButton(QMouseEvent* event)
 
 void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
 {
+#ifdef WITH_VTK
   const float x = static_cast<float>(event->x() - viewer_->pos().x());
 
   const float y = static_cast<float>(event->y() - viewer_->pos().y());
 
   renderer_->mousePress(x, y, getRenderButton(event));
+#endif
 }
 
 void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
 {
+#ifdef WITH_VTK
   const float x = static_cast<float>(event->x() - viewer_->pos().x());
 
   const float y = static_cast<float>(event->y() - viewer_->pos().y());
 
   renderer_->mouseMove(x, y, getRenderButton(event));
+#endif
 }
 
 void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
 {
+#ifdef WITH_VTK
   renderer_->mouseRelease();
+#endif
 }
 
 void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
 {
+#ifdef WITH_VTK
   renderer_->mouseWheel(event->angleDelta().y());
+#endif
 }
 
 void ViewSceneVtkDialog::initializeClippingPlaneDisplay()
@@ -1740,8 +1760,9 @@ void ViewSceneVtkDialog::doClippingPlanes()
 
 void ViewSceneVtkDialog::updateClippingPlaneDisplay()
 {
+#ifdef WITH_VTK
   renderer_->updateClippingPlanes(clippingPlaneManager_->allPlanes());
   const auto& activePlane = clippingPlaneManager_->active();
   clippingPlaneControls_->updatePlaneControlDisplay(activePlane.x, activePlane.y, activePlane.z, activePlane.d);
-
+#endif
 }
