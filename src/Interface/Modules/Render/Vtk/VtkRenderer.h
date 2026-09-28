@@ -31,7 +31,7 @@
 #include <cstdio>
 
 
-
+#ifdef WITH_VTK
 #include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include "VtkCameraController.h"
 
