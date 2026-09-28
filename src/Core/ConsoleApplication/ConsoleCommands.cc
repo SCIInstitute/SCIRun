@@ -272,7 +272,7 @@ bool PrintModulesCommand::execute()
 
 bool InteractiveModeCommandConsole::execute()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   quietModulesIfNotVerbose();
   PythonInterpreter::Instance().importSCIRunLibrary();
   std::string line;
@@ -310,7 +310,7 @@ bool RunPythonScriptCommandConsole::execute()
   auto script = app.parameters()->pythonScriptFile();
   if (script)
   {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
     LOG_CONSOLE("RUNNING PYTHON SCRIPT: " << *script);
 
     app.controller()->clear();

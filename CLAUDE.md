@@ -23,7 +23,7 @@ SCIRun uses a **two-level CMake Superbuild**. The outer Superbuild (in `Superbui
 ./build.sh                         # Release build
 ./build.sh --debug
 ./build.sh --with-tetgen
-./build.sh -DBUILD_HEADLESS=ON
+./build.sh --headless
 ```
 
 **Direct CMake:**
@@ -36,19 +36,19 @@ cmake --build . --config Release -j 8
 
 Key CMake options (pass as `-DOPTION=VALUE` to the Superbuild):
 - `BUILD_TESTING=ON` — enables unit and regression tests (off by default)
-- `BUILD_WITH_PYTHON=ON` — Python API support (on by default)
-- `BUILD_HEADLESS=ON` — skip Qt/GUI
+- `WITH_PYTHON=ON` — Python API support (on by default)
+- `WITH_GUI=OFF` — headless build, no Qt required
 - `WITH_TETGEN=ON` — Tetgen mesh library
-- `BUILD_OSPRAY=ON` — OSPRay ray-tracing renderer (`PREBUILT_OSPRAY=ON` to use an installed copy instead)
+- `WITH_OSPRAY=ON` — OSPRay ray-tracing renderer (`PREBUILT_OSPRAY=ON` to use an installed copy instead of building it)
 - `WITH_VTK=ON` — VTK renderer backend (off by default)
 
 ### Option naming rule
 
 The prefix says what kind of knob it is (#2668):
-- `WITH_<DEP>` — an optional third-party dependency. The Superbuild fetches and builds it; the inner build compiles the code that uses it. `WITH_TETGEN`, `WITH_VTK`.
+- `WITH_<DEP>` — an optional third-party dependency. The Superbuild fetches and builds it; the inner build compiles the code that uses it. `WITH_PYTHON`, `WITH_GUI` (Qt), `WITH_TETGEN`, `WITH_OSPRAY`, `WITH_VTK`.
 - `BUILD_<THING>` — an extra artifact this project emits. `BUILD_TESTING`, `BUILD_DOCUMENTATION`, `BUILD_BUNDLE`. Matches what CMake already means by `BUILD_TESTING` / `BUILD_SHARED_LIBS`.
 - `ENABLE_` / `RUN_` / `GENERATE_` / `DOWNLOAD_` — behavior knobs; leave as they are.
-- `BUILD_WITH_` is retired. Do not add new flags with it. `BUILD_WITH_PYTHON`, `BUILD_HEADLESS` and `BUILD_OSPRAY` predate the rule and are being renamed (#2670, #2671, #2749).
+- `BUILD_WITH_` is retired. Do not add new flags with it. `BUILD_WITH_PYTHON` and `BUILD_OSPRAY` still work for one release with a deprecation warning; `BUILD_HEADLESS` is a hard error (its sense inverted — use `WITH_GUI=OFF`).
 - No `SCIRUN_` prefix on options: SCIRun is a terminal application, never a subproject, so there is nothing to collide with.
 
 New flag: pick the prefix by the rule above, add `OPTION()` in `Superbuild/Superbuild.cmake` and the matching `SCIRUN_CACHE_ARGS` entry that forwards it to the inner build. Renaming one: shim the old name with `scirun_renamed_option` / `scirun_removed_option` from `Superbuild/DeprecatedFlags.cmake` for one release.
@@ -136,7 +136,7 @@ See `docs/dev_doc/SCIRun5ModuleGeneration.md` for the full guide. Summary:
 
 - **C++17** throughout (`CMAKE_CXX_STANDARD 17`)
 - **Qt 5.15 or Qt 6.3.1+** for GUI components
-- **Python 3.x** (when `BUILD_WITH_PYTHON=ON`)
+- **Python 3.x** (when `WITH_PYTHON=ON`)
 - Unit tests use **GoogleTest/GoogleMock**
 
 ---

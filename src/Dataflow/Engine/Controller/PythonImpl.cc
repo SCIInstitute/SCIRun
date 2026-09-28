@@ -28,7 +28,7 @@
 
 /// @todo Documentation Dataflow/Engine/Controller/PythonImpl.cc
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 
 #include <boost/python/to_python_converter.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
