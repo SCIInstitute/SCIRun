@@ -28,14 +28,7 @@
 #ifndef CORE_DATATYPES_VTKGEOMETRY_H
 #define CORE_DATATYPES_VTKGEOMETRY_H
 
-#ifdef WITH_VTK
-#pragma push_macro("INPUT_PORT")
-#undef INPUT_PORT
-#include <vtkSmartPointer.h>
-#include <vtkDataObject.h>
-#pragma pop_macro("INPUT_PORT")
-#endif
-
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>

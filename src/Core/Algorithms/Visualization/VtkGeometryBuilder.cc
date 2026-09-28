@@ -25,26 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef WITH_VTK
-#pragma push_macro("INPUT_PORT")
-#undef INPUT_PORT
-#include <vtkUnstructuredGrid.h>
-#include <vtkPoints.h>
-#include <vtkDoubleArray.h>
-#include <vtkPointData.h>
-#include <vtkHexahedron.h>
-#include <vtkCellArray.h>
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
-#include <vtkPolyLine.h>
-#include <vtkFloatArray.h>
-#include <vtkTriangle.h>
-#include <vtkQuad.h>
-#include <vtkLine.h>
-#include <vtkTetra.h>
-#pragma pop_macro("INPUT_PORT")
-#endif
-
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include <Core/Algorithms/Visualization/VtkGeometryBuilder.h>
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>

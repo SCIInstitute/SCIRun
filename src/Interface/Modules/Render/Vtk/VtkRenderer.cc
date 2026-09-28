@@ -25,18 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#pragma push_macro("INPUT_PORT")
-#undef INPUT_PORT
-#include <vtkDataObject.h>
-#include <vtkLookupTable.h>
-#include <vtkProperty.h>
-#include <vtkVolumeProperty.h>
-#include <vtkPiecewiseFunction.h>
-#include <vtkColorTransferFunction.h>
-#include <vtkTubeFilter.h>
-#include <vtkSphereSource.h>
-#pragma pop_macro("INPUT_PORT")
-
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include "VtkRenderer.h"
 #include <Core/GeometryPrimitives/BBox.h>
 

@@ -29,12 +29,7 @@
 
 #ifdef WITH_VTK
 
-#pragma push_macro("INPUT_PORT")
-#undef INPUT_PORT
-#include <vtkCamera.h>
-#include <vtkMath.h>
-#include <vtkRenderer.h>
-#pragma pop_macro("INPUT_PORT")
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 
 namespace SCIRun {
     namespace Render {

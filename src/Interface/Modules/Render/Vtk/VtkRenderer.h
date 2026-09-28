@@ -31,24 +31,8 @@
 #include <cstdio>
 
 
-#ifdef WITH_VTK
-#pragma push_macro("INPUT_PORT")
-#undef INPUT_PORT
-#include <vtkSmartPointer.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkWindowToImageFilter.h>
-#include <vtkActor.h>
-#include <vtkPolyData.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkDataSetMapper.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkSmartVolumeMapper.h>
-#include <vtkGlyph3DMapper.h>
-#include <vtkPlane.h>
-#pragma pop_macro("INPUT_PORT")
 
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include "VtkCameraController.h"
 
 #include <Core/Datatypes/Feedback.h>
