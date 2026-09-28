@@ -129,9 +129,25 @@ jobs:
       #   individually instead of excluding Boost/Python/Libxml2 from a
       #   wholesale `bin/Externals` include.
       #
-      # Scoped to these 3 Linux jobs only (not the 13 mac+windows jobs #2576
+      # Scoped to these Linux jobs only (not the 13 mac+windows jobs #2576
       # tried to cover) is what keeps total cache usage under the repo's
-      # 10 GB cap, now that most PRs run only these jobs (#2747).
+      # 10 GB cap, now that most PRs run only 3 Linux jobs (#2747).
+      #
+      # GitHub Actions caches are scoped per-branch, falling back to the
+      # *default* branch's own cache when the current branch has none -- but
+      # a cache never gets there for free. It has to be written by some
+      # workflow run that actually executes ON master. Since pr.yml only
+      # triggers on pull_request, a PR-only cache-externals had zero effect
+      # in production: every branch was cold on its first push (no fallback
+      # existed) and, since master itself never wrote one, every branch also
+      # saved its own copy -- 19 duplicate ~1.65 GiB sets across concurrent
+      # PRs pushed the repo over the 10 GB cap and evicted each other. Fixed
+      # by also enabling this in ccpp.yml (runs on every push to master), so
+      # PRs get a real fallback and there's one shared copy instead of N.
+      # `runner.arch` is in the key because ccpp.yml also builds on
+      # ubuntu-24.04-arm with the same OS name -- without it, an arm64 job
+      # and an x86_64 job would silently share a key and restore the wrong
+      # architecture's binaries.
       - name: Compute externals cache key
         if: ${{ inputs.cache-externals }}
         id: ext-key
@@ -147,7 +163,7 @@ jobs:
               *) qt_bucket=$(echo "${{ inputs.qt-version }}" | tr -c 'a-zA-Z0-9' '-') ;;
             esac
           fi
-          key="superbuild-ext-v5-${{ runner.os }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
+          key="superbuild-ext-v6-${{ runner.os }}-${{ runner.arch }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
           echo "key=$key" >> "$GITHUB_OUTPUT"
           echo "Externals cache key: $key"
 
