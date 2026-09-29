@@ -1143,6 +1143,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::makeObject(FieldHandle field) const
   return obj;
 }
 
+#ifdef WITH_VTK
 vtkSmartPointer<vtkUnstructuredGrid> VtkGeometryBuilder::buildVolumeGrid(FieldHandle field) const
 {
   auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
@@ -1375,6 +1376,7 @@ vtkSmartPointer<vtkImageData> VtkGeometryBuilder::buildImageVolume(FieldHandle f
 
   return image;
 }
+#endif
 
 std::array<double, 2> VtkGeometryBuilder::computeScalarRange(FieldHandle field) const
 {
