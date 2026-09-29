@@ -322,19 +322,38 @@ void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandl
 {
   if (!poly) return;
 
+  double range[2];
+  poly->GetScalarRange(range);
+
   auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 
   mapper->SetInputData(poly);
+
+  auto actor = vtkSmartPointer<vtkActor>::New();
+
+  if (geo->tfn.fromColorMap)
+  {
+    mapper->ScalarVisibilityOn();
+    mapper->SetColorModeToMapScalars();
+    mapper->SetScalarModeToUsePointData();
+    mapper->SetScalarRange(range);
+
+    auto lut = createLookupTable(geo->tfn, range);
+
+    mapper->SetLookupTable(lut);
+  }
+  else
+  {
+    mapper->ScalarVisibilityOff();
+
+    applyMaterial(actor, geo->material);
+  }
 
   surfaceMappers_.push_back(mapper);
 
   applyCurrentClippingPlanes(mapper.Get());
 
-  auto actor = vtkSmartPointer<vtkActor>::New();
-
   actor->SetMapper(mapper);
-
-  applyMaterial(actor, geo->material);
 
   renderer_->AddActor(actor);
 
@@ -352,20 +371,29 @@ void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGe
 
   mapper->SetInputData(ugrid);
 
-  mapper->ScalarVisibilityOn();
-  mapper->SetColorModeToMapScalars();
-  mapper->SetScalarModeToUsePointData();
-  mapper->SetScalarRange(range);
-
-  auto lut = createLookupTable(geo->tfn, range);
-
-  mapper->SetLookupTable(lut);
-
   surfaceMappers_.push_back(mapper);
 
   applyCurrentClippingPlanes(mapper.Get());
 
   auto actor = vtkSmartPointer<vtkActor>::New();
+
+  if (geo->tfn.fromColorMap)
+  {
+    mapper->ScalarVisibilityOn();
+    mapper->SetColorModeToMapScalars();
+    mapper->SetScalarModeToUsePointData();
+    mapper->SetScalarRange(range);
+
+    auto lut = createLookupTable(geo->tfn, range);
+
+    mapper->SetLookupTable(lut);
+  }
+  else
+  {
+    mapper->ScalarVisibilityOff();
+
+    applyMaterial(actor, geo->material);
+  }
 
   actor->SetMapper(mapper);
 

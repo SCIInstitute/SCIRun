@@ -1226,10 +1226,14 @@ vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeFaces(FieldHandle fi
 
   auto facade = field->mesh()->getFacade();
   auto vmesh = field->vmesh();
+  auto vfield = field->vfield();
 
   auto points = vtkSmartPointer<vtkPoints>::New();
   auto polys = vtkSmartPointer<vtkCellArray>::New();
 
+  //----------------------------------
+  // Points
+  //----------------------------------
   for (const auto& node : facade->nodes())
   {
     auto p = node.point();
@@ -1238,6 +1242,29 @@ vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeFaces(FieldHandle fi
 
   poly->SetPoints(points);
 
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0)
+      vfield->get_value(value, node.index());
+    else
+      value = 0.0;
+
+    scalars->InsertNextValue(value);
+  }
+
+  poly->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Faces
+  //----------------------------------
   FieldInformation info(field);
 
   for (const auto& cell : facade->cells())
@@ -1295,6 +1322,7 @@ vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeSurface(FieldHandle 
   surface->Update();
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
+
   poly->ShallowCopy(surface->GetOutput());
 
   return poly;
