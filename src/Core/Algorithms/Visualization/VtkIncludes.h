@@ -63,6 +63,7 @@
 #include <vtkSmartVolumeMapper.h>
 #include <vtkGlyph3DMapper.h>
 #include <vtkPlane.h>
+#include <vtkDataSetSurfaceFilter.h>
 #pragma pop_macro("INPUT_PORT")
 #endif
 

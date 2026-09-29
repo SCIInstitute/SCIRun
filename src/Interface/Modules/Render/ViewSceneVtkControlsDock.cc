@@ -305,7 +305,11 @@ std::vector<QString> VisibleItemManagerVtk::synchronize(const std::vector<Geomet
     if (stateIter != showFieldStates.end())
     {
       auto state = stateIter->second;
-      updateCheckStates(name, {state->getValue(Parameters::ShowNodes).toBool(), state->getValue(Parameters::ShowEdges).toBool(), state->getValue(Parameters::ShowFaces).toBool()});
+      updateCheckStates(name,
+          {
+              state->getValue(Parameters::ShowNodes).toBool(),
+              state->getValue(Parameters::ShowEdges).toBool(),
+              state->getValue(Parameters::ShowFaces).toBool()});
     }
   }
   itemList_->sortItems(0, Qt::AscendingOrder);

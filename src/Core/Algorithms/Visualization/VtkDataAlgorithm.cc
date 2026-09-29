@@ -53,6 +53,7 @@ ALGORITHM_PARAMETER_DEF(VtkVisualization, UseNormals);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowNodes);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowEdges);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowFaces);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowAllFaces);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowVolume);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ModuleID);
 
@@ -73,6 +74,7 @@ VtkDataAlgorithm::VtkDataAlgorithm()
   addParameter(Parameters::ShowNodes, false);
   addParameter(Parameters::ShowEdges, false);
   addParameter(Parameters::ShowFaces, true);
+  addParameter(Parameters::ShowAllFaces, true);
   addParameter(Parameters::ShowVolume, false);
   addParameter(Parameters::ModuleID, 0);
 }
