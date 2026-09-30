@@ -257,6 +257,13 @@ void VtkRenderer::applyClippingPlanesToScene()
   }
 }
 
+void VtkRenderer::setBackgroundColor(const QColor& color)
+{
+  bgColor_ = color;
+  renderer_->SetBackground(
+      bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
+}
+
 void VtkRenderer::initialize()
   {
   renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
@@ -266,7 +273,8 @@ void VtkRenderer::initialize()
 
   renderWindow_->AddRenderer(renderer_);
 
-  renderer_->SetBackground(0.1, 0.2, 0.4);
+  renderer_->SetBackground(
+      bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
 
   w2i_ = vtkSmartPointer<vtkWindowToImageFilter>::New();
   w2i_->SetInput(renderWindow_);

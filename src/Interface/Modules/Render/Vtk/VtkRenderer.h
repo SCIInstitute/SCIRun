@@ -41,6 +41,7 @@
 
 #include <glm/glm.hpp>
 #include <QImage>
+#include <QColor>
 
 namespace SCIRun { namespace Render {
 
@@ -65,6 +66,8 @@ public:
   void updateGeometries(const std::vector<Core::Datatypes::VtkGeometryObjectHandle>& geometries);
   //clipping planes
   void updateClippingPlanes(const std::vector<Core::Datatypes::ClippingPlane>& planes);
+  //bg
+  void setBackgroundColor(const QColor& color);
 
   //Getters-----------------------------------------------------------------------------------------
   uint32_t width() {return width_;}
@@ -142,6 +145,9 @@ public:
 
   std::vector<Core::Datatypes::ClippingPlane> clippingPlanes_;
   std::vector<vtkSmartPointer<vtkPlane>> vtkClippingPlanes_;
+
+  //bgcolor
+  QColor bgColor_{QColor::fromRgbF(0.1, 0.2, 0.4)};
 
   unsigned char* imagePixels_ = nullptr;
   QImage image_;
