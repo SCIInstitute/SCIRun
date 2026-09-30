@@ -1346,7 +1346,9 @@ void ViewSceneVtkDialog::assignBackgroundColor()
     bgColor_ = newColor;
     colorOptions_->setSampleColor(bgColor_);
     state_->setValue(Parameters::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
+#ifdef WITH_VTK
     renderer_->setBackgroundColor(bgColor_);
+#endif
     const auto useBg = state_->getValue(Parameters::UseBGColor).toBool();
     if (useBg)
       setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
