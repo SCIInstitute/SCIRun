@@ -357,6 +357,16 @@ SET(SCIRUN_CACHE_ARGS
     "-DGENERATE_COMPILATION_DATABASE:BOOL=${GENERATE_COMPILATION_DATABASE}"
 )
 
+# The Superbuild only drives ExternalProjects and compiles nothing itself, so a
+# launcher (CI's sccache) has to be handed to the inner build to do anything.
+FOREACH(lang C CXX)
+  IF(CMAKE_${lang}_COMPILER_LAUNCHER)
+    LIST(APPEND SCIRUN_CACHE_ARGS
+      "-DCMAKE_${lang}_COMPILER_LAUNCHER:STRING=${CMAKE_${lang}_COMPILER_LAUNCHER}"
+    )
+  ENDIF()
+ENDFOREACH()
+
 IF(WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DPython_DIR:PATH=${Python_DIR}"
