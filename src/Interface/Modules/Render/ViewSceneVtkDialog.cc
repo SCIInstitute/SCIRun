@@ -338,6 +338,8 @@ Qt::ToolBarArea ViewSceneVtkDialog::whereIs(QToolBar* toolbar) const
     return Qt::ToolBarArea::TopToolBarArea;
   else if (toolbar == toolBar2_)
     return Qt::ToolBarArea::LeftToolBarArea;
+  else if (toolbar == toolBar3_)
+    return Qt::ToolBarArea::RightToolBarArea;
   return Qt::ToolBarArea::AllToolBarAreas;
 }
 
