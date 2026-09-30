@@ -51,14 +51,14 @@ endmacro()
 # Core numeric / math libraries
 # -----------------------------------------------------------------------------
 # Eigen — fetched as a release tarball (immutable, hashable). GOLD STANDARD pin.
-sci_dep_version(EIGEN_VERSION  "3.4.0"  "Eigen release version")
+sci_dep_version(EIGEN_VERSION  "3.4.1"  "Eigen release version")
 sci_dep_version(EIGEN_URL
   "https://gitlab.com/libeigen/eigen/-/archive/${EIGEN_VERSION}/eigen-${EIGEN_VERSION}.tar.gz"
   "Eigen source tarball URL")
 # Bumping EIGEN_VERSION means recomputing this. An empty value skips the check,
 # which is also what makes a local -DEIGEN_URL override work.
 sci_dep_version(EIGEN_URL_HASH
-  "8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72"
+  "b93c667d1b69265cdb4d9f30ec21f8facbbe8b307cf34c0b9942834c6d4fdbe2"
   "Eigen tarball SHA256 (URL_HASH SHA256=...)")
 
 # -----------------------------------------------------------------------------
