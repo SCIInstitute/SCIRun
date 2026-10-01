@@ -29,199 +29,120 @@
 
 #ifdef WITH_VTK
 
-#include <vtkCamera.h>
-#include <vtkMath.h>
-#include <vtkRenderer.h>
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 
 namespace SCIRun {
-    namespace Render {
+namespace Render {
 
-        void VtkCameraController::mousePress(
-            float x,
-            float y,
-            MouseButton button)
-        {
-            dragging_ = true;
+  void VtkCameraController::setCamera(vtkCamera* camera)
+  {
+    camera_ = camera;
+  }
 
-            activeButton_ = button;
+  void VtkCameraController::mousePress(float x, float y, MouseButton button)
+  {
+    dragging_ = true;
 
-            lastMousePos_ = glm::vec2(x, y);
-        }
+    activeButton_ = button;
 
-        void VtkCameraController::mouseRelease()
-        {
-            dragging_ = false;
-        }
+    lastMousePos_ = glm::vec2(x, y);
+  }
 
-        void VtkCameraController::mouseMove(
-            float x,
-            float y,
-            vtkRenderer* renderer)
-        {
-            if (!dragging_ || !renderer)
-                return;
+  void VtkCameraController::mouseRelease()
+  {
+    dragging_ = false;
+  }
 
-            vtkCamera* camera = renderer->GetActiveCamera();
+  void VtkCameraController::mouseMove(float x, float y)
+  {
+    if (!dragging_ || !camera_) return;
 
-            if (!camera)
-                return;
+    float dx = x - lastMousePos_.x;
+    float dy = y - lastMousePos_.y;
 
-            const float dx = x - lastMousePos_.x;
-            const float dy = y - lastMousePos_.y;
+    switch (activeButton_)
+    {
+    case MouseButton::LEFT: rotate(dx, dy); break;
 
-            switch (activeButton_)
-            {
-            case MouseButton::LEFT:
-                rotate(camera, renderer, dx, dy);
-                break;
+    case MouseButton::MIDDLE: pan(dx, dy); break;
 
-            case MouseButton::MIDDLE:
-                pan(camera, renderer, dx, dy);
-                break;
+    case MouseButton::RIGHT: zoom(dy); break;
 
-            case MouseButton::RIGHT:
-                zoom(camera, renderer, dy);
-                break;
-
-            default:
-                break;
-            }
-
-            lastMousePos_ = glm::vec2(x, y);
-        }
-
-        void VtkCameraController::mouseWheel(
-            int32_t delta,
-            vtkRenderer* renderer)
-        {
-            if (!renderer)
-                return;
-
-            vtkCamera* camera = renderer->GetActiveCamera();
-
-            if (!camera)
-                return;
-
-            zoom(camera,
-                renderer,
-                static_cast<float>(delta));
-        }
-
-        void VtkCameraController::rotate(
-            vtkCamera* camera,
-            vtkRenderer* renderer,
-            float dx,
-            float dy)
-        {
-            camera->Azimuth(-dx * rotationSpeed_);
-            camera->Elevation(dy * rotationSpeed_);
-
-            camera->OrthogonalizeViewUp();
-
-            renderer->ResetCameraClippingRange();
-        }
-
-        void VtkCameraController::pan(
-            vtkCamera* camera,
-            vtkRenderer* renderer,
-            float dx,
-            float dy)
-        {
-            double position[3];
-            double focalPoint[3];
-
-            camera->GetPosition(position);
-            camera->GetFocalPoint(focalPoint);
-
-            double up[3];
-            camera->GetViewUp(up);
-
-            double right[3];
-            vtkMath::Cross(
-                camera->GetDirectionOfProjection(),
-                up,
-                right);
-
-            for (int i = 0; i < 3; ++i)
-            {
-                const double offset =
-                    (-dx * panSpeed_) * right[i]
-                    + (dy * panSpeed_) * up[i];
-
-                position[i] += offset;
-                focalPoint[i] += offset;
-            }
-
-            camera->SetPosition(position);
-            camera->SetFocalPoint(focalPoint);
-
-            renderer->ResetCameraClippingRange();
-        }
-
-        void VtkCameraController::zoom(
-            vtkCamera* camera,
-            vtkRenderer* renderer,
-            float amount)
-        {
-            const double factor =
-                std::pow(1.01, amount * zoomSpeed_);
-
-            camera->Dolly(factor);
-
-            renderer->ResetCameraClippingRange();
-        }
-
-        void VtkCameraController::resetView(
-            vtkRenderer* renderer)
-        {
-            if (!renderer)
-                return;
-
-            renderer->ResetCamera();
-
-            vtkCamera* camera =
-                renderer->GetActiveCamera();
-
-            if (camera)
-            {
-                camera->SetViewUp(0.0, 1.0, 0.0);
-                camera->OrthogonalizeViewUp();
-            }
-
-            renderer->ResetCameraClippingRange();
-        }
-
-        void VtkCameraController::setRotationSpeed(float speed)
-        {
-            rotationSpeed_ = speed;
-        }
-
-        void VtkCameraController::setPanSpeed(float speed)
-        {
-            panSpeed_ = speed;
-        }
-
-        void VtkCameraController::setZoomSpeed(float speed)
-        {
-            zoomSpeed_ = speed;
-        }
-
-        float VtkCameraController::rotationSpeed() const
-        {
-            return rotationSpeed_;
-        }
-
-        float VtkCameraController::panSpeed() const
-        {
-            return panSpeed_;
-        }
-
-        float VtkCameraController::zoomSpeed() const
-        {
-            return zoomSpeed_;
-        }
-
+    default: break;
     }
-} // namespace SCIRun::Render
+
+    lastMousePos_ = {x, y};
+  }
+
+  void VtkCameraController::mouseWheel(int32_t delta)
+  {
+    if (!camera_) return;
+
+    zoom(static_cast<float>(delta));
+  }
+
+  void VtkCameraController::rotate(float dx, float dy)
+  {
+    if (!camera_) return;
+
+    camera_->Azimuth(-dx * rotationSpeed_);
+
+    camera_->Elevation(dy * rotationSpeed_);
+
+    camera_->OrthogonalizeViewUp();
+
+    camera_->Modified();
+  }
+
+  void VtkCameraController::pan(float dx, float dy)
+  {
+    if (!camera_) return;
+
+    double position[3];
+    double focalPoint[3];
+
+    camera_->GetPosition(position);
+    camera_->GetFocalPoint(focalPoint);
+    double up[3];
+    camera_->GetViewUp(up);
+
+    double right[3];
+    vtkMath::Cross(camera_->GetDirectionOfProjection(), up, right);
+
+    for (int i = 0; i < 3; ++i)
+    {
+      const double offset = (-dx * panSpeed_) * right[i] + (dy * panSpeed_) * up[i];
+
+      position[i] += offset;
+      focalPoint[i] += offset;
+    }
+
+    camera_->SetPosition(position);
+    camera_->SetFocalPoint(focalPoint);
+
+  }
+
+  void VtkCameraController::zoom(float amount)
+  {
+    if (!camera_) return;
+
+    double factor = std::pow(1.01, amount * zoomSpeed_);
+
+    camera_->Dolly(factor);
+
+    camera_->Modified();
+  }
+
+  void VtkCameraController::resetView()
+  {
+    if (!camera_) return;
+
+    camera_->SetViewUp(0.0, 1.0, 0.0);
+    camera_->OrthogonalizeViewUp();
+
+  }
+
+}
+}  // namespace SCIRun::Render
 
 #endif

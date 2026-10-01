@@ -25,23 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef WITH_VTK
-#include <vtkUnstructuredGrid.h>
-#include <vtkPoints.h>
-#include <vtkDoubleArray.h>
-#include <vtkPointData.h>
-#include <vtkHexahedron.h>
-#include <vtkCellArray.h>
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
-#include <vtkPolyLine.h>
-#include <vtkFloatArray.h>
-#include <vtkTriangle.h>
-#include <vtkQuad.h>
-#include <vtkLine.h>
-#include <vtkTetra.h>
-#endif
-
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include <Core/Algorithms/Visualization/VtkGeometryBuilder.h>
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
@@ -711,64 +695,25 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addQuadSurface(FieldHandle field, Co
 VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
   bool showFaces = algorithm_.get(Parameters::ShowFaces).toBool();
+  bool showAllFaces = algorithm_.get(Parameters::ShowAllFaces).toBool();
   bool showVolume = algorithm_.get(Parameters::ShowVolume).toBool();
+  bool showPolyData = showFaces || showAllFaces;
 
   auto volumeObj = showVolume ? makeObject(field) : nullptr;
-  auto meshObj = showFaces ? makeObject(field) : nullptr;
+  auto meshObj = showPolyData ? makeObject(field) : nullptr;
 
 #ifdef WITH_VTK
-  auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  const auto range = computeScalarRange(field);
 
-  auto facade = field->mesh()->getFacade();
-  auto vfield = field->vfield();
-  auto vmesh = field->vmesh();
-
-  // volume
   if (showVolume)
   {
-    auto image = vtkSmartPointer<vtkImageData>::New();
-
-    const auto ni = vmesh->get_ni();
-    const auto nj = vmesh->get_nj();
-    const auto nk = vmesh->get_nk();
-    auto bbox = vmesh->get_bounding_box();
-    const auto originX = bbox.get_min().x();
-    const auto originY = bbox.get_min().y();
-    const auto originZ = bbox.get_min().z();
-    const auto sizeX = bbox.get_max().x() - originX;
-    const auto sizeY = bbox.get_max().y() - originY;
-    const auto sizeZ = bbox.get_max().z() - originZ;
-    const auto dx = sizeX / (ni > 1 ? ni - 1 : 1);
-    const auto dy = sizeY / (nj > 1 ? nj - 1 : 1);
-    const auto dz = sizeZ / (nk > 1 ? nk - 1 : 1);
-
-    image->SetDimensions(ni, nj, nk);
-    image->SetOrigin(originX, originY, originZ);
-    image->SetSpacing(dx, dy, dz);
-
-    auto imageScalars = vtkSmartPointer<vtkDoubleArray>::New();
-    imageScalars->SetName("Values");
-    imageScalars->SetNumberOfComponents(1);
-    imageScalars->SetNumberOfTuples(ni * nj * nk);
-
-    double value = 0.0;
-    bool value_num = vfield->num_values() > 0;
-
-    for (const auto& node : facade->nodes())
-    {
-      if (value_num)
-        vfield->get_value(value, node.index());
-      imageScalars->SetValue(node.index(), value);
-    }
-
-    image->GetPointData()->SetScalars(imageScalars);
-
+    auto image = buildImageVolume(field);
     volumeObj->dataObject = image;
     volumeObj->material.color[0] = static_cast<float>(algorithm_.get(Parameters::DefaultColorR).toDouble());
     volumeObj->material.color[1] = static_cast<float>(algorithm_.get(Parameters::DefaultColorG).toDouble());
     volumeObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
     volumeObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
-    volumeObj->tfn.range = {static_cast<float>(imageScalars->GetRange()[0]), static_cast<float>(imageScalars->GetRange()[1])};
+    volumeObj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
     if (colorMap)
     {
       ColorMap_OSP_helper cmp(colorMap);
@@ -786,74 +731,23 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     volumeObj->type = GeometryType::STRUCTURED_VOLUME;
   }
 
-  if (showFaces)
+  if (showPolyData)
   {
-    //----------------------------------
-    // Points
-    //----------------------------------
-
-    auto points = vtkSmartPointer<vtkPoints>::New();
-
-    for (const auto& node : facade->nodes())
+    vtkSmartPointer<vtkPolyData> faces;
+    if (showAllFaces)
     {
-      auto p = node.point();
-
-      points->InsertNextPoint(p.x(), p.y(), p.z());
+      faces = buildVolumeFaces(field);
     }
-
-    grid->SetPoints(points);
-
-    //----------------------------------
-    // Point scalars
-    //----------------------------------
-
-    auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
-    scalars->SetName("Values");
-
-    double value = 0.0;
-    bool value_num = vfield->num_values() > 0;
-    std::vector<double> valueRange(2);
-    valueRange[0] = std::numeric_limits<double>::max();
-    valueRange[1] = std::numeric_limits<double>::lowest();
-
-    for (const auto& node : facade->nodes())
+    else if (showFaces)
     {
-      if (value_num)
-        vfield->get_value(value, node.index());
-      scalars->InsertNextValue(value);
-      valueRange[0] = std::min(valueRange[0], value);
-      valueRange[1] = std::max(valueRange[1], value);
+      faces = buildVolumeSurface(field);
     }
-
-    grid->GetPointData()->SetScalars(scalars);
-
-    //----------------------------------
-    // Hex cells
-    //----------------------------------
-
-    for (const auto& cell : facade->cells())
-    {
-      VMesh::Node::array_type nodes;
-      vmesh->get_nodes(nodes, cell.index());
-
-      if (nodes.size() != 8) continue;
-
-      vtkNew<vtkHexahedron> hex;
-
-      for (size_t i = 0; i < 8; ++i)
-      {
-        hex->GetPointIds()->SetId(static_cast<vtkIdType>(i), static_cast<vtkIdType>(nodes[i]));
-      }
-
-      grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
-    }
-
-    meshObj->dataObject = grid;
+    meshObj->dataObject = faces;
     meshObj->material.color[0] = static_cast<float>(algorithm_.get(Parameters::DefaultColorR).toDouble());
     meshObj->material.color[1] = static_cast<float>(algorithm_.get(Parameters::DefaultColorG).toDouble());
     meshObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
     meshObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
-    meshObj->tfn.range = {static_cast<float>(valueRange[0]), static_cast<float>(valueRange[1])};
+    meshObj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
     if (colorMap)
     {
       ColorMap_OSP_helper cmp(colorMap);
@@ -868,18 +762,18 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
       meshObj->tfn.colors = {meshObj->material.color[0], meshObj->material.color[1], meshObj->material.color[2]};
       meshObj->tfn.opacities = {meshObj->material.opacity};
     }
-    meshObj->type = GeometryType::STRUCTURED_VOLUME;
+    meshObj->type = GeometryType::VOLUME_FACES;
   }
 
-  if (showVolume && !showFaces)
+  if (showVolume && !showPolyData)
   {
     return volumeObj;
   }
-  else if (!showVolume && showFaces)
+  else if (!showVolume && showPolyData)
   {
     return meshObj;
   }
-  else if (showVolume && showFaces)
+  else if (showVolume && showPolyData)
   {
     return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{volumeObj, meshObj});
   }
@@ -1247,4 +1141,263 @@ VtkGeometryObjectHandle VtkGeometryBuilder::makeObject(FieldHandle field) const
   auto bbox = vmesh->get_bounding_box();
   obj->box = bbox;
   return obj;
+}
+
+#ifdef WITH_VTK
+vtkSmartPointer<vtkUnstructuredGrid> VtkGeometryBuilder::buildVolumeGrid(FieldHandle field) const
+{
+  auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
+
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
+  auto vmesh = field->vmesh();
+
+  //----------------------------------
+  // Points
+  //----------------------------------
+
+  auto points = vtkSmartPointer<vtkPoints>::New();
+
+  for (const auto& node : facade->nodes())
+  {
+    auto p = node.point();
+    points->InsertNextPoint(p.x(), p.y(), p.z());
+  }
+
+  grid->SetPoints(points);
+
+  //----------------------------------
+  // Scalars
+  //----------------------------------
+
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0)
+      vfield->get_value(value, node.index());
+    else
+      value = 0.0;
+
+    scalars->InsertNextValue(value);
+  }
+
+  grid->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Cells
+  //----------------------------------
+
+  FieldInformation info(field);
+
+  for (const auto& cell : facade->cells())
+  {
+    VMesh::Node::array_type nodes;
+    vmesh->get_nodes(nodes, cell.index());
+
+    if (info.is_tetvol())
+    {
+      vtkNew<vtkTetra> tet;
+
+      for (size_t i = 0; i < 4; ++i)
+        tet->GetPointIds()->SetId(i, nodes[i]);
+
+      grid->InsertNextCell(tet->GetCellType(), tet->GetPointIds());
+    }
+    else if (info.is_hexvol() || info.is_latvol())
+    {
+      vtkNew<vtkHexahedron> hex;
+
+      for (size_t i = 0; i < 8; ++i)
+        hex->GetPointIds()->SetId(i, nodes[i]);
+
+      grid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
+    }
+  }
+
+  return grid;
+}
+
+vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeFaces(FieldHandle field) const
+{
+  auto poly = vtkSmartPointer<vtkPolyData>::New();
+
+  auto facade = field->mesh()->getFacade();
+  auto vmesh = field->vmesh();
+  auto vfield = field->vfield();
+
+  auto points = vtkSmartPointer<vtkPoints>::New();
+  auto polys = vtkSmartPointer<vtkCellArray>::New();
+
+  //----------------------------------
+  // Points
+  //----------------------------------
+  for (const auto& node : facade->nodes())
+  {
+    auto p = node.point();
+    points->InsertNextPoint(p.x(), p.y(), p.z());
+  }
+
+  poly->SetPoints(points);
+
+  //----------------------------------
+  // Point scalars
+  //----------------------------------
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+  scalars->SetName("Values");
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0)
+      vfield->get_value(value, node.index());
+    else
+      value = 0.0;
+
+    scalars->InsertNextValue(value);
+  }
+
+  poly->GetPointData()->SetScalars(scalars);
+
+  //----------------------------------
+  // Faces
+  //----------------------------------
+  FieldInformation info(field);
+
+  for (const auto& cell : facade->cells())
+  {
+    VMesh::Node::array_type nodes;
+    vmesh->get_nodes(nodes, cell.index());
+
+    if (info.is_hexvol() || info.is_latvol())
+    {
+      constexpr int faces[6][4] = {{0, 1, 2, 3}, {4, 5, 6, 7}, {0, 1, 5, 4}, {1, 2, 6, 5}, {2, 3, 7, 6}, {3, 0, 4, 7}};
+
+      for (int f = 0; f < 6; ++f)
+      {
+        vtkNew<vtkQuad> quad;
+
+        for (int i = 0; i < 4; ++i)
+        {
+          quad->GetPointIds()->SetId(i, static_cast<vtkIdType>(nodes[faces[f][i]]));
+        }
+
+        polys->InsertNextCell(quad);
+      }
+    }
+
+    else if (info.is_tetvol())
+    {
+      constexpr int faces[4][3] = {{0, 1, 2}, {0, 3, 1}, {1, 3, 2}, {2, 3, 0}};
+
+      for (int f = 0; f < 4; ++f)
+      {
+        vtkNew<vtkTriangle> tri;
+
+        for (int i = 0; i < 3; ++i)
+        {
+          tri->GetPointIds()->SetId(i, static_cast<vtkIdType>(nodes[faces[f][i]]));
+        }
+
+        polys->InsertNextCell(tri);
+      }
+    }
+  }
+
+  poly->SetPolys(polys);
+
+  return poly;
+}
+
+vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeSurface(FieldHandle field) const
+{
+  auto grid = buildVolumeGrid(field);
+
+  auto surface = vtkSmartPointer<vtkDataSetSurfaceFilter>::New();
+
+  surface->SetInputData(grid);
+  surface->Update();
+
+  auto poly = vtkSmartPointer<vtkPolyData>::New();
+
+  poly->ShallowCopy(surface->GetOutput());
+
+  return poly;
+}
+
+vtkSmartPointer<vtkImageData> VtkGeometryBuilder::buildImageVolume(FieldHandle field) const
+{
+  auto image = vtkSmartPointer<vtkImageData>::New();
+
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
+  auto vmesh = field->vmesh();
+
+  const auto ni = vmesh->get_ni();
+  const auto nj = vmesh->get_nj();
+  const auto nk = vmesh->get_nk();
+
+  auto bbox = vmesh->get_bounding_box();
+
+  const auto ox = bbox.get_min().x();
+  const auto oy = bbox.get_min().y();
+  const auto oz = bbox.get_min().z();
+
+  const auto dx = (bbox.get_max().x() - ox) / (ni > 1 ? ni - 1 : 1);
+
+  const auto dy = (bbox.get_max().y() - oy) / (nj > 1 ? nj - 1 : 1);
+
+  const auto dz = (bbox.get_max().z() - oz) / (nk > 1 ? nk - 1 : 1);
+
+  image->SetDimensions(ni, nj, nk);
+  image->SetOrigin(ox, oy, oz);
+  image->SetSpacing(dx, dy, dz);
+
+  auto scalars = vtkSmartPointer<vtkDoubleArray>::New();
+
+  scalars->SetName("Values");
+  scalars->SetNumberOfComponents(1);
+  scalars->SetNumberOfTuples(ni * nj * nk);
+
+  double value = 0.0;
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0) vfield->get_value(value, node.index());
+
+    scalars->SetValue(node.index(), value);
+  }
+
+  image->GetPointData()->SetScalars(scalars);
+
+  return image;
+}
+#endif
+
+std::array<double, 2> VtkGeometryBuilder::computeScalarRange(FieldHandle field) const
+{
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
+
+  double value = 0.0;
+
+  double minv = std::numeric_limits<double>::max();
+  double maxv = std::numeric_limits<double>::lowest();
+
+  for (const auto& node : facade->nodes())
+  {
+    if (vfield->num_values() > 0)
+      vfield->get_value(value, node.index());
+    else
+      value = 0.0;
+
+    minv = std::min(minv, value);
+    maxv = std::max(maxv, value);
+  }
+
+  return {minv, maxv};
 }

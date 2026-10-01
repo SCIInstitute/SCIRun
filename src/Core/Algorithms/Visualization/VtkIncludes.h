@@ -25,51 +25,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_RENDER_VIEW_SCENE_VTK_H
-#define MODULES_RENDER_VIEW_SCENE_VTK_H
-
-#include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
-#include <Core/Thread/Mutex.h>
-#include <Core/Algorithms/Base/AlgorithmMacros.h>
-#include <Modules/Render/share.h>
-
-namespace SCIRun {
-namespace Core {
-  namespace Algorithms {
-    namespace Render {
-    }
-  }
-}
-
-namespace Modules {
-  namespace Render {
-
-    class SCISHARE ViewSceneVtk : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
-        public Has1InputPort<AsyncDynamicPortTag<GeometryVtkPortTag>>,
-        public HasNoOutputPorts
-    {
-     public:
-      ViewSceneVtk();
-      void asyncExecute(const Dataflow::Networks::PortId&, Core::Datatypes::DatatypeHandle) override;
-      void setStateDefaults() override;
-
-      INPUT_PORT_DYNAMIC(0, GeneralGeom, VtkGeometryObject);
-      void execute() override;
-
-      MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
-
-#ifndef WITH_VTK
-      DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
+#ifdef WITH_VTK
+#pragma push_macro("INPUT_PORT")
+#undef INPUT_PORT
+#include <vtkSmartPointer.h>
+#include <vtkDataObject.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkPoints.h>
+#include <vtkDoubleArray.h>
+#include <vtkPointData.h>
+#include <vtkHexahedron.h>
+#include <vtkCellArray.h>
+#include <vtkImageData.h>
+#include <vtkPolyData.h>
+#include <vtkPolyLine.h>
+#include <vtkFloatArray.h>
+#include <vtkTriangle.h>
+#include <vtkQuad.h>
+#include <vtkLine.h>
+#include <vtkTetra.h>
+#include <vtkCamera.h>
+#include <vtkMath.h>
+#include <vtkRenderer.h>
+#include <vtkLookupTable.h>
+#include <vtkProperty.h>
+#include <vtkVolumeProperty.h>
+#include <vtkPiecewiseFunction.h>
+#include <vtkColorTransferFunction.h>
+#include <vtkTubeFilter.h>
+#include <vtkSphereSource.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkWindowToImageFilter.h>
+#include <vtkActor.h>
+#include <vtkDataSetMapper.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkSmartVolumeMapper.h>
+#include <vtkGlyph3DMapper.h>
+#include <vtkPlane.h>
+#include <vtkDataSetSurfaceFilter.h>
+#include <vtkAxesActor.h>
+#include <vtkCallbackCommand.h>
+#pragma pop_macro("INPUT_PORT")
 #endif
 
-     protected:
-      void portRemovedSlotImpl(const Dataflow::Networks::PortId&) override;
-
-     private:
-      void sendCompositeGeometry();
-    };
-  }
-}
-}
-
-#endif

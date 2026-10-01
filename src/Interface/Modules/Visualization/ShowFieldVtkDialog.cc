@@ -57,6 +57,7 @@ ShowFieldVtkDialog::ShowFieldVtkDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(UseNormalCheckBox_, UseNormals);
   addCheckBoxManager(ShowNodesCheckBox_, ShowNodes);
   addCheckBoxManager(ShowFacesCheckBox_, ShowFaces);
+  addCheckBoxManager(ShowAllFacesCheckBox_, ShowAllFaces);
   addCheckBoxManager(ShowEdgesCheckBox_, ShowEdges);
   addCheckBoxManager(ShowVolumeCheckBox_, ShowVolume);
 }

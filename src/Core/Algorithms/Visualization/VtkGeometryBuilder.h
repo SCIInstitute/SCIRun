@@ -76,6 +76,18 @@ namespace SCIRun
 
            Core::Datatypes::VtkGeometryObjectHandle makeObject(FieldHandle field) const;
 
+#ifdef WITH_VTK
+           vtkSmartPointer<vtkUnstructuredGrid> buildVolumeGrid(FieldHandle field) const;
+
+           vtkSmartPointer<vtkPolyData> buildVolumeFaces(FieldHandle field) const;
+
+           vtkSmartPointer<vtkPolyData> buildVolumeSurface(FieldHandle field) const;
+
+           vtkSmartPointer<vtkImageData> buildImageVolume(FieldHandle field) const;
+#endif
+
+           std::array<double, 2> computeScalarRange(FieldHandle field) const;
+
            void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions) const;
 
            std::list<Vertex_u> sort_cc(EdgeVector sub_edges) const;
