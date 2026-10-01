@@ -25,65 +25,56 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
-
-#ifdef WITH_VTK
-
-#include <glm/glm.hpp>
-
-#include <Core/Datatypes/Feedback.h>
-
-class vtkRenderer;
-class vtkCamera;
+#include "VtkOverlayManager.h"
+#include "VtkOverlay.h"
 
 namespace SCIRun {
-    namespace Render {
+namespace Render {
 
-class VtkCameraController
-      {
-       public:
-        void setCamera(vtkCamera* camera);
+  void VtkOverlayManager::initialize(vtkRenderer* renderer)
+  {
+    renderer_ = renderer;
 
-        void mousePress(float x, float y, MouseButton button);
-
-        void mouseMove(float x, float y);
-
-        void mouseRelease();
-
-        void mouseWheel(int32_t delta);
-
-        void resetView();
-
-        void setRotationSpeed(float speed) { rotationSpeed_ = speed; }
-        void setPanSpeed(float speed) { panSpeed_ = speed; }
-        void setZoomSpeed(float speed) { zoomSpeed_ = speed; }
-
-        float rotationSpeed() const { return rotationSpeed_; }
-        float panSpeed() const { return panSpeed_; }
-        float zoomSpeed() const { return zoomSpeed_; }
-
-       private:
-        void rotate(float dx, float dy);
-
-        void pan(float dx, float dy);
-
-        void zoom(float amount);
-
-       private:
-        vtkCamera* camera_{nullptr};
-
-        bool dragging_{false};
-
-        MouseButton activeButton_;
-
-        glm::vec2 lastMousePos_{0.f, 0.f};
-
-        float rotationSpeed_{0.5f};
-        float panSpeed_{0.01f};
-        float zoomSpeed_{0.15f};
-      };
-
+    for (auto& overlay : overlays_)
+    {
+      overlay->initialize(renderer_);
     }
-} // namespace SCIRun::Render
+  }
 
-#endif
+  void VtkOverlayManager::addOverlay(OverlayType type, std::unique_ptr<VtkOverlay> overlay)
+  {
+    if (renderer_)
+    {
+      overlay->initialize(renderer_);
+    }
+
+    overlays_.push_back(std::move(overlay));
+    overlayMap_[type] = overlays_.back().get();
+  }
+
+  void VtkOverlayManager::cameraChanged(vtkCamera* camera)
+  {
+    for (auto& overlay : overlays_)
+    {
+      overlay->cameraChanged(camera);
+    }
+  }
+
+  void VtkOverlayManager::resize(int width, int height)
+  {
+    for (auto& overlay : overlays_)
+    {
+      overlay->resize(width, height);
+    }
+  }
+
+  void VtkOverlayManager::setVisible(OverlayType type, bool visible)
+  {
+    if (overlayMap_.find(type) != overlayMap_.end())
+    {
+      overlayMap_[type]->setVisible(visible);
+    }
+  }
+
+}
+}

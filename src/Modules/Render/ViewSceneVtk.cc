@@ -89,7 +89,7 @@ void ViewSceneVtk::setStateDefaults()
   state->setValue(Parameters::InvertZoom, false);
   state->setValue(Parameters::ZoomSpeed, 1.0);
 
-  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::BackgroundColor, ColorRGB(0.1, 0.2, 0.4).toString());
   state->setValue(Parameters::Ambient, 0.2);
   state->setValue(Parameters::Diffuse, 1.0);
   state->setValue(Parameters::Specular, 0.3);

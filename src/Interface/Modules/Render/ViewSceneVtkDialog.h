@@ -153,7 +153,6 @@ public Q_SLOTS:
   void setWidth(int w);
   void setViewportCamera();
   void setLightColor();
-  void setBGColor();
   void setCameraWidgets();
   void lockMutex();
 

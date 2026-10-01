@@ -7,12 +7,17 @@ SET(LIBS ${LIBS} ${OPENGL_LIBRARIES} ${TBB_LIBRARY_MALLOC} ${TBB_LIBRARY})
 
 SET(SRCS ${SRCS}
   VtkCameraController.cc
+  VtkOrientationOverlay.cc
+  VtkOverlayManager.cc
   VtkQWidget.cc
   VtkRenderer.cc
 )
 
 SET(MOC_HEADERS
   VtkCameraController.h
+  VtkOrientationOverlay.h
+  VtkOverlay.h
+  VtkOverlayManager.h
   VtkQWidget.h
   VtkRenderer.h
   share.h

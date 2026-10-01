@@ -64,6 +64,8 @@
 #include <vtkGlyph3DMapper.h>
 #include <vtkPlane.h>
 #include <vtkDataSetSurfaceFilter.h>
+#include <vtkAxesActor.h>
+#include <vtkCallbackCommand.h>
 #pragma pop_macro("INPUT_PORT")
 #endif
 

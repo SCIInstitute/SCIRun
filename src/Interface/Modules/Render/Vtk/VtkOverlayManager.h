@@ -29,61 +29,54 @@
 
 #ifdef WITH_VTK
 
-#include <glm/glm.hpp>
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
-#include <Core/Datatypes/Feedback.h>
-
-class vtkRenderer;
 class vtkCamera;
+class vtkRenderer;
 
-namespace SCIRun {
-    namespace Render {
+namespace SCIRun::Render {
+class VtkOverlay;
 
-class VtkCameraController
+enum class OverlayType
+{
+  Orientation,
+  Scalebar
+};
+
+class VtkOverlayManager
+{
+ public:
+  void initialize(vtkRenderer* renderer);
+
+  void addOverlay(OverlayType type, std::unique_ptr<VtkOverlay> overlay);
+
+  void cameraChanged(vtkCamera* camera);
+
+  void resize(int width, int height);
+
+  void setVisible(OverlayType type, bool visible);
+
+  template <class T>
+  T* overlay()
+  {
+    for (auto& overlay : overlays_)
+    {
+      if (auto casted = dynamic_cast<T*>(overlay.get()))
       {
-       public:
-        void setCamera(vtkCamera* camera);
-
-        void mousePress(float x, float y, MouseButton button);
-
-        void mouseMove(float x, float y);
-
-        void mouseRelease();
-
-        void mouseWheel(int32_t delta);
-
-        void resetView();
-
-        void setRotationSpeed(float speed) { rotationSpeed_ = speed; }
-        void setPanSpeed(float speed) { panSpeed_ = speed; }
-        void setZoomSpeed(float speed) { zoomSpeed_ = speed; }
-
-        float rotationSpeed() const { return rotationSpeed_; }
-        float panSpeed() const { return panSpeed_; }
-        float zoomSpeed() const { return zoomSpeed_; }
-
-       private:
-        void rotate(float dx, float dy);
-
-        void pan(float dx, float dy);
-
-        void zoom(float amount);
-
-       private:
-        vtkCamera* camera_{nullptr};
-
-        bool dragging_{false};
-
-        MouseButton activeButton_;
-
-        glm::vec2 lastMousePos_{0.f, 0.f};
-
-        float rotationSpeed_{0.5f};
-        float panSpeed_{0.01f};
-        float zoomSpeed_{0.15f};
-      };
-
+        return casted;
+      }
     }
-} // namespace SCIRun::Render
+    return nullptr;
+  }
+
+ private:
+  vtkRenderer* renderer_{nullptr};
+
+  std::vector<std::unique_ptr<VtkOverlay>> overlays_;
+  std::unordered_map<OverlayType, VtkOverlay*> overlayMap_;
+};
+}
 
 #endif

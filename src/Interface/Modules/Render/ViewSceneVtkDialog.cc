@@ -1004,29 +1004,33 @@ void ViewSceneVtkDialog::setClippingPlaneD(int index)
 
 void ViewSceneVtkDialog::showOrientationChecked(bool value)
 {
-  //auto spire = mSpire.lock();
-  //spire->showOrientation(value);
+#ifdef WITH_VTK
+  renderer_->setOrientationAxesVisible(value);
+#endif
   state_->setValue(Parameters::AxesVisible, value);
 }
 
 void ViewSceneVtkDialog::setOrientAxisSize(int value)
 {
-  //auto spire = mSpire.lock();
-  //spire->setOrientSize(value);
+#ifdef WITH_VTK
+  renderer_->setOrientationAxesSize(value);
+#endif
   state_->setValue(Parameters::AxesSize, value);
 }
 
 void ViewSceneVtkDialog::setOrientAxisPosX(int pos)
 {
-  //auto spire = mSpire.lock();
-  //spire->setOrientPosX(pos);
+#ifdef WITH_VTK
+  renderer_->setOrientationAxesPosX(pos);
+#endif
   state_->setValue(Parameters::AxesX, pos);
 }
 
 void ViewSceneVtkDialog::setOrientAxisPosY(int pos)
 {
-  //auto spire = mSpire.lock();
-  //spire->setOrientPosY(pos);
+#ifdef WITH_VTK
+  renderer_->setOrientationAxesPosY(pos);
+#endif
   state_->setValue(Parameters::AxesY, pos);
 }
 
@@ -1523,10 +1527,6 @@ void ViewSceneVtkDialog::lockMutex()
 }
 
 void ViewSceneVtkDialog::setLightColor() {
-}
-
-void ViewSceneVtkDialog::setBGColor()
-{
 }
 
 void ViewSceneVtkDialog::setMaterialFactor(MatFactor factor, double value)

@@ -34,6 +34,7 @@
 #ifdef WITH_VTK
 #include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include "VtkCameraController.h"
+#include "VtkOverlayManager.h"
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
@@ -68,6 +69,12 @@ public:
   void updateClippingPlanes(const std::vector<Core::Datatypes::ClippingPlane>& planes);
   //bg
   void setBackgroundColor(const QColor& color);
+  QColor getBackgroundColor() const { return bgColor_; }
+  //orientation axes
+  void setOrientationAxesVisible(bool visible);
+  void setOrientationAxesSize(int size);
+  void setOrientationAxesPosX(int x);
+  void setOrientationAxesPosY(int y);
 
   //Getters-----------------------------------------------------------------------------------------
   uint32_t width() {return width_;}
@@ -86,6 +93,8 @@ public:
   bool isScivis {true};
 
   void initialize();
+
+  void onCameraModified();
 
     //----------------------------------------
   // Geometry dispatch
@@ -133,7 +142,6 @@ public:
   bool first_update_ = true;
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
-  vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
   std::vector<vtkSmartPointer<vtkActor>> actors_;
   vtkSmartPointer<vtkWindowToImageFilter> w2i_;
 
@@ -148,6 +156,10 @@ public:
 
   //bgcolor
   QColor bgColor_{QColor::fromRgbF(0.1, 0.2, 0.4)};
+
+  //layers
+  vtkSmartPointer<vtkCallbackCommand> cameraObserver_;
+  std::unique_ptr<VtkOverlayManager> overlayManager_;
 
   unsigned char* imagePixels_ = nullptr;
   QImage image_;

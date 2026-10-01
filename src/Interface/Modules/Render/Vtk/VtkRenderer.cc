@@ -25,11 +25,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include "VtkRenderer.h"
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include <Core/GeometryPrimitives/BBox.h>
-
 #include <iostream>
+#include "VtkOrientationOverlay.h"
+#include "VtkOverlay.h"
 
 using namespace SCIRun;
 using namespace Render;
@@ -38,15 +39,11 @@ using namespace Core::Geometry;
 
 #ifdef WITH_VTK
 
-VtkRenderer::VtkRenderer()
-{
-}
+VtkRenderer::VtkRenderer() {}
 
-VtkRenderer::~VtkRenderer()
-{
-}
+VtkRenderer::~VtkRenderer() {}
 
-//Rendering-----------------------------------------------------------------------------------------
+// Rendering-----------------------------------------------------------------------------------------
 void VtkRenderer::renderFrame()
 {
   if (!initialized_) return;
@@ -80,23 +77,22 @@ void VtkRenderer::renderFrame()
     image_ = QImage(imagePixels_, dims[0], dims[1], bytesPerLine, QImage::Format_RGBA8888).copy();
   }
 
-  // VTK is usually vertically flipped relative to Qt
-  #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    image_ = image_.flipped(Qt::Vertical);
-  #else
-    image_ = image_.mirrored(false, true);
-  #endif
+// VTK is usually vertically flipped relative to Qt
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+  image_ = image_.flipped(Qt::Vertical);
+#else
+  image_ = image_.mirrored(false, true);
+#endif
 
-  //std::cout << "Rendered image size: " << image_.width() << "x" << image_.height() << std::endl;
+  // std::cout << "Rendered image size: " << image_.width() << "x" << image_.height() << std::endl;
 }
 
-
-
-//Interaction---------------------------------------------------------------------------------------
+// Interaction---------------------------------------------------------------------------------------
 void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
 {
   width_ = width;
   height_ = height;
+
   if (dpr != devicePixelRatio_)
   {
     devicePixelRatio_ = dpr;
@@ -112,6 +108,11 @@ void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
   {
     renderer_->SetViewport(0.0, 0.0, 1.0, 1.0);
   }
+
+  if (overlayManager_)
+  {
+    overlayManager_->resize(static_cast<int>(width), static_cast<int>(height));
+  }
 }
 
 void VtkRenderer::mousePress(float x, float y, MouseButton btn)
@@ -121,7 +122,7 @@ void VtkRenderer::mousePress(float x, float y, MouseButton btn)
 
 void VtkRenderer::mouseMove(float x, float y, MouseButton btn)
 {
-  cameraController_.mouseMove(x, y, renderer_);
+  cameraController_.mouseMove(x, y);
 
   renderFrame();
 }
@@ -133,19 +134,19 @@ void VtkRenderer::mouseRelease()
 
 void VtkRenderer::mouseWheel(int32_t delta)
 {
-  cameraController_.mouseWheel(delta, renderer_);
+  cameraController_.mouseWheel(delta);
 
   renderFrame();
 }
 
 void VtkRenderer::autoView()
 {
-  cameraController_.resetView(renderer_);
+  cameraController_.resetView();
 
   renderFrame();
 }
 
-//Data----------------------------------------------------------------------------------------------
+// Data----------------------------------------------------------------------------------------------
 void VtkRenderer::updateGeometries(const std::vector<VtkGeometryObjectHandle>& geometries)
 {
   if (!initialized_) initialize();
@@ -177,6 +178,51 @@ void VtkRenderer::updateClippingPlanes(const std::vector<Core::Datatypes::Clippi
   applyClippingPlanesToScene();
 
   renderFrame();
+}
+
+void VtkRenderer::setOrientationAxesVisible(bool visible)
+{
+  if (overlayManager_)
+  {
+    overlayManager_->setVisible(OverlayType::Orientation, visible);
+    renderFrame();
+  }
+}
+
+void VtkRenderer::setOrientationAxesSize(int size)
+{
+  if (overlayManager_)
+  {
+    if (auto orientationOverlay = overlayManager_->overlay<VtkOrientationOverlay>())
+    {
+      orientationOverlay->setSize(size);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setOrientationAxesPosX(int x)
+{
+  if (overlayManager_)
+  {
+    if (auto orientationOverlay = overlayManager_->overlay<VtkOrientationOverlay>())
+    {
+      orientationOverlay->setPosX(x);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setOrientationAxesPosY(int y)
+{
+  if (overlayManager_)
+  {
+    if (auto orientationOverlay = overlayManager_->overlay<VtkOrientationOverlay>())
+    {
+      orientationOverlay->setPosY(y);
+      renderFrame();
+    }
+  }
 }
 
 void VtkRenderer::rebuildClippingPlanes()
@@ -260,12 +306,11 @@ void VtkRenderer::applyClippingPlanesToScene()
 void VtkRenderer::setBackgroundColor(const QColor& color)
 {
   bgColor_ = color;
-  renderer_->SetBackground(
-      bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
+  renderer_->SetBackground(bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
 }
 
 void VtkRenderer::initialize()
-  {
+{
   renderWindow_ = vtkSmartPointer<vtkRenderWindow>::New();
   renderWindow_->SetOffScreenRendering(1);
 
@@ -273,13 +318,47 @@ void VtkRenderer::initialize()
 
   renderWindow_->AddRenderer(renderer_);
 
-  renderer_->SetBackground(
-      bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
+  renderer_->SetBackground(bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
 
   w2i_ = vtkSmartPointer<vtkWindowToImageFilter>::New();
   w2i_->SetInput(renderWindow_);
 
+  // overlay
+  overlayManager_ = std::make_unique<VtkOverlayManager>();
+  // orientation axes
+  auto orientationOverlay = std::make_unique<VtkOrientationOverlay>();
+  orientationOverlay->setVisible(true);
+  overlayManager_->addOverlay(OverlayType::Orientation, std::move(orientationOverlay));
+  //
+  overlayManager_->initialize(renderer_);
+  overlayManager_->resize(static_cast<int>(width_), static_cast<int>(height_));
+
+  // camera
+  vtkCamera* camera = renderer_->GetActiveCamera();
+  cameraController_.setCamera(camera);
+
+  cameraObserver_ = vtkSmartPointer<vtkCallbackCommand>::New();
+
+  cameraObserver_->SetClientData(this);
+
+  cameraObserver_->SetCallback([](vtkObject*, unsigned long, void* clientData, void*) {
+    auto self = static_cast<VtkRenderer*>(clientData);
+
+    self->onCameraModified();
+  });
+
+  camera->AddObserver(vtkCommand::ModifiedEvent, cameraObserver_);
+
+  overlayManager_->cameraChanged(camera);
+
   initialized_ = true;
+}
+
+void VtkRenderer::onCameraModified()
+{
+  vtkCamera* camera = renderer_->GetActiveCamera();
+
+  overlayManager_->cameraChanged(camera);
 }
 
 void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
@@ -653,12 +732,8 @@ vtkSmartPointer<vtkLookupTable> VtkRenderer::createLookupTable(const VtkGeometry
   return lut;
 }
 
-void VtkRenderer::addDirectionalLight(glm::vec3 color, glm::vec3 direction)
-{
-}
+void VtkRenderer::addDirectionalLight(glm::vec3 color, glm::vec3 direction) {}
 
-void VtkRenderer::addAmbientLight(glm::vec3 color, float intensity)
-{
-}
+void VtkRenderer::addAmbientLight(glm::vec3 color, float intensity) {}
 
 #endif
