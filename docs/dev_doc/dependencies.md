@@ -12,7 +12,7 @@ This document lists the key build and external dependency requirements introduce
 | Boost | v1.90.0 | `Superbuild/BoostExternal.cmake` |
 | Qt | 5.15.2 minimum; Qt 6.3.1+ and Qt 6.10 known to work | `Superbuild/Superbuild.cmake` |
 | Qwt | wrapper v0.1.1 → Qwt v6.3.0 | `Superbuild/QwtExternal.cmake` |
-| Eigen | 3.4.0 | `Superbuild/EigenExternal.cmake` |
+| Eigen | 3.4.1 | `Superbuild/EigenExternal.cmake` |
 | GLM | 0.9.9.8 | `Superbuild/GLMExternal.cmake` |
 | spdlog | v1.10.0 | `Superbuild/SpdLogExternal.cmake` |
 | TetGen | v1.6.1 | `Superbuild/TetgenExternal.cmake` |
