@@ -214,6 +214,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 	actionRunNewModuleWizard_->setDisabled(true);
 
   connect(actionAbout_, &QAction::triggered, this, &SCIRunMainWindow::displayAcknowledgement);
+  connect(actionCredits_, &QAction::triggered, this, &SCIRunMainWindow::displayCredits);
   connect(actionCreateToolkitFromDirectory_, &QAction::triggered, this, &SCIRunMainWindow::helpWithToolkitCreation);
 
   connect(helpActionPythonAPI_, &QAction::triggered, this, &SCIRunMainWindow::loadPythonAPIDoc);

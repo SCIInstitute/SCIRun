@@ -91,6 +91,7 @@
     <file>Resources/flash4.png</file>
     <file>Resources/flash5.png</file>
     <file>Resources/LegacyModuleImporter.xml</file>
+    <file>Resources/contributors.txt</file>
     <file>Resources/Wizard/int_with_py_network.png</file>
   </qresource>
 </RCC>
