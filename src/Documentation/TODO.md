@@ -217,7 +217,6 @@ Known Bugs
 * Setting SparseMatrix entries to same constant fails with EvaluateLinAlgUnary
 * Review OptimizeConductivities module to make sure it works as expected.
 * OptimizeDipole sample networks hang
-* ViewScene record movie fails silently if path doesn't exist
 * torso-tank-bem.srn network fails if cage is moved
 * ExportNrrdsToMatlab doens't preserve header information
 * ViewSlices module not ported properly from SCIRun 3
@@ -226,6 +225,7 @@ Resolved Bugs
 =============
 
 * SCIRun crashes when you write a movie to a directory where you do not have the permission to.
+* ViewScene record movie fails silently if path doesn't exist
 * libxml2 does not resolve local DTD path
 * SCIRun module GeneratePlanarElectrode causes SCIRun to crash when loading.
 * ShowAndEditCameraWidget UI is broken
