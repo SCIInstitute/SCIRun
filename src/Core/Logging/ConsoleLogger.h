@@ -53,6 +53,15 @@ namespace SCIRun
         mutable bool errorReported_{ false };
       };
 
+      // Errors only: what a non-verbose regression run needs on stdout.
+      class SCISHARE ErrorOnlyConsoleLogger : public ConsoleLogger
+      {
+      public:
+        void warning(const std::string&) const override {}
+        void remark(const std::string&) const override {}
+        void status(const std::string&) const override {}
+      };
+
       class SCISHARE NullLogger : public LegacyLoggerInterface
       {
       public:
