@@ -47,7 +47,7 @@ MapFieldDataOntoNodesDialog::MapFieldDataOntoNodesDialog(const std::string& name
   addComboBoxManager(interpolationComboBox_, Parameters::InterpolationModel);
   addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
   addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
-  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues);
+  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::toggled, this, &MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues);
 }
 
 void MapFieldDataOntoNodesDialog::pullSpecial()
@@ -58,11 +58,11 @@ void MapFieldDataOntoNodesDialog::pullSpecial()
   }
 }
 
-void MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues(int state)
+void MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues(bool state)
 {
   if (!pulling_)
   {
-    if (0 != state)
+    if (state)
     state_->setValue(Parameters::OutsideValue, std::numeric_limits<double>::quiet_NaN());
   }
 }

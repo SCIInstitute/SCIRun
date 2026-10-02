@@ -48,8 +48,8 @@ public:
 protected:
   void pullSpecial() override;
 private Q_SLOTS:
-  void setNoMaximumValue(int state);
-  void setUseNanForUnassignedValues(int state);
+  void setNoMaximumValue(bool state);
+  void setUseNanForUnassignedValues(bool state);
 };
 
 }
