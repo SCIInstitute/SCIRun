@@ -223,6 +223,15 @@ AlgorithmOutput SetupTDCSAlgorithm::run(const AlgorithmInput& input) const
   return output;
 }
 
+void SetupTDCSAlgorithm::ensureClosestNodeFound(bool found, const std::string& searched) const
+{
+  if (!found)
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR(
+        " No closest node could be found in " + searched + "; the mesh has no nodes. ");
+  }
+}
+
 boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle,
     DenseMatrixHandle, DenseMatrixHandle, FieldHandle, std::vector<double>>
 SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc,
@@ -302,8 +311,9 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
       Point p, q;
       mesh_elc_tri_surf->get_center(p, l);
       double distance = -1;
-      VMesh::Node::index_type ind;
-      mesh_vmesh->find_closest_node(distance, q, ind, p);
+      VMesh::Node::index_type ind = 0;
+      ensureClosestNodeFound(mesh_vmesh->find_closest_node(distance, q, ind, p),
+          "the mesh (first module input)");
       point_electrodes_mesh->add_point(q);
       fvalues.push_back(0);
       electrode_sponge_areas.push_back(std::numeric_limits<double>::quiet_NaN());
@@ -367,7 +377,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
   int electrode_sponges = elc_sponge_location->nrows();
   std::vector<long> lookup(electrode_sponges);
   DenseMatrixHandle distances(new DenseMatrix(electrode_sponges, 1));
-  VMesh::Node::index_type didx;
+  VMesh::Node::index_type didx = 0;
   double distance = 0;
 
   for (long i = 0; i < electrode_sponges; i++)
@@ -376,13 +386,15 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
         (*elc_sponge_location)(i, 0), (*elc_sponge_location)(i, 1), (*elc_sponge_location)(i, 2)),
         r;
     double min_dis = std::numeric_limits<double>::infinity();
-    long found_index = std::numeric_limits<double>::quiet_NaN();
+    long found_index = -1;  /// stays negative when nothing matched, which the lookup below skips
     for (long j = 0; j < result.size(); j++)
     {
       VMesh* tmp_mesh = result[j]->vmesh();
       tmp_mesh->synchronize(Mesh::NODE_LOCATE_E);
 
-      tmp_mesh->find_closest_node(distance, r, didx, elc);
+      /// distance is left untouched on failure, so a stale value must not reach the comparison
+      if (!tmp_mesh->find_closest_node(distance, r, didx, elc))
+        continue;
 
       if (distance < min_dis)
       {
@@ -416,7 +428,7 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
   VMesh* mesh_scalp_tri_surf = scalp_tri_surf->vmesh();
   Point p, q;
   Vector norm;
-  VMesh::Node::index_type node_ind;
+  VMesh::Node::index_type node_ind = 0;
   distance = std::numeric_limits<double>::infinity();
   DenseMatrixHandle sponge_center_pojected_onto_scalp_index(new DenseMatrix(result.size(), 1));
   DenseMatrixHandle sponge_center_pojected_onto_scalp_normal(new DenseMatrix(result.size(), 3));
@@ -453,13 +465,16 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
     Point avr_sponge_geometry(avr_x, avr_y, avr_z);
     mesh_sponge_geometry_centers->add_point(avr_sponge_geometry);
     tmp_field_mesh->synchronize(Mesh::NODE_LOCATE_E);
-    tmp_field_mesh->find_closest_node(distance, q, node_ind, avr_sponge_geometry);
+    ensureClosestNodeFound(
+        tmp_field_mesh->find_closest_node(distance, q, node_ind, avr_sponge_geometry),
+        "the electrode sponge surface projected onto the scalp");
 
     (*sponge_center_pojected_onto_scalp)(i, 0) = q.x();
     (*sponge_center_pojected_onto_scalp)(i, 1) = q.y();
     (*sponge_center_pojected_onto_scalp)(i, 2) = q.z();
 
-    mesh_scalp_tri_surf->find_closest_node(distance, p, node_ind, q);
+    ensureClosestNodeFound(mesh_scalp_tri_surf->find_closest_node(distance, p, node_ind, q),
+        "the scalp surface (second module input)");
     (*sponge_center_pojected_onto_scalp_index)(i, 0) = node_ind;
   }
   /// determine normal of scalp/electrode sponge inferface center
@@ -655,7 +670,8 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
       Point o3(x, y, z), o4;  // electrode surface point = additional criterial to identify the
                               // sponge top/electrode surface
       tmp_mesh->synchronize(Mesh::NODE_LOCATE_E);
-      tmp_mesh->find_closest_node(distance, o4, node_ind, o3);
+      ensureClosestNodeFound(tmp_mesh->find_closest_node(distance, o4, node_ind, o3),
+          "the electrode sponge surface");
       estimated_sponge_top_center_points_vmesh->add_point(o4);
 
       Vector sponge_outwards_normal;
@@ -822,7 +838,8 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
     VMesh::Node::array_type onodes(3);
     elc_sponge_surf_vmesh->get_nodes(onodes, l);
     elc_sponge_surf_vmesh->get_center(p, onodes[0]);
-    mesh_vmesh->find_closest_node(distance, q, node_ind, p);
+    ensureClosestNodeFound(mesh_vmesh->find_closest_node(distance, q, node_ind, p),
+        "the mesh (first module input)");
     if (node_ind == refnode_number)  /// check if ref_node is part of electrode definition throw
                                      /// error, first triangle node of definition
     {
@@ -836,7 +853,8 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
     double x1 = pos.x(), y1 = pos.y(), z1 = pos.z();
 
     elc_sponge_surf_vmesh->get_center(p, onodes[1]);
-    mesh_vmesh->find_closest_node(distance, q, node_ind, p);
+    ensureClosestNodeFound(mesh_vmesh->find_closest_node(distance, q, node_ind, p),
+        "the mesh (first module input)");
     if (node_ind == refnode_number)  /// check if ref_node is part of electrode definition throw
                                      /// error, second triangle node of definition
     {
@@ -848,7 +866,8 @@ SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& im
     mesh_vmesh->get_point(pos, node_ind);
     double x2 = pos.x(), y2 = pos.y(), z2 = pos.z();
     elc_sponge_surf_vmesh->get_center(p, onodes[2]);
-    mesh_vmesh->find_closest_node(distance, q, node_ind, p);
+    ensureClosestNodeFound(mesh_vmesh->find_closest_node(distance, q, node_ind, p),
+        "the mesh (first module input)");
     if (node_ind == refnode_number)  /// check if ref_node is part of electrode definition throw
                                      /// error, third triangle node of definition
     {
@@ -948,8 +967,9 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
       Point p, q;
       mesh_elc_tri_surf->get_center(p, l);
       double distance = -1;
-      VMesh::Node::index_type ind;
-      vmesh->find_closest_node(distance, q, ind, p);
+      VMesh::Node::index_type ind = 0;
+      ensureClosestNodeFound(vmesh->find_closest_node(distance, q, ind, p),
+          "the mesh (first module input)");
       (*output)(static_cast<uint64_t>(ind), 0) = elcs_wanted[l].toDouble() / 1000.0;
       if (min_dis < distance)
       {

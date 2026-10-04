@@ -66,6 +66,244 @@ ArrayMathInterpreter::create_program(ArrayMathProgramHandle& mprogram, std::stri
 // -------------------------------------------------------------------------
 // Translate a parser script
 
+namespace
+{
+
+bool setProgramVarFromSink(ArrayMathProgramCode& pc, size_t slot,
+    ArrayMathProgramHandle& mprogram, const std::string& type,
+    const std::string& name, ArrayMathProgramSource& ps, std::string& error)
+{
+if (type == "FD")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_vfield())
+  {
+    pc.set_vfield(slot,ps.get_vfield());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Field type, but given source is not a field.";
+    return (false);
+  }
+}
+else if (type == "FM")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_vmesh())
+  {
+    pc.set_vmesh(slot,ps.get_vmesh());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
+    return (false);
+  }
+}
+else if (type == "FN")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_vmesh())
+  {
+    pc.set_vmesh(slot,ps.get_vmesh());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
+    return (false);
+  }
+}
+else if (type == "FE")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_vmesh())
+  {
+    pc.set_vmesh(slot,ps.get_vmesh());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
+    return (false);
+  }
+}
+else if (type == "AB")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_bool_array())
+  {
+    pc.set_bool_array(slot,ps.get_bool_array());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
+    return (false);
+  }
+}
+else if (type == "AI")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_int_array())
+  {
+    pc.set_int_array(slot,ps.get_int_array());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
+    return (false);
+  }
+}
+else if (type == "AD")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_double_array())
+  {
+    pc.set_double_array(slot,ps.get_double_array());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
+    return (false);
+  }
+}
+else if (type == "M")
+{
+  mprogram->find_sink(name,ps);
+  if (ps.is_matrix())
+  {
+    pc.set_matrix(slot,ps.get_matrix());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
+    return (false);
+  }
+}
+else
+{
+  error = "INTERNAL ERROR - Encountered unknown type.";
+  return (false);
+}
+  return true;
+}
+
+bool setProgramVarFromSource(ArrayMathProgramCode& pc, size_t slot,
+    ArrayMathProgramHandle& mprogram, const std::string& type,
+    const std::string& name, ArrayMathProgramSource& ps, std::string& error)
+{
+if (type == "FD")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_vfield())
+  {
+    pc.set_vfield(slot,ps.get_vfield());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Field type, but given source is not a field.";
+    return (false);
+  }
+}
+else if (type == "FM")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_vmesh())
+  {
+    pc.set_vmesh(slot,ps.get_vmesh());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
+    return (false);
+  }
+}
+else if (type == "FE")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_vmesh())
+  {
+    pc.set_vmesh(slot,ps.get_vmesh());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
+    return (false);
+  }
+}
+else if (type == "FN")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_vmesh())
+  {
+    pc.set_vmesh(slot,ps.get_vmesh());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
+    return (false);
+  }
+}
+else if (type == "AB")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_bool_array())
+  {
+    pc.set_bool_array(slot,ps.get_bool_array());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
+    return (false);
+  }
+}
+else if (type == "AI")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_int_array())
+  {
+    pc.set_int_array(slot,ps.get_int_array());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
+    return (false);
+  }
+}
+else if (type == "AD")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_double_array())
+  {
+    pc.set_double_array(slot,ps.get_double_array());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
+    return (false);
+  }
+}
+else if (type == "M")
+{
+  mprogram->find_source(name,ps);
+  if (ps.is_matrix())
+  {
+    pc.set_matrix(slot,ps.get_matrix());
+  }
+  else
+  {
+    error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
+    return (false);
+  }
+}
+else
+{
+  error = "INTERNAL ERROR - Encountered unknown type.";
+  return (false);
+}
+  return true;
+}
+
+} // anonymous namespace
+
+
 bool
 ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
                                 ArrayMathProgramHandle& mprogram,
@@ -382,113 +620,8 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
         pc.set_variable(0,mprogram->get_const_variable(onum)->get_data());
       }
     }
-    else if (type == "FD")
+    else if (!setProgramVarFromSink(pc, 0, mprogram, type, name, ps, error))
     {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vfield())
-      {
-        pc.set_vfield(0,ps.get_vfield());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Field type, but given source is not a field.";
-        return (false);
-      }
-    }
-    else if (type == "FM")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vmesh())
-      {
-        pc.set_vmesh(0,ps.get_vmesh());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-        return (false);
-      }
-    }
-    else if (type == "FN")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vmesh())
-      {
-        pc.set_vmesh(0,ps.get_vmesh());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-        return (false);
-      }
-    }
-    else if (type == "FE")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vmesh())
-      {
-        pc.set_vmesh(0,ps.get_vmesh());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-        return (false);
-      }
-    }
-    else if (type == "AB")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_bool_array())
-      {
-        pc.set_bool_array(0,ps.get_bool_array());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
-        return (false);
-      }
-    }
-    else if (type == "AI")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_int_array())
-      {
-        pc.set_int_array(0,ps.get_int_array());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
-        return (false);
-      }
-    }
-    else if (type == "AD")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_double_array())
-      {
-        pc.set_double_array(0,ps.get_double_array());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
-        return (false);
-      }
-    }
-    else if (type == "M")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_matrix())
-      {
-        pc.set_matrix(0,ps.get_matrix());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
-        return (false);
-      }
-    }
-    else
-    {
-      error = "INTERNAL ERROR - Encountered unknown type.";
       return (false);
     }
 
@@ -516,113 +649,8 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
         }
 
       }
-      else if (type == "FD")
+      else if (!setProgramVarFromSource(pc, i+1, mprogram, type, name, ps, error))
       {
-        mprogram->find_source(name,ps);
-        if (ps.is_vfield())
-        {
-          pc.set_vfield(i+1,ps.get_vfield());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Field type, but given source is not a field.";
-          return (false);
-        }
-      }
-      else if (type == "FM")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(i+1,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "FE")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(i+1,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "FN")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(i+1,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "AB")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_bool_array())
-        {
-          pc.set_bool_array(i+1,ps.get_bool_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
-          return (false);
-        }
-      }
-      else if (type == "AI")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_int_array())
-        {
-          pc.set_int_array(i+1,ps.get_int_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
-          return (false);
-        }
-      }
-      else if (type == "AD")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_double_array())
-        {
-          pc.set_double_array(i+1,ps.get_double_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
-          return (false);
-        }
-      }
-      else if (type == "M")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_matrix())
-        {
-          pc.set_matrix(i+1,ps.get_matrix());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
-          return (false);
-        }
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Encountered unknown type.";
         return (false);
       }
     }
@@ -666,113 +694,8 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       }
 
     }
-    else if (type == "FD")
+    else if (!setProgramVarFromSink(pc, 0, mprogram, type, name, ps, error))
     {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vfield())
-      {
-        pc.set_vfield(0,ps.get_vfield());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Field type, but given source is not a field.";
-        return (false);
-      }
-    }
-    else if (type == "FM")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vmesh())
-      {
-        pc.set_vmesh(0,ps.get_vmesh());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-        return (false);
-      }
-    }
-    else if (type == "FN")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vmesh())
-      {
-        pc.set_vmesh(0,ps.get_vmesh());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-        return (false);
-      }
-    }
-    else if (type == "FE")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_vmesh())
-      {
-        pc.set_vmesh(0,ps.get_vmesh());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-        return (false);
-      }
-    }
-    else if (type == "AB")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_bool_array())
-      {
-        pc.set_bool_array(0,ps.get_bool_array());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
-        return (false);
-      }
-    }
-    else if (type == "AI")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_int_array())
-      {
-        pc.set_int_array(0,ps.get_int_array());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
-        return (false);
-      }
-    }
-    else if (type == "AD")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_double_array())
-      {
-        pc.set_double_array(0,ps.get_double_array());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
-        return (false);
-      }
-    }
-    else if (type == "M")
-    {
-      mprogram->find_sink(name,ps);
-      if (ps.is_matrix())
-      {
-        pc.set_matrix(0,ps.get_matrix());
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
-        return (false);
-      }
-    }
-    else
-    {
-      error = "INTERNAL ERROR - Encountered unknown type.";
       return (false);
     }
 
@@ -800,113 +723,8 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
           pc.set_variable(i+1,mprogram->get_const_variable(inum)->get_data());
         }
       }
-      else if (type == "FD")
+      else if (!setProgramVarFromSource(pc, i+1, mprogram, type, name, ps, error))
       {
-        mprogram->find_source(name,ps);
-        if (ps.is_vfield())
-        {
-          pc.set_vfield(i+1,ps.get_vfield());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Field type, but given source is not a field.";
-          return (false);
-        }
-      }
-      else if (type == "FM")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(i+1,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "FN")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(i+1,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "FE")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(i+1,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "AB")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_bool_array())
-        {
-          pc.set_bool_array(i+1,ps.get_bool_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
-          return (false);
-        }
-      }
-      else if (type == "AI")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_int_array())
-        {
-          pc.set_int_array(i+1,ps.get_int_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
-          return (false);
-        }
-      }
-      else if (type == "AD")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_double_array())
-        {
-          pc.set_double_array(i+1,ps.get_double_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
-          return (false);
-        }
-      }
-      else if (type == "M")
-      {
-        mprogram->find_source(name,ps);
-        if (ps.is_matrix())
-        {
-          pc.set_matrix(i+1,ps.get_matrix());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
-          return (false);
-        }
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Encountered unknown type.";
         return (false);
       }
     }
@@ -935,113 +753,8 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       {
         pc.set_variable(0,mprogram->get_sequential_variable(onum,np)->get_data());
       }
-      else if (type == "FD")
+      else if (!setProgramVarFromSink(pc, 0, mprogram, type, name, ps, error))
       {
-        mprogram->find_sink(name,ps);
-        if (ps.is_vfield())
-        {
-          pc.set_vfield(0,ps.get_vfield());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable '"+name+"' is of Field type, but given source is not a field.";
-          return (false);
-        }
-      }
-      else if (type == "FM")
-      {
-        mprogram->find_sink(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(0,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable '"+name+"' is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "FN")
-      {
-        mprogram->find_sink(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(0,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable '"+name+"' is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "FE")
-      {
-        mprogram->find_sink(name,ps);
-        if (ps.is_vmesh())
-        {
-          pc.set_vmesh(0,ps.get_vmesh());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable '"+name+"' is of Mesh type, but given source is not a mesh.";
-          return (false);
-        }
-      }
-      else if (type == "AB")
-      {
-        mprogram->find_sink(name,ps);
-        if (ps.is_bool_array())
-        {
-          pc.set_bool_array(0,ps.get_bool_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
-          return (false);
-        }
-      }
-      else if (type == "AI")
-      {
-        mprogram->find_sink(name,ps);
-        if (ps.is_int_array())
-        {
-          pc.set_int_array(0,ps.get_int_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
-          return (false);
-        }
-      }
-      else if (type == "AD")
-      {
-        mprogram->find_sink(name,ps);
-        if (ps.is_double_array())
-        {
-          pc.set_double_array(0,ps.get_double_array());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
-          return (false);
-        }
-      }
-      else if (type == "M")
-      {
-        mprogram->find_sink(name,ps);
-        if (ps.is_matrix())
-        {
-          pc.set_matrix(0,ps.get_matrix());
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Variable '"+name+"' is of Matrix type, but given source is not a matrix.";
-          return (false);
-        }
-      }
-      else
-      {
-        error = "INTERNAL ERROR - Encountered unknown type.";
         return (false);
       }
 
@@ -1073,113 +786,8 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
             pc.set_variable(i+1,mprogram->get_const_variable(inum)->get_data());
           }
         }
-        else if (type == "FD")
+        else if (!setProgramVarFromSource(pc, i+1, mprogram, type, name, ps, error))
         {
-          mprogram->find_source(name,ps);
-          if (ps.is_vfield())
-          {
-            pc.set_vfield(i+1,ps.get_vfield());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Field type, but given source is not a field.";
-            return (false);
-          }
-        }
-        else if (type == "FM")
-        {
-          mprogram->find_source(name,ps);
-          if (ps.is_vmesh())
-          {
-            pc.set_vmesh(i+1,ps.get_vmesh());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-            return (false);
-          }
-        }
-        else if (type == "FE")
-        {
-          mprogram->find_source(name,ps);
-          if (ps.is_vmesh())
-          {
-            pc.set_vmesh(i+1,ps.get_vmesh());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-            return (false);
-          }
-        }
-        else if (type == "FN")
-        {
-          mprogram->find_source(name,ps);
-          if (ps.is_vmesh())
-          {
-            pc.set_vmesh(i+1,ps.get_vmesh());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a mesh.";
-            return (false);
-          }
-        }
-        else if (type == "AB")
-        {
-          mprogram->find_source(name,ps);
-          if (ps.is_bool_array())
-          {
-            pc.set_bool_array(i+1,ps.get_bool_array());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a bool array.";
-            return (false);
-          }
-        }
-        else if (type == "AI")
-        {
-          mprogram->find_source(name,ps);
-          if (ps.is_int_array())
-          {
-            pc.set_int_array(i+1,ps.get_int_array());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a int array.";
-            return (false);
-          }
-        }
-        else if (type == "AD")
-        {
-          mprogram->find_source(name,ps);
-          if (ps.is_double_array())
-          {
-            pc.set_double_array(i+1,ps.get_double_array());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Mesh type, but given source is not a double array.";
-            return (false);
-          }
-        }
-        else if (type == "M")
-        {
-          mprogram->find_source(name,ps);
-          if (ps.is_matrix())
-          {
-            pc.set_matrix(i+1,ps.get_matrix());
-          }
-          else
-          {
-            error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
-            return (false);
-          }
-        }
-        else
-        {
-          error = "INTERNAL ERROR - Encountered unknown type.";
           return (false);
         }
       }

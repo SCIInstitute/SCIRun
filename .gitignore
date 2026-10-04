@@ -24,6 +24,8 @@ src/Doxyfile
 *.orig
 CMakeCache.txt
 CMakeFiles
+# per-developer preset overrides (see Superbuild/CMakeUserPresets.json.example)
+CMakeUserPresets.json
 src/Makefile
 cmake_install.cmake
 install_manifest.txt
