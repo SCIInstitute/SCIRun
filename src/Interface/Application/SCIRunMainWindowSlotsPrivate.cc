@@ -597,7 +597,8 @@ void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
 #ifdef __APPLE__
     dock->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
 #else
-    dock->setWindowFlags(Qt::Window);
+    // Owned windows minimize with no taskbar entry here, so leave out the minimize button.
+    dock->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
 #endif
     dock->show();
   }

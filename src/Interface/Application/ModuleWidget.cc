@@ -1241,7 +1241,8 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 #ifdef __APPLE__
     dockable_->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
 #else
-    dockable_->setWindowFlags(Qt::Window);
+    // Owned windows minimize with no taskbar entry here, so leave out the minimize button.
+    dockable_->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
 #endif
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
@@ -1288,7 +1289,12 @@ void ModuleWidget::toggleOptionsDialog()
 {
   if (dialogManager_.hasOptions())
   {
+#ifdef __APPLE__
     if (dockable_->isHidden())
+#else
+    // A minimized dock is not hidden, but there is nothing on screen to click; reopen it instead of hiding it.
+    if (dockable_->isHidden() || dockable_->isMinimized())
+#endif
     {
       if (firstTimeShown_)
       {
@@ -1306,6 +1312,9 @@ void ModuleWidget::toggleOptionsDialog()
         }
         positions_.append(dockable_->pos());
       }
+#ifndef __APPLE__
+      dockable_->setWindowState(dockable_->windowState() & ~Qt::WindowMinimized);
+#endif
       dockable_->show();
       Q_EMIT showUIrequested(dialogManager_.options());
       dockable_->raise();
@@ -1438,6 +1447,9 @@ void ModuleWidget::showUI()
 {
   if (dockable_)
   {
+#ifndef __APPLE__
+    dockable_->setWindowState(dockable_->windowState() & ~Qt::WindowMinimized);
+#endif
     dockable_->show();
     dialogManager_.options()->expand();
     Q_EMIT showUIrequested(dialogManager_.options());
