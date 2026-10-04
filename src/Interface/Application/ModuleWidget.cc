@@ -42,6 +42,7 @@
 #include <Interface/Application/ModuleOptionsDialogConfiguration.h>
 #include <Interface/Modules/Base/ModuleLogWindow.h>
 #include <Interface/Application/ModuleWidget.h>
+#include <Interface/Application/FloatingDockWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PortWidgetManager.h>
@@ -1238,11 +1239,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
   if (isFloating)
   {
-#ifdef __APPLE__
-    dockable_->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
-#else
-    dockable_->setWindowFlags(Qt::Window);
-#endif
+    FloatingDockWindow::applyFlags(dockable_);
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
   }
@@ -1288,12 +1285,7 @@ void ModuleWidget::toggleOptionsDialog()
 {
   if (dialogManager_.hasOptions())
   {
-#ifdef __APPLE__
-    if (dockable_->isHidden())
-#else
-    // A minimized dock is not hidden, but there is nothing on screen to click; reopen it instead of hiding it.
-    if (dockable_->isHidden() || dockable_->isMinimized())
-#endif
+    if (FloatingDockWindow::isClosed(dockable_))
     {
       if (firstTimeShown_)
       {
@@ -1311,9 +1303,7 @@ void ModuleWidget::toggleOptionsDialog()
         }
         positions_.append(dockable_->pos());
       }
-#ifndef __APPLE__
-      dockable_->setWindowState(dockable_->windowState() & ~Qt::WindowMinimized);
-#endif
+      FloatingDockWindow::restoreIfMinimized(dockable_);
       dockable_->show();
       Q_EMIT showUIrequested(dialogManager_.options());
       dockable_->raise();
@@ -1446,9 +1436,7 @@ void ModuleWidget::showUI()
 {
   if (dockable_)
   {
-#ifndef __APPLE__
-    dockable_->setWindowState(dockable_->windowState() & ~Qt::WindowMinimized);
-#endif
+    FloatingDockWindow::restoreIfMinimized(dockable_);
     dockable_->show();
     dialogManager_.options()->expand();
     Q_EMIT showUIrequested(dialogManager_.options());

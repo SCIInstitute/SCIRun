@@ -62,6 +62,7 @@
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
+#include <Interface/Application/FloatingDockWindow.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
@@ -594,11 +595,7 @@ void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
   auto dock = qobject_cast<QDockWidget*>(sender());
   if (dock && isFloating)
   {
-#ifdef __APPLE__
-    dock->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
-#else
-    dock->setWindowFlags(Qt::Window);
-#endif
+    FloatingDockWindow::applyFlags(dock);
     dock->show();
   }
 }
