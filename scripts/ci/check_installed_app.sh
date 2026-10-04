@@ -14,8 +14,8 @@ EXE="$APP/Contents/MacOS/SCIRun"
 
 outside() { grep -v -e "^$APP/" -e '^/System/' -e '^/usr/lib/' -e '^@' || true; }
 
-# Static: every load command in every Mach-O in the bundle. Warn-only until the
-# bundled python3.13 interpreter stops linking to the build tree's Python.
+# Static: every load command in every Mach-O in the bundle. Warn-only until
+# #2805 (bundled python3.13 links to the build tree's Python) is fixed.
 static=$(
   find "$APP/Contents" -type f -print0 | while IFS= read -r -d '' f; do
     file -b "$f" | grep -q Mach-O || continue
