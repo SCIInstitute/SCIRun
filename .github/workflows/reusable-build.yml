@@ -38,8 +38,7 @@ on:
         type: boolean
         default: false
       with-vtk:
-        # WITH_VTK=ON. The compiled VTK install is cached on every OS, separately
-        # from cache-externals (see "Restore VTK install cache").
+        # WITH_VTK=ON; the install is cached on its own, see "Restore VTK install cache".
         required: false
         type: boolean
         default: false
@@ -216,10 +215,8 @@ jobs:
           du -sh bin/Externals/* 2>/dev/null || true
           find bin/Externals/Stamp -type f -exec touch -d "2100-01-01" {} \;
 
-      # VTK is ~111 min of every job that builds it and installs to a self-contained
-      # tree (~240 MB on Windows), so it is cached on its own rather than via the
-      # Linux-only externals cache above. On a hit the Superbuild skips the
-      # external (PREBUILT_VTK); the key covers the tag and flags via VtkExternal.cmake.
+      # Separate from the Linux-only externals cache so it covers every OS (#2677).
+      # On a hit the Superbuild skips the external (PREBUILT_VTK).
       - name: Compute VTK cache key
         if: ${{ inputs.with-vtk }}
         id: vtk-key
@@ -495,8 +492,8 @@ jobs:
             bin/Externals/Source/Tetgen_external
           key: ${{ steps.ext-key.outputs.key }}
 
-      # always(): the SCIRun build after VTK can fail, and that must not throw away
-      # a ~111 min VTK build. The sentinel check keeps a half-installed tree out.
+      # always() so a later SCIRun failure doesn't discard the VTK build; the
+      # sentinel keeps a partial install out.
       - name: Save VTK install cache
         if: ${{ always() && inputs.with-vtk && steps.restore-vtk-cache.outputs.cache-hit != 'true' && hashFiles('bin/Externals/Install/VTK_external/lib/cmake/vtk-*/VTKConfig.cmake') != '' }}
         uses: actions/cache/save@v4
