@@ -128,6 +128,8 @@ jobs:
       #   list below is deliberately all-positive, naming Source/ subdirs
       #   individually instead of excluding Boost/Python/Libxml2 from a
       #   wholesale `bin/Externals` include.
+      # - Tetgen is on that list because TETGEN_INCLUDE is its SOURCE_DIR; v6
+      #   omitted it and every warm build lost tetgen.h.
       #
       # Scoped to these Linux jobs only (not the 13 mac+windows jobs #2576
       # tried to cover) is what keeps total cache usage under the repo's
@@ -163,7 +165,7 @@ jobs:
               *) qt_bucket=$(echo "${{ inputs.qt-version }}" | tr -c 'a-zA-Z0-9' '-') ;;
             esac
           fi
-          key="superbuild-ext-v6-${{ runner.os }}-${{ runner.arch }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
+          key="superbuild-ext-v7-${{ runner.os }}-${{ runner.arch }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
           echo "key=$key" >> "$GITHUB_OUTPUT"
           echo "Externals cache key: $key"
 
@@ -189,6 +191,7 @@ jobs:
             bin/Externals/Source/LodePng_external
             bin/Externals/Source/Tny_external
             bin/Externals/Source/Qwt_external
+            bin/Externals/Source/Tetgen_external
           key: ${{ steps.ext-key.outputs.key }}
 
       # CMake's ExternalProject steps are gated by comparing each stamp file's
@@ -449,6 +452,7 @@ jobs:
             bin/Externals/Source/LodePng_external
             bin/Externals/Source/Tny_external
             bin/Externals/Source/Qwt_external
+            bin/Externals/Source/Tetgen_external
           key: ${{ steps.ext-key.outputs.key }}
 
       - name: Smoke test - executable loads and runs (Unix)
