@@ -131,7 +131,7 @@ std::pair<ren::VBO, ren::IBO> getTexUnitQuad(spire::ESCoreBase& core)
 
 glm::mat4 getTexQuadTransform(const glm::vec3& center, float width, float height)
 {
-  glm::mat4 trafo;
+  glm::mat4 trafo {1.0f};
   trafo[3] = glm::vec4(center.x, center.y, center.z, 1.0f);
 
   float halfWidth = width / 2.0f;

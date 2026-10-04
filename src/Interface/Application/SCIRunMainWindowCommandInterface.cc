@@ -32,6 +32,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Utils/QuickExit.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
@@ -54,7 +55,7 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Utils/CurrentFileName.h>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
@@ -137,8 +138,10 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
     }
     else
     {
+      // quickExit, not exit: the GUI is still up, and libc exit() lets Qt flush
+      // posted deletes during static destruction. See #2686.
       if (Application::Instance().parameters()->isRegressionMode())
-        exit(7);
+        Core::quickExit(7);
       //TODO: set error code to non-0 so regression tests fail!
       // probably want to control this with a --regression flag.
     }
@@ -205,7 +208,7 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 
 void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   NetworkEditor::InEditingContext iec(networkEditor_);
   GuiLogger::logInfoQ("RUNNING PYTHON SCRIPT: " + scriptFileName);
   PythonInterpreter::Instance().importSCIRunLibrary();

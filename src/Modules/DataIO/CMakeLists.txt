@@ -36,6 +36,7 @@ SET(Modules_DataIO_SRCS
   WriteMatrix.cc
   AutoReadFile.cc
   ReadColorMapXml.cc
+  WriteColorMapXml.cc
 )
 
 SET(Modules_DataIO_HEADERS
@@ -50,6 +51,7 @@ SET(Modules_DataIO_HEADERS
   WriteMatrix.h
   AutoReadFile.h
   ReadColorMapXml.h
+  WriteColorMapXml.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_DataIO

@@ -57,6 +57,7 @@ void PortColorLookup::init()
     ("Field", "yellow")
     ("Geometry", "magenta")
     ("OsprayGeometry", "darkMagenta")
+    ("GeometryVtk", "darkMagenta")
     ("ColorMap", "purple")
     ("Bundle", "orange")
     ("Nrrd", "cyan") // not quite right, it's bluer than the highlight cyan

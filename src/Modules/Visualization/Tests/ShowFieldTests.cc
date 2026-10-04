@@ -27,9 +27,16 @@
 
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Testing/Utils/SCIRunFieldSamples.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <cmath>
+#include <cstring>
 
 using namespace SCIRun::Testing;
 using namespace SCIRun::TestUtils;
@@ -164,4 +171,128 @@ TEST_F(ShowFieldPerformanceTest, TestFacePerformance)
     std::cout << fs.second << " : " << std::chrono::duration<double, std::milli>(diff).count()/NUM_RUNS << " ms\n";
   }
   std::cout << "\n";
+}
+
+
+// Faces of a cell-data field are two sided: the texture coordinate's x holds the
+// first adjacent cell's colormap index and y holds the second's, and the shaders
+// pick between them with gl_FrontFacing. Regression test for #2439, where the
+// vector and tensor paths left y holding a stale value on boundary faces.
+class ShowFieldTwoSidedFaceTest : public ModuleTest
+{
+protected:
+  // Distinct, in-range values so a stale y is visible as a different coordinate.
+  static std::vector<double> cellValues() { return {-0.8, -0.5, -0.2, 0.1, 0.4, 0.7}; }
+
+  static FieldHandle cubeWithCellData(data_info_type type)
+  {
+    auto field = CubeTetVolConstantBasis(type);
+    auto vfield = field->vfield();
+    const auto values = cellValues();
+    for (size_t i = 0; i < values.size(); ++i)
+    {
+      const VMesh::Elem::index_type idx = static_cast<VMesh::Elem::index_type>(i);
+      switch (type)
+      {
+        case data_info_type::DOUBLE_E: vfield->set_value(values[i], idx); break;
+        case data_info_type::VECTOR_E: vfield->set_value(Geometry::Vector(values[i], 0.0, 0.0), idx); break;
+        case data_info_type::TENSOR_E: vfield->set_value(Geometry::Tensor(values[i] / std::sqrt(3.0)), idx); break;
+        default: break;
+      }
+    }
+    return field;
+  }
+
+  // Per-vertex texture coordinates from the face VBO, in mesh face order.
+  std::vector<std::pair<float, float>> faceTexCoords(FieldHandle field)
+  {
+    std::vector<std::pair<float, float>> coords;
+
+    auto showField = makeModule("ShowField");
+    showField->setStateDefaults();
+    auto state = showField->get_state();
+    state->setValue(ShowFaces, true);
+    state->setValue(ShowEdges, false);
+    state->setValue(ShowNodes, false);
+    state->setValue(FacesColoring, 1);
+
+    stubPortNWithThisData(showField, 0, field);
+    stubPortNWithThisData(showField, 1, StandardColorMapFactory::create());
+    showField->execute();
+
+    auto geom = std::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(
+      getDataOnThisOutputPort(showField, 0));
+    EXPECT_THAT(geom, ::testing::NotNull());
+    if (!geom || geom->vbos().empty()) return coords;
+
+    const auto& vbo = geom->vbos().front();
+    size_t stride = 0, texOffset = 0;
+    bool foundTexCoords = false;
+    for (const auto& attrib : vbo.attributes)
+    {
+      if (attrib.name == "aTexCoords")
+      {
+        texOffset = stride;
+        foundTexCoords = true;
+      }
+      stride += attrib.sizeInBytes;
+    }
+    EXPECT_TRUE(foundTexCoords);
+    if (!foundTexCoords) return coords;
+
+    const char* buffer = vbo.data->getBuffer();
+    const size_t bufferSize = vbo.data->getBufferSize();
+    for (size_t offset = texOffset; offset + 2 * sizeof(float) <= bufferSize; offset += stride)
+    {
+      float xy[2];
+      std::memcpy(xy, buffer + offset, sizeof(xy));
+      coords.emplace_back(xy[0], xy[1]);
+    }
+    return coords;
+  }
+
+  UseRealModuleStateFactory f_;
+};
+
+TEST_F(ShowFieldTwoSidedFaceTest, CellDataFacesAreColoredFromBothAdjacentCells)
+{
+  LogSettings::Instance().setVerbose(false);
+
+  for (auto type : {data_info_type::DOUBLE_E, data_info_type::VECTOR_E, data_info_type::TENSOR_E})
+  {
+    auto field = cubeWithCellData(type);
+    const auto coords = faceTexCoords(field);
+
+    auto mesh = field->vmesh();
+    mesh->synchronize(Mesh::FACES_E);
+    VMesh::Face::size_type numFaces;
+    mesh->size(numFaces);
+    ASSERT_EQ(static_cast<size_t>(3 * numFaces), coords.size());
+
+    size_t boundaryFaces = 0, interiorFaces = 0;
+    VMesh::Face::iterator fiter, fend;
+    mesh->begin(fiter);
+    mesh->end(fend);
+    for (size_t vertex = 0; fiter != fend; ++fiter, vertex += 3)
+    {
+      VMesh::Elem::array_type cells;
+      mesh->get_elems(cells, *fiter);
+
+      for (size_t i = 0; i < 3; ++i)
+      {
+        if (cells.size() == 1)
+          EXPECT_EQ(coords[vertex + i].first, coords[vertex + i].second)
+            << "boundary face " << *fiter << ", data type " << static_cast<int>(type);
+        else
+          EXPECT_NE(coords[vertex + i].first, coords[vertex + i].second)
+            << "interior face " << *fiter << ", data type " << static_cast<int>(type);
+      }
+
+      (cells.size() == 1 ? boundaryFaces : interiorFaces)++;
+    }
+
+    // The cube is six tets: twelve surface triangles and six shared faces.
+    EXPECT_EQ(size_t(12), boundaryFaces);
+    EXPECT_EQ(size_t(6), interiorFaces);
+  }
 }

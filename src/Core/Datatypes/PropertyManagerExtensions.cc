@@ -26,22 +26,34 @@
 */
 
 
+#include <mutex>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 
+namespace
+{
+  // One FieldHandle commonly fans out to several modules that execute
+  // concurrently, and each may be the first to touch its properties. Without
+  // this lock both threads construct a PropertyManager, the loser's is freed
+  // while the winner is still reading it, and the process dies in
+  // copy_properties (#2700). A file-static lock keeps HasPropertyManager
+  // trivially copyable-by-value, which MatrixBase relies on.
+  std::mutex propertyManagerInitLock;
+}
+
 PropertyManager& HasPropertyManager::properties()
 {
-  if (!properties_)
-    properties_.reset(new PropertyManager);
-
-  return *properties_;
+  // Same lazy init as the const overload; const_cast rather than duplicate it.
+  return const_cast<PropertyManager&>(const_cast<const HasPropertyManager*>(this)->properties());
 }
 
 const PropertyManager& HasPropertyManager::properties() const
 {
+  std::lock_guard<std::mutex> guard(propertyManagerInitLock);
+
   if (!properties_)
     properties_.reset(new PropertyManager);
 

@@ -49,13 +49,13 @@ struct Texture
   GLint           uniformLocation;
   char            uniformName[MaxUniformName];
   GLenum          textureType;
-  GLsizei textureWidth;
-  GLsizei textureHeight;
-  GLsizei textureDepth;
-  GLint internalFormat;
-  GLenum format;
-  GLenum type;
-  GLint filter;
+  GLsizei textureWidth = 0;
+  GLsizei textureHeight = 0;
+  GLsizei textureDepth = 0;
+  GLint internalFormat = 0;
+  GLenum format = 0;
+  GLenum type = 0;
+  GLint filter = 0;
 
   // -- Functions --
   Texture()

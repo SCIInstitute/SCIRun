@@ -72,11 +72,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_P
 
 # Make a version file containing the current version from git.
 include(GetGitRevisionDescription)
-git_describe(VERSION_TAG --tag)
+# Match only release tags (v*). CI moves a rolling `nightly` tag
+# (.github/workflows/publish-release.yml), which would otherwise win here and
+# make the GUI, splash screen and CPack version report "nightly" instead of the
+# last release.
+git_describe(VERSION_TAG --tags --match "v*")
 git_describe(VERSION_BRANCH --all)
 get_git_head_revision(VERSION_REFSPEC VERSION_HASHVAR)
 
-IF(VERSION_TAG MATCHES "HEAD-HASH-NOTFOUND")
+# Covers both no-git (source zip: "HEAD-HASH-NOTFOUND") and a shallow clone with
+# no release tag reachable ("-128-NOTFOUND").
+IF(VERSION_TAG MATCHES "NOTFOUND")
   FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/LATEST_TAG.txt VERSION_TAG)
   STRING(STRIP ${VERSION_TAG} VERSION_TAG)
   MESSAGE(STATUS "Found tag file for version info: " "${VERSION_TAG}")
@@ -223,7 +229,13 @@ INCLUDE(${FREETYPE_USE_FILE})
 CONFIG_STANDARD_EXTERNAL( Cleaver2 Cleaver2Config.cmake ${CLEAVER2_DIR} )
 INCLUDE(${CLEAVER2_USE_FILE})
 
-IF(BUILD_WITH_PYTHON)
+CONFIG_STANDARD_EXTERNAL( LibXml2 libxml2-config.cmake ${LibXML2_DIR} )
+
+message(STATUS "LibXml2_FOUND=${LibXml2_FOUND}")
+message(STATUS "LibXml2_DIR=${LibXml2_DIR}")
+message(STATUS "LIBXml2_USE_FILE=${LIBXml2_USE_FILE}")
+
+IF(WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
@@ -245,7 +257,7 @@ set(_scirun_boost_components
   thread
 )
 
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   list(APPEND _scirun_boost_components
        python${SCI_PYTHON_VERSION_SHORT_WIN32})
 endif()
@@ -307,12 +319,25 @@ IF(WITH_OSPRAY)
   find_package(ospray 2.0.0 REQUIRED HINTS ${Ospray_External_Dir}/install/ospray)
 ENDIF()
 
+IF(WITH_VTK)
+  set(VTK_DIR ${VTK_External_Dir}/lib/cmake/vtk-9.6)
+  find_package(VTK REQUIRED COMPONENTS
+    CommonCore
+    RenderingCore
+    RenderingOpenGL2
+    FiltersCore
+    FiltersSources
+    InteractionStyle
+    HINTS ${VTK_DIR}
+  )
+ENDIF()
+
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
 ENDIF()
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
 # QWT variables come directly from superbuild
   set(SCI_QWT_INCLUDE "${QWT_INCLUDE}")
   set(SCI_QWT_LIBRARY_DIR "${QWT_LIBRARY_DIR}")
@@ -393,6 +418,11 @@ IF(WITH_OSPRAY)
   SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
+# Configure VTK
+IF(WITH_VTK)
+  add_definitions(-DWITH_VTK)
+ENDIF()
+
 ########################################################################
 # Detailed renderer logging
 
@@ -471,7 +501,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 ########################################################################
 # Find and configure Qt
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   if (${QT_VERSION_MAJOR} STREQUAL "6")
     FIND_PACKAGE(Qt${QT_VERSION_MAJOR} COMPONENTS DBus DBusTools Core Gui Widgets Network OpenGL Concurrent PrintSupport Svg CoreTools GuiTools WidgetsTools OpenGLWidgets REQUIRED HINTS ${Qt_PATH})
   else()
@@ -479,7 +509,7 @@ IF(NOT BUILD_HEADLESS)
   endif()
 
   IF(Qt${QT_VERSION_MAJOR}Core_FOUND)
-    MESSAGE(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}Core_VERSION_STRING}")
+    MESSAGE(STATUS "Found Qt version: ${Qt${QT_VERSION_MAJOR}Core_VERSION}")
     INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Core_INCLUDE_DIRS})
 	  INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Widgets_INCLUDE_DIRS})
     INCLUDE_DIRECTORIES(${Qt${QT_VERSION_MAJOR}Gui_INCLUDE_DIRS})
@@ -554,16 +584,24 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
   ${SCIRun_SOURCE_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/spire/
   ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googletest/include
   ${SCIRun_SOURCE_DIR}/Externals/submodules/googletest/googlemock/include
-  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
-  ${SCI_TEEM_INCLUDE}
+  # Not SYSTEM: a SYSTEM dir is searched after every -I, which hands <zlib.h>
+  # to the copy Qt ships in include/QtZlib; its zconf.h pulls in qglobal.h and
+  # that is a hard error wherever Qt isn't linked (Core_Matlab on MSVC, #2758).
   ${SCI_ZLIB_INCLUDE}
+)
+
+# SYSTEM: header-only externals (Eigen above all) otherwise diagnose inside our
+# translation units, which is what broke -Werror on Apple (#2432) and is ~43%
+# of CI warning volume. Boost is not here: it arrives as the Boost::headers
+# imported target (already SYSTEM) or via Superbuild/UseBoost.cmake (#2197).
+INCLUDE_DIRECTORIES(SYSTEM
+  ${SCI_TEEM_INCLUDE}
   ${GLM_DIR}
   ${SPDLOG_DIR}/include
   ${Eigen_DIR}
@@ -572,8 +610,6 @@ INCLUDE_DIRECTORIES(
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
-
-#INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
@@ -628,11 +664,48 @@ MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 SET(BUILD_FROM_TOP_LEVEL 1)
 
+########################################################################
+# Coverage instrumentation.
+#
+# Must precede the ADD_SUBDIRECTORY calls below: CMAKE_CXX_FLAGS is captured by
+# each subdirectory as it is added, so setting it further down the file compiles
+# and links every SCIRun target without instrumentation while still printing the
+# "enabled" message. That produced zero .profraw files and an empty nightly
+# coverage artifact.
+
+OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
+MARK_AS_ADVANCED(ENABLE_GCOV_DATA_FILES)
+
+IF(ENABLE_GCOV_DATA_FILES)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF()
+
+# Clang source-based coverage (recommended on macOS / any Clang toolchain).
+# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
+# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
+# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
+# above, the instrumentation flags must also be applied at link time so the
+# profile runtime is linked into every shared library.
+OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
+IF(ENABLE_COVERAGE)
+  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
+  ENDIF()
+  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
+  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
+ENDIF()
+
+########################################################################
+
 ADD_SUBDIRECTORY(Externals)
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
+  ADD_DEFINITIONS(-DWITH_GUI=1)
   ADD_SUBDIRECTORY(Interface)
-ELSE()
-  ADD_DEFINITIONS(-DBUILD_HEADLESS=1)
 ENDIF()
 ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
@@ -743,6 +816,7 @@ SET_PROPERTY(TARGET Core_Datatypes_Legacy_Base         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Nrrd         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Bundle         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Datatypes_VTK PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Basis         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Persistent         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_DatabaseManager         PROPERTY FOLDER "Core")
@@ -774,7 +848,7 @@ SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
 SET_PROPERTY(TARGET ${SPIRE_LIBRARY_NAME} PROPERTY FOLDER "Graphics")
 
-IF(NOT BUILD_HEADLESS)
+IF(WITH_GUI)
   SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_DataIO   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_Math   PROPERTY FOLDER "Interface/Modules")
@@ -791,6 +865,9 @@ IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Teem   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
   SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
+  IF(WITH_VTK)
+    SET_PROPERTY(TARGET Interface_Modules_Render_Vtk PROPERTY FOLDER "Interface/Modules")
+  ENDIF()
 ENDIF()
 
 SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")
@@ -891,24 +968,24 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
 
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 	SET_PROPERTY(TARGET Modules_Dialog_Factory_Tests PROPERTY FOLDER "Interface/Tests")
   ENDIF()
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")
     SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 	SET_PROPERTY(TARGET Modules_Python_Tests   PROPERTY FOLDER "Modules/Python")
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
   SET_PROPERTY(TARGET Modules_Python   PROPERTY FOLDER "Modules/Python")
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     SET_PROPERTY(TARGET Interface_Modules_Python   PROPERTY FOLDER "Interface/Modules")
   ENDIF()
 ENDIF()
@@ -1035,32 +1112,5 @@ ENDIF()
 
 INCLUDE(CPack)
 
-########################################################################
-#GCov
-
-OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
-MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
-
-IF(ENABLE_GCOV_DATA_FILES)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-ENDIF()
-
-# Clang source-based coverage (recommended on macOS / any Clang toolchain).
-# Build with -DENABLE_COVERAGE=ON, run tests via scripts/coverage.sh, which
-# sets LLVM_PROFILE_FILE=<dir>/%p.profraw (one .profraw per test process),
-# merges with llvm-profdata, and reports with llvm-cov. Unlike the gcov option
-# above, the instrumentation flags must also be applied at link time so the
-# profile runtime is linked into every shared library.
-OPTION(ENABLE_COVERAGE "Build with Clang source-based code coverage instrumentation" OFF)
-IF(ENABLE_COVERAGE)
-  IF(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    MESSAGE(WARNING "ENABLE_COVERAGE uses Clang source-based coverage but the compiler is ${CMAKE_CXX_COMPILER_ID}; use ENABLE_GCOV_DATA_FILES instead.")
-  ENDIF()
-  SET(SCIRUN_COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SCIRUN_COVERAGE_FLAGS} -g")
-  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
-  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SCIRUN_COVERAGE_FLAGS}")
-  MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
-ENDIF()
+# Coverage options moved above the ADD_SUBDIRECTORY calls -- they had no effect
+# down here. See the "Coverage instrumentation" block there.

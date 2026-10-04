@@ -1,0 +1,15 @@
+---
+# Scoped to the ES/Spire render glue code, where uninitialized members have
+# repeatedly caused bugs (e.g. GH #881, the "red ViewScene" crash).
+InheritParentConfig: true
+Checks: >
+  -*,
+  cppcoreguidelines-pro-type-member-init,
+  cppcoreguidelines-init-variables
+CheckOptions:
+  - key:   cppcoreguidelines-pro-type-member-init.IgnoreArrays
+    value: false
+  - key:   cppcoreguidelines-pro-type-member-init.UseAssignment
+    value: true
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'

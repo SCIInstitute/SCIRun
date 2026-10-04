@@ -194,7 +194,7 @@ namespace SCIRun
       glm::vec3 originWorld_;
       glm::vec3 flipAxisWorld_;
       glm::vec3 originToInitialSpos_;
-      double multiplier_;
+      double multiplier_ {1.0};
       float projectedW_;
       float originToInitialSposLength_;
       size_t scaleAxisIndex_;

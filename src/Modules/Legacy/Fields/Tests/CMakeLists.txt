@@ -48,8 +48,4 @@ IF(WITH_TETGEN)
     gtest
     gmock
   )
-
-  # InterfaceWithTetGenImpl.h (InterfaceWithTetGenInput) is only compiled behind
-  # this flag; match it so the test sees the same declarations.
-  TARGET_COMPILE_DEFINITIONS(Modules_Legacy_Fields_Tests PRIVATE WITH_TETGEN)
 ENDIF()

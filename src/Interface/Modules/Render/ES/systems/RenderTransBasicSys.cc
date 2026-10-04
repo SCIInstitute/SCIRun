@@ -63,6 +63,10 @@
 #include "../comp/LightingUniforms.h"
 #include "../comp/ClippingPlaneUniforms.h"
 
+#include <Core/Logging/Log.h>
+
+#include <set>
+
 namespace es = spire;
 namespace shaders = spire;
 using namespace SCIRun::Graphics::Datatypes;
@@ -138,6 +142,15 @@ private:
 
   std::vector<SortedObject> sortedObjects;
 
+  /// Passes already reported as unsortable, so the warning doesn't repeat every frame.
+  std::set<std::string> warnedPasses;
+
+  void warnUnsortable(const std::string& passName, const std::string& reason)
+  {
+    if (warnedPasses.insert(passName).second)
+      logWarning("ViewScene: transparency sort skipped for \"{}\" ({}); drawing unsorted.", passName, reason);
+  }
+
   class DepthIndex {
   public:
     size_t mIndex;
@@ -180,26 +193,61 @@ private:
     const spire::ComponentGroup<SpireSubPass>& pass,
     const spire::ComponentGroup<ren::StaticIBOMan>&)
   {
-    char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
-    uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
-    size_t num_triangles = pass.front().ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+    const auto& subPass = pass.front();
+    const auto& passName = subPass.ibo.name;
+
+    // This reads the IBO as raw uint32 triples indexing straight into the VBO, so anything that
+    // breaks that assumption -- narrower indices, a stride too small to hold a vec3, an index past
+    // the last vertex -- reads off the end of the VBO and kills the process. #2700.
+    if (!subPass.vbo.data || !subPass.ibo.data)
+    {
+      warnUnsortable(passName, "missing geometry buffer");
+      return ibo.front().glid;
+    }
+
+    char* vbo_buffer = reinterpret_cast<char*>(subPass.vbo.data->getBuffer());
+    uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(subPass.ibo.data->getBuffer());
+    size_t num_triangles = subPass.ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
 
     size_t stride_vbo = 0;
-    for (auto a : pass.front().vbo.attributes)
+    for (auto a : subPass.vbo.attributes)
       stride_vbo += a.sizeInBytes;
+
+    if (subPass.ibo.indexSize != sizeof(uint32_t))
+    {
+      warnUnsortable(passName, "index size is not 32-bit");
+      return ibo.front().glid;
+    }
+
+    if (stride_vbo < 3 * sizeof(float))
+    {
+      warnUnsortable(passName, "vertex stride too small for a position");
+      return ibo.front().glid;
+    }
+
+    const size_t num_vertices = subPass.vbo.data->getBufferSize() / stride_vbo;
 
     std::vector<DepthIndex> rel_depth(num_triangles);
 
 
     for (size_t j = 0; j < num_triangles; j++)
     {
-      float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
+      const uint32_t index1 = ibo_buffer[j * 3];
+      const uint32_t index2 = ibo_buffer[j * 3 + 1];
+      const uint32_t index3 = ibo_buffer[j * 3 + 2];
+      if (index1 >= num_vertices || index2 >= num_vertices || index3 >= num_vertices)
+      {
+        warnUnsortable(passName, "index out of range of the vertex buffer");
+        return ibo.front().glid;
+      }
+
+      float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * index1);
       Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
 
-      float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
+      float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * index2);
       Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
 
-      float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
+      float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * index3);
       Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
 
       rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
@@ -208,21 +256,21 @@ private:
 
     std::sort(rel_depth.begin(), rel_depth.end());
 
-    std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
-    char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
+    std::vector<char> sorted_buffer(subPass.ibo.data->getBufferSize());
+    char* ibuffer = reinterpret_cast<char*>(subPass.ibo.data->getBuffer());
     char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : nullptr;
     GLuint result = ibo.front().glid;
     if (sbuffer && num_triangles > 0)
     {
-      size_t tri_size = pass.front().ibo.data->getBufferSize() / num_triangles;
+      size_t tri_size = subPass.ibo.data->getBufferSize() / num_triangles;
 
       for (size_t j = 0; j < num_triangles; j++)
       {
         memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
       }
 
-      std::string transIBOName = pass.front().ibo.name + "trans";
-      result = addIBO(sbuffer, pass.front().ibo.data->getBufferSize());
+      std::string transIBOName = passName + "trans";
+      result = addIBO(sbuffer, subPass.ibo.data->getBufferSize());
     }
 
     return result;
