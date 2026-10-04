@@ -67,15 +67,28 @@ public:
 };
 
 
+namespace
+{
+  // #2484: on Qt6/Windows the main window vanishes briefly when the first ViewScene
+  // GL widget appears. Fixing the default format up front lets the main window's
+  // surface be created GL-compatible once; see SCIRunMainWindow::primeOpenGLSurface.
+  void setDefaultOpenGLFormat()
+  {
+#ifdef Q_OS_WIN
+    QSurfaceFormat fmt;
+    fmt.setDepthBufferSize(24);
+    fmt.setStencilBufferSize(8);
+    fmt.setVersion(3, 3);
+    fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
+    QSurfaceFormat::setDefaultFormat(fmt);
+#endif
+  }
+}
+
 int GuiApplication::run(int argc, const char* argv[])
 {
   QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-  QSurfaceFormat fmt;
-  fmt.setDepthBufferSize(24);
-  fmt.setStencilBufferSize(8);
-  fmt.setVersion(3, 3);
-  fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
-  QSurfaceFormat::setDefaultFormat(fmt);
+  setDefaultOpenGLFormat();
 
   SCIRunGuiApplication app(argc, const_cast<char**>(argv));
 
