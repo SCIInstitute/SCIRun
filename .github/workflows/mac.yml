@@ -40,6 +40,20 @@ jobs:
       variant: gui
       build-with-python: true
 
+  # WITH_VTK=ON (#2677); also warms the master VTK cache for pr.yml's VTK tier
+  # (runner is part of the cache key). Skipped on release tags.
+  mac-gui-vtk:
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      with-vtk: true
+      timeout-minutes: 360
+
   mac-gui-26:
     uses: ./.github/workflows/reusable-build.yml
     with:
