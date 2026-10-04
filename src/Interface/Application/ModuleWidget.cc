@@ -1241,8 +1241,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 #ifdef __APPLE__
     dockable_->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
 #else
-    // Owned windows minimize with no taskbar entry here, so leave out the minimize button.
-    dockable_->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+    dockable_->setWindowFlags(Qt::Window);
 #endif
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
