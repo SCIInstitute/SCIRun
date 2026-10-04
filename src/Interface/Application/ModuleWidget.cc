@@ -1238,7 +1238,11 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
   if (isFloating)
   {
+#ifdef __APPLE__
     dockable_->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
+#else
+    dockable_->setWindowFlags(Qt::Window);
+#endif
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
   }

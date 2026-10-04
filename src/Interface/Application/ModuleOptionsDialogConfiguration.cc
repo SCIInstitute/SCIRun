@@ -102,7 +102,9 @@ ModuleDialogDockWidget* ModuleOptionsDialogConfiguration::configDockable(ModuleD
   dockable->setAutoFillBackground(true);
   mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable);
   dockable->setFloating(true);
+#ifdef __APPLE__
   dockable->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
+#endif
   dockable->hide();
   QObject::connect(dockable, &QDockWidget::visibilityChanged, moduleWidget_, &ModuleWidget::colorOptionsButton);
   QObject::connect(dockable, &QDockWidget::topLevelChanged, moduleWidget_, &ModuleWidget::updateDockWidgetProperties);
