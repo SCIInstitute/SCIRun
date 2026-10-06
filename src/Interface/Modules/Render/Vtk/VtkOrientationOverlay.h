@@ -60,10 +60,10 @@ namespace SCIRun {
         private:
             bool visible_{ true };
 
-            int size_{ 100 };
+            int size_{ 5 };
 
-            int posX_{ 20 };
-            int posY_{ 20 };
+            int posX_{ 100 };
+            int posY_{ 100 };
 
             int width_{ 1 };
             int height_{ 1 };

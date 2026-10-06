@@ -137,17 +137,19 @@ namespace Render {
 
   void VtkOrientationOverlay::updateViewport()
   {
-    if (!overlayRenderer_) return;
+    if (!overlayRenderer_ || width_ <= 0 || height_ <= 0) return;
 
-    if (width_ <= 0 || height_ <= 0) return;
+    double centerX = static_cast<double>(posX_) / 100.0;
+    double centerY = static_cast<double>(posY_) / 100.0;
 
-    double xmin = static_cast<double>(posX_) / static_cast<double>(width_);
+    double halfW = (static_cast<double>(size_) + 50) / static_cast<double>(width_);
 
-    double ymin = static_cast<double>(posY_) / static_cast<double>(height_);
+    double halfH = (static_cast<double>(size_) + 50) / static_cast<double>(height_);
 
-    double xmax = static_cast<double>(posX_ + size_) / static_cast<double>(width_);
-
-    double ymax = static_cast<double>(posY_ + size_) / static_cast<double>(height_);
+    double xmin = centerX - halfW;
+    double xmax = centerX + halfW;
+    double ymin = centerY - halfH;
+    double ymax = centerY + halfH;
 
     xmin = std::clamp(xmin, 0.0, 1.0);
     ymin = std::clamp(ymin, 0.0, 1.0);
@@ -156,6 +158,5 @@ namespace Render {
 
     overlayRenderer_->SetViewport(xmin, ymin, xmax, ymax);
   }
-
 }
 }

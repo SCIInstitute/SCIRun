@@ -330,8 +330,8 @@ void VtkRenderer::initialize()
   orientationOverlay->setVisible(true);
   overlayManager_->addOverlay(OverlayType::Orientation, std::move(orientationOverlay));
   //
-  overlayManager_->initialize(renderer_);
   overlayManager_->resize(static_cast<int>(width_), static_cast<int>(height_));
+  overlayManager_->initialize(renderer_);
 
   // camera
   vtkCamera* camera = renderer_->GetActiveCamera();
