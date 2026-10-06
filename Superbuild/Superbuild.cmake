@@ -158,6 +158,11 @@ ENDIF()
 ###########################################
 # Configure vtk
 OPTION(WITH_VTK "build VTK" OFF)
+OPTION(PREBUILT_VTK "With WITH_VTK: use the VTK install at VTK_INSTALL_DIR instead of building the external (CI restores it from cache)." OFF)
+
+IF(PREBUILT_VTK AND NOT WITH_VTK)
+  SET(WITH_VTK ON CACHE BOOL "build VTK" FORCE)
+ENDIF()
 
 ###########################################
 # Configure Windows executable to run with
@@ -308,7 +313,13 @@ ENDIF()
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
 IF(WITH_VTK)
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+  IF(PREBUILT_VTK)
+    IF(NOT EXISTS "${VTK_INSTALL_DIR}/lib/cmake")
+      MESSAGE(FATAL_ERROR "PREBUILT_VTK needs VTK_INSTALL_DIR to point at a VTK install (no lib/cmake in '${VTK_INSTALL_DIR}').")
+    ENDIF()
+  ELSE()
+    ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+  ENDIF()
 ENDIF()
 
 ###########################################
