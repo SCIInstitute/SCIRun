@@ -158,6 +158,11 @@ ENDIF()
 ###########################################
 # Configure vtk
 OPTION(WITH_VTK "build VTK" OFF)
+OPTION(PREBUILT_VTK "With WITH_VTK: use the VTK install at VTK_INSTALL_DIR instead of building the external (CI restores it from cache)." OFF)
+
+IF(PREBUILT_VTK AND NOT WITH_VTK)
+  SET(WITH_VTK ON CACHE BOOL "build VTK" FORCE)
+ENDIF()
 
 ###########################################
 # Configure Windows executable to run with
@@ -308,7 +313,13 @@ ENDIF()
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
 IF(WITH_VTK)
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+  IF(PREBUILT_VTK)
+    IF(NOT EXISTS "${VTK_INSTALL_DIR}/lib/cmake")
+      MESSAGE(FATAL_ERROR "PREBUILT_VTK needs VTK_INSTALL_DIR to point at a VTK install (no lib/cmake in '${VTK_INSTALL_DIR}').")
+    ENDIF()
+  ELSE()
+    ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
+  ENDIF()
 ENDIF()
 
 ###########################################
@@ -408,11 +419,21 @@ IF(WITH_GUI)
   )
 ENDIF()
 
+# The default VS build step is a nested MSBuild without /m, which builds one
+# project at a time whatever the outer build was told (#2771). Makefiles
+# inherit the jobserver and Ninja/Xcode parallelize by default.
+SET(SCIRUN_BUILD_COMMAND)
+IF(CMAKE_GENERATOR MATCHES "Visual Studio")
+  SET(SCIRUN_BUILD_COMMAND BUILD_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --config $<CONFIG> --parallel ${SUPERBUILD_PARALLEL_JOBS})
+ENDIF()
+
 ExternalProject_Add( SCIRun_external
   DEPENDS ${SCIRun_DEPENDENCIES}
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${SCIRUN_SOURCE_DIR}
   BINARY_DIR ${SCIRUN_BINARY_DIR}
   CMAKE_CACHE_ARGS ${SCIRUN_CACHE_ARGS}
+  ${SCIRUN_BUILD_COMMAND}
   INSTALL_COMMAND ""
 )
