@@ -28,9 +28,13 @@ name: pr
 # regression-tests.yml / windows-build-script.yml and runs on master pushes and
 # nightly -- not on every pull request. Use the `workflow_dispatch` trigger on
 # those workflows to run the full matrix against a risky branch on demand.
+#
+# To opt a single PR into mac-gui and windows-gui-qt6 regardless of paths, add
+# the `full-matrix` label. Labeling or unlabeling re-runs this workflow.
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
@@ -52,9 +56,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          files=$(gh pr view "${{ github.event.pull_request.number }}" \
-                    --repo "${{ github.repository }}" \
-                    --json files --jq '.files[].path')
+          pr=$(gh pr view "${{ github.event.pull_request.number }}" \
+                 --repo "${{ github.repository }}" --json files,labels)
+          files=$(jq -r '.files[].path' <<<"$pr")
+          labels=$(jq -r '.labels[].name' <<<"$pr")
 
           echo "Changed files:"
           echo "$files"
@@ -80,7 +85,11 @@ jobs:
           # Only the two top-level CMakeLists count: those hold the APPLE/WIN32
           # blocks. Nested ones are source lists, and matching them would drag
           # every new module into the full matrix for no reason.
+          # The `full-matrix` label is additive: it forces the tier on for a PR
+          # whose author knows the path filter is wrong for it.
           if [ "$count" -eq 0 ] || [ "$count" -ge 100 ]; then
+            platform_risk=true
+          elif printf '%s\n' "$labels" | grep -qxF 'full-matrix'; then
             platform_risk=true
           elif printf '%s\n' "$files" | grep -qE '^(Superbuild/|\.github/|CMake/|src/Externals/|src/Main/)|^(src/)?CMakeLists\.txt$|\.cmake$|^build\.(sh|ps1)$'; then
             platform_risk=true
