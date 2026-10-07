@@ -65,6 +65,20 @@ IF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
 ENDIF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
 
 ########################################################################
+# MSBuild otherwise compiles one file at a time per project (#2771).
+# Multi-ToolTask runs a cl per file; the cross-build cap keeps /m:N from
+# multiplying that into N^2 compilers and exhausting memory.
+
+IF(CMAKE_GENERATOR MATCHES "Visual Studio")
+  IF(NOT CMAKE_VS_GLOBALS MATCHES "(^|;)UseMultiToolTask=")
+    LIST(APPEND CMAKE_VS_GLOBALS UseMultiToolTask=true)
+  ENDIF()
+  IF(NOT CMAKE_VS_GLOBALS MATCHES "(^|;)EnforceProcessCountAcrossBuilds=")
+    LIST(APPEND CMAKE_VS_GLOBALS EnforceProcessCountAcrossBuilds=true)
+  ENDIF()
+ENDIF()
+
+########################################################################
 # Git revision details
 
 # Appends the cmake/modules path to MAKE_MODULE_PATH variable.
