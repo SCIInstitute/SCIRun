@@ -133,6 +133,165 @@ namespace
     ModuleId from, to;
     size_t fromIndex, toIndex;
   };
+
+  // Keys named after an input port (dynamic port labels) only exist once that port is connected.
+  bool isPortKey(const ModuleHandle& module, const std::string& key)
+  {
+    const auto ports = module->inputPorts();
+    return std::any_of(ports.begin(), ports.end(), [&key](const InputPortHandle& port)
+      { return port && (port->externalId().toString() == key || port->internalId().toString() == key); });
+  }
+
+  class ScriptWriter
+  {
+  public:
+    explicit ScriptWriter(const NetworkStateInterface& network) : network_(network)
+    {
+      py_.imbue(std::locale::classic());
+      for (size_t i = 0; i < network.nmodules(); ++i)
+      {
+        modules_.push_back(network.module(i));
+        order_[modules_.back()->id().id_] = i;
+      }
+    }
+
+    void header(const std::string& sourceName)
+    {
+      py_ << "# SCIRun network exported to Python" << (sourceName.empty() ? "" : " from " + sourceName) << ".\n"
+          << "# Run it with `scirun -s <this file>`, or paste it into the SCIRun Python console.\n"
+          << "# Module IDs are reassigned when the script runs, so modules are referred to by variable.\n"
+          << "\n"
+          << "skipped = []\n"
+          << "def set_state(module, key, value):\n"
+          << "    # Saved networks can hold keys or value types that this version's modules no longer accept.\n"
+          << "    try:\n"
+          << "        scirun_set_module_state(module, key, value)\n"
+          << "    except (ValueError, RuntimeError) as e:\n"
+          << "        skipped.append(f\"{module} {key}: {e}\")\n";
+    }
+
+    void addModules()
+    {
+      py_ << "\n";
+      for (const auto& module : modules_)
+        py_ << variableName(module->id()) << " = scirun_add_module(" << quoted(module->name()) << ")\n";
+    }
+
+    void state(bool portKeys)
+    {
+      for (const auto& module : modules_)
+        moduleState(module, portKeys);
+    }
+
+    void connections()
+    {
+      resolveConnections();
+      if (!connections_.empty())
+        py_ << "\n";
+      for (const auto& c : connections_)
+        py_ << connectionCall("scirun_connect_modules", c);
+    }
+
+    void layout(const NetworkFile& file)
+    {
+      // The GUI keys disabled connections by module pair only, "to--from" (NetworkEditor::connectionNoteId).
+      const auto& disabled = file.disabledComponents.disabledConnections;
+      for (const auto& c : connections_)
+      {
+        if (std::find(disabled.begin(), disabled.end(), c.to.id_ + "--" + c.from.id_) != disabled.end())
+          py_ << connectionCall("scirun_disable_connection", c);
+      }
+
+      for (const auto& id : file.disabledComponents.disabledModules)
+        py_ << "# " << id << " is disabled in the network; the python API cannot disable modules.\n";
+
+      positions(file.modulePositions.modulePositions);
+    }
+
+    std::string footer()
+    {
+      py_ << "\nif skipped:\n"
+          << "    print(\"Saved state not applied:\\n  \" + \"\\n  \".join(skipped))\n";
+      return py_.str();
+    }
+
+  private:
+    void moduleState(const ModuleHandle& module, bool portKeys)
+    {
+      auto state = module->get_state();
+      if (!state)
+        return;
+      const auto var = variableName(module->id());
+      bool headerWritten = false;
+      for (const auto& key : state->getKeys())
+      {
+        if (isPortKey(module, key.name()) != portKeys)
+          continue;
+        if (!headerWritten)
+          py_ << "\n# " << module->id().id_ << "\n";
+        headerWritten = true;
+        const auto literal = pythonLiteral(state->getValue(key));
+        if (literal)
+          py_ << "set_state(" << var << ", " << quoted(key.name()) << ", " << *literal << ")\n";
+        else
+          py_ << "# " << key.name() << ": value has no python form, left at its default\n";
+      }
+    }
+
+    void resolveConnections()
+    {
+      for (const auto& desc : network_.connections(false))
+      {
+        auto from = network_.lookupModule(desc.out_.moduleId_);
+        auto to = network_.lookupModule(desc.in_.moduleId_);
+        auto outPort = from ? from->getOutputPort(desc.out_.portId_) : nullptr;
+        auto inPort = to ? to->getInputPort(desc.in_.portId_) : nullptr;
+        if (!outPort || !inPort)
+        {
+          py_ << "# could not resolve connection " << ConnectionId::create(desc).id_ << "\n";
+          continue;
+        }
+        connections_.push_back({ desc.out_.moduleId_, desc.in_.moduleId_, outPort->getIndex(), inPort->getIndex() });
+      }
+      // Dynamic input ports appear one at a time as they are connected, so connect in port order.
+      // Module order rather than ID keeps the output stable when a rebuilt network renumbers IDs.
+      std::sort(connections_.begin(), connections_.end(), [this](const ResolvedConnection& a, const ResolvedConnection& b)
+      {
+        return std::make_tuple(order_[a.to.id_], a.toIndex, order_[a.from.id_], a.fromIndex)
+          < std::make_tuple(order_[b.to.id_], b.toIndex, order_[b.from.id_], b.fromIndex);
+      });
+    }
+
+    void positions(const ModulePositions::Data& positions)
+    {
+      bool first = true;
+      for (const auto& module : modules_)
+      {
+        auto pos = positions.find(module->id().id_);
+        if (pos == positions.end())
+          continue;
+        if (first)
+          py_ << "\n";
+        first = false;
+        py_ << "scirun_move_module(" << variableName(module->id()) << ", "
+            << doubleLiteral(pos->second.first) << ", " << doubleLiteral(pos->second.second) << ")\n";
+      }
+    }
+
+    static std::string connectionCall(const std::string& function, const ResolvedConnection& c)
+    {
+      std::ostringstream call;
+      call << function << "(" << variableName(c.from) << ", " << c.fromIndex << ", "
+           << variableName(c.to) << ", " << c.toIndex << ")\n";
+      return call.str();
+    }
+
+    const NetworkStateInterface& network_;
+    std::ostringstream py_;
+    std::vector<ModuleHandle> modules_;
+    std::map<std::string, size_t> order_;
+    std::vector<ResolvedConnection> connections_;
+  };
 }
 
 std::optional<std::string> SCIRun::Dataflow::Networks::pythonLiteral(const Variable& var)
@@ -143,131 +302,13 @@ std::optional<std::string> SCIRun::Dataflow::Networks::pythonLiteral(const Varia
 std::string SCIRun::Dataflow::Networks::networkToPythonScript(const NetworkStateInterface& network,
   const NetworkFile* layout, const std::string& sourceName)
 {
-  std::ostringstream py;
-  py.imbue(std::locale::classic());
-  py << "# SCIRun network exported to Python" << (sourceName.empty() ? "" : " from " + sourceName) << ".\n"
-     << "# Run it with `scirun -s <this file>`, or paste it into the SCIRun Python console.\n"
-     << "# Module IDs are reassigned when the script runs, so modules are referred to by variable.\n";
-
-  std::vector<ModuleHandle> modules;
-  std::map<std::string, size_t> order;
-  for (size_t i = 0; i < network.nmodules(); ++i)
-  {
-    modules.push_back(network.module(i));
-    order[modules.back()->id().id_] = i;
-  }
-
-  py << "\n"
-     << "skipped = []\n"
-     << "def set_state(module, key, value):\n"
-     << "    # Saved networks can hold keys or value types that this version's modules no longer accept.\n"
-     << "    try:\n"
-     << "        scirun_set_module_state(module, key, value)\n"
-     << "    except (ValueError, RuntimeError) as e:\n"
-     << "        skipped.append(f\"{module} {key}: {e}\")\n";
-
-  py << "\n";
-  for (const auto& module : modules)
-    py << variableName(module->id()) << " = scirun_add_module(" << quoted(module->name()) << ")\n";
-
-  // Keys named after an input port (dynamic port labels) only exist once that port is connected.
-  auto isPortKey = [](const ModuleHandle& module, const std::string& key)
-  {
-    const auto ports = module->inputPorts();
-    return std::any_of(ports.begin(), ports.end(), [&key](const InputPortHandle& port)
-      { return port && (port->externalId().toString() == key || port->internalId().toString() == key); });
-  };
-  auto emitState = [&](const ModuleHandle& module, bool portKeys, bool& headerWritten)
-  {
-    auto state = module->get_state();
-    if (!state)
-      return;
-    const auto var = variableName(module->id());
-    for (const auto& key : state->getKeys())
-    {
-      if (isPortKey(module, key.name()) != portKeys)
-        continue;
-      if (!headerWritten)
-        py << "\n# " << module->id().id_ << "\n";
-      headerWritten = true;
-      const auto literal = pythonLiteral(state->getValue(key));
-      if (literal)
-        py << "set_state(" << var << ", " << quoted(key.name()) << ", " << *literal << ")\n";
-      else
-        py << "# " << key.name() << ": value has no python form, left at its default\n";
-    }
-  };
-
-  for (const auto& module : modules)
-  {
-    bool headerWritten = false;
-    emitState(module, false, headerWritten);
-  }
-
-  std::vector<ResolvedConnection> connections;
-  for (const auto& desc : network.connections(false))
-  {
-    auto from = network.lookupModule(desc.out_.moduleId_);
-    auto to = network.lookupModule(desc.in_.moduleId_);
-    auto outPort = from ? from->getOutputPort(desc.out_.portId_) : nullptr;
-    auto inPort = to ? to->getInputPort(desc.in_.portId_) : nullptr;
-    if (!outPort || !inPort)
-    {
-      py << "# could not resolve connection " << ConnectionId::create(desc).id_ << "\n";
-      continue;
-    }
-    connections.push_back({ desc.out_.moduleId_, desc.in_.moduleId_, outPort->getIndex(), inPort->getIndex() });
-  }
-  // Dynamic input ports appear one at a time as they are connected, so connect in port order.
-  // Module order rather than ID keeps the output stable when a rebuilt network renumbers IDs.
-  std::sort(connections.begin(), connections.end(), [&order](const ResolvedConnection& a, const ResolvedConnection& b)
-  {
-    return std::make_tuple(order[a.to.id_], a.toIndex, order[a.from.id_], a.fromIndex)
-      < std::make_tuple(order[b.to.id_], b.toIndex, order[b.from.id_], b.fromIndex);
-  });
-
-  if (!connections.empty())
-    py << "\n";
-  for (const auto& c : connections)
-    py << "scirun_connect_modules(" << variableName(c.from) << ", " << c.fromIndex << ", "
-       << variableName(c.to) << ", " << c.toIndex << ")\n";
-
-  for (const auto& module : modules)
-  {
-    bool headerWritten = false;
-    emitState(module, true, headerWritten);
-  }
-
+  ScriptWriter writer(network);
+  writer.header(sourceName);
+  writer.addModules();
+  writer.state(false);
+  writer.connections();
+  writer.state(true);
   if (layout)
-  {
-    // The GUI keys disabled connections by module pair only, "to--from" (NetworkEditor::connectionNoteId).
-    const auto& disabled = layout->disabledComponents.disabledConnections;
-    for (const auto& c : connections)
-    {
-      if (std::find(disabled.begin(), disabled.end(), c.to.id_ + "--" + c.from.id_) != disabled.end())
-        py << "scirun_disable_connection(" << variableName(c.from) << ", " << c.fromIndex << ", "
-           << variableName(c.to) << ", " << c.toIndex << ")\n";
-    }
-
-    for (const auto& id : layout->disabledComponents.disabledModules)
-      py << "# " << id << " is disabled in the network; the python API cannot disable modules.\n";
-
-    const auto& positions = layout->modulePositions.modulePositions;
-    bool first = true;
-    for (const auto& module : modules)
-    {
-      auto pos = positions.find(module->id().id_);
-      if (pos == positions.end())
-        continue;
-      if (first)
-        py << "\n";
-      first = false;
-      py << "scirun_move_module(" << variableName(module->id()) << ", "
-         << doubleLiteral(pos->second.first) << ", " << doubleLiteral(pos->second.second) << ")\n";
-    }
-  }
-
-  py << "\nif skipped:\n"
-     << "    print(\"Saved state not applied:\\n  \" + \"\\n  \".join(skipped))\n";
-  return py.str();
+    writer.layout(*layout);
+  return writer.footer();
 }
