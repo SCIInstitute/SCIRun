@@ -74,14 +74,20 @@ xcrun llvm-cov report "${OBJECTS[@]}" \
   -instr-profile="$COV_DIR/merged.profdata" \
   -ignore-filename-regex="$IGNORE" | tee "$COV_DIR/summary.txt"
 
-# "N functions have mismatched data": the profile has the function's name but
-# not its body hash, so its counts are dropped. List them, unfiltered, so the
-# cause can be traced.
+# llvm-cov's "N functions have mismatched data" is mostly noise: an image that
+# includes an inline function but never calls it records it under hash 0, and
+# llvm-cov warns about that copy while still using the image that did call it.
+# A non-zero hash is a function compiled differently in two images; those can
+# lose counts, so list them.
 xcrun llvm-cov report "${OBJECTS[@]}" \
   -instr-profile="$COV_DIR/merged.profdata" -dump 2>&1 \
-  | sed -n "s/^hash-mismatch: No profile record found for '\(.*\)' with hash.*/\1/p" \
-  | xcrun llvm-cxxfilt -n | sort > "$COV_DIR/mismatched.txt" || true
-echo ">>> $(wc -l < "$COV_DIR/mismatched.txt") mismatched functions: $COV_DIR/mismatched.txt"
+  | sed -n "s/^hash-mismatch: No profile record found for '\(.*\)' with hash = \(0x[0-9a-f]*\).*/\2 \1/p" \
+  > "$COV_DIR/mismatch-raw.txt" || true
+grep -v '^0x0 ' "$COV_DIR/mismatch-raw.txt" | cut -d' ' -f2- \
+  | xcrun llvm-cxxfilt -n | sort | uniq -c | sort -rn > "$COV_DIR/mismatched.txt" || true
+echo ">>> hash mismatches: $(grep -c '^0x0 ' "$COV_DIR/mismatch-raw.txt") unused-copy (harmless)," \
+  "$(wc -l < "$COV_DIR/mismatched.txt" | tr -d ' ') real: $COV_DIR/mismatched.txt"
+rm -f "$COV_DIR/mismatch-raw.txt"
 
 echo ">>> Generating HTML report"
 xcrun llvm-cov show "${OBJECTS[@]}" \
