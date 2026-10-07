@@ -73,9 +73,12 @@ class Coverage:
 def coverage_dir_of(name):
     # Rows are relative to llvm-cov's common prefix, e.g.
     # "SCIRun/src/Core/Datatypes/Field.cc"; group two levels below src/.
+    # None outside src/: bin/ moc and factory output and Qt headers would
+    # otherwise top the listing with code nobody can write tests for.
     parts = name.split("/")
-    if "src" in parts:
-        parts = parts[parts.index("src") + 1:]
+    if "src" not in parts:
+        return None
+    parts = parts[parts.index("src") + 1:]
     return "/".join(parts[:2]) if len(parts) > 2 else "/".join(parts[:-1]) or "."
 
 
@@ -93,7 +96,10 @@ def parse_coverage(path, label):
         if g[0] == "TOTAL":
             cov.totals = nums
             continue
-        d = cov.dirs.setdefault(coverage_dir_of(g[0]), [0, 0])
+        dirname = coverage_dir_of(g[0])
+        if dirname is None:
+            continue
+        d = cov.dirs.setdefault(dirname, [0, 0])
         d[0] += nums["lines"][0]
         d[1] += nums["lines"][1]
     return cov if cov.totals else None
