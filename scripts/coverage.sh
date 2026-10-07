@@ -41,7 +41,11 @@ rm -f "$COV_DIR"/*.profraw "$COV_DIR/merged.profdata"
 
 # %p => one profraw per process. Each regression test is its own process, so
 # this avoids the processes clobbering a single shared profile file.
-export LLVM_PROFILE_FILE="$(cd "$COV_DIR" && pwd)/%p.profraw"
+# %c => continuous mode: counters are mmapped into the file as they change.
+# Regression mode leaves via _Exit (Core::quickExit), which skips the atexit
+# hook that would otherwise write them, so without %c those tests record
+# nothing. Flushing by hand is no fix: each dylib has its own runtime copy.
+export LLVM_PROFILE_FILE="$(cd "$COV_DIR" && pwd)/%c%p.profraw"
 
 echo ">>> Running tests (LLVM_PROFILE_FILE=$LLVM_PROFILE_FILE)"
 ( cd "$BUILD_DIR" && ctest --output-on-failure "${CTEST_ARGS[@]}" ) || \
