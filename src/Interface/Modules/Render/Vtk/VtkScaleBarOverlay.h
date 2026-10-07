@@ -25,51 +25,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef WITH_VTK
-#pragma push_macro("INPUT_PORT")
-#undef INPUT_PORT
-#include <vtkSmartPointer.h>
-#include <vtkDataObject.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkPoints.h>
-#include <vtkDoubleArray.h>
-#include <vtkPointData.h>
-#include <vtkHexahedron.h>
-#include <vtkCellArray.h>
-#include <vtkImageData.h>
-#include <vtkPolyData.h>
-#include <vtkPolyLine.h>
-#include <vtkFloatArray.h>
-#include <vtkTriangle.h>
-#include <vtkQuad.h>
-#include <vtkLine.h>
-#include <vtkTetra.h>
-#include <vtkCamera.h>
-#include <vtkMath.h>
-#include <vtkRenderer.h>
-#include <vtkLookupTable.h>
-#include <vtkProperty.h>
-#include <vtkVolumeProperty.h>
-#include <vtkPiecewiseFunction.h>
-#include <vtkColorTransferFunction.h>
-#include <vtkTubeFilter.h>
-#include <vtkSphereSource.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkWindowToImageFilter.h>
-#include <vtkActor.h>
-#include <vtkDataSetMapper.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkSmartVolumeMapper.h>
-#include <vtkGlyph3DMapper.h>
-#include <vtkPlane.h>
-#include <vtkDataSetSurfaceFilter.h>
-#include <vtkAxesActor.h>
-#include <vtkTextActor.h>
-#include <vtkPolyDataMapper2D.h>
-#include <vtkProperty2D.h>
-#include <vtkTextProperty.h>
-#include <vtkCallbackCommand.h>
-#pragma pop_macro("INPUT_PORT")
-#endif
+#pragma once
 
+#ifdef WITH_VTK
+#include "VtkOverlay.h"
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
+
+namespace SCIRun {
+    namespace Render {
+        class VtkScaleBarOverlay : public VtkOverlay
+        {
+        public:
+            void initialize(vtkRenderer*) override;
+            void cameraChanged(vtkCamera*) override;
+            void resize(int, int) override;
+            void setVisible(bool visible) override;
+
+        private:
+            vtkSmartPointer<vtkRenderer> overlayRenderer_;
+
+            vtkSmartPointer<vtkActor2D> barActor_;
+            vtkSmartPointer<vtkTextActor> textActor_;
+
+            bool visible_{true};
+
+            int width_{1};
+            int height_{ 1 };
+
+            int posX_{ 50 };
+            int posY_{ 10 };
+
+            int barPixels_{ 100 };
+
+            void updateScale();
+        };
+    }
+}
+#endif

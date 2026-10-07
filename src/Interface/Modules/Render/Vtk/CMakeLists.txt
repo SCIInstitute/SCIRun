@@ -11,6 +11,7 @@ SET(SRCS ${SRCS}
   VtkOverlayManager.cc
   VtkQWidget.cc
   VtkRenderer.cc
+  VtkScaleBarOverlay.cc
 )
 
 SET(MOC_HEADERS
@@ -20,6 +21,7 @@ SET(MOC_HEADERS
   VtkOverlayManager.h
   VtkQWidget.h
   VtkRenderer.h
+  VtkScaleBarOverlay.h
   share.h
 )
 

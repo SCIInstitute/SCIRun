@@ -30,6 +30,7 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <iostream>
 #include "VtkOrientationOverlay.h"
+#include "VtkScaleBarOverlay.h"
 #include "VtkOverlay.h"
 
 using namespace SCIRun;
@@ -329,6 +330,10 @@ void VtkRenderer::initialize()
   auto orientationOverlay = std::make_unique<VtkOrientationOverlay>();
   orientationOverlay->setVisible(true);
   overlayManager_->addOverlay(OverlayType::Orientation, std::move(orientationOverlay));
+  //scale bar
+  auto scalebarOverlay = std::make_unique<VtkScaleBarOverlay>();
+  scalebarOverlay->setVisible(true);
+  overlayManager_->addOverlay(OverlayType::Scalebar, std::move(scalebarOverlay));
   //
   overlayManager_->resize(static_cast<int>(width_), static_cast<int>(height_));
   overlayManager_->initialize(renderer_);
