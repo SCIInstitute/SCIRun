@@ -285,6 +285,7 @@ private Q_SLOTS:
   void updateMacroButton(int index, const QString& name);
   void saveNetwork();
   void saveNetworkAs();
+  void exportNetworkAsPython();
   void selectModuleKeyboardAction();
   void setDragMode(bool toggle);
   void setExecutor(int type);

@@ -38,6 +38,9 @@
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/NetworkToPython.h>
+#include <boost/filesystem/path.hpp>
+#include <fstream>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -640,6 +643,15 @@ std::string PythonImpl::saveNetwork(const std::string& filename)
   save->set(Variables::Filename, filename);
   return save->execute() ? (filename + " saved") : "Save failed";
   //TODO: provide more informative python return value string
+}
+
+std::string PythonImpl::exportPython(const std::string& filename)
+{
+  const auto layout = nec_.saveNetwork();
+  const auto source = boost::filesystem::path(SCIRun::Core::getCurrentFileName()).filename().string();
+  std::ofstream out(filename, std::ios::binary);
+  out << networkToPythonScript(*nec_.getNetwork(), layout.get(), source);
+  return out ? (filename + " exported") : "Export failed";
 }
 
 std::string PythonImpl::loadNetwork(const std::string& filename)

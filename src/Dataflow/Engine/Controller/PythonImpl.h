@@ -59,6 +59,7 @@ namespace Engine {
     std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     std::string saveNetwork(const std::string& filename) override;
+    std::string exportPython(const std::string& filename) override;
     std::string loadNetwork(const std::string& filename) override;
     std::string currentNetworkFile() const override;
     std::string importNetwork(const std::string& filename) override;
