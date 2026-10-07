@@ -51,6 +51,8 @@ void VtkRenderer::renderFrame()
 
   renderWindow_->SetSize(width_, height_);
 
+  renderer_->ResetCameraClippingRange();
+
   renderWindow_->Render();
 
   w2i_->Modified();
@@ -142,7 +144,7 @@ void VtkRenderer::mouseWheel(int32_t delta)
 
 void VtkRenderer::autoView()
 {
-  cameraController_.resetView();
+  renderer_->ResetCamera();
 
   renderFrame();
 }
