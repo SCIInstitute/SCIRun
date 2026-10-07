@@ -74,6 +74,15 @@ xcrun llvm-cov report "${OBJECTS[@]}" \
   -instr-profile="$COV_DIR/merged.profdata" \
   -ignore-filename-regex="$IGNORE" | tee "$COV_DIR/summary.txt"
 
+# "N functions have mismatched data": the profile has the function's name but
+# not its body hash, so its counts are dropped. List them, unfiltered, so the
+# cause can be traced.
+xcrun llvm-cov report "${OBJECTS[@]}" \
+  -instr-profile="$COV_DIR/merged.profdata" -dump 2>&1 \
+  | sed -n "s/^hash-mismatch: No profile record found for '\(.*\)' with hash.*/\1/p" \
+  | xcrun llvm-cxxfilt -n | sort > "$COV_DIR/mismatched.txt" || true
+echo ">>> $(wc -l < "$COV_DIR/mismatched.txt") mismatched functions: $COV_DIR/mismatched.txt"
+
 echo ">>> Generating HTML report"
 xcrun llvm-cov show "${OBJECTS[@]}" \
   -instr-profile="$COV_DIR/merged.profdata" \
