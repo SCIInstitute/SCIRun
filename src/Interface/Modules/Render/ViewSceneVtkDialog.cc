@@ -477,7 +477,7 @@ void ViewSceneVtkDialog::addScreenshotButton()
   screenshotButton->setToolTip("Take screenshot");
   screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
-  connect(screenshotButton, &QPushButton::clicked, this, &ViewSceneVtkDialog::screenshotClicked);
+  connect(screenshotButton, &QPushButton::clicked, this, &ViewSceneVtkDialog::quickScreenshotClicked);
   screenshotControls_ = new ScreenshotControlsVtk(this);
   addToolbarButton(screenshotButton, Qt::TopToolBarArea, screenshotControls_);
 }
@@ -1388,9 +1388,11 @@ void ViewSceneVtkDialog::setTransparencySortTypeLists(bool)
 
 void ViewSceneVtkDialog::screenshotSaveAs()
 {
-  //auto fileName = QFileDialog::getSaveFileName(mGLWidget, "Save screenshot...", QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()), "*.png");
+#ifdef WITH_VTK
+  auto fileName = QFileDialog::getSaveFileName(viewer_, "Save screenshot...", QString::fromStdString(state_->getValue(Parameters::ScreenshotDirectory).toString()), "*.png");
 
-  //saveScreenshot(fileName, true);
+  saveScreenshot(fileName, true);
+#endif
 }
 
 void ViewSceneVtkDialog::quickScreenshot()
@@ -1424,8 +1426,6 @@ void ViewSceneVtkDialog::setToolBarPositions()
   toolBarController_->registerDirectionButton(toolBar2_, toolBar2Position_);
   toolBarController_->registerDirectionButton(toolBar3_, toolBar3Position_);
 }
-
-void ViewSceneVtkDialog::screenshotClicked() {}
 
 void ViewSceneVtkDialog::nextTimestepClicked()
 {
@@ -1549,13 +1549,13 @@ void ViewSceneVtkDialog::setFogColor(const glm::vec4& color)
 
 void ViewSceneVtkDialog::saveScreenshot(QString fileName, bool notify)
 {
-  //if (!fileName.isEmpty())
-  //{
-  //  takeScreenshot();
-  //  if (notify) QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
-
-  //  screenshotTaker_->saveScreenshot(fileName);
-  //}
+  if (!fileName.isEmpty())
+  {
+    if (notify) QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
+#ifdef WITH_VTK
+    renderer_->saveScreenshot(fileName);
+#endif
+  }
 }
 
 const ViewSceneVtkDialog::ShortcutTable& ViewSceneVtkDialog::shortcutTable()

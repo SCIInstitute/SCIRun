@@ -228,6 +228,12 @@ void VtkRenderer::setOrientationAxesPosY(int y)
   }
 }
 
+void VtkRenderer::saveScreenshot(const QString& filename)
+{
+  if (image_.isNull()) return;
+  image_.save(filename);
+}
+
 void VtkRenderer::rebuildClippingPlanes()
 {
   vtkClippingPlanes_.clear();

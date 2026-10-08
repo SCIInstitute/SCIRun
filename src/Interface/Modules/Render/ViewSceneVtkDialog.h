@@ -145,7 +145,6 @@ public Q_SLOTS:
  protected Q_SLOTS:
   void newGeometryValue();
   void autoRotateClicked();
-  void screenshotClicked();
   void nextTimestepClicked();
   void playTimestepsClicked();
   void configButtonClicked();

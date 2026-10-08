@@ -75,6 +75,8 @@ public:
   void setOrientationAxesSize(int size);
   void setOrientationAxesPosX(int x);
   void setOrientationAxesPosY(int y);
+  //screenshot
+  void saveScreenshot(const QString& filename);
 
   //Getters-----------------------------------------------------------------------------------------
   uint32_t width() {return width_;}
