@@ -150,13 +150,16 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   if (module_->getModule()->isImplementationDisabled())
   {
+    const auto flag = module_->getModule()->requiredBuildFlag();
     setOpacity(0.5);
     auto colorize = new QGraphicsColorizeEffect;
     colorize->setColor(QColor(150,0,0));
     previousEffect_ = colorize;
     setGraphicsEffect(previousEffect_);
     QMessageBox::warning(nullptr, "Disabled module",
-      tr("Module %1 is disabled; you might need a different build of SCIRun.").arg(QString::fromStdString(module_->getModuleId())));
+      flag.empty()
+        ? tr("Module %1 is disabled; you might need a different build of SCIRun.").arg(QString::fromStdString(module_->getModuleId()))
+        : tr("Module %1 is disabled: this build of SCIRun was configured without %2.").arg(QString::fromStdString(module_->getModuleId()), QString::fromStdString(flag)));
   }
 
 #ifdef MODULE_POSITION_LOGGING
