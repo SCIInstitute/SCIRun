@@ -45,6 +45,8 @@
 #include <boost/graph/copy.hpp>
 #include <boost/graph/connected_components.hpp>
 
+#include <unordered_set>
+
 using namespace SCIRun;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
@@ -1267,6 +1269,8 @@ vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeFaces(FieldHandle fi
   // Faces
   //----------------------------------
   FieldInformation info(field);
+  std::unordered_set<QuadFaceKey, QuadFaceKeyHash> seenQuads;
+  std::unordered_set<TriFaceKey, TriFaceKeyHash> seenTris;
 
   for (const auto& cell : facade->cells())
   {
@@ -1279,6 +1283,13 @@ vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeFaces(FieldHandle fi
 
       for (int f = 0; f < 6; ++f)
       {
+        QuadFaceKey key{
+            {static_cast<vtkIdType>(nodes[faces[f][0]]), static_cast<vtkIdType>(nodes[faces[f][1]]), static_cast<vtkIdType>(nodes[faces[f][2]]), static_cast<vtkIdType>(nodes[faces[f][3]])}};
+
+        std::sort(key.ids.begin(), key.ids.end());
+
+        if (!seenQuads.insert(key).second) continue;
+
         vtkNew<vtkQuad> quad;
 
         for (int i = 0; i < 4; ++i)
@@ -1296,6 +1307,12 @@ vtkSmartPointer<vtkPolyData> VtkGeometryBuilder::buildVolumeFaces(FieldHandle fi
 
       for (int f = 0; f < 4; ++f)
       {
+        TriFaceKey key{{static_cast<vtkIdType>(nodes[faces[f][0]]), static_cast<vtkIdType>(nodes[faces[f][1]]), static_cast<vtkIdType>(nodes[faces[f][2]])}};
+
+        std::sort(key.ids.begin(), key.ids.end());
+
+        if (!seenTris.insert(key).second) continue;
+
         vtkNew<vtkTriangle> tri;
 
         for (int i = 0; i < 3; ++i)

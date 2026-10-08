@@ -31,6 +31,8 @@
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <Core/Algorithms/Visualization/share.h>
+#include <array>
+#include <functional>
 
 namespace SCIRun
 {
@@ -46,6 +48,46 @@ namespace SCIRun
         typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
         typedef boost::graph_traits<UndirectedGraph>::vertex_descriptor Vertex_u;
         typedef std::map<int, int> ComponentMap;
+
+        struct QuadFaceKey
+        {
+          std::array<vtkIdType, 4> ids;
+
+          bool operator==(const QuadFaceKey& other) const { return ids == other.ids; }
+        };
+
+        struct TriFaceKey
+        {
+          std::array<vtkIdType, 3> ids;
+
+          bool operator==(const TriFaceKey& other) const { return ids == other.ids; }
+        };
+
+        struct QuadFaceKeyHash
+        {
+          size_t operator()(const QuadFaceKey& k) const
+          {
+            size_t h = 0;
+            for (auto id : k.ids)
+            {
+              h ^= std::hash<vtkIdType>{}(id) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            }
+            return h;
+          }
+        };
+
+        struct TriFaceKeyHash
+        {
+          size_t operator()(const TriFaceKey& k) const
+          {
+            size_t h = 0;
+            for (auto id : k.ids)
+            {
+              h ^= std::hash<vtkIdType>{}(id) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            }
+            return h;
+          }
+        };
 
         class SCISHARE VtkGeometryBuilder
         {
