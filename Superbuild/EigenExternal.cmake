@@ -26,8 +26,19 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
+# A hash is what makes ExternalProject notice a bad download at all: file(DOWNLOAD)
+# reports success for an HTTP error page, so without one the body is extracted as
+# a tarball and fails with something unrelated. With it, CMake retries the fetch.
+SET(eigen_URL_HASH)
+IF(EIGEN_URL_HASH)
+  SET(eigen_URL_HASH URL_HASH SHA256=${EIGEN_URL_HASH})
+ENDIF()
+
 ExternalProject_Add(Eigen_external
   URL ${EIGEN_URL}
+  ${eigen_URL_HASH}
+  # A mirror that dribbles bytes never trips the overall timeout; this one it does.
+  INACTIVITY_TIMEOUT 120
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_IN_SOURCE ON

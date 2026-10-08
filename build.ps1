@@ -32,8 +32,9 @@
 .PARAMETER BuildVerbose
     Show full compiler command lines during the build.
 
-.PARAMETER WithTetgen
-    Include the Tetgen mesh generation library (GPL license).
+.PARAMETER WithoutTetgen
+    Exclude the Tetgen mesh generation library. Tetgen is GPL-licensed and
+    included by default, matching the Superbuild's default.
     See https://tetgen.org for license details.
 
 .PARAMETER Headless
@@ -131,7 +132,7 @@ param(
     [switch]$Debug,
     [switch]$Release,
     [switch]$BuildVerbose,
-    [switch]$WithTetgen,
+    [switch]$WithoutTetgen,
     [switch]$Headless,
     [switch]$Documentation,
     [string]$CMakePath    = "",
@@ -215,11 +216,26 @@ function Enable-TLS12 {
 function Invoke-Download([string]$url, [string]$dest, [string]$label) {
     Enable-TLS12
     Write-Info "Downloading $label..."
-    try {
-        Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
-    } catch {
-        Exit-WithError "Download failed for $label.`n    URL: $url`n    Error: $_"
+    # These come from github.com and friends, which serve the odd 504; a prereq
+    # installer is not worth failing a 90-minute build over. Retry rather than
+    # abort, as the CI workflows do for apt (#2731).
+    $attempts = 3
+    for ($i = 1; $i -le $attempts; $i++) {
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing
+            return
+        } catch {
+            $err = $_
+            # A failed attempt can leave a truncated file that the next one would
+            # otherwise be asked to append to or that a caller might install.
+            if (Test-Path $dest) { Remove-Item $dest -Force -ErrorAction SilentlyContinue }
+            if ($i -lt $attempts) {
+                Write-Info "Download of $label failed (attempt $i of $attempts); retrying..."
+                Start-Sleep -Seconds ($i * 5)
+            }
+        }
     }
+    Exit-WithError "Download failed for $label after $attempts attempts.`n    URL: $url`n    Error: $err"
 }
 
 function Sync-EnvPath {
@@ -558,8 +574,8 @@ function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildT
         "-A", "x64",
         "-DCMAKE_BUILD_TYPE:STRING=$buildType",
         "-DCMAKE_VERBOSE_MAKEFILE:BOOL=$(if ($BuildVerbose) {'ON'} else {'OFF'})",
-        "-DBUILD_HEADLESS:BOOL=$(if ($Headless) {'ON'} else {'OFF'})",
-        "-DWITH_TETGEN:BOOL=$(if ($WithTetgen) {'ON'} else {'OFF'})",
+        "-DWITH_GUI:BOOL=$(if ($Headless) {'OFF'} else {'ON'})",
+        "-DWITH_TETGEN:BOOL=$(if ($WithoutTetgen) {'OFF'} else {'ON'})",
         "-DBUILD_DOCUMENTATION:BOOL=$(if ($Documentation) {'ON'} else {'OFF'})",
         "-DSCIRUN_QT_MIN_VERSION:STRING=$QtVersion"
     )
@@ -773,7 +789,7 @@ Write-Host "  Build type   : $buildType" -ForegroundColor White
 Write-Host "  Parallel jobs: $numJobs" -ForegroundColor White
 Write-Host "  Qt version   : $QtVersion$(if ($Headless) {' (N/A -- headless build)'})" -ForegroundColor White
 Write-Host "  Headless     : $Headless" -ForegroundColor White
-Write-Host "  With Tetgen  : $WithTetgen" -ForegroundColor White
+Write-Host "  With Tetgen  : $(-not $WithoutTetgen)" -ForegroundColor White
 Write-Host ""
 
 # Verify the Superbuild is where we expect it
