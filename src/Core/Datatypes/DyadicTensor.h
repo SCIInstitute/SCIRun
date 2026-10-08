@@ -209,14 +209,25 @@ namespace Core {
       template <typename OtherDerived>
       bool operator==(const OtherDerived& other) const
       {
-        auto otherTensor = static_cast<TensorType>(other);
-        if (Dim != otherTensor.dimension(0) || Dim != otherTensor.dimension(1)) return false;
-        for (SizeType i = 0; i < Dim; ++i)
-          for (SizeType j = 0; j < Dim; ++j)
-            if ((*this)(i, j) != otherTensor(i, j)) return false;
-        return true;
+        // Converting first would assign mismatched fixed sizes: an Eigen assert in Debug (#2546).
+        if constexpr (dimOf(static_cast<const OtherDerived*>(nullptr)) != Dim)
+          return false;
+        else
+        {
+          auto otherTensor = static_cast<TensorType>(other);
+          for (SizeType i = 0; i < Dim; ++i)
+            for (SizeType j = 0; j < Dim; ++j)
+              if ((*this)(i, j) != otherTensor(i, j)) return false;
+          return true;
+        }
       }
 
+     private:
+      template <typename N2, int D2>
+      static constexpr int dimOf(const DyadicTensorGeneric<N2, D2>*) { return D2; }
+      static constexpr int dimOf(const void*) { return Dim; }
+
+     public:
       template <typename OtherDerived>
       TensorType operator*(const OtherDerived& other) const
       {
