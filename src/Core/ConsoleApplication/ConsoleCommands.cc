@@ -61,7 +61,14 @@ namespace
 {
   void quietModulesIfNotVerbose()
   {
-    if (!Application::Instance().parameters()->verboseMode())
+    const auto& params = *Application::Instance().parameters();
+    if (params.verboseMode())
+      return;
+    // Module error text is the only diagnostic CI captures from a failed
+    // regression network (#2701), so keep errors on stdout there.
+    if (params.isRegressionMode())
+      DefaultModuleFactories::defaultLogger_.reset(new Logging::ErrorOnlyConsoleLogger);
+    else
       DefaultModuleFactories::defaultLogger_.reset(new Logging::NullLogger);
   }
 }
