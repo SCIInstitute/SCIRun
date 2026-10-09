@@ -558,6 +558,25 @@ jobs:
             fi
           fi
 
+      # The smoke test above runs the build tree; this one runs what users get.
+      # Gating, like the smoke test: a .pkg that installs a broken app should
+      # not be uploaded. Package step's `|| true`s mean a missing .pkg fails here.
+      - name: Smoke test - install .pkg and run the installed app (macOS)
+        if: ${{ inputs.run-smoke-test && inputs.artifact-name != '' && runner.os == 'macOS' }}
+        shell: bash
+        run: |
+          set -eux
+          shopt -s nullglob
+          pkgs=(bin/SCIRun/SCIRun-*-Darwin.pkg)
+          [ ${#pkgs[@]} -eq 1 ] || { echo "::error::expected one .pkg, found ${#pkgs[@]}"; exit 1; }
+          sudo installer -pkg "${pkgs[0]}" -target /
+          # Ask the receipt where the app went rather than assuming /Applications.
+          info=$(pkgutil --pkg-info edu.utah.sci.SCIRun)
+          vol=$(sed -n 's/^volume: //p' <<< "$info")
+          loc=$(sed -n 's/^location: //p' <<< "$info")
+          app=$(pkgutil --only-dirs --files edu.utah.sci.SCIRun | grep -m1 -E '(^|/)SCIRun\.app$')
+          scripts/ci/check_installed_app.sh "${vol%/}/${loc:+$loc/}$app"
+
       - name: Package (optional - Windows)
         if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
         shell: cmd
@@ -705,6 +724,7 @@ jobs:
           if-no-files-found: error
           path: |
             bin/SCIRun/coverage/summary.txt
+            bin/SCIRun/coverage/mismatched.txt
             bin/SCIRun/coverage/html
 
       # Runs after packaging so it can read the installed binary, and before the
