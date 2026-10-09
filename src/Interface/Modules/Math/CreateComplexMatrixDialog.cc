@@ -42,15 +42,15 @@ CreateComplexMatrixDialog::CreateComplexMatrixDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(editCheckBox_, &QCheckBox::stateChanged, this, &CreateComplexMatrixDialog::pushMatrixToState);
+  connect(editCheckBox_, &QCheckBox::toggled, this, &CreateComplexMatrixDialog::pushMatrixToState);
   connect(matrixTextEdit_, &QPlainTextEdit::textChanged, this, &CreateComplexMatrixDialog::editBoxUnsaved);
 }
 
-void CreateComplexMatrixDialog::pushMatrixToState(int state)
+void CreateComplexMatrixDialog::pushMatrixToState(bool state)
 {
   if (!pulling_)
   {
-    if (0 == state) // matrix is done editing
+    if (!state) // matrix is done editing
     {
       state_->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrixTextEdit_->toPlainText().toStdString());
       editBoxSaved();

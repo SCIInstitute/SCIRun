@@ -260,11 +260,11 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(moduleFilterLineEdit_, &QLineEdit::textChanged, this, &SCIRunMainWindow::filterModuleNamesInTreeView);
 
-  connect(prefsWindow_->modulesSnapToCheckBox_, &QCheckBox::stateChanged, this, &SCIRunMainWindow::modulesSnapToChanged);
-  connect(prefsWindow_->modulesSnapToCheckBox_, &QCheckBox::stateChanged, networkEditor_, &NetworkEditor::snapToModules);
-  connect(prefsWindow_->portSizeEffectsCheckBox_, &QCheckBox::stateChanged, this, &SCIRunMainWindow::highlightPortsChanged);
-  connect(prefsWindow_->portSizeEffectsCheckBox_, &QCheckBox::stateChanged, networkEditor_, &NetworkEditor::highlightPorts);
-  connect(prefsWindow_->dockableModulesCheckBox_, &QCheckBox::stateChanged, this, &SCIRunMainWindow::adjustModuleDock);
+  connect(prefsWindow_->modulesSnapToCheckBox_, &QCheckBox::toggled, this, &SCIRunMainWindow::modulesSnapToChanged);
+  connect(prefsWindow_->modulesSnapToCheckBox_, &QCheckBox::toggled, networkEditor_, &NetworkEditor::snapToModules);
+  connect(prefsWindow_->portSizeEffectsCheckBox_, &QCheckBox::toggled, this, &SCIRunMainWindow::highlightPortsChanged);
+  connect(prefsWindow_->portSizeEffectsCheckBox_, &QCheckBox::toggled, networkEditor_, &NetworkEditor::highlightPorts);
+  connect(prefsWindow_->dockableModulesCheckBox_, &QCheckBox::toggled, this, &SCIRunMainWindow::adjustModuleDock);
 
   makeFilterButtonMenu();
 
