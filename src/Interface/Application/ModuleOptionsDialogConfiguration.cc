@@ -38,6 +38,7 @@
 #include <Interface/Application/ModuleOptionsDialogConfiguration.h>
 #include <Interface/Modules/Base/ModuleLogWindow.h>
 #include <Interface/Application/ModuleWidget.h>
+#include <Interface/Application/FloatingDockWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PortWidgetManager.h>
@@ -102,6 +103,7 @@ ModuleDialogDockWidget* ModuleOptionsDialogConfiguration::configDockable(ModuleD
   dockable->setAutoFillBackground(true);
   mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable);
   dockable->setFloating(true);
+  FloatingDockWindow::applyFlagsOnCreate(dockable);
   dockable->hide();
   QObject::connect(dockable, &QDockWidget::visibilityChanged, moduleWidget_, &ModuleWidget::colorOptionsButton);
   QObject::connect(dockable, &QDockWidget::topLevelChanged, moduleWidget_, &ModuleWidget::updateDockWidgetProperties);
