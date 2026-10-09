@@ -36,6 +36,8 @@ SET(Algorithms_Visualization_HEADERS
   OsprayDataAlgorithm.h
   VtkDataAlgorithm.h
   VtkGeometryBuilder.h
+  VtkIncludes.h
+  share.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
@@ -59,6 +61,7 @@ IF(WITH_VTK)
   target_link_libraries(Core_Algorithms_Visualization
     VTK::CommonDataModel
     VTK::CommonCore
+    VTK::FiltersGeometry
   )
 ENDIF()
 

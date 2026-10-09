@@ -29,61 +29,27 @@
 
 #ifdef WITH_VTK
 
-#include <glm/glm.hpp>
-
-#include <Core/Datatypes/Feedback.h>
-
-class vtkRenderer;
 class vtkCamera;
+class vtkRenderer;
+class vtkRenderWindow;
 
-namespace SCIRun {
-    namespace Render {
+namespace SCIRun::Render {
+class VtkOverlay
+{
+ public:
+  virtual ~VtkOverlay() = default;
 
-class VtkCameraController
-      {
-       public:
-        void setCamera(vtkCamera* camera);
+  virtual void initialize(vtkRenderer* renderer) = 0;
 
-        void mousePress(float x, float y, MouseButton button);
+  virtual void cameraChanged(vtkCamera* camera) = 0;
 
-        void mouseMove(float x, float y);
+  virtual void resize(int width, int height) {}
 
-        void mouseRelease();
+  virtual void setVisible(bool visible) = 0;
 
-        void mouseWheel(int32_t delta);
-
-        void resetView();
-
-        void setRotationSpeed(float speed) { rotationSpeed_ = speed; }
-        void setPanSpeed(float speed) { panSpeed_ = speed; }
-        void setZoomSpeed(float speed) { zoomSpeed_ = speed; }
-
-        float rotationSpeed() const { return rotationSpeed_; }
-        float panSpeed() const { return panSpeed_; }
-        float zoomSpeed() const { return zoomSpeed_; }
-
-       private:
-        void rotate(float dx, float dy);
-
-        void pan(float dx, float dy);
-
-        void zoom(float amount);
-
-       private:
-        vtkCamera* camera_{nullptr};
-
-        bool dragging_{false};
-
-        MouseButton activeButton_;
-
-        glm::vec2 lastMousePos_{0.f, 0.f};
-
-        float rotationSpeed_{0.5f};
-        float panSpeed_{0.01f};
-        float zoomSpeed_{0.15f};
-      };
-
-    }
-} // namespace SCIRun::Render
+ protected:
+  vtkRenderWindow* renderWindow_{nullptr};
+};
+}
 
 #endif

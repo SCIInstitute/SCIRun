@@ -28,62 +28,52 @@
 #pragma once
 
 #ifdef WITH_VTK
-
-#include <glm/glm.hpp>
-
-#include <Core/Datatypes/Feedback.h>
-
-class vtkRenderer;
-class vtkCamera;
+#include "VtkOverlay.h"
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 
 namespace SCIRun {
     namespace Render {
+        class VtkOrientationOverlay : public VtkOverlay
+        {
+        public:
+            void initialize(vtkRenderer* renderer) override;
 
-class VtkCameraController
-      {
-       public:
-        void setCamera(vtkCamera* camera);
+            void cameraChanged(vtkCamera* camera) override;
 
-        void mousePress(float x, float y, MouseButton button);
+            void resize(int width, int height) override;
 
-        void mouseMove(float x, float y);
+            void setVisible(bool visible) override;
 
-        void mouseRelease();
+            void setSize(int value);
 
-        void mouseWheel(int32_t delta);
+            void setPosX(int value);
 
-        void resetView();
+            void setPosY(int value);
 
-        void setRotationSpeed(float speed) { rotationSpeed_ = speed; }
-        void setPanSpeed(float speed) { panSpeed_ = speed; }
-        void setZoomSpeed(float speed) { zoomSpeed_ = speed; }
+            void setPosition(
+                int x,
+                int y);
 
-        float rotationSpeed() const { return rotationSpeed_; }
-        float panSpeed() const { return panSpeed_; }
-        float zoomSpeed() const { return zoomSpeed_; }
+        private:
+            void updateViewport();
 
-       private:
-        void rotate(float dx, float dy);
+        private:
+            bool visible_{ true };
 
-        void pan(float dx, float dy);
+            int size_{ 5 };
 
-        void zoom(float amount);
+            int posX_{ 100 };
+            int posY_{ 100 };
 
-       private:
-        vtkCamera* camera_{nullptr};
+            int width_{ 1 };
+            int height_{ 1 };
 
-        bool dragging_{false};
+            vtkSmartPointer<vtkRenderer>
+                overlayRenderer_;
 
-        MouseButton activeButton_;
-
-        glm::vec2 lastMousePos_{0.f, 0.f};
-
-        float rotationSpeed_{0.5f};
-        float panSpeed_{0.01f};
-        float zoomSpeed_{0.15f};
-      };
-
+            vtkSmartPointer<vtkAxesActor>
+                axesActor_;
+        };
     }
-} // namespace SCIRun::Render
-
+}
 #endif

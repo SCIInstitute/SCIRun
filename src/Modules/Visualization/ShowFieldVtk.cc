@@ -62,6 +62,7 @@ void ShowFieldVtk::setStateDefaults()
   setStateBoolFromAlgo(Parameters::UseNormals);
   setStateBoolFromAlgo(Parameters::ShowNodes);
   setStateBoolFromAlgo(Parameters::ShowFaces);
+  setStateBoolFromAlgo(Parameters::ShowAllFaces);
   setStateBoolFromAlgo(Parameters::ShowEdges);
   setStateBoolFromAlgo(Parameters::ShowVolume);
   setStateIntFromAlgo(Parameters::ModuleID);
@@ -94,6 +95,7 @@ void ShowFieldVtk::execute()
     setAlgoBoolFromState(Parameters::UseNormals);
     setAlgoBoolFromState(Parameters::ShowNodes);
     setAlgoBoolFromState(Parameters::ShowFaces);
+    setAlgoBoolFromState(Parameters::ShowAllFaces);
     setAlgoBoolFromState(Parameters::ShowEdges);
     setAlgoBoolFromState(Parameters::ShowVolume);
 
