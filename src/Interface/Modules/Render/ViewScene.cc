@@ -1316,13 +1316,12 @@ void ViewSceneDialog::pullSpecial()
   if (!impl_->pulledSavedVisibility_)
   {
     pullCameraState();
+    adjustSizeFromState();
     const auto show = state_->getValue(Parameters::ShowViewer).toBool();
     if (show && parentWidget())
     {
       parentWidget()->show();
     }
-
-    adjustSizeFromState();
 
     if (parentWidget())
     {
@@ -1600,11 +1599,8 @@ void ViewSceneDialog::runDelayedGC()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-  {
-    const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
-    parentWidget()->resize(qs);
-  }
-
+  // No resize here: the dock's GL surface already exists, and resizing it on screen makes
+  // Apple's software GL clear past its drawbuffer (#2732). Callers use prepareToShow().
   if (!impl_->shown_)
   {
     autoViewClicked();

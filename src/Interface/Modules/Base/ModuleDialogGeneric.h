@@ -97,6 +97,8 @@ namespace Gui {
     bool isCollapsed() const { return collapsed_; }
     virtual void createStartupNote() {}
     virtual void adjustToolbar(double /*factor*/) {}
+    // Called before the dialog's dock is shown; resizing a visible GL window races its surface (#2732).
+    virtual void prepareToShow() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }

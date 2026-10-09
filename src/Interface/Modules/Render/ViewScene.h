@@ -98,6 +98,7 @@ namespace SCIRun {
 
       std::string toString(std::string prefix) const;
       void adjustToolbar(double factor) override;
+      void prepareToShow() override { adjustSizeFromState(); }
 
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(float x, float y);
