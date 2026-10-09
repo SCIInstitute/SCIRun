@@ -1050,73 +1050,99 @@ void ViewSceneVtkDialog::setScaleBarVisible(bool value)
 {
   scaleBar_.visible = value;
   state_->setValue(Parameters::ShowScaleBar, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbVisible(value);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarFontSize(int value)
 {
   scaleBar_.fontSize = value;
   state_->setValue(Parameters::ScaleBarFontSize, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbFontSize(scaleBar_.fontSize);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarUnitValue(const QString& text)
 {
   scaleBar_.unit = text.toStdString();
   state_->setValue(Parameters::ScaleBarUnitValue, text.toStdString());
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbUnit(scaleBar_.unit);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarLength(double value)
 {
   scaleBar_.length = value;
   state_->setValue(Parameters::ScaleBarLength, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbLength(scaleBar_.length);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarHeight(double value)
 {
   scaleBar_.height = value;
   state_->setValue(Parameters::ScaleBarHeight, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbHeight(scaleBar_.height);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarMultiplier(double value)
 {
   scaleBar_.multiplier = value;
   state_->setValue(Parameters::ScaleBarMultiplier, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbMultiplier(scaleBar_.multiplier);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarNumTicks(int value)
 {
   scaleBar_.numTicks = value;
   state_->setValue(Parameters::ScaleBarNumTicks, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbNumTicks(scaleBar_.numTicks);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarLineColor(double value)
 {
   scaleBar_.lineColor = value;
   state_->setValue(Parameters::ScaleBarLineColor, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbLineColor(scaleBar_.lineColor);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBarLineWidth(double value)
 {
   scaleBar_.lineWidth = value;
   state_->setValue(Parameters::ScaleBarLineWidth, value);
-  setScaleBar();
+#ifdef WITH_VTK
+  renderer_->setSbLineWidth(scaleBar_.lineWidth);
+#endif
 }
 
 void ViewSceneVtkDialog::setScaleBar()
 {
   if (scaleBar_.visible)
   {
-    //updateScaleBarLength();
-    //scaleBarGeom_ = buildGeometryScaleBar();
+#ifdef WITH_VTK
+    renderer_->setSbFontSize(scaleBar_.fontSize);
+    renderer_->setSbLength(scaleBar_.length);
+    renderer_->setSbHeight(scaleBar_.height);
+    renderer_->setSbMultiplier(scaleBar_.multiplier);
+    renderer_->setSbNumTicks(scaleBar_.numTicks);
+    renderer_->setSbLineWidth(scaleBar_.lineWidth);
+    renderer_->setSbLineColor(scaleBar_.lineColor);
+    renderer_->setSbUnit(scaleBar_.unit);
+    renderer_->setSbProjLength(scaleBar_.projLength);
+#endif
   }
-  //updateModifiedGeometries();
 }
 
 namespace {

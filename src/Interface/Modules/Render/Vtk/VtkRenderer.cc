@@ -228,6 +228,123 @@ void VtkRenderer::setOrientationAxesPosY(int y)
   }
 }
 
+void VtkRenderer::setSbVisible(bool visible)
+{
+  if (overlayManager_)
+  {
+    overlayManager_->setVisible(OverlayType::Scalebar, visible);
+    renderFrame();
+  }
+}
+
+void VtkRenderer::setSbFontSize(int size)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setFontSize(size);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbLength(double length)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setLength(length);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbHeight(double height)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setHeight(height);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbMultiplier(double mul)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setMultiplier(mul);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbNumTicks(double num)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setNumTicks(num);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbLineWidth(double width)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setLineWidth(width);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbLineColor(double color)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setLineColor(color);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbUnit(const std::string& unit)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setUnit(unit);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbProjLength(double length)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setProjLength(length);
+      renderFrame();
+    }
+  }
+}
+
 void VtkRenderer::saveScreenshot(const QString& filename)
 {
   if (image_.isNull()) return;

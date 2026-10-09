@@ -41,22 +41,38 @@ namespace SCIRun {
             void resize(int, int) override;
             void setVisible(bool visible) override;
 
-        private:
+            void setFontSize(int size);
+            void setLength(double length);
+            void setHeight(double height);
+            void setMultiplier(double mul);
+            void setNumTicks(double num);
+            void setLineWidth(double width);
+            void setLineColor(double color);
+            void setUnit(const std::string& unit);
+            void setProjLength(double length);
+
+           private:
+            vtkRenderer* sceneRenderer_ = nullptr;
             vtkSmartPointer<vtkRenderer> overlayRenderer_;
 
             vtkSmartPointer<vtkActor2D> barActor_;
             vtkSmartPointer<vtkTextActor> textActor_;
 
             bool visible_{true};
-
             int width_{1};
-            int height_{ 1 };
+            int height_{1};
 
-            int posX_{ 50 };
-            int posY_{ 10 };
+            int sbFontSize_;
+            double sbLength_;
+            double sbHeight_;
+            double sbMultiplier_;
+            double sbNumTicks_;
+            double sbLineWidth_;
+            double sbLineColor_;
+            std::string sbUnit_;
+            double sbProjLength_;
 
-            int barPixels_{ 100 };
-
+            void updateProjectedLength();
             void updateScale();
         };
     }

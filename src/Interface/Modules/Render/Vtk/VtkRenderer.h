@@ -75,6 +75,17 @@ public:
   void setOrientationAxesSize(int size);
   void setOrientationAxesPosX(int x);
   void setOrientationAxesPosY(int y);
+  //scale bar
+  void setSbVisible(bool visible);
+  void setSbFontSize(int size);
+  void setSbLength(double length);
+  void setSbHeight(double height);
+  void setSbMultiplier(double mul);
+  void setSbNumTicks(double num);
+  void setSbLineWidth(double width);
+  void setSbLineColor(double color);
+  void setSbUnit(const std::string& unit);
+  void setSbProjLength(double length);
   //screenshot
   void saveScreenshot(const QString& filename);
 

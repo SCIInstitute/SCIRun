@@ -26,6 +26,7 @@
 */
 
 #include "VtkScaleBarOverlay.h"
+#include <sstream>
 
 namespace SCIRun {
 namespace Render {
@@ -34,6 +35,8 @@ namespace Render {
     {
         if (!renderer)
             return;
+
+        sceneRenderer_ = renderer;
 
         auto renderWindow = renderer->GetRenderWindow();
 
@@ -76,7 +79,7 @@ namespace Render {
         updateScale();
     }
 
-    void VtkScaleBarOverlay::cameraChanged(vtkCamera*)
+    void VtkScaleBarOverlay::cameraChanged(vtkCamera* camera)
     {
         if (!overlayRenderer_)
             return;
@@ -104,8 +107,80 @@ namespace Render {
       if (visible) updateScale();
     }
 
+    void VtkScaleBarOverlay::setFontSize(int size)
+    {
+      sbFontSize_ = size;
+    }
+
+    void VtkScaleBarOverlay::setLength(double length)
+    {
+      sbLength_ = length;
+    }
+
+    void VtkScaleBarOverlay::setHeight(double height)
+    {
+      sbHeight_ = height;
+    }
+
+    void VtkScaleBarOverlay::setMultiplier(double mul)
+    {
+      sbMultiplier_ = mul;
+    }
+
+    void VtkScaleBarOverlay::setNumTicks(double num)
+    {
+      sbNumTicks_ = num;
+    }
+
+    void VtkScaleBarOverlay::setLineWidth(double width)
+    {
+      sbLineWidth_ = width;
+    }
+
+    void VtkScaleBarOverlay::setLineColor(double color)
+    {
+      sbLineColor_ = color;
+    }
+
+    void VtkScaleBarOverlay::setUnit(const std::string& unit)
+    {
+      sbUnit_ = unit;
+    }
+
+    void VtkScaleBarOverlay::setProjLength(double length)
+    {
+      sbProjLength_ = length;
+    }
+
+    void VtkScaleBarOverlay::updateProjectedLength()
+    {
+      if (!sceneRenderer_) return;
+
+      double p1[4] = {-sbLength_ * 0.5, 0.0, 0.0, 1.0};
+      double p2[4] = {sbLength_ * 0.5, 0.0, 0.0, 1.0};
+
+      sceneRenderer_->SetWorldPoint(p1);
+      sceneRenderer_->WorldToDisplay();
+
+      double d1[3];
+      sceneRenderer_->GetDisplayPoint(d1);
+
+      sceneRenderer_->SetWorldPoint(p2);
+      sceneRenderer_->WorldToDisplay();
+
+      double d2[3];
+      sceneRenderer_->GetDisplayPoint(d2);
+
+      double dx = d2[0] - d1[0];
+      double dy = d2[1] - d1[1];
+
+      sbProjLength_ = std::sqrt(dx * dx + dy * dy);
+    }
+
     void VtkScaleBarOverlay::updateScale()
     {
+        updateProjectedLength();
+
         if (!barActor_)
             return;
 
@@ -128,70 +203,59 @@ namespace Render {
         //------------------------------------------------------------------
 
         double x =
-            static_cast<double>(posX_) / 100.0 * width_;
+            static_cast<double>(10) / 100.0 * width_;
 
         double y =
-            static_cast<double>(posY_) / 100.0 * height_;
-
-        //------------------------------------------------------------------
-        // Placeholder scale.
-        //
-        // Later:
-        // worldUnitsPerPixel -> nice value -> barPixels_
-        //------------------------------------------------------------------
-
-        double lengthPixels = static_cast<double>(barPixels_);
+            static_cast<double>(90) / 100.0 * height_;
 
         //------------------------------------------------------------------
         // Main horizontal bar.
         //------------------------------------------------------------------
 
-        vtkIdType p0 = points->InsertNextPoint(x, y, 0.0);
-        vtkIdType p1 = points->InsertNextPoint(x + lengthPixels, y, 0.0);
+        std::ostringstream ss;
+        ss << sbLength_ * sbMultiplier_;
+
+        if (!sbUnit_.empty()) ss << " " << sbUnit_;
+
+        std::string label = ss.str();
+
+        double textWidth = sbFontSize_ * label.length() * 0.6;
+
+        double gap = 5.0;
+
+        double lengthPixels = sbProjLength_;
+
+        double x0 = x - lengthPixels - textWidth - gap;
+        double x1 = x - textWidth - gap;
+
+        // Main bar.
+        vtkIdType p0 = points->InsertNextPoint(x0, y, 0.0);
+        vtkIdType p1 = points->InsertNextPoint(x1, y, 0.0);
 
         lines->InsertNextCell(2);
         lines->InsertCellPoint(p0);
         lines->InsertCellPoint(p1);
 
-        //------------------------------------------------------------------
-        // Left tick.
-        //------------------------------------------------------------------
+        // Ticks.
+        int numTicks = std::max(2, static_cast<int>(std::round(sbNumTicks_)));
 
-        vtkIdType p2 = points->InsertNextPoint(x, y - 5.0, 0.0);
-        vtkIdType p3 = points->InsertNextPoint(x, y + 5.0, 0.0);
+        for (int i = 0; i < numTicks; ++i)
+        {
+          double tx = x0 + i * lengthPixels / static_cast<double>(numTicks - 1);
 
-        lines->InsertNextCell(2);
-        lines->InsertCellPoint(p2);
-        lines->InsertCellPoint(p3);
+          vtkIdType a = points->InsertNextPoint(tx, y, 0.0);
 
-        //------------------------------------------------------------------
-        // Right tick.
-        //------------------------------------------------------------------
+          vtkIdType b = points->InsertNextPoint(tx, y + sbHeight_, 0.0);
 
-        vtkIdType p4 = points->InsertNextPoint(
-            x + lengthPixels, y - 5.0, 0.0);
-
-        vtkIdType p5 = points->InsertNextPoint(
-            x + lengthPixels, y + 5.0, 0.0);
-
-        lines->InsertNextCell(2);
-        lines->InsertCellPoint(p4);
-        lines->InsertCellPoint(p5);
+          lines->InsertNextCell(2);
+          lines->InsertCellPoint(a);
+          lines->InsertCellPoint(b);
+        }
 
         polyData->SetPoints(points);
         polyData->SetLines(lines);
 
         polyData->Modified();
-
-        //------------------------------------------------------------------
-        // Placeholder label.
-        //------------------------------------------------------------------
-
-        textActor_->SetInput("10 mm");
-
-        textActor_->SetDisplayPosition(
-            static_cast<int>(x + lengthPixels * 0.5 - 20.0),
-            static_cast<int>(y + 10.0));
     }
 
 }
