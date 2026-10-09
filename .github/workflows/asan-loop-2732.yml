@@ -26,7 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [asan, control]
+        # control ran in 37886085522: 2 segfaults in 5 passes
+        variant: [asan]
     runs-on: macOS-latest
     timeout-minutes: 355
     env:

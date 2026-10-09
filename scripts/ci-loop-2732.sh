@@ -44,7 +44,9 @@ while [ "$SECONDS" -lt "$end" ] && [ "$hits" -lt "$MAX_HITS" ]; do
   line="iter=$i gui_rc=$rc bg1_rc=$rc1 bg2_rc=$rc2 asan_reports=$asan secs=$((SECONDS - start)) elapsed=$SECONDS"
   echo "$line" | tee -a "$SUMMARY"
 
-  if [ "$rc" -ne 0 ] || [ "$rc1" -ne 0 ] || [ "$rc2" -ne 0 ] || [ "$asan" -ne 0 ]; then
+  # 12 is normal for the headless copies: -x on a GUI build errors on the ScreenshotData ports.
+  bad() { [ "$1" -ne 0 ] && [ "$1" -ne 12 ]; }
+  if [ "$rc" -ne 0 ] || bad "$rc1" || bad "$rc2" || [ "$asan" -ne 0 ]; then
     hits=$((hits + 1))
     echo "::warning::hit $hits at iteration $i ($line)"
   else
@@ -59,7 +61,7 @@ echo "done: $i iterations, $hits hits, ${SECONDS}s" | tee -a "$SUMMARY"
 {
   echo "### #2732 loop: $i iterations, $hits hits"
   echo '```'
-  grep -v "gui_rc=0 bg1_rc=0 bg2_rc=0 asan_reports=0" "$SUMMARY" | tail -40
+  grep -Ev "gui_rc=0 bg1_rc=(0|12) bg2_rc=(0|12) asan_reports=0" "$SUMMARY" | tail -40
   echo '```'
 } >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
 exit 0
