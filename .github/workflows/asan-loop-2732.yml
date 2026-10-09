@@ -18,7 +18,8 @@ on:
         default: '5'
 
 concurrency:
-  group: asan-loop-2732
+  # Per-commit, so a follow-up push doesn't cancel a leg still running.
+  group: asan-loop-2732-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -28,7 +29,8 @@ jobs:
       matrix:
         # Plain-build control ran in 37886085522 (2 segfaults in 5 passes); ASan in
         # 37891638812 caught the Qt/GL clear overrun on 5 of 5. Now: which workaround stops it.
-        qt: ['6.10.2', '6.8.3']
+        # 6.10.2 runs in 37930275873. 6.8.3 can't link on this SDK (ld: framework 'AGL' not found).
+        qt: ['6.9.3']
     runs-on: macOS-latest
     timeout-minutes: 355
     env:
