@@ -419,11 +419,21 @@ IF(WITH_GUI)
   )
 ENDIF()
 
+# The default VS build step is a nested MSBuild without /m, which builds one
+# project at a time whatever the outer build was told (#2771). Makefiles
+# inherit the jobserver and Ninja/Xcode parallelize by default.
+SET(SCIRUN_BUILD_COMMAND)
+IF(CMAKE_GENERATOR MATCHES "Visual Studio")
+  SET(SCIRUN_BUILD_COMMAND BUILD_COMMAND
+    ${CMAKE_COMMAND} --build <BINARY_DIR> --config $<CONFIG> --parallel ${SUPERBUILD_PARALLEL_JOBS})
+ENDIF()
+
 ExternalProject_Add( SCIRun_external
   DEPENDS ${SCIRun_DEPENDENCIES}
   DOWNLOAD_COMMAND ""
   SOURCE_DIR ${SCIRUN_SOURCE_DIR}
   BINARY_DIR ${SCIRUN_BINARY_DIR}
   CMAKE_CACHE_ARGS ${SCIRUN_CACHE_ARGS}
+  ${SCIRUN_BUILD_COMMAND}
   INSTALL_COMMAND ""
 )
