@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetMatrixSlice",
+    "namespace": "Math",
+    "status": "New module based on GetRowOrColumnFromMatrix",
+    "description": "...",
+    "header": "Modules/Math/GetMatrixSlice.h"
+  },
+  "algorithm": {
+    "name": "GetMatrixSliceAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/GetMatrixSliceAlgo.h"
+  },
+  "UI": {
+    "name": "GetMatrixSliceDialog",
+    "header": "Interface/Modules/Math/GetMatrixSliceDialog.h"
+  }
+}

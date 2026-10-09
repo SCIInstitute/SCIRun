@@ -44,7 +44,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-SolveLinearSystem::SolveLinearSystem() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun"))
+MODULE_INFO_DEF(SolveLinearSystem, Math, SCIRun)
+
+SolveLinearSystem::SolveLinearSystem() : Module(staticInfo_)
 {
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);

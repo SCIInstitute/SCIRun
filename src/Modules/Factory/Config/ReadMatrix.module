@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReadMatrix",
+    "namespace": "DataIO",
+    "status": "Redo of ReadMatrix",
+    "description": "...",
+    "header": "Modules/DataIO/ReadMatrixClassic.h"
+  },
+  "algorithm": {
+    "name": "ReadMatrixAlgorithm",
+    "namespace": "DataIO",
+    "header": "Core/Algorithms/DataIO/ReadMatrix.h"
+  },
+  "UI": {
+    "name": "ReadMatrixClassicDialog",
+    "header": "Interface/Modules/DataIO/ReadMatrixClassicDialog.h"
+  }
+}

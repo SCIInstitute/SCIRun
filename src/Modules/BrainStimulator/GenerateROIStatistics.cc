@@ -40,7 +40,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-GenerateROIStatistics::GenerateROIStatistics() : Module(ModuleLookupInfo("GenerateROIStatistics", "BrainStimulator", "SCIRun"))
+MODULE_INFO_DEF(GenerateROIStatistics, BrainStimulator, SCIRun)
+
+GenerateROIStatistics::GenerateROIStatistics() : Module(staticInfo_)
 {
  INITIALIZE_PORT(MeshDataOnElements);
  INITIALIZE_PORT(PhysicalUnit);

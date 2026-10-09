@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GeneratePointSamplesFromFieldOrWidget",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "in progress",
+    "header": "Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h"
+  },
+  "algorithm": {
+    "name": "GeneratePointSamplesFromFieldAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/SampleField/GeneratePointSamplesFromField.h"
+  },
+  "UI": {
+    "name": "GeneratePointSamplesFromFieldOrWidgetDialog",
+    "header": "Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h"
+  }
+}

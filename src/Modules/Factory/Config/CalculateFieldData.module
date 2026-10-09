@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateFieldData",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/CalculateFieldData5.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CalculateFieldDataDialog",
+    "header": "Interface/Modules/Fields/CalculateFieldDataDialog.h"
+  }
+}

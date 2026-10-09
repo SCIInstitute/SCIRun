@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "EvaluateLinearAlgebraUnary",
+    "namespace": "Math",
+    "status": "Partially functional, needs GUI work.",
+    "description": "...",
+    "header": "Modules/Math/EvaluateLinearAlgebraUnary.h"
+  },
+  "algorithm": {
+    "name": "EvaluateLinearAlgebraUnaryAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h"
+  },
+  "UI": {
+    "name": "EvaluateLinearAlgebraUnaryDialog",
+    "header": "Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h"
+  }
+}

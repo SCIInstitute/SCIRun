@@ -40,10 +40,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::DataIO;
+
+MODULE_INFO_DEF(WriteMatrix, DataIO, SCIRun)
 
 WriteMatrix::WriteMatrix()
-  : my_base("WriteMatrix", "DataIO", "SCIRun", "Filename")
+  : my_base(staticInfo_, "Filename")
   //gui_increment_(get_ctx()->subVar("increment"), 0),
   //gui_current_(get_ctx()->subVar("current"), 0)
 {

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateString",
+    "namespace": "StringProcessing",
+    "status": "Functional, needs GUI work.",
+    "description": "...",
+    "header": "Modules/String/CreateString.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CreateStringDialog",
+    "header": "Interface/Modules/String/CreateStringDialog.h"
+  }
+}

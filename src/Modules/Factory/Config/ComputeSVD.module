@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ComputeSVD",
+    "namespace": "Math",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Math/ComputeSVD.h"
+  },
+  "algorithm": {
+    "name": "ComputeSVDAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ComputeSVD.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

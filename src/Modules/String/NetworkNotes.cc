@@ -37,9 +37,11 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(NetworkNotes, String, SCIRun)
+
 const AlgorithmParameterName NetworkNotes::InputString("InputString");
 
-NetworkNotes::NetworkNotes() : Module(ModuleLookupInfo("NetworkNotes", "String", "SCIRun"))
+NetworkNotes::NetworkNotes() : Module(staticInfo_)
 {
   INITIALIZE_PORT(NewString);
 }

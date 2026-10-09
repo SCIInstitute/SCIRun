@@ -39,10 +39,12 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(PrintDatatype, String, SCIRun)
+
 AlgorithmParameterName PrintDatatype::ReceivedValue("ReceivedValue");
 
 PrintDatatype::PrintDatatype()
-  : Module(ModuleLookupInfo("PrintDatatype", "DataIO", "SCIRun"))
+  : Module(staticInfo_)
 {
   INITIALIZE_PORT(Input);
 }

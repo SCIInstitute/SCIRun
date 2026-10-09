@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "AddKnownsToLinearSystem",
+    "namespace": "Math",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Math/AddKnownsToLinearSystem.h"
+  },
+  "algorithm": {
+    "name": "AddKnownsToLinearSystemAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/AddKnownsToLinearSystem.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

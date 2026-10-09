@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "MapFieldDataFromNodeToElem",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h"
+  },
+  "algorithm": {
+    "name": "MapFieldDataFromNodeToElemAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h"
+  },
+  "UI": {
+    "name": "MapFieldDataFromNodeToElemDialog",
+    "header": "Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h"
+  }
+}

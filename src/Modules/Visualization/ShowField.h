@@ -33,6 +33,7 @@
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
+#include <Modules/Visualization/VisualizationParameters.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -44,7 +45,6 @@ namespace SCIRun {
       namespace Visualization
       {
         ALGORITHM_PARAMETER_DECL(CylinderRadius);
-        ALGORITHM_PARAMETER_DECL(FieldName);
         ALGORITHM_PARAMETER_DECL(NodesAvailable);
         ALGORITHM_PARAMETER_DECL(EdgesAvailable);
         ALGORITHM_PARAMETER_DECL(FacesAvailable);

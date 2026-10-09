@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ViewScene",
+    "namespace": "Render",
+    "status": "Can display meshes and fields, pan/rotate/zoom.",
+    "description": "...",
+    "header": "Modules/Render/ViewScene.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ViewSceneDialog",
+    "header": "Interface/Modules/Render/ViewScene.h"
+  }
+}

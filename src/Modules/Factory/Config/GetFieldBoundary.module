@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetFieldBoundary",
+    "namespace": "Fields",
+    "status": "First real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/GetFieldBoundary.h"
+  },
+  "algorithm": {
+    "name": "GetFieldBoundaryAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
