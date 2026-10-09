@@ -1,0 +1,94 @@
+name: asan-loop-2732
+
+# Throwaway (#2732): never merge. Loops the setuptdcs_colin27_patchelc net on the same
+# mac runner/Qt as mac-gui-regression, once under AddressSanitizer and once plain as a
+# control for the base crash rate.
+
+on:
+  push:
+    branches:
+      - claude/scirun-2732-ci-asan
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: Loop time budget per job (minutes)
+        default: '240'
+      max-hits:
+        description: Stop a job after this many failing iterations
+        default: '5'
+
+concurrency:
+  group: asan-loop-2732
+  cancel-in-progress: true
+
+jobs:
+  loop:
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [asan, control]
+    runs-on: macOS-latest
+    timeout-minutes: 355
+    env:
+      LOOP_MINUTES: ${{ inputs.minutes || '240' }}
+      LOOP_MAX_HITS: ${{ inputs.max-hits || '5' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.10.2'
+          setup-python: 'true'
+          install-deps: true
+
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+        continue-on-error: true
+
+      - name: Checkout SCIRunTestData
+        uses: actions/checkout@v6
+        with:
+          repository: CIBC-Internal/SCIRunTestData
+          path: SCIRunTestData
+
+      - name: Build
+        shell: bash
+        run: |
+          set -eux
+          if [ "${{ matrix.variant }}" = "asan" ]; then export SCIRUN_ASAN=1; fi
+          CMD=(./build.sh)
+          if command -v sccache >/dev/null 2>&1; then
+            CMD+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache" "-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
+          fi
+          CMD+=("-DREGENERATE_MODULE_FACTORY_CODE:BOOL=OFF")
+          CMD+=("-DQt_PATH=${QT_ROOT_DIR}" "-DSCIRUN_QT_MIN_VERSION=6.3.1")
+          CMD+=("-DBUILD_TESTING:BOOL=ON" "-DSCIRUN_TEST_RESOURCE_DIR=${GITHUB_WORKSPACE}/SCIRunTestData")
+          "${CMD[@]}"
+          ls bin/SCIRun/lib | grep -c Interface
+
+      - name: Loop the net
+        shell: bash
+        run: bash scripts/ci-loop-2732.sh "$LOOP_MINUTES" "$LOOP_MAX_HITS" "$GITHUB_WORKSPACE/loop-out"
+
+      - name: Collect macOS crash reports
+        if: always()
+        run: |
+          sleep 10
+          mkdir -p "$GITHUB_WORKSPACE/loop-out/crash-reports"
+          for d in "$HOME/Library/Logs/DiagnosticReports" /Library/Logs/DiagnosticReports; do
+            [ -d "$d" ] && cp "$d"/SCIRun*.ips "$GITHUB_WORKSPACE/loop-out/crash-reports/" 2>/dev/null
+          done
+          echo "collected $(ls -1 "$GITHUB_WORKSPACE/loop-out/crash-reports" | wc -l) crash report(s)"
+        continue-on-error: true
+
+      - name: Upload loop output
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: loop-2732-${{ matrix.variant }}
+          path: loop-out
+          retention-days: 14

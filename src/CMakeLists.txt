@@ -714,6 +714,14 @@ IF(ENABLE_COVERAGE)
   MESSAGE(STATUS "Code coverage instrumentation enabled (Clang source-based). Best with a Debug build.")
 ENDIF()
 
+# Throwaway branch only: ASan for the #2732 CI loop. An env var, because the Superbuild
+# does not forward compiler flags, and externals must stay uninstrumented.
+IF(DEFINED ENV{SCIRUN_ASAN})
+  ADD_COMPILE_OPTIONS(-g -fsanitize=address -fno-omit-frame-pointer)
+  ADD_LINK_OPTIONS(-fsanitize=address)
+  MESSAGE(STATUS "AddressSanitizer enabled (SCIRUN_ASAN)")
+ENDIF()
+
 ########################################################################
 
 ADD_SUBDIRECTORY(Externals)
