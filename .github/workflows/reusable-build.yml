@@ -724,6 +724,7 @@ jobs:
           if-no-files-found: error
           path: |
             bin/SCIRun/coverage/summary.txt
+            bin/SCIRun/coverage/mismatched.txt
             bin/SCIRun/coverage/html
 
       # Runs after packaging so it can read the installed binary, and before the
