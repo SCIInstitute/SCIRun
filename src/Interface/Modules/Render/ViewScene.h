@@ -64,9 +64,6 @@ namespace SCIRun {
     Q_OBJECT;
 
     public:
-      // Throwaway #2732 experiment: lets the dock be sized before it is first shown.
-      void sizeDockFromState() { adjustSizeFromState(); }
-
       // -------- Keyboard shortcut registry ----------------------------------------
       struct ShortcutDef
       {
@@ -101,6 +98,7 @@ namespace SCIRun {
 
       std::string toString(std::string prefix) const;
       void adjustToolbar(double factor) override;
+      void prepareToShow() override { adjustSizeFromState(); }
 
       static ViewSceneManager viewSceneManager;
       void inputMouseDownHelper(float x, float y);

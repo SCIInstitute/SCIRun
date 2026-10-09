@@ -76,7 +76,7 @@ jobs:
 
       - name: Loop the net
         shell: bash
-        run: bash scripts/ci-loop-2732.sh "$LOOP_MAX_PASSES" "$LOOP_MAX_HITS" "$GITHUB_WORKSPACE/loop-out" base noresize fix
+        run: bash scripts/ci-loop-2732.sh "$LOOP_MAX_PASSES" "$LOOP_MAX_HITS" "$GITHUB_WORKSPACE/loop-out" base
 
       - name: Collect macOS crash reports
         if: always()

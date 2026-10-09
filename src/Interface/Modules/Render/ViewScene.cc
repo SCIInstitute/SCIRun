@@ -26,7 +26,6 @@
 */
 
 #include <algorithm>
-#include <cstdlib>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
@@ -1317,19 +1316,17 @@ void ViewSceneDialog::pullSpecial()
   if (!impl_->pulledSavedVisibility_)
   {
     pullCameraState();
+    adjustSizeFromState();
     const auto show = state_->getValue(Parameters::ShowViewer).toBool();
     if (show && parentWidget())
     {
       parentWidget()->show();
     }
 
-    adjustSizeFromState();
-
     if (parentWidget())
     {
       auto dock = qobject_cast<QDockWidget*>(parentWidget());
-      // Throwaway #2732 experiment: SCIRUN_2732_NOFLOAT keeps the ViewScene docked.
-      const auto isFloating = state_->getValue(Parameters::IsFloating).toBool() && !std::getenv("SCIRUN_2732_NOFLOAT");
+      const auto isFloating = state_->getValue(Parameters::IsFloating).toBool();
       if (dock)
         dock->setFloating(isFloating);
 
@@ -1356,7 +1353,7 @@ void ViewSceneDialog::pullSpecial()
 
 void ViewSceneDialog::adjustSizeFromState()
 {
-  if (parentWidget() && !std::getenv("SCIRUN_2732_NORESIZE"))
+  if (parentWidget())
   {
     const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
     parentWidget()->resize(qs);
@@ -1602,12 +1599,8 @@ void ViewSceneDialog::runDelayedGC()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-  if (!std::getenv("SCIRUN_2732_NORESIZE") && !std::getenv("SCIRUN_2732_FIX"))
-  {
-    const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
-    parentWidget()->resize(qs);
-  }
-
+  // No resize here: the dock's GL surface already exists, and resizing it on screen makes
+  // Apple's software GL clear past its drawbuffer (#2732). Callers use prepareToShow().
   if (!impl_->shown_)
   {
     autoViewClicked();
