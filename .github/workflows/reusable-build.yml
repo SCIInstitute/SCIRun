@@ -37,6 +37,11 @@ on:
         required: false
         type: boolean
         default: false
+      with-vtk:
+        # WITH_VTK=ON; the install is cached on its own, see "Restore VTK install cache".
+        required: false
+        type: boolean
+        default: false
       build-testing:
         required: false
         type: boolean
@@ -210,6 +215,25 @@ jobs:
           du -sh bin/Externals/* 2>/dev/null || true
           find bin/Externals/Stamp -type f -exec touch -d "2100-01-01" {} \;
 
+      # Separate from the Linux-only externals cache so it covers every OS (#2677).
+      # On a hit the Superbuild skips the external (PREBUILT_VTK).
+      - name: Compute VTK cache key
+        if: ${{ inputs.with-vtk }}
+        id: vtk-key
+        shell: bash
+        run: |
+          build=Release; [ "${{ inputs.coverage }}" = "true" ] && build=Debug
+          gen=$(echo "${{ inputs.cmake-generator }}" | tr -c "a-zA-Z0-9" "-")
+          echo "key=vtk-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.runner }}-${gen}-${build}-${{ hashFiles('Superbuild/VtkExternal.cmake') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore VTK install cache
+        if: ${{ inputs.with-vtk }}
+        id: restore-vtk-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: bin/Externals/Install/VTK_external
+          key: ${{ steps.vtk-key.outputs.key }}
+
       - name: Install Qt (if requested)
         if: ${{ inputs.qt-version != '' }}
         uses: jurplel/install-qt-action@v4
@@ -332,6 +356,12 @@ jobs:
           if [ "${{ inputs.with-ospray }}" = "true" ]; then
             CMD+=("-DWITH_OSPRAY:BOOL=ON")
           fi
+          if [ "${{ inputs.with-vtk }}" = "true" ]; then
+            CMD+=("-DWITH_VTK:BOOL=ON")
+            if [ "${{ steps.restore-vtk-cache.outputs.cache-hit }}" = "true" ]; then
+              CMD+=("-DPREBUILT_VTK:BOOL=ON" "-DVTK_INSTALL_DIR:PATH=${GITHUB_WORKSPACE}/bin/Externals/Install/VTK_external")
+            fi
+          fi
           if [ "${{ inputs.build-testing }}" = "true" ]; then
             CMD+=("-DBUILD_TESTING:BOOL=ON")
           fi
@@ -395,6 +425,13 @@ jobs:
           if ('${{ inputs.variant }}' -eq 'headless') { $cmakeArgs += "-DWITH_GUI:BOOL=OFF" }
           if ('${{ inputs.build-with-python }}' -eq 'false') { $cmakeArgs += "-DWITH_PYTHON=OFF" }
           if ('${{ inputs.with-ospray }}' -eq 'true') { $cmakeArgs += "-DWITH_OSPRAY:BOOL=ON" }
+          if ('${{ inputs.with-vtk }}' -eq 'true') {
+            $cmakeArgs += "-DWITH_VTK:BOOL=ON"
+            if ('${{ steps.restore-vtk-cache.outputs.cache-hit }}' -eq 'true') {
+              $cmakeArgs += "-DPREBUILT_VTK:BOOL=ON"
+              $cmakeArgs += "-DVTK_INSTALL_DIR:PATH=$env:GITHUB_WORKSPACE/bin/Externals/Install/VTK_external"
+            }
+          }
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
           if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
 
@@ -455,6 +492,15 @@ jobs:
             bin/Externals/Source/Tetgen_external
           key: ${{ steps.ext-key.outputs.key }}
 
+      # always() so a later SCIRun failure doesn't discard the VTK build; the
+      # sentinel keeps a partial install out.
+      - name: Save VTK install cache
+        if: ${{ always() && inputs.with-vtk && steps.restore-vtk-cache.outputs.cache-hit != 'true' && hashFiles('bin/Externals/Install/VTK_external/lib/cmake/vtk-*/VTKConfig.cmake') != '' }}
+        uses: actions/cache/save@v4
+        with:
+          path: bin/Externals/Install/VTK_external
+          key: ${{ steps.vtk-key.outputs.key }}
+
       - name: Smoke test - executable loads and runs (Unix)
         if: ${{ inputs.run-smoke-test && runner.os != 'Windows' }}
         working-directory: bin/SCIRun
@@ -511,6 +557,25 @@ jobs:
               echo "No packaging directory found; skipping package step"
             fi
           fi
+
+      # The smoke test above runs the build tree; this one runs what users get.
+      # Gating, like the smoke test: a .pkg that installs a broken app should
+      # not be uploaded. Package step's `|| true`s mean a missing .pkg fails here.
+      - name: Smoke test - install .pkg and run the installed app (macOS)
+        if: ${{ inputs.run-smoke-test && inputs.artifact-name != '' && runner.os == 'macOS' }}
+        shell: bash
+        run: |
+          set -eux
+          shopt -s nullglob
+          pkgs=(bin/SCIRun/SCIRun-*-Darwin.pkg)
+          [ ${#pkgs[@]} -eq 1 ] || { echo "::error::expected one .pkg, found ${#pkgs[@]}"; exit 1; }
+          sudo installer -pkg "${pkgs[0]}" -target /
+          # Ask the receipt where the app went rather than assuming /Applications.
+          info=$(pkgutil --pkg-info edu.utah.sci.SCIRun)
+          vol=$(sed -n 's/^volume: //p' <<< "$info")
+          loc=$(sed -n 's/^location: //p' <<< "$info")
+          app=$(pkgutil --only-dirs --files edu.utah.sci.SCIRun | grep -m1 -E '(^|/)SCIRun\.app$')
+          scripts/ci/check_installed_app.sh "${vol%/}/${loc:+$loc/}$app"
 
       - name: Package (optional - Windows)
         if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
