@@ -67,7 +67,11 @@ for lib in "$BUILD_DIR"/lib/*.dylib; do
   OBJECTS+=(-object "$lib")
 done
 
-IGNORE='(Externals|/Testing/|googletest|/usr/|/Applications/)'
+# The build dir holds only generated code (moc_*, factory *_Generated.cc): ~40k
+# untestable lines that cut the line total by 4 points. Physical path because
+# that's what CMake records; regex-escaped since it's spliced into the pattern.
+BUILD_ABS="$(cd "$BUILD_DIR" && pwd -P | sed 's/[][\.*^$+?(){}|]/\\&/g')"
+IGNORE="(Externals|/Testing/|googletest|/usr/|/Applications/|\\.framework/|^${BUILD_ABS}/)"
 
 echo ">>> Coverage summary"
 xcrun llvm-cov report "${OBJECTS[@]}" \

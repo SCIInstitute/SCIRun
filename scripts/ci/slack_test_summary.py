@@ -15,6 +15,12 @@ absolute path (/tmp/unit-test-results.txt) with workspace-relative ones, so
 upload-artifact roots the archive at / and the files land under
 `test-results-Linux-headless/home/runner/work/...`; the all-relative Windows
 paths land directly under the artifact directory. Hence rglob, not glob.
+
+Coverage is optional: pass the directories `coverage-report-*` artifacts were
+downloaded into (this run's, then the previous nightly's for the trend):
+
+    gh run download <run-id> --dir coverage --pattern 'coverage-report-*'
+    python3 scripts/ci/slack_test_summary.py artifacts coverage coverage-prev
 """
 
 import json
@@ -38,6 +44,122 @@ CTEST_SUMMARY = re.compile(
 # interpreter). External entities are not a concern; CPython's expat does not
 # fetch them.
 DOCTYPE = re.compile(rb"<!DOCTYPE", re.IGNORECASE)
+
+
+# Uncovered-directory listing length. Ranked by missed lines, not percentage:
+# a 0% directory with 20 lines matters less than a 40% one with 10k.
+MAX_COV_DIRS = 5
+
+# llvm-cov report row: filename, then regions/missed/cover, functions/missed/
+# executed, lines/missed/cover, branches/missed/cover. A cover is "-" for 0/0.
+COV_ROW = re.compile(
+    r"^(?P<name>\S.*?)\s+" + r"\s+".join([r"(\d+)\s+(\d+)\s+(\S+)"] * 4)
+    + r"\s*$")
+
+
+class Coverage:
+    """Totals and per-directory line counts from one llvm-cov summary.txt."""
+
+    def __init__(self, label):
+        self.label = label
+        self.totals = {}  # metric -> (count, missed)
+        self.dirs = {}    # directory -> [lines, missed]
+
+    def pct(self, metric):
+        count, missed = self.totals.get(metric, (0, 0))
+        return 100.0 * (count - missed) / count if count else None
+
+
+def coverage_dir_of(name):
+    # Rows are relative to llvm-cov's common prefix, e.g.
+    # "SCIRun/src/Core/Datatypes/Field.cc"; group two levels below src/.
+    # None outside src/: bin/ moc and factory output and Qt headers would
+    # otherwise top the listing with code nobody can write tests for.
+    parts = name.split("/")
+    if "src" not in parts:
+        return None
+    parts = parts[parts.index("src") + 1:]
+    return "/".join(parts[:2]) if len(parts) > 2 else "/".join(parts[:-1]) or "."
+
+
+def parse_coverage(path, label):
+    cov = Coverage(label)
+    for line in path.read_text(errors="replace").splitlines():
+        m = COV_ROW.match(line)
+        if m is None:
+            continue
+        g = m.groups()
+        nums = {"regions": (int(g[1]), int(g[2])),
+                "functions": (int(g[4]), int(g[5])),
+                "lines": (int(g[7]), int(g[8])),
+                "branches": (int(g[10]), int(g[11]))}
+        if g[0] == "TOTAL":
+            cov.totals = nums
+            continue
+        dirname = coverage_dir_of(g[0])
+        if dirname is None:
+            continue
+        d = cov.dirs.setdefault(dirname, [0, 0])
+        d[0] += nums["lines"][0]
+        d[1] += nums["lines"][1]
+    return cov if cov.totals else None
+
+
+def collect_coverage(coverage_dir):
+    if coverage_dir is None or not coverage_dir.is_dir():
+        return None
+    for summary in sorted(coverage_dir.rglob("summary.txt")):
+        # Artifact dir is coverage-report-<os>; gh drops it for a lone match.
+        label = next((p.name.removeprefix("coverage-report-")
+                      for p in summary.parents
+                      if p.name.startswith("coverage-report-")), "")
+        cov = parse_coverage(summary, label)
+        if cov is not None:
+            return cov
+    return None
+
+
+def coverage_blocks(cov, prev, url):
+    if cov is None:
+        return [{"type": "context",
+                 "elements": [{"type": "mrkdwn",
+                               "text": ":warning: No coverage summary found "
+                                       "in this run's artifacts."}]}]
+
+    def trend(metric):
+        now = cov.pct(metric)
+        before = prev.pct(metric) if prev else None
+        if now is None or before is None:
+            return ""
+        delta = now - before
+        if abs(delta) < 0.005:
+            return " (±0)"
+        return f" ({'▲' if delta > 0 else '▼'}{abs(delta):.2f})"
+
+    def fmt(metric):
+        p = cov.pct(metric)
+        return "–" if p is None else f"{p:.2f}%{trend(metric)}"
+
+    where = f" ({cov.label})" if cov.label else ""
+    text = (f":bar_chart: *Coverage*{where}: *lines {fmt('lines')}* · "
+            f"functions {fmt('functions')} · regions {fmt('regions')} · "
+            f"branches {fmt('branches')}")
+    if url:
+        text += f" — <{url}|HTML report>"
+    blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": text}}]
+
+    worst = sorted(((missed, lines, d) for d, (lines, missed)
+                    in cov.dirs.items() if missed),
+                   reverse=True)[:MAX_COV_DIRS]
+    if worst:
+        listing = " · ".join(
+            f"`{d}` {missed:,} ({100.0 * (lines - missed) / lines:.0f}%)"
+            for missed, lines, d in worst)
+        blocks.append({"type": "context",
+                       "elements": [{"type": "mrkdwn",
+                                     "text": f"*Most uncovered lines:* "
+                                             f"{listing}"}]})
+    return blocks
 
 
 class Report:
@@ -120,7 +242,7 @@ def emoji_for(conclusion, any_failed, failed_jobs):
     return base
 
 
-def build(reports, env):
+def build(reports, env, coverage=None, coverage_prev=None):
     name = env.get("WF_NAME", "workflow")
     conclusion = env.get("WF_CONCLUSION", "unknown")
     url = env.get("WF_URL", "")
@@ -162,6 +284,12 @@ def build(reports, env):
                           "text": f":package: <{installer_url}|Installers from "
                                   "this run> — unsigned, see #1663"}],
         })
+
+    # Also above the fields, so the trim below cannot reach it. Only the
+    # workflow that runs mac-coverage gets the block, missing or not.
+    if coverage is not None or env.get("WF_NAME") == "regression-tests":
+        blocks.extend(coverage_blocks(
+            coverage, coverage_prev, env.get("WF_COVERAGE_URL", "").strip()))
 
     # One field per report, two columns. Slack caps a section at 10 fields, so
     # chunk rather than assume the matrix stays small.
@@ -210,9 +338,13 @@ def build(reports, env):
 
 
 def main():
-    artifacts_dir = Path(sys.argv[1] if len(sys.argv) > 1 else "artifacts")
+    args = sys.argv[1:] + [None] * 3
+    artifacts_dir = Path(args[0] or "artifacts")
     reports = collect(artifacts_dir) if artifacts_dir.is_dir() else []
-    json.dump(build(reports, os.environ), sys.stdout, indent=2)
+    coverage = collect_coverage(Path(args[1] or "coverage"))
+    coverage_prev = collect_coverage(Path(args[2] or "coverage-prev"))
+    json.dump(build(reports, os.environ, coverage, coverage_prev),
+              sys.stdout, indent=2)
     sys.stdout.write("\n")
 
 
