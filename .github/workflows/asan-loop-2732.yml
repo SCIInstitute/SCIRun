@@ -1,6 +1,6 @@
 name: asan-loop-2732
 
-# Throwaway (#2732): never merge. Loops the setuptdcs_colin27_patchelc net on the same
+# Throwaway (#2732, now #2700): never merge. Loops the setuptdcs_colin27_patchelc net on the same
 # mac runner/Qt as mac-gui-regression, once under AddressSanitizer and once plain as a
 # control for the base crash rate.
 
@@ -12,10 +12,10 @@ on:
     inputs:
       max-passes:
         description: Passes per variant
-        default: '30'
+        default: '8'
       max-hits:
         description: Stop a variant after this many failing passes
-        default: '10'
+        default: '3'
 
 concurrency:
   # Per-commit, so a follow-up push doesn't cancel a leg still running.
@@ -27,15 +27,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Plain-build control ran in 37886085522 (2 segfaults in 5 passes); ASan in
-        # 37891638812 caught the Qt/GL clear overrun on 5 of 5. Now: which workaround stops it.
-        # 6.10.2 runs in 37930275873. 6.8.3 can't link on this SDK (ld: framework 'AGL' not found).
-        qt: ['6.10.2']
+        # #2700 nets, with and without the #2818 fix (dc99ffb53), which this branch carries.
+        code: [master, fix]
     runs-on: macOS-latest
     timeout-minutes: 355
     env:
-      LOOP_MAX_PASSES: ${{ inputs.max-passes || '30' }}
-      LOOP_MAX_HITS: ${{ inputs.max-hits || '10' }}
+      LOOP_MAX_PASSES: ${{ inputs.max-passes || '8' }}
+      LOOP_MAX_HITS: ${{ inputs.max-hits || '3' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -45,7 +43,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: ${{ matrix.qt }}
+          version: '6.10.2'
           setup-python: 'true'
           install-deps: true
 
@@ -58,6 +56,15 @@ jobs:
         with:
           repository: CIBC-Internal/SCIRunTestData
           path: SCIRunTestData
+
+      - name: Restore master's copy of the #2818 files
+        if: ${{ matrix.code == 'master' }}
+        run: |
+          git checkout origin/master -- src/Interface/Application/ModuleWidget.cc \
+            src/Interface/Application/ModuleOptionsDialogConfiguration.cc \
+            src/Interface/Modules/Base/ModuleDialogGeneric.h \
+            src/Interface/Modules/Render/ViewScene.cc src/Interface/Modules/Render/ViewScene.h
+          git status --short
 
       - name: Build
         shell: bash
@@ -76,7 +83,17 @@ jobs:
 
       - name: Loop the net
         shell: bash
-        run: bash scripts/ci-loop-2732.sh "$LOOP_MAX_PASSES" "$LOOP_MAX_HITS" "$GITHUB_WORKSPACE/loop-out" base
+        run: |
+          bash scripts/ci-loop-nets.sh "$LOOP_MAX_PASSES" "$LOOP_MAX_HITS" "$GITHUB_WORKSPACE/loop-out" \
+            src/ExampleNets/regression/Modules/createLatVol_new.srn5 \
+            src/ExampleNets/regression/Modules/extractIsosurfaceManualRange.srn5 \
+            src/ExampleNets/regression/Renderer/tensorOrders.srn5 \
+            src/ExampleNets/regression/Renderer/widgetFeedbackTest.srn5 \
+            src/ExampleNets/regression/Modules/vsBars.srn5 \
+            src/ExampleNets/regression/ImportExport/colorMapXml.srn5 \
+            src/ExampleNets/regression/Renderer/vectorMagnitude.srn5 \
+            src/ExampleNets/regression/Renderer/embb2.srn5 \
+            src/ExampleNets/regression/Renderer/rainbowBall.srn5
 
       - name: Collect macOS crash reports
         if: always()
@@ -93,6 +110,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: loop-2732-qt${{ matrix.qt }}
+          name: loop-2700-${{ matrix.code }}
           path: loop-out
           retention-days: 14
