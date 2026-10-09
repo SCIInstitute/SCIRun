@@ -157,7 +157,7 @@ namespace SCIRun {
       QStringList compatibleModules() const
       {
         QStringList qsl;
-        Q_FOREACH(QAction* q, compatibleModuleActions_)
+        for (const auto& q : compatibleModuleActions_)
           qsl.append(q->text());
         qsl.sort();
         return qsl;
@@ -665,7 +665,9 @@ void PortWidget::removeConnection(ConnectionLine* c)
 
 void PortWidget::deleteConnections()
 {
-  Q_FOREACH (ConnectionLine* c, connections_)
+  // ~ConnectionLine calls back into removeConnection, mutating connections_, so iterate over a copy.
+  const auto connectionsCopy = connections_;
+  for (const auto& c : connectionsCopy)
     delete c;
   connections_.clear();
   setConnected(false);
@@ -673,7 +675,7 @@ void PortWidget::deleteConnections()
 
 void PortWidget::deleteConnectionsLater()
 {
-  Q_FOREACH(ConnectionLine* c, connections_)
+  for (const auto& c : connections_)
     c->deleteLater();
   connections_.clear();
   setConnected(false);
@@ -681,7 +683,7 @@ void PortWidget::deleteConnectionsLater()
 
 void PortWidget::trackConnections()
 {
-  Q_FOREACH (ConnectionLine* c, connections_)
+  for (const auto& c : connections_)
     c->trackNodes();
 }
 
