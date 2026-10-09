@@ -12,9 +12,11 @@ supply it:
   - Defaults and types would need a built, running SCIRun; this runs on a
     checkout.
 
-scirun_dump_module_state does report keys and values at runtime (as a string of
-"[key, value]" lines, not the dict the docs claim), which makes it a reasonable
+scirun_dump_module_state returns the live state as a dict, which makes it a
 cross-check on the state half of this manifest, but not a substitute.
+
+Only modules the factory registers are listed; sources no CMakeLists.txt
+compiles are ignored, since the dormant v4 ports reuse live class names.
 
 Usage:
     scripts/gen_module_manifest.py --out module_manifest.json
@@ -147,6 +149,8 @@ def cpp_literal(expr, _depth=0):
         m = _WRAPPER.match(e)
         if m:
             inner = m.group(1) if m.group(1) is not None else m.group(2)
+            if m.group(1) is not None and not inner.strip():
+                return '', True
             value, literal = cpp_literal(inner, _depth + 1)
             if literal:
                 return value, True
@@ -165,6 +169,49 @@ def cpp_literal(expr, _depth=0):
     if e in ('nullptr', 'NULL'):
         return None, True
     return e, False
+
+
+_CAST = re.compile(r'^static_cast\s*<\s*([\w:\s]+?)\s*>\s*\(')
+_CAST_TYPE = {'int': 'int', 'unsigned': 'int', 'unsigned int': 'int', 'size_t': 'int',
+              'long': 'int', 'double': 'double', 'float': 'double', 'bool': 'bool',
+              'std::string': 'string'}
+CONST_DEF = re.compile(
+    r'\b(?:static\s+)?(?:constexpr|const)\s+(?:static\s+)?'
+    r'(?:int|double|bool|float|size_t|long|unsigned(?:\s+int)?)\s+(?:\w+::)*(\w+)\s*=\s*([^;{]+);')
+
+
+def default_fields(expr, consts):
+    """{'default', 'type'} for a literal or named constant; else the expression
+    plus whatever type a cast or string construction gives away."""
+    value, literal = cpp_literal(expr)
+    if not literal:
+        m = re.fullmatch(r'(?:[\w:]*::)?(\w+)', expr.strip())
+        if m and m.group(1) in consts:
+            value, literal = consts[m.group(1)], True
+    if literal:
+        return {'default': value, 'type': _JSON_TYPE[type(value)]}
+    e = expr.strip()
+    m = _CAST.match(e)
+    t = _CAST_TYPE.get(m.group(1)) if m else None
+    if t is None and (e.startswith('"') or re.match(r'(?:std::)?string\s*\(', e)):
+        t = 'string'
+    return {'defaultExpr': value, 'type': t or 'unknown'}
+
+
+def scan_constants(src):
+    """Named numeric constants, e.g. SetupTDCSAlgorithm::max_number_of_electrodes.
+    A name defined with two different values is dropped as ambiguous."""
+    found, clash = {}, set()
+    for root in ('Core', 'Modules'):
+        for path in walk(os.path.join(src, root), {'.cc', '.h'}):
+            for m in CONST_DEF.finditer(read(path)):
+                value, literal = cpp_literal(m.group(2))
+                if not literal:
+                    continue
+                if m.group(1) in found and found[m.group(1)] != value:
+                    clash.add(m.group(1))
+                found[m.group(1)] = value
+    return {k: v for k, v in found.items() if k not in clash}
 
 
 # --------------------------------------------------------------------------
@@ -216,6 +263,9 @@ PARAM_ALIAS_DEF = re.compile(
     r'\bAlgorithmParameterName\s+(?:\w+::)*(\w+)::(\w+)\s*\(\s*"([^"]*)"\s*\)')
 PARAM_ARRAY_DEF = re.compile(
     r'\bAlgorithmParameterName\s+(?:\w+::)*(\w+)::(\w+)\s*\[\s*\]\s*=\s*\{')
+# Batched form of setState*FromAlgo: copyAlgoToState({Parameters::A, Parameters::B}).
+# Type comes from the algorithm's addParameter/addOption at merge time.
+COPY_ALGO_TO_STATE = re.compile(r'\bcopyAlgoToState\s*\(')
 STATE_FROM_ALGO = re.compile(
     r'\bsetState(String|Int|Double|Bool)FromAlgo(Option)?\s*\(')
 # Receiver is either a local `state` variable or a direct `get_state()` call.
@@ -233,12 +283,34 @@ ADD_PARAM = re.compile(r'\badd(Parameter|Option)\s*\(')
 TYPE_OF = {'String': 'string', 'Int': 'int', 'Double': 'double', 'Bool': 'bool'}
 
 
+# .cc files no CMakeLists.txt compiles: the dormant v4 ports (commented out in
+# Legacy/), Examples/, Template/, and orphans. They share class names with live
+# modules, so scanning them would mix dead code into live entries.
+_NOT_BUILT = set()
+
+
+def find_unbuilt_sources(src):
+    built = set()
+    for dirpath, _, filenames in os.walk(src):
+        if 'Externals' in dirpath or 'CMakeLists.txt' not in filenames:
+            continue
+        with open(os.path.join(dirpath, 'CMakeLists.txt'), errors='replace') as fh:
+            text = re.sub(r'#[^\n]*', '', fh.read())
+        for tok in re.findall(r'[\w${}./+-]+\.cc\b', text):
+            tok = tok.replace('${CMAKE_CURRENT_SOURCE_DIR}/', '')
+            built.add(os.path.normpath(os.path.abspath(os.path.join(dirpath, tok))))
+    return {p for p in (os.path.normpath(os.path.abspath(q)) for q in walk(src, {'.cc'}))
+            if p not in built}
+
+
 def walk(root, exts):
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in ('Externals', 'Tests', '.git')]
         for fn in filenames:
-            if os.path.splitext(fn)[1] in exts:
-                yield os.path.join(dirpath, fn)
+            path = os.path.join(dirpath, fn)
+            if os.path.splitext(fn)[1] in exts and \
+                    os.path.normpath(os.path.abspath(path)) not in _NOT_BUILT:
+                yield path
 
 
 def read(path):
@@ -266,7 +338,10 @@ def scan_param_aliases(src):
 
 
 def scan_ports(src):
-    """({class: {'input','output','header'}}, {class: [base class names]})"""
+    """({class: [{'input','output','header'}, ...]}, {class: [base class names]})
+
+    A class can be declared in more than one header (an orphan left by a split,
+    as with GenerateElectrodeFromWidget.h); choose_ports() resolves that."""
     ports = {}
     bases = {}
     for path in walk(os.path.join(src, 'Modules'), {'.h'}):
@@ -297,11 +372,11 @@ def scan_ports(src):
                     entry['dynamic'] = pm.group(1).endswith('DYNAMIC')
                     ins.append(entry)
             if ins or outs:
-                ports[name] = {
+                ports.setdefault(name, []).append({
                     'input': sorted(ins, key=lambda p: p['index']),
                     'output': sorted(outs, key=lambda p: p['index']),
                     'header': os.path.relpath(path, os.path.dirname(src)),
-                }
+                })
     return ports, bases
 
 
@@ -358,7 +433,7 @@ _JSON_TYPE = {bool: 'bool', int: 'int', float: 'double',
               str: 'string', type(None): 'unknown'}
 
 
-def scan_state_defaults(src, aliases, arrays):
+def scan_state_defaults(src, aliases, arrays, consts):
     """setStateDefaults bodies -> {class: [state var records]}"""
     out = defaultdict(list)
     unparsed = defaultdict(list)
@@ -389,20 +464,31 @@ def scan_state_defaults(src, aliases, arrays):
                         'source': 'algorithm',
                     })
 
+            for sm in COPY_ALGO_TO_STATE.finditer(body):
+                args = call_args(body, sm.end() - 1)
+                if len(args) != 1 or not args[0].startswith('{'):
+                    unparsed[cls].extend(args or ['copyAlgoToState(?)'])
+                    continue
+                for item in split_args(args[0].strip()[1:-1]):
+                    names = resolve_param(item, aliases, arrays)
+                    if not names:
+                        unparsed[cls].append(item)
+                        continue
+                    for name in names:
+                        if name not in seen:
+                            seen.add(name)
+                            out[cls].append({'name': name, 'source': 'algorithm'})
+
             for sm in SET_VALUE.finditer(body):
                 args = call_args(body, sm.end() - 1)
                 if len(args) < 2:
                     continue
                 raw = args[0].strip()
-                value, literal = cpp_literal(args[1])
+                fields = default_fields(args[1], consts)
                 # A trailing-underscore member (SCIRun's member convention) holds a
                 # key seeded by a subclass ctor; defer it for build() to resolve.
                 if re.fullmatch(r'\w+_', raw) and raw not in aliases:
-                    rec = {'member': raw, 'source': 'module'}
-                    if literal:
-                        rec['default'] = value
-                        rec['type'] = _JSON_TYPE[type(value)]
-                    out[cls].append(rec)
+                    out[cls].append(dict(fields, member=raw, source='module'))
                     continue
                 names = resolve_param(raw, aliases, arrays)
                 if not names:
@@ -415,49 +501,50 @@ def scan_state_defaults(src, aliases, arrays):
                     rec = {'name': name, 'source': 'module'}
                     if sm.group(1):
                         rec['transient'] = True
-                    if literal:
-                        rec['default'] = value
-                        rec['type'] = _JSON_TYPE[type(value)]
-                    else:
-                        rec['defaultExpr'] = value
-                        rec['type'] = 'unknown'
+                    rec.update(fields)
                     out[cls].append(rec)
     return out, unparsed
 
 
-def scan_algorithms(src, aliases):
+def _algo_ctor_bodies(root):
+    """(class, ctor body) for out-of-line ctors in .cc and inline ones in .h
+    (ModelTMSCoilAlgorithm, BiotSavartSolverAlgorithm define theirs in-class)."""
+    for path in walk(root, {'.cc', '.h'}):
+        text = read(path)
+        if path.endswith('.cc'):
+            for m in ALGO_CTOR.finditer(text):
+                yield m.group(1), brace_body(text, m.end() - 1)[0]
+            continue
+        for cm in CLASS_DEF.finditer(text):
+            cls = cm.group(1)
+            cbody, _ = brace_body(text, cm.end() - 1)
+            m = re.search(r'\b' + cls + r'\s*\(\s*\)\s*(?::[^{;]*)?\{', cbody)
+            if m:
+                yield cls, brace_body(cbody, m.end() - 1)[0]
+
+
+def scan_algorithms(src, aliases, consts):
     """Algo ctors -> {algo_class: {param: record}} plus a global name fallback."""
     by_class = defaultdict(dict)
     globally = {}
-    for path in walk(os.path.join(src, 'Core', 'Algorithms'), {'.cc'}):
-        text = read(path)
-        for m in ALGO_CTOR.finditer(text):
-            cls = m.group(1)
-            body, _ = brace_body(text, m.end() - 1)
-            for am in ADD_PARAM.finditer(body):
-                args = call_args(body, am.end() - 1)
-                if len(args) < 2:
-                    continue
-                names = resolve_param(args[0], aliases)
-                if not names:
-                    continue
-                rec = {}
-                value, literal = cpp_literal(args[1])
-                if literal:
-                    rec['default'] = value
-                else:
-                    rec['defaultExpr'] = value
-                if am.group(1) == 'Option':
-                    rec['type'] = 'option'
-                    if len(args) >= 3:
-                        opts, is_lit = cpp_literal(args[2])
-                        if is_lit and isinstance(opts, str):
-                            rec['options'] = opts.split('|')
-                elif literal:
-                    rec['type'] = _JSON_TYPE[type(value)]
-                for name in names:
-                    by_class[cls][name] = rec
-                    globally.setdefault(name, rec)
+    for cls, body in _algo_ctor_bodies(os.path.join(src, 'Core', 'Algorithms')):
+        for am in ADD_PARAM.finditer(body):
+            args = call_args(body, am.end() - 1)
+            if len(args) < 2:
+                continue
+            names = resolve_param(args[0], aliases)
+            if not names:
+                continue
+            rec = default_fields(args[1], consts)
+            if am.group(1) == 'Option':
+                rec['type'] = 'option'
+                if len(args) >= 3:
+                    opts, is_lit = cpp_literal(args[2])
+                    if is_lit and isinstance(opts, str):
+                        rec['options'] = opts.split('|')
+            for name in names:
+                by_class[cls][name] = rec
+                globally.setdefault(name, rec)
     return by_class, globally
 
 
@@ -564,20 +651,56 @@ def ancestry(name, bases, _seen=None):
     return order
 
 
+def live_includes(src):
+    """Header paths (as written in #include) that some built .cc includes."""
+    inc = set()
+    for path in walk(src, {'.cc'}):
+        with open(path, errors='replace') as fh:
+            inc.update(re.findall(r'#\s*include\s*[<"]([^>"]+)[>"]', fh.read()))
+    return inc
+
+
+def choose_ports(candidates, included, configs):
+    """One port record per class: the header a built .cc actually includes, else
+    the one the .module config names. Returns (ports, ambiguous class names)."""
+    chosen, ambiguous = {}, []
+    for cls, cands in candidates.items():
+        if len(cands) > 1:
+            live = [c for c in cands if c['header'].split('src/', 1)[-1] in included]
+            cfg = configs.get(cls, {}).get('module', {}).get('header')
+            named = [c for c in cands if cfg and c['header'].endswith(cfg)]
+            pick = live if len(live) == 1 else named
+            if len(pick) != 1:
+                ambiguous.append(cls)
+            cands = pick or cands
+        chosen[cls] = cands[0]
+    return chosen, sorted(ambiguous)
+
+
 def build(repo):
     src = os.path.join(repo, 'src')
-    aliases, arrays = scan_param_aliases(src)
-    ports, bases = scan_ports(src)
-    member_param_index, base_call_args = scan_ctor_forwarding(src)
-    info = scan_module_info(src)
-    state, unparsed = scan_state_defaults(src, aliases, arrays)
-    algos_by_class, algos_global = scan_algorithms(src, aliases)
+    _NOT_BUILT.clear()
+    _NOT_BUILT.update(find_unbuilt_sources(src))
     configs = scan_configs(src)
     factory = scan_factory(src)
+    consts = scan_constants(src)
+    aliases, arrays = scan_param_aliases(src)
+    port_candidates, bases = scan_ports(src)
+    ports, ambiguous = choose_ports(port_candidates, live_includes(src), configs)
+    member_param_index, base_call_args = scan_ctor_forwarding(src)
+    info = scan_module_info(src)
+    state, unparsed = scan_state_defaults(src, aliases, arrays, consts)
+    algos_by_class, algos_global = scan_algorithms(src, aliases, consts)
     dialog_keys = scan_dialog_keys(src, aliases)
     docs = scan_docs(os.path.join(repo, 'docs', 'modules'))
 
-    names = set(configs) | set(factory) | (set(info) & (set(ports) | set(state)))
+    # Only what the factory registers: scirun_add_module rejects anything else,
+    # however complete its source looks.
+    names = set(configs) | set(factory)
+    meta = {
+        'unregistered': sorted((set(info) & (set(ports) | set(state))) - names),
+        'ambiguousHeaders': [c for c in ambiguous if c in names],
+    }
     modules = {}
 
     for name in sorted(names):
@@ -626,7 +749,8 @@ def build(repo):
         algo_name = cfg_algo.get('name')
         if algo_name in (None, 'N/A'):
             algo_name = None
-        guess = algo_name or f'{name}Algo'
+        guess = algo_name or next(
+            (c for c in (f'{name}Algo', f'{name}Algorithm') if c in algos_by_class), f'{name}Algo')
         algo_params = algos_by_class.get(guess, {})
         if algo_params:
             entry['algorithm'] = {'name': guess, 'header': cfg_algo.get('header')}
@@ -663,17 +787,22 @@ def build(repo):
                 algos_global.get(rec.get('name')) if rec['source'] == 'algorithm' else None)
             if extra:
                 for k, v in extra.items():
-                    if k == 'type' and rec.get('type') not in (None, 'unknown'):
+                    if k == 'type':
+                        if rec.get('type') in (None, 'unknown'):
+                            rec['type'] = v
                         continue
                     rec.setdefault(k, v)
+                if 'default' in rec:
+                    rec.pop('defaultExpr', None)
                 if 'options' in extra:
                     rec['options'] = extra['options']
+            rec.setdefault('type', 'unknown')
             merged.append(rec)
 
         known = {r.get('name') for r in merged}
         for pname, rec in sorted(algo_params.items()):
             if pname not in known:
-                merged.append(dict(rec, name=pname, source='algorithm-only'))
+                merged.append(dict({'type': 'unknown'}, **rec, name=pname, source='algorithm-only'))
                 known.add(pname)
         for key in sorted(dialog_keys.get(name, ())):
             if key not in known:
@@ -688,10 +817,10 @@ def build(repo):
 
         modules[name] = {k: v for k, v in entry.items() if v is not None}
 
-    return modules
+    return modules, meta
 
 
-def gaps_report(modules):
+def gaps_report(modules, meta):
     no_ports = [n for n, m in modules.items() if not m.get('ports')]
     no_state = [n for n, m in modules.items() if not m.get('state')]
     no_doc = [n for n, m in modules.items() if not m.get('doc')]
@@ -710,7 +839,9 @@ def gaps_report(modules):
              f'| No state variables found | {len(no_state)} |',
              f'| No doc page | {len(no_doc)} |',
              f'| Modules with unresolved state keys | {len(unresolved)} |',
-             f'| Modules with untyped/defaultless state | {len(untyped)} |', '']
+             f'| Modules with untyped/defaultless state | {len(untyped)} |',
+             f'| In source but never registered (excluded) | {len(meta["unregistered"])} |',
+             f'| Class declared in several headers, unresolved | {len(meta["ambiguousHeaders"])} |', '']
 
     def section(title, items):
         lines.append(f'## {title} ({len(items)})')
@@ -721,6 +852,8 @@ def gaps_report(modules):
     section('No ports parsed', no_ports)
     section('No state variables parsed', no_state)
     section('No documentation page', no_doc)
+    section('Built or on disk, but never registered with the factory', meta['unregistered'])
+    section('Declared in several headers; ports may be from the wrong one', meta['ambiguousHeaders'])
 
     lines.append(f'## Unresolved state keys ({len(unresolved)})')
     lines.append('')
@@ -746,7 +879,7 @@ def main():
     ap.add_argument('--module', help='print a single module and exit')
     args = ap.parse_args()
 
-    modules = build(args.repo)
+    modules, meta = build(args.repo)
 
     if args.module:
         entry = modules.get(args.module)
@@ -760,6 +893,7 @@ def main():
         'schema': 1,
         'moduleCount': len(modules),
         'modules': modules,
+        'unregisteredModules': meta['unregistered'],
     }
     text = json.dumps(payload, indent=2, sort_keys=False)
     if args.out:
@@ -771,7 +905,7 @@ def main():
 
     if args.gaps:
         with open(args.gaps, 'w', encoding='utf-8') as fh:
-            fh.write(gaps_report(modules) + '\n')
+            fh.write(gaps_report(modules, meta) + '\n')
         print(f'gap report -> {args.gaps}', file=sys.stderr)
     return 0
 
