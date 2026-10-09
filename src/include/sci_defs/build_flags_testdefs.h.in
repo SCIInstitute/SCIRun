@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2020 Scientific Computing and Imaging Institute,
+   Copyright (c) 2026 Scientific Computing and Imaging Institute,
    University of Utah.
 
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,38 +26,23 @@
 */
 
 
-#ifndef MODULES_VISUALIZATION_SHOWFIELDVTK_H
-#define MODULES_VISUALIZATION_SHOWFIELDVTK_H
+#ifndef SCI_BUILD_FLAGS_DEFS_H
+#define SCI_BUILD_FLAGS_DEFS_H
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
+// Optional-dependency flags as constants rather than -D macros, so code can test
+// them without #ifdef and a class reads the same in every TU (#2682).
+namespace SCIRun::BuildFlags
+{
+  struct BuildFlag
+  {
+    const char* name;
+    bool enabled;
+  };
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
-
-      class SCISHARE ShowFieldVtk : public Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-          public Has1OutputPort<GeometryVtkPortTag>
-      {
-      public:
-        ShowFieldVtk();
-        void execute() override;
-        void setStateDefaults() override;
-
-        INPUT_PORT(0, Field, Field);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
-        OUTPUT_PORT(0, SceneGraph, VtkGeometryObject);
-
-        uint32_t id;
-
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
-
-        REQUIRES_BUILD_FLAG(WithVtk)
-      };
-    }
-  }
+  inline constexpr BuildFlag WithPython { "WITH_PYTHON", @SCIRUN_BUILDFLAG_WITH_PYTHON@ };
+  inline constexpr BuildFlag WithTetgen { "WITH_TETGEN", @SCIRUN_BUILDFLAG_WITH_TETGEN@ };
+  inline constexpr BuildFlag WithOspray { "WITH_OSPRAY", @SCIRUN_BUILDFLAG_WITH_OSPRAY@ };
+  inline constexpr BuildFlag WithVtk    { "WITH_VTK",    @SCIRUN_BUILDFLAG_WITH_VTK@ };
 }
 
 #endif
