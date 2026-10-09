@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # #2700 nets, with and without the #2818 fix (dc99ffb53), which this branch carries.
+        # #2700 nets, with and without #2818 (dc99ffb53 + 529ae2cfa screenshot retry), which this branch carries.
         code: [master, fix]
     runs-on: macOS-latest
     timeout-minutes: 355
@@ -93,7 +93,14 @@ jobs:
             src/ExampleNets/regression/ImportExport/colorMapXml.srn5 \
             src/ExampleNets/regression/Renderer/vectorMagnitude.srn5 \
             src/ExampleNets/regression/Renderer/embb2.srn5 \
-            src/ExampleNets/regression/Renderer/rainbowBall.srn5
+            src/ExampleNets/regression/Renderer/rainbowBall.srn5 \
+            src/ExampleNets/regression/Modules/calcFieldData1.srn5 \
+            src/ExampleNets/regression/Modules/calcFieldData3.srn5 \
+            src/ExampleNets/regression/Modules/convertFieldBasis.srn5 \
+            src/ExampleNets/regression/Modules/extractsimpleisosurf.srn5 \
+            src/ExampleNets/regression/Renderer/colorMap.srn5 \
+            src/ExampleNets/regression/Renderer/rescaleColorMap.srn5 \
+            src/ExampleNets/regression/Modules/setuptdcs_colin27_patchelc.srn5
 
       - name: Collect macOS crash reports
         if: always()
