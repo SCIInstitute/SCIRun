@@ -12,10 +12,10 @@ on:
     inputs:
       max-passes:
         description: Passes per variant
-        default: '20'
+        default: '30'
       max-hits:
         description: Stop a variant after this many failing passes
-        default: '5'
+        default: '10'
 
 concurrency:
   # Per-commit, so a follow-up push doesn't cancel a leg still running.
@@ -30,12 +30,12 @@ jobs:
         # Plain-build control ran in 37886085522 (2 segfaults in 5 passes); ASan in
         # 37891638812 caught the Qt/GL clear overrun on 5 of 5. Now: which workaround stops it.
         # 6.10.2 runs in 37930275873. 6.8.3 can't link on this SDK (ld: framework 'AGL' not found).
-        qt: ['6.9.3']
+        qt: ['6.10.2']
     runs-on: macOS-latest
     timeout-minutes: 355
     env:
-      LOOP_MAX_PASSES: ${{ inputs.max-passes || '20' }}
-      LOOP_MAX_HITS: ${{ inputs.max-hits || '5' }}
+      LOOP_MAX_PASSES: ${{ inputs.max-passes || '30' }}
+      LOOP_MAX_HITS: ${{ inputs.max-hits || '10' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -76,7 +76,7 @@ jobs:
 
       - name: Loop the net
         shell: bash
-        run: bash scripts/ci-loop-2732.sh "$LOOP_MAX_PASSES" "$LOOP_MAX_HITS" "$GITHUB_WORKSPACE/loop-out" base noflags noresize nofloat
+        run: bash scripts/ci-loop-2732.sh "$LOOP_MAX_PASSES" "$LOOP_MAX_HITS" "$GITHUB_WORKSPACE/loop-out" base noresize fix
 
       - name: Collect macOS crash reports
         if: always()

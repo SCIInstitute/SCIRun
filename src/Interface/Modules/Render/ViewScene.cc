@@ -1602,7 +1602,7 @@ void ViewSceneDialog::runDelayedGC()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-  if (!std::getenv("SCIRUN_2732_NORESIZE"))
+  if (!std::getenv("SCIRUN_2732_NORESIZE") && !std::getenv("SCIRUN_2732_FIX"))
   {
     const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
     parentWidget()->resize(qs);

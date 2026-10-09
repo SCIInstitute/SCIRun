@@ -29,6 +29,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <QOpenGLWidget>
+#include <iostream>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
@@ -45,6 +46,8 @@ Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
 void Screenshot::takeScreenshot()
 {
 	screenshot_ = getScreenshot();
+	// Throwaway #2732 experiment: proof a frame was rendered and grabbed (the logger isn't on stdout in GUI mode).
+	std::cerr << "PROBE2732 screenshot " << screenshot_.width() << "x" << screenshot_.height() << std::endl;
 }
 
 QImage Screenshot::getScreenshot()

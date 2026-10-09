@@ -44,6 +44,8 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
+#include <Interface/Modules/Render/ViewScene.h>
+#include <cstdlib>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -108,6 +110,10 @@ ModuleDialogDockWidget* ModuleOptionsDialogConfiguration::configDockable(ModuleD
 
   if (moduleWidget_->isViewScene_ && Application::Instance().parameters()->isRegressionMode())
   {
+    // Throwaway #2732 experiment: size before show, so the GL surface is never resized on screen.
+    if (std::getenv("SCIRUN_2732_FIX"))
+      if (auto vs = qobject_cast<ViewSceneDialog*>(options))
+        vs->sizeDockFromState();
     dockable->show();
     dockable->setFloating(true);
   }

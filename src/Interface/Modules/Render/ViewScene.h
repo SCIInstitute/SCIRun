@@ -64,6 +64,9 @@ namespace SCIRun {
     Q_OBJECT;
 
     public:
+      // Throwaway #2732 experiment: lets the dock be sized before it is first shown.
+      void sizeDockFromState() { adjustSizeFromState(); }
+
       // -------- Keyboard shortcut registry ----------------------------------------
       struct ShortcutDef
       {

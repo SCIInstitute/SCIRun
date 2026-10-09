@@ -28,18 +28,20 @@ ASAN_BASE="halt_on_error=1:abort_on_error=0:detect_leaks=0"
 mkdir -p "$OUT"
 SUMMARY="$OUT/summary.txt"
 : > "$SUMMARY"
-TABLE="| variant | passes | hits |"$'\n'"|---|---|---|"
+TABLE="| variant | passes | hits | passes that rendered |"$'\n'"|---|---|---|---|"
 
-# 12 is normal for the headless copies: -x on a GUI build errors on the ScreenshotData ports.
-bad() { [ "$1" -ne 0 ] && [ "$1" -ne 12 ]; }
+# The headless copies exit 10-12 by design (-x on a GUI build errors on the ScreenshotData
+# ports), so only a signal counts against them.
+bad() { [ "$1" -ge 128 ]; }
 
 for v in "${VARIANTS[@]}"; do
-  unset SCIRUN_2732_NOFLAGS SCIRUN_2732_NORESIZE SCIRUN_2732_NOFLOAT
+  unset SCIRUN_2732_NOFLAGS SCIRUN_2732_NORESIZE SCIRUN_2732_NOFLOAT SCIRUN_2732_FIX
   case "$v" in
     base) ;;
     noflags) export SCIRUN_2732_NOFLAGS=1 ;;
     noresize) export SCIRUN_2732_NORESIZE=1 ;;
     nofloat) export SCIRUN_2732_NOFLOAT=1 ;;
+    fix) export SCIRUN_2732_FIX=1 ;;
     *) echo "unknown variant $v"; continue ;;
   esac
 
@@ -62,7 +64,8 @@ for v in "${VARIANTS[@]}"; do
     wait "$bg2"; rc2=$?
 
     asan=$(ls "$VOUT"/asan-"$i"-* 2>/dev/null | wc -l | tr -d ' ')
-    line="variant=$v pass=$i gui_rc=$rc bg1_rc=$rc1 bg2_rc=$rc2 asan_reports=$asan secs=$((SECONDS - start))"
+    shots=$(grep -c "PROBE2732 screenshot" "$VOUT/gui-$i.log")
+    line="variant=$v pass=$i gui_rc=$rc bg1_rc=$rc1 bg2_rc=$rc2 asan_reports=$asan screenshots=$shots secs=$((SECONDS - start))"
     echo "$line" | tee -a "$SUMMARY"
 
     if [ "$rc" -ne 0 ] || bad "$rc1" || bad "$rc2" || [ "$asan" -ne 0 ]; then
@@ -74,8 +77,9 @@ for v in "${VARIANTS[@]}"; do
     # Regression mode keeps QSettings per pid; don't let them pile up.
     rm -f "$HOME"/Library/Preferences/com.sci-cibc-software.SCIRun5_regression_*.plist 2>/dev/null
   done
-  echo "variant=$v done: $i passes, $hits hits" | tee -a "$SUMMARY"
-  TABLE+=$'\n'"| $v | $i | $hits |"
+  rendered=$(grep -c "variant=$v pass=.* screenshots=[1-9]" "$SUMMARY")
+  echo "variant=$v done: $i passes, $hits hits, $rendered passes rendered" | tee -a "$SUMMARY"
+  TABLE+=$'\n'"| $v | $i | $hits | $rendered |"
 done
 
 {
