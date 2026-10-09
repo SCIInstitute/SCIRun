@@ -41,6 +41,7 @@ SET(Interface_Modules_Render_FORMS
   ColorOptions.ui
   Fog.ui
   Materials.ui
+  MovieRecord.ui
   ObjectSelection.ui
   OrientationAxes.ui
   Screenshot.ui
@@ -64,6 +65,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   GLWidget.h
   GLContextPlatformCompatibility.h
   Screenshot.h
+  MovieRecorder.h
   OsprayViewerDialog.h
   ViewSceneVtkDialog.h
 )
@@ -101,6 +103,7 @@ SET(Interface_Modules_Render_SOURCES
   ViewSceneControlsDock.cc
   GLWidget.cc
   Screenshot.cc
+  MovieRecorder.cc
   OsprayViewerDialog.cc
   ViewOspraySceneConfig.cc
   ViewSceneVtkDialog.cc
