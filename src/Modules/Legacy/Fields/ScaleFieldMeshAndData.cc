@@ -55,10 +55,7 @@ ScaleFieldMeshAndData::ScaleFieldMeshAndData()
 
 void ScaleFieldMeshAndData::setStateDefaults()
 {
-  auto state = get_state();
-  setStateDoubleFromAlgo(Parameters::data_scale);
-  setStateDoubleFromAlgo(Parameters::mesh_scale);
-  setStateBoolFromAlgo(Parameters::scale_from_center);
+  copyAlgoToState({Parameters::data_scale, Parameters::mesh_scale, Parameters::scale_from_center});
 }
 
 void ScaleFieldMeshAndData::execute()
@@ -81,9 +78,7 @@ void ScaleFieldMeshAndData::execute()
       get_state()->setValue(Parameters::mesh_scale, scale);
     }
 
-    setAlgoDoubleFromState(Parameters::data_scale);
-    setAlgoDoubleFromState(Parameters::mesh_scale);
-    setAlgoBoolFromState(Parameters::scale_from_center);
+    copyStateToAlgo({Parameters::data_scale, Parameters::mesh_scale, Parameters::scale_from_center});
     auto output = algo().run(withInputData((InputField, input)));
     sendOutputFromAlgorithm(OutputField, output);
   }

@@ -167,6 +167,17 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
+    void SRCamera::centerView()
+    {
+      if (!mSceneBBox.valid())
+        return;
+
+      const auto center = mSceneBBox.center();
+      mArcLookAt->setLookAt(glm::vec3(center.x(), center.y(), center.z()));
+      setClippingPlanes();
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRCamera::setClippingPlanes()
     {
       //we could divide by 2.0 for tightest bound but here we divide by 1.0 to accomidate

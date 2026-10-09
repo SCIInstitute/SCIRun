@@ -56,17 +56,11 @@ ElectrodeCoilSetup::ElectrodeCoilSetup() : Module(ModuleLookupInfo("ElectrodeCoi
 
 void ElectrodeCoilSetup::setStateDefaults()
 {
-  setStateIntFromAlgo(Parameters::NumberOfPrototypes);
-  setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
-  setStateBoolFromAlgo(Parameters::InvertNormalsCheckBox);
-  setStateBoolFromAlgo(Parameters::AllInputsTDCS);
-  setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
-  setStateListFromAlgo(Parameters::TableValues);
-  setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
-  setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
-  setStateBoolFromAlgo(Parameters::OrientTMSCoilRadialToScalpCheckBox);
-  setStateBoolFromAlgo(Parameters::PutElectrodesOnScalpCheckBox);
-  setStateBoolFromAlgo(Parameters::InterpolateElectrodeShapeCheckbox);
+  copyAlgoToState({Parameters::NumberOfPrototypes, Parameters::ProtoTypeInputCheckbox,
+    Parameters::InvertNormalsCheckBox, Parameters::AllInputsTDCS, Parameters::ProtoTypeInputComboBox,
+    Parameters::TableValues, Parameters::ElectrodethicknessSpinBox, Parameters::ElectrodethicknessCheckBox,
+    Parameters::OrientTMSCoilRadialToScalpCheckBox, Parameters::PutElectrodesOnScalpCheckBox,
+    Parameters::InterpolateElectrodeShapeCheckbox});
 }
 
 void ElectrodeCoilSetup::execute()
@@ -77,15 +71,11 @@ void ElectrodeCoilSetup::execute()
 
  if (needToExecute())  //newStatePresent
  {
-   setAlgoBoolFromState(Parameters::ProtoTypeInputCheckbox);
-   setAlgoBoolFromState(Parameters::InvertNormalsCheckBox);
-   setAlgoBoolFromState(Parameters::OrientTMSCoilRadialToScalpCheckBox);
-   setAlgoBoolFromState(Parameters::AllInputsTDCS);
-   setAlgoIntFromState(Parameters::ProtoTypeInputComboBox);
-   setAlgoBoolFromState(Parameters::ElectrodethicknessCheckBox);
-   setAlgoBoolFromState(Parameters::PutElectrodesOnScalpCheckBox);
-   setAlgoBoolFromState(Parameters::InterpolateElectrodeShapeCheckbox);
-   setAlgoDoubleFromState(Parameters::ElectrodethicknessSpinBox);
+   copyStateToAlgo({Parameters::ProtoTypeInputCheckbox, Parameters::InvertNormalsCheckBox,
+     Parameters::OrientTMSCoilRadialToScalpCheckBox, Parameters::AllInputsTDCS,
+     Parameters::ProtoTypeInputComboBox, Parameters::ElectrodethicknessCheckBox,
+     Parameters::PutElectrodesOnScalpCheckBox, Parameters::InterpolateElectrodeShapeCheckbox,
+     Parameters::ElectrodethicknessSpinBox});
 
    if(elc_coil_proto.size()>0)
     {

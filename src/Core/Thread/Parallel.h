@@ -41,6 +41,18 @@ namespace Core
 {
 namespace Thread
 {
+  /// Per-worker result flags for a Parallel::RunTasks loop, one entry per
+  /// thread index, each written by its own worker.
+  ///
+  /// Deliberately NOT std::vector<bool>: that specialization packs elements
+  /// into shared words, so writes to distinct indices are not writes to
+  /// distinct memory locations and therefore race with each other. A worker's
+  /// result could be lost, which showed up as intermittent "parallel algorithm
+  /// failed" errors. char gives every worker its own addressable byte, so the
+  /// per-index writes are race-free and are published to the reader by the
+  /// thread join at the end of RunTasks.
+  using ParallelSuccessFlags = std::vector<char>;
+
   class SCISHARE Parallel : public boost::noncopyable
   {
   public:

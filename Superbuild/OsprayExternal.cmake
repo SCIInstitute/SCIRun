@@ -53,6 +53,10 @@ ExternalProject_Add(Ospray_external
   GIT_SUBMODULES ""
   GIT_SUBMODULES_RECURSE OFF
 
+  # EP_UPDATE_DISCONNECTED emits update and update_disconnected as siblings; under
+  # -j they race on git lock files. Missed by c552399bb.
+  UPDATE_COMMAND ""
+
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}

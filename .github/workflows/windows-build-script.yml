@@ -23,6 +23,8 @@ concurrency:
 jobs:
   windows-headless:
     runs-on: windows-2022
+    # Builds outside reusable-build.yml, so it needs its own cap; matches the 240 there.
+    timeout-minutes: 240
     steps:
       - name: Checkout
         uses: actions/checkout@v6

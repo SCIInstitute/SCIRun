@@ -40,8 +40,8 @@ namespace ren {
 struct UniformLocation
 {
   // -- Data --
-  int uniformID;          ///< Use this ID to identify your uniform (instead of by name).
-  GLint uniformLocation;  ///< Use this to store the uniform location inside of the shader.
+  int uniformID = 0;          ///< Use this ID to identify your uniform (instead of by name).
+  GLint uniformLocation = -1;  ///< Use this to store the uniform location inside of the shader.
 
   // -- Functions --
   static const char* getName() {return "ren:UniformLocation";}

@@ -38,3 +38,12 @@ boost::filesystem::path TestResources::rootDir()
   return "";
 #endif
 }
+
+boost::filesystem::path TestResources::sourceRootDir()
+{
+#ifdef TEST_SOURCE_ROOT_DIR
+  return TEST_SOURCE_ROOT_DIR;
+#else
+  return "";
+#endif
+}

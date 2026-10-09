@@ -38,6 +38,7 @@
 #include <boost/noncopyable.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Thread/Barrier.h>
+#include <Core/Thread/Parallel.h>
 #include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Algorithms/Math/share.h>
 
@@ -100,7 +101,7 @@ namespace Math {
     size_t size_;
     Datatypes::DenseColumnMatrixHandle current_matrix_;
     std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
-    std::vector<bool> success_;
+    SCIRun::Core::Thread::ParallelSuccessFlags success_;
     SolverInputs imatrices_;
     SCIRun::Core::Thread::Barrier barrier_;
     int numProcs_;

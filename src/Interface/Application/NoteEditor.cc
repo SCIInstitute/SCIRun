@@ -32,6 +32,16 @@
 
 using namespace SCIRun::Gui;
 
+// Applies a character format to all text in the document without
+// destroying existing formatting (unlike the setPlainText(toPlainText()) hack).
+static void applyFormatToAll(QTextEdit* edit, const QTextCharFormat& format)
+{
+  QTextCursor cursor = edit->textCursor();
+  cursor.select(QTextCursor::Document);
+  cursor.mergeCharFormat(format);
+  edit->setTextCursor(cursor);
+}
+
 NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
 {
   setupUi(this);
@@ -74,13 +84,13 @@ void NoteEditor::changeFontSize(const QString& text)
     size = defaultNoteFontSize_;
   else
     size = text.toDouble();
-  textEdit_->setFontPointSize(size);
-  textEdit_->setPlainText(textEdit_->toPlainText());
+  QTextCharFormat fmt;
+  fmt.setFontPointSize(size);
+  applyFormatToAll(textEdit_, fmt);
 }
 
 void NoteEditor::changeTextAlignment(const QString& text)
 {
-  //TODO: only changes one line at a time...may just chuck this option
   Qt::Alignment alignment;
   if (text == "Left")
     alignment = Qt::AlignLeft;
@@ -90,8 +100,12 @@ void NoteEditor::changeTextAlignment(const QString& text)
     alignment = Qt::AlignRight;
   else // text == "Justify")
     alignment = Qt::AlignJustify;
-  textEdit_->setAlignment(alignment);
-  textEdit_->setPlainText(textEdit_->toPlainText());
+  QTextCursor cursor = textEdit_->textCursor();
+  cursor.select(QTextCursor::Document);
+  QTextBlockFormat blockFmt;
+  blockFmt.setAlignment(alignment);
+  cursor.mergeBlockFormat(blockFmt);
+  textEdit_->setTextCursor(cursor);
 }
 
 void NoteEditor::changeTextColor()
@@ -105,6 +119,13 @@ void NoteEditor::setNoteHtml(const QString& text)
 {
   textEdit_->blockSignals(true);
   textEdit_->setHtml(text);
+  // Sync color tracking state from the loaded HTML so that Reset Color and
+  // Cancel work correctly against the actual loaded color, not Qt::white.
+  QTextCursor cursor = textEdit_->textCursor();
+  cursor.movePosition(QTextCursor::Start);
+  const auto loadedColor = cursor.charFormat().foreground().color();
+  if (loadedColor.isValid())
+    currentColor_ = previousColor_ = loadedColor;
   textEdit_->blockSignals(false);
 }
 
@@ -112,8 +133,9 @@ void NoteEditor::setNoteFontSize(int size)
 {
   textEdit_->blockSignals(true);
   fontSizeComboBox_->blockSignals(true);
-  textEdit_->setFontPointSize(size);
-  textEdit_->setPlainText(textEdit_->toPlainText());
+  QTextCharFormat fmt;
+  fmt.setFontPointSize(size);
+  applyFormatToAll(textEdit_, fmt);
   int index = fontSizeComboBox_->findText(QString::number(size));
   if (index != -1)
     fontSizeComboBox_->setCurrentIndex(index);
@@ -129,9 +151,9 @@ void NoteEditor::setDefaultNoteFontSize(int size)
   if (fontSizeComboBox_->currentText() == "Default")
   {
     textEdit_->blockSignals(true);
-
-    textEdit_->setFontPointSize(size);
-    textEdit_->setPlainText(textEdit_->toPlainText());
+    QTextCharFormat fmt;
+    fmt.setFontPointSize(size);
+    applyFormatToAll(textEdit_, fmt);
     currentNote_.html_ = textEdit_->toHtml();
     if (callCount_ > 1)
       updateNote();
@@ -144,9 +166,9 @@ void NoteEditor::setNoteColor(const QColor& color)
 {
   if (color.isValid())
   {
-    previousColor_ = textEdit_->textColor();
-    textEdit_->setTextColor(color);
-    textEdit_->setPlainText(textEdit_->toPlainText());
+    QTextCharFormat fmt;
+    fmt.setForeground(QBrush(color));
+    applyFormatToAll(textEdit_, fmt);
     updateNote();
   }
   else
@@ -162,10 +184,12 @@ void NoteEditor::resetText()
 
 void NoteEditor::resetTextColor()
 {
-  auto oldColor = textEdit_->textColor();
-  textEdit_->setTextColor(previousColor_);
-  textEdit_->setPlainText(textEdit_->toPlainText());
+  const auto oldColor = currentColor_;
+  QTextCharFormat fmt;
+  fmt.setForeground(QBrush(previousColor_));
+  applyFormatToAll(textEdit_, fmt);
   previousColor_ = currentColor_ = oldColor;
+  updateNote();
 }
 
 void NoteEditor::ok()
@@ -177,6 +201,7 @@ void NoteEditor::cancel()
 {
   textEdit_->setHtml(noteHtmlBackup_);
   fontSizeComboBox_->setCurrentIndex(fontSizeBackup_);
+  currentColor_ = previousColor_ = colorBackup_;
   hide();
 }
 
@@ -191,5 +216,6 @@ void NoteEditor::showEvent(QShowEvent* event)
 {
   noteHtmlBackup_ = textEdit_->toHtml();
   fontSizeBackup_ = fontSizeComboBox_->currentIndex();
+  colorBackup_ = currentColor_;
   QDialog::showEvent(event);
 }

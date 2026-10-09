@@ -58,16 +58,11 @@ RefineTetMeshLocally::RefineTetMeshLocally()
 
 void RefineTetMeshLocally::setStateDefaults()
 {
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyIsoValue);
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyEdgeLength);
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyVolume);
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyDihedralAngleSmaller);
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyDihedralAngleBigger);
- setStateIntFromAlgo(Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations);
- setStateIntFromAlgo(Parameters::RefineTetMeshLocallyRadioButtons);
- setStateBoolFromAlgo(Parameters::RefineTetMeshLocallyDoNoSplitSurfaceTets);
- setStateBoolFromAlgo(Parameters::RefineTetMeshLocallyCounterClockWiseOrdering);
- setStateBoolFromAlgo(Parameters::RefineTetMeshLocallyUseModuleInputField);
+  copyAlgoToState({Parameters::RefineTetMeshLocallyIsoValue, Parameters::RefineTetMeshLocallyEdgeLength,
+    Parameters::RefineTetMeshLocallyVolume, Parameters::RefineTetMeshLocallyDihedralAngleSmaller,
+    Parameters::RefineTetMeshLocallyDihedralAngleBigger, Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations,
+    Parameters::RefineTetMeshLocallyRadioButtons, Parameters::RefineTetMeshLocallyDoNoSplitSurfaceTets,
+    Parameters::RefineTetMeshLocallyCounterClockWiseOrdering, Parameters::RefineTetMeshLocallyUseModuleInputField});
 }
 
 void RefineTetMeshLocally::execute()
@@ -76,15 +71,11 @@ void RefineTetMeshLocally::execute()
 
   if (needToExecute())
   {
-    setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyIsoValue);
-    setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyEdgeLength);
-    setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyVolume);
-    setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyDihedralAngleSmaller);
-    setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyDihedralAngleBigger);
-    setAlgoBoolFromState(Parameters::RefineTetMeshLocallyDoNoSplitSurfaceTets);
-    setAlgoBoolFromState(Parameters::RefineTetMeshLocallyCounterClockWiseOrdering);
-    setAlgoBoolFromState(Parameters::RefineTetMeshLocallyUseModuleInputField);
-    setAlgoIntFromState(Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations);
+    copyStateToAlgo({Parameters::RefineTetMeshLocallyIsoValue, Parameters::RefineTetMeshLocallyEdgeLength,
+      Parameters::RefineTetMeshLocallyVolume, Parameters::RefineTetMeshLocallyDihedralAngleSmaller,
+      Parameters::RefineTetMeshLocallyDihedralAngleBigger, Parameters::RefineTetMeshLocallyDoNoSplitSurfaceTets,
+      Parameters::RefineTetMeshLocallyCounterClockWiseOrdering, Parameters::RefineTetMeshLocallyUseModuleInputField,
+      Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations});
     auto RadioButton = (get_state()->getValue(Parameters::RefineTetMeshLocallyRadioButtons)).toInt();
     if (RadioButton == -1)
       RadioButton = 0;

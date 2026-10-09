@@ -59,7 +59,7 @@ SET(boost_Libraries
   CACHE INTERNAL "Boost library names."
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB=1)
   LIST(APPEND boost_Libraries python)
   LIST(APPEND boost_DEPENDENCIES Python_external)
@@ -100,7 +100,7 @@ endif()
 # ------------------------------------------------------------------------------
 # Compute b2 Python flags (MUST be separate arguments)
 # ------------------------------------------------------------------------------
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   SET(BOOST_PYTHON_WITH_FLAG  --with-python)
   #SET(BOOST_PYTHON_EXE_FLAG   python=${SCI_PYTHON_EXE})
   #SET(BOOST_PYTHON_INC_FLAG   include=${SCI_PYTHON_INCLUDE})
@@ -125,7 +125,7 @@ endif()
 # ------------------------------------------------------------------------------
 # Compute Python-related CMake cache arguments for Boost
 # ------------------------------------------------------------------------------
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   if(WIN32 AND MSVC)
     set(_BOOST_PYTHON_CACHE_ARGS
       -DPython3_FIND_FRAMEWORK:STRING=NEVER
@@ -158,7 +158,7 @@ endif()
 # ------------------------------------------------------------------------------
 # Compute Python-related environment variables for Boost/b2
 # ------------------------------------------------------------------------------
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   set(_BOOST_PYTHON_ENV
     "PYTHONHOME=${SCI_PYTHON_ROOT_DIR}"
     "PYTHONPATH="
@@ -178,6 +178,11 @@ ExternalProject_Add(Boost_external
   DEPENDS ${boost_DEPENDENCIES}
   GIT_REPOSITORY ${_boost_git_url}
   GIT_TAG ${_boost_git_tag}
+  # 172 submodules cloned serially cost ~5 of the ~12 minutes CI spends on
+  # Boost; the bottleneck is per-submodule round-trips, not bytes on the wire,
+  # so parallel fetch is the fix (measured 3.6x -- see #2630). GIT_SHALLOW
+  # makes this *worse* (more server-side work per fetch) and is not used here.
+  GIT_CONFIG submodule.fetchJobs=${SUPERBUILD_PARALLEL_JOBS}
   # EP_UPDATE_DISCONNECTED emits update and update_disconnected as siblings; under
   # -j they race on the submodule config locks. Lost from c552399bb in a merge.
   UPDATE_COMMAND ""
@@ -191,8 +196,20 @@ ExternalProject_Add(Boost_external
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
 
+    # Boost's own CMake build (run by ExternalProject_Add's standard configure
+    # and build steps, alongside the b2 steps below) defaults to building all
+    # ~37 libraries; SCIRun only ever linked 8 of them plus Boost.Python (see
+    # #2629). Restrict it to what's actually needed. "python" must NOT be in
+    # this list: BOOST_ENABLE_PYTHON is never turned on here (python keeps
+    # coming from the b2 steps instead), and Boost's CMake build treats an
+    # explicitly-requested python with BOOST_ENABLE_PYTHON off as a hard
+    # configure error rather than silently skipping it -- so this is a
+    # deliberately separate, non-cache list rather than a reuse of
+    # boost_Libraries, which has "python" appended when WITH_PYTHON is on.
+    "-DBOOST_INCLUDE_LIBRARIES:STRING=atomic;chrono;date_time;exception;filesystem;program_options;regex;serialization;thread"
+
     # ---------- Python strictly controlled by SCIRun option ----------
-    -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
+    -DBUILD_PYTHON:BOOL=${WITH_PYTHON}
 
     ${_BOOST_PYTHON_CACHE_ARGS}
 
@@ -208,9 +225,27 @@ ExternalProject_Add(Boost_external
 ExternalProject_Get_Property(Boost_external INSTALL_DIR)
 ExternalProject_Get_Property(Boost_external SOURCE_DIR)
 
+SET(_B2_BOOTSTRAP_ENV)
+SET(_B2_BOOTSTRAP_ARGS)
+SET(_B2_TOOLSET_ARG)
 IF(WIN32)
   SET(_B2_CMD ${SOURCE_DIR}/b2.exe)
-  SET(_B2_BOOTSTRAP_CMD bootstrap.bat)
+  # With NoDefaultCurrentDirectoryInExePath=1 (set by some shells) cmd does not
+  # search the working directory for bare names, and b2's engine scripts call
+  # each other that way (#2791). Full path for ours, unset it for theirs.
+  FILE(TO_NATIVE_PATH "${SOURCE_DIR}/bootstrap.bat" _B2_BOOTSTRAP_CMD)
+  SET(_B2_BOOTSTRAP_ENV ${CMAKE_COMMAND} -E env --unset=NoDefaultCurrentDirectoryInExePath)
+  # b2 auto-detects the newest MSVC on the machine, not the one CMake is
+  # generating for, and its bootstrap dies with "Unknown toolset: vcunk" when
+  # that is newer than it knows (#2657). Pin both to CMake's instance/toolset.
+  # Trailing "/" is required: config_toolset.bat appends "Auxiliary\Build".
+  IF(CMAKE_VS_PLATFORM_TOOLSET MATCHES "^v14([0-9])$")
+    SET(_B2_BOOTSTRAP_ARGS "vc14${CMAKE_MATCH_1}")
+    SET(_B2_TOOLSET_ARG "toolset=msvc-14.${CMAKE_MATCH_1}")
+  ENDIF()
+  IF(CMAKE_GENERATOR_INSTANCE)
+    LIST(APPEND _B2_BOOTSTRAP_ENV "B2_TOOLSET_ROOT=${CMAKE_GENERATOR_INSTANCE}/VC/")
+  ENDIF()
 ELSE()
   SET(_B2_CMD ${SOURCE_DIR}/b2)
   SET(_B2_BOOTSTRAP_CMD ./bootstrap.sh)
@@ -220,7 +255,7 @@ ENDIF()
 # Step: bootstrap b2
 # --------------------------------------------------------------
 ExternalProject_Add_Step(Boost_external bootstrap_b2
-  COMMAND ${_B2_BOOTSTRAP_CMD}
+  COMMAND ${_B2_BOOTSTRAP_ENV} ${_B2_BOOTSTRAP_CMD} ${_B2_BOOTSTRAP_ARGS}
   WORKING_DIRECTORY ${SOURCE_DIR}
   DEPENDEES update
   INDEPENDENT 1
@@ -230,7 +265,7 @@ ExternalProject_Add_Step(Boost_external bootstrap_b2
 # --------------------------------------------------------------
 # Step: write project-config.jam (AFTER bootstrap)
 # --------------------------------------------------------------
-if(BUILD_WITH_PYTHON)
+if(WITH_PYTHON)
   ExternalProject_Add_Step(Boost_external write_project_config
     COMMAND ${CMAKE_COMMAND}
         -DOUTPUT_FILE=${SOURCE_DIR}/project-config.jam
@@ -302,7 +337,7 @@ endif()
 # ------------------------------------------------------------------
 # Boost.Python debug ABI (Windows requires this for python313_d + 'y')
 # ------------------------------------------------------------------
-if(WIN32 AND MSVC AND BUILD_WITH_PYTHON)
+if(WIN32 AND MSVC AND WITH_PYTHON)
   set(BOOST_PYTHON_DEBUGGING_FLAG python-debugging=on)
 else()
   set(BOOST_PYTHON_DEBUGGING_FLAG "")
@@ -352,6 +387,11 @@ set(_BOOST_B2_ARGS
   ${BOOST_PYTHON_WITH_FLAG}
   ${BOOST_PYTHON_DEBUGGING_FLAG}
 
+  ${_B2_TOOLSET_ARG}
+  # Without this, b2's msvc toolset builds its default set, which includes
+  # x86 (address-model=32) alongside x64 -- 26 extra libraries nothing links
+  # against (#2629). SCIRun is x64-only everywhere, so pin it explicitly.
+  address-model=64
   link=static
   runtime-link=shared
   ${_BOOST_VARIANT}
@@ -382,27 +422,12 @@ ExternalProject_Add_Step(Boost_external build_libs
 # ------------------------------------------------------------------------------
 # Export Boost library info
 # ------------------------------------------------------------------------------
+# Both are substituted into BoostConfig.cmake.in below.
 SET(SCI_BOOST_INCLUDE ${INSTALL_DIR}/include)
 SET(SCI_BOOST_LIBRARY_DIR ${SOURCE_DIR}/stage/lib)
-#SET(SCI_BOOST_USE_FILE ${INSTALL_DIR}/UseBoost.cmake)
-
-SET(BOOST_PREFIX "boost_")
-SET(THREAD_POSTFIX "")
-
-#SET(SCI_BOOST_LIBRARY)
-#FOREACH(lib ${boost_Libraries})
-#  IF(lib STREQUAL "python")
-#    # Python library is versioned: e.g., boost_python313
-#    LIST(APPEND SCI_BOOST_LIBRARY "${BOOST_PREFIX}${lib}${SCI_PYTHON_VERSION_SHORT_WIN32}")
-#  ELSE()
-#    LIST(APPEND SCI_BOOST_LIBRARY "${BOOST_PREFIX}${lib}${THREAD_POSTFIX}")
-#  ENDIF()
-#ENDFOREACH()
 
 CONFIGURE_FILE(${SUPERBUILD_DIR}/BoostConfig.cmake.in
                ${INSTALL_DIR}/BoostConfig.cmake @ONLY)
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/UseBoost.cmake
-#               ${SCI_BOOST_USE_FILE} COPYONLY)
 
 SET(Boost_DIR ${INSTALL_DIR} CACHE PATH "")
 MESSAGE(STATUS "Boost_DIR: ${Boost_DIR}")

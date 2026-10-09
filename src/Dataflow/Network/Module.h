@@ -132,6 +132,7 @@ namespace Networks {
     bool executionDisabled() const override final;
     void setExecutionDisabled(bool disable) override final;
     bool isImplementationDisabled() const override { return false; }
+    std::string requiredBuildFlag() const override { return {}; }
     void setProgrammableInputPortEnabled(bool enable) override final;
     bool checkForVirtualConnection(const ModuleInterface&) const override { return false; }
     std::string description() const override;
@@ -184,6 +185,8 @@ namespace Networks {
     void setAlgoStringFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoOptionFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoListFromState(const Core::Algorithms::AlgorithmParameterName& name);
+    void copyAlgoToState(std::initializer_list<Core::Algorithms::AlgorithmParameterName> names);
+    void copyStateToAlgo(std::initializer_list<Core::Algorithms::AlgorithmParameterName> names);
     //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
     virtual void postStateChangeInternalSignalHookup();
 
@@ -200,6 +203,7 @@ namespace Networks {
     Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
     std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
     void runProgrammablePortInput();
+    bool executeAndHandleExceptions();
     template <class T>
     SharedPointer<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>

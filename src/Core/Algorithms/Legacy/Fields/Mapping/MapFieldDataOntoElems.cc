@@ -92,7 +92,7 @@ class MapFieldDataOntoElemsPAlgo : public Interruptible
 
     double def_value_;
 
-    std::vector<bool> success_;
+    ParallelSuccessFlags success_;
 
   private:
     Barrier barrier_;

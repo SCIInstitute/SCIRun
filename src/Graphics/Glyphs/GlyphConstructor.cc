@@ -80,17 +80,17 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
     std::vector<SpireVBO::AttributeData> attribs;
     std::vector<SpireSubPass::Uniform> uniforms;
 
-    attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-    uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", isClippable));
-    uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
+    attribs.emplace_back("aPos", 3 * sizeof(float));
+    uniforms.emplace_back("uUseClippingPlanes", isClippable);
+    uniforms.emplace_back("uUseFog", true);
 
     if (useNormals)
     {
       numAttributes += 3;
-      attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      attribs.emplace_back("aNormal", 3 * sizeof(float));
+      uniforms.emplace_back("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+      uniforms.emplace_back("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f));
+      uniforms.emplace_back("uSpecularPower", 32.0f);
     }
 
     SpireText text;
@@ -101,7 +101,7 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
       {
         numAttributes += 2;
         shader += "_ColorMap";
-        attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
+        attribs.emplace_back("aTexCoords", 2 * sizeof(float));
 
         const static int colorMapResolution = 256;
         for(int i = 0; i < colorMapResolution; ++i)
@@ -121,16 +121,16 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
       {
         numAttributes += 4;
         shader += "_Color";
-        attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+        attribs.emplace_back("aColor", 4 * sizeof(float));
       }
     }
     else
     {
-      uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
-                                               glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue))));
+      uniforms.emplace_back("uDiffuseColor",
+                           glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue)));
     }
 
-    if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
+    if (isTransparent) uniforms.emplace_back("uTransparency", static_cast<float>(transparencyValue));
 
     size_t pointsLeft = data.points_.size();
     size_t startOfPass = 0;
@@ -149,8 +149,8 @@ void GlyphConstructor::buildObject(GeometryObjectSpire& geom, const std::string&
 
       size_t vboSize = static_cast<size_t>(pointsInThisPass) * numAttributes * sizeof(float);
       size_t iboSize = static_cast<size_t>(pointsInThisPass) * sizeof(uint32_t);
-      std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
-      std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+      auto iboBufferSPtr = std::make_shared<spire::VarBuffer>(iboSize);
+      auto vboBufferSPtr = std::make_shared<spire::VarBuffer>(vboSize);
       auto iboBuffer = iboBufferSPtr.get();
       auto vboBuffer = vboBufferSPtr.get();
 

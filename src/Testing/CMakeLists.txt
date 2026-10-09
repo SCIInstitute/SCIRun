@@ -34,8 +34,15 @@ ENDIF()
 IF(BUILD_TESTING)
 
 IF(WIN32)
- # TODO: determine if VS is set to Release or Debug.
- SET(EXE_LOC ${SCIRun_BINARY_DIR}/Release/SCIRun.exe CACHE PATH "Path to SCIRun executable")
+ # Empty means the built target for the config ctest runs (-C). Clear the old
+ # hard-coded Release default from existing caches so Debug builds pick it up.
+ SET(EXE_LOC "" CACHE PATH "Path to SCIRun executable (empty: built target)")
+ IF(EXE_LOC STREQUAL "${SCIRun_BINARY_DIR}/Release/SCIRun.exe")
+   SET_PROPERTY(CACHE EXE_LOC PROPERTY VALUE "")
+ ENDIF()
+ IF(NOT EXE_LOC)
+   SET(EXE_LOC "$<TARGET_FILE:${APPLICATION_NAME}>")
+ ENDIF()
 ELSE(WIN32)
  # TODO: change once testing works with app bundle
  IF(APPLE)
@@ -45,9 +52,60 @@ ELSE(WIN32)
  ENDIF()
 ENDIF()
 
+# On Windows, ctest launches the unit-test executables and SCIRun.exe with the
+# environment it inherited from the shell, which usually lacks the Qt, Python,
+# and Qwt bin directories. Without them the processes fail immediately with
+# 0xc0000135 (STATUS_DLL_NOT_FOUND), and Qt cannot find its platform plugin.
+# Compute the environment once here and apply it to the unit, regression, and
+# import tests below so all of them run from a plain command line / CI machine.
+IF(WIN32)
+  get_filename_component(_python_bin_dir "${PYTHON_EXECUTABLE}" DIRECTORY)
+  # Resolve Qt bin and plugin dirs from whichever Qt version was found
+  foreach(_qt_ver 6 5)
+    if(Qt${_qt_ver}_DIR)
+      get_filename_component(_qt_bin_dir "${Qt${_qt_ver}_DIR}/../../../bin" ABSOLUTE)
+      get_filename_component(_qt_plugins_dir "${Qt${_qt_ver}_DIR}/../../../plugins" ABSOLUTE)
+      break()
+    endif()
+  endforeach()
+  # Qwt is built by the Superbuild; include both the install bin/lib and the
+  # in-tree config subdirs so the qwt DLL is found regardless of layout.
+  string(REPLACE ";" "\\;" _escaped_env_path "$ENV{PATH}")
+  set(_test_path "${_python_bin_dir}\\;${_qt_bin_dir}\\;${QWT_INSTALL_DIR}/lib\\;${QWT_INSTALL_DIR}/bin\\;${Qwt_DIR}/src/Debug\\;${Qwt_DIR}/src/Release\\;${_escaped_env_path}")
+  # DLL/plugin environment every ctest-launched process needs to start at all.
+  set(SCIRUN_TEST_DLL_ENVIRONMENT
+    "PATH=${_test_path}"
+    "PYTHONHOME=${Python_DIR}"
+    "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms")
+  # Same, minus PYTHONHOME, for the Python tests: those are run by a python
+  # interpreter of their own, which would otherwise look for its stdlib under the
+  # Superbuild prefix. They only need the paths so the SCIRun.exe they spawn
+  # starts. Built from _test_path directly rather than by expanding the variable
+  # above, since nesting these lists strips a level of semicolon escaping.
+  set(SCIRUN_TEST_PATH_ENVIRONMENT
+    "PATH=${_test_path}"
+    "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms")
+  # Unit tests run headless and must never pop a window, so pin the offscreen
+  # Qt platform. The regression/import tests launch the full SCIRun app; on a
+  # developer workstation ViewScene networks need the real "windows" platform
+  # to get a usable OpenGL context (the offscreen platform has none and those
+  # networks fail). Leave QT_QPA_PLATFORM unset for those so the default
+  # platform is used locally, while headless CI can still force it via the job
+  # environment.
+  # Spelled out from _test_path rather than expanding SCIRUN_TEST_DLL_ENVIRONMENT:
+  # an unquoted expansion strips a level of escaping from the semicolons in PATH,
+  # after which ctest splits PATH into separate ENVIRONMENT entries and the test
+  # starts with a truncated PATH (0xc0000135 for anything needing Qt/Qwt DLLs).
+  set(SCIRUN_TEST_ENVIRONMENT
+    "PATH=${_test_path}"
+    "PYTHONHOME=${Python_DIR}"
+    "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms"
+    "QT_QPA_PLATFORM=offscreen")
+ENDIF()
+
 IF(RUN_UNIT_TESTS)
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     EXECUTE_PROCESS(COMMAND "python" ${CMAKE_SOURCE_DIR}/Testing/Python/list_tests.py
       ${CMAKE_SOURCE_DIR}/Testing/Python/
       OUTPUT_VARIABLE STR_TESTS
@@ -67,6 +125,11 @@ IF(RUN_UNIT_TESTS)
       ADD_TEST(NAME ${PYTHON_TEST}
         COMMAND ${CMAKE_COMMAND} -E env "SCIRUN_EXECUTABLE_PATH_FOR_PYTHON_TESTS=${EXE_LOC}" "${PYTHON_TEST_EXE}" "-m" "unittest" "-v" ${PYTHON_TEST}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
+      # These tests spawn SCIRun.exe as a subprocess, which needs the Qt/Python/Qwt
+      # DLLs on PATH or it exits immediately with 0xc0000135 (STATUS_DLL_NOT_FOUND).
+      IF(WIN32)
+        SET_TESTS_PROPERTIES("${PYTHON_TEST}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_PATH_ENVIRONMENT}")
+      ENDIF()
     ENDFOREACH(PYTHON_TEST)
   ENDIF()
 
@@ -75,24 +138,12 @@ IF(RUN_UNIT_TESTS)
   ENDFOREACH(test ${UNIT_TEST_LIST})
 
   IF(WIN32 AND UNIT_TEST_LIST)
-    get_filename_component(_python_bin_dir "${PYTHON_EXECUTABLE}" DIRECTORY)
-    # Resolve Qt bin and plugin dirs from whichever Qt version was found
-    foreach(_qt_ver 6 5)
-      if(Qt${_qt_ver}_DIR)
-        get_filename_component(_qt_bin_dir "${Qt${_qt_ver}_DIR}/../../../bin" ABSOLUTE)
-        get_filename_component(_qt_plugins_dir "${Qt${_qt_ver}_DIR}/../../../plugins" ABSOLUTE)
-        break()
-      endif()
-    endforeach()
-    # Qwt is built by the Superbuild; include both config subdirs so ctest works for Debug and Release
-    string(REPLACE ";" "\\;" _escaped_env_path "$ENV{PATH}")
-    set(_test_path "${_python_bin_dir}\\;${_qt_bin_dir}\\;${Qwt_DIR}/src/Debug\\;${Qwt_DIR}/src/Release\\;${_escaped_env_path}")
     FOREACH(test ${UNIT_TEST_LIST})
-      set_property(TEST "${test}" PROPERTY ENVIRONMENT
-        "PATH=${_test_path}"
-        "PYTHONHOME=${Python_DIR}"
-        "QT_QPA_PLATFORM_PLUGIN_PATH=${_qt_plugins_dir}/platforms"
-        "QT_QPA_PLATFORM=offscreen")
+      # Quote the expansion: unquoted, CMake strips a level of escaping from the
+      # semicolons in PATH, so ctest splits it into separate ENVIRONMENT entries
+      # and the test starts with a truncated PATH (0xc0000135 for anything that
+      # needs the Qt or Qwt DLLs).
+      set_property(TEST "${test}" PROPERTY ENVIRONMENT "${SCIRUN_TEST_ENVIRONMENT}")
     ENDFOREACH()
   ENDIF()
 ENDIF()
@@ -106,13 +157,17 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   FILE(GLOB_RECURSE scirun_srns_io "${SCIRun_SOURCE_DIR}/ExampleNets/regression/ImportExport/*.srn5")
   set(scirun_srns ${scirun_srns_modules} ${scirun_srns_network} ${scirun_srns_io})
 
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     FILE(GLOB_RECURSE scirun_srns_renderer "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Renderer/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_renderer})
   ENDIF()
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     FILE(GLOB_RECURSE scirun_srns_python "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Python/*.srn5")
+    # Python/Optional needs packages the bundled interpreter doesn't ship
+    # (numpy, matlab.engine); those networks only ever passed because Python
+    # errors were swallowed (#2699).
+    LIST(FILTER scirun_srns_python EXCLUDE REGEX "/Python/Optional/")
     set(scirun_srns ${scirun_srns} ${scirun_srns_python})
   ENDIF()
 
@@ -127,10 +182,14 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     # In-app regression timeout (seconds). 60 gives the heaviest networks
     # headroom when the machine is under parallel load; genuine hangs are still
     # bounded by the ctest --timeout passed in CI.
-    ADD_TEST("${test_name}" ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
+    ADD_TEST(NAME "${test_name}" COMMAND ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
 
-    # Networks that instantiate a ViewScene render through an offscreen GL
-    # context in regression mode. macOS serializes GPU command submission
+    IF(WIN32)
+      SET_TESTS_PROPERTIES("${test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
+    ENDIF()
+
+    # Networks that instantiate a ViewScene render through a real windowed GL
+    # context, in regression mode too. macOS serializes GPU command submission
     # across contexts, so running several ViewScene networks concurrently can
     # slow rendering enough to trip the in-app regression timeout. Give these
     # tests a shared RESOURCE_LOCK so CTest never schedules two of them at once,
@@ -175,9 +234,12 @@ IF(RUN_IMPORT_TESTS)
     SET(import_test_name ".Test.ImportNetwork.${srn_rel}")
     # Run in GUI mode (no -x): import goes through the GuiCommandFactory's
     # FileImportCommand. The headless console path has no import command.
-    ADD_TEST("${import_test_name}" ${EXE_LOC} --no_splash --regression 30 --import ${srn})
+    ADD_TEST(NAME "${import_test_name}" COMMAND ${EXE_LOC} --no_splash --regression 30 --import ${srn})
     # Bound a hung import at the ctest level.
     SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES TIMEOUT 120)
+    IF(WIN32)
+      SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
+    ENDIF()
     IF("${import_test_name}" IN_LIST DISABLED_IMPORT_TESTS)
       SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES DISABLED TRUE)
     ENDIF()

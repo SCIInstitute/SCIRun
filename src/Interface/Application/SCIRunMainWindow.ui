@@ -359,33 +359,8 @@
          <property name="whatsThis">
           <string>Enter a filter string here. The module list below will display only those modules whose name matches the filter (either by exact string or wildcard).</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="clearFilterButton_">
-         <property name="minimumSize">
-          <size>
-           <width>58</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>58</width>
-           <height>35</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Clear filter text</string>
-         </property>
-         <property name="whatsThis">
-          <string>Click this button to clear the filter text and see all available modules.</string>
-         </property>
-         <property name="text">
-          <string>Clear</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -1361,21 +1336,5 @@
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>clearFilterButton_</sender>
-   <signal>clicked()</signal>
-   <receiver>moduleFilterLineEdit_</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>243</x>
-     <y>64</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>141</x>
-     <y>63</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>

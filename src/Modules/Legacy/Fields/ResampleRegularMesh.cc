@@ -54,17 +54,11 @@ ResampleRegularMesh::ResampleRegularMesh() :
 
 void ResampleRegularMesh::setStateDefaults()
 {
-  auto state = get_state();
-
   setStateStringFromAlgoOption(Parameters::ResampleMethod);
-  setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
-  setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
-  setStateDoubleFromAlgo(Parameters::ResampleXDim);
-  setStateDoubleFromAlgo(Parameters::ResampleYDim);
-  setStateDoubleFromAlgo(Parameters::ResampleZDim);
-  setStateBoolFromAlgo(Parameters::ResampleXDimUseScalingFactor);
-  setStateBoolFromAlgo(Parameters::ResampleYDimUseScalingFactor);
-  setStateBoolFromAlgo(Parameters::ResampleZDimUseScalingFactor);
+  copyAlgoToState({Parameters::ResampleGaussianSigma, Parameters::ResampleGaussianExtend,
+    Parameters::ResampleXDim, Parameters::ResampleYDim, Parameters::ResampleZDim,
+    Parameters::ResampleXDimUseScalingFactor, Parameters::ResampleYDimUseScalingFactor,
+    Parameters::ResampleZDimUseScalingFactor});
 }
 
 void ResampleRegularMesh::setDimensionParameter(const std::string& name, const AlgorithmParameterName& dim, const AlgorithmParameterName& useScaling)

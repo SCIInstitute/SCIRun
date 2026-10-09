@@ -81,8 +81,8 @@ private:
   int   mLines;     ///< Number of lines.
   float mCurCircum; ///< Current cicumfrence.
 
-  glm::vec3 mFirstPoint;
-  glm::vec3 mLastPoint;
+  glm::vec3 mFirstPoint {0.0f};
+  glm::vec3 mLastPoint {0.0f};
 
   GLuint mShaderID;
 

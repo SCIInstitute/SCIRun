@@ -90,6 +90,12 @@ void CompositeModuleWithTypedStaticPorts::execute()
     }
 
     auto resultFuture = impl_->subNet_->executeAll();
+    // Some execution managers signal completion instead of returning a future (#2688).
+    if (!resultFuture.valid())
+    {
+      error("Subnetwork execution did not start: no result from the execution manager.");
+      return;
+    }
     resultFuture.wait();
     const auto result = resultFuture.get();
     if (result != 0)

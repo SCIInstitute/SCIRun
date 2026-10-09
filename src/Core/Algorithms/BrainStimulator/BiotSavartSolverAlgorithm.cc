@@ -87,7 +87,7 @@ class KernelBase
 
   //! parallel essential primitives
   Barrier barrier_;
-  std::vector<bool> success_;
+  ParallelSuccessFlags success_;
 
   //! output Field
   int typeOut_;

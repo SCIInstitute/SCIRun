@@ -28,10 +28,14 @@
 
 SET(Algorithms_Visualization_SRCS
   OsprayDataAlgorithm.cc
+  VtkDataAlgorithm.cc
+  VtkGeometryBuilder.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
   OsprayDataAlgorithm.h
+  VtkDataAlgorithm.h
+  VtkGeometryBuilder.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
@@ -42,12 +46,20 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
 TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes
   Core_Datatypes_Legacy_Field
+  Core_Datatypes_VTK
   Graphics_Glyphs
   Algorithms_Base
 )
 
 IF(WITH_OSPRAY)
   TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization ospray::ospray)
+ENDIF()
+
+IF(WITH_VTK)
+  target_link_libraries(Core_Algorithms_Visualization
+    VTK::CommonDataModel
+    VTK::CommonCore
+  )
 ENDIF()
 
 IF(BUILD_SHARED_LIBS)

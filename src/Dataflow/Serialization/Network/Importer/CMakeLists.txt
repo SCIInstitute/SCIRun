@@ -52,5 +52,5 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network_Importer
   Core_Datatypes
   Dataflow_State
   Core_XMLUtil
-  ${SCI_LIBXML2_LIBRARY}
+  LibXml2::LibXml2
 )

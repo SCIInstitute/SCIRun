@@ -28,7 +28,9 @@
 
 SET(Modules_Visualization_SRCS
   CreateStandardColorMap.cc
+  ConvertMatrixToColorMap.cc
   ShowField.cc
+  ShowFieldVtk.cc
   ShowFieldGlyphs.cc
   ShowFieldGlyphsPortHandler.cc
   ShowString.cc
@@ -46,7 +48,9 @@ SET(Modules_Visualization_SRCS
 
 SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
+  ConvertMatrixToColorMap.h
   ShowField.h
+  ShowFieldVtk.h
   ShowFieldGlyphs.h
   ShowFieldGlyphsPortHandler.h
   ShowString.h
@@ -79,6 +83,14 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Graphics_Widgets
   ${SCI_FREETYPE_LIBRARY}
 )
+
+if (WITH_VTK)
+  TARGET_LINK_LIBRARIES(Modules_Visualization
+  VTK::CommonCore
+  VTK::FiltersSources
+  VTK::FiltersCore
+  )
+endif()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Visualization)
