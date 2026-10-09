@@ -20,6 +20,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Blocking flags are flipped per platform and per suite as each reaches zero
+  # failures (#2711). Still open: Windows unit (#2708), macOS unit (#2709 and
+  # four ImportNetwork timeouts), macOS regression (#2700).
   linux-headless-regression:
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -28,6 +31,8 @@ jobs:
       build-testing: true
       run-unit-tests: true
       run-regression-tests: true
+      unit-tests-blocking: true
+      regression-tests-blocking: true
 
   mac-gui-regression:
     uses: ./.github/workflows/reusable-build.yml
@@ -49,6 +54,7 @@ jobs:
       build-testing: true
       run-unit-tests: true
       run-regression-tests: true
+      regression-tests-blocking: true
 
   mac-coverage:
     uses: ./.github/workflows/reusable-build.yml
