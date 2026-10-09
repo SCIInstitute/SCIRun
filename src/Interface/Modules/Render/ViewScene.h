@@ -246,6 +246,7 @@ namespace SCIRun {
       void updateModifiedGeometries();
       void unblockExecution();
       bool glWidgetCanPaint() const;
+      void retryScreenshotWhenPaintable();
 
       //---------------- Input ---------------------------------------------------------------------
       void showEvent(QShowEvent* evt) override;

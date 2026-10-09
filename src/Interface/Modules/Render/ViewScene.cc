@@ -48,6 +48,8 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 #include <es-log/trace-log.h>
 #include <QOpenGLContext>
+#include <QTimer>
+#include <chrono>
 #include <QWindow>
 #include <QPainter>
 #include <QToolTip>
@@ -225,6 +227,8 @@ namespace Gui {
     class Screenshot*                     screenshotTaker_              {nullptr};
     bool                                  saveScreenshotOnNewGeometry_  {false};
     bool                                  pulledSavedVisibility_        {false};
+    bool                                  screenshotRetryPending_       {false};
+    std::chrono::steady_clock::time_point screenshotRetryDeadline_      {};
     QTimer                                resizeTimer_                  {};
     std::atomic<bool>                     pushingCameraState_           {false};
     glm::vec2 previousAutoRotate_ {0,0};
@@ -1439,6 +1443,11 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
   newGeometryValue(false, false);
   if (glWidgetCanPaint())
     impl_->mGLWidget->requestFrame();
+  else if (Application::Instance().parameters()->isRegressionMode())
+  {
+    if (!impl_->screenshotRetryPending_)
+      retryScreenshotWhenPaintable();
+  }
   else
     unblockExecution();
 
@@ -1446,6 +1455,34 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
   if (!spire)
     return;
   spire->runGCOnNextExecution();
+}
+
+// Regression windows always get exposed, just not always before the module executes;
+// skipping the frame then fails every screenshot consumer. Capped so #2760 can't recur.
+void ViewSceneDialog::retryScreenshotWhenPaintable()
+{
+  using namespace std::chrono;
+  if (!impl_->screenshotRetryPending_)
+  {
+    impl_->screenshotRetryPending_ = true;
+    impl_->screenshotRetryDeadline_ = steady_clock::now() + seconds(8);
+  }
+
+  if (glWidgetCanPaint())
+  {
+    impl_->screenshotRetryPending_ = false;
+    newGeometryValue(false, false);
+    impl_->mGLWidget->requestFrame();
+  }
+  else if (steady_clock::now() >= impl_->screenshotRetryDeadline_)
+  {
+    impl_->screenshotRetryPending_ = false;
+    unblockExecution();
+  }
+  else
+  {
+    QTimer::singleShot(50, this, &ViewSceneDialog::retryScreenshotWhenPaintable);
+  }
 }
 
 void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool clippingPlanesUpdated)
