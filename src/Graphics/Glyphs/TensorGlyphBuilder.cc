@@ -355,8 +355,6 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
   computeTransforms();
   postScaleTransforms();
   computeSinCosTable(half);
-  auto eigvals = t_.getEigenvalues();
-  eigvals.inverse();
   EllipsoidPointParams params;
 
   for (int v = 0; v < nv_ - 1; ++v)

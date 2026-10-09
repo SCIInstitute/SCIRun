@@ -173,6 +173,9 @@ jobs:
           key="superbuild-ext-v7-${{ runner.os }}-${{ runner.arch }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-${{ hashFiles('Superbuild/*.cmake') }}"
           echo "key=$key" >> "$GITHUB_OUTPUT"
           echo "Externals cache key: $key"
+          sccache_prefix="sccache-v1-${{ runner.os }}-${{ runner.arch }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-"
+          echo "sccache-prefix=$sccache_prefix" >> "$GITHUB_OUTPUT"
+          echo "sccache-key=${sccache_prefix}$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
 
       - name: Restore Superbuild externals cache
         if: ${{ inputs.cache-externals }}
@@ -252,6 +255,31 @@ jobs:
         # up after two retries (run 35613949360 died on a 504). The build steps
         # below only pass the launcher flags if sccache actually showed up.
         continue-on-error: true
+
+      # sccache's own GHA backend writes one cache entry per object file into
+      # the same 10 GB cap as the externals cache, so keep it on local disk and
+      # carry the directory as a single entry. Only master (ccpp.yml) saves --
+      # PRs read master's copy -- and at most once a day, so this can't repeat
+      # #2782's N-branch-copies eviction. A prefix match is safe here, unlike
+      # the externals cache: sccache keys on content hashes, so stale entries
+      # just miss.
+      - name: Restore sccache cache
+        if: ${{ inputs.cache-externals && runner.os != 'Windows' }}
+        id: restore-sccache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/sccache
+          key: ${{ steps.ext-key.outputs.sccache-key }}
+          restore-keys: ${{ steps.ext-key.outputs.sccache-prefix }}
+
+      - name: Configure sccache cache
+        if: ${{ inputs.cache-externals && runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          # A server started before these are set would ignore them.
+          sccache --stop-server >/dev/null 2>&1 || true
+          echo "SCCACHE_DIR=$HOME/.cache/sccache" >> "$GITHUB_ENV"
+          echo "SCCACHE_CACHE_SIZE=2G" >> "$GITHUB_ENV"
 
       - name: Checkout SCIRunTestData
         if: ${{ inputs.run-regression-tests || inputs.coverage }}
@@ -492,6 +520,22 @@ jobs:
             bin/Externals/Source/Tetgen_external
           key: ${{ steps.ext-key.outputs.key }}
 
+      - name: Report sccache stats
+        if: ${{ inputs.cache-externals && runner.os != 'Windows' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          sccache --show-stats || true
+          du -sh ~/.cache/sccache 2>/dev/null || true
+
+      - name: Save sccache cache
+        if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && steps.restore-sccache.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/sccache
+          key: ${{ steps.ext-key.outputs.sccache-key }}
+
       # always() so a later SCIRun failure doesn't discard the VTK build; the
       # sentinel keeps a partial install out.
       - name: Save VTK install cache
@@ -557,6 +601,25 @@ jobs:
               echo "No packaging directory found; skipping package step"
             fi
           fi
+
+      # The smoke test above runs the build tree; this one runs what users get.
+      # Gating, like the smoke test: a .pkg that installs a broken app should
+      # not be uploaded. Package step's `|| true`s mean a missing .pkg fails here.
+      - name: Smoke test - install .pkg and run the installed app (macOS)
+        if: ${{ inputs.run-smoke-test && inputs.artifact-name != '' && runner.os == 'macOS' }}
+        shell: bash
+        run: |
+          set -eux
+          shopt -s nullglob
+          pkgs=(bin/SCIRun/SCIRun-*-Darwin.pkg)
+          [ ${#pkgs[@]} -eq 1 ] || { echo "::error::expected one .pkg, found ${#pkgs[@]}"; exit 1; }
+          sudo installer -pkg "${pkgs[0]}" -target /
+          # Ask the receipt where the app went rather than assuming /Applications.
+          info=$(pkgutil --pkg-info edu.utah.sci.SCIRun)
+          vol=$(sed -n 's/^volume: //p' <<< "$info")
+          loc=$(sed -n 's/^location: //p' <<< "$info")
+          app=$(pkgutil --only-dirs --files edu.utah.sci.SCIRun | grep -m1 -E '(^|/)SCIRun\.app$')
+          scripts/ci/check_installed_app.sh "${vol%/}/${loc:+$loc/}$app"
 
       - name: Package (optional - Windows)
         if: ${{ inputs.artifact-name != '' && runner.os == 'Windows' }}
@@ -705,6 +768,7 @@ jobs:
           if-no-files-found: error
           path: |
             bin/SCIRun/coverage/summary.txt
+            bin/SCIRun/coverage/mismatched.txt
             bin/SCIRun/coverage/html
 
       # Runs after packaging so it can read the installed binary, and before the
