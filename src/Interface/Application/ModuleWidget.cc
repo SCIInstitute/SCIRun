@@ -27,6 +27,7 @@
 
 
 #include "ui_Module.h"
+#include <cstdlib>
 #include <iostream>
 #include <QtConcurrent>
 #include <QPointer>
@@ -1262,7 +1263,9 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
   if (isFloating)
   {
-    dockable_->setWindowFlags(Qt::Window);
+    // Throwaway #2732 experiment: setWindowFlags recreates the native window under a live GL swapchain.
+    if (!std::getenv("SCIRUN_2732_NOFLAGS"))
+      dockable_->setWindowFlags(Qt::Window);
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
   }

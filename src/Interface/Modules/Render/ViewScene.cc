@@ -26,6 +26,7 @@
 */
 
 #include <algorithm>
+#include <cstdlib>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Version.h>
@@ -1327,7 +1328,8 @@ void ViewSceneDialog::pullSpecial()
     if (parentWidget())
     {
       auto dock = qobject_cast<QDockWidget*>(parentWidget());
-      const auto isFloating = state_->getValue(Parameters::IsFloating).toBool();
+      // Throwaway #2732 experiment: SCIRUN_2732_NOFLOAT keeps the ViewScene docked.
+      const auto isFloating = state_->getValue(Parameters::IsFloating).toBool() && !std::getenv("SCIRUN_2732_NOFLOAT");
       if (dock)
         dock->setFloating(isFloating);
 
@@ -1354,7 +1356,7 @@ void ViewSceneDialog::pullSpecial()
 
 void ViewSceneDialog::adjustSizeFromState()
 {
-  if (parentWidget())
+  if (parentWidget() && !std::getenv("SCIRUN_2732_NORESIZE"))
   {
     const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
     parentWidget()->resize(qs);
@@ -1600,6 +1602,7 @@ void ViewSceneDialog::runDelayedGC()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
+  if (!std::getenv("SCIRUN_2732_NORESIZE"))
   {
     const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
     parentWidget()->resize(qs);
