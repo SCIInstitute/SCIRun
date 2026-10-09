@@ -53,6 +53,7 @@
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
+#include <Dataflow/Serialization/Network/NetworkToPython.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
@@ -89,6 +90,25 @@ void SCIRunMainWindow::saveNetworkAs()
   auto filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
   if (!filename.isEmpty())
     saveNetworkFile(filename);
+}
+
+void SCIRunMainWindow::exportNetworkAsPython()
+{
+  auto filename = QFileDialog::getSaveFileName(this, "Export Network as Python Script...", latestNetworkDirectory_.path(), "*.py");
+  if (filename.isEmpty())
+    return;
+  if (!filename.endsWith(".py"))
+    filename += ".py";
+
+  const auto layout = networkEditor_->saveNetwork();
+  const auto source = currentFile_.isEmpty() ? std::string() : QFileInfo(currentFile_).fileName().toStdString();
+  const auto script = networkToPythonScript(*Application::Instance().controller()->getNetwork(), layout.get(), source);
+
+  QFile out(filename);
+  if (out.open(QIODevice::WriteOnly) && out.write(script.data(), static_cast<qint64>(script.size())) == static_cast<qint64>(script.size()))
+    showStatusMessage("Exported Python script: " + filename, 2000);
+  else
+    QMessageBox::warning(this, "Export failed", "Could not write " + filename);
 }
 
 void SCIRunMainWindow::loadNetwork()

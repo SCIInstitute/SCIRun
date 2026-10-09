@@ -34,6 +34,12 @@
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <boost/filesystem.hpp>
+#include <Dataflow/Serialization/Network/NetworkToPython.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Math/CreateMatrix.h>
+#include <limits>
+#include <set>
 
 using namespace SCIRun;
 using namespace Core;
@@ -283,4 +289,118 @@ TEST_F(PythonControllerFunctionalTests, ScriptSeesSCIRunAPIAfterImport)
   py.importSCIRunLibrary();
   EXPECT_TRUE(py.run_script("callable(scirun_get_module_input_value)"));
   EXPECT_TRUE(py.run_script("assert callable(scirun_get_module_input_value)"));
+}
+
+TEST_F(PythonControllerFunctionalTests, SetStateKeepsFullDoublePrecision)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  auto& py = PythonInterpreter::Instance();
+  ASSERT_TRUE(py.run_script("m = scirun_add_module(\"CreateLatVol\")\n"
+    "scirun_set_module_state(m, \"PadPercent\", 0.1)\n"
+    "scirun_set_module_state(m, \"XSize\", 7.0)"));
+  auto state = controller.getNetwork()->module(0)->get_state();
+  EXPECT_EQ(0.1, state->getValue(CreateLatVol::PadPercent).toDouble());
+  EXPECT_EQ(7, state->getValue(CreateLatVol::XSize).toInt());
+}
+
+TEST_F(PythonControllerFunctionalTests, SetStateCoercesBoolsAndInts)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_TRUE(PythonInterpreter::Instance().run_script(
+    "m = scirun_add_module(\"CreateLatVol\")\n"
+    "scirun_set_module_state(m, \"ElementSizeNormalized\", True)\n"
+    "scirun_set_module_state(m, \"ProgrammableInputPortEnabled\", 0)"));
+  auto state = controller.getNetwork()->module(0)->get_state();
+  EXPECT_EQ(1, state->getValue(CreateLatVol::ElementSizeNormalized).toInt());
+  EXPECT_FALSE(state->getValue(Name("ProgrammableInputPortEnabled")).toBool());
+}
+
+// EvaluateLinearAlgebraUnary defaults ScalarValue to int 0 but reads it as a double.
+TEST_F(PythonControllerFunctionalTests, SetStateKeepsFractionInIntDefaultedState)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_TRUE(PythonInterpreter::Instance().run_script(
+    "m = scirun_add_module(\"EvaluateLinearAlgebraUnary\")\n"
+    "scirun_set_module_state(m, \"ScalarValue\", 2.5)"));
+  auto state = controller.getNetwork()->module(0)->get_state();
+  EXPECT_EQ(2.5, state->getValue(Variables::ScalarValue).toDouble());
+}
+
+TEST_F(PythonControllerFunctionalTests, ExportedScriptRebuildsNetwork)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  initModuleParameters(false);
+
+  std::string script;
+  std::vector<std::pair<std::string, ModuleStateHandle>> originalStates;
+  std::set<std::string> originalConnections;
+  {
+    // Scoped: the python API binds to the first live controller, so this one must be gone before the rebuild.
+    NetworkEditorController original(mf, sf, nullptr, nullptr, nullptr, nullptr, nullptr);
+    Module::resetIdGenerator();
+    auto latVol = original.addModule("CreateLatVol");
+    auto a = original.addModule("CreateMatrix");
+    auto b = original.addModule("CreateMatrix");
+    auto c = original.addModule("CreateMatrix");
+    auto append = original.addModule("AppendMatrix");
+    auto unary = original.addModule("EvaluateLinearAlgebraUnary");
+    auto nanUnary = original.addModule("EvaluateLinearAlgebraUnary");
+    auto connect = [&](const ModuleHandle& from, const ModuleHandle& to, size_t in)
+    {
+      EXPECT_TRUE(original.requestConnection(from->outputPorts().at(0).get(), to->inputPorts().at(in).get()));
+    };
+    connect(a, append, 0);
+    connect(b, append, 1);
+    connect(c, append, 2);
+    connect(b, append, 3);
+    connect(append, unary, 0);
+
+    latVol->get_state()->setValue(CreateLatVol::XSize, 14);
+    latVol->get_state()->setValue(CreateLatVol::PadPercent, 0.1);
+    a->get_state()->setValue(Math::Parameters::TextEntry, std::string("1 2\n3 4"));
+    b->get_state()->setValue(Math::Parameters::TextEntry, std::string("C:\\path \"quoted\""));
+    unary->get_state()->setValue(Variables::ScalarValue, 0.1);
+    nanUnary->get_state()->setValue(Variables::ScalarValue, std::numeric_limits<double>::quiet_NaN());
+
+    script = networkToPythonScript(*original.getNetwork(), nullptr);
+    for (size_t i = 0; i < original.getNetwork()->nmodules(); ++i)
+    {
+      auto m = original.getNetwork()->module(i);
+      originalStates.emplace_back(m->id().id_, m->get_state());
+    }
+    for (const auto& desc : original.getNetwork()->connections(false))
+      originalConnections.insert(ConnectionId::create(desc).id_);
+  }
+
+  NetworkEditorController rebuilt(mf, sf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  Module::resetIdGenerator();
+  ASSERT_TRUE(PythonInterpreter::Instance().run_script(script)) << script;
+
+  auto network = rebuilt.getNetwork();
+  ASSERT_EQ(originalStates.size(), network->nmodules());
+  for (const auto& [id, state] : originalStates)
+  {
+    auto module = network->lookupModule(ModuleId(id));
+    ASSERT_TRUE(module) << id;
+    for (const auto& key : state->getKeys())
+      EXPECT_EQ(state->getValue(key), module->get_state()->getValue(key)) << id << " " << key.name();
+  }
+
+  std::set<std::string> rebuiltConnections;
+  for (const auto& desc : network->connections(false))
+    rebuiltConnections.insert(ConnectionId::create(desc).id_);
+  EXPECT_EQ(originalConnections, rebuiltConnections);
 }
