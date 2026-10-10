@@ -39,6 +39,7 @@ jobs:
       scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: true
+      cache-externals: true  # trial: externals + sccache (#2626)
 
   # WITH_VTK=ON (#2677); also warms the master VTK cache for pr.yml's VTK tier
   # (runner is part of the cache key). Skipped on release tags.
