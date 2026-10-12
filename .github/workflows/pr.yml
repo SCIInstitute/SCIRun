@@ -159,6 +159,7 @@ jobs:
     if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.platform_risk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
+      cache-compiler: true
       runner: macOS-latest
       qt-version: '6.10.2'
       scirun-qt-min-version: '6.3.1'

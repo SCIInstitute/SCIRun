@@ -34,6 +34,7 @@ jobs:
   mac-gui:
     uses: ./.github/workflows/reusable-build.yml
     with:
+      cache-compiler: true
       runner: macOS-latest
       qt-version: '6.10.2'
       scirun-qt-min-version: '6.3.1'
@@ -158,6 +159,7 @@ jobs:
   mac-headless:
     uses: ./.github/workflows/reusable-build.yml
     with:
+      cache-compiler: true
       runner: macOS-latest
       variant: headless
       build-testing: true
