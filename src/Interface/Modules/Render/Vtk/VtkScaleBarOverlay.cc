@@ -203,10 +203,10 @@ namespace Render {
         //------------------------------------------------------------------
 
         double x =
-            static_cast<double>(10) / 100.0 * width_;
+            static_cast<double>(90) / 100.0 * width_;
 
         double y =
-            static_cast<double>(90) / 100.0 * height_;
+            static_cast<double>(10) / 100.0 * height_;
 
         //------------------------------------------------------------------
         // Main horizontal bar.

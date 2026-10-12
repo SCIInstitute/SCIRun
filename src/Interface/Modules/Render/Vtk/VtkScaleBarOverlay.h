@@ -62,15 +62,15 @@ namespace SCIRun {
             int width_{1};
             int height_{1};
 
-            int sbFontSize_;
-            double sbLength_;
-            double sbHeight_;
-            double sbMultiplier_;
-            double sbNumTicks_;
-            double sbLineWidth_;
-            double sbLineColor_;
-            std::string sbUnit_;
-            double sbProjLength_;
+            int sbFontSize_{8};
+            double sbLength_{1.0};
+            double sbHeight_{1.0};
+            double sbMultiplier_{1.0};
+            double sbNumTicks_{11};
+            double sbLineWidth_{1.0};
+            double sbLineColor_{1.0};
+            std::string sbUnit_{"mm"};
+            double sbProjLength_{100};
 
             void updateProjectedLength();
             void updateScale();
