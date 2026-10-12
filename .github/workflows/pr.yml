@@ -50,6 +50,7 @@ jobs:
     outputs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
       platform_risk: ${{ steps.filter.outputs.platform_risk }}
+      vtk: ${{ steps.filter.outputs.vtk }}
     steps:
       - name: Classify changed paths
         id: filter
@@ -97,7 +98,22 @@ jobs:
             platform_risk=false
           fi
 
+          # VTK tier: VTK-named code under src/ (not the legacy .vtk reader), the
+          # VTK Superbuild files, or the two workflows that implement the tier.
+          # A `vtk` label covers what a path filter can't, e.g. Geometry.h.
+          if printf '%s\n' "$labels" | grep -qxF 'vtk'; then
+            vtk=true
+          elif printf '%s\n' "$files" | grep -E '^src/.*(Vtk|/VTK/|/vtk/)' | grep -qv '/Legacy/'; then
+            vtk=true
+          elif printf '%s\n' "$files" | grep -qE '^Superbuild/(VtkExternal|Superbuild)\.cmake$|^\.github/workflows/(pr|reusable-build)\.yml$'; then
+            vtk=true
+          else
+            vtk=false
+          fi
+
           echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          echo "vtk=$vtk" >> "$GITHUB_OUTPUT"
+          echo "vtk=$vtk"
           echo "platform_risk=$platform_risk" >> "$GITHUB_OUTPUT"
           echo "docs_only=$docs_only"
           echo "platform_risk=$platform_risk"
@@ -161,6 +177,47 @@ jobs:
       build-with-python: false
       artifact-name: SCIRunWindowsInstaller_qt6
 
+  # VTK tier (#2677): WITH_VTK=ON builds, only for PRs that touch VTK (see `vtk`
+  # above). The VTK-off jobs above still run alongside, to catch an unguarded
+  # include or link. A cold VTK cache adds ~111 min, hence the longer timeout.
+  linux-gui-vtk:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.vtk == 'true'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      qt-version: '6.3.*'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      with-vtk: true
+      timeout-minutes: 360
+
+  mac-gui-vtk:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.vtk == 'true'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      with-vtk: true
+      timeout-minutes: 360
+
+  windows-gui-qt6-vtk:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.vtk == 'true'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2022
+      qt-version: '6.3.*'
+      variant: gui
+      build-with-python: false
+      with-vtk: true
+      timeout-minutes: 360
+
   # Unit tests. The ctest step in reusable-build.yml carries
   # `continue-on-error: true`, so a failing test does NOT fail this job today --
   # master currently has 4 failing unit suites plus a large body of failing
@@ -187,7 +244,7 @@ jobs:
   ci-gate:
     name: ci-gate
     if: always()
-    needs: [changes, linux-gui, linux-gui-qt6, mac-gui, windows-gui-qt6, linux-unit-tests]
+    needs: [changes, linux-gui, linux-gui-qt6, mac-gui, windows-gui-qt6, linux-gui-vtk, mac-gui-vtk, windows-gui-qt6-vtk, linux-unit-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Report upstream results
@@ -197,6 +254,9 @@ jobs:
           echo "linux-gui-qt6:    ${{ needs.linux-gui-qt6.result }}"
           echo "mac-gui:          ${{ needs.mac-gui.result }}"
           echo "windows-gui-qt6:  ${{ needs.windows-gui-qt6.result }}"
+          echo "linux-gui-vtk:    ${{ needs.linux-gui-vtk.result }}"
+          echo "mac-gui-vtk:      ${{ needs.mac-gui-vtk.result }}"
+          echo "windows-gui-qt6-vtk: ${{ needs.windows-gui-qt6-vtk.result }}"
           echo "linux-unit-tests: ${{ needs.linux-unit-tests.result }}"
 
       - name: Fail if any required build failed or was cancelled
