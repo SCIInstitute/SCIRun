@@ -48,6 +48,7 @@
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
+#include <Interface/Application/FloatingDockWindow.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -62,7 +63,6 @@
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
-#include <Interface/Application/FloatingDockWindow.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
