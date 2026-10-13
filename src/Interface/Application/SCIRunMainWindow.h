@@ -245,6 +245,7 @@ private Q_SLOTS:
   void clearFragmentList();
   void copyVersionToClipboard();
   void displayAcknowledgement();
+  void displayCredits();
   void exitApplication(int code);
   void exportFragmentList();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
