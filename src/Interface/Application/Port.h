@@ -76,9 +76,9 @@ public:
   void setSceneFunc(SceneFunc getScene) { getScene_ = getScene; }
   SceneFunc sceneFunc() const { return getScene_; }
   bool sameScene(const PortWidgetBase* other) const;
+  static const int DEFAULT_WIDTH = 11;
 
 protected:
-  static const int DEFAULT_WIDTH = 11;
   explicit PortWidgetBase(QWidget* parent);
   QSize sizeHint() const override;
   void paintEvent(QPaintEvent* event) override;

@@ -98,7 +98,7 @@ TARGET_LINK_LIBRARIES(Modules_Math
   Algorithms_Math
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
   TARGET_LINK_LIBRARIES(Modules_Math
     Core_Python
     )

@@ -263,3 +263,24 @@ TEST_F(PythonControllerFunctionalTests, CanDisconnectModulesWithStaticFunction)
 
   ASSERT_EQ(0, controller.getNetwork()->nconnections());
 }
+
+TEST_F(PythonControllerFunctionalTests, RunScriptReportsFailure)
+{
+  auto& py = PythonInterpreter::Instance();
+  EXPECT_TRUE(py.run_script("x = 1 + 1"));
+  EXPECT_FALSE(py.run_script("raise RuntimeError('boom')"));
+  EXPECT_FALSE(py.run_script("def broken(:\n  pass"));
+  // A failure must not poison the next script.
+  EXPECT_TRUE(py.run_script("y = 2"));
+}
+
+// Headless has no Python console to import the API; InterfaceWithPython relies
+// on this being callable repeatedly and cheaply (#2699).
+TEST_F(PythonControllerFunctionalTests, ScriptSeesSCIRunAPIAfterImport)
+{
+  auto& py = PythonInterpreter::Instance();
+  py.importSCIRunLibrary();
+  py.importSCIRunLibrary();
+  EXPECT_TRUE(py.run_script("callable(scirun_get_module_input_value)"));
+  EXPECT_TRUE(py.run_script("assert callable(scirun_get_module_input_value)"));
+}

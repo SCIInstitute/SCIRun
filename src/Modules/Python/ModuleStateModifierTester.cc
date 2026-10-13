@@ -28,7 +28,7 @@
 
 #include <Modules/Python/ModuleStateModifierTester.h>
 #include <Modules/Python/PythonObjectForwarder.h>
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
@@ -71,7 +71,7 @@ Mutex PythonExecutingMetadataObject::lock_("PythonExecutingMetadataObject");
 void PythonExecutingMetadataObject::process(const std::string& modId)
 {
   MetadataObject::process(modId);
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   auto progWithId = std::regex_replace(programData_, std::regex("\\%moduleId\\%"), "\"" + modId + "\"");
   //logCritical("Post-processed code: {}", progWithId);
   {
@@ -84,7 +84,7 @@ void PythonExecutingMetadataObject::process(const std::string& modId)
 
 void ModuleStateModifierTester::execute()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   if (needToExecute())
   {
     auto code = get_state()->getValue(Parameters::StateModifyingCode).toString();
@@ -92,6 +92,6 @@ void ModuleStateModifierTester::execute()
     sendOutput(MetadataCode, makeShared<PythonExecutingMetadataObject>(code));
   }
 #else
-  error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
+  error("This module does nothing, turn on WITH_PYTHON to enable.");
 #endif
 }

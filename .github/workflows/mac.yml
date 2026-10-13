@@ -34,11 +34,26 @@ jobs:
   mac-gui:
     uses: ./.github/workflows/reusable-build.yml
     with:
+      cache-compiler: true
       runner: macOS-latest
       qt-version: '6.10.2'
       scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: true
+
+  # WITH_VTK=ON (#2677); also warms the master VTK cache for pr.yml's VTK tier
+  # (runner is part of the cache key). Skipped on release tags.
+  mac-gui-vtk:
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: macOS-latest
+      qt-version: '6.10.2'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      with-vtk: true
+      timeout-minutes: 360
 
   mac-gui-26:
     uses: ./.github/workflows/reusable-build.yml
@@ -65,7 +80,7 @@ jobs:
   # Oldest available macOS image, built with the GUI. Every other mac-gui job runs
   # on macOS-latest (currently the macos-26 image), and the only macOS 14 jobs are
   # headless -- but src/CMakeLists.txt skips ADD_SUBDIRECTORY(Interface) when
-  # BUILD_HEADLESS is on, so without this job nothing compiles src/Interface for an
+  # WITH_GUI is off, so without this job nothing compiles src/Interface for an
   # older macOS at all. That gap let a macOS-15-only libSystem symbol (quick_exit)
   # link cleanly on the 26 runners and abort at load on macOS 14 (PR #2564).
   #
@@ -144,6 +159,7 @@ jobs:
   mac-headless:
     uses: ./.github/workflows/reusable-build.yml
     with:
+      cache-compiler: true
       runner: macOS-latest
       variant: headless
       build-testing: true

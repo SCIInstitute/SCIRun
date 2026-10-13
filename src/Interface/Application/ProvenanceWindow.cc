@@ -37,7 +37,7 @@
 //TODO: factory
 #include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
 
@@ -305,7 +305,7 @@ GuiActionProvenanceConverter::GuiActionProvenanceConverter(NetworkEditor* editor
   provenanceManagerModifyingNetwork_(false)
 {}
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #define pythonAPIPtr NetworkEditorPythonAPI::getImpl()
 #else
 #define pythonAPIPtr nullptr
