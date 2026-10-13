@@ -31,7 +31,7 @@
 #ifndef ENGINE_NETWORK_PYTHONIMPL_H
 #define ENGINE_NETWORK_PYTHONIMPL_H
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkFwd.h>

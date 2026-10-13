@@ -161,7 +161,7 @@ SET(NonPythonInterface_ApplicationLinkLibraries
   ${CMAKE_THREAD_LIBS}
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
 
 TARGET_LINK_LIBRARIES(Interface_Application
   ${NonPythonInterface_ApplicationLinkLibraries}

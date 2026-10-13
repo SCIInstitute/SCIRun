@@ -12,6 +12,11 @@ on:
   schedule:
     - cron: '45 8 * * *'
   workflow_dispatch:
+    inputs:
+      coverage-only:
+        description: 'Run only mac-coverage (skip the three regression jobs)'
+        type: boolean
+        default: false
 
 concurrency:
   # event_name keeps schedule and master-push runs (same github.ref) from
@@ -21,6 +26,7 @@ concurrency:
 
 jobs:
   linux-headless-regression:
+    if: ${{ !inputs.coverage-only }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-latest
@@ -30,6 +36,7 @@ jobs:
       run-regression-tests: true
 
   mac-gui-regression:
+    if: ${{ !inputs.coverage-only }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: macOS-latest
@@ -42,6 +49,7 @@ jobs:
       run-regression-tests: true
 
   windows-headless-regression:
+    if: ${{ !inputs.coverage-only }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022

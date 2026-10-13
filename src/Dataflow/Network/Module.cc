@@ -379,7 +379,7 @@ namespace
 {
   void logHeadlessExecutionMessage(const std::string& message)
   {
-#ifdef BUILD_HEADLESS //TODO: better headless logging
+#ifndef WITH_GUI //TODO: better headless logging
     static Mutex executeLogLock("headlessExecution");
     if (!LogSettings::Instance().verbose())
     {

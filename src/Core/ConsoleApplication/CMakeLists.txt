@@ -50,7 +50,7 @@ TARGET_LINK_LIBRARIES(Core_ConsoleApplication
   Core_Serialization_Network_Importer
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
 TARGET_LINK_LIBRARIES(Core_ConsoleApplication
   Core_Python)
 ENDIF()
