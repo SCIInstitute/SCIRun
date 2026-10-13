@@ -1262,7 +1262,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
   if (isFloating)
   {
-    dockable_->setWindowFlags(Qt::Window);
+    dockable_->setWindowFlags(Qt::Window | Qt::WindowMinMaxButtonsHint);
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
   }
