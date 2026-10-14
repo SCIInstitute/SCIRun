@@ -1,15 +1,10 @@
 name: windows-build-script
 
-# Exercises build.ps1 end to end: master pushes, nightly, and on demand. Pull
+# Exercises build.ps1 end to end: nightly and on demand (not per master push). Pull
 # requests are covered by the slim tier in pr.yml -- see the comment at the top
 # of that file for why no required check may live in a path-filtered workflow.
 
 on:
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - 'docs/**'
   schedule:
     - cron: '15 8 * * *'
   workflow_dispatch:

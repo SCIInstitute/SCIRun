@@ -1,6 +1,7 @@
 name: windows-build
 
-# Full windows matrix: master pushes, nightly, and on demand. Pull requests are
+# Full windows matrix: nightly and on demand. A master push runs only the jobs that
+# publish installers or warm caches; the rest wait for the nightly. Pull requests are
 # covered by the slim tier in pr.yml -- see the comment at the top of that file
 # for why no required check may live in a path-filtered workflow.
 
@@ -24,6 +25,7 @@ concurrency:
 
 jobs:
   windows-headless:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
@@ -116,6 +118,7 @@ jobs:
   # no longer ships. This job exists to exercise the compiler, not the Qt floor.
   # ---------------------------------------------------------------------------
   windows-2025-headless-vs2026:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2025
@@ -125,6 +128,7 @@ jobs:
       allow-failure: true
 
   windows-2025-gui-qt6-vs2026:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2025
