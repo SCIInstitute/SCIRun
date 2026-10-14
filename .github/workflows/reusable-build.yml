@@ -182,7 +182,9 @@ jobs:
           echo "Externals cache key: $key"
           sccache_prefix="sccache-v1-${{ runner.os }}-${{ runner.arch }}-${qt_bucket}-py${{ inputs.build-with-python }}-ospray${{ inputs.with-ospray }}-"
           echo "sccache-prefix=$sccache_prefix" >> "$GITHUB_OUTPUT"
-          echo "sccache-key=${sccache_prefix}$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          # Weekly, not daily: a prefix restore never counts as an exact hit,
+          # so a daily key saved a fresh ~130 MB copy per variant every day.
+          echo "sccache-key=${sccache_prefix}$(date -u +%G%V)" >> "$GITHUB_OUTPUT"
 
       - name: Restore Superbuild externals cache
         if: ${{ inputs.cache-externals }}
@@ -504,7 +506,8 @@ jobs:
           find bin/Externals/Source -mindepth 1 -maxdepth 1 -print0 2>/dev/null | xargs -0 du -sh 2>/dev/null | sort -rh || true
 
       - name: Save Superbuild externals cache
-        if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && steps.restore-ext-cache.outputs.cache-hit != 'true' }}
+        # Not from PRs: each PR ref saved its own ~580 MB copy of the same key.
+        if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && github.event_name != 'pull_request' && steps.restore-ext-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with:
           path: |
@@ -547,7 +550,7 @@ jobs:
       # sentinel keeps a partial install out. VTK 9 installs vtk-config.cmake;
       # VTKConfig.cmake alone never matched, so nothing was ever saved.
       - name: Save VTK install cache
-        if: ${{ always() && inputs.with-vtk && steps.restore-vtk-cache.outputs.cache-hit != 'true' && hashFiles('bin/Externals/Install/VTK_external/lib/cmake/vtk-*/vtk-config.cmake', 'bin/Externals/Install/VTK_external/lib/cmake/vtk-*/VTKConfig.cmake') != '' }}
+        if: ${{ always() && inputs.with-vtk && github.event_name != 'pull_request' && steps.restore-vtk-cache.outputs.cache-hit != 'true' && hashFiles('bin/Externals/Install/VTK_external/lib/cmake/vtk-*/vtk-config.cmake', 'bin/Externals/Install/VTK_external/lib/cmake/vtk-*/VTKConfig.cmake') != '' }}
         uses: actions/cache/save@v4
         with:
           path: bin/Externals/Install/VTK_external
