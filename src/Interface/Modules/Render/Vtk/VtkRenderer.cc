@@ -457,7 +457,7 @@ void VtkRenderer::initialize()
   overlayManager_->addOverlay(OverlayType::Orientation, std::move(orientationOverlay));
   //scale bar
   auto scalebarOverlay = std::make_unique<VtkScaleBarOverlay>();
-  scalebarOverlay->setVisible(true);
+  scalebarOverlay->setVisible(false);
   overlayManager_->addOverlay(OverlayType::Scalebar, std::move(scalebarOverlay));
   //
   overlayManager_->resize(static_cast<int>(width_), static_cast<int>(height_));

@@ -58,7 +58,7 @@ namespace SCIRun {
             vtkSmartPointer<vtkActor2D> barActor_;
             vtkSmartPointer<vtkTextActor> textActor_;
 
-            bool visible_{true};
+            bool visible_{false};
             int width_{1};
             int height_{1};
 
@@ -67,7 +67,7 @@ namespace SCIRun {
             double sbHeight_{1.0};
             double sbMultiplier_{1.0};
             double sbNumTicks_{11};
-            double sbLineWidth_{1.0};
+            double sbLineWidth_{2.0};
             double sbLineColor_{1.0};
             std::string sbUnit_{"mm"};
             double sbProjLength_{100};

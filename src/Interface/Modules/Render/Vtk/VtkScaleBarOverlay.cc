@@ -76,7 +76,9 @@ namespace Render {
             renderWindow->AddRenderer(overlayRenderer_);
         }
 
-        updateScale();
+        setVisible(visible_);
+        if (visible_)
+            updateScale();
     }
 
     void VtkScaleBarOverlay::cameraChanged(vtkCamera* camera)
@@ -110,54 +112,107 @@ namespace Render {
     void VtkScaleBarOverlay::setFontSize(int size)
     {
       sbFontSize_ = size;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setLength(double length)
     {
       sbLength_ = length;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setHeight(double height)
     {
       sbHeight_ = height;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setMultiplier(double mul)
     {
       sbMultiplier_ = mul;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setNumTicks(double num)
     {
       sbNumTicks_ = num;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setLineWidth(double width)
     {
       sbLineWidth_ = width;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setLineColor(double color)
     {
       sbLineColor_ = color;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setUnit(const std::string& unit)
     {
       sbUnit_ = unit;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::setProjLength(double length)
     {
       sbProjLength_ = length;
+      updateScale();
     }
 
     void VtkScaleBarOverlay::updateProjectedLength()
     {
       if (!sceneRenderer_) return;
 
-      double p1[4] = {-sbLength_ * 0.5, 0.0, 0.0, 1.0};
-      double p2[4] = {sbLength_ * 0.5, 0.0, 0.0, 1.0};
+      vtkCamera* camera = sceneRenderer_->GetActiveCamera();
+      if (!camera) return;
+
+      int* size = sceneRenderer_->GetSize();
+      if (!size || size[1] <= 0) return;
+
+      // Orthographic camera
+      if (camera->GetParallelProjection())
+      {
+        // World height visible in viewport
+        const double worldHeight = 2.0 * camera->GetParallelScale();
+
+        const double pixelsPerWorldUnit = static_cast<double>(size[1]) / worldHeight;
+
+        sbProjLength_ = sbLength_ * pixelsPerWorldUnit;
+        return;
+      }
+
+      // Perspective camera
+
+      double fp[3];
+      camera->GetFocalPoint(fp);
+
+      double dop[3];
+      camera->GetDirectionOfProjection(dop);
+      vtkMath::Normalize(dop);
+
+      double up[3];
+      camera->GetViewUp(up);
+      vtkMath::Normalize(up);
+
+      double right[3];
+      vtkMath::Cross(dop, up, right);
+      vtkMath::Normalize(right);
+
+      double p1[4];
+      double p2[4];
+
+      for (int i = 0; i < 3; ++i)
+      {
+        p1[i] = fp[i] - 0.5 * sbLength_ * right[i];
+        p2[i] = fp[i] + 0.5 * sbLength_ * right[i];
+      }
+
+      p1[3] = 1.0;
+      p2[3] = 1.0;
 
       sceneRenderer_->SetWorldPoint(p1);
       sceneRenderer_->WorldToDisplay();
@@ -171,91 +226,126 @@ namespace Render {
       double d2[3];
       sceneRenderer_->GetDisplayPoint(d2);
 
-      double dx = d2[0] - d1[0];
-      double dy = d2[1] - d1[1];
+      const double dx = d2[0] - d1[0];
+      const double dy = d2[1] - d1[1];
 
       sbProjLength_ = std::sqrt(dx * dx + dy * dy);
     }
 
     void VtkScaleBarOverlay::updateScale()
     {
-        updateProjectedLength();
+      updateProjectedLength();
 
-        if (!barActor_)
-            return;
+      if (!barActor_) return;
 
-        auto mapper =
-            vtkPolyDataMapper2D::SafeDownCast(barActor_->GetMapper());
+      auto mapper = vtkPolyDataMapper2D::SafeDownCast(barActor_->GetMapper());
 
-        if (!mapper)
-            return;
+      if (!mapper) return;
 
-        auto polyData = mapper->GetInput();
+      auto polyData = mapper->GetInput();
 
-        if (!polyData)
-            return;
+      if (!polyData) return;
 
-        auto points = vtkSmartPointer<vtkPoints>::New();
-        auto lines = vtkSmartPointer<vtkCellArray>::New();
+      auto points = vtkSmartPointer<vtkPoints>::New();
+      auto lines = vtkSmartPointer<vtkCellArray>::New();
 
-        //------------------------------------------------------------------
-        // Screen position.
-        //------------------------------------------------------------------
+      //------------------------------------------------------------------
+      // Screen position.
+      //------------------------------------------------------------------
 
-        double x =
-            static_cast<double>(90) / 100.0 * width_;
+      const double x = static_cast<double>(90) / 100.0 * width_;
 
-        double y =
-            static_cast<double>(10) / 100.0 * height_;
+      const double y = static_cast<double>(10) / 100.0 * height_;
 
-        //------------------------------------------------------------------
-        // Main horizontal bar.
-        //------------------------------------------------------------------
+      //------------------------------------------------------------------
+      // Build label.
+      //------------------------------------------------------------------
 
-        std::ostringstream ss;
-        ss << sbLength_ * sbMultiplier_;
+      std::ostringstream ss;
+      ss << sbLength_ * sbMultiplier_;
 
-        if (!sbUnit_.empty()) ss << " " << sbUnit_;
+      if (!sbUnit_.empty()) ss << " " << sbUnit_;
 
-        std::string label = ss.str();
+      const std::string label = ss.str();
 
-        double textWidth = sbFontSize_ * label.length() * 0.6;
+      constexpr double gap = 5.0;
 
-        double gap = 5.0;
+      const double lengthPixels = sbProjLength_;
 
-        double lengthPixels = sbProjLength_;
+      // Bar occupies [x0, x1]
+      const double x0 = x - lengthPixels;
+      const double x1 = x;
 
-        double x0 = x - lengthPixels - textWidth - gap;
-        double x1 = x - textWidth - gap;
+      //------------------------------------------------------------------
+      // Main horizontal bar.
+      //------------------------------------------------------------------
 
-        // Main bar.
-        vtkIdType p0 = points->InsertNextPoint(x0, y, 0.0);
-        vtkIdType p1 = points->InsertNextPoint(x1, y, 0.0);
+      vtkIdType p0 = points->InsertNextPoint(x0, y, 0.0);
+      vtkIdType p1 = points->InsertNextPoint(x1, y, 0.0);
+
+      lines->InsertNextCell(2);
+      lines->InsertCellPoint(p0);
+      lines->InsertCellPoint(p1);
+
+      //------------------------------------------------------------------
+      // Ticks.
+      //------------------------------------------------------------------
+
+      const int numTicks = std::max(2, static_cast<int>(std::round(sbNumTicks_)));
+
+      for (int i = 0; i < numTicks; ++i)
+      {
+        const double tx = x0 + i * lengthPixels / static_cast<double>(numTicks - 1);
+
+        vtkIdType a = points->InsertNextPoint(tx, y, 0.0);
+        vtkIdType b = points->InsertNextPoint(tx, y + sbHeight_, 0.0);
 
         lines->InsertNextCell(2);
-        lines->InsertCellPoint(p0);
-        lines->InsertCellPoint(p1);
+        lines->InsertCellPoint(a);
+        lines->InsertCellPoint(b);
+      }
 
-        // Ticks.
-        int numTicks = std::max(2, static_cast<int>(std::round(sbNumTicks_)));
+      //------------------------------------------------------------------
+      // Update polydata.
+      //------------------------------------------------------------------
 
-        for (int i = 0; i < numTicks; ++i)
-        {
-          double tx = x0 + i * lengthPixels / static_cast<double>(numTicks - 1);
+      polyData->SetPoints(points);
+      polyData->SetLines(lines);
+      polyData->Modified();
 
-          vtkIdType a = points->InsertNextPoint(tx, y, 0.0);
+      //------------------------------------------------------------------
+      // Line appearance.
+      //------------------------------------------------------------------
 
-          vtkIdType b = points->InsertNextPoint(tx, y + sbHeight_, 0.0);
+      if (auto* prop = barActor_->GetProperty())
+      {
+        prop->SetColor(sbLineColor_, sbLineColor_, sbLineColor_);
 
-          lines->InsertNextCell(2);
-          lines->InsertCellPoint(a);
-          lines->InsertCellPoint(b);
-        }
+        prop->SetLineWidth(sbLineWidth_);
+      }
 
-        polyData->SetPoints(points);
-        polyData->SetLines(lines);
+      //------------------------------------------------------------------
+      // Text.
+      //------------------------------------------------------------------
 
-        polyData->Modified();
+      if (textActor_)
+      {
+        textActor_->SetInput(label.c_str());
+
+        auto* textProp = textActor_->GetTextProperty();
+
+        textProp->SetFontSize(sbFontSize_);
+
+        textProp->SetColor(sbLineColor_, sbLineColor_, sbLineColor_);
+
+        textProp->SetJustificationToLeft();
+        textProp->SetVerticalJustificationToCentered();
+
+        // Center of the entire scale bar extent.
+        const double centerY = y + 0.5 * sbHeight_;
+
+        textActor_->SetPosition(x1 + gap, centerY);
+      }
     }
 
 }

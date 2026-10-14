@@ -51,7 +51,9 @@ namespace Render {
       renderWindow_->AddRenderer(overlayRenderer_);
     }
 
-    updateViewport();
+    setVisible(visible_);
+    if (visible_)
+        updateViewport();
   }
 
   void VtkOrientationOverlay::cameraChanged(vtkCamera* camera)
