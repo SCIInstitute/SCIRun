@@ -48,6 +48,19 @@ jobs:
       build-with-python: false
       artifact-name: installer-windows-qt6
 
+  # WITH_VTK=ON (#2677); also warms the master VTK cache for pr.yml's VTK tier
+  # (runner and generator are part of the cache key). Skipped on release tags.
+  windows-gui-qt6-vtk:
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2022
+      qt-version: '6.3.*'
+      variant: gui
+      build-with-python: false
+      with-vtk: true
+      timeout-minutes: 360
+
   windows-gui-python-qt5:
     uses: ./.github/workflows/reusable-build.yml
     with:

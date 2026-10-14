@@ -41,7 +41,11 @@ rm -f "$COV_DIR"/*.profraw "$COV_DIR/merged.profdata"
 
 # %p => one profraw per process. Each regression test is its own process, so
 # this avoids the processes clobbering a single shared profile file.
-export LLVM_PROFILE_FILE="$(cd "$COV_DIR" && pwd)/%p.profraw"
+# %c => continuous mode: counters are mmapped into the file as they change.
+# Regression mode leaves via _Exit (Core::quickExit), which skips the atexit
+# hook that would otherwise write them, so without %c those tests record
+# nothing. Flushing by hand is no fix: each dylib has its own runtime copy.
+export LLVM_PROFILE_FILE="$(cd "$COV_DIR" && pwd)/%c%p.profraw"
 
 echo ">>> Running tests (LLVM_PROFILE_FILE=$LLVM_PROFILE_FILE)"
 ( cd "$BUILD_DIR" && ctest --output-on-failure "${CTEST_ARGS[@]}" ) || \
@@ -69,6 +73,21 @@ echo ">>> Coverage summary"
 xcrun llvm-cov report "${OBJECTS[@]}" \
   -instr-profile="$COV_DIR/merged.profdata" \
   -ignore-filename-regex="$IGNORE" | tee "$COV_DIR/summary.txt"
+
+# llvm-cov's "N functions have mismatched data" is mostly noise: an image that
+# includes an inline function but never calls it records it under hash 0, and
+# llvm-cov warns about that copy while still using the image that did call it.
+# A non-zero hash is a function compiled differently in two images; those can
+# lose counts, so list them.
+xcrun llvm-cov report "${OBJECTS[@]}" \
+  -instr-profile="$COV_DIR/merged.profdata" -dump 2>&1 \
+  | sed -n "s/^hash-mismatch: No profile record found for '\(.*\)' with hash = \(0x[0-9a-f]*\).*/\2 \1/p" \
+  > "$COV_DIR/mismatch-raw.txt" || true
+grep -v '^0x0 ' "$COV_DIR/mismatch-raw.txt" | cut -d' ' -f2- \
+  | xcrun llvm-cxxfilt -n | sort | uniq -c | sort -rn > "$COV_DIR/mismatched.txt" || true
+echo ">>> hash mismatches: $(grep -c '^0x0 ' "$COV_DIR/mismatch-raw.txt") unused-copy (harmless)," \
+  "$(wc -l < "$COV_DIR/mismatched.txt" | tr -d ' ') real: $COV_DIR/mismatched.txt"
+rm -f "$COV_DIR/mismatch-raw.txt"
 
 echo ">>> Generating HTML report"
 xcrun llvm-cov show "${OBJECTS[@]}" \

@@ -62,6 +62,20 @@ jobs:
       build-testing: true
       cache-externals: true
 
+  # WITH_VTK=ON (#2677). Also what keeps a master-branch VTK install cache warm
+  # for pr.yml's VTK tier: runner and generator match it, since they are in the
+  # cache key.
+  linux-gui-vtk:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      qt-version: '6.3.*'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      with-vtk: true
+      timeout-minutes: 360
+
   linux-gui-nonpython:
     uses: ./.github/workflows/reusable-build.yml
     with:
