@@ -71,9 +71,7 @@ namespace SCIRun
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
-        #ifndef BUILD_WITH_PYTHON
-          DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
-        #endif
+        REQUIRES_BUILD_FLAG(WithPython)
       private:
         SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
         int execCount_ {0};

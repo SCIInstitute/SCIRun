@@ -51,10 +51,10 @@ struct SCISHARE VecUniform
     NONE
   };
 
-  glm::vec4       uniform;
+  glm::vec4       uniform {0.0f};
   VecUniformType  type;
   GLint           uniformLocation;
-  char            uniformName[MaxUniformNameSize];
+  char            uniformName[MaxUniformNameSize] = {};
 
   // -- Functions --
   VecUniform()

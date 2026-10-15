@@ -31,6 +31,8 @@
 
 #include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
 #include <Core/Thread/Mutex.h>
+#include <chrono>
+#include <mutex>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 //TODO: split out header with shared state keys.
 #include <Modules/Render/OsprayViewer.h>
@@ -161,10 +163,12 @@ namespace Render {
   public:
     ~ViewSceneLocks();
     Core::Thread::Mutex& stateMutex() { return mutex_; }
-    Core::Thread::Mutex& screenShotMutex() { return screenShotMutex_; }
+    // Held by the dialog and released per rendered frame; timed so the module
+    // can give up if no frame ever comes (#2760).
+    std::timed_mutex& screenShotMutex() { return screenShotMutex_; }
   private:
     Core::Thread::Mutex mutex_ {"generalVSMutex"};
-    Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};
+    std::timed_mutex screenShotMutex_;
   };
 
   using ViewSceneLocksPtr = std::shared_ptr<ViewSceneLocks>;

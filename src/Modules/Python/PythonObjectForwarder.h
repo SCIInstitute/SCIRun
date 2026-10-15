@@ -50,7 +50,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(NumberOfRetries);
         ALGORITHM_PARAMETER_DECL(PythonObject);
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
         template <class PythonModule>
         class PythonObjectForwarderImpl
         {

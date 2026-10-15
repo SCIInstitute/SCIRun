@@ -36,7 +36,7 @@
 #include <Core/Logging/Log.h>
 #include <spdlog/fmt/ostr.h>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
 
@@ -101,7 +101,7 @@ BooleanCompare::execute()
     {
 
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 //      quit nicely
       LOG_DEBUG("cond matrix : {}", *out_mat);
       remark("Ordered to quit. Trying to quit.");

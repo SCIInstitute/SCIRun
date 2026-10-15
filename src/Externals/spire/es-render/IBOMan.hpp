@@ -66,9 +66,9 @@ public:
   // Use this structure if you are storing IBO data for later retrieval.
   struct MinIBOData
   {
-    GLenum primMode;
-    GLenum primType;
-    GLsizei numPrims;
+    GLenum primMode = 0;
+    GLenum primType = 0;
+    GLsizei numPrims = 0;
   };
 
   struct IBOData

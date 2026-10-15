@@ -50,6 +50,7 @@ namespace Datatypes {
   class Int32;
   class String;
   class GeometryObject;
+  class VtkGeometryObject;
   class ColorMap;
   class Bundle;
   class MetadataObject;

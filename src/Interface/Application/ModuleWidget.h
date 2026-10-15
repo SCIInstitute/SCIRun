@@ -267,6 +267,8 @@ private:
   bool deletedFromGui_, colorLocked_;
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_, programmablePortEnabled_{false};
   std::atomic<bool> errored_;
+  enum class LogColorPriority { None = 0, Remark = 1, Warning = 2, Error = 3 };
+  std::atomic<int> currentLogPriority_ { static_cast<int>(LogColorPriority::None) };
   int previousPageIndex_ {0};
   QDialog* replaceWithDialog_{ nullptr };
 
@@ -279,8 +281,11 @@ private:
   void hookUpGeneralPortSignals(PortWidget* port) const;
   void setupDisplayConnections(ModuleWidgetDisplayBase* display);
   void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index);
+  void resizeForPortCount();
+  int widthNeededForPorts() const;
   void setupLoggingAndProgress(ModuleErrorDisplayer* ed);
   std::string moduleId_;
+  int nameBasedWidth_ {0};
   QString name_;
 
   ModuleDialogManager dialogManager_;

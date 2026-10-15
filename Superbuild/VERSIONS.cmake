@@ -51,12 +51,15 @@ endmacro()
 # Core numeric / math libraries
 # -----------------------------------------------------------------------------
 # Eigen — fetched as a release tarball (immutable, hashable). GOLD STANDARD pin.
-sci_dep_version(EIGEN_VERSION  "3.4.0"  "Eigen release version")
+sci_dep_version(EIGEN_VERSION  "3.4.1"  "Eigen release version")
 sci_dep_version(EIGEN_URL
   "https://gitlab.com/libeigen/eigen/-/archive/${EIGEN_VERSION}/eigen-${EIGEN_VERSION}.tar.gz"
   "Eigen source tarball URL")
-# TODO: add EIGEN_URL_HASH (SHA256) so downloads are integrity-checked.
-sci_dep_version(EIGEN_URL_HASH "" "Eigen tarball SHA256 (URL_HASH SHA256=...)")
+# Bumping EIGEN_VERSION means recomputing this. An empty value skips the check,
+# which is also what makes a local -DEIGEN_URL override work.
+sci_dep_version(EIGEN_URL_HASH
+  "b93c667d1b69265cdb4d9f30ec21f8facbbe8b307cf34c0b9942834c6d4fdbe2"
+  "Eigen tarball SHA256 (URL_HASH SHA256=...)")
 
 # -----------------------------------------------------------------------------
 # I/O, compression, imaging
@@ -130,6 +133,14 @@ sci_dep_version(SPDLOG_GIT_TAG "v1.10.0"                                      "s
 sci_dep_version(TNY_GIT_URL    "https://github.com/CIBC-Internal/Tny.git"     "Tny repository")
 sci_dep_version(TNY_GIT_TAG    "scirun-pin-2026.07.27"     "Tny pin -> commit 08cb2652 (branch scirun-5.0.0)")
 
+# libiconv
+sci_dep_version(LIBICONV_GIT_URL "https://git.savannah.gnu.org/git/libiconv.git" "libiconv repository")
+sci_dep_version(LIBICONV_GIT_TAG "v1.18" "libiconv pinned tag")
+
+# libxml2
+sci_dep_version(LIBXML2_GIT_URL "https://gitlab.gnome.org/GNOME/libxml2.git" "libxml2 repository")
+sci_dep_version(LIBXML2_GIT_TAG "v2.15.3" "libxml2 pinned tag")
+
 # =============================================================================
 # NOT MANIFEST-MANAGED
 # =============================================================================
@@ -149,8 +160,8 @@ sci_dep_version(TNY_GIT_TAG    "scirun-pin-2026.07.27"     "Tny pin -> commit 08
 #     ExternalProject is disabled. Re-add its pin here if it is ever re-enabled.
 #   - Qt — provided by the system / CI toolchain via find_package, not built by
 #     the Superbuild (min version SCIRUN_QT_MIN_VERSION in Superbuild.cmake).
-#   - SCIRunTestData / CIBCData — test fixtures fetched by TestDataConfig.cmake
-#     and SCIRunDataExternal.cmake (the latter over SVN); data, not code deps.
+#   - SCIRunTestData / CIBCData — test fixtures fetched by TestDataConfig.cmake;
+#     data, not code deps.
 
 # =============================================================================
 # REPRODUCIBILITY NOTE
@@ -178,8 +189,9 @@ sci_dep_version(TNY_GIT_TAG    "scirun-pin-2026.07.27"     "Tny pin -> commit 08
 # this class of mistake is caught automatically rather than by inspection.
 #
 # Remaining hardening (follow-up work):
-#   - Add EIGEN_URL_HASH (and hashes for any future tarball deps) so downloads
-#     are integrity-checked, not just version-pinned.
+#   - Give any future tarball dep a *_URL_HASH, as EIGEN_URL_HASH has. Without
+#     one a truncated or error-page "tarball" is accepted and only fails later,
+#     during extraction; with one CMake re-downloads it.
 #
 # The check-dependencies CI job (.github/workflows/dependency-check.yml) diffs
 # these pins against upstream tags/releases and reports when newer versions are

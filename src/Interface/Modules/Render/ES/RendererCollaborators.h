@@ -137,7 +137,7 @@ namespace SCIRun
 
       Graphics::Datatypes::WidgetHandle currentWidget_;
       SharedPointer<WidgetTransformEvent> event_;
-      MouseButton buttonPushed_;
+      MouseButton buttonPushed_ {MouseButton::NONE};
       ObjectTransformer* transformer_ {nullptr};
       const ScreenParams& screen_;
       SRCamera* camera_ {nullptr};
