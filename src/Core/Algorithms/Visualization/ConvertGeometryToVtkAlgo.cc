@@ -145,137 +145,162 @@ namespace
     return 0;
   }
 
-  VtkGeometryObjectHandle convertPass(const SpireSubPass& pass, std::string& skipReason)
+  // Same test as RenderBasicSys: anything else is drawn with blending off, so alpha is moot.
+  bool isTransparent(const RenderState& rs)
   {
-    if (isScreenSpace(pass))
-    {
-      skipReason = "screen-space text/legend";
-      return nullptr;
-    }
+    return rs.get(RenderState::ActionFlags::USE_TRANSPARENCY)
+      || rs.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES)
+      || rs.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES);
+  }
 
+  const SpireTexture2D* colorMapTextureOf(const SpireSubPass& pass, const VertexLayout& layout)
+  {
+    const auto& tex = pass.texture;
+    const bool usable = layout.texCoords && tex.name == "ColorMap" && tex.width > 0 && tex.bitmap.size() >= 4 * tex.width;
+    return usable ? &tex : nullptr;
+  }
+
+  std::optional<std::string> whyUnconvertible(const SpireSubPass& pass, const VertexLayout& layout)
+  {
     const auto& vbo = pass.vbo;
     const auto& ibo = pass.ibo;
+    if (isScreenSpace(pass))
+      return "screen-space text/legend";
     if (!vbo.data || !ibo.data || vbo.data->getBufferSize() == 0 || ibo.data->getBufferSize() == 0)
-    {
-      skipReason = "empty buffers";
-      return nullptr;
-    }
-
-    const auto layout = layoutOf(vbo);
+      return "empty buffers";
     if (!layout.pos || layout.stride == 0 || vbo.data->getBufferSize() % layout.stride != 0)
-    {
-      skipReason = "unrecognized vertex layout";
-      return nullptr;
-    }
-
+      return "unrecognized vertex layout";
     const size_t perPrim = verticesPerPrimitive(ibo.prim);
     const size_t numIndices = ibo.indexSize ? ibo.data->getBufferSize() / ibo.indexSize : 0;
     if (!readIndex(ibo.data->getBuffer(), 0, ibo.indexSize) || perPrim == 0 || numIndices < perPrim)
-    {
-      skipReason = "unrecognized index buffer";
-      return nullptr;
-    }
+      return "unrecognized index buffer";
+    return std::nullopt;
+  }
 
-    const char* vtx = vbo.data->getBuffer();
-    const char* idx = ibo.data->getBuffer();
-    const size_t numVerts = vbo.data->getBufferSize() / layout.stride;
-
-    const auto* colorMapTexture = layout.texCoords && pass.texture.name == "ColorMap"
-      && pass.texture.width > 0 && pass.texture.bitmap.size() >= 4 * pass.texture.width
-      ? &pass.texture : nullptr;
-
-    auto obj = std::make_shared<VtkGeometryObject>();
-
-    // Uniform color mirrors the Phong/Flat shaders: uDiffuseColor, alpha from uTransparency.
-    auto color = pass.renderState.defaultColor;
-    obj->material.color[0] = static_cast<float>(color.r());
-    obj->material.color[1] = static_cast<float>(color.g());
-    obj->material.color[2] = static_cast<float>(color.b());
+  // Uniform color mirrors the Phong/Flat shaders: uDiffuseColor, alpha from uTransparency.
+  VtkGeometryObject::Material materialOf(const SpireSubPass& pass, bool transparent, bool colorMapped)
+  {
+    VtkGeometryObject::Material material;
+    const auto& color = pass.renderState.defaultColor;
+    material.color[0] = static_cast<float>(color.r());
+    material.color[1] = static_cast<float>(color.g());
+    material.color[2] = static_cast<float>(color.b());
     if (auto diffuse = findUniform(pass, "uDiffuseColor"))
     {
-      obj->material.color[0] = diffuse->data.r;
-      obj->material.color[1] = diffuse->data.g;
-      obj->material.color[2] = diffuse->data.b;
+      material.color[0] = diffuse->data.r;
+      material.color[1] = diffuse->data.g;
+      material.color[2] = diffuse->data.b;
     }
-    // Same test as RenderBasicSys: anything else is drawn with blending off, so alpha is moot.
-    const auto& rs = pass.renderState;
-    const bool transparent = rs.get(RenderState::ActionFlags::USE_TRANSPARENCY)
-      || rs.get(RenderState::ActionFlags::USE_TRANSPARENT_EDGES)
-      || rs.get(RenderState::ActionFlags::USE_TRANSPARENT_NODES);
-    if (transparent && !colorMapTexture)
+    // The colormap shaders take alpha from the texture alone.
+    if (transparent && !colorMapped)
     {
       if (auto transparency = findUniform(pass, "uTransparency"))
-        obj->material.opacity = transparency->data.x;
+        material.opacity = transparency->data.x;
+    }
+    return material;
+  }
+
+  unsigned char toByte(float c)
+  {
+    return static_cast<unsigned char>(std::clamp(c, 0.f, 1.f) * 255.f + 0.5f);
+  }
+
+  struct VertexDecoder
+  {
+    const char* buffer;
+    const VertexLayout& layout;
+    const SpireTexture2D* colorMap;
+    bool transparent;
+    float opacity;
+
+    void vec3(size_t vertex, size_t offset, float out[3]) const
+    {
+      for (int k = 0; k < 3; ++k)
+        out[k] = readAt<float>(buffer, vertex * layout.stride + offset + k * sizeof(float));
     }
 
+    void color(size_t vertex, unsigned char rgba[4]) const
+    {
+      if (colorMap)
+      {
+        // Front faces sample .y (Phong_ColorMap.fs); x and y only differ on two-sided cell data.
+        const float t = readAt<float>(buffer, vertex * layout.stride + *layout.texCoords + sizeof(float));
+        const size_t width = colorMap->width;
+        const size_t texel = std::min(width - 1, static_cast<size_t>(std::max(0.f, t) * width));
+        std::copy_n(&colorMap->bitmap[4 * texel], 4, rgba);
+        if (!transparent)
+          rgba[3] = 255;
+        return;
+      }
+      float c[3];
+      vec3(vertex, *layout.color, c);
+      for (int k = 0; k < 3; ++k)
+        rgba[k] = toByte(c[k]);
+      // Flat_Color/Phong_Color ignore vertex alpha in favor of uTransparency.
+      rgba[3] = toByte(opacity);
+    }
+  };
+
+  vtkSmartPointer<vtkPolyData> decodeVertices(const VertexDecoder& decoder, size_t numVerts, BBox& box)
+  {
+    const auto n = static_cast<vtkIdType>(numVerts);
     auto points = vtkSmartPointer<vtkPoints>::New();
     points->SetDataTypeToFloat();
-    points->SetNumberOfPoints(static_cast<vtkIdType>(numVerts));
+    points->SetNumberOfPoints(n);
 
     vtkSmartPointer<vtkFloatArray> normals;
-    if (layout.normal)
+    if (decoder.layout.normal)
     {
       normals = vtkSmartPointer<vtkFloatArray>::New();
       normals->SetName("Normals");
       normals->SetNumberOfComponents(3);
-      normals->SetNumberOfTuples(static_cast<vtkIdType>(numVerts));
+      normals->SetNumberOfTuples(n);
     }
 
     vtkSmartPointer<vtkUnsignedCharArray> colors;
-    if (layout.color || colorMapTexture)
+    if (decoder.layout.color || decoder.colorMap)
     {
       colors = vtkSmartPointer<vtkUnsignedCharArray>::New();
       colors->SetName("Colors");
       colors->SetNumberOfComponents(4);
-      colors->SetNumberOfTuples(static_cast<vtkIdType>(numVerts));
+      colors->SetNumberOfTuples(n);
     }
 
-    auto toByte = [](float c) { return static_cast<unsigned char>(std::clamp(c, 0.f, 1.f) * 255.f + 0.5f); };
-
-    for (size_t i = 0; i < numVerts; ++i)
+    for (vtkIdType i = 0; i < n; ++i)
     {
-      const size_t base = i * layout.stride;
-      float p[3];
-      for (int k = 0; k < 3; ++k)
-        p[k] = readAt<float>(vtx, base + *layout.pos + k * sizeof(float));
-      points->SetPoint(static_cast<vtkIdType>(i), p);
-      obj->box.extend(Point(p[0], p[1], p[2]));
-
+      float v[3];
+      decoder.vec3(i, *decoder.layout.pos, v);
+      points->SetPoint(i, v);
+      box.extend(Point(v[0], v[1], v[2]));
       if (normals)
       {
-        float n[3];
-        for (int k = 0; k < 3; ++k)
-          n[k] = readAt<float>(vtx, base + *layout.normal + k * sizeof(float));
-        normals->SetTypedTuple(static_cast<vtkIdType>(i), n);
+        decoder.vec3(i, *decoder.layout.normal, v);
+        normals->SetTypedTuple(i, v);
       }
-
-      if (!colors) continue;
-      unsigned char rgba[4];
-      if (colorMapTexture)
+      if (colors)
       {
-        // Front faces sample .y (Phong_ColorMap.fs); x and y only differ on two-sided cell data.
-        const float t = readAt<float>(vtx, base + *layout.texCoords + sizeof(float));
-        const size_t width = colorMapTexture->width;
-        const size_t texel = std::min(width - 1, static_cast<size_t>(std::max(0.f, t) * width));
-        std::copy_n(&colorMapTexture->bitmap[4 * texel], 4, rgba);
-        // The colormap shaders take alpha from the texture alone.
-        if (!transparent)
-          rgba[3] = 255;
+        unsigned char rgba[4];
+        decoder.color(i, rgba);
+        colors->SetTypedTuple(i, rgba);
       }
-      else
-      {
-        for (int k = 0; k < 3; ++k)
-          rgba[k] = toByte(readAt<float>(vtx, base + *layout.color + k * sizeof(float)));
-        // Flat_Color/Phong_Color ignore vertex alpha in favor of uTransparency.
-        rgba[3] = toByte(obj->material.opacity);
-      }
-      colors->SetTypedTuple(static_cast<vtkIdType>(i), rgba);
     }
+
+    auto poly = vtkSmartPointer<vtkPolyData>::New();
+    poly->SetPoints(points);
+    if (normals) poly->GetPointData()->SetNormals(normals);
+    if (colors) poly->GetPointData()->SetScalars(colors);
+    return poly;
+  }
+
+  vtkSmartPointer<vtkCellArray> decodeCells(const SpireIBO& ibo, size_t numVerts, size_t& badIndices)
+  {
+    const size_t perPrim = verticesPerPrimitive(ibo.prim);
+    const size_t numIndices = ibo.data->getBufferSize() / ibo.indexSize;
+    const char* idx = ibo.data->getBuffer();
 
     auto cells = vtkSmartPointer<vtkCellArray>::New();
     cells->AllocateEstimate(static_cast<vtkIdType>(numIndices / perPrim), static_cast<vtkIdType>(perPrim));
     std::vector<vtkIdType> cell(perPrim);
-    size_t badIndices = 0;
     for (size_t i = 0; i + perPrim <= numIndices; i += perPrim)
     {
       bool valid = true;
@@ -290,33 +315,60 @@ namespace
       else
         ++badIndices;
     }
+    return cells;
+  }
 
-    if (cells->GetNumberOfCells() == 0)
-    {
-      skipReason = "no valid primitives";
-      return nullptr;
-    }
-
-    auto poly = vtkSmartPointer<vtkPolyData>::New();
-    poly->SetPoints(points);
-    if (normals) poly->GetPointData()->SetNormals(normals);
-    if (colors) poly->GetPointData()->SetScalars(colors);
-
-    switch (ibo.prim)
+  void attachCells(vtkPolyData* poly, SpireIBO::PRIMITIVE prim, vtkCellArray* cells)
+  {
+    switch (prim)
     {
     case SpireIBO::PRIMITIVE::POINTS: poly->SetVerts(cells); break;
     case SpireIBO::PRIMITIVE::LINES: poly->SetLines(cells); break;
     case SpireIBO::PRIMITIVE::TRIANGLES:
     case SpireIBO::PRIMITIVE::QUADS: poly->SetPolys(cells); break;
     }
+  }
 
-    // Points and lines stay NO_TYPE: SPHERE/EDGE would make VtkRenderer swap in glyphs and
-    // tubes, but these were already tessellated (or drawn as GL points/lines) upstream.
-    if (ibo.prim == SpireIBO::PRIMITIVE::TRIANGLES)
-      obj->type = GeometryType::TRI_SURFACE;
-    else if (ibo.prim == SpireIBO::PRIMITIVE::QUADS)
-      obj->type = GeometryType::QUAD_SURFACE;
+  // Points and lines stay NO_TYPE: SPHERE/EDGE would make VtkRenderer swap in glyphs and
+  // tubes, but these were already tessellated (or drawn as GL points/lines) upstream.
+  GeometryType geometryTypeOf(SpireIBO::PRIMITIVE prim)
+  {
+    switch (prim)
+    {
+    case SpireIBO::PRIMITIVE::TRIANGLES: return GeometryType::TRI_SURFACE;
+    case SpireIBO::PRIMITIVE::QUADS: return GeometryType::QUAD_SURFACE;
+    default: return GeometryType::NO_TYPE;
+    }
+  }
 
+  VtkGeometryObjectHandle convertPass(const SpireSubPass& pass, std::string& skipReason)
+  {
+    const auto layout = layoutOf(pass.vbo);
+    if (auto reason = whyUnconvertible(pass, layout))
+    {
+      skipReason = *reason;
+      return nullptr;
+    }
+
+    const auto* colorMap = colorMapTextureOf(pass, layout);
+    const bool transparent = isTransparent(pass.renderState);
+    auto obj = std::make_shared<VtkGeometryObject>();
+    obj->material = materialOf(pass, transparent, colorMap != nullptr);
+
+    const size_t numVerts = pass.vbo.data->getBufferSize() / layout.stride;
+    const VertexDecoder decoder{ pass.vbo.data->getBuffer(), layout, colorMap, transparent, obj->material.opacity };
+    auto poly = decodeVertices(decoder, numVerts, obj->box);
+
+    size_t badIndices = 0;
+    auto cells = decodeCells(pass.ibo, numVerts, badIndices);
+    if (cells->GetNumberOfCells() == 0)
+    {
+      skipReason = "no valid primitives";
+      return nullptr;
+    }
+    attachCells(poly, pass.ibo.prim, cells);
+
+    obj->type = geometryTypeOf(pass.ibo.prim);
     obj->tfn.colors = { obj->material.color[0], obj->material.color[1], obj->material.color[2] };
     obj->tfn.opacities = { obj->material.opacity };
     obj->tfn.range = { 0.f, 1.f };
