@@ -100,9 +100,7 @@ namespace Render {
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
-  #ifndef WITH_OSPRAY
-    DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
-  #endif
+    REQUIRES_BUILD_FLAG(WithOspray)
 
   protected:
     void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;

@@ -1,6 +1,8 @@
 name: linux-build
 
-# Full linux matrix: master pushes, nightly, and on demand. Pull requests are
+# Full linux matrix: nightly and on demand. A master push runs only the jobs that
+# publish installers or warm caches; the rest wait for the nightly. Non-python and
+# mac-intel-26 jobs run Sundays only (daily cron 1-6 skips them). Pull requests are
 # covered by the slim tier in pr.yml -- see the comment at the top of that file
 # for why no required check may live in a path-filtered workflow.
 
@@ -11,7 +13,8 @@ on:
     paths-ignore:
       - 'docs/**'
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 8 * * 1-6'
+    - cron: '0 8 * * 0'
   workflow_dispatch:
 
 concurrency:
@@ -62,7 +65,22 @@ jobs:
       build-testing: true
       cache-externals: true
 
+  # WITH_VTK=ON (#2677). Also what keeps a master-branch VTK install cache warm
+  # for pr.yml's VTK tier: runner and generator match it, since they are in the
+  # cache key.
+  linux-gui-vtk:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      qt-version: '6.3.*'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      with-vtk: true
+      timeout-minutes: 360
+
   linux-gui-nonpython:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event.schedule == '0 8 * * 0' }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-latest
@@ -80,8 +98,9 @@ jobs:
   # arm64 (aarch64) coverage. GitHub-hosted Linux/arm64 runners
   # (ubuntu-24.04-arm) are free for public repositories. These mirror the x86_64
   # jobs above so the nightly/master matrix exercises the arm64 build path --
-  # e.g. the Boost PLATFORM_SUFFIX arch detection fixed in this branch (#2583).
+  # e.g. Boost library-name resolution, which is architecture-sensitive (#2583).
   linux-gui-arm:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-24.04-arm
@@ -90,6 +109,7 @@ jobs:
       build-with-python: true
 
   linux-headless-arm:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-24.04-arm
@@ -97,6 +117,7 @@ jobs:
       build-testing: true
 
   linux-gui-nonpython-arm:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event.schedule == '0 8 * * 0' }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-24.04-arm
@@ -126,6 +147,7 @@ jobs:
   # each earns its slot.
   # ---------------------------------------------------------------------------
   linux-2604-headless:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-26.04
