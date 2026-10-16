@@ -21,8 +21,8 @@ concurrency:
 
 jobs:
   # Blocking flags are flipped per platform and per suite as each reaches zero
-  # failures (#2711). Still open: Windows unit (#2708), macOS unit (#2709 and
-  # four ImportNetwork timeouts), macOS regression (#2700).
+  # failures (#2711). Still open: macOS unit (ModuleTraitHasUIMatchesDialogFactory
+  # plus four ImportNetwork timeouts), macOS regression (#2700, #2732).
   linux-headless-regression:
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -54,6 +54,7 @@ jobs:
       build-testing: true
       run-unit-tests: true
       run-regression-tests: true
+      unit-tests-blocking: true
       regression-tests-blocking: true
 
   mac-coverage:
