@@ -34,8 +34,15 @@ ENDIF()
 IF(BUILD_TESTING)
 
 IF(WIN32)
- # TODO: determine if VS is set to Release or Debug.
- SET(EXE_LOC ${SCIRun_BINARY_DIR}/Release/SCIRun.exe CACHE PATH "Path to SCIRun executable")
+ # Empty means the built target for the config ctest runs (-C). Clear the old
+ # hard-coded Release default from existing caches so Debug builds pick it up.
+ SET(EXE_LOC "" CACHE PATH "Path to SCIRun executable (empty: built target)")
+ IF(EXE_LOC STREQUAL "${SCIRun_BINARY_DIR}/Release/SCIRun.exe")
+   SET_PROPERTY(CACHE EXE_LOC PROPERTY VALUE "")
+ ENDIF()
+ IF(NOT EXE_LOC)
+   SET(EXE_LOC "$<TARGET_FILE:${APPLICATION_NAME}>")
+ ENDIF()
 ELSE(WIN32)
  # TODO: change once testing works with app bundle
  IF(APPLE)
@@ -175,7 +182,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     # In-app regression timeout (seconds). 60 gives the heaviest networks
     # headroom when the machine is under parallel load; genuine hangs are still
     # bounded by the ctest --timeout passed in CI.
-    ADD_TEST("${test_name}" ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
+    ADD_TEST(NAME "${test_name}" COMMAND ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
 
     IF(WIN32)
       SET_TESTS_PROPERTIES("${test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
@@ -227,7 +234,7 @@ IF(RUN_IMPORT_TESTS)
     SET(import_test_name ".Test.ImportNetwork.${srn_rel}")
     # Run in GUI mode (no -x): import goes through the GuiCommandFactory's
     # FileImportCommand. The headless console path has no import command.
-    ADD_TEST("${import_test_name}" ${EXE_LOC} --no_splash --regression 30 --import ${srn})
+    ADD_TEST(NAME "${import_test_name}" COMMAND ${EXE_LOC} --no_splash --regression 30 --import ${srn})
     # Bound a hung import at the ctest level.
     SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES TIMEOUT 120)
     IF(WIN32)
