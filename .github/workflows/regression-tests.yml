@@ -1,6 +1,6 @@
 name: regression-tests
 
-# Regression and coverage matrix: master pushes, nightly, and on demand. Pull
+# Regression and coverage matrix: nightly and on demand (not per master push). Pull
 # requests are covered by the slim tier in pr.yml -- see the comment at the top
 # of that file for why no required check may live in a path-filtered workflow.
 
@@ -8,10 +8,14 @@ on:
   push:
     branches:
       - regression-tests-ci
-      - master
   schedule:
     - cron: '45 8 * * *'
   workflow_dispatch:
+    inputs:
+      coverage-only:
+        description: 'Run only mac-coverage (skip the three regression jobs)'
+        type: boolean
+        default: false
 
 concurrency:
   # event_name keeps schedule and master-push runs (same github.ref) from
@@ -24,6 +28,7 @@ jobs:
   # failures (#2711). Still open: macOS unit (ModuleTraitHasUIMatchesDialogFactory
   # plus four ImportNetwork timeouts), macOS regression (#2700, #2732).
   linux-headless-regression:
+    if: ${{ !inputs.coverage-only }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: ubuntu-latest
@@ -35,6 +40,7 @@ jobs:
       regression-tests-blocking: true
 
   mac-gui-regression:
+    if: ${{ !inputs.coverage-only }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: macOS-latest
@@ -47,6 +53,7 @@ jobs:
       run-regression-tests: true
 
   windows-headless-regression:
+    if: ${{ !inputs.coverage-only }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
