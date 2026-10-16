@@ -196,13 +196,13 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:14px;border-top:1px soli
 <section class="scene" id="both" data-title="Both directions">
   <div class="chapter">03 · Building the node list</div>
   <h2>Backward, reverse, forward</h2>
-  <p class="lede">With direction set to <b>Both</b>, SCIRun integrates backward from the seed, reverses that list, then integrates forward and appends. The result is one ordered array of points per seed, and that ordering is about to be thrown away.</p>
+  <p class="lede">With direction set to <b>Both</b>, SCIRun integrates backward from the seed, reverses that list, then integrates forward and appends. At that point the algorithm holds the whole streamline as one ordered array. Watch the last step: writing the array to the output field keeps the points and the edges, but not the fact that they form one line from one seed.</p>
   <div class="stage" style="aspect-ratio:16/8"><canvas id="bothCanvas"></canvas><span class="tag" id="bothTag">phase</span></div>
   <div class="controls"><button class="btn" id="bothReplay">↻ Replay</button><span class="mono" style="color:var(--muted)">GenerateStreamLines.cc · StreamLinesForCertainSeeds()</span></div>
   <div class="card">
-    <div class="panel-title">BI.nodes_ (one seed)</div>
+    <div class="panel-title" id="bothStripTitle">BI.nodes_ · in memory</div>
     <div class="chips" id="bothStrip"></div>
-    <p class="note" style="margin-top:12px">Then <code>setOutputData()</code> walks this array, calls <code>add_node</code> for each point and <code>add_elem({n1, n2})</code> for each consecutive pair, and moves on to the next seed. The output only records pairs of nodes, not "these nodes form line 7".</p>
+    <p class="note" style="margin-top:12px">Then <code>setOutputData()</code> walks this array, calls <code>add_node</code> for each point and <code>add_elem({n1, n2})</code> for each consecutive pair, and moves on to the next seed. Nothing in the output marks where one streamline ends and the next begins. Chapter 04 shows what that costs.</p>
   </div>
 </section>
 
@@ -593,15 +593,18 @@ const io = new IntersectionObserver(es => {
   const st = new Stage($("#bothCanvas"), [-2.1, 2.1, -0.75, 1.35]);
   const seed = [0.1, 0.62];
   const neg = trace(seed, -0.13, 40).slice(1), pos = trace(seed, 0.13, 40).slice(1);
-  const nN = neg.length, nP = pos.length, DUR = 10000;
+  const nN = neg.length, nP = pos.length, DUR = 14000;
+  const all = [...neg.slice().reverse(), seed, ...pos];
+  // phase boundaries as fractions of DUR: backward, reverse, forward, "this is the line", write out
+  const B = [0.26, 0.36, 0.6, 0.74, 1];
   let t0 = 0, el = DUR, lastKey = "";
-  // phases: 0-35% backward, 35-50% reverse, 50-85% forward, 85-100% edges
   function state() {
     const u = el / DUR;
-    if (u < 0.35) return { ph: 0, k: Math.floor(u / 0.35 * (nN + 1)) };
-    if (u < 0.5) return { ph: 1 };
-    if (u < 0.85) return { ph: 2, k: Math.floor((u - 0.5) / 0.35 * (nP + 1)) };
-    return { ph: 3 };
+    if (u < B[0]) return { ph: 0, k: Math.floor(u / B[0] * (nN + 1)), u };
+    if (u < B[1]) return { ph: 1, u };
+    if (u < B[2]) return { ph: 2, k: Math.floor((u - B[1]) / (B[2] - B[1]) * (nP + 1)), u };
+    if (u < B[3]) return { ph: 3, u };
+    return { ph: 4, u, f: clamp((u - B[3]) / 0.12, 0, 1) };
   }
   function strip(s) {
     const key = s.ph + ":" + (s.k ?? "");
@@ -609,38 +612,59 @@ const io = new IntersectionObserver(es => {
     let html = "";
     if (s.ph === 0) {
       html = `<span class="chip seed">seed</span>` + neg.slice(0, Math.min(s.k, nN)).map((_, i) => `<span class="chip neg">−${i + 1}</span>`).join("");
-    } else {
-      const arr = [...neg.map((_, i) => ["neg", -(i + 1)]).reverse(), ["seed", 0]];
+    } else if (s.ph < 4) {
+      const arr = [...neg.map(() => "neg"), "seed"];
       const kp = s.ph === 1 ? 0 : s.ph === 2 ? Math.min(s.k, nP) : nP;
-      for (let i = 0; i < kp; i++) arr.push(["pos", i + 1]);
-      html = arr.map(([c, _], i) => `<span class="chip ${c}">${i}</span>`).join("");
+      for (let i = 0; i < kp; i++) arr.push("pos");
+      html = arr.map((c, i) => `<span class="chip ${c}">${i}</span>`).join("");
       if (s.ph === 1) html = `<span class="chip" style="border-style:dashed">reverse()</span> ` + html;
+      if (s.ph === 3) html = `<span class="cellgrp" style="border-color:var(--accent)"><span class="chip" style="background:var(--accent);color:var(--accent-fg);border-color:var(--accent)">streamline 0 · seed 0</span>${html}</span>`;
+    } else {
+      html = `<span class="chip" style="text-decoration:line-through;color:var(--bad);border-color:var(--bad)">streamline 0 · seed 0</span> ` +
+        all.slice(1).map((_, i) => `<span class="chip">${i}–${i + 1}</span>`).join("");
     }
     $("#bothStrip").innerHTML = html;
+    $("#bothStripTitle").textContent = s.ph < 4 ? "BI.nodes_ · in memory" : "output field · what gets saved";
   }
   function draw() {
     const s = state();
     st.clear();
     for (const L of [trace([SRC[0] + .09, .0], .03, 400), trace([SRC[0] + .06, .07], .03, 400)]) st.poly(L, C["stage-grid"], 1);
     electrodes(st);
-    const tags = ["1 · integrate backward (step = −h)", "2 · reverse the backward list", "3 · integrate forward, append", "4 · setOutputData(): add_elem(n, n+1)"];
+    const tags = ["1 · integrate backward (step = −h)", "2 · reverse the backward list", "3 · integrate forward, append",
+                  "4 · the array is the streamline", "5 · setOutputData(): add_node, add_elem(n, n+1)"];
     $("#bothTag").textContent = tags[s.ph];
-    const kN = s.ph === 0 ? Math.min(s.k, nN) : nN, kP = s.ph < 2 ? 0 : s.ph === 2 ? Math.min(s.k, nP) : nP;
-    const nl = neg.slice(0, kN), pl = pos.slice(0, kP);
-    if (s.ph === 3) {
-      const all = [...neg.slice().reverse(), seed, ...pos];
-      for (let i = 1; i < all.length; i++) st.seg(all[i - 1], all[i], C.accent, 3);
-    } else {
-      st.poly([seed, ...nl], C.neg, 1.4, [3, 4]); st.poly([seed, ...pl], C.pos, 1.4, [3, 4]);
-    }
     const lab = (p, s2, col) => st.text(s2, p, col, 10, 0, -12);
-    nl.forEach((p, i) => { st.dot(p, 4, C.neg); lab(p, s.ph === 0 ? "−" + (i + 1) : String(nN - 1 - i), C.neg); });
-    pl.forEach((p, i) => { st.dot(p, 4, C.pos); lab(p, String(nN + 1 + i), C.pos); });
-    st.dot(seed, 6, C.seed); lab(seed, s.ph === 0 ? "seed" : String(nN), C.seed);
-    if (s.ph === 1) {
-      const g = st.ctx, a = neg[nN - 1], b = neg[0];
-      g.save(); g.globalAlpha = 0.5 + 0.5 * Math.sin(el / 120);
-      st.poly([a, b], C.neg, 2, [2, 5]); g.restore();
+    const g = st.ctx;
+    if (s.ph <= 2) {
+      const kN = s.ph === 0 ? Math.min(s.k, nN) : nN, kP = s.ph < 2 ? 0 : Math.min(s.k, nP);
+      const nl = neg.slice(0, kN), pl = pos.slice(0, kP);
+      st.poly([seed, ...nl], C.neg, 1.4, [3, 4]); st.poly([seed, ...pl], C.pos, 1.4, [3, 4]);
+      nl.forEach((p, i) => { st.dot(p, 4, C.neg); lab(p, s.ph === 0 ? "−" + (i + 1) : String(nN - 1 - i), C.neg); });
+      pl.forEach((p, i) => { st.dot(p, 4, C.pos); lab(p, String(nN + 1 + i), C.pos); });
+      st.dot(seed, 6, C.seed); lab(seed, s.ph === 0 ? "seed" : String(nN), C.seed);
+      if (s.ph === 1) {
+        g.save(); g.globalAlpha = 0.5 + 0.5 * Math.sin(el / 120);
+        st.poly([neg[nN - 1], neg[0]], C.neg, 2, [2, 5]); g.restore();
+      }
+    } else if (s.ph === 3) {
+      st.poly(all, C.accent, 10 + 2 * Math.sin(el / 160)); st.poly(all, C.stage, 4); st.poly(all, C.accent, 2);
+      all.forEach((p, i) => { st.dot(p, 4, i === nN ? C.seed : C["stage-fg"]); lab(p, String(i), C["stage-fg"]); });
+      st.text(`one streamline · one seed · ${all.length} points in order`, [0, -0.45], C.accent, 13);
+    } else {
+      const f = s.f, sh = 0.26 * f;
+      g.save(); g.globalAlpha = 1 - f; st.poly(all, C.accent, 3); g.restore();
+      g.save(); g.globalAlpha = f;
+      for (let i = 1; i < all.length; i++) {
+        const A = all[i - 1], Bp = all[i];
+        st.seg([A[0] + (Bp[0] - A[0]) * sh, A[1] + (Bp[1] - A[1]) * sh], [Bp[0] + (A[0] - Bp[0]) * sh, Bp[1] + (A[1] - Bp[1]) * sh], C["stage-fg"], 2.4);
+      }
+      g.restore();
+      all.forEach((p, i) => { st.dot(p, 3.5, C["stage-muted"]); lab(p, String(i), C["stage-muted"]); });
+      if (s.u > B[3] + 0.14) {
+        st.text(`kept: ${all.length} points, ${all.length - 1} edges`, [-0.9, -0.45], C["stage-fg"], 13);
+        st.text(`dropped: "these form streamline 0"`, [0.95, -0.45], C.bad, 13);
+      }
     }
     strip(s);
   }
@@ -934,8 +958,9 @@ const TOUR = [
   ["integ", 6500, "Each line is a numerical integration from a seed. The exact answer here is a circle, so any drift is error.", () => { S.integ.only(["euler", "heun", "rk4", "rkf"]); S.integ.setH(0.4); S.integ.replay(); }],
   ["integ", 6000, "With a big step, Euler spirals away and Heun drifts. RK4 and SCIRun's default, adaptive RKF45, stay on the circle.", () => { S.integ.setH(0.8); S.integ.replay(); }],
   ["integ", 5000, "Shrink the step and everything converges, but it takes more steps.", () => { S.integ.setH(0.15); S.integ.replay(); }],
-  ["both", 10500, "With direction 'Both', SCIRun integrates backward, reverses that list, integrates forward and appends. That gives one ordered point array per seed…", () => S.both.replay()],
-  ["both", 5000, "…which it then writes out as nothing but pairs of nodes."],
+  ["both", 8400, "With direction 'Both', SCIRun integrates backward from the seed, reverses that list, then integrates forward and appends.", () => S.both.replay()],
+  ["both", 2000, "Now the algorithm holds the whole streamline: one ordered array, from one seed."],
+  ["both", 6000, "Writing it out keeps every point and every edge, but not the fact that they form one line. Nothing in the output says where this streamline starts or ends."],
   ["data", 6500, "That's a CurveMesh: a node table and a table of 2-node edges. Nothing in it says which edges make up line 1.", () => S.data.setMode("scirun")],
   ["data", 6500, "VTK's native form is vtkPolyData with one vtkPolyLine cell per streamline: an ordered list of point ids, plus per-point arrays.", () => S.data.setMode("vtk")],
   ["recon", 2600, "So the VTK renderer rebuilds the lines. First it copies the points…", () => { S.recon.stop(); S.recon.setBranch(false); S.recon.go(0); }],
