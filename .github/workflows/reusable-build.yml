@@ -58,6 +58,13 @@ on:
         required: false
         type: boolean
         default: false
+      cache-compiler:
+        # sccache alone (restore on every run, save from master), without the
+        # externals cache. Not for Windows: the Visual Studio generators ignore
+        # CMAKE_<LANG>_COMPILER_LAUNCHER, so it would cache nothing there.
+        required: false
+        type: boolean
+        default: false
       cache-externals:
         # POC (issue #2627/#2677 lineage): cache the Superbuild's compiled
         # externals (Externals/Build + Externals/Install + Externals/Stamp)
@@ -156,7 +163,7 @@ jobs:
       # and an x86_64 job would silently share a key and restore the wrong
       # architecture's binaries.
       - name: Compute externals cache key
-        if: ${{ inputs.cache-externals }}
+        if: ${{ inputs.cache-externals || inputs.cache-compiler }}
         id: ext-key
         shell: bash
         run: |
@@ -264,7 +271,7 @@ jobs:
       # the externals cache: sccache keys on content hashes, so stale entries
       # just miss.
       - name: Restore sccache cache
-        if: ${{ inputs.cache-externals && runner.os != 'Windows' }}
+        if: ${{ (inputs.cache-externals || inputs.cache-compiler) && runner.os != 'Windows' }}
         id: restore-sccache
         uses: actions/cache/restore@v4
         with:
@@ -273,7 +280,7 @@ jobs:
           restore-keys: ${{ steps.ext-key.outputs.sccache-prefix }}
 
       - name: Configure sccache cache
-        if: ${{ inputs.cache-externals && runner.os != 'Windows' }}
+        if: ${{ (inputs.cache-externals || inputs.cache-compiler) && runner.os != 'Windows' }}
         shell: bash
         run: |
           # A server started before these are set would ignore them.
@@ -481,6 +488,24 @@ jobs:
 
           Pop-Location
 
+      # VTK modules compile out silently without WITH_VTK (#2682), so a green build
+      # doesn't show the VTK tier built VTK. Check both the cache and the generated
+      # header the code compiles against, in both directions: a plain job must be off.
+      - name: Verify WITH_VTK took effect
+        shell: bash
+        env:
+          WANT: ${{ inputs.with-vtk && 'ON' || 'OFF' }}
+        run: |
+          set -eu
+          cache=$(sed -n 's/^WITH_VTK:BOOL=//p' bin/SCIRun/CMakeCache.txt)
+          hdr=$(sed -n 's/.*WithVtk *{ *"WITH_VTK", *\([a-z]*\).*/\1/p' bin/SCIRun/include/sci_defs/build_flags.h)
+          [ "$hdr" = true ] && hdr=ON || hdr=OFF
+          echo "wanted WITH_VTK=$WANT; CMakeCache=${cache:-<unset>}; build_flags.h=$hdr"
+          [ "${cache:-OFF}" = "$WANT" ] && [ "$hdr" = "$WANT" ] || {
+            echo "::error::WITH_VTK is not $WANT in this build"
+            exit 1
+          }
+
       # Save-on-success only, and only when we didn't already restore this
       # exact key: an incomplete/broken build must never overwrite a good
       # cache, and there's nothing to save on a hit since content is identical.
@@ -521,7 +546,7 @@ jobs:
           key: ${{ steps.ext-key.outputs.key }}
 
       - name: Report sccache stats
-        if: ${{ inputs.cache-externals && runner.os != 'Windows' }}
+        if: ${{ (inputs.cache-externals || inputs.cache-compiler) && runner.os != 'Windows' }}
         continue-on-error: true
         shell: bash
         run: |
@@ -529,7 +554,7 @@ jobs:
           du -sh ~/.cache/sccache 2>/dev/null || true
 
       - name: Save sccache cache
-        if: ${{ success() && inputs.cache-externals && runner.os != 'Windows' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && steps.restore-sccache.outputs.cache-hit != 'true' }}
+        if: ${{ success() && (inputs.cache-externals || inputs.cache-compiler) && runner.os != 'Windows' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && steps.restore-sccache.outputs.cache-hit != 'true' }}
         continue-on-error: true
         uses: actions/cache/save@v4
         with:
@@ -537,9 +562,10 @@ jobs:
           key: ${{ steps.ext-key.outputs.sccache-key }}
 
       # always() so a later SCIRun failure doesn't discard the VTK build; the
-      # sentinel keeps a partial install out.
+      # sentinel keeps a partial install out. VTK 9 installs vtk-config.cmake;
+      # VTKConfig.cmake alone never matched, so nothing was ever saved.
       - name: Save VTK install cache
-        if: ${{ always() && inputs.with-vtk && steps.restore-vtk-cache.outputs.cache-hit != 'true' && hashFiles('bin/Externals/Install/VTK_external/lib/cmake/vtk-*/VTKConfig.cmake') != '' }}
+        if: ${{ always() && inputs.with-vtk && steps.restore-vtk-cache.outputs.cache-hit != 'true' && hashFiles('bin/Externals/Install/VTK_external/lib/cmake/vtk-*/vtk-config.cmake', 'bin/Externals/Install/VTK_external/lib/cmake/vtk-*/VTKConfig.cmake') != '' }}
         uses: actions/cache/save@v4
         with:
           path: bin/Externals/Install/VTK_external

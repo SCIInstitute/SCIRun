@@ -99,6 +99,7 @@ SET(Interface_Application_HEADERS
   MacroEditor.h
   StateViewer.h
   ModuleOptionsDialogConfiguration.h
+  FloatingDockWindow.h
 )
 
 SET(Interface_Application_FORMS
