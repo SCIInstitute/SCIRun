@@ -302,7 +302,8 @@ jobs:
           echo "SCCACHE_CACHE_SIZE=2G" >> "$GITHUB_ENV"
 
       - name: Checkout SCIRunTestData
-        if: ${{ inputs.run-regression-tests || inputs.coverage }}
+        # Unit tests read it too (TEST_RESOURCE_ROOT_DIR), not just regression.
+        if: ${{ inputs.build-testing || inputs.coverage }}
         uses: actions/checkout@v6
         with:
           repository: CIBC-Internal/SCIRunTestData
@@ -413,7 +414,7 @@ jobs:
           if [ "${{ inputs.build-testing }}" = "true" ]; then
             CMD+=("-DBUILD_TESTING:BOOL=ON")
           fi
-          if [ "${{ inputs.run-regression-tests }}" = "true" ] || [ "${{ inputs.coverage }}" = "true" ]; then
+          if [ "${{ inputs.build-testing }}" = "true" ] || [ "${{ inputs.coverage }}" = "true" ]; then
             CMD+=("-DSCIRUN_TEST_RESOURCE_DIR=${GITHUB_WORKSPACE}/SCIRunTestData")
           fi
           if [ "${{ inputs.coverage }}" = "true" ]; then
@@ -481,7 +482,7 @@ jobs:
             }
           }
           if ('${{ inputs.build-testing }}' -eq 'true') { $cmakeArgs += "-DBUILD_TESTING:BOOL=ON" }
-          if ('${{ inputs.run-regression-tests }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
+          if ('${{ inputs.build-testing }}' -eq 'true' -or '${{ inputs.coverage }}' -eq 'true') { $cmakeArgs += "-DSCIRUN_TEST_RESOURCE_DIR=$env:GITHUB_WORKSPACE/SCIRunTestData" }
 
           # Prepare build directory (use bin/ to match build.ps1, build.sh, the
           # docs, and the Unix/macOS jobs — keeps the build tree identical across
