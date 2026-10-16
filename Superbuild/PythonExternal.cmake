@@ -87,6 +87,23 @@ IF(UNIX)
     # framework contains *.dylib
     LIST(APPEND python_CONFIGURE_FLAGS "--enable-framework=<INSTALL_DIR>")
     SET(python_FRAMEWORK_ARCHIVE "framework.tar")
+
+    # CPython 3.13.1's _ssl.c does not compile against OpenSSL 4 (opaque
+    # ASN1_STRING), and Homebrew's unversioned openssl, which configure finds
+    # through pkg-config, is now 4.x (actions/runner-images#14856). Use openssl@3.
+    SET(python_OPENSSL_ROOT "${OPENSSL_ROOT_DIR}")
+    IF(NOT python_OPENSSL_ROOT)
+      FIND_PROGRAM(BREW_EXECUTABLE brew)
+      IF(BREW_EXECUTABLE)
+        EXECUTE_PROCESS(COMMAND "${BREW_EXECUTABLE}" --prefix openssl@3
+          OUTPUT_VARIABLE python_OPENSSL_ROOT
+          OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+      ENDIF()
+    ENDIF()
+    IF(python_OPENSSL_ROOT AND EXISTS "${python_OPENSSL_ROOT}/include/openssl/ssl.h")
+      LIST(APPEND python_CONFIGURE_FLAGS "--with-openssl=${python_OPENSSL_ROOT}")
+      MESSAGE(STATUS "[Python_external] OpenSSL: ${python_OPENSSL_ROOT}")
+    ENDIF()
   ELSE()
     LIST(APPEND python_CONFIGURE_FLAGS "--enable-shared")
   ENDIF()
