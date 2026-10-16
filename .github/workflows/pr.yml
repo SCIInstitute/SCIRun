@@ -99,13 +99,14 @@ jobs:
           fi
 
           # VTK tier: VTK-named code under src/ (not the legacy .vtk reader), the
-          # VTK Superbuild files, or the two workflows that implement the tier.
+          # VTK Superbuild files, or the reusable build (VTK cache/flag logic).
+          # pr.yml is left out: editing it must not cost a cold VTK build.
           # A `vtk` label covers what a path filter can't, e.g. Geometry.h.
           if printf '%s\n' "$labels" | grep -qxF 'vtk'; then
             vtk=true
           elif printf '%s\n' "$files" | grep -E '^src/.*(Vtk|/VTK/|/vtk/)' | grep -qv '/Legacy/'; then
             vtk=true
-          elif printf '%s\n' "$files" | grep -qE '^Superbuild/(VtkExternal|Superbuild)\.cmake$|^\.github/workflows/(pr|reusable-build)\.yml$'; then
+          elif printf '%s\n' "$files" | grep -qE '^Superbuild/(VtkExternal|Superbuild)\.cmake$|^\.github/workflows/reusable-build\.yml$'; then
             vtk=true
           else
             vtk=false
