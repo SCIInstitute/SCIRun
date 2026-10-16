@@ -490,6 +490,24 @@ jobs:
 
           Pop-Location
 
+      # VTK modules compile out silently without WITH_VTK (#2682), so a green build
+      # doesn't show the VTK tier built VTK. Check both the cache and the generated
+      # header the code compiles against, in both directions: a plain job must be off.
+      - name: Verify WITH_VTK took effect
+        shell: bash
+        env:
+          WANT: ${{ inputs.with-vtk && 'ON' || 'OFF' }}
+        run: |
+          set -eu
+          cache=$(sed -n 's/^WITH_VTK:BOOL=//p' bin/SCIRun/CMakeCache.txt)
+          hdr=$(sed -n 's/.*WithVtk *{ *"WITH_VTK", *\([a-z]*\).*/\1/p' bin/SCIRun/include/sci_defs/build_flags.h)
+          [ "$hdr" = true ] && hdr=ON || hdr=OFF
+          echo "wanted WITH_VTK=$WANT; CMakeCache=${cache:-<unset>}; build_flags.h=$hdr"
+          [ "${cache:-OFF}" = "$WANT" ] && [ "$hdr" = "$WANT" ] || {
+            echo "::error::WITH_VTK is not $WANT in this build"
+            exit 1
+          }
+
       # Save-on-success only, and only when we didn't already restore this
       # exact key: an incomplete/broken build must never overwrite a good
       # cache, and there's nothing to save on a hit since content is identical.
