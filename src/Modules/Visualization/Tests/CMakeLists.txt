@@ -44,6 +44,12 @@ IF(WITH_OSPRAY)
   )
 ENDIF()
 
+IF(WITH_VTK)
+  SET(Modules_Visualization_Tests_SRCS ${Modules_Visualization_Tests_SRCS}
+    ConvertGeometryToVtkTests.cc
+  )
+ENDIF()
+
 SCIRUN_ADD_UNIT_TEST(Modules_Visualization_Tests
   ${Modules_Visualization_Tests_SRCS}
 )
@@ -64,4 +70,8 @@ TARGET_LINK_LIBRARIES(Modules_Visualization_Tests
 
 IF(WITH_OSPRAY)
   TARGET_LINK_LIBRARIES(Modules_Visualization_Tests ospray::ospray)
+ENDIF()
+
+IF(WITH_VTK)
+  TARGET_LINK_LIBRARIES(Modules_Visualization_Tests VTK::CommonDataModel)
 ENDIF()
