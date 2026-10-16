@@ -27,15 +27,19 @@
 
 
 SET(Algorithms_Visualization_SRCS
+  ConvertGeometryToVtkAlgo.cc
   OsprayDataAlgorithm.cc
   VtkDataAlgorithm.cc
   VtkGeometryBuilder.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
+  ConvertGeometryToVtkAlgo.h
   OsprayDataAlgorithm.h
   VtkDataAlgorithm.h
   VtkGeometryBuilder.h
+  VtkIncludes.h
+  share.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
@@ -47,6 +51,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_VTK
+  Graphics_Datatypes
   Graphics_Glyphs
   Algorithms_Base
 )
@@ -59,6 +64,7 @@ IF(WITH_VTK)
   target_link_libraries(Core_Algorithms_Visualization
     VTK::CommonDataModel
     VTK::CommonCore
+    VTK::FiltersGeometry
   )
 ENDIF()
 

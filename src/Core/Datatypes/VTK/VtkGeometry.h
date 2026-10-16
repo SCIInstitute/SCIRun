@@ -28,11 +28,7 @@
 #ifndef CORE_DATATYPES_VTKGEOMETRY_H
 #define CORE_DATATYPES_VTKGEOMETRY_H
 
-#ifdef WITH_VTK
-#include <vtkSmartPointer.h>
-#include <vtkDataObject.h>
-#endif
-
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>
