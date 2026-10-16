@@ -146,6 +146,10 @@ jobs:
       build-with-python: true
       cache-externals: true
 
+  # mac and windows also wait for linux-unit-tests (~20 min), so a PR that does not
+  # compile never spends macOS/Windows minutes; a Linux failure skips them and the
+  # gate still goes red on the Linux result.
+  #
   # mac and windows run only when the PR touches something that can diverge by
   # platform. They stay in ci-gate's `needs`, so when they do run the gate waits
   # on them exactly as before; when they are skipped, branch protection counts
@@ -156,7 +160,7 @@ jobs:
   # this. windows-gui-qt6 alone is 104-139 min against ~63 for linux-gui-qt6,
   # and macOS-latest is capped at 5 concurrent jobs repo-wide.
   mac-gui:
-    needs: changes
+    needs: [changes, linux-unit-tests]
     if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.platform_risk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -169,7 +173,7 @@ jobs:
       artifact-name: SCIRunMacInstaller
 
   windows-gui-qt6:
-    needs: changes
+    needs: [changes, linux-unit-tests]
     if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.platform_risk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -196,7 +200,7 @@ jobs:
       timeout-minutes: 360
 
   mac-gui-vtk:
-    needs: changes
+    needs: [changes, linux-unit-tests]
     if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.vtk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -209,7 +213,7 @@ jobs:
       timeout-minutes: 360
 
   windows-gui-qt6-vtk:
-    needs: changes
+    needs: [changes, linux-unit-tests]
     if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.vtk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
