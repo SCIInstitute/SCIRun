@@ -132,6 +132,7 @@ namespace Networks {
     bool executionDisabled() const override final;
     void setExecutionDisabled(bool disable) override final;
     bool isImplementationDisabled() const override { return false; }
+    std::string requiredBuildFlag() const override { return {}; }
     void setProgrammableInputPortEnabled(bool enable) override final;
     bool checkForVirtualConnection(const ModuleInterface&) const override { return false; }
     std::string description() const override;
