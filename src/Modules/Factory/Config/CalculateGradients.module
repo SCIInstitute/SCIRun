@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateGradients",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/CalculateGradients.h"
+  },
+  "algorithm": {
+    "name": "CalculateGradientsAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

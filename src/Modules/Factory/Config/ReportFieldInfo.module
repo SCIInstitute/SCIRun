@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportFieldInfo",
+    "namespace": "Fields",
+    "status": "Same as v4",
+    "description": "...",
+    "header": "Modules/Fields/ReportFieldInfo.h"
+  },
+  "algorithm": {
+    "name": "ReportFieldInfoAlgorithm",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Field/ReportFieldInfoAlgorithm.h"
+  },
+  "UI": {
+    "name": "ReportFieldInfoDialog",
+    "header": "Interface/Modules/Fields/ReportFieldInfoDialog.h"
+  }
+}

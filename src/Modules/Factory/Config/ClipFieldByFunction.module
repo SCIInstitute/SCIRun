@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ClipFieldByFunction",
+    "namespace": "Fields",
+    "status": "In progress",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ClipFieldByFunction3.h"
+  },
+  "algorithm": {
+    "name": "ClipMeshBySelectionAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h"
+  },
+  "UI": {
+    "name": "ClipFieldByFunctionDialog",
+    "header": "Interface/Modules/Fields/ClipFieldByFunctionDialog.h"
+  }
+}

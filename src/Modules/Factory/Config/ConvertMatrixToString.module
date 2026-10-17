@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertMatrixToString",
+    "namespace": "Converters",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Converters/ConvertMatrixToString.h"
+  },
+  "algorithm": {
+    "name": "ConvertMatrixToStringAlgo",
+    "namespace": "Converters",
+    "header": "Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SetFieldNodes",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/SetFieldNodes.h"
+  },
+  "algorithm": {
+    "name": "SetMeshNodesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

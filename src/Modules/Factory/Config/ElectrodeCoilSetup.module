@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ElectrodeCoilSetup",
+    "namespace": "BrainStimulator",
+    "status": " in progress ",
+    "description": " Place tDCS electrodes and TMS coils ",
+    "header": "Modules/BrainStimulator/ElectrodeCoilSetup.h"
+  },
+  "algorithm": {
+    "name": "ElectrodeCoilSetupAlgorithm",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h"
+  },
+  "UI": {
+    "name": "ElectrodeCoilSetupDialog",
+    "header": "Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h"
+  }
+}

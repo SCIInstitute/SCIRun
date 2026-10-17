@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "AsyncStreamingTest",
+    "namespace": "Basic",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Basic/AsyncStreamingTestModule.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
