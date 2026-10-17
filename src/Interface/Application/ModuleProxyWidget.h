@@ -75,7 +75,7 @@ namespace SCIRun
       void setDefaultNoteSize(int size);
       void createPortPositionProviders();
       void snapToGrid();
-      void highlightPorts(int state);
+      void highlightPorts(bool state);
       void ensureThisVisible();
       void showAndColor(const QColor& color);
       void updateNote(const Note& note);

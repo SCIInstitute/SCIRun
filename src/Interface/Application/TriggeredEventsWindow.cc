@@ -41,7 +41,7 @@ TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockW
   gridLayout_2->addWidget(scriptPlainTextEdit_, 2, 0);
   connect(eventListWidget_, &QListWidget::itemSelectionChanged, this, &TriggeredEventsWindow::updateScriptEditor);
   connect(scriptPlainTextEdit_, &QPlainTextEdit::textChanged, this, &TriggeredEventsWindow::updateScripts);
-  connect(enabledCheckBox_, &QCheckBox::stateChanged, this, &TriggeredEventsWindow::enableStateChanged);
+  connect(enabledCheckBox_, &QCheckBox::toggled, this, &TriggeredEventsWindow::enableStateChanged);
 }
 
 const QMap<QString, QString>& TriggeredEventsWindow::scripts() const
@@ -106,10 +106,10 @@ void TriggeredEventsWindow::updateScripts()
   push();
 }
 
-void TriggeredEventsWindow::enableStateChanged(int state)
+void TriggeredEventsWindow::enableStateChanged(bool state)
 {
   auto key = eventListWidget_->currentItem()->text();
-  auto enabled = state == Qt::Checked;
+  auto enabled = state;
   scriptEnabledFlags_[key] = enabled;
 
   //TODO: waiting on implementation of #41, see ModuleDialogGeneric.h comment
