@@ -126,6 +126,9 @@ html_theme = 'furo'
 
 html_static_path = ['_static']
 
+# Standalone HTML pages, copied verbatim to the site root.
+html_extra_path = ['explainers']
+
 html_css_files = ['css/main.css']
 
 html_title = project

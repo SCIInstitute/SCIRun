@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Streamlines: SCIRun vs VTK</title>
+<meta name="description" content="An interactive explainer: how SCIRun and VTK store and draw streamline geometry, how they differ, and what that means for visualizing current density.">
+<style>
+:root{
+  --bg:#f5f6fa; --fg:#141a26; --muted:#5b6476; --card:#ffffff; --line:#dde2ec; --code:#eef1f7;
+  --accent:#2f6fec; --accent-fg:#ffffff;
+  --stage:#0c1220; --stage-rgb:12,18,32; --stage-fg:#e6ecf7; --stage-muted:#7b87a1; --stage-grid:#1c2538;
+  --neg:#4aa3ff; --pos:#ff9d3d; --seed:#34d399; --bad:#ff5d6c;
+  --c0:#4aa3ff; --c1:#ff9d3d; --c2:#c084fc; --c3:#34d399;
+  --tint1:#13213a; --tint2:#2a1a2c;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a0e17; --fg:#e7ecf5; --muted:#98a2b6; --card:#121827; --line:#232c3f; --code:#1a2133;
+    --accent:#5b8cff; --accent-fg:#0a0e17;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a0e17; --fg:#e7ecf5; --muted:#98a2b6; --card:#121827; --line:#232c3f; --code:#1a2133;
+  --accent:#5b8cff; --accent-fg:#0a0e17;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:96px}
+a{color:var(--accent)}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+code{background:var(--code);padding:.1em .35em;border-radius:4px}
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .brand{font-weight:700;letter-spacing:.01em}
+header.top .sp{flex:1}
+header.top nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+header.top nav a{font-size:12px;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:999px;white-space:nowrap}
+header.top nav a.on{background:var(--accent);color:var(--accent-fg)}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 12px;font-size:14px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--card);color:var(--fg);padding:6px 12px;font-size:14px;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--accent);color:var(--accent-fg)}
+main{max-width:1180px;margin:0 auto;padding:0 16px}
+section.scene{padding:72px 0 40px;scroll-margin-top:56px}
+.chapter{font:600 12px/1 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(32px,6vw,60px);line-height:1.05;margin:.2em 0;letter-spacing:-.02em}
+h2{font-size:clamp(24px,3.6vw,36px);line-height:1.15;margin:.3em 0 .4em;letter-spacing:-.01em}
+h3{margin:.2em 0}
+p.lede{font-size:18px;color:var(--muted);max-width:760px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;width:100%;aspect-ratio:16/10;border-radius:14px;overflow:hidden;background:var(--stage);box-shadow:0 10px 40px -18px rgba(0,0,0,.5)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stage .tag{position:absolute;left:12px;top:10px;font:600 11px/1 ui-monospace,Menlo,monospace;color:var(--stage-muted);letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+.stage .legend{position:absolute;right:10px;top:8px;display:flex;flex-direction:column;gap:3px;font:12px/1.3 ui-monospace,Menlo,monospace;color:var(--stage-fg);background:rgba(var(--stage-rgb),.75);padding:6px 9px;border-radius:8px;pointer-events:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:12px 0}
+.controls label{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.controls input[type=range]{width:150px;accent-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card+.card{margin-top:12px}
+.note{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--muted);font-size:15px}
+.warn{border-left-color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font:12px/1 ui-monospace,Menlo,monospace;padding:5px 6px;border-radius:6px;background:var(--code);border:1px solid var(--line);color:var(--fg);transition:transform .15s}
+.chip.hi{outline:2px solid var(--accent);transform:translateY(-1px)}
+.chip.neg{background:color-mix(in srgb,var(--neg) 22%,var(--card));border-color:var(--neg)}
+.chip.pos{background:color-mix(in srgb,var(--pos) 22%,var(--card));border-color:var(--pos)}
+.chip.seed{background:color-mix(in srgb,var(--seed) 26%,var(--card));border-color:var(--seed)}
+.cellgrp{display:inline-flex;gap:3px;padding:4px;border-radius:8px;border:1.5px solid;margin:0 6px 6px 0;flex-wrap:wrap}
+.panel-title{font:600 11px/1 ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:14px 0 6px}
+.panel-title:first-child{margin-top:0}
+.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+.steps li{counter-increment:s;padding:8px 10px 8px 40px;position:relative;border-radius:8px;color:var(--muted);font-size:15px;cursor:pointer}
+.steps li::before{content:counter(s);position:absolute;left:10px;top:9px;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);font:600 11px/20px ui-monospace,Menlo,monospace;text-align:center}
+.steps li.on{background:var(--code);color:var(--fg)}
+.steps li.on::before{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.steps li.done::before{border-color:var(--accent);color:var(--accent)}
+table.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:15px}
+table.cmp th,table.cmp td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+table.cmp thead th{font:600 12px/1.2 ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+table.cmp tbody th{font-weight:600;width:22%}
+.wrap-x{overflow-x:auto}
+.good{color:var(--seed);font-weight:700}.meh{color:var(--pos);font-weight:700}.bad{color:var(--bad);font-weight:700}
+.cards4{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.road{position:relative;padding-top:30px}
+.road .n{position:absolute;top:12px;left:16px;font:700 12px/1 ui-monospace,Menlo,monospace;color:var(--accent);letter-spacing:.1em}
+.pill{display:inline-block;font:600 11px/1 ui-monospace,Menlo,monospace;padding:4px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-right:4px}
+.hero{position:relative;min-height:min(78vh,720px);border-radius:0 0 22px 22px;overflow:hidden;background:var(--stage);color:var(--stage-fg);margin:0 -16px;padding:0}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero .over{position:relative;z-index:2;padding:12vh 32px 48px;max-width:780px;pointer-events:none}
+.hero .over p{color:#b6c1d6;font-size:18px}
+.hero .over .btn{pointer-events:auto}
+.hero .chapter{color:#8fb2ff}
+.cap{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:30;width:min(920px,calc(100% - 32px));display:flex;align-items:center;gap:10px;background:rgba(10,14,24,.92);color:#eef2fa;border-radius:14px;padding:10px 12px;box-shadow:0 14px 50px -10px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.08)}
+.cap .txt{flex:1;font-size:15px;line-height:1.4;min-height:2.8em;display:flex;align-items:center}
+.cap button{background:rgba(255,255,255,.08);color:#eef2fa;border:1px solid rgba(255,255,255,.14);border-radius:8px;width:36px;height:36px;display:grid;place-items:center;flex:none}
+.cap button.play{background:#5b8cff;border-color:#5b8cff;color:#0a0e17}
+.cap .bar{position:absolute;left:12px;right:12px;top:0;height:3px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden}
+.cap .bar i{display:block;height:100%;width:0;background:#5b8cff;transition:width .3s}
+.readout{font:600 14px/1.4 ui-monospace,Menlo,monospace}
+footer{padding:40px 0 20px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:40px}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="brand">Streamlines · SCIRun ⇄ VTK</span>
+  <span class="sp"></span>
+  <nav id="nav"></nav>
+  <button class="btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+</header>
+
+<main>
+
+<!-- ============================== HERO ============================== -->
+<section class="scene" id="hero" data-title="Intro" style="padding-top:0">
+  <div class="hero">
+    <canvas id="heroCanvas"></canvas>
+    <div class="over">
+      <div class="chapter">An explainer · visualizing current density</div>
+      <h1>Following the current</h1>
+      <p>When the quantity you care about is <b>current density</b>, the clearest picture of current is a streamline. SCIRun and VTK can both draw streamlines, but they store the geometry very differently. This page covers how each one works, where they disagree, and what we should build.</p>
+      <p style="margin-top:22px"><button class="btn primary" id="heroPlay">▶ Play the tour</button> <span style="color:#7b87a1;font-size:14px;margin-left:8px">or scroll; every scene is interactive</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 1. WHY ============================== -->
+<section class="scene" id="why" data-title="Why streamlines">
+  <div class="chapter">01 · The question</div>
+  <h2>Arrows show direction. Streamlines show where current goes.</h2>
+  <p class="lede">Between two electrodes, J = −σ∇φ. A glyph per point answers "which way here?". A streamline integrates those directions into paths, which answers "where does the current from this electrode end up?".</p>
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="whyCanvas"></canvas><span class="tag">dipole · |J| colormap</span></div>
+      <div class="controls">
+        <div class="seg" id="whyMode">
+          <button data-m="glyph">Glyphs</button><button data-m="stream" class="on">Streamlines</button><button data-m="both">Both</button>
+        </div>
+        <button class="btn" id="whyReplay">↻ Replay</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>What the viewer needs</h3>
+        <p>Glyphs near an electrode are a blur of long arrows. Far away they are short and easy to miss, and you have to connect them in your head. A streamline does that connecting for you: one continuous path per seed, colored by |J|.</p>
+        <p class="note">SCIRun module: <code>GenerateStreamLines</code>. Inputs: a vector field and a seed point set. Output: a field on a <code>CurveMesh</code>.</p>
+      </div>
+      <div class="card">
+        <h3>Colormap</h3>
+        <canvas id="cbar" style="width:100%;height:14px;border-radius:4px;display:block"></canvas>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>weak |J|</span><span>strong |J| (log)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 2. INTEGRATORS ============================== -->
+<section class="scene" id="integ" data-title="Integrators">
+  <div class="chapter">02 · Tracing one line</div>
+  <h2>Each streamline is a numerical integration</h2>
+  <p class="lede">Start at a seed and take a step along the field, then another. The method controls how fast the error builds up. Here the exact answer is a circle (field v = (−y, x)), so any drift is visible.</p>
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="intCanvas"></canvas><span class="tag">rotation field · 2 revolutions</span><div class="legend" id="intLegend"></div></div>
+      <div class="controls">
+        <label>step size h <input type="range" id="intH" min="0.05" max="1" step="0.01" value="0.4"><span class="mono" id="intHv">0.40</span></label>
+        <span id="intToggles" class="seg">
+          <button data-k="euler" class="on">Euler</button><button data-k="heun" class="on">Heun</button><button data-k="rk4" class="on">RK4</button><button data-k="rkf" class="on">RKF45</button>
+        </span>
+        <button class="btn" id="intReplay">↻ Replay</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>SCIRun's five methods</h3>
+        <p><code>AdamsBashforth</code>, <code>Heun</code>, <code>RungeKutta</code> (RK4), <code>RungeKuttaFehlberg</code> (adaptive RK4/5, the <b>default</b>), and <code>CellWalk</code>.</p>
+        <p>Euler is not an option in SCIRun. It is shown here as the worst case. Drag <b>h</b> up and watch Heun leave the circle while RK4 and RKF stay on it.</p>
+        <p class="note">CellWalk is different in kind. It steps element by element through a cell-centered (order-0) field rather than interpolating. It is also the method with an open stability bug, <a href="https://github.com/SCIInstitute/SCIRun/issues/872">#872</a>. Remember that for chapter 06.</p>
+      </div>
+      <div class="card">
+        <h3>VTK's equivalent</h3>
+        <p><code>vtkStreamTracer</code> offers RK2, RK4, and adaptive RK4-5, with termination reasons, integration time and vorticity as output arrays.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 3. BOTH DIRECTIONS ============================== -->
+<section class="scene" id="both" data-title="Both directions">
+  <div class="chapter">03 · Building the node list</div>
+  <h2>Backward, reverse, forward</h2>
+  <p class="lede">With direction set to <b>Both</b>, SCIRun integrates backward from the seed, reverses that list, then integrates forward and appends. At that point the algorithm holds the whole streamline as one ordered array. Watch the last step: writing the array to the output field keeps the points and the edges, but not the fact that they form one line from one seed.</p>
+  <div class="stage" style="aspect-ratio:16/8"><canvas id="bothCanvas"></canvas><span class="tag" id="bothTag">phase</span></div>
+  <div class="controls"><button class="btn" id="bothReplay">↻ Replay</button><span class="mono" style="color:var(--muted)">GenerateStreamLines.cc · StreamLinesForCertainSeeds()</span></div>
+  <div class="card">
+    <div class="panel-title" id="bothStripTitle">BI.nodes_ · in memory</div>
+    <div class="chips" id="bothStrip"></div>
+    <p class="note" style="margin-top:12px">Then <code>setOutputData()</code> walks this array, calls <code>add_node</code> for each point and <code>add_elem({n1, n2})</code> for each consecutive pair, and moves on to the next seed. Nothing in the output marks where one streamline ends and the next begins. Chapter 04 shows what that costs.</p>
+  </div>
+</section>
+
+<!-- ============================== 4. DATA STRUCTURES ============================== -->
+<section class="scene" id="data" data-title="Data structures">
+  <div class="chapter">04 · The core difference</div>
+  <h2>An edge list vs. a list of polylines</h2>
+  <p class="lede">Here are the same three streamlines in each format. Hover a chip to find it in the picture.</p>
+  <div class="controls">
+    <div class="seg" id="dataMode"><button data-m="scirun" class="on">SCIRun · CurveMesh</button><button data-m="vtk">VTK · vtkPolyData</button></div>
+  </div>
+  <div class="grid2">
+    <div class="stage"><canvas id="dataCanvas"></canvas><span class="tag" id="dataTag"></span></div>
+    <div class="card" id="dataPanel" style="max-height:560px;overflow:auto"></div>
+  </div>
+  <div class="card" style="margin-top:16px" id="dataNote"></div>
+</section>
+
+<!-- ============================== 5. RECONSTRUCTION ============================== -->
+<section class="scene" id="recon" data-title="The rebuild">
+  <div class="chapter">05 · What the VTK renderer does today</div>
+  <h2>Rebuilding lines SCIRun already knew</h2>
+  <p class="lede"><code>VtkGeometryBuilder::addStreamline</code> receives an edge list and needs polylines to give <code>vtkTubeFilter</code>. It recovers them with a graph search. This runs for every <code>CurveMesh</code> that reaches the VTK renderer, not only streamlines.</p>
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="reconCanvas"></canvas><span class="tag" id="reconTag"></span></div>
+      <div class="controls">
+        <button class="btn" id="reconPrev">◀</button><button class="btn primary" id="reconPlay">▶ Auto</button><button class="btn" id="reconNext">▶</button>
+        <label><input type="checkbox" id="reconBranch"> add a branching curve</label>
+      </div>
+    </div>
+    <div class="card">
+      <ol class="steps" id="reconSteps">
+        <li><b>Copy points + scalars.</b><br><span class="mono">facade-&gt;nodes() → vtkPoints, "Values"</span></li>
+        <li><b>Collect every edge.</b><br><span class="mono">facade-&gt;edges() → EdgeVector</span></li>
+        <li><b>Find connected components.</b><br><span class="mono">boost::connected_components</span></li>
+        <li><b>Order each component.</b><br><span class="mono">undirected_dfs + FindPath()</span></li>
+        <li><b>One vtkPolyLine per component.</b><br><span class="mono">lines-&gt;InsertNextCell(polyLine)</span></li>
+        <li><b>Tube it.</b><br><span class="mono">vtkTubeFilter · 16 sides</span></li>
+      </ol>
+      <p class="note warn" id="reconWarn" style="display:none">At a node with three or more edges, <code>FindPath</code> skips the third edge and everything behind it (the source says <code>// TODO: deal with branching streamlines</code>). <code>GenerateStreamLines</code> never produces branches, but other curve meshes such as wire networks and electrode leads can.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 6. COMPARE ============================== -->
+<section class="scene" id="compare" data-title="Side by side">
+  <div class="chapter">06 · Scorecard</div>
+  <h2>CurveMesh vs. VTK polylines</h2>
+  <p class="lede">VTK has no special "streamline" type. <code>vtkStreamTracer</code> produces a <code>vtkPolyData</code> whose cells are <code>vtkPolyLine</code>s. That is the native type we are comparing against.</p>
+  <div class="card wrap-x">
+    <table class="cmp">
+      <thead><tr><th></th><th>SCIRun <code>CurveMesh</code></th><th>VTK <code>vtkPolyData</code> polylines</th></tr></thead>
+      <tbody>
+        <tr><th>Connectivity</th><td><span class="meh">●</span> A flat list of 2-node edges, with no concept of "a line"</td><td><span class="good">●</span> One cell per streamline, with an ordered point list</td></tr>
+        <tr><th>Line identity</th><td><span class="bad">●</span> Lost at creation and recovered by a graph search</td><td><span class="good">●</span> Built in: cell id, plus a <code>SeedIds</code> array</td></tr>
+        <tr><th>Per-point data</th><td><span class="meh">●</span> One scalar per node (the StreamlineValue option)</td><td><span class="good">●</span> Any number of named arrays</td></tr>
+        <tr><th>Curved segments</th><td><span class="meh">●</span> The basis supports higher order, but streamlines use linear</td><td><span class="meh">●</span> Straight segments only</td></tr>
+        <tr><th>Memory</th><td><span class="good">●</span> Node table + edge table</td><td><span class="good">●</span> Points + cell array; about the same</td></tr>
+        <tr><th>Works with the rest of SCIRun</th><td><span class="good">●</span> Every Field module: probe, map, clip, save, Python</td><td><span class="bad">●</span> Only the VTK renderer</td></tr>
+        <tr><th>Branching curves</th><td><span class="good">●</span> Representable (a node can have three edges)</td><td><span class="meh">●</span> Must be split into separate cells</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cards4" style="margin-top:16px">
+    <div class="card"><h3>Verdict</h3><p>Don't switch data types. A <code>CurveMesh</code> can hold everything a polyline holds, and switching would cut streamlines off from every Field module.</p></div>
+    <div class="card"><h3>The real gap</h3><p>The gap is one missing fact: which nodes make up which line. The algorithm knows it while tracing and drops it on output.</p></div>
+  </div>
+</section>
+
+<!-- ============================== 7. TISSUE BOUNDARIES ============================== -->
+<section class="scene" id="tissue" data-title="Current at boundaries">
+  <div class="chapter">07 · Current in tissue</div>
+  <h2>Current bends at tissue boundaries, and thin layers are hard</h2>
+  <p class="lede">At an interface, normal J is continuous and tangential E is continuous, so <span class="mono">tan θ₂ = (σ₂/σ₁) · tan θ₁</span>. In a FEM solution J is usually <b>per element</b> (order 0). If you interpolate it to nodes before tracing, a thin layer such as skull is blended with its neighbours, and the streamline shows current flowing along the layer where it should cross it.</p>
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="tisCanvas"></canvas><span class="tag">outer · thin layer · outer</span><div class="legend" id="tisLegend"></div></div>
+      <div class="controls">
+        <label>σ<sub>layer</sub>/σ<sub>outer</sub> <input type="range" id="tisR" min="-2" max="2" step="0.01" value="-1.52"><span class="mono" id="tisRv"></span></label>
+        <label>θ₁ <input type="range" id="tisT" min="5" max="60" step="1" value="28"><span class="mono" id="tisTv"></span></label>
+        <label>elements across layer <input type="range" id="tisN" min="1" max="8" step="1" value="1"><span class="mono" id="tisNv"></span></label>
+      </div>
+      <div class="controls">
+        <span style="font-size:13px;color:var(--muted)">Presets:</span>
+        <button class="btn" data-preset="-1.52">skull-like (×0.03)</button>
+        <button class="btn" data-preset="0.7">CSF-like (×5)</button>
+        <button class="btn" data-preset="0">uniform</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3>Two ways to trace</h3>
+        <p><b style="color:var(--stage-muted)">- - dashed</b>: exact, element by element on order-0 J. This is what <code>CellWalk</code> is for.</p>
+        <p><b>solid</b>: J averaged to nodes, then interpolated and integrated with RKF. This is the path you get from the default settings.</p>
+        <p class="readout" id="tisOut"></p>
+      </div>
+      <div class="card">
+        <h3>What this means</h3>
+        <ul style="margin:0;padding-left:18px">
+          <li>Trace <b>J = −σ∇φ</b>, not ∇φ: compute the gradient, then weight it by conductivity.</li>
+          <li>For order-0 J through thin layers, the accurate method is CellWalk. It is unstable (<a href="https://github.com/SCIInstitute/SCIRun/issues/872">#872</a>), so fixing it comes before new streamline features.</li>
+          <li>Drag "elements across layer" up: refining the mesh shrinks the smeared zone, but the elements touching each interface stay wrong.</li>
+          <li>In this flat toy the solid lines still exit at the right height, because node averaging conserves the total. In a curved head the errors are not guaranteed to cancel.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">The conductivity ratios are illustrative values from the literature (scalp ≈ 0.33 S/m, skull ≈ 0.01, CSF ≈ 1.65). This 2D toy has straight interfaces, so the real head will look different.</p>
+</section>
+
+<!-- ============================== 8. PLAN ============================== -->
+<section class="scene" id="plan" data-title="Plan">
+  <div class="chapter">08 · Recommendation</div>
+  <h2>What to build, in order</h2>
+  <p class="lede">Tracked in <a href="https://github.com/SCIInstitute/SCIRun/issues/2819">SCIInstitute/SCIRun#2819</a>.</p>
+  <div class="cards4">
+    <div class="card road"><span class="n">01 · SMALL</span><h3>Keep the line id</h3><p>Store a per-node streamline id, or emit the ordering next to the field. <code>VtkGeometryBuilder</code> then builds polylines directly and the Boost graph code goes away.</p><span class="pill">ShowFieldVtk</span><span class="pill">GenerateStreamLines</span></div>
+    <div class="card road"><span class="n">02 · FOR CURRENT</span><h3>J = −σ∇φ network</h3><p>An example network that computes the gradient, weights it by conductivity on a tet mesh, and seeds at the electrodes. Render tubes colored by |J|.</p><span class="pill">example net</span></div>
+    <div class="card road"><span class="n">03 · BLOCKER</span><h3>Fix CellWalk</h3><p>Order-0 current through thin layers needs element-by-element tracing. Fix <a href="https://github.com/SCIInstitute/SCIRun/issues/872">#872</a> and add tests (<a href="https://github.com/SCIInstitute/SCIRun/issues/932">#932</a>).</p><span class="pill">#872</span><span class="pill">#932</span></div>
+    <div class="card road"><span class="n">04 · DECIDE</span><h3>vtkStreamTracer?</h3><p>Wrap VTK's tracer only if RKF turns out to be the weak point. It brings termination reasons, integration time and vorticity, at the cost of a field-to-<code>vtkUnstructuredGrid</code> conversion.</p><span class="pill">optional</span></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>Not proposed</h3>
+    <p>Replacing <code>CurveMesh</code> with a VTK type. The data structure is fine. What it lacks is one integer per node.</p>
+  </div>
+  <footer>
+    Source references: <a href="https://github.com/SCIInstitute/SCIRun/blob/master/src/Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.cc">GenerateStreamLines.cc</a> ·
+    <a href="https://github.com/SCIInstitute/SCIRun/blob/master/src/Core/Algorithms/Visualization/VtkGeometryBuilder.cc">VtkGeometryBuilder.cc</a> ·
+    <a href="https://github.com/SCIInstitute/SCIRun/blob/master/src/Interface/Modules/Render/Vtk/VtkRenderer.cc">VtkRenderer.cc</a>.
+    Every animation on this page is computed live in your browser. The figures are schematic, not SCIRun output.
+  </footer>
+</section>
+
+</main>
+
+<div class="cap" id="cap">
+  <div class="bar"><i id="capBar"></i></div>
+  <button id="capPrev" aria-label="Previous">⏮</button>
+  <button id="capPlay" class="play" aria-label="Play">▶</button>
+  <button id="capNext" aria-label="Next">⏭</button>
+  <div class="txt" id="capTxt">Press ▶ for a narrated tour (space to pause, ← → to skip), or scroll and play with each scene.</div>
+</div>
+
+<script>
+"use strict";
+// ---------- shared ----------
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const C = {};
+function readColors() {
+  const s = getComputedStyle(document.documentElement);
+  for (const k of ["stage","stage-rgb","stage-fg","stage-muted","stage-grid","neg","pos","seed","bad","c0","c1","c2","c3","tint1","tint2","accent"])
+    C[k] = s.getPropertyValue("--" + k).trim();
+}
+readColors();
+const CELLC = () => [C.c0, C.c1, C.c2, C.c3];
+
+const VIR = [[68,1,84],[59,82,139],[33,145,140],[94,201,98],[253,231,37]];
+function cmap(t) {
+  t = clamp(t, 0, 1) * 4;
+  const i = Math.min(3, Math.floor(t)), f = t - i, a = VIR[i], b = VIR[i + 1];
+  return `rgb(${a.map((v, k) => Math.round(v + (b[k] - v) * f)).join(",")})`;
+}
+
+class Stage {
+  constructor(canvas, world) { this.c = canvas; this.world = world; this.resize(); }
+  resize() {
+    const r = this.c.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    this.c.width = Math.max(1, Math.round(r.width * d)); this.c.height = Math.max(1, Math.round(r.height * d));
+    this.ctx = this.c.getContext("2d"); this.ctx.setTransform(d, 0, 0, d, 0, 0);
+    this.w = r.width; this.h = r.height;
+    const [x0, x1, y0, y1] = this.world;
+    this.s = Math.min(this.w / (x1 - x0), this.h / (y1 - y0));
+    this.cx = this.w / 2 - this.s * (x0 + x1) / 2; this.cy = this.h / 2 + this.s * (y0 + y1) / 2;
+  }
+  X(x) { return this.cx + x * this.s; }
+  Y(y) { return this.cy - y * this.s; }
+  clear() { const g = this.ctx; g.fillStyle = C.stage; g.fillRect(0, 0, this.w, this.h); }
+  dot(p, r, col) { const g = this.ctx; g.beginPath(); g.arc(this.X(p[0]), this.Y(p[1]), r, 0, 7); g.fillStyle = col; g.fill(); }
+  seg(a, b, col, w) { const g = this.ctx; g.beginPath(); g.moveTo(this.X(a[0]), this.Y(a[1])); g.lineTo(this.X(b[0]), this.Y(b[1])); g.strokeStyle = col; g.lineWidth = w; g.lineCap = "round"; g.stroke(); }
+  poly(pts, col, w, dash) {
+    if (pts.length < 2) return;
+    const g = this.ctx; g.beginPath(); g.moveTo(this.X(pts[0][0]), this.Y(pts[0][1]));
+    for (let i = 1; i < pts.length; i++) g.lineTo(this.X(pts[i][0]), this.Y(pts[i][1]));
+    g.strokeStyle = col; g.lineWidth = w; g.lineCap = "round"; g.lineJoin = "round"; g.setLineDash(dash || []); g.stroke(); g.setLineDash([]);
+  }
+  text(s, p, col, size, dx = 0, dy = 0, align = "center") {
+    const g = this.ctx; g.font = `${size || 11}px ui-monospace,Menlo,monospace`; g.fillStyle = col; g.textAlign = align; g.textBaseline = "middle";
+    g.fillText(s, this.X(p[0]) + dx, this.Y(p[1]) + dy);
+  }
+}
+
+// Dipole current field between two electrodes.
+const SRC = [-0.8, 0], SNK = [0.8, 0];
+function dip(x, y) {
+  const a = x - SRC[0], b = y - SRC[1], c = x - SNK[0], d = y - SNK[1];
+  const r1 = a * a + b * b + 1e-4, r2 = c * c + d * d + 1e-4;
+  return [a / r1 - c / r2, b / r1 - d / r2];
+}
+const magT = (x, y) => { const v = dip(x, y); return (Math.log10(Math.hypot(v[0], v[1]) + 1e-9) + 0.7) / 1.7; };
+function unitStep(f, p, h) {
+  const g = q => { const v = f(q[0], q[1]); const m = Math.hypot(v[0], v[1]) || 1; return [v[0] / m, v[1] / m]; };
+  const k1 = g(p), k2 = g([p[0] + h / 2 * k1[0], p[1] + h / 2 * k1[1]]),
+        k3 = g([p[0] + h / 2 * k2[0], p[1] + h / 2 * k2[1]]), k4 = g([p[0] + h * k3[0], p[1] + h * k3[1]]);
+  return [p[0] + h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]), p[1] + h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1])];
+}
+const nearE = (p, r) => Math.hypot(p[0] - SNK[0], p[1] - SNK[1]) < r || Math.hypot(p[0] - SRC[0], p[1] - SRC[1]) < r;
+const dipStop = p => nearE(p, 0.07) || Math.abs(p[0]) > 2.5 || Math.abs(p[1]) > 1.5;
+function trace(seed, h, max, stop = dipStop) {
+  const pts = [seed]; let p = seed;
+  for (let i = 0; i < max; i++) { p = unitStep(dip, p, h); if (stop(p)) break; pts.push(p); }
+  return pts;
+}
+function electrodes(st) {
+  for (const [p, s, col] of [[SRC, "+", C.pos], [SNK, "−", C.neg]]) {
+    st.dot(p, 11, col); st.text(s, p, C.stage, 15);
+  }
+}
+
+// ---------- scene registry ----------
+const scenes = {};
+let rafOn = false;
+function loop(t) {
+  let any = false;
+  for (const k in scenes) { const s = scenes[k]; if (s.visible && s.frame) { if (s.frame(t) !== false) any = true; } }
+  if (any) requestAnimationFrame(loop); else rafOn = false;
+}
+function kick() { if (!rafOn) { rafOn = true; requestAnimationFrame(loop); } }
+const io = new IntersectionObserver(es => {
+  for (const e of es) {
+    const s = scenes[e.target.id]; if (!s) continue;
+    const was = s.visible; s.visible = e.isIntersecting;
+    if (s.visible && !was && s.enter) s.enter();
+    if (s.visible) kick();
+  }
+}, { threshold: 0.25 });
+
+// ---------- HERO ----------
+(() => {
+  const st = new Stage($("#heroCanvas"), [-2.4, 2.4, -0.75, 2.05]);
+  let parts = [];
+  const spawn = () => {
+    if (Math.random() < 0.75) { const a = Math.random() * 6.283; return { p: [SRC[0] + 0.07 * Math.cos(a), SRC[1] + 0.07 * Math.sin(a)], age: 0 }; }
+    return { p: [(Math.random() - 0.5) * 5, (Math.random() - 0.5) * 2.6], age: 0 };
+  };
+  for (let i = 0; i < 1100; i++) { const q = spawn(); q.age = Math.random() * 300; parts.push(q); }
+  const s = scenes.hero = {
+    resize() { st.resize(); st.clear(); },
+    frame() {
+      const g = st.ctx;
+      g.fillStyle = `rgba(${C["stage-rgb"]},0.09)`; g.fillRect(0, 0, st.w, st.h);
+      g.lineWidth = 1.6; g.lineCap = "round";
+      for (const q of parts) {
+        const v = dip(q.p[0], q.p[1]), m = Math.hypot(v[0], v[1]) || 1;
+        const sp = 0.0035 * clamp(m, 0.4, 5);
+        const n = [q.p[0] + v[0] / m * sp, q.p[1] + v[1] / m * sp];
+        g.strokeStyle = cmap(magT(q.p[0], q.p[1]) * 0.85 + 0.15);
+        g.beginPath(); g.moveTo(st.X(q.p[0]), st.Y(q.p[1])); g.lineTo(st.X(n[0]), st.Y(n[1])); g.stroke();
+        q.p = n; q.age++;
+        if (q.age > 420 || nearE(n, 0.05) || Math.abs(n[0]) > 3 || Math.abs(n[1]) > 1.6) Object.assign(q, spawn());
+      }
+      electrodes(st);
+    }
+  };
+  st.clear();
+  io.observe($("#hero"));
+})();
+
+// ---------- 1. WHY ----------
+(() => {
+  const st = new Stage($("#whyCanvas"), [-2.2, 2.2, -1.3, 1.3]);
+  let mode = "stream", t0 = 0, prog = 1;
+  const lines = [];
+  for (let k = 0; k < 18; k++) {
+    const a = (k + 0.5) / 18 * 6.283;
+    lines.push(trace([SRC[0] + 0.09 * Math.cos(a), SRC[1] + 0.09 * Math.sin(a)], 0.025, 500));
+  }
+  function arrow(p, dir, len, col) {
+    const a = [p[0] - dir[0] * len / 2, p[1] - dir[1] * len / 2], b = [p[0] + dir[0] * len / 2, p[1] + dir[1] * len / 2];
+    st.seg(a, b, col, 1.6);
+    const g = st.ctx, X = st.X(b[0]), Y = st.Y(b[1]), ang = Math.atan2(-dir[1], dir[0]);
+    g.beginPath(); g.moveTo(X, Y); g.lineTo(X - 6 * Math.cos(ang - 0.45), Y - 6 * Math.sin(ang - 0.45));
+    g.lineTo(X - 6 * Math.cos(ang + 0.45), Y - 6 * Math.sin(ang + 0.45)); g.closePath(); g.fillStyle = col; g.fill();
+  }
+  function draw() {
+    st.clear();
+    if (mode !== "stream") {
+      for (let i = 0; i < 24; i++) for (let j = 0; j < 13; j++) {
+        const p = [-2.05 + i * 4.1 / 23, -1.15 + j * 2.3 / 12];
+        if (nearE(p, 0.16)) continue;
+        const v = dip(p[0], p[1]), m = Math.hypot(v[0], v[1]), t = magT(p[0], p[1]);
+        arrow(p, [v[0] / m, v[1] / m], 0.05 + 0.1 * clamp(t, 0, 1), cmap(t));
+      }
+    }
+    if (mode !== "glyph") {
+      for (const L of lines) {
+        const n = Math.floor(prog * L.length);
+        for (let i = 1; i < n; i++) st.seg(L[i - 1], L[i], cmap(magT(L[i][0], L[i][1])), mode === "both" ? 2 : 3);
+      }
+    }
+    electrodes(st);
+  }
+  scenes.why = {
+    resize() { st.resize(); draw(); },
+    enter() { t0 = performance.now(); prog = 0; },
+    frame(t) { if (prog >= 1) return false; prog = clamp((t - t0) / 2200, 0, 1); draw(); },
+    setMode(m) { mode = m; $$("#whyMode button").forEach(b => b.classList.toggle("on", b.dataset.m === m)); if (m !== "glyph") this.enter(); draw(); kick(); },
+    replay() { this.enter(); kick(); }
+  };
+  $$("#whyMode button").forEach(b => b.onclick = () => scenes.why.setMode(b.dataset.m));
+  $("#whyReplay").onclick = () => scenes.why.replay();
+  draw(); io.observe($("#why"));
+  const cb = $("#cbar"), g = cb.getContext("2d"); cb.width = 300; cb.height = 10;
+  for (let i = 0; i < 300; i++) { g.fillStyle = cmap(i / 299); g.fillRect(i, 0, 1, 10); }
+})();
+
+// ---------- 2. INTEGRATORS ----------
+(() => {
+  const st = new Stage($("#intCanvas"), [-2, 2, -1.45, 1.45]);
+  const f = p => [-p[1], p[0]];
+  const lin = (p, ks, cs, h) => { let x = p[0], y = p[1]; ks.forEach((k, i) => { x += h * cs[i] * k[0]; y += h * cs[i] * k[1]; }); return [x, y]; };
+  const steps = {
+    euler: (p, h) => lin(p, [f(p)], [1], h),
+    heun: (p, h) => { const k1 = f(p), k2 = f(lin(p, [k1], [1], h)); return lin(p, [k1, k2], [0.5, 0.5], h); },
+    rk4: (p, h) => { const k1 = f(p), k2 = f(lin(p, [k1], [.5], h)), k3 = f(lin(p, [k2], [.5], h)), k4 = f(lin(p, [k3], [1], h)); return lin(p, [k1, k2, k3, k4], [1/6, 1/3, 1/3, 1/6], h); }
+  };
+  function rkf(p, h) {
+    const k1 = f(p), k2 = f(lin(p, [k1], [1/4], h)), k3 = f(lin(p, [k1, k2], [3/32, 9/32], h)),
+      k4 = f(lin(p, [k1, k2, k3], [1932/2197, -7200/2197, 7296/2197], h)),
+      k5 = f(lin(p, [k1, k2, k3, k4], [439/216, -8, 3680/513, -845/4104], h)),
+      k6 = f(lin(p, [k1, k2, k3, k4, k5], [-8/27, 2, -3544/2565, 1859/4104, -11/40], h));
+    return [lin(p, [k1, k3, k4, k5], [25/216, 1408/2565, 2197/4104, -1/5], h),
+            lin(p, [k1, k3, k4, k5, k6], [16/135, 6656/12825, 28561/56430, -9/50, 2/55], h)];
+  }
+  const T = 4 * Math.PI, TOL = 1e-4;
+  const META = { euler: ["Euler", () => C.bad], heun: ["Heun", () => C.pos], rk4: ["RK4", () => C.c0], rkf: ["RKF45", () => C.c2] };
+  let h = 0.4, on = { euler: true, heun: true, rk4: true, rkf: true }, paths = {}, t0 = 0, prog = 1;
+  function compute() {
+    for (const k of ["euler", "heun", "rk4"]) {
+      let p = [1, 0]; const pts = [p], n = Math.round(T / h);
+      for (let i = 0; i < n; i++) { p = steps[k](p, h); pts.push(p); }
+      paths[k] = pts;
+    }
+    let p = [1, 0], t = 0, hh = h; const pts = [p];
+    while (t < T - 1e-9 && pts.length < 3000) {
+      hh = Math.min(hh, T - t);
+      const [y4, y5] = rkf(p, hh), err = Math.hypot(y5[0] - y4[0], y5[1] - y4[1]);
+      if (err > TOL) { hh /= 2; continue; }
+      p = y5; t += hh; pts.push(p); if (err < TOL / 32) hh = Math.min(hh * 2, 1.2);
+    }
+    paths.rkf = pts;
+    $("#intLegend").innerHTML = Object.keys(META).map(k => {
+      const P = paths[k], q = P[P.length - 1], e = Math.abs(Math.hypot(q[0], q[1]) - 1);
+      return `<span style="opacity:${on[k] ? 1 : .35}"><b style="color:${META[k][1]()}">●</b> ${META[k][0].padEnd(6)} ${String(P.length - 1).padStart(3)} steps · |r−1| ${e < 1e-3 ? e.toExponential(0) : e.toFixed(3)}</span>`;
+    }).join("");
+  }
+  function draw() {
+    st.clear();
+    const g = st.ctx;
+    g.beginPath(); g.arc(st.X(0), st.Y(0), st.s, 0, 7); g.setLineDash([4, 6]); g.strokeStyle = C["stage-muted"]; g.lineWidth = 1.2; g.stroke(); g.setLineDash([]);
+    st.text("exact", [0, 1.08], C["stage-muted"], 11);
+    for (const k of ["euler", "heun", "rk4", "rkf"]) {
+      if (!on[k]) continue;
+      const P = paths[k], n = Math.max(1, Math.ceil(prog * P.length)), col = META[k][1]();
+      st.poly(P.slice(0, n), col, 1.4);
+      for (let i = 0; i < n; i++) st.dot(P[i], k === "rkf" ? 2.2 : 2.8, col);
+    }
+    st.dot([1, 0], 5, C.seed); st.text("seed", [1, 0], C.seed, 11, 26, 0);
+  }
+  scenes.integ = {
+    resize() { st.resize(); draw(); },
+    enter() { t0 = performance.now(); prog = 0; },
+    frame(t) { if (prog >= 1) return false; prog = clamp((t - t0) / 2600, 0, 1); draw(); },
+    setH(v) { h = v; $("#intH").value = v; $("#intHv").textContent = v.toFixed(2); compute(); prog = 1; draw(); },
+    replay() { this.enter(); kick(); },
+    only(keys) { for (const k in on) on[k] = keys.includes(k); $$("#intToggles button").forEach(b => b.classList.toggle("on", on[b.dataset.k])); compute(); draw(); }
+  };
+  $("#intH").oninput = e => scenes.integ.setH(+e.target.value);
+  $$("#intToggles button").forEach(b => b.onclick = () => { on[b.dataset.k] = !on[b.dataset.k]; b.classList.toggle("on", on[b.dataset.k]); compute(); draw(); });
+  $("#intReplay").onclick = () => scenes.integ.replay();
+  compute(); draw(); io.observe($("#integ"));
+})();
+
+// ---------- 3. BOTH DIRECTIONS ----------
+(() => {
+  const st = new Stage($("#bothCanvas"), [-2.1, 2.1, -0.75, 1.35]);
+  const seed = [0.1, 0.62];
+  const neg = trace(seed, -0.13, 40).slice(1), pos = trace(seed, 0.13, 40).slice(1);
+  const nN = neg.length, nP = pos.length, DUR = 14000;
+  const all = [...neg.slice().reverse(), seed, ...pos];
+  // phase boundaries as fractions of DUR: backward, reverse, forward, "this is the line", write out
+  const B = [0.26, 0.36, 0.6, 0.74, 1];
+  let t0 = 0, el = DUR, lastKey = "";
+  function state() {
+    const u = el / DUR;
+    if (u < B[0]) return { ph: 0, k: Math.floor(u / B[0] * (nN + 1)), u };
+    if (u < B[1]) return { ph: 1, u };
+    if (u < B[2]) return { ph: 2, k: Math.floor((u - B[1]) / (B[2] - B[1]) * (nP + 1)), u };
+    if (u < B[3]) return { ph: 3, u };
+    return { ph: 4, u, f: clamp((u - B[3]) / 0.12, 0, 1) };
+  }
+  function strip(s) {
+    const key = s.ph + ":" + (s.k ?? "");
+    if (key === lastKey) return; lastKey = key;
+    let html = "";
+    if (s.ph === 0) {
+      html = `<span class="chip seed">seed</span>` + neg.slice(0, Math.min(s.k, nN)).map((_, i) => `<span class="chip neg">−${i + 1}</span>`).join("");
+    } else if (s.ph < 4) {
+      const arr = [...neg.map(() => "neg"), "seed"];
+      const kp = s.ph === 1 ? 0 : s.ph === 2 ? Math.min(s.k, nP) : nP;
+      for (let i = 0; i < kp; i++) arr.push("pos");
+      html = arr.map((c, i) => `<span class="chip ${c}">${i}</span>`).join("");
+      if (s.ph === 1) html = `<span class="chip" style="border-style:dashed">reverse()</span> ` + html;
+      if (s.ph === 3) html = `<span class="cellgrp" style="border-color:var(--accent)"><span class="chip" style="background:var(--accent);color:var(--accent-fg);border-color:var(--accent)">streamline 0 · seed 0</span>${html}</span>`;
+    } else {
+      html = `<span class="chip" style="text-decoration:line-through;color:var(--bad);border-color:var(--bad)">streamline 0 · seed 0</span> ` +
+        all.slice(1).map((_, i) => `<span class="chip">${i}–${i + 1}</span>`).join("");
+    }
+    $("#bothStrip").innerHTML = html;
+    $("#bothStripTitle").textContent = s.ph < 4 ? "BI.nodes_ · in memory" : "output field · what gets saved";
+  }
+  function draw() {
+    const s = state();
+    st.clear();
+    for (const L of [trace([SRC[0] + .09, .0], .03, 400), trace([SRC[0] + .06, .07], .03, 400)]) st.poly(L, C["stage-grid"], 1);
+    electrodes(st);
+    const tags = ["1 · integrate backward (step = −h)", "2 · reverse the backward list", "3 · integrate forward, append",
+                  "4 · the array is the streamline", "5 · setOutputData(): add_node, add_elem(n, n+1)"];
+    $("#bothTag").textContent = tags[s.ph];
+    const lab = (p, s2, col) => st.text(s2, p, col, 10, 0, -12);
+    const g = st.ctx;
+    if (s.ph <= 2) {
+      const kN = s.ph === 0 ? Math.min(s.k, nN) : nN, kP = s.ph < 2 ? 0 : Math.min(s.k, nP);
+      const nl = neg.slice(0, kN), pl = pos.slice(0, kP);
+      st.poly([seed, ...nl], C.neg, 1.4, [3, 4]); st.poly([seed, ...pl], C.pos, 1.4, [3, 4]);
+      nl.forEach((p, i) => { st.dot(p, 4, C.neg); lab(p, s.ph === 0 ? "−" + (i + 1) : String(nN - 1 - i), C.neg); });
+      pl.forEach((p, i) => { st.dot(p, 4, C.pos); lab(p, String(nN + 1 + i), C.pos); });
+      st.dot(seed, 6, C.seed); lab(seed, s.ph === 0 ? "seed" : String(nN), C.seed);
+      if (s.ph === 1) {
+        g.save(); g.globalAlpha = 0.5 + 0.5 * Math.sin(el / 120);
+        st.poly([neg[nN - 1], neg[0]], C.neg, 2, [2, 5]); g.restore();
+      }
+    } else if (s.ph === 3) {
+      st.poly(all, C.accent, 10 + 2 * Math.sin(el / 160)); st.poly(all, C.stage, 4); st.poly(all, C.accent, 2);
+      all.forEach((p, i) => { st.dot(p, 4, i === nN ? C.seed : C["stage-fg"]); lab(p, String(i), C["stage-fg"]); });
+      st.text(`one streamline · one seed · ${all.length} points in order`, [0, -0.45], C.accent, 13);
+    } else {
+      const f = s.f, sh = 0.26 * f;
+      g.save(); g.globalAlpha = 1 - f; st.poly(all, C.accent, 3); g.restore();
+      g.save(); g.globalAlpha = f;
+      for (let i = 1; i < all.length; i++) {
+        const A = all[i - 1], Bp = all[i];
+        st.seg([A[0] + (Bp[0] - A[0]) * sh, A[1] + (Bp[1] - A[1]) * sh], [Bp[0] + (A[0] - Bp[0]) * sh, Bp[1] + (A[1] - Bp[1]) * sh], C["stage-fg"], 2.4);
+      }
+      g.restore();
+      all.forEach((p, i) => { st.dot(p, 3.5, C["stage-muted"]); lab(p, String(i), C["stage-muted"]); });
+      if (s.u > B[3] + 0.14) {
+        st.text(`kept: ${all.length} points, ${all.length - 1} edges`, [-0.9, -0.45], C["stage-fg"], 13);
+        st.text(`dropped: "these form streamline 0"`, [0.95, -0.45], C.bad, 13);
+      }
+    }
+    strip(s);
+  }
+  scenes.both = {
+    resize() { st.resize(); draw(); },
+    enter() { t0 = performance.now(); el = 0; lastKey = ""; },
+    frame(t) { if (el >= DUR) return false; el = clamp(t - t0, 0, DUR); draw(); },
+    replay() { this.enter(); kick(); }
+  };
+  $("#bothReplay").onclick = () => scenes.both.replay();
+  draw(); io.observe($("#both"));
+})();
+
+// ---------- shared demo geometry for 4 + 5 ----------
+const DEMO = (() => {
+  const lines = [40, 65, 90].map(deg => {
+    const a = deg * Math.PI / 180;
+    const L = trace([SRC[0] + 0.1 * Math.cos(a), SRC[1] + 0.1 * Math.sin(a)], 0.3, 40, p => nearE(p, 0.12) || Math.abs(p[1]) > 1.5);
+    return L;
+  });
+  const nodes = [], edges = [], cellIds = [];
+  lines.forEach(L => {
+    const ids = [];
+    L.forEach((p, i) => { const id = nodes.length; nodes.push(p); ids.push(id); if (i) edges.push([id - 1, id]); });
+    cellIds.push(ids);
+  });
+  return { lines, nodes, edges, cellIds };
+})();
+
+// ---------- 4. DATA STRUCTURES ----------
+(() => {
+  const st = new Stage($("#dataCanvas"), [-1.1, 1.1, -0.3, 1.0]);
+  const { nodes, edges, cellIds } = DEMO;
+  let mode = "scirun", hi = null;
+  const nodeCell = []; cellIds.forEach((ids, c) => ids.forEach(i => nodeCell[i] = c));
+  function draw() {
+    st.clear();
+    electrodes(st);
+    const col = CELLC();
+    if (mode === "scirun") {
+      $("#dataTag").textContent = "CurveMesh · " + nodes.length + " nodes · " + edges.length + " edges";
+      edges.forEach(([a, b], i) => {
+        const A = nodes[a], B = nodes[b], s = 0.14;
+        const p = [A[0] + (B[0] - A[0]) * s, A[1] + (B[1] - A[1]) * s], q = [B[0] + (A[0] - B[0]) * s, B[1] + (A[1] - B[1]) * s];
+        const H = hi && hi.t === "e" && hi.i === i;
+        st.seg(p, q, H ? C.accent : C["stage-fg"], H ? 5 : 2.4);
+      });
+      nodes.forEach((p, i) => {
+        const H = hi && hi.t === "n" && hi.i === i;
+        st.dot(p, H ? 6 : 3.5, H ? C.accent : C["stage-muted"]);
+        st.text(String(i), p, H ? C.accent : C["stage-muted"], 10, 0, -11);
+      });
+    } else {
+      $("#dataTag").textContent = "vtkPolyData · " + nodes.length + " points · " + cellIds.length + " polyline cells";
+      cellIds.forEach((ids, c) => {
+        const H = hi && hi.t === "c" && hi.i === c;
+        st.poly(ids.map(i => nodes[i]), col[c], H ? 6 : 3.2);
+      });
+      nodes.forEach((p, i) => {
+        const H = hi && hi.t === "n" && hi.i === i;
+        st.dot(p, H ? 6 : 3.2, H ? C.accent : col[nodeCell[i]]);
+        st.text(String(i), p, H ? C.accent : C["stage-muted"], 10, 0, -11);
+      });
+    }
+  }
+  function panel() {
+    const col = CELLC();
+    let h = "";
+    if (mode === "scirun") {
+      h += `<div class="panel-title">Nodes (${nodes.length}) · Point[]</div><div class="chips">${nodes.map((_, i) => `<span class="chip" data-t="n" data-i="${i}">${i}</span>`).join("")}</div>`;
+      h += `<div class="panel-title">Edges (${edges.length}) · 2-node elements</div><div class="chips">${edges.map(([a, b], i) => `<span class="chip" data-t="e" data-i="${i}">${a}–${b}</span>`).join("")}</div>`;
+      h += `<div class="panel-title">Field data</div><div class="chips"><span class="chip">double per node · "Seed index"</span></div>`;
+      h += `<div class="panel-title">Lines</div><p style="margin:0;color:var(--muted);font-size:14px">Not stored. Look for the gap between <code>${cellIds[0].at(-1)}</code> and <code>${cellIds[1][0]}</code>: there is no edge there. The absence of that edge is the only record that line 0 ended.</p>`;
+    } else {
+      h += `<div class="panel-title">Points (${nodes.length}) · vtkPoints</div><div class="chips">${nodes.map((_, i) => `<span class="chip" data-t="n" data-i="${i}">${i}</span>`).join("")}</div>`;
+      h += `<div class="panel-title">Lines · vtkCellArray of vtkPolyLine</div>`;
+      h += cellIds.map((ids, c) => `<span class="cellgrp" style="border-color:${col[c]}" data-t="c" data-i="${c}"><span class="chip" style="background:${col[c]};color:#0b1020;border-color:${col[c]}">cell ${c} · n=${ids.length}</span>${ids.map(i => `<span class="chip" data-t="n" data-i="${i}">${i}</span>`).join("")}</span>`).join("");
+      h += `<div class="panel-title">Point data (vtkStreamTracer)</div><div class="chips">${["Values", "SeedIds", "IntegrationTime", "Vorticity", "Normals", "ReasonForTermination*"].map(s => `<span class="chip">${s}</span>`).join("")}</div><p style="font-size:12px;color:var(--muted);margin:6px 0 0">* cell data</p>`;
+    }
+    $("#dataPanel").innerHTML = h;
+    $("#dataNote").innerHTML = mode === "scirun"
+      ? `<b>Why this shape?</b> A <code>CurveMesh</code> is a general 1-D mesh. It can hold a wire network or a branching vessel tree as easily as a streamline, and any Field module can take it as input. The cost is that a sequence has to be rebuilt by walking connectivity.`
+      : `<b>Why this shape?</b> A polyline cell is a sequence. Renderers like <code>vtkTubeFilter</code> need a sequence so they can orient each ring of the tube along the line. Data per line (seed, termination reason) has a cell to attach to.`;
+  }
+  scenes.data = {
+    resize() { st.resize(); draw(); },
+    setMode(m) { mode = m; hi = null; $$("#dataMode button").forEach(b => b.classList.toggle("on", b.dataset.m === m)); panel(); draw(); }
+  };
+  $$("#dataMode button").forEach(b => b.onclick = () => scenes.data.setMode(b.dataset.m));
+  $("#dataPanel").addEventListener("mouseover", e => {
+    const el = e.target.closest("[data-t]"); if (!el) return;
+    $$("#dataPanel .hi").forEach(x => x.classList.remove("hi")); el.classList.add("hi");
+    hi = { t: el.dataset.t, i: +el.dataset.i }; draw();
+  });
+  $("#dataPanel").addEventListener("mouseleave", () => { hi = null; $$("#dataPanel .hi").forEach(x => x.classList.remove("hi")); draw(); });
+  panel(); draw(); io.observe($("#data"));
+})();
+
+// ---------- 5. RECONSTRUCTION ----------
+(() => {
+  const st = new Stage($("#reconCanvas"), [-1.1, 1.1, -1.0, 1.0]);
+  let step = 0, branch = false, auto = null, t0 = 0, prog = 1;
+  let G;
+  function build() {
+    const nodes = DEMO.nodes.slice(), edges = DEMO.edges.slice();
+    if (branch) {
+      const b = nodes.length, P = [[-0.75, -0.55], [-0.45, -0.6], [-0.15, -0.62], [0.12, -0.6], [0.38, -0.45], [0.62, -0.32], [0.38, -0.75], [0.62, -0.85]];
+      P.forEach(p => nodes.push(p));
+      [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [3, 6], [6, 7]].forEach(([a, c]) => edges.push([b + a, b + c]));
+    }
+    // connected components (union-find)
+    const par = nodes.map((_, i) => i), find = x => par[x] === x ? x : (par[x] = find(par[x]));
+    edges.forEach(([a, b]) => { par[find(a)] = find(b); });
+    const compOf = {}, comps = [];
+    edges.forEach(e => { const r = find(e[0]); if (!(r in compOf)) { compOf[r] = comps.length; comps.push([]); } comps[compOf[r]].push(e); });
+    // Mirror VtkGeometryBuilder::sort_cc / FindPath, including the skipped-branch behavior.
+    const paths = [], skipped = [];
+    comps.forEach(ce => {
+      const adj = {};
+      ce.forEach(([a, b]) => { (adj[a] ||= []).push(b); (adj[b] ||= []).push(a); });
+      const path = [ce[0][0]];
+      const fp = (v, front) => {
+        let cnt = 0, neigh = 0;
+        for (const u of adj[v]) {
+          cnt++;
+          if (cnt > 2) { skipped.push([v, u]); continue; }
+          if (!path.includes(u)) {
+            neigh++; if (neigh === 2) front = true;
+            front ? path.unshift(u) : path.push(u);
+            fp(u, front); front = false;
+          }
+        }
+      };
+      fp(path[0], false);
+      paths.push(path);
+    });
+    const inPath = new Set(paths.flat());
+    const lost = nodes.map((_, i) => !inPath.has(i) && edges.some(e => e.includes(i)));
+    const ncomp = nodes.map(() => -1); comps.forEach((ce, c) => ce.forEach(([a, b]) => ncomp[a] = ncomp[b] = c));
+    G = { nodes, edges, comps, paths, skipped, lost, ncomp };
+  }
+  const isSkipped = (a, b) => G.skipped.some(([x, y]) => (x === a && y === b) || (x === b && y === a)) || G.lost[a] || G.lost[b];
+  function draw() {
+    const { nodes, edges, paths, ncomp } = G, col = CELLC();
+    st.clear(); electrodes(st);
+    $("#reconTag").textContent = ["vtkPoints + Values", "EdgeVector · " + edges.length + " edges", G.comps.length + " components", "DFS order", G.paths.length + " vtkPolyLine cells", "vtkTubeFilter"][step];
+    $$("#reconSteps li").forEach((li, i) => { li.classList.toggle("on", i === step); li.classList.toggle("done", i < step); });
+    $("#reconWarn").style.display = branch && step >= 3 ? "" : "none";
+    if (step <= 2) {
+      edges.forEach(([a, b]) => {
+        let c = step === 0 ? C["stage-grid"] : C["stage-fg"];
+        if (step === 2) c = col[ncomp[a] % 4];
+        const w = step === 1 ? 2.4 + 1.6 * Math.max(0, Math.sin(prog * Math.PI)) : 2.4;
+        st.seg(nodes[a], nodes[b], c, w);
+      });
+      nodes.forEach((p, i) => st.dot(p, 3.4, step === 2 ? col[ncomp[i] % 4] : cmap(0.3 + 0.6 * ((i * 37) % 11) / 10)));
+    } else if (step === 3) {
+      edges.forEach(([a, b]) => { if (isSkipped(a, b)) st.poly([nodes[a], nodes[b]], C.bad, 2, [4, 4]); else st.seg(nodes[a], nodes[b], C["stage-grid"], 2); });
+      paths.forEach((P, c) => {
+        const n = Math.max(1, Math.ceil(prog * P.length));
+        st.poly(P.slice(0, n).map(i => nodes[i]), col[c % 4], 3);
+        P.slice(0, n).forEach((i, k) => { st.dot(nodes[i], 8, col[c % 4]); st.text(String(k), nodes[i], C.stage, 9); });
+      });
+      if (branch) G.nodes.forEach((p, i) => { if (G.lost[i]) { st.dot(p, 4, C.bad); } });
+      if (branch && prog >= 1) { const q = G.nodes[G.nodes.length - 1]; st.text("dropped", q, C.bad, 11, 34, 0); }
+    } else {
+      paths.forEach((P, c) => {
+        const pts = P.map(i => nodes[i]);
+        if (step === 4) { st.poly(pts, col[c % 4], 3); pts.forEach(p => st.dot(p, 2.5, col[c % 4])); }
+        else {
+          st.poly(pts, "rgba(0,0,0,.55)", 15);
+          st.poly(pts, col[c % 4], 12);
+          st.poly(pts.map(p => [p[0] - 0.008, p[1] + 0.012]), "rgba(255,255,255,.35)", 4);
+        }
+      });
+    }
+  }
+  const go = s => { step = clamp(s, 0, 5); t0 = performance.now(); prog = 0; draw(); kick(); };
+  scenes.recon = {
+    resize() { st.resize(); draw(); },
+    frame(t) { if (prog >= 1) return false; prog = clamp((t - t0) / 1600, 0, 1); draw(); },
+    go, setBranch(b) { branch = b; $("#reconBranch").checked = b; build(); draw(); },
+    play() { this.stop(); go(0); auto = setInterval(() => { if (step >= 5) this.stop(); else go(step + 1); }, 2400); $("#reconPlay").textContent = "■ Stop"; },
+    stop() { if (auto) clearInterval(auto); auto = null; $("#reconPlay").textContent = "▶ Auto"; }
+  };
+  $("#reconPrev").onclick = () => { scenes.recon.stop(); go(step - 1); };
+  $("#reconNext").onclick = () => { scenes.recon.stop(); go(step + 1); };
+  $("#reconPlay").onclick = () => auto ? scenes.recon.stop() : scenes.recon.play();
+  $("#reconBranch").onchange = e => scenes.recon.setBranch(e.target.checked);
+  $$("#reconSteps li").forEach((li, i) => li.onclick = () => { scenes.recon.stop(); go(i); });
+  build(); draw(); io.observe($("#recon"));
+})();
+
+// ---------- 7. TISSUE ----------
+(() => {
+  const st = new Stage($("#tisCanvas"), [-2, 2, -1.25, 1.25]);
+  const L = 0.5;            // layer thickness, world units (treated as 5 mm)
+  let r = Math.pow(10, -1.52), th = 28, nel = 1;
+  // Element g = sigma ratio applied to the tangential component; Jx is the same everywhere.
+  const gExact = x => (Math.abs(x) < L / 2 ? r : 1);
+  function gInterp(x) {
+    const e = L / nel, k = Math.floor((x + L / 2) / e), x0 = -L / 2 + k * e, s = (x - x0) / e;
+    const el = j => { const m = -L / 2 + (j + 0.5) * e; return gExact(m); };
+    const node = j => 0.5 * (el(j - 1) + el(j));   // node j sits at -L/2 + j*e
+    return node(k) * (1 - s) + node(k + 1) * s;
+  }
+  function path(y0, gfun) {
+    const tn = Math.tan(th * Math.PI / 180), pts = []; let y = y0;
+    const dx = 0.01;
+    for (let x = -2; x <= 2.0001; x += dx) { pts.push([x, y]); y += dx * tn * gfun(x + dx / 2); }
+    return pts;
+  }
+  function draw() {
+    st.clear();
+    const g = st.ctx, X0 = st.X(-L / 2), X1 = st.X(L / 2);
+    g.fillStyle = C.tint1; g.fillRect(0, 0, X0, st.h); g.fillRect(X1, 0, st.w - X1, st.h);
+    g.fillStyle = C.tint2; g.fillRect(X0, 0, X1 - X0, st.h);
+    // element grid aligned to the layer
+    const e = L / nel; g.strokeStyle = C["stage-grid"]; g.lineWidth = 1;
+    for (let x = -L / 2 - Math.ceil(2 / e) * e; x <= 2.2; x += e) {
+      g.beginPath(); g.moveTo(st.X(x), 0); g.lineTo(st.X(x), st.h); g.stroke();
+    }
+    for (let y = -1.5; y <= 1.5; y += e) {
+      g.beginPath(); g.moveTo(0, st.Y(y)); g.lineTo(st.w, st.Y(y)); g.stroke();
+    }
+    g.strokeStyle = C["stage-muted"]; g.lineWidth = 1.5;
+    [X0, X1].forEach(X => { g.beginPath(); g.moveTo(X, 0); g.lineTo(X, st.h); g.stroke(); });
+    st.text("σ₁", [-1.2, 1.1], C["stage-fg"], 14); st.text("σ₂", [0, 1.1], C["stage-fg"], 14); st.text("σ₁", [1.2, 1.1], C["stage-fg"], 14);
+    const tn = Math.tan(th * Math.PI / 180), gmn = Math.min(1, r), gmx = Math.max(1, r);
+    const seeds = []; for (let y = -3.6; y <= 1.2; y += 0.32) seeds.push(y);
+    for (const y0 of seeds) {
+      const E = path(y0, gExact), I = path(y0, gInterp);
+      st.poly(E, C["stage-muted"], 1.4, [5, 5]);
+      for (let i = 1; i < I.length; i++) {
+        const gm = gInterp((I[i][0] + I[i - 1][0]) / 2);
+        st.seg(I[i - 1], I[i], cmap(0.12 + 0.83 * (Math.abs(r - 1) < 1e-6 ? 1 : (gm - gmn) / (gmx - gmn))), 2.4);
+      }
+    }
+    const th2 = Math.atan(r * tn) * 180 / Math.PI, thI = Math.atan(gInterp(0) * tn) * 180 / Math.PI;
+    const k = gInterp(0) / r;
+    $("#tisOut").innerHTML = `mid-layer angle: exact ${th2.toFixed(1)}° · interpolated ${thI.toFixed(1)}°<br>tangential J in layer: <span style="color:${Math.abs(k - 1) > 0.25 ? "var(--bad)" : "inherit"}">×${k < 10 ? k.toFixed(2) : k.toFixed(0)}</span> the true value`;
+    $("#tisLegend").innerHTML = `<span>- - exact (CellWalk)</span><span>── interpolated (RKF)</span><span>color = σ the tracer sees</span>`;
+  }
+  function sync() {
+    $("#tisRv").textContent = "×" + (r < 1 ? r.toFixed(3) : r.toFixed(1));
+    $("#tisTv").textContent = th + "°"; $("#tisNv").textContent = nel;
+    draw();
+  }
+  scenes.tissue = {
+    resize() { st.resize(); draw(); },
+    set(o) {
+      if (o.v != null) { r = Math.pow(10, o.v); $("#tisR").value = o.v; }
+      if (o.n != null) { nel = o.n; $("#tisN").value = o.n; }
+      if (o.th != null) { th = o.th; $("#tisT").value = o.th; }
+      sync();
+    }
+  };
+  $("#tisR").oninput = e => scenes.tissue.set({ v: +e.target.value });
+  $("#tisT").oninput = e => scenes.tissue.set({ th: +e.target.value });
+  $("#tisN").oninput = e => scenes.tissue.set({ n: +e.target.value });
+  $$("[data-preset]").forEach(b => b.onclick = () => scenes.tissue.set({ v: +b.dataset.preset }));
+  sync(); io.observe($("#tissue"));
+})();
+
+// ---------- nav, theme, resize ----------
+const SECS = $$("section.scene");
+$("#nav").innerHTML = SECS.map(s => `<a href="#${s.id}" data-id="${s.id}">${s.dataset.title}</a>`).join("");
+const navIO = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) $$("#nav a").forEach(a => a.classList.toggle("on", a.dataset.id === e.target.id));
+}), { rootMargin: "-45% 0px -50% 0px" });
+SECS.forEach(s => navIO.observe(s));
+
+function redrawAll() { readColors(); for (const k in scenes) scenes[k].resize && scenes[k].resize(); }
+let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(redrawAll, 120); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
+$("#themeBtn").onclick = () => {
+  const root = document.documentElement, cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  root.dataset.theme = cur === "dark" ? "light" : "dark";
+  try { localStorage.setItem("sl-theme", root.dataset.theme); } catch (e) {}
+  redrawAll();
+};
+try { const t = localStorage.getItem("sl-theme"); if (t) { document.documentElement.dataset.theme = t; readColors(); } } catch (e) {}
+
+// ---------- the tour ----------
+const S = scenes;
+const TOUR = [
+  ["hero", 6000, "When you want to see current, the clearest picture is a streamline. Here charge flows from the + electrode to the − electrode."],
+  ["hero", 5500, "SCIRun and VTK can both draw this, but they store the geometry very differently. Let's see how."],
+  ["why", 5500, "Glyphs give the local direction of J. Near electrodes they crowd together, and far away they shrink to nothing.", () => S.why.setMode("glyph")],
+  ["why", 5500, "Streamlines connect those directions into paths from electrode to electrode, colored by |J|.", () => S.why.setMode("stream")],
+  ["integ", 6500, "Each line is a numerical integration from a seed. The exact answer here is a circle, so any drift is error.", () => { S.integ.only(["euler", "heun", "rk4", "rkf"]); S.integ.setH(0.4); S.integ.replay(); }],
+  ["integ", 6000, "With a big step, Euler spirals away and Heun drifts. RK4 and SCIRun's default, adaptive RKF45, stay on the circle.", () => { S.integ.setH(0.8); S.integ.replay(); }],
+  ["integ", 5000, "Shrink the step and everything converges, but it takes more steps.", () => { S.integ.setH(0.15); S.integ.replay(); }],
+  ["both", 8400, "With direction 'Both', SCIRun integrates backward from the seed, reverses that list, then integrates forward and appends.", () => S.both.replay()],
+  ["both", 2000, "Now the algorithm holds the whole streamline: one ordered array, from one seed."],
+  ["both", 6000, "Writing it out keeps every point and every edge, but not the fact that they form one line. Nothing in the output says where this streamline starts or ends."],
+  ["data", 6500, "That's a CurveMesh: a node table and a table of 2-node edges. Nothing in it says which edges make up line 1.", () => S.data.setMode("scirun")],
+  ["data", 6500, "VTK's native form is vtkPolyData with one vtkPolyLine cell per streamline: an ordered list of point ids, plus per-point arrays.", () => S.data.setMode("vtk")],
+  ["recon", 2600, "So the VTK renderer rebuilds the lines. First it copies the points…", () => { S.recon.stop(); S.recon.setBranch(false); S.recon.go(0); }],
+  ["recon", 2600, "…collects every edge into a Boost graph…", () => S.recon.go(1)],
+  ["recon", 2800, "…splits the graph into connected components…", () => S.recon.go(2)],
+  ["recon", 3200, "…walks each component with a DFS to recover the order…", () => S.recon.go(3)],
+  ["recon", 2800, "…and emits one polyline per component, which then gets tubed.", () => S.recon.go(5)],
+  ["recon", 6500, "When a curve branches, FindPath skips the third edge and drops everything behind it. The source has a TODO for this case.", () => { S.recon.setBranch(true); S.recon.go(3); }],
+  ["compare", 7000, "Verdict: don't switch data types. CurveMesh works with every Field module. What's missing is one integer per node, the line id.", () => S.recon.setBranch(false)],
+  ["tissue", 7500, "For current in tissue, the harder problem is physics. Current bends at tissue boundaries, and through a skull-like layer it crosses almost straight.", () => S.tissue.set({ v: -1.52, n: 1, th: 28 })],
+  ["tissue", 7000, "If per-element J is averaged to nodes before tracing, a thin layer gets blended away. Inside the skull the solid lines run sideways, with many times the true tangential current.", () => S.tissue.set({ n: 1 })],
+  ["tissue", 6000, "Refining the mesh helps but never fixes it. The exact method for order-0 J is CellWalk, and that's the unstable one, #872.", () => S.tissue.set({ n: 6 })],
+  ["plan", 8000, "The plan: keep the line id, build a J = −σ∇φ example network, fix CellWalk, then decide whether vtkStreamTracer is worth wrapping. Tracked in #2819."]
+];
+let ti = -1, playing = false, timer = null;
+function tourGo(i) {
+  if (i < 0 || i >= TOUR.length) { stopTour(); return; }
+  ti = i;
+  const [sec, dur, say, act] = TOUR[i];
+  const el = document.getElementById(sec);
+  const top = el.getBoundingClientRect().top + scrollY - 56;
+  if (Math.abs(top - scrollY) > 40) scrollTo({ top, behavior: "smooth" });
+  if (act) setTimeout(act, Math.abs(top - scrollY) > 40 ? 500 : 0);
+  $("#capTxt").textContent = say;
+  $("#capBar").style.width = ((i + 1) / TOUR.length * 100) + "%";
+  clearTimeout(timer);
+  if (playing) timer = setTimeout(() => tourGo(i + 1), dur);
+}
+function startTour() { playing = true; $("#capPlay").textContent = "❚❚"; tourGo(ti < 0 || ti >= TOUR.length - 1 ? 0 : ti + 1); }
+function stopTour() { playing = false; clearTimeout(timer); $("#capPlay").textContent = "▶"; }
+$("#capPlay").onclick = () => playing ? stopTour() : startTour();
+$("#heroPlay").onclick = () => { ti = -1; startTour(); };
+$("#capNext").onclick = () => tourGo(Math.min(TOUR.length - 1, ti + 1));
+$("#capPrev").onclick = () => tourGo(Math.max(0, ti - 1));
+addEventListener("keydown", e => {
+  if (e.target.closest("input,textarea")) return;
+  if (e.code === "Space") { e.preventDefault(); playing ? stopTour() : startTour(); }
+  else if (e.key === "ArrowRight") tourGo(Math.min(TOUR.length - 1, ti + 1));
+  else if (e.key === "ArrowLeft") tourGo(Math.max(0, ti - 1));
+});
+// a manual wheel/touch scroll pauses the tour
+addEventListener("wheel", () => playing && stopTour(), { passive: true });
+addEventListener("touchmove", () => playing && stopTour(), { passive: true });
+</script>
+</body>
+</html>
