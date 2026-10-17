@@ -456,6 +456,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
+  Modules::Render::ViewSceneLockManager::get(state_.get())->setWaitForFrameIndefinitely(
+    Application::Instance().parameters()->isRegressionMode());
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
