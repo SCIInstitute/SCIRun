@@ -166,6 +166,7 @@ private:
   void makeFilterButtonMenu();
   void writeSettings();
   void readSettings();
+  void primeOpenGLSurface();
   void setupNetworkEditor();
   void setupProvenanceWindow();
   void setupScriptedEventsWindow();
