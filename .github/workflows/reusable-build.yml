@@ -786,6 +786,16 @@ jobs:
         run: rm -f "$HOME"/Library/Preferences/com.sci-cibc-software.SCIRun5_regression_*.plist 2>/dev/null || true
         continue-on-error: true
 
+      # Without a CODECOV_TOKEN secret (forks, fresh setups) this fails soft.
+      - name: Upload coverage to Codecov
+        if: ${{ inputs.coverage && runner.os == 'macOS' }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: bin/SCIRun/coverage/coverage.lcov
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+        continue-on-error: true
+
       - name: Upload coverage report
         if: ${{ inputs.coverage && runner.os == 'macOS' }}
         uses: actions/upload-artifact@v6
@@ -798,6 +808,7 @@ jobs:
           path: |
             bin/SCIRun/coverage/summary.txt
             bin/SCIRun/coverage/mismatched.txt
+            bin/SCIRun/coverage/coverage.lcov
             bin/SCIRun/coverage/html
 
       # Runs after packaging so it can read the installed binary, and before the
