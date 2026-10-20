@@ -104,6 +104,7 @@ private:
     std::vector<VtkGeometryObjectHandle> objs_;
 };
 
+using CompositeVtkGeometryObjectHandle = SharedPointer<CompositeVtkGeometryObject>;
 }
 }
 }

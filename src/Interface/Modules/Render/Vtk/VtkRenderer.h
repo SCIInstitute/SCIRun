@@ -39,6 +39,7 @@
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
+//#include <Graphics/Widgets/Widget.h>
 
 #include <glm/glm.hpp>
 #include <QImage>
@@ -95,6 +96,13 @@ public:
   const unsigned char* imagePixels() const { return imagePixels_; }
   QImage image() const { return image_; }
   glm::mat4 getWidgetTransform() { return widgetTransform_; }
+  glm::mat4 getWorldToProjection() const;
+
+  //widgets
+  //void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y);
+  //void removeAllGeomObjects();
+  //void setWidgetInteractionMode(MouseButton button);
+  //Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets);
 
  private:
   static int vtkRendererInstances;

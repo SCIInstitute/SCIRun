@@ -1787,6 +1787,183 @@ void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
 #endif
 }
 
+bool ViewSceneVtkDialog::needToWaitForWidgetSelection()
+{
+  const auto lastExec = transient_value_cast<unsigned long>(state_->getTransientValue(Parameters::TimeExecutionFinished));
+
+  return previousWidgetInfo_.timeSince(lastExec) < delayAfterModuleExecution_ || previousWidgetInfo_.timeSinceWidgetColorRestored() < delayAfterWidgetColorRestored_ ||
+         previousWidgetInfo_.timeSinceLastSelectionAttempt() < delayAfterLastSelection_;
+}
+
+bool ViewSceneVtkDialog::canSelectWidget()
+{
+  return shiftdown_ && previousWidgetInfo_.getFrameIsFinished() && !mouseButtonPressed_ && !needToWaitForWidgetSelection();
+}
+
+bool ViewSceneVtkDialog::tryWidgetSelection(int x, int y, MouseButton button)
+{
+  bool widgetSelected = false;
+  if (canSelectWidget())
+  {
+    mouseButtonPressed_ = true;
+    selectObject(x, y, button);
+    widgetSelected = true;
+    updateCursor();
+  }
+  return widgetSelected;
+}
+
+static std::vector<WidgetHandle> filterGeomObjectsForWidgets(
+    CompositeVtkGeometryObjectHandle geomData,
+    VisibleItemManagerVtk& visibleItems)
+{
+  // getting geom list
+  std::vector<WidgetHandle> objList;
+  const auto& geomList = geomData->objects();
+
+  int port = 0;
+  for (auto it = geomList.begin(); it != geomList.end(); ++it, ++port)
+  {
+    // Check if object is visible
+    auto obj = *it;
+    auto name = obj->uniqueID();
+    auto displayName = QString::fromStdString(name).split(GeometryObject::delimiter).at(1);
+    if (visibleItems.isVisible(displayName))
+    {
+      auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      if (realObj)
+      {
+        // filter objs
+        bool isWidget = false;
+        for (const auto& pass : realObj->passes())
+        {
+          if (pass.renderState.get(SCIRun::RenderState::ActionFlags::IS_WIDGET))
+          {
+            isWidget = true;
+            break;
+          }
+        }
+        if (isWidget) objList.push_back(std::dynamic_pointer_cast<WidgetBase>(realObj));
+      }
+    }
+  }
+
+  return objList;
+}
+
+void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton button)
+{
+#ifdef WITH_VTK
+  auto geomDataPresent = false;
+  {
+    LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+    auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- selectObject");
+    LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
+    //auto spire = mSpire.lock();
+    //if (!spire) return;
+
+    const auto geomData = getGeomData();
+    if (geomData)
+    {
+      geomDataPresent = true;
+      // Search for new widgets if geometry has changed
+      const bool newGeometry = state_->getValue(Parameters::HasNewGeometry).toBool();
+      if (newGeometry)
+      {
+        widgetHandles_ = filterGeomObjectsForWidgets(geomData, objectSelectionControls_->visibleItems());
+        state_->setValue(Parameters::HasNewGeometry, false);
+      }
+
+      // Search for new widget unless mouse and camera wasn't moved
+      const auto adjustedX = x - viewer_->pos().x();
+      const auto adjustedY = y - viewer_->pos().y();
+      const auto currentCameraTransform = renderer_->getWorldToProjection();
+      // TODO: extract function
+      const bool reuseWidget = !newGeometry && previousWidgetInfo_.hasSameMousePosition(x, y) && previousWidgetInfo_.hasSameCameraTansform(currentCameraTransform);
+      if (reuseWidget)
+      {
+        if (previousWidgetInfo_.hasPreviousWidget())
+        {
+          selectedWidget_ = previousWidgetInfo_.getPreviousWidget();
+          //renderer_->doInitialWidgetUpdate(selectedWidget_, adjustedX, adjustedY);
+        }
+        delayAfterLastSelection_ = 50;
+      }
+      else
+      {
+        //renderer_->removeAllGeomObjects();
+        //renderer_->setWidgetInteractionMode(button);
+        //selectedWidget_ = renderer_->select(adjustedX, adjustedY, widgetHandles_);
+        previousWidgetInfo_.setCameraTransform(currentCameraTransform);
+        delayAfterLastSelection_ = 200;
+      }
+
+      if (selectedWidget_)
+      {
+        widgetColorChanger_ = makeShared<ScopedWidgetColorChangerVtk>(selectedWidget_, WidgetColorVtk::RED);
+        movementType_ = selectedWidget_->movementType(yetAnotherEnumConversion(button)).base;
+        selectedWidget_->changeID();
+      }
+      previousWidgetInfo_.deletePreviousWidget();
+    }
+    previousWidgetInfo_.selectionAttempt();
+  }
+  if (geomDataPresent)
+      newGeometryValue();
+#endif
+}
+
+CompositeVtkGeometryObjectHandle ViewSceneVtkDialog::getGeomData()
+{
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  if (geomDataTransient && !geomDataTransient->empty())
+  {
+    auto geomData = transient_value_cast<CompositeVtkGeometryObjectHandle>(geomDataTransient);
+    if (!geomData)
+    {
+      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+      return nullptr;
+    }
+    return geomData;
+  }
+  return {};
+}
+
+bool ViewSceneVtkDialog::checkForSelectedWidget(WidgetHandle widget)
+{
+  const auto geomData = getGeomData();
+  if (geomData)
+  {
+    const auto id = widget->uniqueID();
+    for (const auto& obj : geomData->objects())
+    {
+      if (obj->uniqueID() == id) return true;
+    }
+  }
+  return false;
+}
+
+void ViewSceneVtkDialog::restoreObjColor()
+{
+  LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
+
+  auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- restoreObjColor");
+  widgetColorChanger_.reset();
+
+  LOG_DEBUG("ViewSceneDialog::restoreObjColor after locking");
+}
+
+void ViewSceneVtkDialog::updateCursor()
+{
+  if (selectedWidget_)
+    setCursor(Qt::ClosedHandCursor);
+  else if (shiftdown_)
+    setCursor(Qt::OpenHandCursor);
+  else
+    setCursor(Qt::ArrowCursor);
+}
+
 void ViewSceneVtkDialog::initializeClippingPlaneDisplay()
 {
   clippingPlaneManager_->setActive(0);

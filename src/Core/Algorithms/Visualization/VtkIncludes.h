@@ -70,6 +70,7 @@
 #include <vtkProperty2D.h>
 #include <vtkTextProperty.h>
 #include <vtkCallbackCommand.h>
+#include <vtkMatrix4x4.h>
 #pragma pop_macro("INPUT_PORT")
 #endif
 

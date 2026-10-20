@@ -353,6 +353,50 @@ void VtkRenderer::saveScreenshot(const QString& filename)
   image_.save(filename);
 }
 
+glm::mat4 VtkRenderer::getWorldToProjection() const
+{
+  if (!renderer_) return glm::mat4(1.0f);
+
+  auto camera = renderer_->GetActiveCamera();
+  if (!camera) return glm::mat4(1.0f);
+
+  double clipping[2];
+  camera->GetClippingRange(clipping);
+
+  auto result = camera->GetCompositeProjectionTransformMatrix(renderer_->GetTiledAspectRatio(),
+      clipping[0],  // near
+      clipping[1]   // far
+  );
+
+  glm::mat4 glmResult(1.0f);
+
+  for (int r = 0; r < 4; ++r)
+  {
+    for (int c = 0; c < 4; ++c)
+    {
+      glmResult[c][r] = result->GetElement(r, c);
+    }
+  }
+
+  return glmResult;
+}
+
+//void VtkRenderer::doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) {
+//}
+//
+//void VtkRenderer::removeAllGeomObjects()
+//{
+//}
+//
+//void VtkRenderer::setWidgetInteractionMode(MouseButton button)
+//{
+//}
+//
+//Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphics::Datatypes::WidgetList& widgets)
+//{
+//  return nullptr;
+//}
+
 void VtkRenderer::rebuildClippingPlanes()
 {
   vtkClippingPlanes_.clear();

@@ -36,6 +36,7 @@
 #ifdef WITH_VTK
 #include <Interface/Modules/Render/Vtk/VtkRenderer.h>
 #include <Interface/Modules/Render/Vtk/VtkQWidget.h>
+#include <Core/Datatypes/VTK/VtkGeometry.h>
 #endif
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Feedback.h>
@@ -48,6 +49,7 @@
 #include <Graphics/Widgets/Widget.h>
 
 using namespace SCIRun::Graphics::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 
 namespace SCIRun {
 
@@ -355,7 +357,17 @@ public Q_SLOTS:
   void setAxisView(int n);  // n=1..6 → +X,-X,+Y,-Y,+Z,-Z
   void setClosestAxisView();  // snap to nearest cardinal axis
 
-  //clipping planes
+  //---------------- Widgets -------------------------------------------------------------------
+  bool needToWaitForWidgetSelection();
+  bool canSelectWidget();
+  bool tryWidgetSelection(int x, int y, MouseButton button);
+  void selectObject(const int x, const int y, MouseButton button);
+  CompositeVtkGeometryObjectHandle getGeomData();
+  bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
+  void restoreObjColor();
+  void updateCursor();
+
+  // clipping planes
   void updateClippingPlaneDisplay();
   void initializeClippingPlaneDisplay();
   void doClippingPlanes();
@@ -445,6 +457,10 @@ public Q_SLOTS:
   //widgets
   SharedPointer<ScopedWidgetColorChangerVtk> widgetColorChanger_{};
   Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
+  const static int delayAfterModuleExecution_{200};
+  const static int delayAfterWidgetColorRestored_{50};
+  int delayAfterLastSelection_{50};
+  std::vector<Graphics::Datatypes::WidgetHandle> widgetHandles_{};
 
   bool shiftdown_{false};
   bool mouseButtonPressed_{false};
