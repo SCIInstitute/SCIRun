@@ -254,6 +254,24 @@ namespace ren {
     return true;
   }
 
+  bool TextureMan::updateTexture(ren::Texture& tex, const void* data)
+  {
+    if (glIsTexture(tex.glid) != GL_TRUE) return false;
+
+    glBindTexture(GL_TEXTURE_2D, tex.glid);
+
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex.textureWidth, tex.textureHeight, tex.format, tex.type, data);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return true;
+  }
+
+  bool TextureMan::updateTexture(ren::Texture& tex, const std::vector<uint8_t>& data)
+  {
+    return updateTexture(tex, data.data());
+  }
+
   void TextureMan::requestTexture(spire::ESCoreBase& core, const std::string& assetName,
     int32_t numRetries)
   {

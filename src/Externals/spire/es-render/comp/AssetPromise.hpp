@@ -44,14 +44,14 @@ struct AssetPromise
   // very well decompose into several items, such as a VBO / IBO pair and
   // a set of shaders. All of the necessary components will be added to
   // the object when the asset is finally loaded.
-  char name[MaxAssetName];
+  char name[MaxAssetName] = {};
 
   // This is an indicator variable. If it is false (because we serialized)
   // then a new request needs to be issued by the system to
-  bool requestInitiated;
+  bool requestInitiated = false;
 
   // The number of errors this asset has encountered.
-  uint32_t numErrors;
+  uint32_t numErrors = 0;
 
   // -- Functions --
 

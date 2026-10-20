@@ -60,3 +60,4 @@ CompositeOsprayGeometryObject::CompositeOsprayGeometryObject(const std::vector<O
       box.extend(obj->box);
   }
 }
+

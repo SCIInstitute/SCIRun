@@ -26,7 +26,7 @@
 */
 
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <iostream>
 #include <QApplication>
 #include <QClipboard>

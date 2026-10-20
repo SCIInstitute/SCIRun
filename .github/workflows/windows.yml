@@ -1,6 +1,8 @@
 name: windows-build
 
-# Full windows matrix: master pushes, nightly, and on demand. Pull requests are
+# Full windows matrix: nightly and on demand. A master push runs only the jobs that
+# publish installers or warm caches; the rest wait for the nightly. Non-python and
+# mac-intel-26 jobs run Sundays only (daily cron 1-6 skips them). Pull requests are
 # covered by the slim tier in pr.yml -- see the comment at the top of that file
 # for why no required check may live in a path-filtered workflow.
 
@@ -13,7 +15,8 @@ on:
     paths-ignore:
       - 'docs/**'
   schedule:
-    - cron: '15 8 * * *'
+    - cron: '15 8 * * 1-6'
+    - cron: '15 8 * * 0'
   workflow_dispatch:
 
 concurrency:
@@ -24,6 +27,7 @@ concurrency:
 
 jobs:
   windows-headless:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
@@ -31,22 +35,37 @@ jobs:
       build-testing: true
 
   windows-gui-qt5:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event.schedule == '15 8 * * 0' }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
       qt-version: '5.15.2'
       variant: gui
       build-with-python: false
-      artifact-name: SCIRunWindowsInstaller_qt5
+      artifact-name: installer-windows-qt5
 
   windows-gui-qt6:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event.schedule == '15 8 * * 0' }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
       qt-version: '6.3.*'
       variant: gui
       build-with-python: false
-      artifact-name: SCIRunWindowsInstaller_qt6
+      artifact-name: installer-windows-qt6
+
+  # WITH_VTK=ON (#2677); also warms the master VTK cache for pr.yml's VTK tier
+  # (runner and generator are part of the cache key). Skipped on release tags.
+  windows-gui-qt6-vtk:
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: windows-2022
+      qt-version: '6.3.*'
+      variant: gui
+      build-with-python: false
+      with-vtk: true
+      timeout-minutes: 360
 
   windows-gui-python-qt5:
     uses: ./.github/workflows/reusable-build.yml
@@ -55,7 +74,7 @@ jobs:
       qt-version: '5.15.2'
       variant: gui
       build-with-python: true
-      artifact-name: SCIRunWindowsPythonInstaller_qt5
+      artifact-name: installer-windows-qt5-python
 
   windows-gui-python-qt6:
     uses: ./.github/workflows/reusable-build.yml
@@ -64,7 +83,7 @@ jobs:
       qt-version: '6.3.*'
       variant: gui
       build-with-python: true
-      artifact-name: SCIRunWindowsPythonInstaller_qt6
+      artifact-name: installer-windows-qt6-python
 
   # ---------------------------------------------------------------------------
   # Publish installers to a GitHub Release (issue #2398). Nightly on cron/master
@@ -73,7 +92,7 @@ jobs:
   # ---------------------------------------------------------------------------
   publish-nightly:
     needs: [windows-gui-qt5, windows-gui-qt6, windows-gui-python-qt5, windows-gui-python-qt6]
-    if: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master') }}
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && (github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master')) }}
     permissions:
       contents: write
     uses: ./.github/workflows/publish-release.yml
@@ -97,8 +116,13 @@ jobs:
   # Nightly-only, not the PR tier (pr.yml), so a VS-2026 break can't block pull
   # requests (#2449). allow-failure until the externals catch up: Boost 1.90's
   # b2 can't bootstrap under VS 2026 (#2657), fixed by the 1.91 upgrade (#2548).
+  #
+  # Qt here is 6.10.2, not the '6.3.*' floor the windows-2022 jobs pin: Qt 6.3's
+  # QVarLengthArray calls stdext::make_checked_array_iterator, which the v145 STL
+  # no longer ships. This job exists to exercise the compiler, not the Qt floor.
   # ---------------------------------------------------------------------------
   windows-2025-headless-vs2026:
+    if: ${{ github.event_name != 'push' || startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2025
@@ -108,12 +132,16 @@ jobs:
       allow-failure: true
 
   windows-2025-gui-qt6-vs2026:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event.schedule == '15 8 * * 0' }}
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2025
       cmake-generator: 'Visual Studio 18 2026'
-      qt-version: '6.3.*'
+      qt-version: '6.10.2'
       variant: gui
       build-with-python: false
-      artifact-name: SCIRunWindowsInstaller_qt6_vs2026
+      # Deliberately not `installer-*`: publish-release.yml globs that prefix,
+      # and this job is not in its `needs`, so a matching name would land on the
+      # release or not depending on which finished first.
+      artifact-name: experimental-windows-qt6-vs2026
       allow-failure: true

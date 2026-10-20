@@ -34,8 +34,15 @@ ENDIF()
 IF(BUILD_TESTING)
 
 IF(WIN32)
- # TODO: determine if VS is set to Release or Debug.
- SET(EXE_LOC ${SCIRun_BINARY_DIR}/Release/SCIRun.exe CACHE PATH "Path to SCIRun executable")
+ # Empty means the built target for the config ctest runs (-C). Clear the old
+ # hard-coded Release default from existing caches so Debug builds pick it up.
+ SET(EXE_LOC "" CACHE PATH "Path to SCIRun executable (empty: built target)")
+ IF(EXE_LOC STREQUAL "${SCIRun_BINARY_DIR}/Release/SCIRun.exe")
+   SET_PROPERTY(CACHE EXE_LOC PROPERTY VALUE "")
+ ENDIF()
+ IF(NOT EXE_LOC)
+   SET(EXE_LOC "$<TARGET_FILE:${APPLICATION_NAME}>")
+ ENDIF()
 ELSE(WIN32)
  # TODO: change once testing works with app bundle
  IF(APPLE)
@@ -98,7 +105,7 @@ ENDIF()
 
 IF(RUN_UNIT_TESTS)
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     EXECUTE_PROCESS(COMMAND "python" ${CMAKE_SOURCE_DIR}/Testing/Python/list_tests.py
       ${CMAKE_SOURCE_DIR}/Testing/Python/
       OUTPUT_VARIABLE STR_TESTS
@@ -141,6 +148,14 @@ IF(RUN_UNIT_TESTS)
   ENDIF()
 ENDIF()
 
+# An empty value would leave a bare -d (SCIRun_test rejects it) and make the
+# import glob below start at the filesystem root.
+IF(IS_DIRECTORY "${SCIRUN_TEST_RESOURCE_DIR}")
+  SET(scirun_test_data_args -d "${SCIRUN_TEST_RESOURCE_DIR}")
+ELSE()
+  SET(scirun_test_data_args)
+ENDIF()
+
 IF(RUN_BASIC_REGRESSION_TESTS)
   MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
 
@@ -150,13 +165,17 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   FILE(GLOB_RECURSE scirun_srns_io "${SCIRun_SOURCE_DIR}/ExampleNets/regression/ImportExport/*.srn5")
   set(scirun_srns ${scirun_srns_modules} ${scirun_srns_network} ${scirun_srns_io})
 
-  IF(NOT BUILD_HEADLESS)
+  IF(WITH_GUI)
     FILE(GLOB_RECURSE scirun_srns_renderer "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Renderer/*.srn5")
     set(scirun_srns ${scirun_srns} ${scirun_srns_renderer})
   ENDIF()
 
-  IF(BUILD_WITH_PYTHON)
+  IF(WITH_PYTHON)
     FILE(GLOB_RECURSE scirun_srns_python "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Python/*.srn5")
+    # Python/Optional needs packages the bundled interpreter doesn't ship
+    # (numpy, matlab.engine); those networks only ever passed because Python
+    # errors were swallowed (#2699).
+    LIST(FILTER scirun_srns_python EXCLUDE REGEX "/Python/Optional/")
     set(scirun_srns ${scirun_srns} ${scirun_srns_python})
   ENDIF()
 
@@ -171,14 +190,14 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     # In-app regression timeout (seconds). 60 gives the heaviest networks
     # headroom when the machine is under parallel load; genuine hangs are still
     # bounded by the ctest --timeout passed in CI.
-    ADD_TEST("${test_name}" ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
+    ADD_TEST(NAME "${test_name}" COMMAND ${EXE_LOC} -E ${srn} --no_splash --regression 60 ${scirun_test_data_args})
 
     IF(WIN32)
       SET_TESTS_PROPERTIES("${test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
     ENDIF()
 
-    # Networks that instantiate a ViewScene render through an offscreen GL
-    # context in regression mode. macOS serializes GPU command submission
+    # Networks that instantiate a ViewScene render through a real windowed GL
+    # context, in regression mode too. macOS serializes GPU command submission
     # across contexts, so running several ViewScene networks concurrently can
     # slow rendering enough to trip the in-app regression timeout. Give these
     # tests a shared RESOURCE_LOCK so CTest never schedules two of them at once,
@@ -193,7 +212,9 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 
 ENDIF()
 
-IF(RUN_IMPORT_TESTS)
+IF(RUN_IMPORT_TESTS AND NOT IS_DIRECTORY "${SCIRUN_TEST_RESOURCE_DIR}")
+  MESSAGE(STATUS "SCIRUN_TEST_RESOURCE_DIR is not a directory; skipping v4 import tests.")
+ELSEIF(RUN_IMPORT_TESTS)
   # Networks that reference modules not yet ported to SCIRun 5.
   SET(DISABLED_IMPORT_TESTS
     ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.MDSplus"
@@ -223,7 +244,7 @@ IF(RUN_IMPORT_TESTS)
     SET(import_test_name ".Test.ImportNetwork.${srn_rel}")
     # Run in GUI mode (no -x): import goes through the GuiCommandFactory's
     # FileImportCommand. The headless console path has no import command.
-    ADD_TEST("${import_test_name}" ${EXE_LOC} --no_splash --regression 30 --import ${srn})
+    ADD_TEST(NAME "${import_test_name}" COMMAND ${EXE_LOC} --no_splash --regression 30 --import ${srn})
     # Bound a hung import at the ctest level.
     SET_TESTS_PROPERTIES("${import_test_name}" PROPERTIES TIMEOUT 120)
     IF(WIN32)

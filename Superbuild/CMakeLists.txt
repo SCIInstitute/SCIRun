@@ -24,7 +24,7 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.21)
 
 # Pin the macOS floor explicitly. When unset, CMake defaults the deployment
 # target to the build host's OS/SDK, so the minimum supported macOS of a build

@@ -29,7 +29,7 @@
 #define CORE_PYTHON_PYTHONINTERPRETER_H
 
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 
 #include <boost/python.hpp>
 #include <boost/filesystem/path.hpp>
@@ -89,9 +89,9 @@ public:
 	bool run_string( const std::string& command ) override;
 
 	// RUN_SCRIPT:
-	/// Execute a python script.
+	/// Execute a python script. Returns false if it failed to compile or raised.
 	/// NOTE: The script is run in its own local namespace.
-	void run_script( const std::string& script );
+	bool run_script( const std::string& script );
 
 	// RUN_FILE:
 	/// Execute a python script from file.
@@ -134,7 +134,7 @@ namespace SCIRun::Core
 {
   inline void runPythonString(const std::string& cmd)
   {
-    #ifdef BUILD_WITH_PYTHON
+    #ifdef WITH_PYTHON
     PythonInterpreter::Instance().run_string(cmd);
     #else
     (void)cmd;

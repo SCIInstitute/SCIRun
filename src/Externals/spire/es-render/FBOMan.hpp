@@ -83,10 +83,10 @@ namespace ren {
     // Use this structure if you are storing FBO data for later retrieval.
     struct MinFBOData
     {
-      GLenum textureType;
-      GLsizei numPixelsX;
-      GLsizei numPixelsY;
-      GLsizei numPixelsZ;
+      GLenum textureType = 0;
+      GLsizei numPixelsX = 0;
+      GLsizei numPixelsY = 0;
+      GLsizei numPixelsZ = 0;
     };
 
     struct FBOData

@@ -42,6 +42,7 @@
 #include <Interface/Application/ModuleOptionsDialogConfiguration.h>
 #include <Interface/Modules/Base/ModuleLogWindow.h>
 #include <Interface/Application/ModuleWidget.h>
+#include <Interface/Application/FloatingDockWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PortWidgetManager.h>
@@ -375,6 +376,7 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
 
   createPorts(*theModule_);
   addPorts(currentIndex());
+  resizeForPortCount();
   updateProgrammablePorts();
 
   connect(this, &ModuleWidget::backgroundColorUpdated, this, &ModuleWidget::updateBackgroundColor);
@@ -498,6 +500,27 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
   {
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
   }
+  nameBasedWidth_ = frame->width();
+  resizeForPortCount();
+}
+
+// Mirrors the port placement in ModuleProxyWidget::createPortPositionProviders:
+// firstPortXPos + index * (width + spacing).
+int ModuleWidget::widthNeededForPorts() const
+{
+  const auto n = static_cast<int>(std::max(ports().numInputPorts(), ports().numOutputPorts()));
+  const int firstPortXPos = 5;
+  return firstPortXPos + n * (PortWidgetBase::DEFAULT_WIDTH + SMALL_PORT_SPACING) + firstPortXPos;
+}
+
+// The frame is sized from the title; with enough dynamic ports (ViewScene with
+// many inputs) the port row outgrew it and was clipped (#1874). Grow to fit,
+// and fall back to the title width once ports are removed again.
+void ModuleWidget::resizeForPortCount()
+{
+  const int target = std::max(nameBasedWidth_, widthNeededForPorts());
+  if (target != width())
+    resize(target, height());
 }
 
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
@@ -521,6 +544,22 @@ void ModuleWidget::subnetButtonClicked()
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
+  const auto incoming = static_cast<int>(
+    (color == Qt::red)    ? LogColorPriority::Error   :
+    (color == Qt::yellow) ? LogColorPriority::Warning :
+                            LogColorPriority::Remark);
+
+  // Only update if the incoming message has strictly higher priority than
+  // whatever is already shown (fixes #103: remark after error stays red).
+  int expected = currentLogPriority_.load();
+  while (incoming > expected)
+  {
+    if (currentLogPriority_.compare_exchange_weak(expected, incoming))
+      break;
+  }
+  if (incoming <= expected)
+    return;
+
   if (color == Qt::red)
   {
     errored_ = true;
@@ -531,6 +570,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
 
 void ModuleWidget::resetLogButtonColor()
 {
+  currentLogPriority_ = static_cast<int>(LogColorPriority::None);
   fullWidgetDisplay_->setStatusColor("");
 }
 
@@ -955,6 +995,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     ports_->reindexInputs();
 
     inputPortLayout_->insertWidget(newPortIndex, w);
+    resizeForPortCount();
 
     Q_EMIT dynamicPortChanged(pid.toString(), true);
   }
@@ -966,6 +1007,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
+      resizeForPortCount();
       Q_EMIT dynamicPortChanged(pid.toString(), false);
     }
   }
@@ -1092,6 +1134,7 @@ bool ModuleWidget::executeWithSignals()
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
+    currentLogPriority_ = static_cast<int>(LogColorPriority::None);
     //colorLocked_ = true; //TODO
     timer_.reset(new SimpleScopedTimer);
     theModule_->executeWithSignals();
@@ -1220,7 +1263,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
   if (isFloating)
   {
-    dockable_->setWindowFlags(Qt::Window);
+    FloatingDockWindow::applyFlags(dockable_);
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
   }
@@ -1266,7 +1309,7 @@ void ModuleWidget::toggleOptionsDialog()
 {
   if (dialogManager_.hasOptions())
   {
-    if (dockable_->isHidden())
+    if (FloatingDockWindow::isClosed(dockable_))
     {
       if (firstTimeShown_)
       {
@@ -1284,6 +1327,7 @@ void ModuleWidget::toggleOptionsDialog()
         }
         positions_.append(dockable_->pos());
       }
+      FloatingDockWindow::restoreIfMinimized(dockable_);
       dockable_->show();
       Q_EMIT showUIrequested(dialogManager_.options());
       dockable_->raise();
@@ -1416,6 +1460,7 @@ void ModuleWidget::showUI()
 {
   if (dockable_)
   {
+    FloatingDockWindow::restoreIfMinimized(dockable_);
     dockable_->show();
     dialogManager_.options()->expand();
     Q_EMIT showUIrequested(dialogManager_.options());

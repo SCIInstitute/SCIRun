@@ -48,6 +48,7 @@
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
+#include <Interface/Application/FloatingDockWindow.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -60,7 +61,7 @@
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
@@ -293,7 +294,7 @@ void SCIRunMainWindow::runScript()
 
 void SCIRunMainWindow::runMacro()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   auto index = sender()->property(MacroEditor::Index).toInt();
   auto script = macroEditor_->macroForButton(index);
   NetworkEditor::InEditingContext iec(networkEditor_);
@@ -576,7 +577,7 @@ void SCIRunMainWindow::launchNewUserWizard()
 
 void SCIRunMainWindow::launchPythonWizard()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   PythonWizard *wiz = new PythonWizard( [this](const  QString& code) {pythonConsole_->runWizardCommand(code); }, this);
   wiz->show();
 #endif
@@ -594,7 +595,7 @@ void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
   auto dock = qobject_cast<QDockWidget*>(sender());
   if (dock && isFloating)
   {
-    dock->setWindowFlags(Qt::Window);
+    FloatingDockWindow::applyFlags(dock);
     dock->show();
   }
 }
