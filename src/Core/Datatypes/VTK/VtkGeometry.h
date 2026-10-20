@@ -58,11 +58,17 @@ public:
       std::vector<float> range;
     };
 
-    VtkGeometryObject() {}
+    VtkGeometryObject() = default;
+    VtkGeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag);
     VtkGeometryObject(const VtkGeometryObject& other) = delete;
     VtkGeometryObject& operator=(const VtkGeometryObject& other) = delete;
 
     VtkGeometryObject* clone() const override;
+
+    void setObjectName(const std::string& name) { objectName_ = name; }
+    const std::string& objectName() const { return objectName_; }
+    const std::string uniqueID() const { return objectName_ + std::to_string(idIncrement_); }
+    void changeID() { ++idIncrement_; }
 
     std::string dynamic_type_name() const override { return "VtkGeometryObject"; }
     
@@ -79,7 +85,11 @@ public:
     Core::Geometry::BBox box;
 
     uint64_t id{0};
-    uint64_t version{ 0 };
+    uint64_t version{0};
+
+private:
+    std::string objectName_;       ///< Name of this object. Should be unique across all modules in the network.
+    uint64_t idIncrement_{0};  // Incrementing this lets you update the object without updating every other geometry object
 };
 
 using VtkGeometryObjectHandle = SharedPointer<VtkGeometryObject>;

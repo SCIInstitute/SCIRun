@@ -65,6 +65,8 @@ namespace Modules {
 
      private:
       void sendCompositeGeometry();
+      void processViewSceneObjectFeedback();
+      void processMeshComponentSelection();
     };
   }
 }

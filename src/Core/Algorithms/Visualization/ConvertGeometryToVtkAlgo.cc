@@ -341,7 +341,9 @@ namespace
     }
   }
 
-  VtkGeometryObjectHandle convertPass(const SpireSubPass& pass, std::string& skipReason)
+  VtkGeometryObjectHandle convertPass(
+      const GeometryHandle& leaf,
+      const SpireSubPass& pass, std::string& skipReason)
   {
     const auto layout = layoutOf(pass.vbo);
     if (auto reason = whyUnconvertible(pass, layout))
@@ -353,6 +355,7 @@ namespace
     const auto* colorMap = colorMapTextureOf(pass, layout);
     const bool transparent = isTransparent(pass.renderState);
     auto obj = std::make_shared<VtkGeometryObject>();
+    obj->setObjectName(leaf->uniqueID());
     obj->material = materialOf(pass, transparent, colorMap != nullptr);
 
     const size_t numVerts = pass.vbo.data->getBufferSize() / layout.stride;
@@ -400,7 +403,7 @@ AlgorithmOutput ConvertGeometryToVtkAlgo::run([[maybe_unused]] const AlgorithmIn
     for (const auto& pass : leaf->passes())
     {
       std::string reason;
-      auto obj = convertPass(pass, reason);
+      auto obj = convertPass(leaf, pass, reason);
       if (obj)
       {
         obj->version = ++versionNumber;

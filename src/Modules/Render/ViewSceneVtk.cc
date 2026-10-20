@@ -32,6 +32,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Core/Application/Preferences/Preferences.h>
+#include <Core/Datatypes/Feedback.h>
 
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
@@ -184,4 +185,28 @@ void ViewSceneVtk::sendCompositeGeometry()
   VtkGeometryObjectHandle composite(new CompositeVtkGeometryObject(flattened));
 
   get_state()->setTransientValue(Parameters::GeomData, composite, true);
+}
+
+void ViewSceneVtk::processViewSceneObjectFeedback()
+{
+  // TODO: match ID of touched geom object with port id, and send that info back too.
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
+  // TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
+  if (newInfo)
+  {
+    auto vsInfo = transient_value_cast<ViewSceneFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
+  }
+}
+
+void ViewSceneVtk::processMeshComponentSelection()
+{
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
+  if (newInfo)
+  {
+    const auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
+  }
 }
