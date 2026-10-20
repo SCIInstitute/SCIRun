@@ -45,11 +45,80 @@
 #include <Interface/Modules/Render/ViewSceneVtkControlsDock.h>
 #include <Interface/Modules/Render/ES/RendererCollaborators.h>
 
+#include <Graphics/Widgets/Widget.h>
+
+using namespace SCIRun::Graphics::Datatypes;
+
 namespace SCIRun {
 
 namespace Gui {
 
-//class ViewSceneVtkConfigDialog;
+  enum class WidgetColorVtk
+  {
+    RED,
+    GREEN,
+    BLUE
+  };
+
+  class ScopedWidgetColorChangerVtk
+  {
+   public:
+    ScopedWidgetColorChangerVtk(WidgetHandle widget, WidgetColorVtk color) : widget_(widget)
+    {
+      backupColorValues();
+      if (widget_)
+      {
+        backupColorValues();
+        switch (color)
+        {
+        case WidgetColorVtk::RED: colorWidgetRed(); break;
+        case WidgetColorVtk::GREEN: colorWidgetGreen(); break;
+        case WidgetColorVtk::BLUE: colorWidgetBlue(); break;
+        }
+      }
+    }
+
+    ~ScopedWidgetColorChangerVtk()
+    {
+      if (widget_) colorWidget(previousAmbientColor_, previousDiffuseColor_, previousSpecularColor_);
+    }
+
+   private:
+    WidgetHandle widget_;
+    glm::vec4 previousDiffuseColor_{0.0};
+    glm::vec4 previousSpecularColor_{0.0};
+    glm::vec4 previousAmbientColor_{0.0};
+
+    void colorWidget(glm::vec4 ambient, glm::vec4 diffuse, glm::vec4 specular)
+    {
+      for (auto& pass : widget_->passes())
+      {
+        pass.addUniform("uAmbientColor", ambient);
+        pass.addUniform("uDiffuseColor", diffuse);
+        pass.addUniform("uSpecularColor", specular);
+      }
+    }
+
+    void colorWidgetRed() { colorWidget(glm::vec4{0.1f, 0.0f, 0.0f, 1.0f}, glm::vec4{1.0f, 0.0f, 0.0f, 1.0f}, glm::vec4{0.1f, 0.0f, 0.0f, 1.0f}); }
+
+    void colorWidgetGreen() { colorWidget(glm::vec4{0.0f, 0.1f, 0.0f, 1.0f}, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f}, glm::vec4{0.0f, 0.1f, 0.0f, 1.0f}); }
+
+    void colorWidgetBlue() { colorWidget(glm::vec4{0.0f, 0.0f, 0.1f, 1.0f}, glm::vec4{0.0f, 0.0f, 1.0f, 1.0f}, glm::vec4{0.0f, 0.0f, 0.1f, 1.0f}); }
+
+    void backupColorValues()
+    {
+      for (auto& pass : widget_->passes())
+        for (auto& uniform : pass.mUniforms)
+        {
+          if (uniform.name == "uAmbientColor")
+            previousAmbientColor_ = uniform.data;
+          else if (uniform.name == "uDiffuseColor")
+            previousDiffuseColor_ = uniform.data;
+          else if (uniform.name == "uSpecularColor")
+            previousSpecularColor_ = uniform.data;
+        }
+    }
+  };
 
 class SCISHARE ViewSceneVtkDialog : public ModuleDialogGeneric, public Ui::ViewSceneVtk
 {
@@ -143,6 +212,8 @@ public Q_SLOTS:
   void adaptToFullScreenView(bool fullScreen) override;
 
  protected Q_SLOTS:
+  void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+
   void newGeometryValue();
   void autoRotateClicked();
   void nextTimestepClicked();
@@ -370,6 +441,15 @@ public Q_SLOTS:
   bool isFullScreen_{false};
 
   QTimer resizeTimer_{};
+
+  //widgets
+  SharedPointer<ScopedWidgetColorChangerVtk> widgetColorChanger_{};
+  Render::PreviousWidgetSelectionInfo previousWidgetInfo_;
+
+  bool shiftdown_{false};
+  bool mouseButtonPressed_{false};
+  Graphics::Datatypes::WidgetHandle selectedWidget_;
+  Core::Datatypes::WidgetMovement movementType_{Core::Datatypes::NONE};
 
   friend class ViewSceneControlsDockVtk;
   friend class AutoRotateControlsVtk;

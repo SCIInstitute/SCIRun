@@ -40,7 +40,9 @@ using namespace Core::Geometry;
 
 #ifdef WITH_VTK
 
-VtkRenderer::VtkRenderer() {}
+VtkRenderer::VtkRenderer()
+{
+}
 
 VtkRenderer::~VtkRenderer() {}
 

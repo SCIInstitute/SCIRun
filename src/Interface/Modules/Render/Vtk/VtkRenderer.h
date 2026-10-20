@@ -94,6 +94,7 @@ public:
   uint32_t height() {return height_;}
   const unsigned char* imagePixels() const { return imagePixels_; }
   QImage image() const { return image_; }
+  glm::mat4 getWidgetTransform() { return widgetTransform_; }
 
  private:
   static int vtkRendererInstances;
@@ -176,6 +177,9 @@ public:
 
   unsigned char* imagePixels_ = nullptr;
   QImage image_;
+
+  //widgets
+  glm::mat4 widgetTransform_{1.0f};
 };
 
 }}

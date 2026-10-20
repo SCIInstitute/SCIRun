@@ -117,6 +117,9 @@ void ViewSceneVtk::setStateDefaults()
   state->setValue(Parameters::ToolBarAdvancedPosition, 2);  // RightToolBarArea
 
   state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
+
+  get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
+  get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
 
 void ViewSceneVtk::portRemovedSlotImpl(const PortId&)

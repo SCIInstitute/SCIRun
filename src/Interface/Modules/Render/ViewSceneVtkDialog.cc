@@ -98,6 +98,9 @@ ViewSceneVtkDialog::ViewSceneVtkDialog(const std::string& name, ModuleStateHandl
   viewer_ = new VtkQWidget(this, renderer_);
 #endif
 
+  connect(this, &ViewSceneVtkDialog::mousePressSignalForGeometryObjectFeedback,
+      this, &ViewSceneVtkDialog::sendGeometryFeedbackToState);
+
   // Set background Color
   const auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
   bgColor_ = checkColorSetting(colorStr, Qt::black);
@@ -167,6 +170,19 @@ ViewSceneVtkDialog::~ViewSceneVtkDialog()
   delete renderer_;
 #endif
   viewSceneManager.removeViewScene(this);
+}
+
+void ViewSceneVtkDialog::sendGeometryFeedbackToState(int, int, const std::string& selName)
+{
+#ifdef WITH_VTK
+  auto trans = renderer_->getWidgetTransform();
+
+  ViewSceneFeedback vsf;
+  vsf.transform = toSciTransform(trans);
+  vsf.selectionName = selName;
+  vsf.movementType = movementType_;
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
+#endif
 }
 
 void ViewSceneVtkDialog::newGeometryValue()
