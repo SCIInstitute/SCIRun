@@ -96,6 +96,8 @@ void VtkRenderer::renderFrame()
 // Interaction---------------------------------------------------------------------------------------
 void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
 {
+  if (!initialized_) return;
+
   width_ = width;
   height_ = height;
 
@@ -147,6 +149,8 @@ void VtkRenderer::mouseWheel(int32_t delta)
 
 void VtkRenderer::autoView()
 {
+  if (!initialized_) return;
+
   renderer_->ResetCamera();
 
   renderFrame();
@@ -396,6 +400,8 @@ void VtkRenderer::setWidgetInteractionMode(MouseButton button)
 
 Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphics::Datatypes::WidgetList& widgets)
 {
+  if (!initialized_) return nullptr;
+
   vtkNew<vtkCellPicker> picker;
 
   if (!picker->Pick(x, y, 0, renderer_)) return nullptr;
@@ -414,6 +420,8 @@ Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphi
 
 void VtkRenderer::rebuildClippingPlanes()
 {
+  if (!initialized_) return;
+
   vtkClippingPlanes_.clear();
 
   double bounds[6];
@@ -492,6 +500,7 @@ void VtkRenderer::applyClippingPlanesToScene()
 
 void VtkRenderer::setBackgroundColor(const QColor& color)
 {
+  if (!initialized_) return;
   bgColor_ = color;
   renderer_->SetBackground(bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
 }
@@ -547,6 +556,8 @@ void VtkRenderer::initialize()
 
 void VtkRenderer::onCameraModified()
 {
+  if (!initialized_) return;
+
   vtkCamera* camera = renderer_->GetActiveCamera();
 
   overlayManager_->cameraChanged(camera);
@@ -598,6 +609,8 @@ void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
 
 void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
 
   double range[2];
@@ -640,6 +653,8 @@ void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandl
 
 void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!ugrid) return;
 
   double range[2];
@@ -684,6 +699,8 @@ void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGe
 
 void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   auto mapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
   mapper->SetInputData(image);
 
@@ -764,6 +781,8 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
 
 void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
 
   auto tube = vtkSmartPointer<vtkTubeFilter>::New();
@@ -804,6 +823,8 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
 
 void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
 
   auto tube = vtkSmartPointer<vtkTubeFilter>::New();
@@ -844,6 +865,8 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
 
 void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
 
   auto sphere = vtkSmartPointer<vtkSphereSource>::New();

@@ -1861,21 +1861,86 @@ void ViewSceneVtkDialog::resizeEvent(QResizeEvent* event)
   ModuleDialogGeneric::resizeEvent(event);
 }
 
+namespace {
+auto xPos(QMouseEvent* e)
+{
+#ifdef SCIRUN_QT6_ENABLED
+  return e->position().x();
+#else
+  return e->x();
+#endif
+}
+
+auto yPos(QMouseEvent* e)
+{
+#ifdef SCIRUN_QT6_ENABLED
+  return e->position().y();
+#else
+  return e->y();
+#endif
+}
+}
+
+bool ViewSceneVtkDialog::clickedInViewer(QMouseEvent* e) const
+{
+  return childAt(xPos(e), yPos(e)) == viewer_;
+}
+
 void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
 {
+  Q_EMIT closeAllNonPinnedPopups();
+  if (!clickedInViewer(event))
+  {
+    return;
+  }
+
 #ifdef WITH_VTK
-  const float x = static_cast<float>(event->x() - viewer_->pos().x());
+  if (!tryWidgetSelection(xPos(event), yPos(event), getRenderButton(event)))
+  {
+    const float x = static_cast<float>(event->x() - viewer_->pos().x());
 
-  const float y = static_cast<float>(event->y() - viewer_->pos().y());
+    const float y = static_cast<float>(event->y() - viewer_->pos().y());
 
-  renderer_->mousePress(x, y, getRenderButton(event));
+    renderer_->mousePress(x, y, getRenderButton(event));
+  }
 #endif
+
+  previousWidgetInfo_.setMousePosition(xPos(event), yPos(event));
 }
 
 void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
 {
 #ifdef WITH_VTK
+  const bool widgetMoved = renderer_->getWidgetTransform() != glm::mat4(1.0f);
+  if (selectedWidget_)
+  {
+    if (widgetMoved)
+    {
+      Q_EMIT mousePressSignalForGeometryObjectFeedback(xPos(event), yPos(event), selectedWidget_->uniqueID());
+      previousWidgetInfo_.setFrameIsFinished(false);
+    }
+    else
+    {
+      restoreObjColor();
+      selectedWidget_->changeID();
+      newGeometryValue();
+      previousWidgetInfo_.widgetColorRestored();
+    }
+
+    //unblockExecution();
+    previousWidgetInfo_.setPreviousWidget(selectedWidget_);
+    selectedWidget_.reset();
+    updateCursor();
+  }
+  else if (!shiftdown_)
+  {
+    //for (auto* vsd : viewScenesToUpdate)
+    //  vsd->inputMouseUpHelper();
+  }
+
   renderer_->mouseRelease();
+  mouseButtonPressed_ = false;
+
 #endif
 }
 
@@ -1984,7 +2049,7 @@ bool ViewSceneVtkDialog::needToWaitForWidgetSelection()
 
 bool ViewSceneVtkDialog::canSelectWidget()
 {
-  return shiftdown_ && previousWidgetInfo_.getFrameIsFinished() && !mouseButtonPressed_ && !needToWaitForWidgetSelection();
+  return shiftdown_ && !mouseButtonPressed_ && !needToWaitForWidgetSelection();
 }
 
 bool ViewSceneVtkDialog::tryWidgetSelection(int x, int y, MouseButton button)
@@ -2000,39 +2065,59 @@ bool ViewSceneVtkDialog::tryWidgetSelection(int x, int y, MouseButton button)
   return widgetSelected;
 }
 
-static std::vector<WidgetHandle> filterGeomObjectsForWidgets(
-    CompositeVtkGeometryObjectHandle geomData,
-    VisibleItemManagerVtk& visibleItems)
+static std::vector<WidgetHandle> filterGeomObjectsForWidgets(CompositeVtkGeometryObjectHandle geomData, VisibleItemManagerVtk& visibleItems)
 {
-  // getting geom list
   std::vector<WidgetHandle> objList;
+
+  if (!geomData) return objList;
+
   const auto& geomList = geomData->objects();
 
   int port = 0;
   for (auto it = geomList.begin(); it != geomList.end(); ++it, ++port)
   {
-    // Check if object is visible
     auto obj = *it;
-    auto name = obj->uniqueID();
-    auto displayName = QString::fromStdString(name).split(GeometryObject::delimiter).at(1);
-    if (visibleItems.isVisible(displayName))
+    if (!obj) continue;
+
+    const auto name = obj->uniqueID();
+
+    if (name.empty())
     {
-      auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
-      if (realObj)
+      LOG_DEBUG("Skipping geometry object with empty name");
+      continue;
+    }
+
+    auto parts = QString::fromStdString(name).split(GeometryObject::delimiter);
+
+    if (parts.size() < 2)
+    {
+      LOG_DEBUG("Skipping geometry object with invalid name: " + name);
+      continue;
+    }
+
+    const auto& displayName = parts[1];
+
+    //if (!visibleItems.isVisible(displayName)) continue;
+
+    auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+
+    if (!realObj) continue;
+
+    bool isWidget = false;
+    for (const auto& pass : realObj->passes())
+    {
+      if (pass.renderState.get(SCIRun::RenderState::ActionFlags::IS_WIDGET))
       {
-        // filter objs
-        bool isWidget = false;
-        for (const auto& pass : realObj->passes())
-        {
-          if (pass.renderState.get(SCIRun::RenderState::ActionFlags::IS_WIDGET))
-          {
-            isWidget = true;
-            break;
-          }
-        }
-        if (isWidget) objList.push_back(std::dynamic_pointer_cast<WidgetBase>(realObj));
+        isWidget = true;
+        break;
       }
     }
+
+    if (!isWidget) continue;
+
+    auto widget = std::dynamic_pointer_cast<WidgetBase>(realObj);
+
+    if (widget) objList.push_back(widget);
   }
 
   return objList;
@@ -2101,17 +2186,22 @@ void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton butt
 CompositeVtkGeometryObjectHandle ViewSceneVtkDialog::getGeomData()
 {
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  if (geomDataTransient && !geomDataTransient->empty())
+
+  if (!geomDataTransient || geomDataTransient->empty()) return {};
+
+  auto object = transient_value_cast<VtkGeometryObjectHandle>(geomDataTransient);
+
+  if (!object)
   {
-    auto geomData = transient_value_cast<CompositeVtkGeometryObjectHandle>(geomDataTransient);
-    if (!geomData)
-    {
-      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-      return nullptr;
-    }
-    return geomData;
+    LOG_DEBUG("Logical error: ViewSceneDialog received unexpected geometry type.");
+    return {};
   }
-  return {};
+
+  auto composite = std::dynamic_pointer_cast<CompositeVtkGeometryObject>(object);
+
+  if (composite) return composite;
+
+  return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{object});
 }
 
 bool ViewSceneVtkDialog::checkForSelectedWidget(WidgetHandle widget)

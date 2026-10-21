@@ -118,6 +118,14 @@ void ViewSceneVtk::setStateDefaults()
 
   state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
 
+  state->setValue(Parameters::ShowViewer, false);
+  state->setValue(Parameters::WindowSizeX, 450);
+  state->setValue(Parameters::WindowSizeY, 450);
+  state->setValue(Parameters::WindowPositionX, 200);
+  state->setValue(Parameters::WindowPositionY, 200);
+  state->setValue(Parameters::IsFloating, true);
+  state->setValue(Parameters::HasNewGeometry, false);
+
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
@@ -139,6 +147,7 @@ void ViewSceneVtk::asyncExecute(const PortId&, DatatypeHandle data)
   }
 
   sendCompositeGeometry();
+  get_state()->setValue(Parameters::HasNewGeometry, true);
 }
 
 void ViewSceneVtk::execute()

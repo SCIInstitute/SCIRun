@@ -371,6 +371,7 @@ protected:
   void setClosestAxisView();  // snap to nearest cardinal axis
 
   //---------------- Widgets -------------------------------------------------------------------
+  bool clickedInViewer(QMouseEvent* e) const;
   bool needToWaitForWidgetSelection();
   bool canSelectWidget();
   bool tryWidgetSelection(int x, int y, MouseButton button);
