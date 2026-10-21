@@ -28,6 +28,7 @@
 #include "VtkRenderer.h"
 #include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Graphics/Widgets/Widget.h>
 #include <iostream>
 #include "VtkOrientationOverlay.h"
 #include "VtkScaleBarOverlay.h"
@@ -381,21 +382,22 @@ glm::mat4 VtkRenderer::getWorldToProjection() const
   return glmResult;
 }
 
-//void VtkRenderer::doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y) {
-//}
-//
-//void VtkRenderer::removeAllGeomObjects()
-//{
-//}
-//
-//void VtkRenderer::setWidgetInteractionMode(MouseButton button)
-//{
-//}
-//
-//Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphics::Datatypes::WidgetList& widgets)
-//{
-//  return nullptr;
-//}
+void VtkRenderer::doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y)
+{
+}
+
+void VtkRenderer::removeAllGeomObjects()
+{
+}
+
+void VtkRenderer::setWidgetInteractionMode(MouseButton button)
+{
+}
+
+Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphics::Datatypes::WidgetList& widgets)
+{
+  return nullptr;
+}
 
 void VtkRenderer::rebuildClippingPlanes()
 {
