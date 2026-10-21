@@ -51,7 +51,7 @@ Release notes and every variant are on the [nightly release page](https://github
 | macOS, Apple silicon | [SCIRun-nightly-macos14-arm64-qt6-python.pkg](https://github.com/SCIInstitute/SCIRun/releases/download/nightly/SCIRun-nightly-macos14-arm64-qt6-python.pkg) | macOS 14 or newer |
 | Windows | [SCIRun-nightly-windows-x64-qt5-python.exe](https://github.com/SCIInstitute/SCIRun/releases/download/nightly/SCIRun-nightly-windows-x64-qt5-python.exe) | Windows 10/11, x64 |
 | Windows, Qt 6 | [SCIRun-nightly-windows-x64-qt6-python.exe](https://github.com/SCIInstitute/SCIRun/releases/download/nightly/SCIRun-nightly-windows-x64-qt6-python.exe) | Windows 10/11, x64 |
-| Linux | No installer yet ([#1396](https://github.com/SCIInstitute/SCIRun/issues/1396)): [build from source](#user-content-build-from-source) | |
+| Linux | No installer yet ([#2851](https://github.com/SCIInstitute/SCIRun/issues/2851)): [build from source](#user-content-build-from-source) | |
 | macOS, Intel | No daily installer: [build from source](#user-content-build-from-source) | |
 
 The installers are not signed yet ([#1663](https://github.com/SCIInstitute/SCIRun/issues/1663)), so the OS blocks them on first launch:
