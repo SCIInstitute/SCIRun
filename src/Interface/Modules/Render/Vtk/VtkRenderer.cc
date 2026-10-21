@@ -396,7 +396,20 @@ void VtkRenderer::setWidgetInteractionMode(MouseButton button)
 
 Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphics::Datatypes::WidgetList& widgets)
 {
-  return nullptr;
+  vtkNew<vtkCellPicker> picker;
+
+  if (!picker->Pick(x, y, 0, renderer_)) return nullptr;
+
+  auto actor = picker->GetActor();
+  if (!actor) return nullptr;
+
+  auto idIt = actorIds_.find(actor);
+  if (idIt == actorIds_.end()) return nullptr;
+
+  auto widgetIt = widgetMap_.find(idIt->second);
+  if (widgetIt == widgetMap_.end()) return nullptr;
+
+  return widgetIt->second;
 }
 
 void VtkRenderer::rebuildClippingPlanes()

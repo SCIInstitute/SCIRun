@@ -42,8 +42,6 @@ ConvertGeometryToVtk::ConvertGeometryToVtk() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Geometry);
   INITIALIZE_PORT(VtkGeometry);
-  getOutputPort(VtkGeometry)->connectConnectionFeedbackListener(
-      [this](const ModuleFeedback& f) { sendFeedbackUpstreamAlongIncomingConnections(f); });
 }
 
 void ConvertGeometryToVtk::execute()
@@ -55,4 +53,14 @@ void ConvertGeometryToVtk::execute()
     auto output = algo().run(withInputData((Geometry, geom)));
     sendOutputFromAlgorithm(VtkGeometry, output);
   }
+}
+
+void ConvertGeometryToVtk::setStateDefaults()
+{
+  getOutputPort(VtkGeometry)->
+      connectConnectionFeedbackListener(
+          [this](const ModuleFeedback& f)
+          {
+              sendFeedbackUpstreamAlongIncomingConnections(f);
+          });
 }

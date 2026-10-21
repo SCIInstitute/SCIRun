@@ -44,6 +44,8 @@
 #include <QImage>
 #include <QColor>
 
+#include <unordered_map>
+
 namespace SCIRun {
 namespace Graphics {
   namespace Datatypes {
@@ -201,6 +203,8 @@ public:
 
   //widgets
   glm::mat4 widgetTransform_{1.0f};
+  std::unordered_map<std::string, Graphics::Datatypes::WidgetHandle> widgetMap_;
+  std::unordered_map<vtkProp*, std::string> actorIds_;
 };
 
 }}

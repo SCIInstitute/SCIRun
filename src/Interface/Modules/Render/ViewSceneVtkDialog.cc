@@ -1691,6 +1691,60 @@ const ViewSceneVtkDialog::ShortcutTable& ViewSceneVtkDialog::shortcutTable()
   return table;
 }
 
+namespace {
+// Keys 1-6 (no modifier) → axis-aligned views; handled as a range so the
+// table only needs one representative entry for the help dialog.
+bool isAxisViewKey(Qt::Key key, Qt::KeyboardModifiers mods)
+{
+  return mods == Qt::NoModifier && key >= Qt::Key_1 && key <= Qt::Key_6;
+}
+}
+
+bool ViewSceneVtkDialog::dispatchShortcutKey(QKeyEvent* event)
+{
+  const auto key = static_cast<Qt::Key>(event->key());
+  const auto mods = event->modifiers() & ~Qt::KeypadModifier;
+
+  if (isAxisViewKey(key, mods))
+  {
+    static const char* const axisNames[] = {"+X", "-X", "+Y", "-Y", "+Z", "-Z"};
+    const int n = key - Qt::Key_0;
+    setAxisView(n);
+    flashShortcutTooltip(QString("%1 View").arg(axisNames[n - 1]));
+    return true;
+  }
+
+  for (const auto& sc : shortcutTable())
+  {
+    if (sc.key == key && sc.modifiers == mods && sc.action)
+    {
+      sc.action(this);
+      flashShortcutTooltip(sc.actionName);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ViewSceneVtkDialog::handlesShortcutKey(QKeyEvent* event) const
+{
+  const auto key = static_cast<Qt::Key>(event->key());
+  const auto mods = event->modifiers() & ~Qt::KeypadModifier;
+
+  if (isAxisViewKey(key, mods)) return true;
+
+  for (const auto& sc : shortcutTable())
+  {
+    if (sc.key == key && sc.modifiers == mods && sc.action) return true;
+  }
+  return false;
+}
+
+void ViewSceneVtkDialog::flashShortcutTooltip(const QString& msg)
+{
+  QToolTip::showText(mapToGlobal(QPoint(width() / 2, 32)), msg, this, {}, 1500);
+}
+
 void ViewSceneVtkDialog::pullSpecial()
 {
   if (!pulledSavedVisibility_)
@@ -1731,6 +1785,175 @@ void ViewSceneVtkDialog::pullSpecial()
   }
 }
 
+bool ViewSceneVtkDialog::eventFilter(QObject* obj, QEvent* event)
+{
+  if (obj == shortcutsDialog_)
+  {
+    if (event->type() == QEvent::Move)
+    {
+      shortcutsDialogPos_ = shortcutsDialog_->pos();
+      return false;
+    }
+  }
+  if (event->type() == QEvent::KeyPress && (obj == shortcutsDialog_ || obj == shortcutsTable_))
+  {
+    if (dispatchShortcutKey(static_cast<QKeyEvent*>(event))) return true;  // shortcut fired — consume so dialog doesn't also handle it
+  }
+  return ModuleDialogGeneric::eventFilter(obj, event);
+}
+
+bool ViewSceneVtkDialog::event(QEvent* event)
+{
+  // Modifier shortcuts overlap with main-window actions -- Ctrl+0 is also
+  // "Reset Network Zoom" -- and those win over key events while this dialog is
+  // docked. Claiming the override keeps the key an ordinary key press for us.
+  if (event->type() == QEvent::ShortcutOverride && handlesShortcutKey(static_cast<QKeyEvent*>(event)))
+  {
+    event->accept();
+    return true;
+  }
+  return ModuleDialogGeneric::event(event);
+}
+
+void ViewSceneVtkDialog::showEvent(QShowEvent* evt)
+{
+  {
+    const auto qs = QSize(state_->getValue(Parameters::WindowSizeX).toInt(), state_->getValue(Parameters::WindowSizeY).toInt());
+    parentWidget()->resize(qs);
+  }
+
+  if (!shown_)
+  {
+    autoViewClicked();
+    shown_ = true;
+  }
+
+  if (pulledSavedVisibility_)
+  {
+    ScopedWidgetSignalBlocker ssb(this);
+    state_->setValue(Parameters::ShowViewer, true);
+  }
+
+  //updateModifiedGeometriesAndSendScreenShot();
+
+  ModuleDialogGeneric::showEvent(evt);
+}
+
+void ViewSceneVtkDialog::hideEvent(QHideEvent* evt)
+{
+  if (pulledSavedVisibility_)
+  {
+    ScopedWidgetSignalBlocker ssb(this);
+    state_->setValue(Parameters::ShowViewer, false);
+  }
+
+  // A frame requested just before hiding will never paint; don't leave the
+  // module waiting on it (#2760).
+  // if (impl_->mGLWidget->frameRequested()) unblockExecution();
+
+  ModuleDialogGeneric::hideEvent(evt);
+}
+
+void ViewSceneVtkDialog::resizeEvent(QResizeEvent* event)
+{
+  resizeTimer_.start(400);
+
+  ModuleDialogGeneric::resizeEvent(event);
+}
+
+void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
+{
+#ifdef WITH_VTK
+  const float x = static_cast<float>(event->x() - viewer_->pos().x());
+
+  const float y = static_cast<float>(event->y() - viewer_->pos().y());
+
+  renderer_->mousePress(x, y, getRenderButton(event));
+#endif
+}
+
+void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+#ifdef WITH_VTK
+  renderer_->mouseRelease();
+#endif
+}
+
+void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
+{
+#ifdef WITH_VTK
+  const float x = static_cast<float>(event->x() - viewer_->pos().x());
+
+  const float y = static_cast<float>(event->y() - viewer_->pos().y());
+
+  if (selectedWidget_)
+  {
+    // move widget
+  }
+  else if (!shiftdown_)
+  {
+    renderer_->mouseMove(x, y, getRenderButton(event));
+  }
+  else
+  {
+    tryWidgetSelection(previousWidgetInfo_.getPreviousMouseX(), previousWidgetInfo_.getPreviousMouseY(), getRenderButton(event));
+  }
+#endif
+}
+
+void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
+{
+#ifdef WITH_VTK
+  renderer_->mouseWheel(event->angleDelta().y());
+#endif
+}
+
+void ViewSceneVtkDialog::keyPressEvent(QKeyEvent* event)
+{
+  // Shift is handled separately — it affects cursor state, not a command shortcut.
+  if (event->key() == Qt::Key_Shift)
+  {
+    shiftdown_ = true;
+    updateCursor();
+    return;
+  }
+  dispatchShortcutKey(event);
+}
+
+void ViewSceneVtkDialog::keyReleaseEvent(QKeyEvent* event)
+{
+  switch (event->key())
+  {
+  case Qt::Key_Shift:
+    shiftdown_ = false;
+    updateCursor();
+    break;
+  default:;
+  }
+}
+
+void ViewSceneVtkDialog::focusOutEvent(QFocusEvent*)
+{
+  shiftdown_ = false;
+  updateCursor();
+}
+
+void ViewSceneVtkDialog::focusInEvent(QFocusEvent*)
+{
+  updateCursor();
+}
+
+void ViewSceneVtkDialog::closeEvent(QCloseEvent* evt)
+{
+  // NOTE: At one point this was required because the renderer was
+  // multi-threaded. It is likely we will run into the same issue in the
+  // future. Kept for future reference.
+  // glLayout->removeWidget(impl_->mGLWidget);
+
+  //if (impl_->mGLWidget) impl_->mGLWidget->close();
+  ModuleDialogGeneric::closeEvent(evt);
+}
+
 void ViewSceneVtkDialog::mousePositionToScreenSpace(int xIn, int yIn, float& xOut, float& yOut)
 {
 #ifdef WITH_VTK
@@ -1749,42 +1972,6 @@ MouseButton ViewSceneVtkDialog::getRenderButton(QMouseEvent* event)
   else if (event->buttons() & Qt::RightButton) btn = MouseButton::RIGHT;
   else if (event->buttons() & Qt::MiddleButton)   btn = MouseButton::MIDDLE;
   return btn;
-}
-
-void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
-{
-#ifdef WITH_VTK
-  const float x = static_cast<float>(event->x() - viewer_->pos().x());
-
-  const float y = static_cast<float>(event->y() - viewer_->pos().y());
-
-  renderer_->mousePress(x, y, getRenderButton(event));
-#endif
-}
-
-void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
-{
-#ifdef WITH_VTK
-  const float x = static_cast<float>(event->x() - viewer_->pos().x());
-
-  const float y = static_cast<float>(event->y() - viewer_->pos().y());
-
-  renderer_->mouseMove(x, y, getRenderButton(event));
-#endif
-}
-
-void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
-{
-#ifdef WITH_VTK
-  renderer_->mouseRelease();
-#endif
-}
-
-void ViewSceneVtkDialog::wheelEvent(QWheelEvent* event)
-{
-#ifdef WITH_VTK
-  renderer_->mouseWheel(event->angleDelta().y());
-#endif
 }
 
 bool ViewSceneVtkDialog::needToWaitForWidgetSelection()
@@ -1860,9 +2047,6 @@ void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton butt
     auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- selectObject");
     LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-    //auto spire = mSpire.lock();
-    //if (!spire) return;
-
     const auto geomData = getGeomData();
     if (geomData)
     {
@@ -1886,15 +2070,15 @@ void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton butt
         if (previousWidgetInfo_.hasPreviousWidget())
         {
           selectedWidget_ = previousWidgetInfo_.getPreviousWidget();
-          //renderer_->doInitialWidgetUpdate(selectedWidget_, adjustedX, adjustedY);
+          renderer_->doInitialWidgetUpdate(selectedWidget_, adjustedX, adjustedY);
         }
         delayAfterLastSelection_ = 50;
       }
       else
       {
-        //renderer_->removeAllGeomObjects();
-        //renderer_->setWidgetInteractionMode(button);
-        //selectedWidget_ = renderer_->select(adjustedX, adjustedY, widgetHandles_);
+        renderer_->removeAllGeomObjects();
+        renderer_->setWidgetInteractionMode(button);
+        selectedWidget_ = renderer_->select(adjustedX, adjustedY, widgetHandles_);
         previousWidgetInfo_.setCameraTransform(currentCameraTransform);
         delayAfterLastSelection_ = 200;
       }

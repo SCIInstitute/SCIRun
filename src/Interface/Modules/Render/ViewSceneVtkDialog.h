@@ -196,14 +196,6 @@ Q_SIGNALS:
   void closeAllNonPinnedPopups();
   void fullScreenChanged();
 
-protected:
-  void pullSpecial() override;
-  void mousePressEvent(QMouseEvent* event) override;
-  void mouseMoveEvent(QMouseEvent* event) override;
-  void mouseReleaseEvent(QMouseEvent* event) override;
-  void wheelEvent(QWheelEvent* event) override;
-  void contextMenuEvent(QContextMenuEvent*) override {}
-
 public Q_SLOTS:
   void printToString() const { std::cout << toString(""); }
   void sendBugReport();
@@ -213,7 +205,7 @@ public Q_SLOTS:
   void menuMouseControlChanged(int index);
   void adaptToFullScreenView(bool fullScreen) override;
 
- protected Q_SLOTS:
+protected Q_SLOTS:
   void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
 
   void newGeometryValue();
@@ -320,6 +312,27 @@ public Q_SLOTS:
   void setScreenshotDirectory();
   void setToolBarPositions();
 
+protected:
+  //---------------- Initialization ------------------------------------------------------------
+  void pullSpecial() override;
+  bool eventFilter(QObject* obj, QEvent* event) override;
+  bool event(QEvent* event) override;
+
+  //---------------- Input ---------------------------------------------------------------------
+  void showEvent(QShowEvent* evt) override;
+  void hideEvent(QHideEvent* evt) override;
+  void resizeEvent(QResizeEvent* event) override;
+  void mousePressEvent(QMouseEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void wheelEvent(QWheelEvent* event) override;
+  void keyPressEvent(QKeyEvent* event) override;
+  void keyReleaseEvent(QKeyEvent* event) override;
+  void focusOutEvent(QFocusEvent* event) override;
+  void focusInEvent(QFocusEvent* event) override;
+  void closeEvent(QCloseEvent* evt) override;
+  void contextMenuEvent(QContextMenuEvent*) override {}
+
  private:
   void addToolBar();
   void setupScaleBar();
@@ -380,7 +393,11 @@ public Q_SLOTS:
   void saveScreenshot(QString directory, bool notify);
 
   static const ShortcutTable& shortcutTable();
+  bool dispatchShortcutKey(QKeyEvent* event);
+  bool handlesShortcutKey(QKeyEvent* event) const;
+  void flashShortcutTooltip(const QString& msg);
 
+ private:
   std::unique_ptr<Core::GeometryIDGenerator> gid_;
   std::string name_;
 
@@ -462,6 +479,7 @@ public Q_SLOTS:
   int delayAfterLastSelection_{50};
   std::vector<Graphics::Datatypes::WidgetHandle> widgetHandles_{};
 
+  bool shown_{false};
   bool shiftdown_{false};
   bool mouseButtonPressed_{false};
   Graphics::Datatypes::WidgetHandle selectedWidget_;
