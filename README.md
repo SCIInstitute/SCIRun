@@ -23,8 +23,10 @@ wire modules into a network, run it, and explore the results interactively.**
 - [SCIRun 5](#user-content-scirun-5)
 	- [Summary](#user-content-summary)
 	- [Goals](#user-content-goals)
+	- [Install](#user-content-install)
+ 	  - [Nightly installers](#user-content-nightly-installers)
+ 	  - [Build from source](#user-content-build-from-source)
 	- [Documentation](#user-content-documentation)
- 	  - [Build](#user-content-build)
  	  - [Python API](#user-content-python-api)
 	- [Questions and Answers](#user-content-questions-and-answers)
 	- [License and Credits](#user-content-license-and-credits)
@@ -38,11 +40,45 @@ wire modules into a network, run it, and explore the results interactively.**
 SCIRun 5 is a complete rewrite of the GUI front end and graphical components of SCIRun 4, including a more stable and
 efficient middle layer, with support for Python scripting.
 
+### Install
+
+#### Nightly installers
+Built from `master` every night; the links below always point at the latest build.
+Release notes and every variant are on the [nightly release page](https://github.com/SCIInstitute/SCIRun/releases/tag/nightly).
+
+| Platform | Installer | Runs on |
+|---|---|---|
+| macOS, Apple silicon | [SCIRun-nightly-macos14-arm64-qt6-python.pkg](https://github.com/SCIInstitute/SCIRun/releases/download/nightly/SCIRun-nightly-macos14-arm64-qt6-python.pkg) | macOS 14 or newer |
+| Windows | [SCIRun-nightly-windows-x64-qt5-python.exe](https://github.com/SCIInstitute/SCIRun/releases/download/nightly/SCIRun-nightly-windows-x64-qt5-python.exe) | Windows 10/11, x64 |
+| Windows, Qt 6 | [SCIRun-nightly-windows-x64-qt6-python.exe](https://github.com/SCIInstitute/SCIRun/releases/download/nightly/SCIRun-nightly-windows-x64-qt6-python.exe) | Windows 10/11, x64 |
+| Linux | No installer yet ([#1396](https://github.com/SCIInstitute/SCIRun/issues/1396)): [build from source](#user-content-build-from-source) | |
+| macOS, Intel | No daily installer: [build from source](#user-content-build-from-source) | |
+
+The installers are not signed yet ([#1663](https://github.com/SCIInstitute/SCIRun/issues/1663)), so the OS blocks them on first launch:
+- **macOS:** `xattr -dr com.apple.quarantine SCIRun-nightly-*.pkg`, then open the package.
+- **Windows:** at the SmartScreen prompt choose **More info**, then **Run anyway**.
+
+Tagged builds are on the [releases page](https://github.com/SCIInstitute/SCIRun/releases).
+
+#### Build from source
+You need CMake 3.21+, a C++17 compiler and, for the GUI, Qt 5.15 or Qt 6.3.1+.
+The Superbuild downloads and compiles every other dependency, so the first build takes 30–90 minutes and about 15 GB of disk.
+
+```bash
+git clone https://github.com/SCIInstitute/SCIRun.git
+cd SCIRun
+./build.sh                 # Linux and macOS; --help lists options such as --headless and -j8
+```
+
+```powershell
+.\build.ps1 -BuildDir C:\SR  # Windows; offers to install any missing tools, Qt included
+```
+
+On Windows keep the build directory short: the Superbuild nests deeply enough to hit the 260-character path limit.
+Platform requirements, CMake presets and all build options are in the [build guide](https://scirun.readthedocs.io/en/latest/start/build.html).
+
 ### Documentation
 For documentation, please see: https://scirun.readthedocs.io/en/latest/
-
-#### Build
-Please see https://scirun.readthedocs.io/en/latest/start/build.html
 
 #### Python API
 Please see https://scirun.readthedocs.io/en/latest/user_doc/python.html
