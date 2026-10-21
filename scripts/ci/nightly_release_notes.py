@@ -13,9 +13,11 @@ The merge is driven by HTML comment markers in the existing body:
     <!-- changes --> ... <!-- /changes -->
 
 Rules:
-  * This run replaces only its OWN platform's asset block. Other platforms are
-    carried over verbatim -- their assets are still on the release. Each block
-    records the commit it was built from, so a stale one is visible as such.
+  * This run rebuilds only its OWN platform's asset block. Other platforms are
+    carried over verbatim -- their assets are still on the release. Within its
+    own block, rows for assets it didn't rebuild but that are still on the
+    release (weekly-only jobs, #2850) are carried over too. Each row records
+    when and from which commit it was built, so a stale one is visible as such.
   * The changelog is recomputed only when this run's commit differs from the
     recorded nightly-sha. Same commit (the usual mac/windows pair) preserves it.
 
@@ -34,6 +36,9 @@ import sys
 from pathlib import Path
 
 SHA_MARKER = re.compile(r"<!--\s*nightly-sha:\s*([0-9a-f]{7,40})\s*-->")
+ROW_ASSET = re.compile(r"^\| \[`([^`]+)`\]")
+FLOOR_WARNING = "&#9888;&#65039;"
+TABLE_COLUMNS = 6
 REPO_URL = "https://github.com/SCIInstitute/SCIRun"
 MAX_COMMITS = 50
 
@@ -89,11 +94,32 @@ def load_infos(dist: Path) -> list[dict]:
     return infos
 
 
-def asset_table(infos: list[dict], asset_names: dict[str, str]) -> str:
+def carried_rows(previous: str | None, keep: set[str]) -> list[str]:
+    """Rows of this platform's previous table whose asset is in `keep`."""
+    rows = []
+    for ln in (previous or "").splitlines():
+        m = ROW_ASSET.match(ln)
+        if not m or m.group(1) not in keep:
+            continue
+        # Rows from before the Built column existed.
+        missing = TABLE_COLUMNS - (ln.count("|") - 1)
+        rows.append(ln + " -- |" * max(missing, 0))
+    return rows
+
+
+def built(info: dict) -> str:
+    date = info.get("built_utc", "")[:10]
+    sha = info.get("commit", "")[:7]
+    return " ".join(x for x in (date, f"`{sha}`" if sha else "") if x) or "--"
+
+
+def asset_table(infos: list[dict], asset_names: dict[str, str],
+                carried: list[str] = ()) -> str:
     rows = [
-        "| Installer | Arch | Runs on | Qt | Python |",
-        "|---|---|---|---|---|",
+        "| Installer | Arch | Runs on | Qt | Python | Built |",
+        "|---|---|---|---|---|---|",
     ]
+    fresh = []
     for i in sorted(infos, key=lambda x: x.get("slug", "")):
         slug = i.get("slug", "?")
         name = asset_names.get(slug, slug)
@@ -101,29 +127,28 @@ def asset_table(infos: list[dict], asset_names: dict[str, str]) -> str:
         if i["platform"] == "macos" and floor:
             runs = f"macOS {floor} or newer"
             if i.get("os_floor_exceeds_max"):
-                runs += " &#9888;&#65039;"
+                runs += " " + FLOOR_WARNING
         elif i["platform"] == "windows":
             runs = "Windows 10/11 x64"
         else:
             runs = i.get("runner_os", "?")
-        rows.append(
-            "| [`{}`]({}/releases/download/nightly/{}) | {} | {} | {} | {} |".format(
+        fresh.append(
+            "| [`{}`]({}/releases/download/nightly/{}) | {} | {} | {} | {} | {} |".format(
                 name, REPO_URL, name, i.get("arch", "?"), runs,
                 i.get("qt_version") or "--", "yes" if i.get("python") else "no",
+                built(i),
             )
         )
+    body = sorted([*fresh, *carried], key=lambda r: ROW_ASSET.match(r).group(1))
 
-    commits = sorted({i.get("commit", "")[:7] for i in infos if i.get("commit")})
-    note = f"\nBuilt from `{', '.join(commits)}`." if commits else ""
-
-    warned = [i for i in infos if i.get("os_floor_exceeds_max")]
-    if warned:
-        note += (
-            "\n\n&#9888;&#65039; These are built on the newest runner image and "
+    note = ""
+    if any(FLOOR_WARNING in r for r in body):
+        note = (
+            "\n\n" + FLOOR_WARNING + " These are built on the newest runner image and "
             "inherit its minimum OS, so they will not launch on older macOS "
             "releases that SCIRun otherwise supports."
         )
-    return "\n".join(rows) + note
+    return "\n".join(rows + body) + note
 
 
 def main() -> int:
@@ -133,6 +158,9 @@ def main() -> int:
     ap.add_argument("--existing-body", type=Path)
     ap.add_argument("--asset-names", type=Path,
                     help="JSON map of slug -> final asset filename")
+    ap.add_argument("--release-assets", type=Path,
+                    help="Asset names on the release after cleanup; this "
+                         "platform's rows for ones not rebuilt are carried over")
     ap.add_argument("--updated",
                     help="Human-readable UTC timestamp of this run, shown at "
                          "the top of the body since GitHub's own 'released "
@@ -147,6 +175,11 @@ def main() -> int:
     if args.asset_names and args.asset_names.exists():
         asset_names = json.loads(args.asset_names.read_text())
 
+    release_assets: set[str] = set()
+    if args.release_assets and args.release_assets.exists():
+        release_assets = set(args.release_assets.read_text().split())
+    keep = release_assets - set(asset_names.values())
+
     infos = load_infos(args.dist)
     if not infos:
         print("::warning::No build-info.json found; asset table will be omitted",
@@ -158,7 +191,8 @@ def main() -> int:
     for plat in ("macos", "windows", "linux"):
         if plat in platforms:
             mine = [i for i in infos if i["platform"] == plat]
-            blocks.append(block(f"assets:{plat}", asset_table(mine, asset_names)))
+            carried = carried_rows(extract(f"assets:{plat}", existing), keep)
+            blocks.append(block(f"assets:{plat}", asset_table(mine, asset_names, carried)))
         else:
             carried = extract(f"assets:{plat}", existing)
             if carried:
