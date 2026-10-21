@@ -1,13 +1,22 @@
-![SCIRun Banner](https://sci.utah.edu/wp-content/uploads/2025/07/scirun.webp "")
+<div align="center">
 
-## SCIRun 5
-<!-- https://github.com/SCIInstitute/SCIRun -->
+<img src="docs/_static/scirun.png" alt="SCIRun" width="420">
 
-[![mac-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/mac.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/mac.yml)
-[![linux-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/ccpp.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/ccpp.yml)
-[![windows-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/windows.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/windows.yml)
-[![regression-tests](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml/badge.svg)](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml)
+**SCIRun is a dataflow-based platform for scientific visualization and computation:<br>
+wire modules into a network, run it, and explore the results interactively.**
+
+<!-- Windows push runs skip the build job, so its badge tracks the nightly schedule instead. -->
+[![mac-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/mac.yml/badge.svg?branch=master)](https://github.com/SCIInstitute/SCIRun/actions/workflows/mac.yml?query=branch%3Amaster)
+[![linux-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/ccpp.yml/badge.svg?branch=master)](https://github.com/SCIInstitute/SCIRun/actions/workflows/ccpp.yml?query=branch%3Amaster)
+[![windows-build](https://github.com/SCIInstitute/SCIRun/actions/workflows/windows.yml/badge.svg?event=schedule)](https://github.com/SCIInstitute/SCIRun/actions/workflows/windows.yml?query=event%3Aschedule)
+[![regression-tests](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml/badge.svg?event=schedule)](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml?query=event%3Aschedule)
 [![coverage](https://codecov.io/gh/SCIInstitute/SCIRun/branch/master/graph/badge.svg)](https://codecov.io/gh/SCIInstitute/SCIRun)
+<br>
+[![docs](https://readthedocs.org/projects/scirun/badge/?version=latest)](https://scirun.readthedocs.io/en/latest/)
+[![release](https://img.shields.io/github/v/release/SCIInstitute/SCIRun?include_prereleases&filter=v*)](https://github.com/SCIInstitute/SCIRun/releases)
+[![license](https://img.shields.io/github/license/SCIInstitute/SCIRun)](LICENSE.md)
+
+</div>
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
@@ -50,6 +59,8 @@ For help, check out the discussion page: https://github.com/SCIInstitute/SCIRun/
 
 ### License and Credits
   For more information, please see: http://software.sci.utah.edu
+
+  Icons made by [DinosoftLabs](https://www.flaticon.com/authors/dinosoftlabs) from [www.flaticon.com](https://www.flaticon.com/).
 
   The MIT License
 
