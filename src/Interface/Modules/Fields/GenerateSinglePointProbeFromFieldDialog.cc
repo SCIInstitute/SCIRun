@@ -62,7 +62,7 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   connect(moveToComboBox_, COMBO_BOX_ACTIVATED_STRING, this, &GenerateSinglePointProbeFromFieldDialog::enableWidgets);
   connect(colorChooserPushButton_, &QPushButton::clicked, this, &GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor);
   connectButtonToExecuteSignal(colorChooserPushButton_);
-  connect(bboxScaleCheckBox_, &QCheckBox::stateChanged, this, &GenerateSinglePointProbeFromFieldDialog::toggleSpinBoxes);
+  connect(bboxScaleCheckBox_, &QCheckBox::toggled, this, &GenerateSinglePointProbeFromFieldDialog::toggleSpinBoxes);
 }
 
 void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)

@@ -61,16 +61,16 @@ public:
   void setToolBarPopupHideDelay(int delay);
 
 public Q_SLOTS:
-  void updateModuleErrorDialogOption(int state);
-  void updateModuleErrorInlineMessagesOption(int state);
-  void updateSaveBeforeExecuteOption(int state);
-  void updateAutoNotesState(int state);
-  void updateHighDPIAdjust(int state);
-  void updateForceGridBackground(int state);
-  void updateAutoRotateViewer(int state);
+  void updateModuleErrorDialogOption(bool state);
+  void updateModuleErrorInlineMessagesOption(bool state);
+  void updateSaveBeforeExecuteOption(bool state);
+  void updateAutoNotesState(bool state);
+  void updateHighDPIAdjust(bool state);
+  void updateForceGridBackground(bool state);
+  void updateAutoRotateViewer(bool state);
   void updateToolBarPopupShowDelay(int delay);
   void updateToolBarPopupHideDelay(int delay);
-  void updateModuleExecuteDownstream(int state);
+  void updateModuleExecuteDownstream(bool state);
 
 protected:
   void hideEvent(QHideEvent * event) override;

@@ -597,7 +597,7 @@ ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
   : ViewSceneControlPopupWidget(parent)
 {
   setupUi(this);
-  connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
+  connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::toggled, parent, &ViewSceneDialog::saveNewGeometryChanged);
   connect(screenshotSaveAsButton_, &QPushButton::clicked, parent, &ViewSceneDialog::screenshotSaveAsClicked);
   connect(screenshotPathButton_, &QPushButton::clicked, parent, &ViewSceneDialog::setScreenshotDirectory);
 }
@@ -676,7 +676,7 @@ InputControls::InputControls(ViewSceneDialog* parent) : ViewSceneControlPopupWid
 
   updateZoomOptionVisibility();
 
-  //connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
+  //connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::toggled, parent, &ViewSceneDialog::saveNewGeometryChanged);
   connect(mouseControlComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), parent, &ViewSceneDialog::menuMouseControlChanged);
   connect(invertZoomCheckBox_, &QCheckBox::clicked, parent, &ViewSceneDialog::invertZoomClicked);
   connect(zoomSpeedHorizontalSlider_, &QSlider::valueChanged, parent, &ViewSceneDialog::adjustZoomSpeed);
