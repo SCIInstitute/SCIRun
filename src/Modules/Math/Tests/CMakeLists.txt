@@ -28,6 +28,7 @@
 
 SET(Modules_Math_Tests_SRCS
   AppendMatrixTests.cc
+  CreateMatrixTests.cc
   ReportMatrixInfoTests.cc
   EvaluateLinearAlgebraUnaryTests.cc
   EvaluateLinearAlgebraBinaryTests.cc
