@@ -564,6 +564,37 @@ NetworkSignalManager::LoadingContext::~LoadingContext()
 // TODO: refactor the next two functions into one
 ///////
 
+namespace
+{
+  // The GUI also applies these (with the visual greying), but headless has no
+  // serialization manager, so without this a disabled module still executes (#2701).
+  void applyDisabledComponents(const NetworkStateInterface& network, const DisabledComponents& disabled)
+  {
+    const auto& mods = disabled.disabledModules;
+    const auto& conns = disabled.disabledConnections;
+    if (mods.empty() && conns.empty())
+      return;
+    for (size_t i = 0; i < network.nmodules(); ++i)
+    {
+      auto module = network.module(i);
+      if (std::find(mods.begin(), mods.end(), module->id().id_) != mods.end())
+        module->setExecutionDisabled(true);
+      for (const auto& port : module->inputPorts())
+      {
+        for (size_t c = 0; c < port->nconnections(); ++c)
+        {
+          auto conn = port->connection(c);
+          const auto desc = conn->id_.describe();
+          // Same "<to>--<from>" key the GUI writes in NetworkEditor::dumpDisabledComponents.
+          const auto key = desc.in_.moduleId_.id_ + "--" + desc.out_.moduleId_.id_;
+          if (std::find(conns.begin(), conns.end(), key) != conns.end())
+            conn->setDisable(true);
+        }
+      }
+    }
+  }
+}
+
 void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   NetworkSignalManager::LoadingContext ctx(signals_.loadingContext_);
@@ -593,6 +624,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
           signals_.connectionAdded_(cd);
         }
       }
+      applyDisabledComponents(*collabs_.theNetwork_, xml->disabledComponents);
       if (collabs_.serializationManager_)
       {
         collabs_.serializationManager_->updateModuleNotes(xml->moduleNotes);
