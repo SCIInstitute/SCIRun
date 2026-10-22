@@ -30,6 +30,8 @@
 #define GL_SILENCE_DEPRECATION
 #endif
 
+#include <algorithm>
+#include <limits>
 #include <es-log/trace-log.h>
 // Needed for OpenGL include files on Travis:
 #include <gl-platform/GLPlatform.hpp>
@@ -97,6 +99,8 @@ namespace
   }
 
   const std::string widgetSelectFboName = "Selection:FBO:0";
+  // Half-width in logical pixels of the window searched around a click for a widget.
+  constexpr int widgetSelectRadius = 6;
 }
 
 SRInterface::SRInterface(int frameInitLimit) :
@@ -473,20 +477,42 @@ void SRInterface::runGCOnNextExecution()
         ScopedLambdaExecutor removeEntities([this, &entityList]() { for (auto& it : entityList) mCore.removeEntity(it); });
         {
           ScopedLambdaExecutor unbindFBOs([&fboMan]() { fboMan->unbindFBO(); });
-          GLuint value;
-          if (fboMan->readFBO(mCore, widgetSelectFboName, x, y, 1, 1, (GLvoid*)&value, (GLvoid*)&selectionDepth_))
+          // Widget handles are thin, so a 1-pixel hit test is frustrating. Read a
+          // window around the click and take the hit nearest its center.
+          const int left = std::max(0, x - widgetSelectRadius);
+          const int right = std::min(static_cast<int>(screen_.width) - 1, x + widgetSelectRadius);
+          const int top = std::max(0, y - widgetSelectRadius);
+          const int bottom = std::min(static_cast<int>(screen_.height) - 1, y + widgetSelectRadius);
+          const int w = right - left + 1;
+          const int h = bottom - top + 1;
+          std::vector<GLuint> values(std::max(0, w * h));
+          std::vector<float> depths(values.size());
+          // readFBO flips y, and glReadPixels takes the lower-left corner, so pass the
+          // window's bottom screen row; buffer row i is then screen row bottom - i.
+          if (!values.empty() && fboMan->readFBO(mCore, widgetSelectFboName, left, bottom, w, h, values.data(), depths.data()))
           {
-            auto it = selMap.find(value);
-            if (it != selMap.end())
+            int bestDist = std::numeric_limits<int>::max();
+            for (int i = 0; i < h; ++i)
             {
-              auto widgetId = it->second;
-
-              for (auto& widget : widgets)
+              for (int j = 0; j < w; ++j)
               {
-                if (widget->uniqueID() == widgetId)
+                const int dx = left + j - x;
+                const int dy = bottom - i - y;
+                const int dist = dx * dx + dy * dy;
+                if (dist >= bestDist)
+                  continue;
+                auto it = selMap.find(values[i * w + j]);
+                if (it == selMap.end())
+                  continue;
+                for (auto& widget : widgets)
                 {
-                  widgetUpdater_.setCurrentWidget(widget);
-                  break;
+                  if (widget->uniqueID() == it->second)
+                  {
+                    widgetUpdater_.setCurrentWidget(widget);
+                    selectionDepth_ = depths[i * w + j];
+                    bestDist = dist;
+                    break;
+                  }
                 }
               }
             }
