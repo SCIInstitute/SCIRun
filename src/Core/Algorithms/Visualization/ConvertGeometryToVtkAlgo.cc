@@ -40,6 +40,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/Widget.h>
 
 #include <algorithm>
 #include <atomic>
@@ -356,6 +357,7 @@ namespace
     const bool transparent = isTransparent(pass.renderState);
     auto obj = std::make_shared<VtkGeometryObject>();
     obj->setObjectName(leaf->uniqueID());
+    obj->widget = std::dynamic_pointer_cast<Graphics::Datatypes::WidgetBase>(leaf);
     obj->material = materialOf(pass, transparent, colorMap != nullptr);
 
     const size_t numVerts = pass.vbo.data->getBufferSize() / layout.stride;

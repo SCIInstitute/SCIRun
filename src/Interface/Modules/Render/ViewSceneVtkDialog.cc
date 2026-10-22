@@ -2095,27 +2095,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(CompositeVtkGeometr
       continue;
     }
 
-    const auto& displayName = parts[1];
-
-    //if (!visibleItems.isVisible(displayName)) continue;
-
-    auto realObj = std::dynamic_pointer_cast<GeometryObjectSpire>(obj);
-
-    if (!realObj) continue;
-
-    bool isWidget = false;
-    for (const auto& pass : realObj->passes())
-    {
-      if (pass.renderState.get(SCIRun::RenderState::ActionFlags::IS_WIDGET))
-      {
-        isWidget = true;
-        break;
-      }
-    }
-
-    if (!isWidget) continue;
-
-    auto widget = std::dynamic_pointer_cast<WidgetBase>(realObj);
+    auto widget = obj->widget;
 
     if (widget) objList.push_back(widget);
   }

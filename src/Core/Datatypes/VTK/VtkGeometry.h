@@ -34,6 +34,19 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Datatypes/VTK/share.h>
 
+namespace SCIRun {
+namespace Graphics {
+  namespace Datatypes {
+
+    class WidgetBase;
+    using WidgetHandle = SharedPointer<WidgetBase>;
+    using WidgetList = std::vector<WidgetHandle>;
+    using WidgetListIterator = WidgetList::const_iterator;
+
+  }
+}
+}
+
 namespace SCIRun
 {
 namespace Core
@@ -86,6 +99,8 @@ public:
 
     uint64_t id{0};
     uint64_t version{0};
+
+    Graphics::Datatypes::WidgetHandle widget;
 
 private:
     std::string objectName_;       ///< Name of this object. Should be unique across all modules in the network.
