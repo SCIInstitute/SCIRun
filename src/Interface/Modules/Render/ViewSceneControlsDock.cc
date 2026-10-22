@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include <Interface/Modules/Render/MovieRecorder.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Logging/Log.h>
@@ -35,6 +36,8 @@
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkColorPickerButton.h>
 #include <Interface/Modules/Base/CustomWidgets/CTK/ctkPopupWidget.h>
 
+#include <QStandardItemModel>
+#include <QStringBuilder>
 #include <qwt/qwt_knob.h>
 #include <qwt/qwt_abstract_slider.h>
 
@@ -600,6 +603,54 @@ ScreenshotControls::ScreenshotControls(ViewSceneDialog* parent)
   connect(saveScreenShotOnUpdateCheckBox_, &QCheckBox::stateChanged, parent, &ViewSceneDialog::saveNewGeometryChanged);
   connect(screenshotSaveAsButton_, &QPushButton::clicked, parent, &ViewSceneDialog::screenshotSaveAsClicked);
   connect(screenshotPathButton_, &QPushButton::clicked, parent, &ViewSceneDialog::setScreenshotDirectory);
+}
+
+MovieRecordControls::MovieRecordControls(ViewSceneDialog* parent)
+  : ViewSceneControlPopupWidget(parent)
+{
+  setupUi(this);
+
+  // The field is always narrower than a real path, so keep the whole thing
+  // reachable without scrolling the line edit.
+  const auto pathHint = movieOutputPath_->toolTip();
+  connect(movieOutputPath_, &QLineEdit::textChanged, this,
+    [this, pathHint](const QString& path)
+    { movieOutputPath_->setToolTip(path.isEmpty() ? pathHint : path % "\n\n" % pathHint); });
+
+  connect(movieOutputPathButton_, &QPushButton::clicked, parent, &ViewSceneDialog::setMovieOutputPath);
+  connect(movieRecordButton_, &QPushButton::clicked, parent, &ViewSceneDialog::startMovieRecording);
+  connect(movieStopButton_, &QPushButton::clicked, parent, &ViewSceneDialog::stopMovieRecording);
+
+  // The toolbar button carries the camera; the transport meaning lives here.
+  movieRecordButton_->setIcon(recordDotIcon());
+  movieStopButton_->setIcon(stopSquareIcon(palette().color(QPalette::ButtonText)));
+
+  if (!MovieRecorder::ffmpegAvailable())
+  {
+    setStatus("ffmpeg not found: only PNG frame sequences can be recorded.");
+    if (auto* model = qobject_cast<QStandardItemModel*>(movieFormatComboBox_->model()))
+    {
+      for (auto format : {MovieFormat::Mp4, MovieFormat::Gif})
+      {
+        if (auto* item = model->item(static_cast<int>(format)))
+          item->setEnabled(false);
+      }
+    }
+  }
+}
+
+void MovieRecordControls::setRecordingState(bool recording)
+{
+  movieRecordButton_->setEnabled(!recording);
+  movieStopButton_->setEnabled(recording);
+  movieOutputGroupBox_->setEnabled(!recording);
+  movieFormatComboBox_->setEnabled(!recording);
+  movieFrameRateSpinBox_->setEnabled(!recording);
+}
+
+void MovieRecordControls::setStatus(const QString& text)
+{
+  movieStatusLabel_->setText(text);
 }
 
 ScaleBarControls::ScaleBarControls(ViewSceneDialog* parent, QPushButton* toolbarButton)
