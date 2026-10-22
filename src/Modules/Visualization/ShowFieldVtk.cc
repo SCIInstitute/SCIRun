@@ -33,6 +33,7 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #ifdef BUILD_Modules_Visualization
@@ -42,9 +43,13 @@
 #endif
 
 using namespace SCIRun;
-using namespace Dataflow::Networks;
+using namespace Modules;
 using namespace Modules::Visualization;
 using namespace Core;
+using namespace Datatypes;
+using namespace Thread;
+using namespace Dataflow::Networks;
+using namespace Algorithms;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
 using namespace VtkVisualization;
@@ -62,6 +67,7 @@ void ShowFieldVtk::setStateDefaults()
   setStateBoolFromAlgo(Parameters::UseNormals);
   setStateBoolFromAlgo(Parameters::ShowNodes);
   setStateBoolFromAlgo(Parameters::ShowFaces);
+  setStateBoolFromAlgo(Parameters::ShowAllFaces);
   setStateBoolFromAlgo(Parameters::ShowEdges);
   setStateBoolFromAlgo(Parameters::ShowVolume);
   setStateIntFromAlgo(Parameters::ModuleID);
@@ -94,6 +100,7 @@ void ShowFieldVtk::execute()
     setAlgoBoolFromState(Parameters::UseNormals);
     setAlgoBoolFromState(Parameters::ShowNodes);
     setAlgoBoolFromState(Parameters::ShowFaces);
+    setAlgoBoolFromState(Parameters::ShowAllFaces);
     setAlgoBoolFromState(Parameters::ShowEdges);
     setAlgoBoolFromState(Parameters::ShowVolume);
 
@@ -114,5 +121,22 @@ void ShowFieldVtk::execute()
 
     auto output = algo().run(withInputData((Field, field)(ColorMapObject, optionalAlgoInput(colorMap))));
     sendOutputFromAlgorithm(SceneGraph, output);
+  }
+}
+
+void ShowFieldVtk::processMeshComponentSelection(const ModuleFeedback& var)
+{
+  try
+  {
+    auto sel = dynamic_cast<const MeshComponentSelectionFeedback&>(var);
+    if (sel.moduleId == Module::id().id_)
+    {
+      get_state()->setValue(Name("Show" + sel.component), sel.selected);
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    // ignore
   }
 }

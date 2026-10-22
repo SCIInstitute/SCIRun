@@ -30,12 +30,19 @@
 using namespace SCIRun::Core;
 using namespace Datatypes;
 
+VtkGeometryObject::VtkGeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag) :
+    objectName_(idGenerator.generateGeometryID(tag))
+{
+}
+
 VtkGeometryObject* VtkGeometryObject::clone() const
 {
     return nullptr;  // TODO
 }
 
-CompositeVtkGeometryObject::CompositeVtkGeometryObject(const std::vector<VtkGeometryObjectHandle>& objs) : objs_(objs)
+CompositeVtkGeometryObject::CompositeVtkGeometryObject(
+    const std::vector<VtkGeometryObjectHandle>& objs) :
+    objs_(objs)
 {
     for (const auto& obj : objs_)
     {

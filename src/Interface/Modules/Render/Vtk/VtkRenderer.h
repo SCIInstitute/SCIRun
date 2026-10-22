@@ -32,24 +32,35 @@
 
 
 #ifdef WITH_VTK
-#include <vtkSmartPointer.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkWindowToImageFilter.h>
-#include <vtkActor.h>
-#include <vtkPolyData.h>
-#include <vtkUnstructuredGrid.h>
-
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include "VtkCameraController.h"
+#include "VtkOverlayManager.h"
 
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
+
 #include <glm/glm.hpp>
 #include <QImage>
+#include <QColor>
 
-namespace SCIRun { namespace Render {
+#include <unordered_map>
+
+namespace SCIRun {
+namespace Graphics {
+  namespace Datatypes {
+
+    class WidgetBase;
+    using WidgetHandle = SharedPointer<WidgetBase>;
+    using WidgetList = std::vector<WidgetHandle>;
+    using WidgetListIterator = WidgetList::const_iterator;
+
+  }
+}
+}
+
+namespace SCIRun {
+namespace Render {
 
 class SCISHARE VtkRenderer
 {
@@ -70,12 +81,43 @@ public:
 
   //Data--------------------------------------------------------------------------------------------
   void updateGeometries(const std::vector<Core::Datatypes::VtkGeometryObjectHandle>& geometries);
+  //clipping planes
+  void updateClippingPlanes(const std::vector<Core::Datatypes::ClippingPlane>& planes);
+  //bg
+  void setBackgroundColor(const QColor& color);
+  QColor getBackgroundColor() const { return bgColor_; }
+  //orientation axes
+  void setOrientationAxesVisible(bool visible);
+  void setOrientationAxesSize(int size);
+  void setOrientationAxesPosX(int x);
+  void setOrientationAxesPosY(int y);
+  //scale bar
+  void setSbVisible(bool visible);
+  void setSbFontSize(int size);
+  void setSbLength(double length);
+  void setSbHeight(double height);
+  void setSbMultiplier(double mul);
+  void setSbNumTicks(double num);
+  void setSbLineWidth(double width);
+  void setSbLineColor(double color);
+  void setSbUnit(const std::string& unit);
+  void setSbProjLength(double length);
+  //screenshot
+  void saveScreenshot(const QString& filename);
 
   //Getters-----------------------------------------------------------------------------------------
   uint32_t width() {return width_;}
   uint32_t height() {return height_;}
   const unsigned char* imagePixels() const { return imagePixels_; }
   QImage image() const { return image_; }
+  glm::mat4 getWidgetTransform() { return widgetTransform_; }
+  glm::mat4 getWorldToProjection() const;
+
+  //widgets
+  void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y);
+  void removeAllGeomObjects();
+  void setWidgetInteractionMode(MouseButton button);
+  Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets);
 
  private:
   static int vtkRendererInstances;
@@ -88,6 +130,8 @@ public:
   bool isScivis {true};
 
   void initialize();
+
+  void onCameraModified();
 
     //----------------------------------------
   // Geometry dispatch
@@ -116,17 +160,50 @@ public:
   void addDirectionalLight(glm::vec3 color, glm::vec3 direction);
   void addAmbientLight(glm::vec3 color, float intensity);
 
+  //clipping planes
+  void rebuildClippingPlanes();
+  void applyClippingPlanesToScene();
+
+  template <class MapperT>
+  void applyCurrentClippingPlanes(MapperT* mapper)
+  {
+    if (!mapper) return;
+
+    for (const auto& plane : vtkClippingPlanes_)
+    {
+      mapper->AddClippingPlane(plane);
+    }
+  }
+
   bool initialized_ = false;
+  bool first_update_ = true;
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
-  vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
   std::vector<vtkSmartPointer<vtkActor>> actors_;
   vtkSmartPointer<vtkWindowToImageFilter> w2i_;
 
   VtkCameraController cameraController_;
 
+  //mappers
+  std::vector<vtkSmartPointer<vtkMapper>> surfaceMappers_;
+  std::vector<vtkSmartPointer<vtkAbstractMapper3D>> volumeMappers_;
+
+  std::vector<Core::Datatypes::ClippingPlane> clippingPlanes_;
+  std::vector<vtkSmartPointer<vtkPlane>> vtkClippingPlanes_;
+
+  //bgcolor
+  QColor bgColor_{QColor::fromRgbF(0.1, 0.2, 0.4)};
+
+  //layers
+  vtkSmartPointer<vtkCallbackCommand> cameraObserver_;
+  std::unique_ptr<VtkOverlayManager> overlayManager_;
+
   unsigned char* imagePixels_ = nullptr;
   QImage image_;
+
+  //widgets
+  glm::mat4 widgetTransform_{1.0f};
+  std::unordered_map<vtkProp*, Graphics::Datatypes::WidgetHandle> actorWidgets_;
 };
 
 }}
