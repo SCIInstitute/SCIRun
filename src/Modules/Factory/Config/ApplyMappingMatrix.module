@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ApplyMappingMatrix",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ApplyMappingMatrix.h"
+  },
+  "algorithm": {
+    "name": "ApplyMappingMatrixAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateVectorMagnitudes",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/CalculateVectorMagnitudes.h"
+  },
+  "algorithm": {
+    "name": "CalculateVectorMagnitudesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

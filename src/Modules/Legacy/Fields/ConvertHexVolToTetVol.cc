@@ -32,8 +32,10 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(ConvertHexVolToTetVol, ChangeMesh, SCIRun)
+
 ConvertHexVolToTetVol::ConvertHexVolToTetVol()
-  : Module(ModuleLookupInfo("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun"), false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(HexOrLatVol);
   INITIALIZE_PORT(TetVol);

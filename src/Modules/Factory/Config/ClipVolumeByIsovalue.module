@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ClipVolumeByIsovalue",
+    "namespace": "Fields",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ClipVolumeByIsovalue.h"
+  },
+  "algorithm": {
+    "name": "ClipMeshByIsovalueAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h"
+  },
+  "UI": {
+    "name": "ClipVolumeByIsovalueDialog",
+    "header": "Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h"
+  }
+}

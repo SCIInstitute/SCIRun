@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetFieldNodes",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/GetFieldNodes.h"
+  },
+  "algorithm": {
+    "name": "GetMeshNodesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

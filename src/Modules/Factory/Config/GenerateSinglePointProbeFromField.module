@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GenerateSinglePointProbeFromField",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "in progress",
+    "header": "Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "GenerateSinglePointProbeFromFieldDialog",
+    "header": "Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h"
+  }
+}

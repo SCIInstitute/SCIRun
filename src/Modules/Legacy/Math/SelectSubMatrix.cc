@@ -37,7 +37,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
 
-SelectSubMatrix::SelectSubMatrix() : Module(ModuleLookupInfo("SelectSubMatrix", "Math", "SCIRun"))
+MODULE_INFO_DEF(SelectSubMatrix, Math, SCIRun)
+
+SelectSubMatrix::SelectSubMatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(RowIndicies);

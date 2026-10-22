@@ -38,8 +38,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(ComputeSVD, Math, SCIRun)
 
-ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
+ComputeSVD::ComputeSVD() : Module(staticInfo_, false)
 {
 	INITIALIZE_PORT(InputMatrix);
 	INITIALIZE_PORT(LeftSingularMatrix);
