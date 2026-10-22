@@ -203,8 +203,7 @@ public:
 
   //widgets
   glm::mat4 widgetTransform_{1.0f};
-  std::unordered_map<std::string, Graphics::Datatypes::WidgetHandle> widgetMap_;
-  std::unordered_map<vtkProp*, std::string> actorIds_;
+  std::unordered_map<vtkProp*, Graphics::Datatypes::WidgetHandle> actorWidgets_;
 };
 
 }}

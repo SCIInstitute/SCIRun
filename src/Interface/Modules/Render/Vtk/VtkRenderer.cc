@@ -90,7 +90,11 @@ void VtkRenderer::renderFrame()
   image_ = image_.mirrored(false, true);
 #endif
 
-  // std::cout << "Rendered image size: " << image_.width() << "x" << image_.height() << std::endl;
+  int* size = renderWindow_->GetSize();
+
+  //std::cout << "VTK size " << size[0] << " x " << size[1] << std::endl;
+
+  //std::cout << "Qt DPR " << devicePixelRatio_ << std::endl;
 }
 
 // Interaction---------------------------------------------------------------------------------------
@@ -166,6 +170,8 @@ void VtkRenderer::updateGeometries(const std::vector<VtkGeometryObjectHandle>& g
 
   surfaceMappers_.clear();
   volumeMappers_.clear();
+
+  actorWidgets_.clear();
 
   for (const auto& geo : geometries)
   {
@@ -404,18 +410,34 @@ Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphi
 
   vtkNew<vtkCellPicker> picker;
 
-  if (!picker->Pick(x, y, 0, renderer_)) return nullptr;
+  picker->PickFromListOn();
+
+  for (auto& pair : actorWidgets_)
+  {
+    picker->AddPickList(pair.first);
+  }
+
+  const int px = static_cast<int>(std::round(x * devicePixelRatio_));
+  const int py = static_cast<int>(std::round(y * devicePixelRatio_));
+
+  if (!picker->Pick(px, py, 0, renderer_)) return nullptr;
 
   auto actor = picker->GetActor();
   if (!actor) return nullptr;
 
-  auto idIt = actorIds_.find(actor);
-  if (idIt == actorIds_.end()) return nullptr;
+  auto it = actorWidgets_.find(actor);
+  if (it == actorWidgets_.end()) return nullptr;
 
-  auto widgetIt = widgetMap_.find(idIt->second);
-  if (widgetIt == widgetMap_.end()) return nullptr;
+  int* size = renderWindow_->GetSize();
 
-  return widgetIt->second;
+  std::cout <<
+      "logical=(" << x << "," << y << ") " <<
+      "physical=(" << px << "," << py << ") " <<
+      "window=(" << size[0] << "," << size[1] << ") " <<
+      "id=" << it->second->uniqueID() <<
+      std::endl;
+  
+  return it->second;
 }
 
 void VtkRenderer::rebuildClippingPlanes()
@@ -649,6 +671,11 @@ void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandl
   renderer_->AddActor(actor);
 
   actors_.push_back(actor);
+
+  if (geo->widget)
+  {
+    actorWidgets_[actor] = geo->widget;
+  }
 }
 
 void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGeometryObjectHandle& geo)
@@ -819,6 +846,11 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
+
+  if (geo->widget)
+  {
+    actorWidgets_[actor] = geo->widget;
+  }
 }
 
 void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
@@ -902,6 +934,11 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
+
+  if (geo->widget)
+  {
+    actorWidgets_[actor] = geo->widget;
+  }
 }
 
 void VtkRenderer::applyMaterial(vtkActor* actor, const VtkGeometryObject::Material& mat)
