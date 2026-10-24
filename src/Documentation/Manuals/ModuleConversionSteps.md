@@ -1,97 +1,158 @@
-# How to convert a SCIRun 4 module to SCIRun 5 in 17 easy steps.
+# How to convert a SCIRun 4 module to SCIRun 5
 
-## 0. Set up Git+Github
-https://help.github.com/articles/set-up-git/
+This is the concise checklist. For the full narrative with code templates, see
+`docs/dev_doc/SCIRun5ModuleGeneration.md` (§"Converting Modules from SCIRun 4").
+If you are Claude Code (or another agent), use the `convert-scirun-module` skill
+in `.claude/skills/` — it carries the backlog manifest, the v4→v5 idiom
+translation table, and the verification policy in machine-runnable form.
 
-## 1. Set up your fork of the repo.
-Follow these steps with our repo.
-Steps:
->https://help.github.com/articles/fork-a-repo/
+The guiding principle is the same as building a new module: **start minimal and
+add one piece at a time, keeping the build green and committing after each step.**
 
-Repo:
->https://github.com/SCIInstitute/SCIRun
+## Where the backlog is
 
-Make sure to cover all the steps: set up Git, create a local clone of your fork, and configure upstream remotes.
+Unported v4 modules already live in `src/Modules/Legacy/<Domain>/` as `.cc`
+files that are **commented out** in that directory's `CMakeLists.txt`
+(e.g. `#PadRegularMesh.cc`). Uncommenting one and making it build + run is the
+core of a conversion. A dormant file is recognizable by its v4 idioms:
+`class Foo : public Module`, `virtual void execute();`, and `DECLARE_MAKER(Foo)`.
 
-## 2. Create a branch off of latest master.
+(Some commented entries have **no** `.cc` on disk — mostly `Teem/Tend` and the
+Visualization `Show*Texture*` set. Those are from-scratch new modules, not
+mechanical ports; treat them separately.)
 
-Ensure your fork is synced:
-> https://help.github.com/articles/syncing-a-fork/
+## 0–2. Git setup
 
-Branch basics:
-> https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
+- Set up Git and GitHub, fork `https://github.com/SCIInstitute/SCIRun`, and add
+  the upstream remote. See `docs/dev_doc/SCIRun5ModuleGeneration.md`
+  §"Creating Your SCIRun Fork".
+- Sync your fork, then create a branch off the latest `master` **per module**.
+- Start from a clean tree (`git status`; `git stash`/`git reset` if needed).
 
-If you have an old batch of changed files (check with `git status`), you can `git stash` them or `git reset` them to continue with a clean workspace.
+## 3. Build SCIRun
 
-## 3. Build SCIRun binaries
-1. Make sure Qt 4.8 is installed. 
-2. You also need CMake 2.8.12 (newer versions will run into problems while building externals)
-  * https://cmake.org/files/v2.8/
-3. OSX/*nix instructions: Run `./build.sh` OR try this manual method:
-  ```
-  cd SCIRun/bin
-  cmake ../Superbuild
-  make -j4
-  # after first time success, you can 
-  cd SCIRun 
-  #(that's right, SCIRun/bin/SCIRun), and just 
-  make -j8
-  ```
-4. Windows: 
-  1. Use CMake to output Visual Studio 2013 (or newer) project files, with a binary directoy of short length. 
-  2. Open bin/Superbuild.sln and build it. This will take a long time initially, since it configures the SCIRun solution file and also builds it. Remember to switch to Release mode if you want a faster build (both in build time and executable performance).
-  3. Once that build finishes, you can close Superbuild.sln and just work with bin/SCIRun/SCIRun.sln in Visual Studio.
+Use the two-level Superbuild (see the repo `CLAUDE.md` and `docs/start/build.md`
+for the authoritative, current instructions):
 
-  Initial builds will take some time. Subsequently, unless externals have changed (rare, and we'll alert everyone), incremental builds are usually quite fast.
+- **Requirements:** Qt 5.15 or 6.3.1+, a current CMake, and a C++17 compiler
+  (C++20 on the `module-descriptors-metaprogram` branch). Do **not** use the old
+  Qt 4.8 / CMake 2.8 toolchain referenced in ancient docs.
+- **Linux/macOS:** `./build.sh` (add `--debug`, `--headless`, etc.).
+- **Windows:** `.\build.ps1` (`-Debug`, `-Headless`, `-Jobs N`).
+- Builds are out-of-source into `bin/`. First build downloads/compiles all
+  externals (~15 GB, 30–90 min); incremental inner builds are fast: after the
+  first success you can build just the inner project in `bin/SCIRun/`.
+- Configure with `-DBUILD_TESTING=ON` so you can run unit + regression tests.
 
-5. Build output should produce `bin/SCIRun_test` and `bin/SCIRun` bundle on Mac, and `bin/Release/SCIRun.exe` on Windows.
+## 4. Create the module configuration file
 
-## 4. Essential new/convert module changes
-1. Create a new `.module` file in `src/Modules/Factory/Config`. You can copy/paste an existing file and edit it in a text editor. Be careful to check every line.
-2. The format is JSON and it should be self-explanatory for those who know SCIRun. Essentially it contains bits of source code that help wire up the three components of a module: algorithm, module proper, and UI implementation. 
-3. The "header" paths are relative to the `src` directory.
-4. The "status" and "description" strings are documentation and can be whatever you want; all the rest will turn into compiled code so you'll get a compile or link error if there is a mistake.
+Create `src/Modules/Factory/Config/<Module>.module`. Copy an existing one and
+edit every line. It is JSON with three blocks — `module`, `algorithm`, `UI` —
+each naming a `name`, `namespace`, and `header` (paths relative to `src/`). Set
+the `algorithm` and `UI` blocks to `"N/A"` until those layers exist; fill the
+`module` block first. `status`/`description` are free-text docs; everything else
+becomes compiled code, so a typo is a build/link error.
 
-To convert an old module, find the v4 source code and make sure it's in a place that makes sense. Some of the module code directory tree has been simplified.
+## 5. Create the module header
 
-## 5. Create Module header
-TODO
+Most v4 modules had no header — create `<Module>.h` next to the `.cc`. It
+declares the class, its input/output ports, and the `execute()` /
+`setStateDefaults()` methods, plus the module-info macro. Copy the structure
+from a nearby **active** module in the same directory, or the template in
+`src/Modules/Template/`. See `SCIRun5ModuleGeneration.md` §"Module Header File"
+for the annotated layout.
 
-## 6. Edit CMakeLists.txt (between 1-5 of them, depending on layers needed and testing)
-* Some old modules are where they need to be and just need a line uncommented in the CMake file; others will need to be added to a new, existing library, or in a brand new library. Steps for this: contact @dcwhite.
+## 6. Edit CMakeLists.txt
 
-## 7. Edit Module source file in order to compile
-TODO
+Uncomment the module's `.cc` in `src/Modules/Legacy/<Domain>/CMakeLists.txt` and
+add the new `.h`. Depending on the layers you add you may touch up to five
+CMakeLists (module, algorithm, UI, and their test dirs). Most dormant modules
+are already in the right library and just need the line uncommented; if a new
+library is needed, coordinate with @dcwhite.
 
-## 8. Once build is green, check if new module is present in module list (before proceeding to algo and UI layers)
-TODO
+## 7. Edit the module source so it compiles (empty `execute()`)
 
-## 9. Commit changes to your branch, and sync your branch.
-Nice guide:
-> https://guides.github.com/introduction/flow/index.html
+In the `.cc`: delete `DECLARE_MAKER`, the in-`.cc` class declaration, and every
+`#include <Dataflow/Network/Ports/*Port.h>`. Fix the namespaces (at least the
+domain namespace and `Networks`). Rewrite the constructor to
+`Module(staticInfo_)` (append `,false` if there will be no UI). **Comment out the
+body of `execute()`** and any helper functions for now — get an empty shell
+compiling first. The v4→v5 idiom map is in the skill's
+`reference/translation-table.md` and `SCIRun5ModuleGeneration.md`
+§"Common Function Changes" / §"Common Build Errors".
 
-## 10. Algo layer conversion
-TODO
+## 8. Build green, confirm the module loads
 
-## 11. Commit changes to your branch, and sync your branch.
-TODO
+Build. Once green, launch SCIRun and find the module in the list. Verify all
+ports are present and correctly named (hover to check). Fix any port/name
+mistakes now, before adding functionality.
 
-## 12. GUI layer conversion
-TODO
+## 9. Commit, sync.
 
-## 13. Commit changes to your branch, and sync your branch.
-Do this frequently.
+Commit the building shell to your branch and sync.
 
-## 14. Add test network for new module
-TODO
+## 10. Algorithm layer
 
-## 15. Add test code for algo/module/UI
-TODO
+If the compute is non-trivial, move it into
+`src/Core/Algorithms/<Domain>/<Module>Algo.{h,cc}` (some v4 algorithms are
+already copied under `Core/Algorithms/Legacy/` but not ported — reuse them).
+The algorithm derives from `AlgorithmBase` and implements
+`run(const AlgorithmInput&) const`. Wire the `algorithm` block in the `.module`
+config and add the files to the algorithm CMakeLists. State-variable names are
+declared once (in the algo header) and shared by module, dialog, and algo. See
+`SCIRun5ModuleGeneration.md` §"Module Algorithm Code".
 
-## 16. Create Pull request
-> https://help.github.com/articles/using-pull-requests/
+## 11. Commit, sync.
 
-## 17. Wait for feedback from a developer. 
-A developer will be assigned to review the changes, and make suggestions for fixes or improvement. The key thing to remember is any change can just go on the same branch as you PRed, and it will show up on the PR page once the branch is synced. When everything is good and working, the PR will be merged into the main repo and your new/converted module is ready for everyone to use. 
+## 12. GUI layer
 
-Congratulations, you made a module! Proceed to step 5 and repeat until SCIRun is out of beta.
+If the v4 module had a UI, add a dialog under
+`src/Interface/Modules/<Domain>/`: copy the three files
+(`<Module>Dialog.{h,cc}` + `<Module>Dialog.ui`) from a similar module or
+`src/Interface/Modules/Template/`, edit the Qt `.ui` to match the needed widgets,
+and hook the widgets to state variables. Fill the `UI` block in the `.module`
+config and add the files to the interface CMakeLists. Implement
+`setStateDefaults()` so the dialog shows sensible defaults. See
+`SCIRun5ModuleGeneration.md` §"Module UI Code".
+
+## 13. Restore `execute()` incrementally
+
+Uncomment the compute one slice at a time, keeping the build green:
+inputs (`getRequiredInput` / `getOptionalInput`) → compute or algo call →
+outputs (`sendOutput` / `sendOutputFromAlgorithm`). Use the translation table for
+each old idiom (`get_input_handle`, `send_output_handle`, `GuiVar` reads,
+`.get_rep()`, dynamic-compilation removal, etc.). Commit frequently.
+
+## 14. Legacy network import mapping
+
+Add (or verify) this module's `<module name="...">` entry in
+`src/Interface/Application/Resources/LegacyModuleImporter.xml`, mapping every old
+v4 GUI/state variable name to its new state variable (with the right conversion
+`<type>`). Without this, v4 networks that use the module import with missing or
+wrong state. This is the fix surface tracked by issue #2532.
+
+## 15. Add a test network + unit tests
+
+- **Regression network:** the acceptance corpus is the v4 example networks in the
+  SCIRunTestData repo (`Other/v4nets/`), run through the network-import
+  regression tests. Find the network(s) that use your module and confirm they
+  import **and** execute. If a network points to data that isn't present, note
+  it. If **no** v4 network exercises your module, build a new test network from
+  available data.
+- **Unit tests:** copy `src/Modules/Template/ModuleUnitTest.cc` or
+  `src/Core/Algorithms/Template/AlgorithmTestTemplate.cc` and test the algo/module
+  on representative inputs. Compare against the v4 output where you can.
+
+## 16. Document the module
+
+Add the module markdown doc and symbolic link as described in
+`SCIRun5ModuleGeneration.md` §"Documenting the New Module".
+
+## 17. Pull request
+
+Sync your branch with the latest `master`, push, and open a PR. Note which v4
+network exercised the module and anything you had to flag (missing data,
+hard-to-port paths). Address review feedback on the same branch.
+
+Congratulations — you converted a module. Pick the next one from the backlog and
+repeat.
