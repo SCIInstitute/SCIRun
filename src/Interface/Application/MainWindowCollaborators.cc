@@ -276,9 +276,9 @@ void NewUserWizard::updatePathLabel(const QString& dir)
   pathWidget_->setText(dir);
 }
 
-void NewUserWizard::setShowPrefs(int state)
+void NewUserWizard::setShowPrefs(bool state)
 {
-  showPrefs_ = state != 0;
+  showPrefs_ = state;
 }
 
 class ConnectionStyleWizardPage : public QWizardPage, public Ui::ConnectionStyleWizardPage
@@ -307,8 +307,8 @@ public:
   explicit OtherSettingsWizardPage(NewUserWizard* wiz)
   {
     setupUi(this);
-    connect(saveBeforeExecuteCheckBox_, &QCheckBox::stateChanged, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setSaveBeforeExecute);
-    connect(loadPreferencesCheckBox_, &QCheckBox::stateChanged, wiz, &NewUserWizard::setShowPrefs);
+    connect(saveBeforeExecuteCheckBox_, &QCheckBox::toggled, SCIRunMainWindow::Instance(), &SCIRunMainWindow::setSaveBeforeExecute);
+    connect(loadPreferencesCheckBox_, &QCheckBox::toggled, wiz, &NewUserWizard::setShowPrefs);
   }
 };
 
@@ -824,9 +824,9 @@ void PythonWizard::updatePathLabel(const QString& dir)
   pathWidget_->setText(dir);
 }
 
-void PythonWizard::setShowPrefs(int state)
+void PythonWizard::setShowPrefs(bool state)
 {
-  showPrefs_ = state != 0;
+  showPrefs_ = state;
 }
 
 

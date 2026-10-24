@@ -82,9 +82,9 @@ void SCIRunMainWindow::setConnectionPipelineType(int type)
   }
 }
 
-void SCIRunMainWindow::setSaveBeforeExecute(int state)
+void SCIRunMainWindow::setSaveBeforeExecute(bool state)
 {
-  prefsWindow_->setSaveBeforeExecute(state != 0);
+  prefsWindow_->setSaveBeforeExecute(state);
 }
 
 void SCIRunMainWindow::showZoomStatusMessage(int zoomLevel)
