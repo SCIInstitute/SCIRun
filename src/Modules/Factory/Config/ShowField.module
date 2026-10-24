@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ShowField",
+    "namespace": "Visualization",
+    "status": "Some basic options available, still work in progress.",
+    "description": "Visualize a field.",
+    "header": "Modules/Visualization/ShowField.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ShowFieldDialog",
+    "header": "Interface/Modules/Visualization/ShowFieldDialog.h"
+  }
+}

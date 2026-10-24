@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SolveLinearSystem",
+    "namespace": "Math",
+    "status": "Four multi-threaded algorithms available.",
+    "description": "...",
+    "header": "Modules/Math/SolveLinearSystem.h"
+  },
+  "algorithm": {
+    "name": "SolveLinearSystemAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h"
+  },
+  "UI": {
+    "name": "SolveLinearSystemDialog",
+    "header": "Interface/Modules/Math/SolveLinearSystemDialog.h"
+  }
+}

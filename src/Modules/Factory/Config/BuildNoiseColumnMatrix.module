@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildNoiseColumnMatrix",
+    "namespace": "Math",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Math/BuildNoiseColumnMatrix.h"
+  },
+  "algorithm": {
+    "name": "BuildNoiseColumnMatrixAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/BuildNoiseColumnMatrix.h"
+  },
+  "UI": {
+    "name": "BuildNoiseColumnMatrixDialog",
+    "header": "Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h"
+  }
+}

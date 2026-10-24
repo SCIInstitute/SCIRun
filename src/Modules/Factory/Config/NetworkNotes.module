@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "NetworkNotes",
+    "namespace": "StringProcessing",
+    "status": "Functional, needs GUI work.",
+    "description": "...",
+    "header": "Modules/String/NetworkNotes.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "NetworkNotesDialog",
+    "header": "Interface/Modules/String/NetworkNotesDialog.h"
+  }
+}

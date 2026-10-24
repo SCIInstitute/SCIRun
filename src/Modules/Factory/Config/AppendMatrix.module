@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "AppendMatrix",
+    "namespace": "Math",
+    "status": "Fully functional.",
+    "description": "Append the rows or columns of a matrix to a base matrix.",
+    "header": "Modules/Math/AppendMatrix.h"
+  },
+  "algorithm": {
+    "name": "AppendMatrixAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/AppendMatrix.h"
+  },
+  "UI": {
+    "name": "AppendMatrixDialog",
+    "header": "Interface/Modules/Math/AppendMatrixDialog.h"
+  }
+}

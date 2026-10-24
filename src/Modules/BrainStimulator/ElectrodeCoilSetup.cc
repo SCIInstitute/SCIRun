@@ -43,7 +43,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-ElectrodeCoilSetup::ElectrodeCoilSetup() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
+MODULE_INFO_DEF(ElectrodeCoilSetup, BrainStimulator, SCIRun)
+
+ElectrodeCoilSetup::ElectrodeCoilSetup() : Module(staticInfo_)
 {
  INITIALIZE_PORT(SCALP_SURF);
  INITIALIZE_PORT(LOCATIONS);
