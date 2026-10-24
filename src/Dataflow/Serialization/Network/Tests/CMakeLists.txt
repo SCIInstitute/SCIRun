@@ -29,6 +29,7 @@
 SET(Core_Serialization_Network_Tests_SRCS
   ModuleSerializationTests.cc
   NetworkSerializationTests.cc
+  NetworkToPythonTests.cc
   StateSerializationTests.cc
   LegacyNetworkFileImporterTests.cc
 )

@@ -78,6 +78,7 @@ namespace SCIRun {
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
+    static std::string exportPython(const std::string& filename);
     static std::string loadNetwork(const std::string& filename);
     static std::string importNetwork(const std::string& filename);
     static std::string runScript(const std::string& filename);

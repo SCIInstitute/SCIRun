@@ -134,6 +134,7 @@ namespace SCIRun
     virtual std::string setConnectionStatus(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex, bool enable) = 0;
     virtual std::string executeAll() = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
+    virtual std::string exportPython(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string importNetwork(const std::string& filename) = 0;
     virtual std::string runScript(const std::string& filename) = 0;

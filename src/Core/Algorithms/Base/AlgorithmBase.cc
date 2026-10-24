@@ -30,6 +30,8 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <cmath>
+#include <limits>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -120,8 +122,16 @@ void Variable::setValue(const Value& val)
 
 int AlgorithmParameter::toInt() const
 {
-  auto v = boost::get<int>(&value_);
-  return v ? *v : 0;
+  if (auto v = boost::get<int>(&value_))
+    return *v;
+  // Older networks saved some int states as bools.
+  if (auto b = boost::get<bool>(&value_))
+    return *b ? 1 : 0;
+  // Python can store a double in a state that defaulted to int; truncate rather than read 0.
+  if (auto d = boost::get<double>(&value_))
+    if (std::isfinite(*d) && std::abs(*d) <= std::numeric_limits<int>::max())
+      return static_cast<int>(*d);
+  return 0;
 }
 
 double AlgorithmParameter::toDouble() const
