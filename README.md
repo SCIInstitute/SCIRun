@@ -12,7 +12,7 @@ wire modules into a network, run it, and explore the results interactively.**
 [![regression-tests](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml/badge.svg?event=schedule)](https://github.com/SCIInstitute/SCIRun/actions/workflows/regression-tests.yml?query=event%3Aschedule)
 [![coverage](https://codecov.io/gh/SCIInstitute/SCIRun/branch/master/graph/badge.svg)](https://codecov.io/gh/SCIInstitute/SCIRun)
 <br>
-[![docs](https://readthedocs.org/projects/scirun/badge/?version=latest)](https://scirun.readthedocs.io/en/latest/)
+[![docs](https://img.shields.io/readthedocs/scirun/latest)](https://scirun.readthedocs.io/en/latest/)
 [![release](https://img.shields.io/github/v/release/SCIInstitute/SCIRun?include_prereleases&filter=v*)](https://github.com/SCIInstitute/SCIRun/releases)
 [![license](https://img.shields.io/github/license/SCIInstitute/SCIRun)](LICENSE.md)
 
