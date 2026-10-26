@@ -1911,7 +1911,7 @@ void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
 void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
 {
 #ifdef WITH_VTK
-  const bool widgetMoved = renderer_->getWidgetTransform() != glm::mat4(1.0f);
+  const bool widgetMoved = renderer_->widgetMoved();
   if (selectedWidget_)
   {
     if (widgetMoved)
@@ -1926,6 +1926,8 @@ void ViewSceneVtkDialog::mouseReleaseEvent(QMouseEvent* event)
       newGeometryValue();
       previousWidgetInfo_.widgetColorRestored();
     }
+
+    renderer_->endWidgetInteraction();
 
     //unblockExecution();
     previousWidgetInfo_.setPreviousWidget(selectedWidget_);
@@ -1953,7 +1955,9 @@ void ViewSceneVtkDialog::mouseMoveEvent(QMouseEvent* event)
 
   if (selectedWidget_)
   {
-    // move widget
+    renderer_->widgetMouseMove(
+        static_cast<int>(x),
+        static_cast<int>(y));
   }
   else if (!shiftdown_)
   {
@@ -2153,6 +2157,11 @@ void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton butt
         renderer_->setHighlightedWidget(selectedWidget_);
         movementType_ = selectedWidget_->movementType(yetAnotherEnumConversion(button)).base;
         selectedWidget_->changeID();
+        renderer_->beginWidgetInteraction(
+            selectedWidget_,
+            button,
+            adjustedX,
+            adjustedY);
       }
       previousWidgetInfo_.deletePreviousWidget();
     }

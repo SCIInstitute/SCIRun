@@ -39,6 +39,7 @@
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Interface/Modules/Render/Vtk/share.h>
+#include <Interface/Modules/Render/Vtk/VtkRendererCollaborators.h>
 
 #include <glm/glm.hpp>
 #include <QImage>
@@ -110,7 +111,6 @@ public:
   uint32_t height() {return height_;}
   const unsigned char* imagePixels() const { return imagePixels_; }
   QImage image() const { return image_; }
-  glm::mat4 getWidgetTransform() { return widgetTransform_; }
   glm::mat4 getWorldToProjection() const;
 
   //widgets
@@ -121,8 +121,15 @@ public:
   void setHighlightedWidget(Graphics::Datatypes::WidgetHandle widget);
   void clearHighlight();
   void applyHighlight();
+  VtkInteractionContext getInteractionContext() const;
+  glm::vec3 pickWorldPosition(int, int y);
+  void beginWidgetInteraction(Graphics::Datatypes::WidgetHandle widget, MouseButton button, int x, int y);
+  void widgetMouseMove(int x, int y);
+  void endWidgetInteraction();
+  bool widgetMoved() const;
+  glm::mat4 getWidgetTransform() const;
 
-private:
+ private:
   static int vtkRendererInstances;
 
   uint32_t width_  {16};
@@ -205,9 +212,10 @@ private:
   QImage image_;
 
   //widgets
-  glm::mat4 widgetTransform_{1.0f};
   std::unordered_map<vtkProp*, Graphics::Datatypes::WidgetHandle> actorWidgets_;
   Graphics::Datatypes::WidgetHandle highlightedWidget_;
+  std::unique_ptr<VtkWidgetUpdateService> widgetUpdater_;
+  vtkSmartPointer<vtkCellPicker> lastPicker_;
 };
 
 }}

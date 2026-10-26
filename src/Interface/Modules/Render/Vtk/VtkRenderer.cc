@@ -431,6 +431,8 @@ Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphi
   auto it = actorWidgets_.find(actor);
   if (it == actorWidgets_.end()) return nullptr;
 
+  lastPicker_ = picker;
+
   int* size = renderWindow_->GetSize();
 
   std::cout <<
@@ -466,6 +468,98 @@ void VtkRenderer::applyHighlight()
 
     actor->GetProperty()->SetColor(1.0, 0.0, 0.0);
   }
+}
+
+VtkInteractionContext VtkRenderer::getInteractionContext() const
+{
+  VtkInteractionContext ctx;
+
+  ctx.worldToProjection = getWorldToProjection();
+
+  ctx.projectionToWorld = glm::inverse(ctx.worldToProjection);
+
+  auto camera = renderer_->GetActiveCamera();
+
+  double pos[3];
+  camera->GetPosition(pos);
+
+  ctx.cameraPosition = {static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2])};
+
+  double focal[3];
+  camera->GetFocalPoint(focal);
+
+  ctx.focalPoint = {static_cast<float>(focal[0]), static_cast<float>(focal[1]), static_cast<float>(focal[2])};
+
+  double up[3];
+  camera->GetViewUp(up);
+
+  ctx.viewUp = {static_cast<float>(up[0]), static_cast<float>(up[1]), static_cast<float>(up[2])};
+
+  int* size = renderWindow_->GetSize();
+
+  ctx.viewportWidth = size[0];
+  ctx.viewportHeight = size[1];
+
+  return ctx;
+}
+
+glm::vec3 VtkRenderer::pickWorldPosition(int x, int y)
+{
+  vtkNew<vtkCellPicker> picker;
+
+  const int px = static_cast<int>(std::round(x * devicePixelRatio_));
+
+  const int pyQt = static_cast<int>(std::round(y * devicePixelRatio_));
+
+  int* size = renderWindow_->GetSize();
+
+  const int py = size[1] - 1 - pyQt;
+
+  if (!picker->Pick(px, py, 0, renderer_)) return glm::vec3(0.f);
+
+  double pos[3];
+  picker->GetPickPosition(pos);
+
+  return glm::vec3(static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2]));
+}
+
+void VtkRenderer::beginWidgetInteraction(
+    Graphics::Datatypes::WidgetHandle widget,
+    MouseButton button,
+    int x, int y)
+{
+  if (!widgetUpdater_) return;
+
+  widgetUpdater_->setCurrentWidget(widget);
+  widgetUpdater_->setButtonPushed(button);
+
+  widgetUpdater_->beginInteraction(x, y, lastPicker_);
+}
+
+void VtkRenderer::widgetMouseMove(int x, int y)
+{
+  if (!widgetUpdater_) return;
+
+  widgetUpdater_->updateWidget(x, y);
+}
+
+void VtkRenderer::endWidgetInteraction()
+{
+  if (widgetUpdater_) widgetUpdater_->reset();
+}
+
+bool VtkRenderer::widgetMoved() const
+{
+  glm::mat4 t = widgetUpdater_->widgetTransform();
+
+  return glm::length(glm::vec4(t[3])) > 1e-6f;
+}
+
+glm::mat4 VtkRenderer::getWidgetTransform() const
+{
+  if (!widgetUpdater_) return glm::mat4(1.0f);
+
+  return widgetUpdater_->widgetTransform();
 }
 
 void VtkRenderer::rebuildClippingPlanes()
