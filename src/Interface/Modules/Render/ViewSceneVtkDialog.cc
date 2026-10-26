@@ -2150,7 +2150,7 @@ void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton butt
 
       if (selectedWidget_)
       {
-        widgetColorChanger_ = makeShared<ScopedWidgetColorChangerVtk>(selectedWidget_, WidgetColorVtk::RED);
+        renderer_->setHighlightedWidget(selectedWidget_);
         movementType_ = selectedWidget_->movementType(yetAnotherEnumConversion(button)).base;
         selectedWidget_->changeID();
       }
@@ -2200,12 +2200,14 @@ bool ViewSceneVtkDialog::checkForSelectedWidget(WidgetHandle widget)
 
 void ViewSceneVtkDialog::restoreObjColor()
 {
+#ifdef WITH_VTK
   LOG_DEBUG("ViewSceneDialog::restoreObjColor before locking");
 
   auto lock = makeLoggedGuard(Modules::Render::ViewSceneLockManager::get(state_.get())->stateMutex(), "mutex1 -- restoreObjColor");
-  widgetColorChanger_.reset();
+  renderer_->clearHighlight();
 
   LOG_DEBUG("ViewSceneDialog::restoreObjColor after locking");
+#endif
 }
 
 void ViewSceneVtkDialog::updateCursor()

@@ -178,6 +178,8 @@ void VtkRenderer::updateGeometries(const std::vector<VtkGeometryObjectHandle>& g
     addGeometry(geo);
   }
 
+  applyHighlight();
+
   if (first_update_)
   {
     renderer_->ResetCamera();
@@ -418,7 +420,8 @@ Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphi
   }
 
   const int px = static_cast<int>(std::round(x * devicePixelRatio_));
-  const int py = static_cast<int>(std::round(y * devicePixelRatio_));
+  const int pyQt = static_cast<int>(std::round(y * devicePixelRatio_));
+  const int py = renderWindow_->GetSize()[1] - 1 - pyQt;
 
   if (!picker->Pick(px, py, 0, renderer_)) return nullptr;
 
@@ -438,6 +441,31 @@ Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphi
       std::endl;
   
   return it->second;
+}
+
+void VtkRenderer::setHighlightedWidget(Graphics::Datatypes::WidgetHandle widget)
+{
+  highlightedWidget_ = widget;
+}
+
+void VtkRenderer::clearHighlight()
+{
+  highlightedWidget_.reset();
+}
+
+void VtkRenderer::applyHighlight()
+{
+  if (!highlightedWidget_) return;
+
+  for (const auto& [prop, widget] : actorWidgets_)
+  {
+    if (widget != highlightedWidget_) continue;
+
+    auto actor = vtkActor::SafeDownCast(prop);
+    if (!actor) continue;
+
+    actor->GetProperty()->SetColor(1.0, 0.0, 0.0);
+  }
 }
 
 void VtkRenderer::rebuildClippingPlanes()

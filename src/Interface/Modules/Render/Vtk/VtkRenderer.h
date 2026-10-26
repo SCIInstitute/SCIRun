@@ -118,8 +118,11 @@ public:
   void removeAllGeomObjects();
   void setWidgetInteractionMode(MouseButton button);
   Graphics::Datatypes::WidgetHandle select(int x, int y, const Graphics::Datatypes::WidgetList& widgets);
+  void setHighlightedWidget(Graphics::Datatypes::WidgetHandle widget);
+  void clearHighlight();
+  void applyHighlight();
 
- private:
+private:
   static int vtkRendererInstances;
 
   uint32_t width_  {16};
@@ -204,6 +207,7 @@ public:
   //widgets
   glm::mat4 widgetTransform_{1.0f};
   std::unordered_map<vtkProp*, Graphics::Datatypes::WidgetHandle> actorWidgets_;
+  Graphics::Datatypes::WidgetHandle highlightedWidget_;
 };
 
 }}
