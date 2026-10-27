@@ -29,7 +29,6 @@
 
 #ifdef WITH_VTK
 #include <Core/Algorithms/Visualization/VtkIncludes.h>
-#include <Core/Datatypes/feedback.h>
 #include <Interface/Modules/Render/Vtk/share.h>
 
 #include <glm/glm.hpp>
@@ -38,6 +37,9 @@
 #include <memory>
 
 namespace SCIRun {
+    template <typename T>
+    using SharedPointer = std::shared_ptr<T>;
+    enum class MouseButton;
     namespace Core {
         namespace Datatypes {
         enum WidgetMovement;
@@ -266,7 +268,7 @@ namespace SCIRun
 
             Graphics::Datatypes::WidgetHandle currentWidget_;
 
-            MouseButton buttonPushed_{MouseButton::NONE};
+            MouseButton buttonPushed_;
 
             glm::vec3 initialPickWorld_;
 

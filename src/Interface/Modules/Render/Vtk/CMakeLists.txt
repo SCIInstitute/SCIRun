@@ -40,6 +40,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render_Vtk
   Core_Algorithms_Visualization
   Core_Datatypes
   Modules_Render
+  Graphics_Widgets
   ${LIBS}
   VTK::CommonCore
   VTK::FiltersSources

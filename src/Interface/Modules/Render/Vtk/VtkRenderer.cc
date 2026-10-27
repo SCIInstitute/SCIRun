@@ -43,6 +43,7 @@ using namespace Core::Geometry;
 
 VtkRenderer::VtkRenderer()
 {
+  widgetUpdater_ = std::make_unique<VtkWidgetUpdateService>(this);
 }
 
 VtkRenderer::~VtkRenderer() {}

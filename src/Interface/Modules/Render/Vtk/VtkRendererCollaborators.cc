@@ -28,6 +28,7 @@
 #include <Interface/Modules/Render/Vtk/VtkRendererCollaborators.h>
 #include <Interface/Modules/Render/Vtk/VtkRenderer.h>
 #include <Graphics/Widgets/Widget.h>
+#include <Core/Datatypes/feedback.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Render;
@@ -83,7 +84,8 @@ std::unique_ptr<VtkTransformCalculator> VtkTransformCalculatorFactory::Create(
 }
 
 VtkWidgetUpdateService::VtkWidgetUpdateService(VtkRenderer* renderer)
-    : renderer_(renderer)
+    : renderer_(renderer),
+    buttonPushed_(MouseButton::NONE)
 {
 }
 
