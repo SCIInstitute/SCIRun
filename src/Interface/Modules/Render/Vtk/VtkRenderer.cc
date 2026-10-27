@@ -395,6 +395,54 @@ glm::mat4 VtkRenderer::getWorldToProjection() const
   return glmResult;
 }
 
+glm::vec3 VtkRenderer::computeWorldPosition(
+    int x, int y,
+    const glm::vec3& planePoint,
+    const glm::vec3& planeNormal) const
+{
+  if (!renderer_) return planePoint;
+
+  // Convert Qt-style top-left coordinates into VTK display coords.
+  int* size = renderWindow_->GetSize();
+  const double px = std::round(x * devicePixelRatio_);
+  const double pyQt = std::round(y * devicePixelRatio_);
+  const double py = size[1] - 1 - pyQt;
+
+  // Near point
+  renderer_->SetDisplayPoint(px, py, 0.0);
+
+  renderer_->DisplayToWorld();
+
+  double nearPt4[4];
+  renderer_->GetWorldPoint(nearPt4);
+
+  if (std::abs(nearPt4[3]) < 1e-12) return planePoint;
+
+  glm::vec3 nearPt(static_cast<float>(nearPt4[0] / nearPt4[3]), static_cast<float>(nearPt4[1] / nearPt4[3]), static_cast<float>(nearPt4[2] / nearPt4[3]));
+
+  // Far point
+  renderer_->SetDisplayPoint(px, py, 1.0);
+
+  renderer_->DisplayToWorld();
+
+  double farPt4[4];
+  renderer_->GetWorldPoint(farPt4);
+
+  if (std::abs(farPt4[3]) < 1e-12) return planePoint;
+
+  glm::vec3 farPt(static_cast<float>(farPt4[0] / farPt4[3]), static_cast<float>(farPt4[1] / farPt4[3]), static_cast<float>(farPt4[2] / farPt4[3]));
+
+  glm::vec3 rayDir = glm::normalize(farPt - nearPt);
+
+  const float denom = glm::dot(planeNormal, rayDir);
+
+  if (std::abs(denom) < 1e-6f) return planePoint;
+
+  const float t = glm::dot(planePoint - nearPt, planeNormal) / denom;
+
+  return nearPt + t * rayDir;
+}
+
 void VtkRenderer::doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y)
 {
 }
@@ -434,15 +482,6 @@ Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphi
 
   lastPicker_ = picker;
 
-  int* size = renderWindow_->GetSize();
-
-  std::cout <<
-      "logical=(" << x << "," << y << ") " <<
-      "physical=(" << px << "," << py << ") " <<
-      "window=(" << size[0] << "," << size[1] << ") " <<
-      "id=" << it->second->uniqueID() <<
-      std::endl;
-  
   return it->second;
 }
 
@@ -502,26 +541,6 @@ VtkInteractionContext VtkRenderer::getInteractionContext() const
   ctx.viewportHeight = size[1];
 
   return ctx;
-}
-
-glm::vec3 VtkRenderer::pickWorldPosition(int x, int y)
-{
-  vtkNew<vtkCellPicker> picker;
-
-  const int px = static_cast<int>(std::round(x * devicePixelRatio_));
-
-  const int pyQt = static_cast<int>(std::round(y * devicePixelRatio_));
-
-  int* size = renderWindow_->GetSize();
-
-  const int py = size[1] - 1 - pyQt;
-
-  if (!picker->Pick(px, py, 0, renderer_)) return glm::vec3(0.f);
-
-  double pos[3];
-  picker->GetPickPosition(pos);
-
-  return glm::vec3(static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2]));
 }
 
 void VtkRenderer::beginWidgetInteraction(

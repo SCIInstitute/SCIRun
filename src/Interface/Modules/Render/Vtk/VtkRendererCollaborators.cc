@@ -143,28 +143,52 @@ void VtkWidgetUpdateService::beginInteraction(int x, int y, vtkCellPicker* picke
   double pos[3];
   picker->GetPickPosition(pos);
 
-  initialPickWorld_ = {static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2])};
+  initialPickWorld_ =
+    {static_cast<float>(pos[0]),
+    static_cast<float>(pos[1]),
+    static_cast<float>(pos[2])};
 
   lastPickWorld_ = initialPickWorld_;
 
   context_ = renderer_->getInteractionContext();
+  context_.startMouse = glm::vec2(x, y);
+  context_.startWorld = lastPickWorld_;
+  context_.dragPlanePoint = lastPickWorld_;
+  const auto viewDir = context_.focalPoint -
+      context_.cameraPosition;
+  if (glm::length(viewDir) > 1e-6f)
+  {
+    context_.dragPlaneNormal = glm::normalize(viewDir);
+  }
+  else
+  {
+    context_.dragPlaneNormal = glm::vec3(0.f, 0.f, -1.f);
+  }
 
-  const auto interaction = ToWidgetInteraction(buttonPushed_);
+  const auto interaction =
+      ToWidgetInteraction(buttonPushed_);
 
-  const auto movement = currentWidget_->movementType(interaction).base;
+  const auto movement =
+      currentWidget_->movementType(interaction).base;
 
-  calculator_ = VtkTransformCalculatorFactory::Create(movement, currentWidget_, context_, initialPickWorld_);
+  calculator_ =
+      VtkTransformCalculatorFactory::Create(
+          movement,
+          currentWidget_,
+          context_,
+          initialPickWorld_);
 }
 
 void VtkWidgetUpdateService::updateWidget(int x, int y)
 {
-  if (!currentWidget_) return;
+  if (!currentWidget_)
+      return;
 
-  if (!calculator_) return;
+  if (!calculator_)
+      return;
 
-  glm::vec3 worldPos = renderer_->pickWorldPosition(x, y);
+  glm::vec3 worldPos = renderer_->computeWorldPosition(x, y, context_.dragPlanePoint, context_.dragPlaneNormal);
 
   widgetTransform_ = calculator_->computeTransform(worldPos);
-
-  //currentWidget_->SetTransform(widgetTransform_);
 }
+

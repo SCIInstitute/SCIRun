@@ -112,6 +112,10 @@ public:
   const unsigned char* imagePixels() const { return imagePixels_; }
   QImage image() const { return image_; }
   glm::mat4 getWorldToProjection() const;
+  glm::vec3 computeWorldPosition(int x, int y,
+      const glm::vec3& planePoint,
+      const glm::vec3& planeNormal) const;
+
 
   //widgets
   void doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y);
@@ -122,7 +126,6 @@ public:
   void clearHighlight();
   void applyHighlight();
   VtkInteractionContext getInteractionContext() const;
-  glm::vec3 pickWorldPosition(int, int y);
   void beginWidgetInteraction(Graphics::Datatypes::WidgetHandle widget, MouseButton button, int x, int y);
   void widgetMouseMove(int x, int y);
   void endWidgetInteraction();

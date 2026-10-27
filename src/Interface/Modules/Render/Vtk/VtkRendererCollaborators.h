@@ -64,19 +64,20 @@ namespace SCIRun
 
         struct SCISHARE VtkInteractionContext
         {
-        glm::mat4 worldToProjection;
+            glm::mat4 worldToProjection;
+            glm::mat4 projectionToWorld;
 
-        glm::mat4 projectionToWorld;
+            glm::vec3 cameraPosition;
+            glm::vec3 focalPoint;
+            glm::vec3 viewUp;
 
-        glm::vec3 cameraPosition;
+            int viewportWidth;
+            int viewportHeight;
 
-        glm::vec3 focalPoint;
-
-        glm::vec3 viewUp;
-
-        int viewportWidth;
-
-        int viewportHeight;
+            glm::vec2 startMouse;
+            glm::vec3 startWorld;
+            glm::vec3 dragPlanePoint;
+            glm::vec3 dragPlaneNormal;
         };
 
         class VtkTransformCalculator
