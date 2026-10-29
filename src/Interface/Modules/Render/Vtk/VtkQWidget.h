@@ -43,6 +43,8 @@ public:
   VtkQWidget(QWidget *parent, VtkRenderer* renderer);
   virtual ~VtkQWidget();
 
+  void updateRenderSize();
+
 public Q_SLOTS:
     void updateRenderer();
 
@@ -55,9 +57,6 @@ protected:
   VtkRenderer* renderer {nullptr};
 
   QTimer* renderTimer {nullptr};
-
-private:
-  void updateRenderSize();
 };
 
 }}

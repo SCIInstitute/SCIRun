@@ -1834,7 +1834,12 @@ void ViewSceneVtkDialog::showEvent(QShowEvent* evt)
     state_->setValue(Parameters::ShowViewer, true);
   }
 
-  //updateModifiedGeometriesAndSendScreenShot();
+#ifdef WITH_VTK
+  QTimer::singleShot(0, this, [this]() {
+    if (viewer_) viewer_->updateRenderSize();
+  });
+#endif
+  // updateModifiedGeometriesAndSendScreenShot();
 
   ModuleDialogGeneric::showEvent(evt);
 }

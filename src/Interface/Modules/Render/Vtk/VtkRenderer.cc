@@ -48,7 +48,7 @@ VtkRenderer::VtkRenderer()
 
 VtkRenderer::~VtkRenderer() {}
 
-// Rendering-----------------------------------------------------------------------------------------
+    // Rendering-----------------------------------------------------------------------------------------
 void VtkRenderer::renderFrame()
 {
   if (!initialized_) return;
@@ -101,8 +101,6 @@ void VtkRenderer::renderFrame()
 // Interaction---------------------------------------------------------------------------------------
 void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
 {
-  if (!initialized_) return;
-
   width_ = width;
   height_ = height;
 
@@ -111,6 +109,8 @@ void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
     devicePixelRatio_ = dpr;
     image_.setDevicePixelRatio(devicePixelRatio_);
   }
+
+  if (!initialized_) return;
 
   if (renderWindow_)
   {
