@@ -88,6 +88,15 @@ namespace SCIRun
           virtual glm::mat4 computeTransform(const glm::vec3& currentWorldPos) = 0;
         };
 
+        class VtkIdentityCalculator : public VtkTransformCalculator
+        {
+         public:
+           glm::mat4 computeTransform(const glm::vec3&) override
+           {
+               return glm::mat4(1.0f);
+           }
+        };
+
         class VtkTranslationCalculator : public VtkTransformCalculator
         {
          public:

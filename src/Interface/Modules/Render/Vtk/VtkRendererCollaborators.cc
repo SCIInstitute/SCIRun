@@ -25,10 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Render/Vtk/VtkRendererCollaborators.h>
-#include <Interface/Modules/Render/Vtk/VtkRenderer.h>
-#include <Graphics/Widgets/Widget.h>
 #include <Core/Datatypes/feedback.h>
+#include <Graphics/Widgets/Widget.h>
+#include <Interface/Modules/Render/Vtk/VtkRenderer.h>
+#include <Interface/Modules/Render/Vtk/VtkRendererCollaborators.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Render;
@@ -41,10 +41,7 @@ static glm::vec3 toVec3(const P& p)
 }
 
 std::unique_ptr<VtkTransformCalculator> VtkTransformCalculatorFactory::Create(
-    WidgetMovement movement,
-    Graphics::Datatypes::WidgetHandle widget,
-    const VtkInteractionContext& context,
-    const glm::vec3& initialPickWorld)
+    WidgetMovement movement, Graphics::Datatypes::WidgetHandle widget, const VtkInteractionContext& context, const glm::vec3& initialPickWorld)
 {
   switch (movement)
   {
@@ -80,14 +77,13 @@ std::unique_ptr<VtkTransformCalculator> VtkTransformCalculatorFactory::Create(
 
     return std::make_unique<VtkRotationCalculator>(toVec3(getRotationOrigin(params)), toVec3(getAxisVector(params)), initialPickWorld);
   }
+
+  case WidgetMovement::NONE:
+  default: return std::make_unique<VtkIdentityCalculator>();
   }
 }
 
-VtkWidgetUpdateService::VtkWidgetUpdateService(VtkRenderer* renderer)
-    : renderer_(renderer),
-    buttonPushed_(MouseButton::NONE)
-{
-}
+VtkWidgetUpdateService::VtkWidgetUpdateService(VtkRenderer* renderer) : renderer_(renderer), buttonPushed_(MouseButton::NONE) {}
 
 void VtkWidgetUpdateService::setCurrentWidget(Graphics::Datatypes::WidgetHandle widget)
 {
@@ -143,10 +139,7 @@ void VtkWidgetUpdateService::beginInteraction(int x, int y, vtkCellPicker* picke
   double pos[3];
   picker->GetPickPosition(pos);
 
-  initialPickWorld_ =
-    {static_cast<float>(pos[0]),
-    static_cast<float>(pos[1]),
-    static_cast<float>(pos[2])};
+  initialPickWorld_ = {static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2])};
 
   lastPickWorld_ = initialPickWorld_;
 
@@ -154,8 +147,7 @@ void VtkWidgetUpdateService::beginInteraction(int x, int y, vtkCellPicker* picke
   context_.startMouse = glm::vec2(x, y);
   context_.startWorld = lastPickWorld_;
   context_.dragPlanePoint = lastPickWorld_;
-  const auto viewDir = context_.focalPoint -
-      context_.cameraPosition;
+  const auto viewDir = context_.focalPoint - context_.cameraPosition;
   if (glm::length(viewDir) > 1e-6f)
   {
     context_.dragPlaneNormal = glm::normalize(viewDir);
@@ -165,30 +157,25 @@ void VtkWidgetUpdateService::beginInteraction(int x, int y, vtkCellPicker* picke
     context_.dragPlaneNormal = glm::vec3(0.f, 0.f, -1.f);
   }
 
-  const auto interaction =
-      ToWidgetInteraction(buttonPushed_);
+  const auto interaction = ToWidgetInteraction(buttonPushed_);
 
-  const auto movement =
-      currentWidget_->movementType(interaction).base;
+  const auto movement = currentWidget_->movementType(interaction).base;
 
-  calculator_ =
-      VtkTransformCalculatorFactory::Create(
-          movement,
-          currentWidget_,
-          context_,
-          initialPickWorld_);
+  calculator_ = VtkTransformCalculatorFactory::Create(movement, currentWidget_, context_, initialPickWorld_);
+
+  if (!calculator_)
+  {
+    calculator_ = std::make_unique<VtkIdentityCalculator>();
+  }
 }
 
 void VtkWidgetUpdateService::updateWidget(int x, int y)
 {
-  if (!currentWidget_)
-      return;
+  if (!currentWidget_) return;
 
-  if (!calculator_)
-      return;
+  if (!calculator_) return;
 
   glm::vec3 worldPos = renderer_->computeWorldPosition(x, y, context_.dragPlanePoint, context_.dragPlaneNormal);
 
   widgetTransform_ = calculator_->computeTransform(worldPos);
 }
-
