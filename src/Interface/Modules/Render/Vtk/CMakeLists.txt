@@ -7,14 +7,23 @@ SET(LIBS ${LIBS} ${OPENGL_LIBRARIES} ${TBB_LIBRARY_MALLOC} ${TBB_LIBRARY})
 
 SET(SRCS ${SRCS}
   VtkCameraController.cc
+  VtkOrientationOverlay.cc
+  VtkOverlayManager.cc
   VtkQWidget.cc
   VtkRenderer.cc
+  VtkScaleBarOverlay.cc
+  VtkRendererCollaborators.cc
 )
 
 SET(MOC_HEADERS
   VtkCameraController.h
+  VtkOrientationOverlay.h
+  VtkOverlay.h
+  VtkOverlayManager.h
   VtkQWidget.h
   VtkRenderer.h
+  VtkScaleBarOverlay.h
+  VtkRendererCollaborators.h
   share.h
 )
 
@@ -31,6 +40,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render_Vtk
   Core_Algorithms_Visualization
   Core_Datatypes
   Modules_Render
+  Graphics_Widgets
   ${LIBS}
   VTK::CommonCore
   VTK::FiltersSources

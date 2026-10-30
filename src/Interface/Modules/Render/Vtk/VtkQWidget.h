@@ -43,6 +43,7 @@ public:
   VtkQWidget(QWidget *parent, VtkRenderer* renderer);
   virtual ~VtkQWidget();
 
+
 public Q_SLOTS:
     void updateRenderer();
 

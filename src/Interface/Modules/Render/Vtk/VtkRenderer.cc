@@ -25,24 +25,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <vtkAxesActor.h>
-#include <vtkDataSetMapper.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkDataObject.h>
-#include <vtkLookupTable.h>
-#include <vtkProperty.h>
-#include <vtkSmartVolumeMapper.h>
-#include <vtkVolumeProperty.h>
-#include <vtkPiecewiseFunction.h>
-#include <vtkColorTransferFunction.h>
-#include <vtkTubeFilter.h>
-#include <vtkSphereSource.h>
-#include <vtkGlyph3DMapper.h>
-
 #include "VtkRenderer.h"
+#include <Core/Algorithms/Visualization/VtkIncludes.h>
 #include <Core/GeometryPrimitives/BBox.h>
-
+#include <Graphics/Widgets/Widget.h>
 #include <iostream>
+#include "VtkOrientationOverlay.h"
+#include "VtkScaleBarOverlay.h"
+#include "VtkOverlay.h"
 
 using namespace SCIRun;
 using namespace Render;
@@ -53,18 +43,19 @@ using namespace Core::Geometry;
 
 VtkRenderer::VtkRenderer()
 {
+  widgetUpdater_ = std::make_unique<VtkWidgetUpdateService>(this);
 }
 
-VtkRenderer::~VtkRenderer()
-{
-}
+VtkRenderer::~VtkRenderer() {}
 
-//Rendering-----------------------------------------------------------------------------------------
+    // Rendering-----------------------------------------------------------------------------------------
 void VtkRenderer::renderFrame()
 {
   if (!initialized_) return;
 
   renderWindow_->SetSize(width_, height_);
+
+  renderer_->ResetCameraClippingRange();
 
   renderWindow_->Render();
 
@@ -93,28 +84,33 @@ void VtkRenderer::renderFrame()
     image_ = QImage(imagePixels_, dims[0], dims[1], bytesPerLine, QImage::Format_RGBA8888).copy();
   }
 
-  // VTK is usually vertically flipped relative to Qt
-  #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    image_ = image_.flipped(Qt::Vertical);
-  #else
-    image_ = image_.mirrored(false, true);
-  #endif
+// VTK is usually vertically flipped relative to Qt
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+  image_ = image_.flipped(Qt::Vertical);
+#else
+  image_ = image_.mirrored(false, true);
+#endif
 
-  //std::cout << "Rendered image size: " << image_.width() << "x" << image_.height() << std::endl;
+  int* size = renderWindow_->GetSize();
+
+  //std::cout << "VTK size " << size[0] << " x " << size[1] << std::endl;
+
+  //std::cout << "Qt DPR " << devicePixelRatio_ << std::endl;
 }
 
-
-
-//Interaction---------------------------------------------------------------------------------------
+// Interaction---------------------------------------------------------------------------------------
 void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
 {
   width_ = width;
   height_ = height;
+
   if (dpr != devicePixelRatio_)
   {
     devicePixelRatio_ = dpr;
     image_.setDevicePixelRatio(devicePixelRatio_);
   }
+
+  if (!initialized_) return;
 
   if (renderWindow_)
   {
@@ -125,6 +121,11 @@ void VtkRenderer::resize(uint32_t width, uint32_t height, double dpr)
   {
     renderer_->SetViewport(0.0, 0.0, 1.0, 1.0);
   }
+
+  if (overlayManager_)
+  {
+    overlayManager_->resize(static_cast<int>(width), static_cast<int>(height));
+  }
 }
 
 void VtkRenderer::mousePress(float x, float y, MouseButton btn)
@@ -132,9 +133,9 @@ void VtkRenderer::mousePress(float x, float y, MouseButton btn)
   cameraController_.mousePress(x, y, btn);
 }
 
-void VtkRenderer::mouseMove(float x, float y, MouseButton btn)
+void VtkRenderer::mouseMove(float x, float y, [[maybe_unused]] MouseButton btn)
 {
-  cameraController_.mouseMove(x, y, renderer_);
+  cameraController_.mouseMove(x, y);
 
   renderFrame();
 }
@@ -146,19 +147,21 @@ void VtkRenderer::mouseRelease()
 
 void VtkRenderer::mouseWheel(int32_t delta)
 {
-  cameraController_.mouseWheel(delta, renderer_);
+  cameraController_.mouseWheel(delta);
 
   renderFrame();
 }
 
 void VtkRenderer::autoView()
 {
-  cameraController_.resetView(renderer_);
+  if (!initialized_) return;
+
+  renderer_->ResetCamera();
 
   renderFrame();
 }
 
-//Data----------------------------------------------------------------------------------------------
+// Data----------------------------------------------------------------------------------------------
 void VtkRenderer::updateGeometries(const std::vector<VtkGeometryObjectHandle>& geometries)
 {
   if (!initialized_) initialize();
@@ -166,12 +169,509 @@ void VtkRenderer::updateGeometries(const std::vector<VtkGeometryObjectHandle>& g
   renderer_->RemoveAllViewProps();
   actors_.clear();
 
+  surfaceMappers_.clear();
+  volumeMappers_.clear();
+
+  actorWidgets_.clear();
+
   for (const auto& geo : geometries)
   {
     addGeometry(geo);
   }
 
-  renderer_->ResetCamera();
+  applyHighlight();
+
+  if (first_update_)
+  {
+    renderer_->ResetCamera();
+    first_update_ = false;
+  }
+}
+
+void VtkRenderer::updateClippingPlanes(const std::vector<Core::Datatypes::ClippingPlane>& planes)
+{
+  clippingPlanes_ = planes;
+
+  rebuildClippingPlanes();
+
+  applyClippingPlanesToScene();
+
+  renderFrame();
+}
+
+void VtkRenderer::setOrientationAxesVisible(bool visible)
+{
+  if (overlayManager_)
+  {
+    overlayManager_->setVisible(OverlayType::Orientation, visible);
+    renderFrame();
+  }
+}
+
+void VtkRenderer::setOrientationAxesSize(int size)
+{
+  if (overlayManager_)
+  {
+    if (auto orientationOverlay = overlayManager_->overlay<VtkOrientationOverlay>())
+    {
+      orientationOverlay->setSize(size);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setOrientationAxesPosX(int x)
+{
+  if (overlayManager_)
+  {
+    if (auto orientationOverlay = overlayManager_->overlay<VtkOrientationOverlay>())
+    {
+      orientationOverlay->setPosX(x);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setOrientationAxesPosY(int y)
+{
+  if (overlayManager_)
+  {
+    if (auto orientationOverlay = overlayManager_->overlay<VtkOrientationOverlay>())
+    {
+      orientationOverlay->setPosY(y);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbVisible(bool visible)
+{
+  if (overlayManager_)
+  {
+    overlayManager_->setVisible(OverlayType::Scalebar, visible);
+    renderFrame();
+  }
+}
+
+void VtkRenderer::setSbFontSize(int size)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setFontSize(size);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbLength(double length)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setLength(length);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbHeight(double height)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setHeight(height);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbMultiplier(double mul)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setMultiplier(mul);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbNumTicks(double num)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setNumTicks(num);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbLineWidth(double width)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setLineWidth(width);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbLineColor(double color)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setLineColor(color);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbUnit(const std::string& unit)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setUnit(unit);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::setSbProjLength(double length)
+{
+  if (overlayManager_)
+  {
+    if (auto scaleBarOverlay = overlayManager_->overlay<VtkScaleBarOverlay>())
+    {
+      scaleBarOverlay->setProjLength(length);
+      renderFrame();
+    }
+  }
+}
+
+void VtkRenderer::saveScreenshot(const QString& filename)
+{
+  if (image_.isNull()) return;
+  image_.save(filename);
+}
+
+glm::mat4 VtkRenderer::getWorldToProjection() const
+{
+  if (!renderer_) return glm::mat4(1.0f);
+
+  auto camera = renderer_->GetActiveCamera();
+  if (!camera) return glm::mat4(1.0f);
+
+  double clipping[2];
+  camera->GetClippingRange(clipping);
+
+  auto result = camera->GetCompositeProjectionTransformMatrix(renderer_->GetTiledAspectRatio(),
+      clipping[0],  // near
+      clipping[1]   // far
+  );
+
+  glm::mat4 glmResult(1.0f);
+
+  for (int r = 0; r < 4; ++r)
+  {
+    for (int c = 0; c < 4; ++c)
+    {
+      glmResult[c][r] = result->GetElement(r, c);
+    }
+  }
+
+  return glmResult;
+}
+
+glm::vec3 VtkRenderer::computeWorldPosition(
+    int x, int y,
+    const glm::vec3& planePoint,
+    const glm::vec3& planeNormal) const
+{
+  if (!renderer_) return planePoint;
+
+  // Convert Qt-style top-left coordinates into VTK display coords.
+  int* size = renderWindow_->GetSize();
+  const double px = std::round(x * devicePixelRatio_);
+  const double pyQt = std::round(y * devicePixelRatio_);
+  const double py = size[1] - 1 - pyQt;
+
+  // Near point
+  renderer_->SetDisplayPoint(px, py, 0.0);
+
+  renderer_->DisplayToWorld();
+
+  double nearPt4[4];
+  renderer_->GetWorldPoint(nearPt4);
+
+  if (std::abs(nearPt4[3]) < 1e-12) return planePoint;
+
+  glm::vec3 nearPt(static_cast<float>(nearPt4[0] / nearPt4[3]), static_cast<float>(nearPt4[1] / nearPt4[3]), static_cast<float>(nearPt4[2] / nearPt4[3]));
+
+  // Far point
+  renderer_->SetDisplayPoint(px, py, 1.0);
+
+  renderer_->DisplayToWorld();
+
+  double farPt4[4];
+  renderer_->GetWorldPoint(farPt4);
+
+  if (std::abs(farPt4[3]) < 1e-12) return planePoint;
+
+  glm::vec3 farPt(static_cast<float>(farPt4[0] / farPt4[3]), static_cast<float>(farPt4[1] / farPt4[3]), static_cast<float>(farPt4[2] / farPt4[3]));
+
+  glm::vec3 rayDir = glm::normalize(farPt - nearPt);
+
+  const float denom = glm::dot(planeNormal, rayDir);
+
+  if (std::abs(denom) < 1e-6f) return planePoint;
+
+  const float t = glm::dot(planePoint - nearPt, planeNormal) / denom;
+
+  return nearPt + t * rayDir;
+}
+
+void VtkRenderer::doInitialWidgetUpdate(
+    [[maybe_unused]] Graphics::Datatypes::WidgetHandle widget,
+    [[maybe_unused]] int x,
+    [[maybe_unused]] int y)
+{
+}
+
+void VtkRenderer::removeAllGeomObjects()
+{
+}
+
+void VtkRenderer::setWidgetInteractionMode(
+    [[maybe_unused]] MouseButton button)
+{
+}
+
+Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y,
+    [[maybe_unused]] const Graphics::Datatypes::WidgetList& widgets)
+{
+  if (!initialized_) return nullptr;
+
+  vtkNew<vtkCellPicker> picker;
+
+  picker->PickFromListOn();
+
+  for (auto& pair : actorWidgets_)
+  {
+    picker->AddPickList(pair.first);
+  }
+
+  const int px = static_cast<int>(std::round(x * devicePixelRatio_));
+  const int pyQt = static_cast<int>(std::round(y * devicePixelRatio_));
+  const int py = renderWindow_->GetSize()[1] - 1 - pyQt;
+
+  if (!picker->Pick(px, py, 0, renderer_)) return nullptr;
+
+  auto actor = picker->GetActor();
+  if (!actor) return nullptr;
+
+  auto it = actorWidgets_.find(actor);
+  if (it == actorWidgets_.end()) return nullptr;
+
+  lastPicker_ = picker;
+
+  return it->second;
+}
+
+void VtkRenderer::setHighlightedWidget(Graphics::Datatypes::WidgetHandle widget)
+{
+  highlightedWidget_ = widget;
+}
+
+void VtkRenderer::clearHighlight()
+{
+  highlightedWidget_.reset();
+}
+
+void VtkRenderer::applyHighlight()
+{
+  if (!highlightedWidget_) return;
+
+  for (const auto& [prop, widget] : actorWidgets_)
+  {
+    if (widget != highlightedWidget_) continue;
+
+    auto actor = vtkActor::SafeDownCast(prop);
+    if (!actor) continue;
+
+    actor->GetProperty()->SetColor(1.0, 0.0, 0.0);
+  }
+}
+
+VtkInteractionContext VtkRenderer::getInteractionContext() const
+{
+  VtkInteractionContext ctx;
+
+  ctx.worldToProjection = getWorldToProjection();
+
+  ctx.projectionToWorld = glm::inverse(ctx.worldToProjection);
+
+  auto camera = renderer_->GetActiveCamera();
+
+  double pos[3];
+  camera->GetPosition(pos);
+
+  ctx.cameraPosition = {static_cast<float>(pos[0]), static_cast<float>(pos[1]), static_cast<float>(pos[2])};
+
+  double focal[3];
+  camera->GetFocalPoint(focal);
+
+  ctx.focalPoint = {static_cast<float>(focal[0]), static_cast<float>(focal[1]), static_cast<float>(focal[2])};
+
+  double up[3];
+  camera->GetViewUp(up);
+
+  ctx.viewUp = {static_cast<float>(up[0]), static_cast<float>(up[1]), static_cast<float>(up[2])};
+
+  int* size = renderWindow_->GetSize();
+
+  ctx.viewportWidth = size[0];
+  ctx.viewportHeight = size[1];
+
+  return ctx;
+}
+
+void VtkRenderer::beginWidgetInteraction(
+    Graphics::Datatypes::WidgetHandle widget,
+    MouseButton button,
+    int x, int y)
+{
+  if (!widgetUpdater_) return;
+
+  widgetUpdater_->setCurrentWidget(widget);
+  widgetUpdater_->setButtonPushed(button);
+
+  widgetUpdater_->beginInteraction(x, y, lastPicker_);
+}
+
+void VtkRenderer::widgetMouseMove(int x, int y)
+{
+  if (!widgetUpdater_) return;
+
+  widgetUpdater_->updateWidget(x, y);
+}
+
+void VtkRenderer::endWidgetInteraction()
+{
+  if (widgetUpdater_) widgetUpdater_->reset();
+}
+
+bool VtkRenderer::widgetMoved() const
+{
+  glm::mat4 t = widgetUpdater_->widgetTransform();
+
+  return glm::length(glm::vec4(t[3])) > 1e-6f;
+}
+
+glm::mat4 VtkRenderer::getWidgetTransform() const
+{
+  if (!widgetUpdater_) return glm::mat4(1.0f);
+
+  return widgetUpdater_->widgetTransform();
+}
+
+void VtkRenderer::rebuildClippingPlanes()
+{
+  if (!initialized_) return;
+
+  vtkClippingPlanes_.clear();
+
+  double bounds[6];
+  renderer_->ComputeVisiblePropBounds(bounds);
+
+  double sx = bounds[1] - bounds[0];
+  double sy = bounds[3] - bounds[2];
+  double sz = bounds[5] - bounds[4];
+
+  double cx = 0.5 * (bounds[0] + bounds[1]);
+  double cy = 0.5 * (bounds[2] + bounds[3]);
+  double cz = 0.5 * (bounds[4] + bounds[5]);
+
+  double sceneDiag = std::sqrt(sx * sx + sy * sy + sz * sz);
+
+  for (const auto& clip : clippingPlanes_)
+  {
+    if (!clip.visible) continue;
+
+    auto plane = vtkSmartPointer<vtkPlane>::New();
+
+    double nx = clip.x;
+    double ny = clip.y;
+    double nz = clip.z;
+
+    double len = std::sqrt(nx * nx + ny * ny + nz * nz);
+
+    if (len < 1e-10)
+    {
+      nx = 1.0;
+      ny = 0.0;
+      nz = 0.0;
+    }
+    else
+    {
+      nx /= len;
+      ny /= len;
+      nz /= len;
+    }
+
+    if (clip.reverseNormal)
+    {
+      nx = -nx;
+      ny = -ny;
+      nz = -nz;
+    }
+
+    double worldD = clip.d * 0.5 * sceneDiag;
+
+    plane->SetNormal(nx, ny, nz);
+
+    plane->SetOrigin(cx + nx * worldD, cy + ny * worldD, cz + nz * worldD);
+
+    vtkClippingPlanes_.push_back(plane);
+  }
+}
+
+void VtkRenderer::applyClippingPlanesToScene()
+{
+  for (auto& mapper : surfaceMappers_)
+  {
+    mapper->RemoveAllClippingPlanes();
+
+    for (auto& plane : vtkClippingPlanes_)
+      mapper->AddClippingPlane(plane);
+  }
+
+  for (auto& mapper : volumeMappers_)
+  {
+    mapper->RemoveAllClippingPlanes();
+
+    for (auto& plane : vtkClippingPlanes_)
+      mapper->AddClippingPlane(plane);
+  }
+}
+
+void VtkRenderer::setBackgroundColor(const QColor& color)
+{
+  if (!initialized_) return;
+  bgColor_ = color;
+  renderer_->SetBackground(bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
 }
 
 void VtkRenderer::initialize()
@@ -183,12 +683,53 @@ void VtkRenderer::initialize()
 
   renderWindow_->AddRenderer(renderer_);
 
-  renderer_->SetBackground(0.1, 0.2, 0.4);
+  renderer_->SetBackground(bgColor_.redF(), bgColor_.greenF(), bgColor_.blueF());
 
   w2i_ = vtkSmartPointer<vtkWindowToImageFilter>::New();
   w2i_->SetInput(renderWindow_);
 
+  // overlay
+  overlayManager_ = std::make_unique<VtkOverlayManager>();
+  // orientation axes
+  auto orientationOverlay = std::make_unique<VtkOrientationOverlay>();
+  orientationOverlay->setVisible(true);
+  overlayManager_->addOverlay(OverlayType::Orientation, std::move(orientationOverlay));
+  //scale bar
+  auto scalebarOverlay = std::make_unique<VtkScaleBarOverlay>();
+  scalebarOverlay->setVisible(false);
+  overlayManager_->addOverlay(OverlayType::Scalebar, std::move(scalebarOverlay));
+  //
+  overlayManager_->resize(static_cast<int>(width_), static_cast<int>(height_));
+  overlayManager_->initialize(renderer_);
+
+  // camera
+  vtkCamera* camera = renderer_->GetActiveCamera();
+  cameraController_.setCamera(camera);
+
+  cameraObserver_ = vtkSmartPointer<vtkCallbackCommand>::New();
+
+  cameraObserver_->SetClientData(this);
+
+  cameraObserver_->SetCallback([](vtkObject*, unsigned long, void* clientData, void*) {
+    auto self = static_cast<VtkRenderer*>(clientData);
+
+    self->onCameraModified();
+  });
+
+  camera->AddObserver(vtkCommand::ModifiedEvent, cameraObserver_);
+
+  overlayManager_->cameraChanged(camera);
+
   initialized_ = true;
+}
+
+void VtkRenderer::onCameraModified()
+{
+  if (!initialized_) return;
+
+  vtkCamera* camera = renderer_->GetActiveCamera();
+
+  overlayManager_->cameraChanged(camera);
 }
 
 void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
@@ -237,7 +778,12 @@ void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
 
 void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
+
+  double range[2];
+  poly->GetScalarRange(range);
 
   auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 
@@ -245,17 +791,44 @@ void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandl
 
   auto actor = vtkSmartPointer<vtkActor>::New();
 
-  actor->SetMapper(mapper);
+  if (geo->tfn.fromColorMap)
+  {
+    mapper->ScalarVisibilityOn();
+    mapper->SetColorModeToMapScalars();
+    mapper->SetScalarModeToUsePointData();
+    mapper->SetScalarRange(range);
 
-  applyMaterial(actor, geo->material);
+    auto lut = createLookupTable(geo->tfn, range);
+
+    mapper->SetLookupTable(lut);
+  }
+  else
+  {
+    mapper->ScalarVisibilityOff();
+
+    applyMaterial(actor, geo->material);
+  }
+
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
+  actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
 
   actors_.push_back(actor);
+
+  if (geo->widget)
+  {
+    actorWidgets_[actor] = geo->widget;
+  }
 }
 
 void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!ugrid) return;
 
   double range[2];
@@ -265,16 +838,29 @@ void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGe
 
   mapper->SetInputData(ugrid);
 
-  mapper->ScalarVisibilityOn();
-  mapper->SetColorModeToMapScalars();
-  mapper->SetScalarModeToUsePointData();
-  mapper->SetScalarRange(range);
+  surfaceMappers_.push_back(mapper);
 
-  auto lut = createLookupTable(geo->tfn, range);
-
-  mapper->SetLookupTable(lut);
+  applyCurrentClippingPlanes(mapper.Get());
 
   auto actor = vtkSmartPointer<vtkActor>::New();
+
+  if (geo->tfn.fromColorMap)
+  {
+    mapper->ScalarVisibilityOn();
+    mapper->SetColorModeToMapScalars();
+    mapper->SetScalarModeToUsePointData();
+    mapper->SetScalarRange(range);
+
+    auto lut = createLookupTable(geo->tfn, range);
+
+    mapper->SetLookupTable(lut);
+  }
+  else
+  {
+    mapper->ScalarVisibilityOff();
+
+    applyMaterial(actor, geo->material);
+  }
 
   actor->SetMapper(mapper);
 
@@ -287,8 +873,14 @@ void VtkRenderer::renderUnstructuredGrid(vtkUnstructuredGrid* ugrid, const VtkGe
 
 void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   auto mapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
   mapper->SetInputData(image);
+
+  volumeMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
 
   auto volumeProperty = vtkSmartPointer<vtkVolumeProperty>::New();
   volumeProperty->ShadeOff();
@@ -363,6 +955,8 @@ void VtkRenderer::renderImageData(vtkImageData* image, const VtkGeometryObjectHa
 
 void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
 
   auto tube = vtkSmartPointer<vtkTubeFilter>::New();
@@ -391,14 +985,25 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
     applyMaterial(actor, geo->material);
   }
 
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
   actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
+
+  if (geo->widget)
+  {
+    actorWidgets_[actor] = geo->widget;
+  }
 }
 
 void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
 
   auto tube = vtkSmartPointer<vtkTubeFilter>::New();
@@ -427,6 +1032,10 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
     applyMaterial(actor, geo->material);
   }
 
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
   actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
@@ -435,6 +1044,8 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
 
 void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle& geo)
 {
+  if (!initialized_) return;
+
   if (!poly) return;
 
   auto sphere = vtkSmartPointer<vtkSphereSource>::New();
@@ -462,10 +1073,19 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
     applyMaterial(actor, geo->material);
   }
 
+  surfaceMappers_.push_back(mapper);
+
+  applyCurrentClippingPlanes(mapper.Get());
+
   actor->SetMapper(mapper);
 
   renderer_->AddActor(actor);
   actors_.push_back(actor);
+
+  if (geo->widget)
+  {
+    actorWidgets_[actor] = geo->widget;
+  }
 }
 
 void VtkRenderer::applyMaterial(vtkActor* actor, const VtkGeometryObject::Material& mat)
@@ -510,11 +1130,15 @@ vtkSmartPointer<vtkLookupTable> VtkRenderer::createLookupTable(const VtkGeometry
   return lut;
 }
 
-void VtkRenderer::addDirectionalLight(glm::vec3 color, glm::vec3 direction)
+void VtkRenderer::addDirectionalLight(
+    [[maybe_unused]] glm::vec3 color,
+    [[maybe_unused]] glm::vec3 direction)
 {
 }
 
-void VtkRenderer::addAmbientLight(glm::vec3 color, float intensity)
+void VtkRenderer::addAmbientLight(
+    [[maybe_unused]] glm::vec3 color,
+    [[maybe_unused]] float intensity)
 {
 }
 
