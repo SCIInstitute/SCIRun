@@ -41,7 +41,10 @@ static glm::vec3 toVec3(const P& p)
 }
 
 std::unique_ptr<VtkTransformCalculator> VtkTransformCalculatorFactory::Create(
-    WidgetMovement movement, Graphics::Datatypes::WidgetHandle widget, const VtkInteractionContext& context, const glm::vec3& initialPickWorld)
+    WidgetMovement movement,
+    Graphics::Datatypes::WidgetHandle widget,
+    [[maybe_unused]] const VtkInteractionContext& context,
+    const glm::vec3& initialPickWorld)
 {
   switch (movement)
   {
