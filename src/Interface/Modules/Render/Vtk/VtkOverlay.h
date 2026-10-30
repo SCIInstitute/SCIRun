@@ -43,7 +43,7 @@ class VtkOverlay
 
   virtual void cameraChanged(vtkCamera* camera) = 0;
 
-  virtual void resize(int width, int height) {}
+  virtual void resize([[maybe_unused]] int width, [[maybe_unused]] int height) {}
 
   virtual void setVisible(bool visible) = 0;
 

@@ -133,7 +133,7 @@ void VtkRenderer::mousePress(float x, float y, MouseButton btn)
   cameraController_.mousePress(x, y, btn);
 }
 
-void VtkRenderer::mouseMove(float x, float y, MouseButton btn)
+void VtkRenderer::mouseMove(float x, float y, [[maybe_unused]] MouseButton btn)
 {
   cameraController_.mouseMove(x, y);
 
@@ -443,7 +443,10 @@ glm::vec3 VtkRenderer::computeWorldPosition(
   return nearPt + t * rayDir;
 }
 
-void VtkRenderer::doInitialWidgetUpdate(Graphics::Datatypes::WidgetHandle widget, int x, int y)
+void VtkRenderer::doInitialWidgetUpdate(
+    [[maybe_unused]] Graphics::Datatypes::WidgetHandle widget,
+    [[maybe_unused]] int x,
+    [[maybe_unused]] int y)
 {
 }
 
@@ -451,11 +454,13 @@ void VtkRenderer::removeAllGeomObjects()
 {
 }
 
-void VtkRenderer::setWidgetInteractionMode(MouseButton button)
+void VtkRenderer::setWidgetInteractionMode(
+    [[maybe_unused]] MouseButton button)
 {
 }
 
-Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y, const Graphics::Datatypes::WidgetList& widgets)
+Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y,
+    [[maybe_unused]] const Graphics::Datatypes::WidgetList& widgets)
 {
   if (!initialized_) return nullptr;
 
@@ -1125,8 +1130,16 @@ vtkSmartPointer<vtkLookupTable> VtkRenderer::createLookupTable(const VtkGeometry
   return lut;
 }
 
-void VtkRenderer::addDirectionalLight(glm::vec3 color, glm::vec3 direction) {}
+void VtkRenderer::addDirectionalLight(
+    [[maybe_unused]] glm::vec3 color,
+    [[maybe_unused]] glm::vec3 direction)
+{
+}
 
-void VtkRenderer::addAmbientLight(glm::vec3 color, float intensity) {}
+void VtkRenderer::addAmbientLight(
+    [[maybe_unused]] glm::vec3 color,
+    [[maybe_unused]] float intensity)
+{
+}
 
 #endif
