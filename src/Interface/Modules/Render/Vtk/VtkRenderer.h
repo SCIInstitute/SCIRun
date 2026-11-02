@@ -131,6 +131,7 @@ public:
   void endWidgetInteraction();
   bool widgetMoved() const;
   glm::mat4 getWidgetTransform() const;
+  void applyWidgetPreviewTransform(const glm::mat4& mat);
 
  private:
   static int vtkRendererInstances;
@@ -216,9 +217,11 @@ public:
 
   //widgets
   std::unordered_map<vtkProp*, Graphics::Datatypes::WidgetHandle> actorWidgets_;
+  std::unordered_map<vtkProp*, std::string> actorWidgetGroups_;
   Graphics::Datatypes::WidgetHandle highlightedWidget_;
   std::unique_ptr<VtkWidgetUpdateService> widgetUpdater_;
   vtkSmartPointer<vtkCellPicker> lastPicker_;
+  std::string activeWidgetGroup_;
 };
 
 }}

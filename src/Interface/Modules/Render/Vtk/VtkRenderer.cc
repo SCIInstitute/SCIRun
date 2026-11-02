@@ -485,6 +485,7 @@ Graphics::Datatypes::WidgetHandle VtkRenderer::select(int x, int y,
   auto it = actorWidgets_.find(actor);
   if (it == actorWidgets_.end()) return nullptr;
 
+  activeWidgetGroup_ = actorWidgetGroups_[actor];
   lastPicker_ = picker;
 
   return it->second;
@@ -566,11 +567,24 @@ void VtkRenderer::widgetMouseMove(int x, int y)
   if (!widgetUpdater_) return;
 
   widgetUpdater_->updateWidget(x, y);
+
+  auto transform = widgetUpdater_->widgetTransform();
+
+  applyWidgetPreviewTransform(transform);
+
+  renderFrame();
 }
 
 void VtkRenderer::endWidgetInteraction()
 {
   if (widgetUpdater_) widgetUpdater_->reset();
+
+  for (auto& [prop, widget] : actorWidgets_)
+  {
+    auto actor = vtkActor::SafeDownCast(prop);
+    if (!actor) continue;
+    actor->SetUserTransform(nullptr);
+  }
 }
 
 bool VtkRenderer::widgetMoved() const
@@ -585,6 +599,40 @@ glm::mat4 VtkRenderer::getWidgetTransform() const
   if (!widgetUpdater_) return glm::mat4(1.0f);
 
   return widgetUpdater_->widgetTransform();
+}
+
+vtkSmartPointer<vtkMatrix4x4> glmToVtk(const glm::mat4& m)
+{
+  auto vtkMat = vtkSmartPointer<vtkMatrix4x4>::New();
+
+  for (int r = 0; r < 4; ++r)
+  {
+    for (int c = 0; c < 4; ++c)
+    {
+      vtkMat->SetElement(r, c, m[c][r]);
+    }
+  }
+
+  return vtkMat;
+}
+
+void VtkRenderer::applyWidgetPreviewTransform(const glm::mat4& mat)
+{
+  auto vtkMat = glmToVtk(mat);
+
+  for (auto& [prop, widget] : actorWidgets_)
+  {
+    auto actor = vtkActor::SafeDownCast(prop);
+    if (!actor) continue;
+
+    auto groupIt = actorWidgetGroups_.find(prop);
+
+    if (groupIt == actorWidgetGroups_.end()) continue;
+
+    if (groupIt->second != activeWidgetGroup_) continue;
+
+    actor->SetUserMatrix(vtkMat);
+  }
 }
 
 void VtkRenderer::rebuildClippingPlanes()
@@ -822,6 +870,7 @@ void VtkRenderer::renderPolyData(vtkPolyData* poly, const VtkGeometryObjectHandl
   if (geo->widget)
   {
     actorWidgets_[actor] = geo->widget;
+    actorWidgetGroups_[actor] = geo->widgetGroupId;
   }
 }
 
@@ -997,6 +1046,7 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
   if (geo->widget)
   {
     actorWidgets_[actor] = geo->widget;
+    actorWidgetGroups_[actor] = geo->widgetGroupId;
   }
 }
 
@@ -1085,6 +1135,7 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
   if (geo->widget)
   {
     actorWidgets_[actor] = geo->widget;
+    actorWidgetGroups_[actor] = geo->widgetGroupId;
   }
 }
 

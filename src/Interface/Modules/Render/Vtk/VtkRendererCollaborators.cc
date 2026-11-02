@@ -85,7 +85,6 @@ std::unique_ptr<VtkTransformCalculator> VtkTransformCalculatorFactory::Create(
   case WidgetMovement::ROTATE:
   {
     auto params = widget->transformParameters();
-
     return std::make_unique<VtkRotationCalculator>(
         toVec3(getRotationOrigin(params)),
         initialPickWorld);

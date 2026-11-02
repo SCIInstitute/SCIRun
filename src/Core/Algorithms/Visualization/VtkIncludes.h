@@ -72,6 +72,7 @@
 #include <vtkCallbackCommand.h>
 #include <vtkMatrix4x4.h>
 #include <vtkCellPicker.h>
+#include <vtkTransform.h>
 #pragma pop_macro("INPUT_PORT")
 #endif
 

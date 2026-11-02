@@ -101,6 +101,7 @@ public:
     uint64_t version{0};
 
     Graphics::Datatypes::WidgetHandle widget;
+    std::string widgetGroupId;
 
 private:
     std::string objectName_;       ///< Name of this object. Should be unique across all modules in the network.
