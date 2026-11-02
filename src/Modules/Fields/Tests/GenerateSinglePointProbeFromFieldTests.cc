@@ -29,6 +29,9 @@
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Feedback.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/Transform.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
 
@@ -45,7 +48,7 @@ class GenerateSinglePointProbeFromFieldTests : public ModuleTest
 protected:
   Point probeAt(const Point& location, bool keepOnMesh)
   {
-    auto probe = makeModule("GenerateSinglePointProbeFromField");
+    probe = makeModule("GenerateSinglePointProbeFromField");
     // Triangle (0,0,0) (1,0,0) (0.5,1,0).
     stubPortNWithThisData(probe, 0, TriangleTriSurfLinearBasis(data_info_type::DOUBLE_E));
     auto state = probe->get_state();
@@ -55,7 +58,23 @@ protected:
     state->setValue(Parameters::KeepOnMesh, keepOnMesh);
 
     probe->execute();
+    return outputPoint();
+  }
 
+  // What ViewScene sends when the probe widget is dragged by offset.
+  Point dragBy(const Vector& offset)
+  {
+    ViewSceneFeedback vsf;
+    vsf.transform.pre_translate(offset);
+    vsf.selectionName = std::string(1, GeometryObject::delimiter) + probe->id().id_ + GeometryObject::delimiter;
+    probe->findOutputPortsWithName("GeneratedWidget")[0]->sendConnectionFeedback(vsf);
+    probe->execute();
+    return outputPoint();
+  }
+
+  Point outputPoint()
+  {
+    auto state = probe->get_state();
     auto output = std::dynamic_pointer_cast<Field>(getDataOnThisOutputPort(probe, 1));
     EXPECT_TRUE(output != nullptr);
     Point p;
@@ -66,6 +85,7 @@ protected:
     return p;
   }
 
+  ModuleHandle probe;
   UseRealModuleStateFactory realState_;
 };
 
@@ -88,5 +108,28 @@ TEST_F(GenerateSinglePointProbeFromFieldTests, KeepOnMeshClampsToNearestEdge)
   auto p = probeAt(Point(0.5, -1.0, 0.5), true);
   EXPECT_NEAR(0.5, p.x(), 1e-9);
   EXPECT_NEAR(0.0, p.y(), 1e-9);
+  EXPECT_NEAR(0.0, p.z(), 1e-9);
+}
+
+TEST_F(GenerateSinglePointProbeFromFieldTests, FreeProbeDragsOffSurface)
+{
+  probeAt(Point(0.5, 0.3, 0.0), false);
+  auto p = dragBy(Vector(0.1, 0.1, 2.0));
+  EXPECT_NEAR(0.6, p.x(), 1e-9);
+  EXPECT_NEAR(0.4, p.y(), 1e-9);
+  EXPECT_NEAR(2.0, p.z(), 1e-9);
+}
+
+TEST_F(GenerateSinglePointProbeFromFieldTests, KeepOnMeshDragLandsBackOnSurface)
+{
+  probeAt(Point(0.5, 0.3, 0.0), true);
+  auto p = dragBy(Vector(0.1, 0.1, 2.0));
+  EXPECT_NEAR(0.6, p.x(), 1e-9);
+  EXPECT_NEAR(0.4, p.y(), 1e-9);
+  EXPECT_NEAR(0.0, p.z(), 1e-9);
+
+  p = dragBy(Vector(-0.2, 0.0, -1.0));
+  EXPECT_NEAR(0.4, p.x(), 1e-9);
+  EXPECT_NEAR(0.4, p.y(), 1e-9);
   EXPECT_NEAR(0.0, p.z(), 1e-9);
 }
