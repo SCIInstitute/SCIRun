@@ -50,35 +50,45 @@ std::unique_ptr<VtkTransformCalculator> VtkTransformCalculatorFactory::Create(
   {
   case WidgetMovement::TRANSLATE:
   {
-    return std::make_unique<VtkTranslationCalculator>(initialPickWorld);
+    return std::make_unique<VtkTranslationCalculator>(
+        initialPickWorld);
   }
 
   case WidgetMovement::TRANSLATE_AXIS:
   {
     auto params = widget->transformParameters();
 
-    return std::make_unique<VtkAxisTranslationCalculator>(initialPickWorld, toVec3(getAxisVector(params)));
+    return std::make_unique<VtkAxisTranslationCalculator>(
+        initialPickWorld,
+        toVec3(getAxisVector(params)));
   }
 
   case WidgetMovement::SCALE:
   {
     auto params = widget->transformParameters();
 
-    return std::make_unique<VtkScaleCalculator>(toVec3(getRotationOrigin(params)), initialPickWorld);
+    return std::make_unique<VtkScaleCalculator>(
+        toVec3(getRotationOrigin(params)),
+        initialPickWorld);
   }
 
   case WidgetMovement::SCALE_AXIS:
   {
     auto params = widget->transformParameters();
 
-    return std::make_unique<VtkScaleAxisCalculator>(toVec3(getRotationOrigin(params)), initialPickWorld, toVec3(getAxisVector(params)));
+    return std::make_unique<VtkScaleAxisCalculator>(
+        toVec3(getRotationOrigin(params)),
+        initialPickWorld,
+        toVec3(getAxisVector(params)));
   }
 
   case WidgetMovement::ROTATE:
   {
     auto params = widget->transformParameters();
 
-    return std::make_unique<VtkRotationCalculator>(toVec3(getRotationOrigin(params)), toVec3(getAxisVector(params)), initialPickWorld);
+    return std::make_unique<VtkRotationCalculator>(
+        toVec3(getRotationOrigin(params)),
+        initialPickWorld);
   }
 
   case WidgetMovement::NONE:

@@ -213,21 +213,26 @@ namespace SCIRun
         class VtkRotationCalculator : public VtkTransformCalculator
         {
          public:
-          VtkRotationCalculator(const glm::vec3& origin, const glm::vec3& axis, const glm::vec3& initialWorld) : origin_(origin), axis_(glm::normalize(axis))
-          {
-            startVector_ = glm::normalize(initialWorld - origin_);
-          }
+          VtkRotationCalculator(const glm::vec3& origin, const glm::vec3& initialWorld) : origin_(origin) { startVector_ = glm::normalize(initialWorld - origin_); }
 
           glm::mat4 computeTransform(const glm::vec3& currentWorldPos) override
           {
             glm::vec3 currentVector = glm::normalize(currentWorldPos - origin_);
 
-            float angle = acos(glm::clamp(glm::dot(startVector_, currentVector), -1.f, 1.f));
+            float dotVal = glm::clamp(glm::dot(startVector_, currentVector), -1.f, 1.f);
+
+            float angle = acos(dotVal);
+
+            glm::vec3 axis = glm::cross(startVector_, currentVector);
+
+            float len = glm::length(axis);
+
+            if (len < 1e-6f) return glm::mat4(1.f);
+
+            axis /= len;
 
             auto T1 = glm::translate(glm::mat4(1.f), origin_);
-
-            auto R = glm::rotate(glm::mat4(1.f), angle, axis_);
-
+            auto R = glm::rotate(glm::mat4(1.f), angle, axis);
             auto T2 = glm::translate(glm::mat4(1.f), -origin_);
 
             return T1 * R * T2;
@@ -235,7 +240,6 @@ namespace SCIRun
 
          private:
           glm::vec3 origin_;
-          glm::vec3 axis_;
           glm::vec3 startVector_;
         };
 
