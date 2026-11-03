@@ -212,6 +212,18 @@ std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
   }
 }
 
+std::string NetworkEditorPythonAPI::exportPython(const std::string& filename)
+{
+  Guard g(pythonLock_);
+
+  if (impl_ && impl_->isModuleContext())
+    return "In module context--function not available";
+
+  if (impl_)
+    return impl_->exportPython(filename);
+  return "Null implementation: NetworkEditorPythonAPI::exportPython()";
+}
+
 std::string NetworkEditorPythonAPI::currentNetworkFile()
 {
   Guard g(pythonLock_);

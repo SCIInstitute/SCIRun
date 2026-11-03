@@ -29,6 +29,7 @@
 SET(Core_Serialization_Network_SRCS
   ModuleDescriptionSerialization.cc
   NetworkDescriptionSerialization.cc
+  NetworkToPython.cc
   NetworkXMLSerializer.cc
   StateSerialization.cc
 )
@@ -37,6 +38,7 @@ SET(Core_Serialization_Network_HEADERS
   ModuleDescriptionSerialization.h
   ModulePositionGetter.h
   NetworkDescriptionSerialization.h
+  NetworkToPython.h
   NetworkXMLSerializer.h
   XMLSerializer.h
   share.h
