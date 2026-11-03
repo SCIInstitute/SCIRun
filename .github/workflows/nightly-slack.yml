@@ -18,10 +18,11 @@ name: nightly-slack
 #    reason: it reaches feature branches that never merge this file.)
 #
 #  * It reports the REAL ctest pass/fail counts, not just the job conclusion.
-#    The ctest steps in reusable-build.yml carry `continue-on-error: true`, so
-#    regression-tests reports "success" even when hundreds of cases fail. The
-#    counts (and the failing test names) come from the junit-*.xml files in that
-#    run's `test-results-*` artifacts. A green job with failing tests is flagged
+#    The ctest steps in reusable-build.yml are continue-on-error unless the
+#    caller sets the *-tests-blocking inputs (#2711), so a platform that is not
+#    yet blocking reports "success" with failing cases. The counts (and the
+#    failing test names) come from the junit-*.xml files in that run's
+#    `test-results-*` artifacts. A green job with failing tests is flagged
 #    yellow rather than green.
 #
 #  * Filtered to `event == 'schedule'`: only the nightly cron pings Slack. Master
