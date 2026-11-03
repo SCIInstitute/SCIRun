@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertGeometryToVtk",
+    "namespace": "Visualization",
+    "status": "New module: experimental VTK rendering path",
+    "description": "Converts any geometry object (ShowField, ShowFieldGlyphs, widgets, ...) into VTK geometry for display in ViewSceneVtk. Screen-space text and legends are skipped. Requires WITH_VTK.",
+    "header": "Modules/Visualization/ConvertGeometryToVtk.h"
+  },
+  "algorithm": {
+    "name": "ConvertGeometryToVtkAlgo",
+    "namespace": "Visualization",
+    "header": "Core/Algorithms/Visualization/ConvertGeometryToVtkAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

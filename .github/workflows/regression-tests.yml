@@ -59,6 +59,7 @@ jobs:
 
   mac-coverage:
     uses: ./.github/workflows/reusable-build.yml
+    secrets: inherit
     with:
       runner: macOS-latest
       qt-version: '6.10.2'

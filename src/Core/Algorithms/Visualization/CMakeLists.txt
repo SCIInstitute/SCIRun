@@ -27,12 +27,14 @@
 
 
 SET(Algorithms_Visualization_SRCS
+  ConvertGeometryToVtkAlgo.cc
   OsprayDataAlgorithm.cc
   VtkDataAlgorithm.cc
   VtkGeometryBuilder.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
+  ConvertGeometryToVtkAlgo.h
   OsprayDataAlgorithm.h
   VtkDataAlgorithm.h
   VtkGeometryBuilder.h
@@ -47,6 +49,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_VTK
+  Graphics_Datatypes
   Graphics_Glyphs
   Algorithms_Base
 )
