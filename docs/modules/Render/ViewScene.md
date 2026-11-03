@@ -72,6 +72,23 @@ restores the display back to a default condition. This is very useful when objec
 ### View Options
 ### Camera Locks
 ### Screenshot
+### Record Movie
+records the scene as it is displayed, one frame at a time, until recording is
+stopped. Clicking the button starts and stops recording; the popup holds the
+settings.
+
+Choose the output file with **Set...**. Three formats are available:
+
+  * **PNG frame sequence** — numbered stills (`name_00001.png`, `name_00002.png`, ...)
+    next to the chosen file. Always available.
+  * **MP4 video** and **Animated GIF** — encoded directly, and only offered when
+    `ffmpeg` is found on the system path.
+
+The frame rate sets both how often the scene is sampled and the playback rate of
+the resulting video. If the disk or the encoder cannot keep up, frames are
+dropped rather than queued, and the count is reported when recording stops.
+
+Recording pairs naturally with Auto Rotate for turntable animations.
 ### Auto Rotate
 ### Background Color
 ### Orientation Axes
