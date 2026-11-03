@@ -48,7 +48,7 @@ public:
 protected:
   void pullSpecial() override;
 private Q_SLOTS:
-  void setNoMaximumValue(int state);
+  void setNoMaximumValue(bool state);
 };
 
 }

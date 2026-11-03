@@ -114,7 +114,7 @@ public Q_SLOTS:
   void setDataDirectoryFromGUI();
   void setScreenshotDirectoryFromGUI();
   void setConnectionPipelineType(int type);
-  void setSaveBeforeExecute(int state);
+  void setSaveBeforeExecute(bool state);
   void reportIssue();
   void toolkitDownload();
   void networkModified();
@@ -237,7 +237,7 @@ private Q_SLOTS:
   void addModuleToWindowList(const QString& id, bool hasUI);
   void addToPathFromGUI();
   void adjustExecuteButtonAppearance();
-  void adjustModuleDock(int state);
+  void adjustModuleDock(bool state);
   void alertForNetworkCycles(int code);
   void changeExecuteActionIconToPlay();
   void changeExecuteActionIconToStop();

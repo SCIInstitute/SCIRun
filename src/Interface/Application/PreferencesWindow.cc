@@ -40,14 +40,14 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor), writeSettings_(writeSettings)
 {
   setupUi(this);
-  connect(saveBeforeExecuteCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateSaveBeforeExecuteOption);
-  connect(moduleErrorDialogDisableCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleErrorDialogOption);
-  connect(autoModuleNoteCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateAutoNotesState);
-  connect(errorGraphicItemsCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleErrorInlineMessagesOption);
-  connect(highDPIAdjustCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateHighDPIAdjust);
-  connect(forceGridBackgroundCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateForceGridBackground);
-  connect(autoRotateViewerOnMouseReleaseCheckbox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateAutoRotateViewer);
-  connect(moduleExecuteDownstreamOnlyCheckBox_, &QCheckBox::stateChanged, this, &PreferencesWindow::updateModuleExecuteDownstream);
+  connect(saveBeforeExecuteCheckBox_, &QCheckBox::toggled, this, &PreferencesWindow::updateSaveBeforeExecuteOption);
+  connect(moduleErrorDialogDisableCheckbox_, &QCheckBox::toggled, this, &PreferencesWindow::updateModuleErrorDialogOption);
+  connect(autoModuleNoteCheckbox_, &QCheckBox::toggled, this, &PreferencesWindow::updateAutoNotesState);
+  connect(errorGraphicItemsCheckBox_, &QCheckBox::toggled, this, &PreferencesWindow::updateModuleErrorInlineMessagesOption);
+  connect(highDPIAdjustCheckBox_, &QCheckBox::toggled, this, &PreferencesWindow::updateHighDPIAdjust);
+  connect(forceGridBackgroundCheckBox_, &QCheckBox::toggled, this, &PreferencesWindow::updateForceGridBackground);
+  connect(autoRotateViewerOnMouseReleaseCheckbox_, &QCheckBox::toggled, this, &PreferencesWindow::updateAutoRotateViewer);
+  connect(moduleExecuteDownstreamOnlyCheckBox_, &QCheckBox::toggled, this, &PreferencesWindow::updateModuleExecuteDownstream);
   connect(toolBarPopupShowDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupShowDelay);
   connect(toolBarPopupHideDelaySpinBox_, qOverload<int>(&QSpinBox::valueChanged), this, &PreferencesWindow::updateToolBarPopupHideDelay);
 }
@@ -64,56 +64,56 @@ void PreferencesWindow::updateToolBarPopupHideDelay(int delay)
   toolBarPopupHideDelaySpinBox_->setValue(delay);
 }
 
-void PreferencesWindow::updateAutoRotateViewer(int state)
+void PreferencesWindow::updateAutoRotateViewer(bool state)
 {
-  SCIRun::Core::Preferences::Instance().autoRotateViewerOnMouseRelease.setValue(state != 0);
+  SCIRun::Core::Preferences::Instance().autoRotateViewerOnMouseRelease.setValue(state);
 }
 
-void PreferencesWindow::updateModuleErrorDialogOption(int state)
+void PreferencesWindow::updateModuleErrorDialogOption(bool state)
 {
-  SCIRun::Core::Preferences::Instance().showModuleErrorDialogs.setValueWithSignal(state == 0);
+  SCIRun::Core::Preferences::Instance().showModuleErrorDialogs.setValueWithSignal(!state);
 }
 
-void PreferencesWindow::updateSaveBeforeExecuteOption(int state)
+void PreferencesWindow::updateSaveBeforeExecuteOption(bool state)
 {
-  SCIRun::Core::Preferences::Instance().saveBeforeExecute.setValue(state != 0);
+  SCIRun::Core::Preferences::Instance().saveBeforeExecute.setValue(state);
 }
 
-void PreferencesWindow::updateAutoNotesState(int state)
+void PreferencesWindow::updateAutoNotesState(bool state)
 {
-  SCIRun::Core::Preferences::Instance().autoNotes.setValue(state != 0);
+  SCIRun::Core::Preferences::Instance().autoNotes.setValue(state);
 }
 
-void PreferencesWindow::updateHighDPIAdjust(int state)
+void PreferencesWindow::updateHighDPIAdjust(bool state)
 {
-  SCIRun::Core::Preferences::Instance().highDPIAdjustment.setValue(state != 0);
+  SCIRun::Core::Preferences::Instance().highDPIAdjustment.setValue(state);
 }
 
-void PreferencesWindow::updateForceGridBackground(int state)
+void PreferencesWindow::updateForceGridBackground(bool state)
 {
-  SCIRun::Core::Preferences::Instance().forceGridBackground.setValueWithSignal(state != 0);
+  SCIRun::Core::Preferences::Instance().forceGridBackground.setValueWithSignal(state);
 }
 
-void PreferencesWindow::updateModuleExecuteDownstream(int state)
+void PreferencesWindow::updateModuleExecuteDownstream(bool state)
 {
-  SCIRun::Core::Preferences::Instance().moduleExecuteDownstreamOnly.setValueWithSignal(state != 0);
+  SCIRun::Core::Preferences::Instance().moduleExecuteDownstreamOnly.setValueWithSignal(state);
 }
 
 void PreferencesWindow::setSaveBeforeExecute(bool mode)
 {
-  updateSaveBeforeExecuteOption(mode ? 1 : 0);
+  updateSaveBeforeExecuteOption(mode);
   saveBeforeExecuteCheckBox_->setChecked(mode);
 }
 
 void PreferencesWindow::setModuleExecuteDownstreamOnly(bool mode)
 {
-  updateModuleExecuteDownstream(mode ? 1 : 0);
+  updateModuleExecuteDownstream(mode);
   moduleExecuteDownstreamOnlyCheckBox_->setChecked(mode);
 }
 
 void PreferencesWindow::setAutoRotateViewerOnMouseRelease(bool mode)
 {
-  updateAutoRotateViewer(mode ? 1 : 0);
+  updateAutoRotateViewer(mode);
   autoRotateViewerOnMouseReleaseCheckbox_->setChecked(mode);
 }
 
@@ -129,24 +129,24 @@ void PreferencesWindow::setToolBarPopupHideDelay(int delay)
 
 void PreferencesWindow::setHighDPIAdjustment(bool highDPI)
 {
-  updateHighDPIAdjust(highDPI ? 1 : 0);
+  updateHighDPIAdjust(highDPI);
   highDPIAdjustCheckBox_->setChecked(highDPI);
 }
 
 void PreferencesWindow::setDisableModuleErrorDialogs(bool mode)
 {
-  updateModuleErrorDialogOption(mode ? 1 : 0);
+  updateModuleErrorDialogOption(mode);
   moduleErrorDialogDisableCheckbox_->setChecked(mode);
 }
 
-void PreferencesWindow::updateModuleErrorInlineMessagesOption(int state)
+void PreferencesWindow::updateModuleErrorInlineMessagesOption(bool state)
 {
-  SCIRun::Core::Preferences::Instance().showModuleErrorInlineMessages.setValue(state != 0);
+  SCIRun::Core::Preferences::Instance().showModuleErrorInlineMessages.setValue(state);
 }
 
 void PreferencesWindow::setModuleErrorInlineMessages(bool mode)
 {
-  updateModuleErrorInlineMessagesOption(mode ? 1 : 0);
+  updateModuleErrorInlineMessagesOption(mode);
   errorGraphicItemsCheckBox_->setChecked(mode);
 }
 

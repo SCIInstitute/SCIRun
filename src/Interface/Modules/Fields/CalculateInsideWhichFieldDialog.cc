@@ -54,7 +54,7 @@ CalculateInsideWhichFieldDialog::CalculateInsideWhichFieldDialog(const std::stri
   addDoubleSpinBoxManager(startValue_, Parameters::StartValue);
   addComboBoxManager(outputType_, Parameters::OutputType);
   addComboBoxManager(dataLocation_, Parameters::DataLocation);
-  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::stateChanged, this, &CalculateInsideWhichFieldDialog::setUseNanForUnassignedValues);
+  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::toggled, this, &CalculateInsideWhichFieldDialog::setUseNanForUnassignedValues);
 }
 void CalculateInsideWhichFieldDialog::pullSpecial()
 {
@@ -63,11 +63,11 @@ void CalculateInsideWhichFieldDialog::pullSpecial()
     useNanForUnassignedValuesCheckBox_->setChecked(true);
   }
 }
-void CalculateInsideWhichFieldDialog::setUseNanForUnassignedValues(int state)
+void CalculateInsideWhichFieldDialog::setUseNanForUnassignedValues(bool state)
 {
   if (!pulling_)
   {
-    if (0 != state)
+    if (state)
     state_->setValue(Parameters::OutsideValue, std::numeric_limits<double>::quiet_NaN());
   }
 }
