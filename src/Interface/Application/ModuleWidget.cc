@@ -1264,6 +1264,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
   if (isFloating)
   {
     FloatingDockWindow::applyFlags(dockable_);
+    dialogManager_.options()->prepareToShow();
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
   }
@@ -1328,6 +1329,7 @@ void ModuleWidget::toggleOptionsDialog()
         positions_.append(dockable_->pos());
       }
       FloatingDockWindow::restoreIfMinimized(dockable_);
+      dialogManager_.options()->prepareToShow();
       dockable_->show();
       Q_EMIT showUIrequested(dialogManager_.options());
       dockable_->raise();
@@ -1461,6 +1463,7 @@ void ModuleWidget::showUI()
   if (dockable_)
   {
     FloatingDockWindow::restoreIfMinimized(dockable_);
+    dialogManager_.options()->prepareToShow();
     dockable_->show();
     dialogManager_.options()->expand();
     Q_EMIT showUIrequested(dialogManager_.options());
