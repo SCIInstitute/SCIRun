@@ -28,7 +28,6 @@
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/Dyadic3DTensor.h>
-#include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/GlyphFactory.h>
 #include <Graphics/Widgets/WidgetBuilders.h>
@@ -351,12 +350,17 @@ void BBoxDataHandler::makeCornerSuperquadrics(const GeneralWidgetParameters& gen
     .boundingBox(params.bbox)
     .resolution(params.resolution);
 
-  auto t = Tensor(scaledEigvecs_[0].normal(), scaledEigvecs_[1].normal(), scaledEigvecs_[2].normal());
-  auto newT = Dyadic3DTensor(t.xx(), t.xy(), t.xz(), t.yy(), t.yz(), t.zz());
+  // Unit eigenvalues make this the identity, so the box's frame must be given as
+  // eigenvectors; right-handed, or the glyph is mirrored and shades inside-out.
+  auto e0 = scaledEigvecs_[0].normal();
+  auto e2 = Cross(e0, scaledEigvecs_[1]).normal();
+  auto e1 = Cross(e2, e0);
+  auto toEigen = [](const Vector& v) { return Eigen::Vector3d(v.x(), v.y(), v.z()); };
+  const Dyadic3DTensor cornerTensor(toEigen(e0), toEigen(e1), toEigen(e2));
   for (int c = 0; c < CORNER_COUNT_; ++c)
   {
     corners_[c] = builder.tag("Corner" + std::to_string(c)).centerPoint(cornerPoints_[c])
-      .tensor(newT).A(cornerEmphasis).B(cornerEmphasis).build();
+      .tensor(cornerTensor).A(cornerEmphasis).B(cornerEmphasis).build();
     auto flipVec = cornerPoints_[c] - params.origin;
     corners_[c]->addTransformParameters<Scaling>(params.origin, flipVec);
   }
