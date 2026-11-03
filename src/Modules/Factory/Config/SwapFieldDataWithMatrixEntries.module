@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SwapFieldDataWithMatrixEntries",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h"
+  },
+  "algorithm": {
+    "name": "SwapFieldDataWithMatrixEntriesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h"
+  },
+  "UI": {
+    "name": "SwapFieldDataWithMatrixEntriesDialog",
+    "header": "Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h"
+  }
+}

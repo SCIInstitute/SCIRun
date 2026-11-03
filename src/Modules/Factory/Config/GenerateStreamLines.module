@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GenerateStreamLines",
+    "namespace": "Visualization",
+    "status": "in progress--needs testing",
+    "description": "...",
+    "header": "Modules/Legacy/Visualization/GenerateStreamLines.h"
+  },
+  "algorithm": {
+    "name": "GenerateStreamLinesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h"
+  },
+  "UI": {
+    "name": "GenerateStreamLinesDialog",
+    "header": "Interface/Modules/Visualization/GenerateStreamLinesDialog.h"
+  }
+}

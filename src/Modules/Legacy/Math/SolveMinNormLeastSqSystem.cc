@@ -58,8 +58,10 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(SolveMinNormLeastSqSystem, Math, SCIRun)
+
 SolveMinNormLeastSqSystem::SolveMinNormLeastSqSystem()
-: Module(ModuleLookupInfo("SolveMinNormLeastSqSystem", "Math", "SCIRun"), false)
+: Module(staticInfo_, false)
 {
   INITIALIZE_PORT(BasisVector1);
   INITIALIZE_PORT(BasisVector2);

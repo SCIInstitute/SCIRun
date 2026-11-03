@@ -40,7 +40,9 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-SetupTDCS::SetupTDCS() : Module(ModuleLookupInfo("SetupTDCS", "BrainStimulator", "SCIRun"))
+MODULE_INFO_DEF(SetupTDCS, BrainStimulator, SCIRun)
+
+SetupTDCS::SetupTDCS() : Module(staticInfo_)
 {
  INITIALIZE_PORT(MESH);
  INITIALIZE_PORT(SCALP_TRI_SURF_MESH);

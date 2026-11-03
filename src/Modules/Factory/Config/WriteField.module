@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "WriteField",
+    "namespace": "DataIO",
+    "status": "Functional, outputs binary .fld only.",
+    "description": "...",
+    "header": "Modules/DataIO/WriteField.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "WriteFieldDialog",
+    "header": "Interface/Modules/DataIO/WriteFieldDialog.h"
+  }
+}

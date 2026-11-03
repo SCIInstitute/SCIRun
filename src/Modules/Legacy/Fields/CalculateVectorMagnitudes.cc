@@ -36,8 +36,10 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(CalculateVectorMagnitudes, ChangeFieldData, SCIRun)
+
 CalculateVectorMagnitudes::CalculateVectorMagnitudes()
-  : Module(ModuleLookupInfo("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun"), false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(ScalarField);
   INITIALIZE_PORT(VectorField);

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildBEMatrix",
+    "namespace": "Forward",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Forward/BuildBEMatrix.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "BuildBEMatrixDialog",
+    "header": "Interface/Modules/Forward/BuildBEMatrixDialog.h"
+  }
+}

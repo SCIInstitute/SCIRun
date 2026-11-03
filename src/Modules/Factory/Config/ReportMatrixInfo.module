@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportMatrixInfo",
+    "namespace": "Math",
+    "status": "Functional, needs GUI work.",
+    "description": "...",
+    "header": "Modules/Math/ReportMatrixInfo.h"
+  },
+  "algorithm": {
+    "name": "ReportMatrixInfoAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ReportMatrixInfo.h"
+  },
+  "UI": {
+    "name": "ReportMatrixInfoDialog",
+    "header": "Interface/Modules/Math/ReportMatrixInfoDialog.h"
+  }
+}

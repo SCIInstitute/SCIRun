@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "MapFieldDataFromSourceToDestination",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h"
+  },
+  "algorithm": {
+    "name": "MapFieldDataFromSourceToDestinationAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h"
+  },
+  "UI": {
+    "name": "MapFieldDataFromSourceToDestinationDialog",
+    "header": "Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GenerateROIStatistics",
+    "namespace": "BrainStimulator",
+    "status": " in progress ",
+    "description": " Roi statistics ",
+    "header": "Modules/BrainStimulator/GenerateROIStatistics.h"
+  },
+  "algorithm": {
+    "name": "GenerateROIStatisticsAlgorithm",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h"
+  },
+  "UI": {
+    "name": "GenerateROIStatisticsDialog",
+    "header": "Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h"
+  }
+}
