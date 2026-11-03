@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
 #include <Core/Thread/Mutex.h>
+#include <atomic>
 #include <chrono>
 #include <mutex>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
@@ -166,9 +167,14 @@ namespace Render {
     // Held by the dialog and released per rendered frame; timed so the module
     // can give up if no frame ever comes (#2760).
     std::timed_mutex& screenShotMutex() { return screenShotMutex_; }
+    // Set by the dialog in regression mode: windows there always paint, just
+    // slowly on CI, so the timeout only turns slow frames into failures (#2700).
+    void setWaitForFrameIndefinitely(bool wait) { waitForFrameIndefinitely_ = wait; }
+    bool waitForFrameIndefinitely() const { return waitForFrameIndefinitely_; }
   private:
     Core::Thread::Mutex mutex_ {"generalVSMutex"};
     std::timed_mutex screenShotMutex_;
+    std::atomic<bool> waitForFrameIndefinitely_ {false};
   };
 
   using ViewSceneLocksPtr = std::shared_ptr<ViewSceneLocks>;
