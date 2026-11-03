@@ -188,15 +188,25 @@ namespace Core {
       using parent::operator=;
       using parent::contract;
 
+      // Carry the eigens over: a degenerate tensor's eigenframe can't be re-solved.
       TensorType& operator=(const TensorType& other)
       {
         parent::operator=(other);
+        ordering_ = OrderState::NONE;
+        haveEigens_ = other.haveEigens_;
+        if (haveEigens_)
+        {
+          eigvecs_ = other.eigvecs_;
+          eigvals_ = other.eigvals_;
+        }
         return *this;
       }
 
       TensorType& operator=(const parent other)
       {
         parent::operator=(other);
+        ordering_ = OrderState::NONE;
+        haveEigens_ = false;
         return *this;
       }
 
