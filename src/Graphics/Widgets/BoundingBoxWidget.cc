@@ -396,7 +396,7 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
 
   auto builder = DiskWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::NONE)}})
-    // .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
+    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
     //.transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
     .scale(diskDiameterScale * params.scale * scale_)
     .defaultColor(SCALE_AXIS_COLOR_)
@@ -406,12 +406,12 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
   for (int f = 0; f < FACE_COUNT_; ++f)
   {
     auto axis = getDirectionOfFace(f).normal();
-    // auto scaleAxisIndex = getIndexOfDirectionOfFace(f);
+    auto scaleAxisIndex = getIndexOfDirectionOfFace(f);
     faceDisks_[f] = builder.tag("FaceDisk" + std::to_string(f))
       .diameterPoints(facePoints_[f], facePoints_[f] + axis * scale_ * params.scale * diskLengthScale)
       .build();
-    // faceDisks_[f]->addTransformParameters<AxisScaling>(params.origin, axis, scaleAxisIndex);
-    //faceDisks_[f]->addTransformParameters<AxisTranslation>(axis);
+    faceDisks_[f]->addTransformParameters<AxisScaling>(params.origin, axis, scaleAxisIndex);
+    faceDisks_[f]->addTransformParameters<AxisTranslation>(axis);
   }
 }
 
@@ -437,21 +437,21 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
   for (auto& edge : edges)
   {
     edge << propagatesEvent<WidgetMovement::TRANSLATE>::to << TheseWidgets{widgets_};
-    // edge << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{widgets_};
+    edge << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{widgets_};
   }
   for (auto& corner : corners)
     corner << propagatesEvent<WidgetMovement::SCALE>::to << TheseWidgets{widgets_};
   for (auto& faceSphere : faceSpheres)
     faceSphere << propagatesEvent<WidgetMovement::ROTATE>::to << TheseWidgets{widgets_};
-  // for (auto i = 0; i < boxData.FACE_COUNT_; ++i)
-  // {
-    // auto edgesParallel = boxData.getEdgesParrallelToFace(i);
-    // auto face = boxData.getWidgetsOnFace(i);
-    // auto oppositeFace = boxData.getWidgetsOnOppositeFace(i);
+   for (auto i = 0; i < boxData.FACE_COUNT_; ++i)
+   {
+     auto edgesParallel = boxData.getEdgesParrallelToFace(i);
+     auto face = boxData.getWidgetsOnFace(i);
+     auto oppositeFace = boxData.getWidgetsOnOppositeFace(i);
 
-    //faceDisks[i] << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{edgesParallel};
-    //faceDisks[i] << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{face};
-  // }
+    faceDisks[i] << propagatesEvent<WidgetMovement::SCALE_AXIS>::to << TheseWidgets{edgesParallel};
+    faceDisks[i] << propagatesEvent<WidgetMovement::TRANSLATE_AXIS>::to << TheseWidgets{face};
+   }
 }
 
 
