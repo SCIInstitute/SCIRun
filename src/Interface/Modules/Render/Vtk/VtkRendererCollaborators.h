@@ -167,23 +167,32 @@ namespace SCIRun
           float startDistance_;
         };
 
-        class VtkScaleAxisCalculator : public VtkTransformCalculator
+class VtkScaleAxisCalculator : public VtkTransformCalculator
         {
          public:
           VtkScaleAxisCalculator(const glm::vec3& origin, const glm::vec3& initialWorld, const glm::vec3& axis) : origin_(origin), initialWorld_(initialWorld), axis_(glm::normalize(axis))
           {
             startProjection_ = glm::dot(initialWorld_ - origin_, axis_);
 
-            if (std::abs(startProjection_) < 1e-6f) startProjection_ = 1.f;
+            halfExtent_ = std::abs(startProjection_);
+
+            if (halfExtent_ < 1e-6f) halfExtent_ = 1.f;
           }
 
           glm::mat4 computeTransform(const glm::vec3& currentWorldPos) override
           {
-            float currentProjection = glm::dot(currentWorldPos - origin_, axis_);
+            const float currentProjection = glm::dot(currentWorldPos - origin_, axis_);
 
-            float scale = currentProjection / startProjection_;
+            // movement of the selected face along its normal
+            const float delta = currentProjection - startProjection_;
 
-            scale = std::max(scale, 0.001f);
+            // new half-extent along that axis
+            float newHalfExtent = halfExtent_ + delta;
+
+            // prevent inversion
+            newHalfExtent = std::max(newHalfExtent, 0.001f);
+
+            const float scale = newHalfExtent / halfExtent_;
 
             glm::vec3 scaleVector(1.f);
 
@@ -193,13 +202,18 @@ namespace SCIRun
 
             if (std::abs(axis_.z) > 0.5f) scaleVector.z = scale;
 
-            auto T1 = glm::translate(glm::mat4(1.f), origin_);
+            // move the center half the face displacement
+            const glm::vec3 translation = axis_ * (delta * 0.5f);
 
-            auto S = glm::scale(glm::mat4(1.f), scaleVector);
+            const glm::mat4 Tmove = glm::translate(glm::mat4(1.f), translation);
 
-            auto T2 = glm::translate(glm::mat4(1.f), -origin_);
+            const glm::mat4 T1 = glm::translate(glm::mat4(1.f), origin_);
 
-            return T1 * S * T2;
+            const glm::mat4 S = glm::scale(glm::mat4(1.f), scaleVector);
+
+            const glm::mat4 T2 = glm::translate(glm::mat4(1.f), -origin_);
+
+            return Tmove * T1 * S * T2;
           }
 
          private:
@@ -207,7 +221,8 @@ namespace SCIRun
           glm::vec3 initialWorld_;
           glm::vec3 axis_;
 
-          float startProjection_;
+          float startProjection_{};
+          float halfExtent_{};
         };
 
         class VtkRotationCalculator : public VtkTransformCalculator
