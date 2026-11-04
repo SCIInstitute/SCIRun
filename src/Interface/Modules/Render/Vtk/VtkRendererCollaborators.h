@@ -167,7 +167,7 @@ namespace SCIRun
           float startDistance_;
         };
 
-class VtkScaleAxisCalculator : public VtkTransformCalculator
+        class VtkScaleAxisCalculator : public VtkTransformCalculator
         {
          public:
           VtkScaleAxisCalculator(const glm::vec3& origin, const glm::vec3& initialWorld, const glm::vec3& axis) : origin_(origin), initialWorld_(initialWorld), axis_(glm::normalize(axis))
