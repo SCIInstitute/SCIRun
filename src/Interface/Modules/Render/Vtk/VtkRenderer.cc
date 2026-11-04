@@ -33,6 +33,8 @@
 #include "VtkOrientationOverlay.h"
 #include "VtkScaleBarOverlay.h"
 #include "VtkOverlay.h"
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 using namespace SCIRun;
 using namespace Render;
@@ -634,6 +636,49 @@ void VtkRenderer::applyWidgetPreviewTransform(const glm::mat4& mat)
     actor->SetUserMatrix(vtkMat);
   }
 }
+
+//void VtkRenderer::applyWidgetPreviewTransform(const glm::mat4& mat)
+//{
+//  glm::vec3 scale;
+//  glm::quat rotation;
+//  glm::vec3 translation;
+//  glm::vec3 skew;
+//  glm::vec4 perspective;
+//
+//  glm::decompose(mat, scale, rotation, translation, skew, perspective);
+//  float uniformScale = 1.0f;
+//  //std::max({scale.x, scale.y, scale.z});
+//
+//  glm::mat4 handleMat =
+//      glm::translate(glm::mat4(1.f), translation) *
+//      glm::mat4_cast(rotation) *
+//      glm::scale(glm::mat4(1.f), glm::vec3(uniformScale));
+//
+//  auto vtkMat = glmToVtk(mat);
+//  auto vtkHandleMat = glmToVtk(handleMat);
+//
+//  for (auto& [prop, widget] : actorWidgets_)
+//  {
+//    auto actor = vtkActor::SafeDownCast(prop);
+//    if (!actor) continue;
+//
+//    auto groupIt = actorWidgetGroups_.find(prop);
+//
+//    if (groupIt == actorWidgetGroups_.end()) continue;
+//
+//    if (groupIt->second != activeWidgetGroup_) continue;
+//
+//    auto id = widget->uniqueID();
+//    if (id.find("Edge") != std::string::npos)
+//    {
+//      actor->SetUserMatrix(vtkMat);
+//    }
+//    else
+//    {
+//      actor->SetUserMatrix(vtkHandleMat);
+//    }
+//  }
+//}
 
 void VtkRenderer::rebuildClippingPlanes()
 {
