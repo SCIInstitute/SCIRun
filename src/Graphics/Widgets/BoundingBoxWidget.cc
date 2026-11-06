@@ -396,7 +396,7 @@ void BBoxDataHandler::makeFaceDisks(const GeneralWidgetParameters& gen,
 
   auto builder = DiskWidgetBuilder(gen.base.idGenerator)
     .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::NONE)}})
-    .transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
+    //.transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::SCALE_AXIS)}})
     //.transformMapping({{WidgetInteraction::CLICK, singleMovementWidget(WidgetMovement::TRANSLATE_AXIS)}})
     .scale(diskDiameterScale * params.scale * scale_)
     .defaultColor(SCALE_AXIS_COLOR_)
