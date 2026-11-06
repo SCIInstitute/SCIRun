@@ -49,6 +49,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ShowNodes);
         ALGORITHM_PARAMETER_DECL(ShowEdges);
         ALGORITHM_PARAMETER_DECL(ShowFaces);
+        ALGORITHM_PARAMETER_DECL(ShowAllFaces);
         ALGORITHM_PARAMETER_DECL(ShowVolume);
         ALGORITHM_PARAMETER_DECL(ModuleID);
       }

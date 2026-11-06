@@ -30,6 +30,7 @@
 #define MODULES_VISUALIZATION_SHOWFIELDVTK_H
 
 #include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
@@ -55,6 +56,9 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm)
 
         REQUIRES_BUILD_FLAG(WithVtk)
+
+      private:
+        void processMeshComponentSelection(const Core::Datatypes::ModuleFeedback& var);
       };
     }
   }

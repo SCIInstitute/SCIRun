@@ -44,7 +44,7 @@ namespace SCIRun {
       public:
         ConvertGeometryToVtk();
         void execute() override;
-        void setStateDefaults() override {}
+        void setStateDefaults() override;
 
         INPUT_PORT(0, Geometry, GeometryObject);
         OUTPUT_PORT(0, VtkGeometry, VtkGeometryObject);
