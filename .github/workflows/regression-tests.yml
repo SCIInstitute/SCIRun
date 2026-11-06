@@ -1,6 +1,6 @@
 name: regression-tests
 
-# Regression and coverage matrix: master pushes, nightly, and on demand. Pull
+# Regression and coverage matrix: nightly and on demand (not per master push). Pull
 # requests are covered by the slim tier in pr.yml -- see the comment at the top
 # of that file for why no required check may live in a path-filtered workflow.
 
@@ -8,7 +8,6 @@ on:
   push:
     branches:
       - regression-tests-ci
-      - master
   schedule:
     - cron: '45 8 * * *'
   workflow_dispatch:
@@ -60,6 +59,7 @@ jobs:
 
   mac-coverage:
     uses: ./.github/workflows/reusable-build.yml
+    secrets: inherit
     with:
       runner: macOS-latest
       qt-version: '6.10.2'

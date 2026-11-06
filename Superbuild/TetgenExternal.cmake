@@ -46,6 +46,10 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND CMAKE_BUILD_TYPE)
   list(APPEND _cmake_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 endif()
 
+if(CMAKE_OSX_DEPLOYMENT_TARGET)
+  list(APPEND _cmake_args -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
+endif()
+
 # Superbuild paths
 set(_tetgen_src  "${CMAKE_BINARY_DIR}/Externals/Source/Tetgen_external")
 set(_tetgen_bin  "${CMAKE_BINARY_DIR}/Externals/Build/Tetgen_external")

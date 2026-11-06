@@ -17,6 +17,7 @@
 # Output:
 #   <build-dir>/coverage/summary.txt     line/region/branch summary
 #   <build-dir>/coverage/html/index.html browsable HTML report
+#   <build-dir>/coverage/coverage.lcov   lcov export (for Codecov)
 #
 set -euo pipefail
 
@@ -95,6 +96,12 @@ xcrun llvm-cov show "${OBJECTS[@]}" \
   -format=html -output-dir="$COV_DIR/html" \
   -ignore-filename-regex="$IGNORE" \
   -show-line-counts-or-regions >/dev/null
+
+# lcov for Codecov upload (CI); HTML above is for humans.
+echo ">>> Exporting lcov"
+xcrun llvm-cov export "${OBJECTS[@]}" \
+  -instr-profile="$COV_DIR/merged.profdata" \
+  -format=lcov -ignore-filename-regex="$IGNORE" > "$COV_DIR/coverage.lcov"
 
 echo ""
 echo "Summary: $COV_DIR/summary.txt"
