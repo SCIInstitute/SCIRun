@@ -70,19 +70,22 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
+// #2484: Qt6 on Windows recreates a top-level's native window the first time a
+// QOpenGLWidget child appears, so adding a ViewScene made the whole app vanish briefly.
+// A hidden GL child created up front moves that recreation to before the window is shown.
+void SCIRunMainWindow::primeOpenGLSurface()
+{
+#ifdef Q_OS_WIN
+  auto dummy = new QOpenGLWidget(this);
+  dummy->setFixedSize(1, 1);
+  dummy->hide();
+#endif
+}
+
 SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
-
-  QOpenGLWidget* dummy = new QOpenGLWidget(this);
-  dummy->setFixedSize(1, 1);
-
-  if (centralWidget() && centralWidget()->layout())
-  {
-    centralWidget()->layout()->addWidget(dummy);
-  }
-
-  dummy->hide();
+  primeOpenGLSurface();
 
   builder_ = makeShared<NetworkEditorBuilder>(this);
   //dockManager_ = new DockManager(dockSpace_, this);
