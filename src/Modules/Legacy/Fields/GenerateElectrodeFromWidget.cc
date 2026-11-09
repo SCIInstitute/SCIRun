@@ -304,6 +304,8 @@ void GenerateElectrodeFromWidget::adjustPositionFromTransform(const Transform& t
   impl_->widget_[index]->setPosition(newLocation);
   impl_->previousTransforms_[index] = transformMatrix;
   
+  impl_->setPointsToState();
+  
 }
 
 std::vector<Point> GenerateElectrodeFromWidget::defaultPoints()
