@@ -49,6 +49,7 @@ SET(Modules_Fields_Tests_SRCS
   ClipVolumeByIsovalueTests.cc
   RemoveUnusedNodesTests.cc
   CleanupTetMeshTests.cc
+  GenerateSinglePointProbeFromFieldTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

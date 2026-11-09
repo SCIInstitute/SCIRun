@@ -55,6 +55,7 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);
   addCheckBoxManager(snapToNodeCheckBox_, Parameters::SnapToNode);
   addCheckBoxManager(snapToElementCheckBox_, Parameters::SnapToElement);
+  addCheckBoxManager(keepOnMeshCheckBox_, Parameters::KeepOnMesh);
 
   addDoubleSpinBoxManager(bboxScaleDoubleSpinBox_, Parameters::BBoxSize);
   addCheckBoxManager(bboxScaleCheckBox_, Parameters::UseBBoxSize);

@@ -55,6 +55,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(ProbeColor);
         ALGORITHM_PARAMETER_DECL(SnapToNode);
         ALGORITHM_PARAMETER_DECL(SnapToElement);
+        ALGORITHM_PARAMETER_DECL(KeepOnMesh);
         ALGORITHM_PARAMETER_DECL(BBoxSize);
         ALGORITHM_PARAMETER_DECL(UseBBoxSize);
       }

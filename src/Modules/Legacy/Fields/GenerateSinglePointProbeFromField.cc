@@ -65,6 +65,7 @@ ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
 ALGORITHM_PARAMETER_DEF(Fields, SnapToNode);
 ALGORITHM_PARAMETER_DEF(Fields, SnapToElement);
+ALGORITHM_PARAMETER_DEF(Fields, KeepOnMesh);
 ALGORITHM_PARAMETER_DEF(Fields, BBoxSize);
 ALGORITHM_PARAMETER_DEF(Fields, UseBBoxSize);
 
@@ -169,6 +170,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
   state->setValue(SnapToNode, false);
   state->setValue(SnapToElement, false);
+  state->setValue(KeepOnMesh, false);
   state->setValue(Parameters::BBoxSize, 10.0);
   state->setValue(Parameters::UseBBoxSize, false);
 
@@ -344,6 +346,17 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(std::optional
     ogport->flushViews();
     gui_moveto_.set("");
 #endif
+  }
+
+  // Widget drags are free 3D translations, so pull the probe back onto the mesh (#1626).
+  if (ifield && state->getValue(KeepOnMesh).toBool())
+  {
+    auto vmesh = ifield->vmesh();
+    vmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
+    Point closest;
+    VMesh::Elem::index_type idx = 0;
+    if (vmesh->find_closest_elem(closest, idx, impl_->widgetLocation_))
+      impl_->widgetLocation_ = closest;
   }
 
   const auto location = impl_->widgetLocation_;
