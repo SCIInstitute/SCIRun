@@ -66,6 +66,7 @@ public:
   void setLockPanning(bool lock);
   void setLockRotation(bool lock);
   void requestFrame() {frameRequested_ = true;}
+  bool frameRequested() const {return frameRequested_;}
 
 Q_SIGNALS:
   void fatalError(const QString& message);

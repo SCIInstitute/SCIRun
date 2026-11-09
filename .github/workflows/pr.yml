@@ -102,6 +102,7 @@ jobs:
       qt-version: ''
       variant: gui
       build-with-python: true
+      cache-externals: true
 
   # Qt6 on Linux. Every other Linux job here and in ccpp.yml autodetects
   # qtbase5-dev, so before this job the only Qt6 compile coverage anywhere was
@@ -117,6 +118,7 @@ jobs:
       scirun-qt-min-version: '6.3.1'
       variant: gui
       build-with-python: true
+      cache-externals: true
 
   # mac and windows run only when the PR touches something that can diverge by
   # platform. They stay in ci-gate's `needs`, so when they do run the gate waits
@@ -169,6 +171,7 @@ jobs:
       variant: headless
       build-testing: true
       run-unit-tests: true
+      cache-externals: true
 
   # The single required check. `if: always()` is what lets it report even when
   # every build above was skipped, which is the case that unblocks docs-only PRs.

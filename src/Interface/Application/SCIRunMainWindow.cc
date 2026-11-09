@@ -55,7 +55,7 @@
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <chrono>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
@@ -228,7 +228,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionReset_Window_Layout, &QAction::triggered, this, &SCIRunMainWindow::resetWindowLayout);
   connect(actionToggleFullScreenMode_, &QAction::triggered, this, &SCIRunMainWindow::toggleFullScreen);
 
-#ifndef BUILD_WITH_PYTHON
+#ifndef WITH_PYTHON
   actionRunScript_->setEnabled(false);
 #endif
 
@@ -365,7 +365,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupDockToggleViewAction(triggeredEventsWindow_, "Ctrl+Shift+E");
   setupDockToggleViewAction(tagManagerWindow_, "Ctrl+Shift+T");
   setupDockToggleViewAction(macroEditor_, "Ctrl+Shift+X");
-  #ifdef BUILD_WITH_PYTHON
+  #ifdef WITH_PYTHON
   setupDockToggleViewAction(pythonConsole_, "Ctrl+Shift+Y");
   #endif
 

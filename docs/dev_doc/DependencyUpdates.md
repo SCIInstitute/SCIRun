@@ -101,8 +101,7 @@ out of `VERSIONS.cmake` (it documents them in a trailing comment block):
 - **Qt** — provided by the system or CI toolchain via `find_package`, not built
   by the Superbuild (minimum `SCIRUN_QT_MIN_VERSION` in `Superbuild.cmake`).
 - **Test/sample data** — `SCIRunTestData` and `CIBCData` are fetched by
-  `TestDataConfig.cmake` / `SCIRunDataExternal.cmake`; these are data fixtures,
-  not code dependencies.
+  `TestDataConfig.cmake`; these are data fixtures, not code dependencies.
 
 ### Deprecated Superbuild files
 

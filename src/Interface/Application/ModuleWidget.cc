@@ -375,6 +375,7 @@ ModuleWidget::ModuleWidget(ModuleErrorDisplayer* ed, const QString& name, Module
 
   createPorts(*theModule_);
   addPorts(currentIndex());
+  resizeForPortCount();
   updateProgrammablePorts();
 
   connect(this, &ModuleWidget::backgroundColorUpdated, this, &ModuleWidget::updateBackgroundColor);
@@ -498,6 +499,27 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
   {
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
   }
+  nameBasedWidth_ = frame->width();
+  resizeForPortCount();
+}
+
+// Mirrors the port placement in ModuleProxyWidget::createPortPositionProviders:
+// firstPortXPos + index * (width + spacing).
+int ModuleWidget::widthNeededForPorts() const
+{
+  const auto n = static_cast<int>(std::max(ports().numInputPorts(), ports().numOutputPorts()));
+  const int firstPortXPos = 5;
+  return firstPortXPos + n * (PortWidgetBase::DEFAULT_WIDTH + SMALL_PORT_SPACING) + firstPortXPos;
+}
+
+// The frame is sized from the title; with enough dynamic ports (ViewScene with
+// many inputs) the port row outgrew it and was clipped (#1874). Grow to fit,
+// and fall back to the title width once ports are removed again.
+void ModuleWidget::resizeForPortCount()
+{
+  const int target = std::max(nameBasedWidth_, widthNeededForPorts());
+  if (target != width())
+    resize(target, height());
 }
 
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
@@ -972,6 +994,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     ports_->reindexInputs();
 
     inputPortLayout_->insertWidget(newPortIndex, w);
+    resizeForPortCount();
 
     Q_EMIT dynamicPortChanged(pid.toString(), true);
   }
@@ -983,6 +1006,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
+      resizeForPortCount();
       Q_EMIT dynamicPortChanged(pid.toString(), false);
     }
   }

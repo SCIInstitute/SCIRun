@@ -1,0 +1,92 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/../bin/${presetName}",
+      "cacheVariables": {
+        "BUILD_WITH_PYTHON": "ON",
+        "WITH_TETGEN": "OFF"
+      }
+    },
+
+    { "name": "qt5", "hidden": true, "cacheVariables": { "SCIRUN_QT_MIN_VERSION": "5.15.2" } },
+    { "name": "qt6", "hidden": true, "cacheVariables": { "SCIRUN_QT_MIN_VERSION": "6.3.1" } },
+    { "name": "testing", "hidden": true, "cacheVariables": { "BUILD_TESTING": "ON" } },
+
+    { "name": "type-release", "hidden": true, "cacheVariables": { "CMAKE_BUILD_TYPE": { "type": "STRING", "value": "Release" } } },
+    { "name": "type-debug", "hidden": true, "cacheVariables": { "CMAKE_BUILD_TYPE": { "type": "STRING", "value": "Debug" } } },
+
+    { "name": "gen-make", "hidden": true, "generator": "Unix Makefiles" },
+    { "name": "gen-ninja", "hidden": true, "generator": "Ninja" },
+    {
+      "name": "gen-vs2022",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022",
+      "architecture": { "value": "x64", "strategy": "set" }
+    },
+    {
+      "name": "gen-vs2019",
+      "hidden": true,
+      "generator": "Visual Studio 16 2019",
+      "architecture": { "value": "x64", "strategy": "set" }
+    },
+
+    {
+      "name": "release",
+      "displayName": "Release (default generator, Qt 5)",
+      "inherits": ["base", "type-release"]
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug (default generator, Qt 5)",
+      "inherits": ["base", "type-debug"]
+    },
+    {
+      "name": "headless",
+      "displayName": "Release, no GUI (default generator)",
+      "inherits": ["base", "type-release"],
+      "cacheVariables": { "BUILD_HEADLESS": "ON" }
+    },
+
+    { "name": "make-release", "displayName": "Release, Unix Makefiles", "inherits": ["base", "type-release", "gen-make"] },
+    { "name": "make-debug", "displayName": "Debug, Unix Makefiles", "inherits": ["base", "type-debug", "gen-make"] },
+    { "name": "ninja-release", "displayName": "Release, Ninja", "inherits": ["base", "type-release", "gen-ninja"] },
+    { "name": "ninja-debug", "displayName": "Debug, Ninja", "inherits": ["base", "type-debug", "gen-ninja"] },
+    { "name": "vs2022-release", "displayName": "Release, Visual Studio 2022 x64", "inherits": ["base", "type-release", "gen-vs2022"] },
+    { "name": "vs2022-debug", "displayName": "Debug, Visual Studio 2022 x64", "inherits": ["base", "type-debug", "gen-vs2022"] },
+    { "name": "vs2019-release", "displayName": "Release, Visual Studio 2019 x64", "inherits": ["base", "type-release", "gen-vs2019"] },
+    { "name": "vs2019-debug", "displayName": "Debug, Visual Studio 2019 x64", "inherits": ["base", "type-debug", "gen-vs2019"] }
+  ],
+
+  "buildPresets": [
+    { "name": "release", "configurePreset": "release", "configuration": "Release" },
+    { "name": "debug", "configurePreset": "debug", "configuration": "Debug" },
+    { "name": "headless", "configurePreset": "headless", "configuration": "Release" },
+    { "name": "make-release", "configurePreset": "make-release" },
+    { "name": "make-debug", "configurePreset": "make-debug" },
+    { "name": "ninja-release", "configurePreset": "ninja-release" },
+    { "name": "ninja-debug", "configurePreset": "ninja-debug" },
+    { "name": "vs2022-release", "configurePreset": "vs2022-release", "configuration": "Release" },
+    { "name": "vs2022-debug", "configurePreset": "vs2022-debug", "configuration": "Debug" },
+    { "name": "vs2019-release", "configurePreset": "vs2019-release", "configuration": "Release" },
+    { "name": "vs2019-debug", "configurePreset": "vs2019-debug", "configuration": "Debug" }
+  ],
+
+  "testPresets": [
+    { "name": "base-test", "hidden": true, "output": { "outputOnFailure": true } },
+    { "name": "release", "inherits": "base-test", "configurePreset": "release", "configuration": "Release" },
+    { "name": "debug", "inherits": "base-test", "configurePreset": "debug", "configuration": "Debug" },
+    { "name": "headless", "inherits": "base-test", "configurePreset": "headless", "configuration": "Release" },
+    { "name": "make-release", "inherits": "base-test", "configurePreset": "make-release" },
+    { "name": "make-debug", "inherits": "base-test", "configurePreset": "make-debug" },
+    { "name": "ninja-release", "inherits": "base-test", "configurePreset": "ninja-release" },
+    { "name": "ninja-debug", "inherits": "base-test", "configurePreset": "ninja-debug" },
+    { "name": "vs2022-release", "inherits": "base-test", "configurePreset": "vs2022-release", "configuration": "Release" },
+    { "name": "vs2022-debug", "inherits": "base-test", "configurePreset": "vs2022-debug", "configuration": "Debug" },
+    { "name": "vs2019-release", "inherits": "base-test", "configurePreset": "vs2019-release", "configuration": "Release" },
+    { "name": "vs2019-debug", "inherits": "base-test", "configurePreset": "vs2019-debug", "configuration": "Debug" }
+  ]
+}

@@ -46,7 +46,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #endif
@@ -71,7 +71,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   collabs_.algoFactory_ = af;
   collabs_.reexFactory_ = reex;
   collabs_.executorFactory_ = executorFactory;
-  #ifndef BUILD_HEADLESS
+  #ifdef WITH_GUI
   collabs_.executionManager_.reset(new ExecutionQueueManager);
   #else
   collabs_.executionManager_.reset(new SimpleExecutionManager);
@@ -86,7 +86,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 
   /// @todo should this class own the network or just keep a reference?
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   NetworkEditorPythonAPI::setImpl(makeShared<PythonImpl>(*this, collabs_.cmdFactory_));
 #endif
 
@@ -122,7 +122,7 @@ NetworkEditorController::NetworkEditorController(NetworkStateHandle network, Exe
 
 NetworkEditorController::~NetworkEditorController()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
   collabs_.executionManager_->stopExecution();
@@ -604,7 +604,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       else
       {
-#ifndef BUILD_HEADLESS
+#ifdef WITH_GUI
         logInfo("module position editor unavailable, module positions at default");
 #endif
       }

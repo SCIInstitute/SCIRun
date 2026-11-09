@@ -64,7 +64,7 @@ SET(Engine_Network_NonPythonDependentLibs
   Core_Matlab
 )
 
-IF(BUILD_WITH_PYTHON)
+IF(WITH_PYTHON)
 
   TARGET_LINK_LIBRARIES(Engine_Network
     ${Engine_Network_NonPythonDependentLibs}

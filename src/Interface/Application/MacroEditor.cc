@@ -33,7 +33,7 @@
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
@@ -244,7 +244,7 @@ void MacroEditor::updateScripts()
 
 void MacroEditor::runSelectedMacro()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   const auto row = macroListWidget_->currentRow();
   if (row >= 0 && row < macros_.size())
   {

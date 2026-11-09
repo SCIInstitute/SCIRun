@@ -281,8 +281,11 @@ private:
   void hookUpGeneralPortSignals(PortWidget* port) const;
   void setupDisplayConnections(ModuleWidgetDisplayBase* display);
   void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index);
+  void resizeForPortCount();
+  int widthNeededForPorts() const;
   void setupLoggingAndProgress(ModuleErrorDisplayer* ed);
   std::string moduleId_;
+  int nameBasedWidth_ {0};
   QString name_;
 
   ModuleDialogManager dialogManager_;

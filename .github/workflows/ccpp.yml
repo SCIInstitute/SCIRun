@@ -21,6 +21,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # cache-externals here is load-bearing, not just a speedup for this job:
+  # pr.yml's cache-externals only ever restores from the *current* branch or
+  # the *default* branch's own cache (GitHub Actions cache scoping), and
+  # pr.yml never runs on master. Without a master-branch copy, every PR was
+  # cold on its first push -- see #2780's post-merge follow-up. These three
+  # jobs match pr.yml's linux-gui / linux-gui-qt6 / linux-unit-tests bucket
+  # for bucket (same OS/arch/qt/python/ospray inputs the cache key is built
+  # from), so a push to master keeps one shared cache warm that every PR
+  # falls back to instead of each saving its own.
   linux-gui:
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -28,6 +37,22 @@ jobs:
       qt-version: ''
       variant: gui
       build-with-python: true
+      cache-externals: true
+
+  # Qt6 on Linux x86_64 previously had no coverage outside pr.yml -- every
+  # other Linux job here and on the arm64 runners below builds against Qt5.
+  # Added alongside the cache-externals rollout for linux-gui/linux-headless
+  # (see comment above); it happens to also be pr.yml's linux-gui-qt6's only
+  # master-branch bucket match.
+  linux-gui-qt6:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      runner: ubuntu-latest
+      qt-version: '6.3.*'
+      scirun-qt-min-version: '6.3.1'
+      variant: gui
+      build-with-python: true
+      cache-externals: true
 
   linux-headless:
     uses: ./.github/workflows/reusable-build.yml
@@ -35,6 +60,7 @@ jobs:
       runner: ubuntu-latest
       variant: headless
       build-testing: true
+      cache-externals: true
 
   linux-gui-nonpython:
     uses: ./.github/workflows/reusable-build.yml

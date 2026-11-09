@@ -65,7 +65,7 @@ jobs:
   # Oldest available macOS image, built with the GUI. Every other mac-gui job runs
   # on macOS-latest (currently the macos-26 image), and the only macOS 14 jobs are
   # headless -- but src/CMakeLists.txt skips ADD_SUBDIRECTORY(Interface) when
-  # BUILD_HEADLESS is on, so without this job nothing compiles src/Interface for an
+  # WITH_GUI is off, so without this job nothing compiles src/Interface for an
   # older macOS at all. That gap let a macOS-15-only libSystem symbol (quick_exit)
   # link cleanly on the 26 runners and abort at load on macOS 14 (PR #2564).
   #

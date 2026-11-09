@@ -49,6 +49,22 @@ CalculateBundleDifferenceAlgo::CalculateBundleDifferenceAlgo()
   addOption(Variables::Method, "distance_between_nodes", "distance_between_nodes|area_between_fibers");
 }
 
+static float computeQuadrilateralArea(
+    const Point& point1, const Point& point2,
+    const Point& pointc, const Point& pointd)
+{
+  float dist_ab = sqrt((point2[0]-point1[0])*(point2[0]-point1[0]) + (point2[1]-point1[1])*(point2[1]-point1[1]) + (point2[2]-point1[2])*(point2[2]-point1[2]));
+  float dist_cd = sqrt((pointc[0]-pointd[0])*(pointc[0]-pointd[0]) + (pointc[1]-pointd[1])*(pointc[1]-pointd[1]) + (pointc[2]-pointd[2])*(pointc[2]-pointd[2]));
+  float dist_ac = sqrt((point2[0]-pointc[0])*(point2[0]-pointc[0]) + (point2[1]-pointc[1])*(point2[1]-pointc[1]) + (point2[2]-pointc[2])*(point2[2]-pointc[2]));
+  float dist_db = sqrt((pointd[0]-point1[0])*(pointd[0]-point1[0]) + (pointd[1]-point1[1])*(pointd[1]-point1[1]) + (pointd[2]-point1[2])*(pointd[2]-point1[2]));
+  float dist_ad = sqrt((point2[0]-pointd[0])*(point2[0]-pointd[0]) + (point2[1]-pointd[1])*(point2[1]-pointd[1]) + (point2[2]-pointd[2])*(point2[2]-pointd[2]));
+  float s1 = (dist_ab + dist_ad + dist_db) / 2.0f;
+  float area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
+  float s2 = (dist_ac + dist_ad + dist_cd) / 2.0f;
+  float area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
+  return area1 + area2;
+}
+
 bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle handle2, BundleHandle seedHandle, BundleHandle& outHandle1, BundleHandle& outHandle2) const
 {
   ScopedAlgorithmStatusReporter asr(this, "CalculateBundleDifference");
@@ -217,7 +233,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
   int fi, bi;
   double dist, max_dist = 0.0;
 
-  float dist_ab, dist_cd, dist_ac, dist_db, dist_ad, s1, s2, area1, area2, area;
+  float area;
   float max_area = 0.0;
 
   VField* outField1;
@@ -476,18 +492,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] - q;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
           }
           for (int q = 0; q < (bi - 1); q++)
@@ -502,18 +507,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] + q + 2;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
           }
         }
@@ -531,18 +525,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] + q + 2;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
           }
           for (int q = 0; q < (bi - 1); q++)
@@ -557,18 +540,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] - q - 2;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
           }
         }
@@ -608,18 +580,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] - q;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
 
             outField1->set_value(area, i1);
@@ -638,18 +599,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] + q + 2;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
 
             outField1->set_value(area, i1);
@@ -670,18 +620,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] + q + 2;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
 
             outField1->set_value(area, i1);
@@ -700,18 +639,7 @@ bool CalculateBundleDifferenceAlgo::runImpl(BundleHandle handle1, BundleHandle h
             id = boundleseed2[p][1] - q - 2;
             imesh2->get_center(pointd, id);
 
-            dist_ab = sqrt((point2[0] - point1[0]) * (point2[0] - point1[0]) + (point2[1] - point1[1]) * (point2[1] - point1[1]) + (point2[2] - point1[2]) * (point2[2] - point1[2]));
-            dist_cd = sqrt((pointc[0] - pointd[0]) * (pointc[0] - pointd[0]) + (pointc[1] - pointd[1]) * (pointc[1] - pointd[1]) + (pointc[2] - pointd[2]) * (pointc[2] - pointd[2]));
-            dist_ac = sqrt((point2[0] - pointc[0]) * (point2[0] - pointc[0]) + (point2[1] - pointc[1]) * (point2[1] - pointc[1]) + (point2[2] - pointc[2]) * (point2[2] - pointc[2]));
-            dist_db = sqrt((pointd[0] - point1[0]) * (pointd[0] - point1[0]) + (pointd[1] - point1[1]) * (pointd[1] - point1[1]) + (pointd[2] - point1[2]) * (pointd[2] - point1[2]));
-            dist_ad = sqrt((point2[0] - pointd[0]) * (point2[0] - pointd[0]) + (point2[1] - pointd[1]) * (point2[1] - pointd[1]) + (point2[2] - pointd[2]) * (point2[2] - pointd[2]));
-
-            s1 = (dist_ab + dist_ad + dist_db) / 2.0;
-            area1 = sqrt(s1 * (s1 - dist_ab) * (s1 - dist_ad) * (s1 - dist_db));
-            s2 = (dist_ac + dist_ad + dist_cd) / 2.0;
-            area2 = sqrt(s2 * (s2 - dist_ac) * (s2 - dist_ad) * (s2 - dist_cd));
-
-            area = area1 + area2;
+            area = computeQuadrilateralArea(point1, point2, pointc, pointd);
             if (area > max_area) max_area = area;
 
             outField1->set_value(area, i1);

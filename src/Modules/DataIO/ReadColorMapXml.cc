@@ -91,15 +91,15 @@ void ReadColorMapXml::execute()
 
     // Reject colormaps that parsed to zero color points. Emitting an empty
     // colormap here would silently produce invalid output that crashes
-    // downstream color lookups. This usually means the file uses an
-    // unsupported dialect rather than the expected
-    // <ColorMaps><ColorMap name="..."><Point x o r g b/></ColorMap></ColorMaps>.
+    // downstream color lookups. Point elements are recognized by their
+    // r/g/b attributes regardless of tag name, so this means the file stores
+    // its colors some other way entirely (e.g. a packed <RGBPoints> list).
     for (const auto& cmXml : cmXmls.maps)
     {
       if (cmXml.points.empty())
       {
         THROW_ALGORITHM_INPUT_ERROR("Colormap '" + cmXml.name +
-          "' contains no color points (no recognized <Point> elements). "
+          "' contains no color points (no elements with r, g and b attributes). "
           "The file may use an unsupported colormap format: " + filenameStr);
       }
     }

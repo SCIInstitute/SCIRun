@@ -35,7 +35,7 @@
 #include <Core/Utils/Legacy/Environment.h>
 #include <iostream>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
@@ -56,7 +56,7 @@ int mainImpl(int argc, const char* argv[], char **environment)
 
   Application::Instance().readCommandLine(argc, argv);
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   SCIRun::Core::PythonInterpreter::Instance().initialize(true,
     Application::Instance().parameters()->entireCommandLine(),
     Application::Instance().executablePath());
@@ -64,7 +64,7 @@ int mainImpl(int argc, const char* argv[], char **environment)
 
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
   //TODO: https://doc.qt.io/qt-5/qapplication.html#details
-#ifndef BUILD_HEADLESS
+#ifdef WITH_GUI
   if (Application::Instance().parameters()->disableGui()
     || Application::Instance().parameters()->help()
     || Application::Instance().parameters()->version())

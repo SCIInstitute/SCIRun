@@ -30,7 +30,7 @@
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Modules/Python/ModuleStateModifierTester.h>
 #include <Modules/Python/InterfaceWithPython.h>
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
@@ -65,7 +65,7 @@ LoopStart::LoopStart() : Module(staticInfo_)
   INITIALIZE_PORT(PythonField2);
   INITIALIZE_PORT(PythonString2);
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl([this]() { return id().id_; }, get_state(),
     { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name,
     Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name,
@@ -102,7 +102,7 @@ void LoopStart::postStateChangeInternalSignalHookup()
 
 void LoopStart::execute()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   auto loopInfo = getOptionalInput(LoopEndCodeObject);
   //if (needToExecute())
   {
@@ -143,6 +143,6 @@ void LoopStart::execute()
     }
   }
 #else
-  error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
+  error("This module does nothing, turn on WITH_PYTHON to enable.");
 #endif
 }

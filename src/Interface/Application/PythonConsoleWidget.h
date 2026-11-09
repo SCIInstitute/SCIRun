@@ -32,7 +32,7 @@
 #include <Core/Utils/SmartPointers.h>
 #include <QDockWidget>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 class PythonConsoleWidgetPrivate;
 typedef SCIRun::SharedPointer< PythonConsoleWidgetPrivate > PythonConsoleWidgetPrivateHandle;
 

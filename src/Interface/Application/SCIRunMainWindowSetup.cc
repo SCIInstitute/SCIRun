@@ -54,7 +54,7 @@
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
@@ -365,7 +365,7 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
 void SCIRunMainWindow::setupProvenanceWindow()
 {
   Core::PythonCommandInterpreterInterface* py = nullptr;
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   py = &Core::PythonInterpreter::Instance();
 #endif
   ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_, py));
@@ -416,7 +416,7 @@ void SCIRunMainWindow::setupPreferencesWindow()
 
 void SCIRunMainWindow::setupPythonConsole()
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
   pythonConsole_ = new PythonConsoleWidget(networkEditor_, this);
   pythonConsole_->toggleViewAction()->setIcon(QPixmap(":/general/Resources/terminal.png"));
   pythonConsole_->setVisible(false);

@@ -54,6 +54,11 @@ set(QWT_LIBRARY_DIR  "${_qwt_inst}/lib")
 # Qt discovery hints (optional)
 # ----------------------------
 set(_qwt_extra_cmake_args "")
+# Qt6_DIR alone is not enough for Qt 6.3: its Tools sub-packages are only
+# found through CMAKE_PREFIX_PATH (see Superbuild.cmake).
+if(Qt_PATH)
+  list(APPEND _qwt_extra_cmake_args "-DCMAKE_PREFIX_PATH=${Qt_PATH}")
+endif()
 if(DEFINED Qt6_DIR)
   list(APPEND _qwt_extra_cmake_args "-DQt6_DIR=${Qt6_DIR}")
 endif()

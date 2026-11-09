@@ -185,7 +185,7 @@ void Application::readCommandLine(int argc, const char* argv[])
 
 namespace
 {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
 
   //TODO: obviously will need a better way to communicate the user-entered script string.
   class HardCodedPythonTestCommand : public ParameterizedCommand
@@ -239,7 +239,7 @@ namespace
 
   NetworkEventCommandFactoryHandle makeNetworkEventCommandFactory()
   {
-#ifdef BUILD_WITH_PYTHON
+#ifdef WITH_PYTHON
     return makeShared<HardCodedPythonFactory>();
 #else
     return makeShared<NullCommandFactory>();

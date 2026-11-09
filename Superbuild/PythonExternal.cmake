@@ -119,6 +119,10 @@ ELSE()
   # pcbuild.sln, and SCIRun ships none of the UWP launchers, so take the escape
   # hatch the assert names. cl.exe reads options out of CL.
   SET(python_MSVC_ENV "CL=/D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS")
+
+  # aka.ms/nugetclidl (used by PCbuild/find_python.bat) can redirect to a Bing
+  # search page instead of the NuGet installer; point straight at the real host.
+  SET(python_NUGET_ENV "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe")
 ENDIF()
 
 # CPython's install: runs frameworkinstallmaclib (symlinks into $(LIBPL)) as a
@@ -163,13 +167,11 @@ ELSE()
     # use for CPython's regenerated SBOM, so keep its outputs newer than their
     # input and the target stays permanently up to date.
     PATCH_COMMAND ${CMAKE_COMMAND} -E touch <SOURCE_DIR>/Misc/externals.spdx.json <SOURCE_DIR>/Misc/sbom.spdx.json
-    # aka.ms/nugetclidl (used by PCbuild/find_python.bat) can redirect to a Bing
-    # search page instead of the NuGet installer; point straight at the real host.
     # The batch file must use native separators: "cmake -E env" launches a .bat
     # through cmd, which reads the "/" in "PCbuild/build.bat" as a switch and
     # fails with "'PCbuild' is not recognized as an internal or external command".
     # build.bat forwards any argument it doesn't recognize straight to MSBuild.
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "NUGET_URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" ${python_MSBUILD_TOOLSET_ENV} ${python_MSVC_ENV} "PCbuild\\build.bat"
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "${python_NUGET_ENV}" ${python_MSBUILD_TOOLSET_ENV} ${python_MSVC_ENV} "PCbuild\\build.bat"
     BUILD_IN_SOURCE ON
     BUILD_COMMAND ${CMAKE_COMMAND} -E env ${python_MSVC_ENV} ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Release /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
     INSTALL_COMMAND "${CMAKE_COMMAND}" -E
@@ -177,6 +179,19 @@ ELSE()
       <SOURCE_DIR>/PCbuild/${python_WIN32_64BIT_DIR}/pyconfig.h
       <SOURCE_DIR>/Include/pyconfig.h
   )
+  # Fetch the externals up front, with retries. build.bat runs get_externals.bat
+  # itself, but swallows a failed download -- see the script. Doing it first
+  # leaves build.bat's own call a no-op, since already-fetched libraries are
+  # skipped; -E is not an option here, as it also skips *building* them.
+  ExternalProject_Add_Step(Python_external fetch_externals
+    COMMAND ${CMAKE_COMMAND} -E env "${python_NUGET_ENV}"
+      ${CMAKE_COMMAND} -DPCBUILD_DIR=<SOURCE_DIR>/PCbuild
+      -P ${SUPERBUILD_DIR}/scripts/fetch_python_externals.cmake
+      DEPENDEES patch
+      DEPENDERS configure
+      WORKING_DIRECTORY <SOURCE_DIR>
+  )
+
   # build both Release and Debug versions
   ExternalProject_Add_Step(Python_external debug_build
     COMMAND ${CMAKE_COMMAND} -E env ${python_MSVC_ENV} ${CMAKE_BUILD_TOOL} PCbuild/pcbuild.sln /nologo /property:Configuration=Debug /property:Platform=${python_WIN32_ARCH} ${python_MSBUILD_TOOLSET}
@@ -206,7 +221,7 @@ IF(UNIX)
     # Keep SCI_PYTHON_LIBRARY as the module name (python3.11 works here)
     SET(SCI_PYTHON_LIBRARY python${SCI_PYTHON_VERSION_SHORT})
 
-    IF(BUILD_HEADLESS)
+    IF(NOT WITH_GUI)
       SET(PYTHON_MODULE_SEARCH_PATH Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_LIBRARY} CACHE INTERNAL "Python modules." FORCE)
     ELSE()
       SET(PYTHON_MODULE_SEARCH_PATH Frameworks/Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/${SCI_PYTHON_MODULE_PARENT_PATH}/${SCI_PYTHON_LIBRARY} CACHE INTERNAL "Python modules." FORCE)

@@ -75,7 +75,7 @@ namespace SCIRun
 
         MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
-        #ifndef BUILD_WITH_PYTHON
+        #ifndef WITH_PYTHON
           DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
         #endif
       private:

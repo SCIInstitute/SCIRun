@@ -4,7 +4,16 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+### Added
+- `Superbuild/CMakePresets.json`: `cmake --preset release` (and `debug`,
+  `headless`, plus `make-`/`ninja-`/`vs2022-`/`vs2019-` variants) replaces the
+  hand-typed configure line. `Qt_PATH` goes in an untracked
+  `Superbuild/CMakeUserPresets.json`; start from the `.example` next to it.
+  `ctest --preset` works from the Superbuild directory when `BUILD_TESTING` is on.
+  ([#2646](https://github.com/SCIInstitute/SCIRun/issues/2646))
+
 ### Changed
+- Superbuild CMake minimum is now 3.21 (was 3.20), the floor for presets schema 3.
 - Nightly release assets are now named for what they run on, not for the runner
   image that built them: `SCIRun-nightly-macos14-arm64-qt6-python.pkg` in place
   of `SCIRunMacInstaller.pkg`, `SCIRunMacNPInstaller.pkg`, and friends. The OS
