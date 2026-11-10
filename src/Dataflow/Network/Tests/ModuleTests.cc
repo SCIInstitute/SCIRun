@@ -28,9 +28,11 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/ModuleBuilder.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
 #include <gtest/gtest.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using SCIRun::Dataflow::State::SimpleMapModuleState;
 
 TEST(ModuleTests, CanBuildWithPorts)
 {
@@ -58,6 +60,29 @@ TEST(ModuleTests, CanBuildWithDynamicPorts)
   EXPECT_EQ("ViewScene", module->name());
   EXPECT_EQ("ViewScene:0", module->id().id_);
   EXPECT_TRUE(module->findInputPortsWithName("ForwardMatrix")[0]->isDynamic());
+}
+
+TEST(DynamicPortLabelTests, UsesStoredLabelWhenPresent)
+{
+  SimpleMapModuleState state;
+  state.setValue(ModuleStateInterface::Name("InputFields:1"), std::string("myField"));
+  EXPECT_EQ("myField", dynamicPortLabel(state, PortId(1, "InputFields")));
+}
+
+// No dialog ever ran (headless), so the state has no per-port keys.
+TEST(DynamicPortLabelTests, DefaultsMatchDialogNamingWhenAbsent)
+{
+  SimpleMapModuleState state;
+  EXPECT_EQ("fieldsInput1", dynamicPortLabel(state, PortId(0, "InputFields")));
+  EXPECT_EQ("matricesInput3", dynamicPortLabel(state, PortId(2, "InputMatrices")));
+  EXPECT_EQ("matrixInput2", dynamicPortLabel(state, PortId(1, "InputMatrix")));
+}
+
+TEST(DynamicPortLabelTests, EmptyStoredLabelFallsBackToDefault)
+{
+  SimpleMapModuleState state;
+  state.setValue(ModuleStateInterface::Name("InputStrings:0"), std::string(""));
+  EXPECT_EQ("stringsInput1", dynamicPortLabel(state, PortId(0, "InputStrings")));
 }
 
 TEST(ModuleIdTests, CanConstructFromString)

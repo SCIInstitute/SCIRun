@@ -1449,7 +1449,11 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
       retryScreenshotWhenPaintable();
   }
   else
+  {
     unblockExecution();
+    // No requested frame will finish, so nothing else clears widget selection to proceed.
+    impl_->previousWidgetInfo_.setFrameIsFinished(true);
+  }
 
   auto spire = impl_->mSpire.lock();
   if (!spire)
