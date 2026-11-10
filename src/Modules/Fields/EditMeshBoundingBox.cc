@@ -116,6 +116,10 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& feedbackT
 
 void EditMeshBoundingBox::setOutputParameters()
 {
+  // Scale drags and saved networks only carry widgetScale_; its columns are half the box.
+  const auto halfAxes = widgetScale_.get_transformation_vectors();
+  size_ = Vector(halfAxes[0].length(), halfAxes[1].length(), halfAxes[2].length()) / HALF_SCALE_;
+
   auto state = get_state();
   state->setValue(OutputCenterX, widgetTranslation_.x());
   state->setValue(OutputCenterY, widgetTranslation_.y());

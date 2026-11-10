@@ -148,6 +148,14 @@ IF(RUN_UNIT_TESTS)
   ENDIF()
 ENDIF()
 
+# An empty value would leave a bare -d (SCIRun_test rejects it) and make the
+# import glob below start at the filesystem root.
+IF(IS_DIRECTORY "${SCIRUN_TEST_RESOURCE_DIR}")
+  SET(scirun_test_data_args -d "${SCIRUN_TEST_RESOURCE_DIR}")
+ELSE()
+  SET(scirun_test_data_args)
+ENDIF()
+
 IF(RUN_BASIC_REGRESSION_TESTS)
   MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
 
@@ -182,7 +190,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     # In-app regression timeout (seconds). 60 gives the heaviest networks
     # headroom when the machine is under parallel load; genuine hangs are still
     # bounded by the ctest --timeout passed in CI.
-    ADD_TEST(NAME "${test_name}" COMMAND ${EXE_LOC} -E ${srn} --no_splash --regression 60 -d ${SCIRUN_TEST_RESOURCE_DIR})
+    ADD_TEST(NAME "${test_name}" COMMAND ${EXE_LOC} -E ${srn} --no_splash --regression 60 ${scirun_test_data_args})
 
     IF(WIN32)
       SET_TESTS_PROPERTIES("${test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
@@ -204,7 +212,9 @@ IF(RUN_BASIC_REGRESSION_TESTS)
 
 ENDIF()
 
-IF(RUN_IMPORT_TESTS)
+IF(RUN_IMPORT_TESTS AND NOT IS_DIRECTORY "${SCIRUN_TEST_RESOURCE_DIR}")
+  MESSAGE(STATUS "SCIRUN_TEST_RESOURCE_DIR is not a directory; skipping v4 import tests.")
+ELSEIF(RUN_IMPORT_TESTS)
   # Networks that reference modules not yet ported to SCIRun 5.
   SET(DISABLED_IMPORT_TESTS
     ".Test.ImportNetwork.Other.v4nets.example_nets.FusionPSE.MDSplus"
