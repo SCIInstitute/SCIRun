@@ -32,6 +32,7 @@ SET(Graphics_Widgets_Tests_SRCS
   ConeWidgetTest.cc
   DiskWidgetTest.cc
   BasicBoundingBoxWidgetTest.cc
+  BoundingBoxWidgetTest.cc
   ArrowWidgetTest.cc
 )
 
