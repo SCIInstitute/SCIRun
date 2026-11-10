@@ -55,6 +55,7 @@ ExportMatricesToMatlab::ExportMatricesToMatlab() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FilenameOut);
 }
 
 void ExportMatricesToMatlab::setStateDefaults()
@@ -118,7 +119,7 @@ void ExportMatricesToMatlab::execute()
 
     for (int i = 0; i < matrices.size(); ++i)
     {
-      matrixnames.push_back(state->getValue(Name((*matrixPortNameIterator++)->internalId().toString())).toString());
+      matrixnames.push_back(dynamicPortLabel(*state, (*matrixPortNameIterator++)->internalId()));
     }
 
     auto matrixformats = toStringVector(state->getValue(Parameters::MatrixFormats).toVector());
@@ -188,6 +189,8 @@ void ExportMatricesToMatlab::execute()
         mfile.putmatlabarray(ma, name);
       }
       mfile.close();
+      // Lets a downstream reader of this file execute after the write, not concurrently with it.
+      sendOutput(FilenameOut, makeShared<String>(filename.string()));
     }
     catch (matlabconverter::error_type&)
     {
