@@ -79,6 +79,8 @@ scripts/run-regression-tests.sh bin/SCIRun -- -j3
 scripts/run-regression-tests.sh bin/SCIRun -- -j3 -R Renderer
 ```
 
+Before adding a regression network, read `src/ExampleNets/regression/README.md`: what a test checks (only that no module errored), how folders map to build options, and the pitfalls.
+
 ---
 
 ## Architecture

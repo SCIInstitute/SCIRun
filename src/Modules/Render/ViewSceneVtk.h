@@ -95,9 +95,7 @@ namespace Modules {
 
       MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)
 
-#ifndef WITH_VTK
-      DISABLED_WITHOUT_ABOVE_COMPILE_FLAG
-#endif
+      REQUIRES_BUILD_FLAG(WithVtk)
 
      protected:
       void portRemovedSlotImpl(const Dataflow::Networks::PortId&) override;

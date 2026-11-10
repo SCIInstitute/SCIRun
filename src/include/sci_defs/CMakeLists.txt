@@ -51,3 +51,16 @@ CONFIGURE_FILE (
   "${SCIRun_SOURCE_DIR}/include/sci_defs/version_testdefs.h.in"
   "${SCIRun_BINARY_DIR}/include/sci_defs/version_defs.h"
 )
+
+FOREACH(_flag WITH_PYTHON WITH_TETGEN WITH_OSPRAY WITH_VTK)
+  IF(${_flag})
+    SET(SCIRUN_BUILDFLAG_${_flag} true)
+  ELSE()
+    SET(SCIRUN_BUILDFLAG_${_flag} false)
+  ENDIF()
+ENDFOREACH()
+
+CONFIGURE_FILE (
+  "${SCIRun_SOURCE_DIR}/include/sci_defs/build_flags_testdefs.h.in"
+  "${SCIRun_BINARY_DIR}/include/sci_defs/build_flags.h"
+)

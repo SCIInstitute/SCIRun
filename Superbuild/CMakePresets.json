@@ -7,7 +7,7 @@
       "hidden": true,
       "binaryDir": "${sourceDir}/../bin/${presetName}",
       "cacheVariables": {
-        "BUILD_WITH_PYTHON": "ON",
+        "WITH_PYTHON": "ON",
         "WITH_TETGEN": "OFF"
       }
     },
@@ -48,7 +48,7 @@
       "name": "headless",
       "displayName": "Release, no GUI (default generator)",
       "inherits": ["base", "type-release"],
-      "cacheVariables": { "BUILD_HEADLESS": "ON" }
+      "cacheVariables": { "WITH_GUI": "OFF" }
     },
 
     { "name": "make-release", "displayName": "Release, Unix Makefiles", "inherits": ["base", "type-release", "gen-make"] },
