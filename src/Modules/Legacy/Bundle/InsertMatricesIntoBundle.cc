@@ -88,10 +88,9 @@ void InsertMatricesIntoBundle::execute()
     for (int i = 0; i < matrices.size(); ++i)
     {
       auto matrix = matrices[i];
-      auto stateName = state->getValue(Name((*matrixPortNameIterator++)->internalId().toString())).toString();
+      auto name = dynamicPortLabel(*state, (*matrixPortNameIterator++)->internalId());
       if (matrix)
       {
-        auto name = !stateName.empty() ? stateName : ("matrix" + boost::lexical_cast<std::string>(i));
         auto replaceMatrix = i < replace.size() ? replace[i].toBool() : true;
         if (replaceMatrix || !bundle->isMatrix(name))
         {
