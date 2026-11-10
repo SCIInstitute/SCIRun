@@ -309,7 +309,9 @@ protected:
   bool canSelectWidget();
   bool tryWidgetSelection(int x, int y, MouseButton button);
   void selectObject(const int x, const int y, MouseButton button);
+#ifdef WITH_VTK
   CompositeVtkGeometryObjectHandle getGeomData();
+#endif
   bool checkForSelectedWidget(Graphics::Datatypes::WidgetHandle widget);
   void restoreObjColor();
   void updateCursor();

@@ -1883,7 +1883,11 @@ auto yPos(QMouseEvent* e)
 
 bool ViewSceneVtkDialog::clickedInViewer(QMouseEvent* e) const
 {
+#ifdef WITH_VTK
   return childAt(xPos(e), yPos(e)) == viewer_;
+#else
+  return false;
+#endif
 }
 
 void ViewSceneVtkDialog::mousePressEvent(QMouseEvent* event)
@@ -2069,6 +2073,7 @@ bool ViewSceneVtkDialog::tryWidgetSelection(int x, int y, MouseButton button)
   return widgetSelected;
 }
 
+#ifdef WITH_VTK
 static std::vector<WidgetHandle> filterGeomObjectsForWidgets(CompositeVtkGeometryObjectHandle geomData, VisibleItemManagerVtk& visibleItems)
 {
   std::vector<WidgetHandle> objList;
@@ -2106,6 +2111,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(CompositeVtkGeometr
 
   return objList;
 }
+#endif
 
 void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton button)
 {
@@ -2172,6 +2178,7 @@ void ViewSceneVtkDialog::selectObject(const int x, const int y, MouseButton butt
 #endif
 }
 
+#ifdef WITH_VTK
 CompositeVtkGeometryObjectHandle ViewSceneVtkDialog::getGeomData()
 {
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
@@ -2192,9 +2199,11 @@ CompositeVtkGeometryObjectHandle ViewSceneVtkDialog::getGeomData()
 
   return std::make_shared<CompositeVtkGeometryObject>(std::vector<VtkGeometryObjectHandle>{object});
 }
+#endif
 
 bool ViewSceneVtkDialog::checkForSelectedWidget(WidgetHandle widget)
 {
+#ifdef WITH_VTK
   const auto geomData = getGeomData();
   if (geomData)
   {
@@ -2204,6 +2213,7 @@ bool ViewSceneVtkDialog::checkForSelectedWidget(WidgetHandle widget)
       if (obj->uniqueID() == id) return true;
     }
   }
+#endif
   return false;
 }
 
