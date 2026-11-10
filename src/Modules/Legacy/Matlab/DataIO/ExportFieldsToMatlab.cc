@@ -55,6 +55,7 @@ ExportFieldsToMatlab::ExportFieldsToMatlab() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FilenameOut);
 }
 
 void ExportFieldsToMatlab::setStateDefaults()
@@ -118,7 +119,7 @@ void ExportFieldsToMatlab::execute()
 
     for (int i = 0; i < fields.size(); ++i)
     {
-      fieldnames.push_back(state->getValue(Name((*fieldPortNameIterator++)->internalId().toString())).toString());
+      fieldnames.push_back(dynamicPortLabel(*state, (*fieldPortNameIterator++)->internalId()));
     }
 
     auto fieldformats = toStringVector(state->getValue(Parameters::FieldFormats).toVector());
@@ -187,6 +188,8 @@ void ExportFieldsToMatlab::execute()
       }
 
       mfile.close();
+      // Lets a downstream reader of this file execute after the write, not concurrently with it.
+      sendOutput(FilenameOut, makeShared<String>(filename.string()));
     }
     catch (matlabconverter::error_type&)
     {
