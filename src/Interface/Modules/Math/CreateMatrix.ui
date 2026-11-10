@@ -48,8 +48,8 @@
       <string/>
      </property>
      <property name="text">
-      <string>Non-numeric text at end of each line will be ignored; 
-use this for row notes.</string>
+      <string>For each line, text after the first non-numeric, non-delimiter character will be ignored;
+use this for row notes. Use of mixed delimiters may trigger notes.</string>
      </property>
     </widget>
    </item>
