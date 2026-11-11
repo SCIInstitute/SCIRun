@@ -482,6 +482,9 @@ void SCIRunMainWindow::fillModuleSelector()
     connect(tree, &QTreeWidget::itemChanged, this, &SCIRunMainWindow::handleCheckedModuleEntry);
 
     tree->setStyleSheet(
+      // Without an item rule, Qt 6 hands rows to the native style, which ignores ::indicator.
+      "QTreeWidget::item {background: transparent;}"
+      "QTreeWidget::item:selected {background: blue; color: yellow;}"
       "QTreeWidget::indicator:unchecked {image: url(:/general/Resources/faveNo.png);}"
       "QTreeWidget::indicator:checked {image: url(:/general/Resources/faveYes.png);}");
   }
