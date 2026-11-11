@@ -55,6 +55,7 @@ printhelp() {
     echo -e "--documentation\t\tEnable building documentation (requires LaTeX)"
     echo -e "--custom-build-dir=<dir>\t\tBuild in dir (use relative path)"
     echo -e "--externals-from=<dir>\t\tReuse the externals of the built Superbuild in <dir> (its bin/);\n\t\t\tonly SCIRun itself is compiled. Build type and WITH_* flags default to that build's."
+    echo -e "--externals-only\t\tBuild the externals but not SCIRun: a shared build for --externals-from to use"
     echo -e "-j#\t\t\tRuns # parallel make processes when building [GNU make only].\n\t\t\tDefaults to a count detected from cores and RAM; -j1 forces a serial build."
     echo -e "-D<var>:<type>=<value>\t\t\tDefine CMake variable."
     echo -e "-?\t\t\tThis help"
@@ -175,7 +176,7 @@ configure_scirun() {
 
 build_scirun_make() {
     echo "Building SCIRun using make..."
-    trybuild make $makeflags
+    trybuild make $makeflags $maketarget
 }
 
 build_scirun() {
@@ -225,6 +226,7 @@ documentation="OFF"
 tetgenbuild=
 gui=
 externalsfrom=
+maketarget=
 
 echo "Parsing arguments..."
 while [[ $1 != "" ]]; do
@@ -240,6 +242,8 @@ while [[ $1 != "" ]]; do
        --externals-from=*)
             externalsfrom="${1#--externals-from=}"
             [[ ${externalsfrom:0:1} == '/' ]] || externalsfrom="${DIR}/${externalsfrom}";;
+       --externals-only)
+            maketarget="SCIRun_external-configure";;
        --custom-build-dir=*)
             dirarg=`echo $1 | cut -c 20-`
             first_char=${dirarg:0:1}
@@ -274,6 +278,11 @@ while [[ $1 != "" ]]; do
 done
 
 cmakeargs="${cmakeargs} ${cmakeflags}"
+
+if [[ -n $externalsfrom && -n $maketarget ]]; then
+    echo "--externals-only and --externals-from cannot be combined."
+    exit 1
+fi
 
 # Defaults, unless --externals-from supplies them. Tetgen is on to match the
 # Superbuild default (it is GPL-licensed, see --without-tetgen).

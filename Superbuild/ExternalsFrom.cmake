@@ -31,6 +31,42 @@
 # only once every external is built (SCIRun_external DEPENDS on all of them)
 # and is one file per build dir under every generator.
 
+# The externals build records a hash of each Superbuild/ file that decides how
+# externals are built (ExternalsManifest.txt, written once they all finish);
+# a build whose Superbuild/ hashes differently is refused. These files are
+# left out: they hold options and inner-build plumbing, not external recipes.
+SET(_ef_untracked Superbuild.cmake CMakeLists.txt ExternalsFrom.cmake
+  DeprecatedFlags.cmake CMakePresets.json CMakeUserPresets.json
+  CMakeUserPresets.json.example scripts/check_dependency_versions.py)
+
+FUNCTION(scirun_externals_manifest superbuild_dir out_var)
+  FILE(GLOB_RECURSE _files RELATIVE "${superbuild_dir}" "${superbuild_dir}/*")
+  LIST(SORT _files)
+  SET(_m "")
+  FOREACH(_f ${_files})
+    IF(_f IN_LIST _ef_untracked OR _f MATCHES "^deprecated/|(^|/)\\.|__pycache__")
+      CONTINUE()
+    ENDIF()
+    FILE(SHA256 "${superbuild_dir}/${_f}" _h)
+    STRING(APPEND _m "${_h}  ${_f}\n")
+  ENDFOREACH()
+  SET(${out_var} "${_m}" PARENT_SCOPE)
+ENDFUNCTION()
+
+# Normal (non-EXTERNALS_FROM) builds: publish the manifest only after every
+# external has built, via a SCIRun_external step ahead of its configure.
+MACRO(scirun_externals_record)
+  scirun_externals_manifest("${SUPERBUILD_DIR}" _ef_m)
+  FILE(CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/ExternalsManifest.pending.txt" CONTENT "${_ef_m}" @ONLY)
+  ExternalProject_Add_Step(SCIRun_external record_externals
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_BINARY_DIR}/ExternalsManifest.pending.txt"
+      "${CMAKE_BINARY_DIR}/ExternalsManifest.txt"
+    DEPENDS "${CMAKE_BINARY_DIR}/ExternalsManifest.pending.txt"
+    DEPENDEES patch
+    DEPENDERS configure)
+ENDMACRO()
+
 # Options that change which externals exist or how they were compiled.
 SET(_ef_config_vars
   WITH_PYTHON WITH_TETGEN WITH_OSPRAY PREBUILT_OSPRAY WITH_VTK PREBUILT_VTK
@@ -51,7 +87,7 @@ MACRO(scirun_externals_from_seed)
       "point it at a Superbuild binary dir (the one holding Externals/ and SCIRun/).")
   ENDIF()
   LOAD_CACHE("${EXTERNALS_FROM}" READ_WITH_PREFIX _ef_
-    CMAKE_PROJECT_NAME CMAKE_BUILD_TYPE CMAKE_CXX_COMPILER CMAKE_GENERATOR
+    CMAKE_PROJECT_NAME CMAKE_HOME_DIRECTORY CMAKE_BUILD_TYPE CMAKE_CXX_COMPILER CMAKE_GENERATOR
     CMAKE_OSX_DEPLOYMENT_TARGET ${_ef_config_vars})
   IF(NOT _ef_CMAKE_PROJECT_NAME STREQUAL "Superbuild")
     MESSAGE(FATAL_ERROR "EXTERNALS_FROM=${EXTERNALS_FROM} is a '${_ef_CMAKE_PROJECT_NAME}' build, "
@@ -74,6 +110,10 @@ MACRO(scirun_externals_from_seed)
       SET(${_v} "${_ef_${_v}}" CACHE ${_t} "Taken from EXTERNALS_FROM")
     ENDIF()
   ENDFOREACH()
+  # Toolkits are example data, not build inputs; the shared build has a copy.
+  IF(NOT DEFINED CACHE{DOWNLOAD_TOOLKITS})
+    SET(DOWNLOAD_TOOLKITS OFF CACHE BOOL "Download toolkit repositories.")
+  ENDIF()
   # PROJECT() has already cached an empty CMAKE_BUILD_TYPE.
   IF(NOT CMAKE_BUILD_TYPE AND _ef_CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE "${_ef_CMAKE_BUILD_TYPE}" CACHE STRING "Taken from EXTERNALS_FROM" FORCE)
@@ -115,6 +155,8 @@ MACRO(scirun_externals_from_import)
       "or use a matching Superbuild.")
   ENDIF()
 
+  scirun_externals_from_check_superbuild()
+
   # Inner-cache name -> Superbuild variable that SCIRUN_CACHE_ARGS reads.
   SET(_ef_map
     Eigen_DIR Eigen_DIR   Zlib_DIR Zlib_DIR   SQLite_DIR SQLite_DIR
@@ -153,4 +195,47 @@ MACRO(scirun_externals_from_import)
     SET(SCIRUN_TEST_RESOURCE_DIR "${_ef_test_dir}" CACHE PATH "Root for all github-based testing files" FORCE)
   ENDIF()
   MESSAGE(STATUS "Using externals from ${EXTERNALS_FROM}; not building any.")
+ENDMACRO()
+
+MACRO(scirun_externals_from_check_superbuild)
+  SET(_ef_manifest_file "${EXTERNALS_FROM}/ExternalsManifest.txt")
+  UNSET(_ef_theirs)
+  IF(EXISTS "${_ef_manifest_file}")
+    FILE(READ "${_ef_manifest_file}" _ef_theirs)
+    # A refresh of the shared externals re-runs this check on the next build.
+    SET_PROPERTY(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${_ef_manifest_file}")
+  ELSEIF(IS_DIRECTORY "${_ef_CMAKE_HOME_DIRECTORY}")
+    MESSAGE(WARNING "EXTERNALS_FROM predates ExternalsManifest.txt; comparing with the current "
+      "Superbuild/ of its checkout (${_ef_CMAKE_HOME_DIRECTORY}), which may have moved on since "
+      "the externals were built. Rebuild it once to record a manifest.")
+    scirun_externals_manifest("${_ef_CMAKE_HOME_DIRECTORY}" _ef_theirs)
+  ELSE()
+    MESSAGE(WARNING "EXTERNALS_FROM has no ExternalsManifest.txt and its source checkout is gone; "
+      "cannot tell whether this Superbuild/ matches the externals.")
+  ENDIF()
+
+  IF(DEFINED _ef_theirs)
+    scirun_externals_manifest("${SUPERBUILD_DIR}" _ef_mine)
+    IF(NOT _ef_mine STREQUAL _ef_theirs)
+      STRING(REPLACE "\n" ";" _ef_mine_l "${_ef_mine}")
+      STRING(REPLACE "\n" ";" _ef_theirs_l "${_ef_theirs}")
+      SET(_ef_diff)
+      FOREACH(_l IN LISTS _ef_mine_l _ef_theirs_l)
+        IF(_l AND NOT (_l IN_LIST _ef_mine_l AND _l IN_LIST _ef_theirs_l))
+          STRING(REGEX REPLACE "^[0-9a-f]+  " "" _p "${_l}")
+          LIST(APPEND _ef_diff "${_p}")
+        ENDIF()
+      ENDFOREACH()
+      LIST(REMOVE_DUPLICATES _ef_diff)
+      LIST(JOIN _ef_diff "\n  " _ef_diff)
+      SET(_ef_msg "This checkout's Superbuild/ differs from the one the externals in "
+        "${EXTERNALS_FROM} were built from:\n  ${_ef_diff}\n")
+      IF(EXTERNALS_FROM_IGNORE_CHANGES)
+        MESSAGE(WARNING ${_ef_msg} "Continuing because EXTERNALS_FROM_IGNORE_CHANGES is ON.")
+      ELSE()
+        MESSAGE(FATAL_ERROR ${_ef_msg} "Do a full Superbuild, refresh the shared externals to match, "
+          "or set EXTERNALS_FROM_IGNORE_CHANGES=ON if the change cannot affect the externals.")
+      ENDIF()
+    ENDIF()
+  ENDIF()
 ENDMACRO()

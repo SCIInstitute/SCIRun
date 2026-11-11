@@ -38,8 +38,10 @@ scirun_removed_option(BUILD_HEADLESS                    # inverted 2026-09 (#267
 # Reuse another Superbuild's externals. Must run before any option is read,
 # since it seeds their defaults from that build.
 SET(EXTERNALS_FROM "" CACHE PATH "Binary dir of a built Superbuild whose externals to reuse instead of building them")
+OPTION(EXTERNALS_FROM_IGNORE_CHANGES "With EXTERNALS_FROM: only warn when this Superbuild/ differs from the externals'" OFF)
+MARK_AS_ADVANCED(EXTERNALS_FROM_IGNORE_CHANGES)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/ExternalsFrom.cmake)
 IF(EXTERNALS_FROM)
-  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/ExternalsFrom.cmake)
   scirun_externals_from_seed()
 ENDIF()
 
@@ -464,4 +466,11 @@ ExternalProject_Add( SCIRun_external
   CMAKE_CACHE_ARGS ${SCIRUN_CACHE_ARGS}
   ${SCIRUN_BUILD_COMMAND}
   INSTALL_COMMAND ""
+  # "--target SCIRun_external-configure" builds the externals only, for a
+  # shared externals build that others use through EXTERNALS_FROM.
+  STEP_TARGETS configure
 )
+
+IF(NOT EXTERNALS_FROM)
+  scirun_externals_record()
+ENDIF()

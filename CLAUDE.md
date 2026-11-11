@@ -57,21 +57,26 @@ First build requires ~15 GB disk space and 30–90 minutes.
 
 ### Reusing another build's externals
 
-To build a branch or PR without rebuilding the externals, point a new build dir at an existing, fully built Superbuild:
+For many branch/PR builds on one machine, keep one long-lived externals build and point each PR build at it. Nothing is copied; a PR build is just SCIRun (~0.6 GB).
 
 ```bash
-./build.sh --externals-from=/path/to/master/bin --custom-build-dir=bin-pr123
-cmake -S Superbuild -B bin-pr123 -DEXTERNALS_FROM=/path/to/master/bin   # direct CMake
+# once, from a checkout of master (refresh later the same way after git pull):
+./build.sh --externals-only --custom-build-dir=/path/to/externals
+# per PR, from the PR's checkout:
+./build.sh --externals-from=/path/to/externals --custom-build-dir=/path/to/bin-pr123
 ```
 ```powershell
-.\build.ps1 -ExternalsFrom C:\SR -BuildDir C:\SR-pr123
+.\build.ps1 -ExternalsOnly -BuildDir C:\SRext
+.\build.ps1 -ExternalsFrom C:\SRext -BuildDir C:\SR-pr123
 ```
 
-`EXTERNALS_FROM` skips every external and reads their paths from `<that bin>/SCIRun/CMakeCache.txt`; only the inner SCIRun project (plus the small toolkit clones) builds. Build type, `WITH_*`, `PREBUILT_*`, `Qt_PATH` and the Qt version default to that build's values; giving a different one is a configure error, and a different compiler or generator is a warning.
+With direct CMake, use `-DEXTERNALS_FROM=<dir>` and `cmake --build <dir> --target SCIRun_external-configure` (externals only). Any built Superbuild also works as `EXTERNALS_FROM`.
 
-- The externals are used in place, by absolute path: don't move or delete that build while builds depend on it.
-- Only valid while the branch leaves `Superbuild/` (versions, patches, flags) as the externals were built. Otherwise do a full Superbuild.
-- Visual Studio: build the same `--config` the externals were built with (MSVC can't mix Debug and Release runtimes). The inner build never copies DLLs next to `SCIRun.exe` either way; `build.ps1` deploys Qt, Qwt and Python DLLs from the externals build.
+- **Settings:** build type, `WITH_*`, `PREBUILT_*`, `Qt_PATH` and the Qt version default to the externals build's values. Giving a different one is a configure error. A different compiler or generator only warns. Toolkit downloads default to off (example data, ~0.4 GB).
+- **`Superbuild/` changes:** the externals build writes `ExternalsManifest.txt`, a hash of each `Superbuild/` file that shapes the externals, after they all build. A PR build whose files hash differently is refused, with the files listed. `Superbuild.cmake`, presets and option shims aren't hashed, since they're mostly inner-build plumbing. Set `EXTERNALS_FROM_IGNORE_CHANGES=ON` to downgrade the refusal to a warning.
+- **Refreshing:** a refresh rewrites the manifest, and each PR build re-runs the check on its next build. Don't build PRs during a refresh. If older PRs still need the old externals, refresh into a new directory and keep the old one until they rebase.
+- **Absolute paths:** the externals are used in place, so don't move or delete that build while others depend on it.
+- **Visual Studio:** build the same `--config` the externals were built with (MSVC can't mix Debug and Release runtimes). The inner build never copies DLLs next to `SCIRun.exe` either way; `build.ps1` deploys Qt, Qwt and Python DLLs from the externals build.
 
 ### Running Tests
 

@@ -93,6 +93,10 @@
     Build with the same -Debug/-Release as that build: MSVC cannot mix runtimes.
     Example: -ExternalsFrom "C:\SR" -BuildDir "C:\SR-pr123"
 
+.PARAMETER ExternalsOnly
+    Build the externals but not SCIRun itself, e.g. to create or refresh a
+    shared externals build that other builds use through -ExternalsFrom.
+
 .PARAMETER Jobs
     Number of parallel compile jobs. Default: number of logical CPU cores.
     Lower this (e.g. -Jobs 4) if the build runs out of memory.
@@ -155,6 +159,7 @@ param(
     [string]$QtVersion    = "",
     [string]$BuildDir     = "",
     [string]$ExternalsFrom = "",
+    [switch]$ExternalsOnly,
     [int]$Jobs            = 0,
     [switch]$InstallPrereqs,
     [switch]$SkipVSInstall,
@@ -638,6 +643,7 @@ function Invoke-Build([string]$buildDir, [string]$buildType, [int]$jobs) {
         "--parallel", "$jobs"
     )
     if ($BuildVerbose) { $buildParams += "--verbose" }
+    if ($ExternalsOnly) { $buildParams += @("--target", "SCIRun_external-configure") }
 
     Write-Info "cmake $buildParams"
     Write-Host ""
@@ -772,6 +778,10 @@ if ($resolvedBuildDir.Length -gt 50) {
     Write-Host ""
 }
 
+if ($ExternalsOnly -and $ExternalsFrom -ne "") {
+    Exit-WithError "-ExternalsOnly and -ExternalsFrom cannot be combined."
+}
+
 # -ExternalsFrom: settings not given on this command line come from that build.
 if ($ExternalsFrom -ne "") {
     $script:externalsDir = if ([IO.Path]::IsPathRooted($ExternalsFrom)) {
@@ -896,7 +906,9 @@ Write-Host "  All prerequisites satisfied. Starting build..." -ForegroundColor G
 # Configure, build, deploy
 Invoke-Configure -buildDir $resolvedBuildDir -sourceDir $sourceDir -buildType $buildType
 Invoke-Build     -buildDir $resolvedBuildDir -buildType $buildType -jobs $numJobs
-Copy-RuntimeDLL  -buildDir $resolvedBuildDir -buildType $buildType
+if (-not $ExternalsOnly) {
+    Copy-RuntimeDLL -buildDir $resolvedBuildDir -buildType $buildType
+}
 
 # Done
 $bar = "=" * 70
