@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/feedback.h>
+#include <Core/Datatypes/Feedback.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Interface/Modules/Render/Vtk/VtkRenderer.h>
 #include <Interface/Modules/Render/Vtk/VtkRendererCollaborators.h>
