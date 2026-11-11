@@ -85,6 +85,14 @@
 
     Example: -BuildDir "C:\SR"
 
+.PARAMETER ExternalsFrom
+    Build directory of an existing, fully built Superbuild. Its externals
+    (Boost, Python, Qwt, ...) are reused and only SCIRun itself is compiled.
+    -Debug, -Headless, -WithoutTetgen, -QtPath and the Qt version default to
+    that build's settings; CMake stops with an error if one given here differs.
+    Build with the same -Debug/-Release as that build: MSVC cannot mix runtimes.
+    Example: -ExternalsFrom "C:\SR" -BuildDir "C:\SR-pr123"
+
 .PARAMETER Jobs
     Number of parallel compile jobs. Default: number of logical CPU cores.
     Lower this (e.g. -Jobs 4) if the build runs out of memory.
@@ -126,6 +134,10 @@
 .EXAMPLE
     .\build.ps1 -Headless
     Build without any GUI; no Qt required.
+
+.EXAMPLE
+    .\build.ps1 -ExternalsFrom "C:\SR" -BuildDir "C:\SR-pr123"
+    Build this checkout against the externals already built in C:\SR.
 #>
 
 param(
@@ -142,6 +154,7 @@ param(
     [switch]$Qt6,
     [string]$QtVersion    = "",
     [string]$BuildDir     = "",
+    [string]$ExternalsFrom = "",
     [int]$Jobs            = 0,
     [switch]$InstallPrereqs,
     [switch]$SkipVSInstall,
@@ -164,6 +177,7 @@ $DL_GIT_URL          = "https://github.com/git-for-windows/git/releases/download
 $script:cmakeBin    = "cmake"
 $script:vsGenerator = ""
 $script:qtFoundPath = ""
+$script:externalsDir = ""
 
 # --- Console helpers ---
 
@@ -580,6 +594,10 @@ function Invoke-Configure([string]$buildDir, [string]$sourceDir, [string]$buildT
         "-DSCIRUN_QT_MIN_VERSION:STRING=$QtVersion"
     )
 
+    if ($script:externalsDir -ne "") {
+        $cmakeParams += "-DEXTERNALS_FROM:PATH=$($script:externalsDir)"
+    }
+
     if (-not $Headless -and $script:qtFoundPath -ne "") {
         $cmakeParams += "-DQt_PATH:PATH=$($script:qtFoundPath)"
     }
@@ -693,15 +711,17 @@ function Copy-RuntimeDLL([string]$buildDir, [string]$buildType) {
         }
     }
 
+    $extRoot = if ($script:externalsDir -ne "") { $script:externalsDir } else { $buildDir }
+
     # Qwt (SCIRun's plotting library, built by the Superbuild)
-    $qwtDll = "$buildDir\Externals\Build\Qwt_external\src\$buildType\qwt.dll"
+    $qwtDll = "$extRoot\Externals\Build\Qwt_external\src\$buildType\qwt.dll"
     if (Test-Path $qwtDll) {
         Copy-Item $qwtDll $outputDir -Force
         Write-OK "Copied qwt.dll"
     }
 
     # Python DLL -- version varies, search with a wildcard
-    $pythonDlls = Get-ChildItem "$buildDir\Externals\Source\Python_external\PCbuild\amd64\python3*.dll" `
+    $pythonDlls = Get-ChildItem "$extRoot\Externals\Source\Python_external\PCbuild\amd64\python3*.dll" `
                     -ErrorAction SilentlyContinue
     foreach ($pdll in $pythonDlls) {
         Copy-Item $pdll.FullName $outputDir -Force
@@ -752,6 +772,35 @@ if ($resolvedBuildDir.Length -gt 50) {
     Write-Host ""
 }
 
+# -ExternalsFrom: settings not given on this command line come from that build.
+if ($ExternalsFrom -ne "") {
+    $script:externalsDir = if ([IO.Path]::IsPathRooted($ExternalsFrom)) {
+        $ExternalsFrom
+    } else {
+        Join-Path $sourceDir $ExternalsFrom
+    }
+    $extCacheFile = Join-Path $script:externalsDir "CMakeCache.txt"
+    if (-not (Test-Path $extCacheFile)) {
+        Exit-WithError "-ExternalsFrom: no CMakeCache.txt in $($script:externalsDir). Point it at a built Superbuild directory."
+    }
+    $extCache = Get-Content $extCacheFile
+    function Get-ExtCacheValue([string]$name) {
+        $m = $extCache | Select-String -Pattern "^$([regex]::Escape($name)):[A-Z]+=(.*)$" | Select-Object -First 1
+        if ($m) { return $m.Matches[0].Groups[1].Value } else { return "" }
+    }
+    if (-not $PSBoundParameters.ContainsKey('Debug') -and -not $PSBoundParameters.ContainsKey('Release')) {
+        $Debug = (Get-ExtCacheValue "CMAKE_BUILD_TYPE") -eq "Debug"
+    }
+    if (-not $PSBoundParameters.ContainsKey('Headless')) {
+        $Headless = (Get-ExtCacheValue "WITH_GUI") -match "^(OFF|FALSE|NO|0)$"
+    }
+    if (-not $PSBoundParameters.ContainsKey('WithoutTetgen')) {
+        $WithoutTetgen = (Get-ExtCacheValue "WITH_TETGEN") -match "^(OFF|FALSE|NO|0)$"
+    }
+    if ($QtPath -eq "") { $QtPath = Get-ExtCacheValue "Qt_PATH" }
+    if (-not ($Qt5 -or $Qt6) -and $QtVersion -eq "") { $QtVersion = Get-ExtCacheValue "SCIRUN_QT_MIN_VERSION" }
+}
+
 if ($Debug -and $Release) {
     Exit-WithError "Cannot specify both -Debug and -Release. Omit both for the default Release build."
 }
@@ -790,6 +839,9 @@ Write-Host "  Parallel jobs: $numJobs" -ForegroundColor White
 Write-Host "  Qt version   : $QtVersion$(if ($Headless) {' (N/A -- headless build)'})" -ForegroundColor White
 Write-Host "  Headless     : $Headless" -ForegroundColor White
 Write-Host "  With Tetgen  : $(-not $WithoutTetgen)" -ForegroundColor White
+if ($script:externalsDir -ne "") {
+    Write-Host "  Externals    : reused from $($script:externalsDir)" -ForegroundColor White
+}
 Write-Host ""
 
 # Verify the Superbuild is where we expect it

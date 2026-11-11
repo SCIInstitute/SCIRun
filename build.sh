@@ -54,6 +54,7 @@ printhelp() {
     echo -e "--cmake-args=<cmake args>\t\tUse given CMake args"
     echo -e "--documentation\t\tEnable building documentation (requires LaTeX)"
     echo -e "--custom-build-dir=<dir>\t\tBuild in dir (use relative path)"
+    echo -e "--externals-from=<dir>\t\tReuse the externals of the built Superbuild in <dir> (its bin/);\n\t\t\tonly SCIRun itself is compiled. Build type and WITH_* flags default to that build's."
     echo -e "-j#\t\t\tRuns # parallel make processes when building [GNU make only].\n\t\t\tDefaults to a count detected from cores and RAM; -j1 forces a serial build."
     echo -e "-D<var>:<type>=<value>\t\t\tDefine CMake variable."
     echo -e "-?\t\t\tThis help"
@@ -143,7 +144,11 @@ detect_parallel_jobs() {
 configure_scirun_make() {
     local build_opts=$@
 
-    build_opts="${build_opts} -DCMAKE_BUILD_TYPE:STRING=${buildtype} -DCMAKE_VERBOSE_MAKEFILE:BOOL=${verbosebuild}"
+    # With --externals-from, an unset build type is taken from that build.
+    if [[ -n $buildtype ]]; then
+        build_opts="${build_opts} -DCMAKE_BUILD_TYPE:STRING=${buildtype}"
+    fi
+    build_opts="${build_opts} -DCMAKE_VERBOSE_MAKEFILE:BOOL=${verbosebuild}"
 
     try $cmakebin $DIR/Superbuild $build_opts $cmakeargs
 }
@@ -155,7 +160,11 @@ configure_scirun() {
     fi
     try cd $builddir
 
-    local COMMON_BUILD_OPTS="-DWITH_GUI:BOOL=$gui -DWITH_TETGEN:BOOL=$tetgenbuild -DBUILD_DOCUMENTATION:BOOL=$documentation"
+    local COMMON_BUILD_OPTS="-DBUILD_DOCUMENTATION:BOOL=$documentation"
+    # With --externals-from, flags not given here are taken from that build.
+    [[ -n $gui ]] && COMMON_BUILD_OPTS="$COMMON_BUILD_OPTS -DWITH_GUI:BOOL=$gui"
+    [[ -n $tetgenbuild ]] && COMMON_BUILD_OPTS="$COMMON_BUILD_OPTS -DWITH_TETGEN:BOOL=$tetgenbuild"
+    [[ -n $externalsfrom ]] && COMMON_BUILD_OPTS="$COMMON_BUILD_OPTS -DEXTERNALS_FROM:PATH=$externalsfrom"
 
     configure_scirun_make $COMMON_BUILD_OPTS
 }
@@ -202,7 +211,7 @@ else
     exit 1
 fi
 
-buildtype="Release"
+buildtype=
 makeflags=
 parallel_jobs=
 cmakeflags=
@@ -213,9 +222,9 @@ verbosebuild="OFF"
 builddir="$DIR/bin"
 xcodebuild=0
 documentation="OFF"
-# matches the Superbuild default; Tetgen is GPL-licensed, see --without-tetgen
-tetgenbuild="ON"
-gui="ON"
+tetgenbuild=
+gui=
+externalsfrom=
 
 echo "Parsing arguments..."
 while [[ $1 != "" ]]; do
@@ -228,6 +237,9 @@ while [[ $1 != "" ]]; do
             verbosebuild="ON";;
        --cmake-args=*)
             cmakeargs=`echo $1 | cut -c 14-`;;
+       --externals-from=*)
+            externalsfrom="${1#--externals-from=}"
+            [[ ${externalsfrom:0:1} == '/' ]] || externalsfrom="${DIR}/${externalsfrom}";;
        --custom-build-dir=*)
             dirarg=`echo $1 | cut -c 20-`
             first_char=${dirarg:0:1}
@@ -263,6 +275,14 @@ done
 
 cmakeargs="${cmakeargs} ${cmakeflags}"
 
+# Defaults, unless --externals-from supplies them. Tetgen is on to match the
+# Superbuild default (it is GPL-licensed, see --without-tetgen).
+if [[ -z $externalsfrom ]]; then
+    [[ -n $buildtype ]] || buildtype="Release"
+    [[ -n $tetgenbuild ]] || tetgenbuild="ON"
+    [[ -n $gui ]] || gui="ON"
+fi
+
 if [[ -z $makeflags ]]; then
     parallel_jobs=$(detect_parallel_jobs)
     makeflags="-j${parallel_jobs}"
@@ -283,7 +303,7 @@ echo "Make Flags: $makeflags"
 
 ensure make --version
 
-echo "Build Type: $buildtype"
+echo "Build Type: ${buildtype:-from $externalsfrom}"
 
 configure_scirun
 

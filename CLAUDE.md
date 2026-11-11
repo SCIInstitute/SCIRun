@@ -55,6 +55,24 @@ New flag: pick the prefix by the rule above, add `OPTION()` in `Superbuild/Super
 
 First build requires ~15 GB disk space and 30–90 minutes.
 
+### Reusing another build's externals
+
+To build a branch or PR without rebuilding the externals, point a new build dir at an existing, fully built Superbuild:
+
+```bash
+./build.sh --externals-from=/path/to/master/bin --custom-build-dir=bin-pr123
+cmake -S Superbuild -B bin-pr123 -DEXTERNALS_FROM=/path/to/master/bin   # direct CMake
+```
+```powershell
+.\build.ps1 -ExternalsFrom C:\SR -BuildDir C:\SR-pr123
+```
+
+`EXTERNALS_FROM` skips every external and reads their paths from `<that bin>/SCIRun/CMakeCache.txt`; only the inner SCIRun project (plus the small toolkit clones) builds. Build type, `WITH_*`, `PREBUILT_*`, `Qt_PATH` and the Qt version default to that build's values; giving a different one is a configure error, and a different compiler or generator is a warning.
+
+- The externals are used in place, by absolute path: don't move or delete that build while builds depend on it.
+- Only valid while the branch leaves `Superbuild/` (versions, patches, flags) as the externals were built. Otherwise do a full Superbuild.
+- Visual Studio: build the same `--config` the externals were built with (MSVC can't mix Debug and Release runtimes). The inner build never copies DLLs next to `SCIRun.exe` either way; `build.ps1` deploys Qt, Qwt and Python DLLs from the externals build.
+
 ### Running Tests
 
 Tests require `BUILD_TESTING=ON` during CMake configuration. Run from the inner build directory (`bin/SCIRun/`):
