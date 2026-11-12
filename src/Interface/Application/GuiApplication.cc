@@ -69,12 +69,12 @@ public:
 
 namespace
 {
-  // #2484: on Qt6/Windows the main window vanishes briefly when the first ViewScene
+  // #2484: on Qt6/Windows and Linux the main window vanishes briefly when the first ViewScene
   // GL widget appears. Fixing the default format up front lets the main window's
   // surface be created GL-compatible once; see SCIRunMainWindow::primeOpenGLSurface.
   void setDefaultOpenGLFormat()
   {
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     QSurfaceFormat fmt;
     fmt.setDepthBufferSize(24);
     fmt.setStencilBufferSize(8);
