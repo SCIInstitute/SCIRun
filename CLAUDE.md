@@ -62,7 +62,8 @@ Tests require `BUILD_TESTING=ON` during CMake configuration. Run from the inner 
 ```bash
 cd bin/SCIRun
 ctest --output-on-failure              # all tests
-ctest -R "\.Test\." --output-on-failure          # unit tests only
+ctest -E "\.Test\." --output-on-failure          # unit tests only (gtest *_Tests binaries)
+ctest -R "\.Test\.ImportNetwork\." --output-on-failure   # v4 network import tests
 ctest -R "ModuleName" --output-on-failure        # filter by name
 ```
 
