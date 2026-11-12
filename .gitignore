@@ -36,3 +36,6 @@ cmake
 # Sphinx builds
 docs/_build/
 /build
+
+# clangd/ccls compile database, usually symlinked from a local build dir
+/compile_commands.json
