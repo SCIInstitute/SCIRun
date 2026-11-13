@@ -31,6 +31,8 @@
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <Core/Algorithms/Visualization/share.h>
+#include <array>
+#include <functional>
 
 namespace SCIRun
 {
@@ -75,6 +77,57 @@ namespace SCIRun
            Core::Datatypes::VtkGeometryObjectHandle addCylinder(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
 
            Core::Datatypes::VtkGeometryObjectHandle makeObject(FieldHandle field) const;
+
+#ifdef WITH_VTK
+           struct QuadFaceKey
+           {
+             std::array<vtkIdType, 4> ids;
+
+             bool operator==(const QuadFaceKey& other) const { return ids == other.ids; }
+           };
+
+           struct TriFaceKey
+           {
+             std::array<vtkIdType, 3> ids;
+
+             bool operator==(const TriFaceKey& other) const { return ids == other.ids; }
+           };
+
+           struct QuadFaceKeyHash
+           {
+             size_t operator()(const QuadFaceKey& k) const
+             {
+               size_t h = 0;
+               for (auto id : k.ids)
+               {
+                 h ^= std::hash<vtkIdType>{}(id) + 0x9e3779b9 + (h << 6) + (h >> 2);
+               }
+               return h;
+             }
+           };
+
+           struct TriFaceKeyHash
+           {
+             size_t operator()(const TriFaceKey& k) const
+             {
+               size_t h = 0;
+               for (auto id : k.ids)
+               {
+                 h ^= std::hash<vtkIdType>{}(id) + 0x9e3779b9 + (h << 6) + (h >> 2);
+               }
+               return h;
+             }
+           };
+           vtkSmartPointer<vtkUnstructuredGrid> buildVolumeGrid(FieldHandle field) const;
+
+           vtkSmartPointer<vtkPolyData> buildVolumeFaces(FieldHandle field) const;
+
+           vtkSmartPointer<vtkPolyData> buildVolumeSurface(FieldHandle field) const;
+
+           vtkSmartPointer<vtkImageData> buildImageVolume(FieldHandle field) const;
+#endif
+
+           std::array<double, 2> computeScalarRange(FieldHandle field) const;
 
            void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions) const;
 
