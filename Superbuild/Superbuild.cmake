@@ -35,6 +35,17 @@ scirun_removed_option(BUILD_HEADLESS                    # inverted 2026-09 (#267
   "It was replaced by WITH_GUI with the opposite sense. Use -DWITH_GUI=OFF for a headless build." FATAL)
 
 ###########################################
+# Reuse another Superbuild's externals. Must run before any option is read,
+# since it seeds their defaults from that build.
+SET(EXTERNALS_FROM "" CACHE PATH "Binary dir of a built Superbuild whose externals to reuse instead of building them")
+OPTION(EXTERNALS_FROM_IGNORE_CHANGES "With EXTERNALS_FROM: only warn when this Superbuild/ differs from the externals'" OFF)
+MARK_AS_ADVANCED(EXTERNALS_FROM_IGNORE_CHANGES)
+INCLUDE(${CMAKE_CURRENT_LIST_DIR}/ExternalsFrom.cmake)
+IF(EXTERNALS_FROM)
+  scirun_externals_from_seed()
+ENDIF()
+
+###########################################
 # TODO: build from archive - Git not used
 SET(compress_type "GIT" CACHE INTERNAL "")
 SET(ep_base "${CMAKE_BINARY_DIR}/Externals" CACHE INTERNAL "")
@@ -265,9 +276,15 @@ SET(SCIRUN_BINARY_DIR ${CMAKE_BINARY_DIR}/SCIRun CACHE INTERNAL "" FORCE)
 # variables. See VERSIONS.cmake for the update process.
 INCLUDE( ${SUPERBUILD_DIR}/VERSIONS.cmake )
 
-IF(BUILD_TESTING)
+IF(EXTERNALS_FROM)
+  scirun_externals_from_import()
+ENDIF()
+
+IF(BUILD_TESTING AND NOT (EXTERNALS_FROM AND SCIRUN_TEST_RESOURCE_DIR))
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TestDataConfig.cmake SCIRunTestData_external )
 ENDIF()
+
+IF(NOT EXTERNALS_FROM)
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/EigenExternal.cmake Eigen_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/ZlibExternal.cmake Zlib_external )
@@ -321,6 +338,8 @@ IF(WITH_VTK)
     ADD_EXTERNAL( ${SUPERBUILD_DIR}/VtkExternal.cmake VTK_external )
   ENDIF()
 ENDIF()
+
+ENDIF() # NOT EXTERNALS_FROM
 
 ###########################################
 # Download external data sources
@@ -447,4 +466,11 @@ ExternalProject_Add( SCIRun_external
   CMAKE_CACHE_ARGS ${SCIRUN_CACHE_ARGS}
   ${SCIRUN_BUILD_COMMAND}
   INSTALL_COMMAND ""
+  # "--target SCIRun_external-configure" builds the externals only, for a
+  # shared externals build that others use through EXTERNALS_FROM.
+  STEP_TARGETS configure
 )
+
+IF(NOT EXTERNALS_FROM)
+  scirun_externals_record()
+ENDIF()
