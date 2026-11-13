@@ -43,6 +43,8 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  addComboBoxManager(delimiterComboBox_, Core::Algorithms::Math::Parameters::MatrixTextDelimiter);
+
   {
     matrixTextEdit_ = new CodeEditor(this);
     layout()->addWidget(matrixTextEdit_);
