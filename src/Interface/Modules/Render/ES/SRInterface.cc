@@ -73,6 +73,10 @@
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
 
+#include <algorithm>
+#include <map>
+#include <set>
+
 using namespace SCIRun;
 using namespace Core;
 using namespace Datatypes;
@@ -97,6 +101,46 @@ namespace
   }
 
   const std::string widgetSelectFboName = "Selection:FBO:0";
+
+  size_t vertexCount(const SpireVBO& vbo)
+  {
+    size_t stride = 0;
+    for (const auto& a : vbo.attributes)
+      stride += a.sizeInBytes;
+    return stride && vbo.data ? vbo.data->getBufferSize() / stride : 0;
+  }
+
+  // One past the largest index, so it compares directly against vertexCount().
+  size_t indexBound(const SpireIBO& ibo)
+  {
+    if (!ibo.data || !ibo.indexSize)
+      return 0;
+    const auto* bytes = reinterpret_cast<const uint8_t*>(ibo.data->getBuffer());
+    const size_t count = ibo.data->getBufferSize() / ibo.indexSize;
+    size_t bound = 0;
+    for (size_t i = 0; i < count; ++i)
+    {
+      size_t index = 0;
+      switch (ibo.indexSize)
+      {
+        case 1: index = bytes[i]; break;
+        case 2: index = reinterpret_cast<const uint16_t*>(bytes)[i]; break;
+        case 4: index = reinterpret_cast<const uint32_t*>(bytes)[i]; break;
+        default: return 0;
+      }
+      bound = std::max(bound, index + 1);
+    }
+    return bound;
+  }
+
+  std::set<std::string> warnedOutOfRangePasses;
+
+  void warnOutOfRange(const std::string& passName, size_t bound, size_t vertices)
+  {
+    if (warnedOutOfRangePasses.insert(passName).second)
+      logWarning("ViewScene: not drawing \"{}\": its indices reach vertex {} but its vertex buffer has {}.",
+        passName, bound - 1, vertices);
+  }
 }
 
 SRInterface::SRInterface(int frameInitLimit) :
@@ -854,6 +898,9 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           RENDERER_LOG("Add vertex buffer objects.");
           std::vector<char*> vbo_buffer;
           std::vector<size_t> stride_vbo;
+          std::vector<size_t> vertices_vbo;
+          // Per buffer name, so each pass can be checked against the pair it draws. #2700
+          std::map<std::string, size_t> vertexCounts, indexBounds;
 
           int nameIndex = 0;
           for (auto it = obj->vbos().cbegin(); it != obj->vbos().cend(); ++it, ++nameIndex)
@@ -872,6 +919,8 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
               vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(), attributeData, vbo.name);
             }
 
+            vertexCounts[vbo.name] = vertexCount(vbo);
+            vertices_vbo.push_back(vertexCounts[vbo.name]);
             vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
             size_t stride = 0;
             for (auto a : vbo.attributes)
@@ -887,6 +936,7 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
           for (auto it = obj->ibos().cbegin(); it != obj->ibos().cend(); ++it, ++nameIndex)
           {
             const auto& ibo = *it;
+            indexBounds[ibo.name] = indexBound(ibo);
             GLenum primType = GL_UNSIGNED_SHORT;
             switch (ibo.indexSize)
             {
@@ -976,7 +1026,11 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
                   dir = Vector(0.0, 0.0, -1.0);
                   name += "NegZ";
                 }
-                if (i > 0)
+                // Same unchecked vertex reads as RenderBasicSysTrans::sortObjects (#2734).
+                const bool sortable = ibo.indexSize == sizeof(uint32_t) &&
+                  nameIndex < static_cast<int>(vertices_vbo.size()) &&
+                  indexBounds[ibo.name] <= vertices_vbo[nameIndex];
+                if (i > 0 && sortable)
                 {
                   for (size_t j = 0; j < num_triangles; j++)
                   {
@@ -1044,6 +1098,15 @@ glm::vec2 ScreenParams::positionFromClick(int x, int y) const
 
               if (pass.renderType == RenderType::RENDER_VBO_IBO)
               {
+                // The driver reads vertex[index] with no bounds check; an index past the end
+                // of the VBO is a bus error inside glDrawElements, so drop the pass instead.
+                const auto vertices = vertexCounts.find(pass.vboName);
+                const auto bound = indexBounds.find(pass.iboName);
+                if (vertices != vertexCounts.end() && bound != indexBounds.end() && bound->second > vertices->second)
+                {
+                  warnOutOfRange(pass.passName, bound->second, vertices->second);
+                  continue;
+                }
                 addVBOToEntity(entityID, pass.vboName);
                 if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
                 {
