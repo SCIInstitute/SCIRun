@@ -171,6 +171,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   scrollArea_->setStyleSheet(styleSheet());
 
   connect(actionSave_As_, &QAction::triggered, this, &SCIRunMainWindow::saveNetworkAs);
+  connect(actionExportPythonScript_, &QAction::triggered, this, &SCIRunMainWindow::exportNetworkAsPython);
   connect(actionSave_, &QAction::triggered, this, &SCIRunMainWindow::saveNetwork);
   connect(actionLoad_, &QAction::triggered, this, &SCIRunMainWindow::loadNetwork);
   connect(actionImportNetwork_, &QAction::triggered, this, &SCIRunMainWindow::importLegacyNetwork);
