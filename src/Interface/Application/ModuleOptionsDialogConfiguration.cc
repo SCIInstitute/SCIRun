@@ -110,6 +110,7 @@ ModuleDialogDockWidget* ModuleOptionsDialogConfiguration::configDockable(ModuleD
 
   if (moduleWidget_->isViewScene_ && Application::Instance().parameters()->isRegressionMode())
   {
+    options->prepareToShow();
     dockable->show();
     dockable->setFloating(true);
   }
