@@ -29,4 +29,32 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-/// @todo
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Testing;
+
+class ViewSceneTests : public ModuleTest
+{
+  UseRealModuleStateFactory useRealState_;
+};
+
+// Downstream modules error on a port with no data, so this must send even with no frame rendered.
+TEST_F(ViewSceneTests, SendsEmptyMatricesWhenNothingRendered)
+{
+  auto viewScene = makeModule("ViewScene");
+  for (size_t port = 0; port < 3; ++port)
+    connectDummyOutputConnection(viewScene, port);
+
+  viewScene->execute();
+
+  for (size_t port = 0; port < 3; ++port)
+  {
+    auto matrix = std::dynamic_pointer_cast<DenseMatrix>(getDataOnThisOutputPort(viewScene, port));
+    ASSERT_TRUE(matrix != nullptr) << "port " << port;
+    EXPECT_EQ(0, matrix->nrows());
+    EXPECT_EQ(0, matrix->ncols());
+  }
+}
