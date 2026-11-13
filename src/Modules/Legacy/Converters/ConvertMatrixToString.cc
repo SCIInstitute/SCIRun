@@ -44,8 +44,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Converters;
 
+MODULE_INFO_DEF(ConvertMatrixToString, Converters, SCIRun)
 
-ConvertMatrixToString::ConvertMatrixToString() : Module(ModuleLookupInfo("ConvertMatrixToString","Converters","SCIRun"),false)
+ConvertMatrixToString::ConvertMatrixToString() : Module(staticInfo_, false)
 {
 	INITIALIZE_PORT(InputMatrix);
 	INITIALIZE_PORT(ResultString);

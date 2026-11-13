@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetSliceFromStructuredFieldByIndices",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "GetSliceFromStructuredFieldByIndicesDialog",
+    "header": "Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SetupTDCS",
+    "namespace": "BrainStimulator",
+    "status": " in progress ",
+    "description": " set RHS for tDCS and TMS ",
+    "header": "Modules/BrainStimulator/SetupRHSforTDCSandTMS.h"
+  },
+  "algorithm": {
+    "name": "SetupTDCSAlgorithm",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h"
+  },
+  "UI": {
+    "name": "SetupRHSforTDCSandTMSDialog",
+    "header": "Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h"
+  }
+}

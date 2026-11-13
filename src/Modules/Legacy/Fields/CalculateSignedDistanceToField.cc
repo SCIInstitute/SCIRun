@@ -37,8 +37,10 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
+MODULE_INFO_DEF(CalculateSignedDistanceToField, ChangeFieldData, SCIRun)
+
 CalculateSignedDistanceToField::CalculateSignedDistanceToField()
-  : Module(ModuleLookupInfo("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun"), false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(ObjectField);

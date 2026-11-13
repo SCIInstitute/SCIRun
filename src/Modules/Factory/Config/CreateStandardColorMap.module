@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateStandardColorMap",
+    "namespace": "Visualization",
+    "status": "In progress: four color maps available",
+    "description": "...",
+    "header": "Modules/Visualization/CreateStandardColorMap.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CreateStandardColorMapDialog",
+    "header": "Interface/Modules/Visualization/CreateStandardColorMapDialog.h"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CollectMatrices",
+    "namespace": "Math",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Math/CollectMatrices.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CollectMatricesDialog",
+    "header": "Interface/Modules/Math/CollectMatricesDialog.h"
+  }
+}

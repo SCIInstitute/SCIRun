@@ -35,8 +35,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
+MODULE_INFO_DEF(GetFieldBoundary, NewField, SCIRun)
+
 GetFieldBoundary::GetFieldBoundary()
-  : Module(ModuleLookupInfo("GetFieldBoundary", "NewField", "SCIRun"), false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(BoundaryField);

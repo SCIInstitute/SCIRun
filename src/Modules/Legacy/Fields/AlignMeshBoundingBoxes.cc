@@ -34,8 +34,10 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(AlignMeshBoundingBoxes, ChangeMesh, SCIRun)
+
 AlignMeshBoundingBoxes::AlignMeshBoundingBoxes() :
-  Module(ModuleLookupInfo("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun"), false)
+  Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(AlignmentField);

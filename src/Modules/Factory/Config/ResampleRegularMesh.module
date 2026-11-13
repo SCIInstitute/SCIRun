@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ResampleRegularMesh",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ResampleRegularMesh.h"
+  },
+  "algorithm": {
+    "name": "ResampleRegularMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h"
+  },
+  "UI": {
+    "name": "ResampleRegularMeshDialog",
+    "header": "Interface/Modules/Fields/ResampleRegularMeshDialog.h"
+  }
+}

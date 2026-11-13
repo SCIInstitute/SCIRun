@@ -41,11 +41,13 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(MapFieldDataFromNodeToElem, ChangeFieldData, SCIRun)
+
 /// @brief This module contains several filters for converting data that is
 /// stored in the nodes to data that is stored in the elements.
 
 MapFieldDataFromNodeToElem::MapFieldDataFromNodeToElem()
-  : Module(ModuleLookupInfo("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun"), true)
+  : Module(staticInfo_, true)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);

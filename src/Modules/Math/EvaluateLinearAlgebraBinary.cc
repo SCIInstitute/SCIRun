@@ -37,8 +37,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(EvaluateLinearAlgebraBinary, Math, SCIRun)
+
 EvaluateLinearAlgebraBinary::EvaluateLinearAlgebraBinary() :
-Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
+Module(staticInfo_)
 {
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);
