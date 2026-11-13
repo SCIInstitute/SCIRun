@@ -422,6 +422,7 @@ BoundingBoxWidget::BoundingBoxWidget(const GeneralWidgetParameters& gen,
   boxData.makeCylinders(gen, params.common, *this);
   boxData.makeCornerSuperquadrics(gen, params.common, *this);
   boxData.makeFaceSpheres(gen, params.common, *this);
+  //face disks removed because of their transforms have not been implemented
   //boxData.makeFaceDisks(gen, params.common, *this);
 
   auto edges = boxData.getEdges();

@@ -25,6 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#pragma once
+
 #ifdef WITH_VTK
 #pragma push_macro("INPUT_PORT")
 #undef INPUT_PORT
