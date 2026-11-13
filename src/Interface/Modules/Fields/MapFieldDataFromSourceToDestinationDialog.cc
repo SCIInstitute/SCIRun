@@ -51,8 +51,8 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
   );
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
   addDoubleSpinBoxManager(defaultValueDoubleSpinBox_, Parameters::DefaultValue);
-  connect(noMaxCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue);
-  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::stateChanged, this, &MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues);
+  connect(noMaxCheckBox_, &QCheckBox::toggled, this, &MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue);
+  connect(useNanForUnassignedValuesCheckBox_, &QCheckBox::toggled, this, &MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues);
 }
 
 void MapFieldDataFromSourceToDestinationDialog::pullSpecial()
@@ -67,20 +67,20 @@ void MapFieldDataFromSourceToDestinationDialog::pullSpecial()
   }
 }
 
-void MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue(int state)
+void MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue(bool state)
 {
   if (!pulling_)
   {
-    if (0 != state)
+    if (state)
       state_->setValue(Parameters::MaxDistance, -1.0);
   }
 }
 
-void MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues(int state)
+void MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues(bool state)
 {
   if (!pulling_)
   {
-    if (0 != state)
+    if (state)
       state_->setValue(Parameters::DefaultValue, std::numeric_limits<double>::quiet_NaN());
   }
 }

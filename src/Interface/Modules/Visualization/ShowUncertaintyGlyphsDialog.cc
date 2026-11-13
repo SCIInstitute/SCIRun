@@ -53,8 +53,8 @@ void ShowUncertaintyGlyphsDialog::setupTensorsTab()
   addDoubleSpinBoxManager(this->scaleTensorsDoubleSpinBox_, ShowUncertaintyGlyphs::TensorsScale);
   addSpinBoxManager(this->tensorsResolutionSpinBox_, ShowUncertaintyGlyphs::TensorsResolution);
   addDoubleSpinBoxManager(this->superquadricEmphasisDoubleSpinBox_, ShowUncertaintyGlyphs::SuperquadricEmphasis);
-  connect(this->superquadricEmphasisSlider_, SIGNAL(valueChanged(int)), this, SLOT(emphasisSliderChanged(int)));
-  connect(this->superquadricEmphasisDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(emphasisSpinBoxChanged(double)));
+  connect(this->superquadricEmphasisSlider_, &QSlider::valueChanged, this, &ShowUncertaintyGlyphsDialog::emphasisSliderChanged);
+  connect(this->superquadricEmphasisDoubleSpinBox_, &QDoubleSpinBox::valueChanged, this, &ShowUncertaintyGlyphsDialog::emphasisSpinBoxChanged);
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);
   connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);
