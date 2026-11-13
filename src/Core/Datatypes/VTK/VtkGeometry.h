@@ -28,7 +28,7 @@
 #ifndef CORE_DATATYPES_VTKGEOMETRY_H
 #define CORE_DATATYPES_VTKGEOMETRY_H
 
-#include <Core/Algorithms/Visualization/VtkIncludes.h>
+#include <Core/Datatypes/VTK/VtkIncludes.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>

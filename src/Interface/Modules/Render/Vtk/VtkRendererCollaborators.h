@@ -28,7 +28,7 @@
 #pragma once
 
 #ifdef WITH_VTK
-#include <Core/Algorithms/Visualization/VtkIncludes.h>
+#include <Core/Datatypes/VTK/VtkIncludes.h>
 #include <Interface/Modules/Render/Vtk/share.h>
 
 #include <glm/glm.hpp>

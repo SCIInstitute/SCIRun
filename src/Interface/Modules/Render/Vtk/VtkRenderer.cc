@@ -26,7 +26,7 @@
 */
 
 #include "VtkRenderer.h"
-#include <Core/Algorithms/Visualization/VtkIncludes.h>
+#include <Core/Datatypes/VTK/VtkIncludes.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Graphics/Widgets/Widget.h>
 #include <iostream>

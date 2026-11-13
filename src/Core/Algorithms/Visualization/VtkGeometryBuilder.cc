@@ -25,7 +25,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Visualization/VtkIncludes.h>
+#include <Core/Datatypes/VTK/VtkIncludes.h>
 #include <Core/Algorithms/Visualization/VtkGeometryBuilder.h>
 #include <Core/Algorithms/Visualization/VtkDataAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>

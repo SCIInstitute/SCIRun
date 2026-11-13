@@ -38,7 +38,6 @@ SET(Algorithms_Visualization_HEADERS
   OsprayDataAlgorithm.h
   VtkDataAlgorithm.h
   VtkGeometryBuilder.h
-  VtkIncludes.h
   share.h
 )
 

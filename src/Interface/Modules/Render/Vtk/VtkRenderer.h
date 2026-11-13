@@ -32,7 +32,7 @@
 
 
 #ifdef WITH_VTK
-#include <Core/Algorithms/Visualization/VtkIncludes.h>
+#include <Core/Datatypes/VTK/VtkIncludes.h>
 #include "VtkCameraController.h"
 #include "VtkOverlayManager.h"
 
