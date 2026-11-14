@@ -33,6 +33,10 @@
 #include FT_FREETYPE_H
 
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <map>
+#include <memory>
+#include <optional>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -65,12 +69,43 @@ namespace SCIRun {
           const std::string& id,
           Graphics::Datatypes::GeometryObjectSpire& geom) const;
 
+        struct WorldLabel
+        {
+          std::string text;
+          Core::Geometry::Point position;
+          // If set, the label is hidden when this faces away from the camera.
+          std::optional<Core::Geometry::Vector> normal;
+          glm::vec4 color {1.0f};
+        };
+
+        // Billboard text: anchored in world space, sized in pixels. All labels
+        // go into one VBO and one pass.
+        void printStringsInWorld(const std::vector<WorldLabel>& labels,
+          const Core::Geometry::Vector &shiftPxlSpc, bool alwaysVisible,
+          const std::string& id,
+          Graphics::Datatypes::GeometryObjectSpire& geom) const;
+
         //get string length based on current settings
         //return value in pixels
         std::tuple<double,double> getStringDims(const std::string& oneline) const;
 
       private:
-        std::string getUniqueFontString(char p, double x, double y, double z, double w, double h) const;
+        struct Glyph
+        {
+          // Texture coordinates of the bitmap in the atlas.
+          float u0, v0, u1, v1;
+          int width, rows, left, top, advance;
+        };
+        struct Atlas
+        {
+          std::map<char, Glyph> glyphs;
+          Graphics::Datatypes::SpireText texture;
+        };
+        const Atlas& atlas() const;
+
+        struct Quad { float x0, y0, x1, y1, u0, v0, u1, v1; };
+        // One quad per visible glyph, in pixels relative to the string's origin.
+        std::vector<Quad> layout(const std::string& oneline, const Core::Geometry::Vector& shiftPxlSpc) const;
 
         void initFreeType(const std::string &libName, size_t size);
         void loadNewFace(const std::string &libName, size_t size);
@@ -86,6 +121,8 @@ namespace SCIRun {
         static std::string mFSRoot;
         static std::string mFSSeparator;
         glm::vec4 color_;
+        // Rebuilt when the face or its size changes.
+        mutable std::shared_ptr<const Atlas> atlas_;
       };
 
 

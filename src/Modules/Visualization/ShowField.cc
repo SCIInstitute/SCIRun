@@ -27,6 +27,8 @@
 
 
 #include <Modules/Visualization/ShowField.h>
+#include <Modules/Visualization/TextBuilder.h>
+#include <Core/Algorithms/Visualization/FieldTextLabels.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Graphics/Datatypes/RenderFieldState.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -111,6 +113,15 @@ public:
     GeometryHandle geom,
     const std::string& id);
 
+  void renderText(
+    FieldHandle field,
+    std::optional<ColorMapHandle> colorMap,
+    GeometryHandle geom,
+    const std::string& id);
+
+  // Labels left out of the last build because of the per-character draw cost.
+  size_t omittedLabels() const { return omittedLabels_; }
+
   RenderState getNodeRenderState(std::optional<ColorMapHandle> colorMap);
   RenderState getEdgeRenderState(std::optional<ColorMapHandle> colorMap);
   RenderState getFaceRenderState(std::optional<ColorMapHandle> colorMap);
@@ -118,6 +129,8 @@ private:
   float faceTransparencyValue_ = 0.65f;
   float edgeTransparencyValue_ = 0.65f;
   float nodeTransparencyValue_ = 0.65f;
+  size_t omittedLabels_ = 0;
+  TextBuilder textBuilder_;
   std::string moduleId_;
   ModuleStateHandle state_;
   Stoppable* stoppable_;
@@ -176,7 +189,7 @@ void ShowField::setStateDefaults()
   state->setValue(CullBackfacingText, false);
   state->setValue(TextAlwaysVisible, false);
   state->setValue(RenderAsLocation, false);
-  state->setValue(TextSize, 8);
+  state->setValue(TextSize, 16);
   state->setValue(TextPrecision, 3);
   state->setValue(TextColoring, 0);
 
@@ -218,6 +231,8 @@ void ShowField::execute()
   {
     updateAvailableRenderOptions(field);
     auto geom = builder_->buildGeometryObject(field, colorMap, *this);
+    if (const auto omitted = builder_->omittedLabels())
+      warning("Too many text labels: " + std::to_string(omitted) + " not shown.");
     sendOutput(SceneGraph, geom);
   }
 }
@@ -385,7 +400,60 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   if (showNodes)
     renderNodes(field, colorMap, getNodeRenderState(colorMap), geom, geom->uniqueID());
 
+  omittedLabels_ = 0;
+  if (state_->getValue(ShowText).toBool())
+    renderText(field, colorMap, geom, geom->uniqueID());
+
   return geom;
+}
+
+void GeometryBuilder::renderText(
+  FieldHandle field,
+  std::optional<SharedPointer<ColorMap>> colorMap,
+  GeometryHandle geom,
+  const std::string& id)
+{
+  // Four vertices per character; this bounds the VBO at roughly 100 MB.
+  static const size_t maxLabels = 100000;
+
+  FieldTextLabelOptions options;
+  options.showDataValues = state_->getValue(ShowDataValues).toBool();
+  options.showNodeIndices = state_->getValue(ShowNodeIndices).toBool();
+  options.showEdgeIndices = state_->getValue(ShowEdgeIndices).toBool();
+  options.showFaceIndices = state_->getValue(ShowFaceIndices).toBool();
+  options.showCellIndices = state_->getValue(ShowCellIndices).toBool();
+  options.renderAsLocation = state_->getValue(RenderAsLocation).toBool();
+  options.cullBackfacing = state_->getValue(CullBackfacingText).toBool();
+  options.useColorMap = state_->getValue(TextColoring).toInt() == 1;
+  options.precision = state_->getValue(TextPrecision).toInt();
+  options.maxLabels = maxLabels;
+
+  const auto labels = buildFieldTextLabels(field, colorMap.value_or(nullptr), options);
+  omittedLabels_ = labels.omitted;
+
+  // Fails without a font directory, e.g. headless.
+  const auto textSize = static_cast<size_t>(std::max(1, state_->getValue(TextSize).toInt()));
+  if (!textBuilder_.initialize(textSize))
+    return;
+  if (textBuilder_.getFaceSize() != textSize)
+    textBuilder_.setFaceSize(textSize);
+
+  ColorRGB defaultColor(state_->getValue(DefaultTextColor).toString());
+  // The dialog stores 0-255, the defaults 0-1.
+  if (defaultColor.r() > 1.0 || defaultColor.g() > 1.0 || defaultColor.b() > 1.0)
+    defaultColor = ColorRGB(defaultColor.r() / 255., defaultColor.g() / 255., defaultColor.b() / 255.);
+  const bool alwaysVisible = state_->getValue(TextAlwaysVisible).toBool();
+  // Start just right of and above the anchor, clear of a node glyph.
+  const Vector shift(0.25 * textSize, 0.25 * textSize, 0.0);
+
+  std::vector<TextBuilder::WorldLabel> worldLabels;
+  worldLabels.reserve(labels.labels.size());
+  for (const auto& label : labels.labels)
+  {
+    const auto& c = label.color ? *label.color : defaultColor;
+    worldLabels.push_back({ label.text, label.anchor, label.normal, glm::vec4(c.r(), c.g(), c.b(), 1.0f) });
+  }
+  textBuilder_.printStringsInWorld(worldLabels, shift, alwaysVisible, id + "text", *geom);
 }
 
 

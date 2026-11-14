@@ -34,6 +34,7 @@ SET(Modules_Visualization_Tests_SRCS
   ShowColorMapTests.cc
   ShowFieldFunctionalTests.cc
   ShowFieldTests.cc
+  ShowFieldTextTests.cc
   ShowMeshTests.cc
   ShowStringTests.cc
 )
@@ -58,6 +59,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization_Tests
   Modules_Visualization
   Modules_Factory
   Algorithms_Math
+  Core_Algorithms_Visualization
   Core_Datatypes
   Dataflow_Network
   Dataflow_State
