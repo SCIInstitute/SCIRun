@@ -39,70 +39,49 @@ class vtkCamera;
 namespace SCIRun {
     namespace Render {
 
-        class VtkCameraController
-        {
-        public:
-            VtkCameraController() = default;
-            virtual ~VtkCameraController() = default;
+class VtkCameraController
+      {
+       public:
+        void setCamera(vtkCamera* camera);
 
-            //----------------------------------------
-            // Interaction
-            //----------------------------------------
+        void mousePress(float x, float y, MouseButton button);
 
-            void mousePress(float x, float y, MouseButton button);
-            void mouseMove(float x, float y, vtkRenderer* renderer);
-            void mouseRelease();
+        void mouseMove(float x, float y);
 
-            void mouseWheel(int32_t delta, vtkRenderer* renderer);
+        void mouseRelease();
 
-            //----------------------------------------
-            // Camera utilities
-            //----------------------------------------
+        void mouseWheel(int32_t delta);
 
-            void resetView(vtkRenderer* renderer);
+        void resetView();
 
-            //----------------------------------------
-            // Settings
-            //----------------------------------------
+        void setRotationSpeed(float speed) { rotationSpeed_ = speed; }
+        void setPanSpeed(float speed) { panSpeed_ = speed; }
+        void setZoomSpeed(float speed) { zoomSpeed_ = speed; }
 
-            void setRotationSpeed(float speed);
-            void setPanSpeed(float speed);
-            void setZoomSpeed(float speed);
+        float rotationSpeed() const { return rotationSpeed_; }
+        float panSpeed() const { return panSpeed_; }
+        float zoomSpeed() const { return zoomSpeed_; }
 
-            float rotationSpeed() const;
-            float panSpeed() const;
-            float zoomSpeed() const;
+       private:
+        void rotate(float dx, float dy);
 
-        private:
-            //----------------------------------------
-            // Helpers
-            //----------------------------------------
+        void pan(float dx, float dy);
 
-            void rotate(vtkCamera* camera,
-                vtkRenderer* renderer,
-                float dx,
-                float dy);
+        void zoom(float amount);
 
-            void pan(vtkCamera* camera,
-                vtkRenderer* renderer,
-                float dx,
-                float dy);
+       private:
+        vtkCamera* camera_{nullptr};
 
-            void zoom(vtkCamera* camera,
-                vtkRenderer* renderer,
-                float amount);
+        bool dragging_{false};
 
-        private:
-            bool dragging_{ false };
+        MouseButton activeButton_;
 
-            MouseButton activeButton_;
+        glm::vec2 lastMousePos_{0.f, 0.f};
 
-            glm::vec2 lastMousePos_{ 0.f, 0.f };
-
-            float rotationSpeed_{ 0.5f };
-            float panSpeed_{ 0.01f };
-            float zoomSpeed_{ 0.15f };
-        };
+        float rotationSpeed_{0.5f};
+        float panSpeed_{0.01f};
+        float zoomSpeed_{0.15f};
+      };
 
     }
 } // namespace SCIRun::Render

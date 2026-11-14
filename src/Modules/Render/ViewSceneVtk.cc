@@ -31,6 +31,8 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
+#include <Core/Application/Preferences/Preferences.h>
+#include <Core/Datatypes/Feedback.h>
 
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
@@ -73,7 +75,6 @@ void ViewSceneVtk::setStateDefaults()
   state->setValue(Parameters::CameraViewUpY, 0.0);
   state->setValue(Parameters::CameraViewUpZ, 1.0);
   state->setValue(Parameters::FrameWriterFilename, std::string("frames.png"));
-  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Parameters::ShowAmbientLight, true);
   state->setValue(Parameters::AmbientLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(Parameters::AmbientLightIntensity, 0.1);
@@ -88,6 +89,45 @@ void ViewSceneVtk::setStateDefaults()
   state->setValue(Parameters::ProbeZ, 0.0);
   state->setValue(Parameters::InvertZoom, false);
   state->setValue(Parameters::ZoomSpeed, 1.0);
+
+  state->setValue(Parameters::BackgroundColor, ColorRGB(0.1, 0.2, 0.4).toString());
+  state->setValue(Parameters::Ambient, 0.2);
+  state->setValue(Parameters::Diffuse, 1.0);
+  state->setValue(Parameters::Specular, 0.3);
+  state->setValue(Parameters::Shine, 0.5);
+  state->setValue(Parameters::Emission, 0.0);  // not connected yet
+  state->setValue(Parameters::FogOn, false);
+  state->setValue(Parameters::ObjectsOnly, true);
+  state->setValue(Parameters::UseBGColor, true);
+  state->setValue(Parameters::FogStart, 0.0);
+  state->setValue(Parameters::FogEnd, 0.71);
+  state->setValue(Parameters::FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
+  state->setValue(Parameters::ShowScaleBar, false);
+  state->setValue(Parameters::ScaleBarUnitValue, std::string("mm"));
+  state->setValue(Parameters::ScaleBarLength, 1.0);
+  state->setValue(Parameters::ScaleBarHeight, 1.0);
+  state->setValue(Parameters::ScaleBarMultiplier, 1.0);
+  state->setValue(Parameters::ScaleBarNumTicks, 11);
+  state->setValue(Parameters::ScaleBarLineWidth, 1.0);
+  state->setValue(Parameters::ScaleBarFontSize, 8);
+  state->setValue(Parameters::ScaleBarLineColor, 1.0);
+
+  state->setValue(Parameters::ToolBarMainPosition, 4);      // TopToolBarArea
+  state->setValue(Parameters::ToolBarRenderPosition, 1);    // LeftToolBarArea
+  state->setValue(Parameters::ToolBarAdvancedPosition, 2);  // RightToolBarArea
+
+  state->setValue(Parameters::ScreenshotDirectory, Core::Preferences::Instance().screenshotDirectory().string());
+
+  state->setValue(Parameters::ShowViewer, false);
+  state->setValue(Parameters::WindowSizeX, 450);
+  state->setValue(Parameters::WindowSizeY, 450);
+  state->setValue(Parameters::WindowPositionX, 200);
+  state->setValue(Parameters::WindowPositionY, 200);
+  state->setValue(Parameters::IsFloating, true);
+  state->setValue(Parameters::HasNewGeometry, false);
+
+  get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
+  get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
 
 void ViewSceneVtk::portRemovedSlotImpl(const PortId&)
@@ -107,6 +147,7 @@ void ViewSceneVtk::asyncExecute(const PortId&, DatatypeHandle data)
   }
 
   sendCompositeGeometry();
+  get_state()->setValue(Parameters::HasNewGeometry, true);
 }
 
 void ViewSceneVtk::execute()
@@ -156,4 +197,28 @@ void ViewSceneVtk::sendCompositeGeometry()
   VtkGeometryObjectHandle composite(new CompositeVtkGeometryObject(flattened));
 
   get_state()->setTransientValue(Parameters::GeomData, composite, true);
+}
+
+void ViewSceneVtk::processViewSceneObjectFeedback()
+{
+  // TODO: match ID of touched geom object with port id, and send that info back too.
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
+  // TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
+  if (newInfo)
+  {
+    auto vsInfo = transient_value_cast<ViewSceneFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
+  }
+}
+
+void ViewSceneVtk::processMeshComponentSelection()
+{
+  const auto state = get_state();
+  const auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
+  if (newInfo)
+  {
+    const auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
+  }
 }
