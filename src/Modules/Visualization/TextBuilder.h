@@ -33,6 +33,8 @@
 #include FT_FREETYPE_H
 
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <optional>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -65,12 +67,32 @@ namespace SCIRun {
           const std::string& id,
           Graphics::Datatypes::GeometryObjectSpire& geom) const;
 
+        struct WorldAnchor
+        {
+          Core::Geometry::Point position;
+          // If set, the label is hidden when this faces away from the camera.
+          std::optional<Core::Geometry::Vector> normal;
+          bool alwaysVisible {false};
+        };
+
+        // Billboard text: anchored in world space, sized in pixels.
+        void printStringInWorld(const std::string& oneline,
+          const WorldAnchor& anchor,
+          const Core::Geometry::Vector &shiftPxlSpc,
+          const std::string& id,
+          Graphics::Datatypes::GeometryObjectSpire& geom) const;
+
         //get string length based on current settings
         //return value in pixels
         std::tuple<double,double> getStringDims(const std::string& oneline) const;
 
       private:
         std::string getUniqueFontString(char p, double x, double y, double z, double w, double h) const;
+        void printGlyphs(const std::string& oneline,
+          const Core::Geometry::Vector &shiftPxlSpc,
+          const std::string& id, const std::string& shader,
+          const std::vector<Graphics::Datatypes::SpireSubPass::Uniform>& uniforms,
+          Graphics::Datatypes::GeometryObjectSpire& geom) const;
 
         void initFreeType(const std::string &libName, size_t size);
         void loadNewFace(const std::string &libName, size_t size);

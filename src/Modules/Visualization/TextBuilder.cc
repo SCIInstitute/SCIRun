@@ -146,6 +146,30 @@ void TextBuilder::printString(const std::string& oneline,
   const Vector &startNrmSpc, const Vector &shiftPxlSpc,
   const std::string& id, GeometryObjectSpire& geom) const
 {
+  printGlyphs(oneline, shiftPxlSpc, id, "Shaders/TextBuilder",
+    { { "uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0) } }, geom);
+}
+
+void TextBuilder::printStringInWorld(const std::string& oneline,
+  const WorldAnchor& anchor, const Vector &shiftPxlSpc,
+  const std::string& id, GeometryObjectSpire& geom) const
+{
+  const auto& p = anchor.position;
+  // uNormal.w flags whether there is a normal to cull against.
+  const auto n = anchor.normal
+    ? glm::vec4(anchor.normal->x(), anchor.normal->y(), anchor.normal->z(), 1.0)
+    : glm::vec4(0.0);
+  printGlyphs(oneline, shiftPxlSpc, id, "Shaders/TextBuilderWorld",
+    { { "uAnchor", glm::vec4(p.x(), p.y(), p.z(), 1.0) },
+      { "uNormal", n },
+      { "uAlwaysVisible", anchor.alwaysVisible ? 1.0f : 0.0f } }, geom);
+}
+
+void TextBuilder::printGlyphs(const std::string& oneline,
+  const Vector &shiftPxlSpc, const std::string& id, const std::string& shader,
+  const std::vector<SpireSubPass::Uniform>& passUniforms,
+  GeometryObjectSpire& geom) const
+{
   if (!ftValid_)
     return;
 
@@ -226,12 +250,10 @@ void TextBuilder::printString(const std::string& oneline,
     auto passName = uniqueNodeID + "Pass";
 
     // Construct VBO.
-    std::string shader = "Shaders/TextBuilder";
     std::vector<SpireVBO::AttributeData> attribs;
     attribs.emplace_back("aPos", 3 * sizeof(float));
     attribs.emplace_back("aTexCoord", 2 * sizeof(float));
-    std::vector<SpireSubPass::Uniform> uniforms;
-    uniforms.emplace_back("uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0));
+    auto uniforms = passUniforms;
     uniforms.emplace_back("uColor", color_);
     auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
       numVBOElements, BBox(Point{}, Point{}), true);

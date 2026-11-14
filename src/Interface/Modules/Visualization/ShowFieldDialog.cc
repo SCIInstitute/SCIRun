@@ -90,9 +90,14 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
     defaultNodeColoringButton_, colormapLookupNodeColoringButton_, //conversionRGBNodeColoringButton_,
     defaultEdgeColoringButton_, colormapLookupEdgeColoringButton_, //conversionRGBEdgeColoringButton_,
     defaultFaceColoringButton_, colormapLookupFaceColoringButton_, /*conversionRGBFaceColoringButton_*/
-    defaultMeshColorButton_, textColorPushButton_ });
+    defaultMeshColorButton_, textColorPushButton_,
+    showTextCheckBox_, showDataValuesCheckBox_, showNodeIndicesCheckBox_, showEdgeIndicesCheckBox_,
+    showFaceIndicesCheckBox_, showCellIndicesCheckBox_, cullTextCheckBox_, textAlwaysVisibleCheckBox_,
+    renderIndicesLocationsCheckBox_, textColoringRadioButton_, colormapLookupTextRadioButton_ });
 
   connectButtonToExecuteSignal(useFaceNormalsCheckBox_);
+  connectSpinBoxToExecuteSignal(textSizeSpinBox_);
+  connectSpinBoxToExecuteSignal(textPrecisionSpinBox_);
 
   createExecuteInteractivelyToggleAction();
 
@@ -108,7 +113,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   textureCheckBox_->setVisible(false);
 
   //Text Tab
-  displayOptionsTabs_->removeTab(3);
+  conversionRGBTextRadioButton_->setVisible(false);
 }
 
 void ShowFieldDialog::push()
