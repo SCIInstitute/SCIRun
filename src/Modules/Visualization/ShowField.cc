@@ -413,9 +413,8 @@ void GeometryBuilder::renderText(
   GeometryHandle geom,
   const std::string& id)
 {
-  // TextBuilder makes a VBO, IBO, texture and pass per character, so cap it
-  // until text is batched (#2148).
-  static const size_t maxLabels = 2000;
+  // Four vertices per character; this bounds the VBO at roughly 100 MB.
+  static const size_t maxLabels = 100000;
 
   FieldTextLabelOptions options;
   options.showDataValues = state_->getValue(ShowDataValues).toBool();
@@ -447,14 +446,14 @@ void GeometryBuilder::renderText(
   // Start just right of and above the anchor, clear of a node glyph.
   const Vector shift(0.25 * textSize, 0.25 * textSize, 0.0);
 
-  size_t i = 0;
+  std::vector<TextBuilder::WorldLabel> worldLabels;
+  worldLabels.reserve(labels.labels.size());
   for (const auto& label : labels.labels)
   {
     const auto& c = label.color ? *label.color : defaultColor;
-    textBuilder_.setColor(c.r(), c.g(), c.b(), 1.0f);
-    textBuilder_.printStringInWorld(label.text, { label.anchor, label.normal, alwaysVisible },
-      shift, id + "text" + std::to_string(i++), *geom);
+    worldLabels.push_back({ label.text, label.anchor, label.normal, glm::vec4(c.r(), c.g(), c.b(), 1.0f) });
   }
+  textBuilder_.printStringsInWorld(worldLabels, shift, alwaysVisible, id + "text", *geom);
 }
 
 

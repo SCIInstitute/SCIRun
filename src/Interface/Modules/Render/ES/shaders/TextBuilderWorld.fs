@@ -26,13 +26,13 @@
 */
 
 
-uniform vec4 uColor;
 uniform sampler2D uTX0;
 
 varying vec2 fTexCoord;
+varying vec4 fColor;
 
 void main()
 {
    vec4 rgba = vec4(texture2D( uTX0, fTexCoord ).x);
-   gl_FragColor = uColor * rgba;
+   gl_FragColor = fColor * rgba;
 }

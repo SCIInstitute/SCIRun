@@ -34,27 +34,29 @@ uniform mat4     uView         ;
 uniform mat4     uProjection   ;
 uniform float    uAspectRatio  ;
 uniform float    uWindowWidth  ;
-uniform vec4     uAnchor       ;
-uniform vec4     uNormal       ;
 uniform float    uAlwaysVisible;
 
 // Attributes
-attribute vec3  aPos;
+attribute vec2  aPos;
 attribute vec2  aTexCoord;
+attribute vec3  aAnchor;
+attribute vec4  aNormal;
+attribute vec4  aColor;
 
 //Outputs
 varying vec2 fTexCoord;
+varying vec4 fColor;
 
 void main( void )
 {
   mat4 modelView = uView * uModel;
-  vec4 eyePos = modelView * vec4(uAnchor.xyz, 1.0);
+  vec4 eyePos = modelView * vec4(aAnchor, 1.0);
   bool ortho = uProjection[3][3] != 0.0;
 
   bool culled = false;
-  if (uNormal.w > 0.5)
+  if (aNormal.w > 0.5)
   {
-    vec3 n = (modelView * vec4(uNormal.xyz, 0.0)).xyz;
+    vec3 n = (modelView * vec4(aNormal.xyz, 0.0)).xyz;
     vec3 toEye = ortho ? vec3(0.0, 0.0, 1.0) : -eyePos.xyz;
     culled = dot(n, toEye) <= 0.0;
   }
@@ -75,4 +77,5 @@ void main( void )
   // Outside the clip volume, so the quad is discarded.
   gl_Position = culled ? vec4(2.0, 2.0, 2.0, 1.0) : clip;
   fTexCoord = aTexCoord;
+  fColor = aColor;
 }
