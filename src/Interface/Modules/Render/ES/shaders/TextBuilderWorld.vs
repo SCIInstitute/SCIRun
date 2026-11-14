@@ -61,11 +61,22 @@ void main( void )
     culled = dot(n, toEye) <= 0.0;
   }
 
-  // Nudge toward the camera so a label isn't z-fighting the surface it sits on.
+  // The quad sits at one depth while the surface under it does not, so a face
+  // tilted toward the camera would cut the text off. Pull each vertex forward
+  // by a multiple of its distance from the anchor. A slope of 3 clears surfaces
+  // tilted up to about 70 degrees; much more lets labels just behind a surface
+  // show through it.
+  float worldPerPixel = 3.0 * 2.0 / (uWindowWidth * uProjection[0][0]);
   if (ortho)
-    eyePos.z += 0.01 * abs(eyePos.z);
+  {
+    eyePos.z += 0.01 * abs(eyePos.z) + length(aPos) * worldPerPixel;
+  }
   else
-    eyePos.xyz *= 0.99;
+  {
+    float dist = length(eyePos.xyz);
+    float nudge = 0.01 * dist + length(aPos) * worldPerPixel * -eyePos.z;
+    eyePos.xyz *= max(0.0, 1.0 - nudge / dist);
+  }
 
   vec4 clip = uProjection * eyePos;
   float x_scale = 2. / uWindowWidth;
