@@ -76,6 +76,12 @@ namespace SCIRun
 
            Core::Datatypes::VtkGeometryObjectHandle addCylinder(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
 
+           Core::Datatypes::VtkGeometryObjectHandle addDataValues(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+           Core::Datatypes::VtkGeometryObjectHandle addNodeLabels(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+           Core::Datatypes::VtkGeometryObjectHandle addEdgeLabels(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+           Core::Datatypes::VtkGeometryObjectHandle addFaceLabels(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+           Core::Datatypes::VtkGeometryObjectHandle addCellLabels(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+
            Core::Datatypes::VtkGeometryObjectHandle makeObject(FieldHandle field) const;
 
 #ifdef WITH_VTK

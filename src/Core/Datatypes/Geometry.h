@@ -53,6 +53,11 @@ namespace Datatypes
     CYLINDER,
     EDGE,
     STREAMLINE,
+    TEXT_LABELS,
+    NODE_LABELS,
+    EDGE_LABELS,
+    FACE_LABELS,
+    CELL_LABELS
   };
 
   using GeomList = std::set<GeometryBaseHandle>;

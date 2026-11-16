@@ -106,6 +106,11 @@ VtkGeometryBuilder::buildGeometryObject(
 
     bool showEdges = algorithm_.get(VtkVisualization::Parameters::ShowEdges).toBool();
     bool showNodes = algorithm_.get(VtkVisualization::Parameters::ShowNodes).toBool();
+    bool showDataValues = algorithm_.get(VtkVisualization::Parameters::ShowDataValues).toBool();
+    bool showNodeIndices = algorithm_.get(VtkVisualization::Parameters::ShowNodeIndices).toBool();
+    bool showEdgeIndices = algorithm_.get(VtkVisualization::Parameters::ShowEdgeIndices).toBool();
+    bool showFaceIndices = algorithm_.get(VtkVisualization::Parameters::ShowFaceIndices).toBool();
+    bool showCellIndices = algorithm_.get(VtkVisualization::Parameters::ShowCellIndices).toBool();
 
     if (info.is_trisurfmesh())
     {
@@ -154,6 +159,31 @@ VtkGeometryBuilder::buildGeometryObject(
     else if (info.is_curvemesh())
     {
         add(addStreamline(field, colorMap));
+    }
+
+    if (showDataValues)
+    {
+      add(addDataValues(field, colorMap));
+    }
+
+    if (showNodeIndices)
+    {
+      add(addNodeLabels(field, colorMap));
+    }
+
+    if (showEdgeIndices)
+    {
+      add(addEdgeLabels(field, colorMap));
+    }
+
+    if (showFaceIndices)
+    {
+      add(addFaceLabels(field, colorMap));
+    }
+
+    if (showCellIndices)
+    {
+      add(addCellLabels(field, colorMap));
     }
 
     return finalize();
@@ -1132,6 +1162,104 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
 
   obj->dataObject = poly;
 #endif
+
+  return obj;
+}
+
+VtkGeometryObjectHandle VtkGeometryBuilder::addDataValues(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = makeObject(field);
+  obj->type = GeometryType::TEXT_LABELS;
+
+  auto facade = field->mesh()->getFacade();
+  auto vfield = field->vfield();
+
+  for (const auto& node : facade->nodes())
+  {
+    double value = 0.0;
+    if (vfield->num_values() > 0)
+    {
+      vfield->get_value(value, node.index());
+    }
+
+    Point p = node.point();
+
+    obj->textLabels.push_back({p, std::to_string(value)});
+  }
+
+  return obj;
+}
+
+VtkGeometryObjectHandle VtkGeometryBuilder::addNodeLabels(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = makeObject(field);
+  obj->type = GeometryType::NODE_LABELS;
+
+  auto vmesh = field->vmesh();
+
+  for (VMesh::Node::index_type i = 0; i < vmesh->num_nodes(); ++i)
+  {
+    Point p;
+    vmesh->get_center(p, i);
+
+    obj->textLabels.push_back({p, std::to_string(i)});
+  }
+
+  return obj;
+}
+
+VtkGeometryObjectHandle VtkGeometryBuilder::addEdgeLabels(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = makeObject(field);
+  obj->type = GeometryType::EDGE_LABELS;
+
+  auto vmesh = field->vmesh();
+  vmesh->synchronize(Mesh::EDGES_E);
+
+  for (VMesh::Edge::index_type i = 0; i < vmesh->num_edges(); ++i)
+  {
+    Point p;
+    vmesh->get_center(p, i);
+
+    obj->textLabels.push_back({p, std::to_string(i)});
+  }
+
+  return obj;
+}
+
+VtkGeometryObjectHandle VtkGeometryBuilder::addFaceLabels(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = makeObject(field);
+  obj->type = GeometryType::FACE_LABELS;
+
+  auto vmesh = field->vmesh();
+  vmesh->synchronize(Mesh::FACES_E);
+
+  for (VMesh::Face::index_type i = 0; i < vmesh->num_faces(); ++i)
+  {
+    Point p;
+    vmesh->get_center(p, i);
+
+    obj->textLabels.push_back({p, std::to_string(i)});
+  }
+
+  return obj;
+}
+
+VtkGeometryObjectHandle VtkGeometryBuilder::addCellLabels(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = makeObject(field);
+  obj->type = GeometryType::CELL_LABELS;
+
+  auto vmesh = field->vmesh();
+
+  for (VMesh::Elem::index_type i = 0; i < vmesh->num_elems(); ++i)
+  {
+    Point p;
+    vmesh->get_center(p, i);
+
+    obj->textLabels.push_back({p, std::to_string(i)});
+  }
 
   return obj;
 }

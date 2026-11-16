@@ -32,7 +32,6 @@
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Core/Datatypes/Feedback.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 

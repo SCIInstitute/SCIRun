@@ -55,6 +55,11 @@ ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowEdges);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowFaces);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowAllFaces);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowVolume);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowDataValues);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowNodeIndices);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowEdgeIndices);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowFaceIndices);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowCellIndices);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ModuleID);
 
 static uint32_t getNewVersionNumber()
