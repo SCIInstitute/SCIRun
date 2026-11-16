@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ReadField:0</first>
@@ -1113,14 +1113,54 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>CalculateFieldData:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CalculateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>double</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = X + Y + Z;</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ReadField:0</moduleId1_>
+				<moduleId1_>CalculateFieldData:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>Field</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
@@ -1154,9 +1194,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadField:0</moduleId1_>
+				<moduleId1_>CalculateFieldData:0</moduleId1_>
 				<port1_>
-					<name>Field</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>RescaleColorMap:0</moduleId2_>
@@ -1177,10 +1217,22 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ReadField:0</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CalculateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>5</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ReadField:0</first>
@@ -1217,6 +1269,13 @@
 				<second>1.00000000000000000e+02</second>
 			</second>
 		</item>
+		<item>
+			<first>CalculateFieldData:0</first>
+			<second>
+				<first>1.50000000000000000e+02</first>
+				<second>6.00000000000000000e+01</second>
+			</second>
+		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>0</count>
@@ -1227,7 +1286,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>5</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>ReadField:0</first>
@@ -1247,6 +1306,10 @@
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:0</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>
