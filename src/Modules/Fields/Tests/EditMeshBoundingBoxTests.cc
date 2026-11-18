@@ -36,6 +36,7 @@ using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Dataflow::Networks;
@@ -47,7 +48,7 @@ protected:
   {
     auto module = makeModule("EditMeshBoundingBox");
     stubPortNWithThisData(module, 0, CreateEmptyLatVol());
-    module->get_state()->setTransientValue(EditMeshBoundingBox::ResetToInput, true);
+    module->get_state()->setTransientValue(Parameters::ResetToInput, true);
     module->execute();
     return module;
   }
@@ -64,9 +65,9 @@ protected:
   Vector outputSize(ModuleHandle module)
   {
     auto state = module->get_state();
-    return Vector(state->getValue(EditMeshBoundingBox::OutputSizeX).toDouble(),
-                  state->getValue(EditMeshBoundingBox::OutputSizeY).toDouble(),
-                  state->getValue(EditMeshBoundingBox::OutputSizeZ).toDouble());
+    return Vector(state->getValue(Parameters::OutputSizeX).toDouble(),
+                  state->getValue(Parameters::OutputSizeY).toDouble(),
+                  state->getValue(Parameters::OutputSizeZ).toDouble());
   }
 
   Transform uniformScale(double factor)
@@ -116,12 +117,12 @@ TEST_F(EditMeshBoundingBoxModuleTest, SavedSizeSurvivesReload)
   auto reloaded = makeModule("EditMeshBoundingBox");
   stubPortNWithThisData(reloaded, 0, CreateEmptyLatVol());
   auto state = reloaded->get_state();
-  for (const auto& name : {EditMeshBoundingBox::RotationTransformMatrix, EditMeshBoundingBox::TranslationPoint,
-                           EditMeshBoundingBox::InverseFieldTransformMatrix, EditMeshBoundingBox::DataSaved})
+  for (const auto& name : {Parameters::RotationTransformMatrix, Parameters::TranslationPoint,
+                           Parameters::InverseFieldTransformMatrix, Parameters::DataSaved})
     state->setValue(name, saved->get_state()->getValue(name).value());
   Transform savedScale;
   savedScale.pre_scale(Vector(2, 3, 4));
-  state->setValue(EditMeshBoundingBox::ScaleTransformMatrix, savedScale.get_string());
+  state->setValue(Parameters::ScaleTransformMatrix, savedScale.get_string());
   reloaded->execute();
 
   const auto size = outputSize(reloaded);
