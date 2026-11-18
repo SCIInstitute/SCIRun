@@ -26,11 +26,12 @@
 */
 
 
-#ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
-#define MODULES_LEGACY_FIELDS_GENERATEELECTRODE_H
+#ifndef MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMWIDGET_H
+#define MODULES_LEGACY_FIELDS_GENERATEELECTRODEFROMWIDGET_H
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
+//#include <Core/GeometryPrimitives/Point.h>
 #include <Modules/Legacy/Fields/share.h>
 
 
@@ -43,18 +44,22 @@ namespace SCIRun
       namespace Fields
       {
 
-        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
-        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeLength);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeThickness);
         ALGORITHM_PARAMETER_DECL(ElectrodeWidth);
-        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
-        ALGORITHM_PARAMETER_DECL(ElectrodeType);
-        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
+//        ALGORITHM_PARAMETER_DECL(NumberOfControlPoints);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeType);
+//        ALGORITHM_PARAMETER_DECL(ElectrodeResolution);
         ALGORITHM_PARAMETER_DECL(ElectrodeProjection);
         ALGORITHM_PARAMETER_DECL(MoveAll);
         ALGORITHM_PARAMETER_DECL(UseFieldNodes);
-        ALGORITHM_PARAMETER_DECL(ProbeColor);
-        ALGORITHM_PARAMETER_DECL(ProbeLabel);
-        ALGORITHM_PARAMETER_DECL(ProbeSize);
+//        ALGORITHM_PARAMETER_DECL(ProbeColor);
+//        ALGORITHM_PARAMETER_DECL(ProbeLabel);
+//        ALGORITHM_PARAMETER_DECL(ProbeSize);
+      
+      ALGORITHM_PARAMETER_DECL(Reset);
+//      ALGORITHM_PARAMETER_DECL(PointPositions);
+      ALGORITHM_PARAMETER_DECL(DipoleDirection);
       
       }
     }
@@ -66,30 +71,36 @@ namespace SCIRun
     namespace Fields
     {
       
-      class GenerateElectrodeImpl;
+      class GenerateElectrodeFromWidgetImpl;
 
-      class SCISHARE GenerateElectrode : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE GenerateElectrodeFromWidget : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
-        public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
+        public Has2OutputPorts<GeometryPortTag, FieldPortTag>
+//        public Has3OutputPorts<FieldPortTag, GeometryPortTag, FieldPortTag>
       {
       public:
-        GenerateElectrode();
+        GenerateElectrodeFromWidget();
         void execute() override;
         void setStateDefaults() override;
         
-        static const Core::Algorithms::AlgorithmParameterName PointPositions;
-        static const Core::Algorithms::AlgorithmParameterName DipoleDirection;
-        static const Core::Algorithms::AlgorithmParameterName Reset;
+//        static const Core::Algorithms::AlgorithmParameterName PointPositions;
+//        static const Core::Algorithms::AlgorithmParameterName DipoleDirection;
+//        static const Core::Algorithms::AlgorithmParameterName Reset;
+//        static const Core::Algorithms::AlgorithmParameterName MoveAll;
 
         INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, ElectrodeMesh, Field);
-        OUTPUT_PORT(1, ElectrodeWidget, GeometryObject);
-        OUTPUT_PORT(2, ControlPoints, Field);
+//        OUTPUT_PORT(0, ElectrodeMesh, Field);
+        OUTPUT_PORT(0, ElectrodeWidget, GeometryObject);
+        OUTPUT_PORT(1, ControlPoints, Field);
           
-        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUIAndAlgorithm);
+        MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI);
       private:
-        SharedPointer<class GenerateElectrodeImpl> impl_;
+        SharedPointer<class GenerateElectrodeFromWidgetImpl> impl_;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);
+//        void GenerateWidgets(std::vector<Point>& points);
+        std::vector<Core::Geometry::Point> defaultPoints();
+
 
       };
     }
