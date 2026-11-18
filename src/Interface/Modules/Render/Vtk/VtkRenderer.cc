@@ -1222,10 +1222,33 @@ void VtkRenderer::renderTextLabels(const VtkGeometryObjectHandle& geo)
 
     renderer_->AddActor(actor);
 
-    // optional if actors_ stores vtkProp
-    textActors_.push_back(actor);
+    //textActors_.push_back(actor);
   }
 }
+//void VtkRenderer::renderTextLabels(const VtkGeometryObjectHandle& geo)
+//{
+//  for (const auto& label : geo->textLabels)
+//  {
+//    double world[4] = {label.position.x(), label.position.y(), label.position.z(), 1.0};
+//
+//    renderer_->SetWorldPoint(world);
+//    renderer_->WorldToDisplay();
+//
+//    double display[3];
+//    renderer_->GetDisplayPoint(display);
+//
+//    auto actor = vtkSmartPointer<vtkTextActor>::New();
+//
+//    actor->SetInput(label.text.c_str());
+//    actor->SetPosition(display[0], display[1]);
+//
+//    auto prop = actor->GetTextProperty();
+//    prop->SetFontSize(static_cast<int>(geo->textStyle.size));
+//    prop->SetColor(geo->textStyle.color[0], geo->textStyle.color[1], geo->textStyle.color[2]);
+//
+//    renderer_->AddActor2D(actor);
+//  }
+//}
 
 void VtkRenderer::applyMaterial(vtkActor* actor, const VtkGeometryObject::Material& mat)
 {
