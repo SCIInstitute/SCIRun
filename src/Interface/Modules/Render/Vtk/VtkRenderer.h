@@ -161,6 +161,8 @@ public:
   void renderSpheres(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
   void renderCylinders(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
   void renderStreamlines(vtkPolyData* poly, const Core::Datatypes::VtkGeometryObjectHandle& geo);
+  // Text renderer
+  void renderTextLabels(const Core::Datatypes::VtkGeometryObjectHandle& geo);
 
   //----------------------------------------
   // Materials / transfer functions
@@ -194,6 +196,7 @@ public:
   vtkSmartPointer<vtkRenderer> renderer_;
   vtkSmartPointer<vtkRenderWindow> renderWindow_;
   std::vector<vtkSmartPointer<vtkActor>> actors_;
+  std::vector<vtkSmartPointer<vtkBillboardTextActor3D>> textActors_;
   vtkSmartPointer<vtkWindowToImageFilter> w2i_;
 
   VtkCameraController cameraController_;

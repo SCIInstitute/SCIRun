@@ -54,19 +54,6 @@ namespace Core
 namespace Datatypes
 {
 
-struct TextLabel
-{
-  Geometry::Point position;
-  std::string text;
-};
-
-struct TextStyle
-{
-  float color[3]{1.f, 1.f, 1.f};
-  double size{12.0};
-  std::string font{"Arial"};
-};
-
 class SCISHARE VtkGeometryObject : public Datatype
 {
 public:
@@ -82,6 +69,19 @@ public:
       std::vector<float> colors;
       std::vector<float> opacities;
       std::vector<float> range;
+    };
+
+    struct TextLabel
+    {
+      Geometry::Point position;
+      std::string text;
+    };
+
+    struct TextStyle
+    {
+      float color[3]{1.f, 1.f, 1.f};
+      double size{12.0};
+      std::string font{"Arial"};
     };
 
     VtkGeometryObject() = default;

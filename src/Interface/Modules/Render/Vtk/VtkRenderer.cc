@@ -26,7 +26,6 @@
 */
 
 #include "VtkRenderer.h"
-#include <Core/Datatypes/VTK/VtkIncludes.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Graphics/Widgets/Widget.h>
 #include <iostream>
@@ -170,6 +169,7 @@ void VtkRenderer::updateGeometries(const std::vector<VtkGeometryObjectHandle>& g
 
   renderer_->RemoveAllViewProps();
   actors_.clear();
+  textActors_.clear();
 
   surfaceMappers_.clear();
   volumeMappers_.clear();
@@ -825,9 +825,29 @@ void VtkRenderer::onCameraModified()
   overlayManager_->cameraChanged(camera);
 }
 
+namespace
+{
+    bool geometryIsText(const VtkGeometryObjectHandle& geo)
+    {
+      return
+          geo->type == GeometryType::TEXT_LABELS ||
+          geo->type == GeometryType::NODE_LABELS ||
+          geo->type == GeometryType::EDGE_LABELS ||
+          geo->type == GeometryType::FACE_LABELS ||
+          geo->type == GeometryType::CELL_LABELS;
+    }
+}
+
 void VtkRenderer::addGeometry(const VtkGeometryObjectHandle& geo)
 {
   if (!geo) return;
+
+  //text only
+  if (geometryIsText(geo))
+  {
+    renderTextLabels(geo);
+    return;
+  }
 
   auto poly = vtkPolyData::SafeDownCast(geo->dataObject);
 
@@ -1181,6 +1201,29 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
   {
     actorWidgets_[actor] = geo->widget;
     actorWidgetGroups_[actor] = geo->widgetGroupId;
+  }
+}
+
+void VtkRenderer::renderTextLabels(const VtkGeometryObjectHandle& geo)
+{
+  for (const auto& label : geo->textLabels)
+  {
+    auto actor = vtkSmartPointer<vtkBillboardTextActor3D>::New();
+
+    actor->SetInput(label.text.c_str());
+
+    actor->SetPosition(label.position.x(), label.position.y(), label.position.z());
+
+    auto prop = actor->GetTextProperty();
+
+    prop->SetFontSize(static_cast<int>(geo->textStyle.size));
+
+    prop->SetColor(geo->textStyle.color[0], geo->textStyle.color[1], geo->textStyle.color[2]);
+
+    renderer_->AddActor(actor);
+
+    // optional if actors_ stores vtkProp
+    textActors_.push_back(actor);
   }
 }
 

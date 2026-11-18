@@ -81,6 +81,11 @@ VtkDataAlgorithm::VtkDataAlgorithm()
   addParameter(Parameters::ShowFaces, true);
   addParameter(Parameters::ShowAllFaces, true);
   addParameter(Parameters::ShowVolume, false);
+  addParameter(Parameters::ShowDataValues, false);
+  addParameter(Parameters::ShowNodeIndices, false);
+  addParameter(Parameters::ShowEdgeIndices, false);
+  addParameter(Parameters::ShowFaceIndices, false);
+  addParameter(Parameters::ShowCellIndices, false);
   addParameter(Parameters::ModuleID, 0);
 }
 

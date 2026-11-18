@@ -69,6 +69,11 @@ void ShowFieldVtk::setStateDefaults()
   setStateBoolFromAlgo(Parameters::ShowAllFaces);
   setStateBoolFromAlgo(Parameters::ShowEdges);
   setStateBoolFromAlgo(Parameters::ShowVolume);
+  setStateBoolFromAlgo(Parameters::ShowDataValues);
+  setStateBoolFromAlgo(Parameters::ShowNodeIndices);
+  setStateBoolFromAlgo(Parameters::ShowEdgeIndices);
+  setStateBoolFromAlgo(Parameters::ShowFaceIndices);
+  setStateBoolFromAlgo(Parameters::ShowCellIndices);
   setStateIntFromAlgo(Parameters::ModuleID);
 }
 
@@ -102,6 +107,11 @@ void ShowFieldVtk::execute()
     setAlgoBoolFromState(Parameters::ShowAllFaces);
     setAlgoBoolFromState(Parameters::ShowEdges);
     setAlgoBoolFromState(Parameters::ShowVolume);
+    setAlgoBoolFromState(Parameters::ShowDataValues);
+    setAlgoBoolFromState(Parameters::ShowNodeIndices);
+    setAlgoBoolFromState(Parameters::ShowEdgeIndices);
+    setAlgoBoolFromState(Parameters::ShowFaceIndices);
+    setAlgoBoolFromState(Parameters::ShowCellIndices);
 
     // this is mostly for user feedback for now.
     auto state = get_state();

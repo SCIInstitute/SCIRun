@@ -60,4 +60,9 @@ ShowFieldVtkDialog::ShowFieldVtkDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(ShowAllFacesCheckBox_, ShowAllFaces);
   addCheckBoxManager(ShowEdgesCheckBox_, ShowEdges);
   addCheckBoxManager(ShowVolumeCheckBox_, ShowVolume);
+  addCheckBoxManager(ShowDataValuesCheckBox_, ShowDataValues);
+  addCheckBoxManager(ShowNodeIndicesCheckBox_, ShowNodeIndices);
+  addCheckBoxManager(ShowEdgeIndicesCheckBox_, ShowEdgeIndices);
+  addCheckBoxManager(ShowFaceIndicesCheckBox_, ShowFaceIndices);
+  addCheckBoxManager(ShowCellIndicesCheckBox_, ShowCellIndices);
 }
