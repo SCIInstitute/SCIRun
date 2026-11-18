@@ -273,7 +273,6 @@ void EditMeshBoundingBox::setOutputCenter()
   widgetTranslation_ = Point(state->getValue(OutputCenterX).toDouble(),
                              state->getValue(OutputCenterY).toDouble(),
                              state->getValue(OutputCenterZ).toDouble());
-
 }
 
 void EditMeshBoundingBox::resetOutputCenter()
