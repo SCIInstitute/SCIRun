@@ -119,29 +119,39 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          # 8, not 7: next Sunday's rebuild lands at about the same hour, so a
+          # late or failed Sunday job would otherwise leave a gap (#2850).
+          NIGHTLY_KEEP_DAYS: 8
         run: |
           set -eu
           # The upload step below only replaces assets whose name matches one
           # we're producing this run, so anything orphaned by a naming change
           # (job-named installers pre-#2565, a retired OS floor, ...) sits on
           # the release forever. A single run only ever builds one platform,
-          # so "same extension, not in this run's output" is a safe stand-in
-          # for "belongs to this platform and is now stale".
+          # so "same extension, not in this run's output" marks this
+          # platform's assets that we didn't rebuild. Weekly-only jobs (#2825)
+          # also look like that, so only delete once they're past the cutoff.
           exts=$(cut -f2 names.tsv | sed -E 's/.*\././' | sort -u)
           current=$(cut -f2 names.tsv)
+          # ISO-8601 UTC sorts as a plain string.
+          cutoff=$(date -u -d "-${NIGHTLY_KEEP_DAYS} days" +%Y-%m-%dT%H:%M:%SZ)
 
-          gh release view nightly --repo "$REPO" --json assets -q '.assets[].name' \
-            > existing-assets.txt 2>/dev/null || : > existing-assets.txt
+          gh api "repos/$REPO/releases/tags/nightly" \
+            --jq '.assets[] | [.name, .updated_at] | @tsv' \
+            > existing-assets.tsv 2>/dev/null || : > existing-assets.tsv
 
-          while IFS= read -r name; do
+          while IFS=$'\t' read -r name updated; do
             [ -n "$name" ] || continue
             ext=".${name##*.}"
-            if printf '%s\n' "$exts" | grep -qxF "$ext" \
-               && ! printf '%s\n' "$current" | grep -qxF "$name"; then
-              echo "Deleting stale asset: $name"
+            printf '%s\n' "$exts" | grep -qxF "$ext" || continue
+            printf '%s\n' "$current" | grep -qxF "$name" && continue
+            if [[ "$updated" < "$cutoff" ]]; then
+              echo "Deleting stale asset: $name (last updated $updated)"
               gh release delete-asset nightly "$name" --repo "$REPO" -y || true
+            else
+              echo "Keeping $name: not rebuilt this run, but updated $updated"
             fi
-          done < existing-assets.txt
+          done < existing-assets.tsv
 
       - name: Compute build timestamp
         if: ${{ inputs.channel == 'nightly' }}
@@ -159,12 +169,17 @@ jobs:
           # commit its changelog was cut to. Absent on the very first run.
           gh release view nightly --repo "$REPO" --json body -q .body \
             > existing-body.md 2>/dev/null || : > existing-body.md
+          # What survived the cleanup, so rows for kept weekly-only installers
+          # are carried into this platform's table instead of dropped.
+          gh release view nightly --repo "$REPO" --json assets -q '.assets[].name' \
+            > release-assets.txt 2>/dev/null || : > release-assets.txt
 
           python3 scripts/ci/nightly_release_notes.py \
             --dist buildinfo \
             --sha "${{ github.sha }}" \
             --existing-body existing-body.md \
             --asset-names names.json \
+            --release-assets release-assets.txt \
             --updated "${{ steps.ts.outputs.date }}" \
             > body.md
 

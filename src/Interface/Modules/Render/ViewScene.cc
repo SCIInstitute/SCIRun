@@ -456,6 +456,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::CameraDistance,[this](){Q_EMIT cameraDistanceChangeForwarder();});
   connect(this, &ViewSceneDialog::cameraDistanceChangeForwarder, this, &ViewSceneDialog::pullCameraDistance);
 
+  Modules::Render::ViewSceneLockManager::get(state_.get())->setWaitForFrameIndefinitely(
+    Application::Instance().parameters()->isRegressionMode());
   lockMutex();
 
   const std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -1441,7 +1443,11 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
   if (glWidgetCanPaint())
     impl_->mGLWidget->requestFrame();
   else
+  {
     unblockExecution();
+    // No requested frame will finish, so nothing else clears widget selection to proceed.
+    impl_->previousWidgetInfo_.setFrameIsFinished(true);
+  }
 
   auto spire = impl_->mSpire.lock();
   if (!spire)
@@ -1864,6 +1870,10 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   const bool widgetMoved = spire->getWidgetTransform() != glm::mat4(1.0f);
   if (impl_->selectedWidget_)
   {
+    // Must precede the feedback: it re-executes the network, and releasing the module
+    // after that would let it read the screenshot before the new frame renders (#2865).
+    unblockExecution();
+
     if (widgetMoved)
     {
       Q_EMIT mousePressSignalForGeometryObjectFeedback(
@@ -1878,7 +1888,6 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
       impl_->previousWidgetInfo_.widgetColorRestored();
     }
 
-    unblockExecution();
     impl_->previousWidgetInfo_.setPreviousWidget(impl_->selectedWidget_);
     impl_->selectedWidget_.reset();
     spire->widgetMouseUp();

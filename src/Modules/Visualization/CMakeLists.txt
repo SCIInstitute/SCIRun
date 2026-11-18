@@ -27,6 +27,7 @@
 
 
 SET(Modules_Visualization_SRCS
+  ConvertGeometryToVtk.cc
   CreateStandardColorMap.cc
   ConvertMatrixToColorMap.cc
   ShowField.cc
@@ -47,6 +48,7 @@ SET(Modules_Visualization_SRCS
 )
 
 SET(Modules_Visualization_HEADERS
+  ConvertGeometryToVtk.h
   CreateStandardColorMap.h
   ConvertMatrixToColorMap.h
   ShowField.h

@@ -51,7 +51,7 @@ namespace Matlab {
 
   class SCISHARE ExportMatricesToMatlab : public Dataflow::Networks::Module,
     public Has2InputPorts<DynamicPortTag<MatrixPortTag>, StringPortTag>,
-    public HasNoOutputPorts
+    public Has1OutputPort<StringPortTag>
   {
   public:
     ExportMatricesToMatlab();
@@ -59,6 +59,7 @@ namespace Matlab {
     void setStateDefaults() override;
     INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
     INPUT_PORT(1, Filename, String);
+    OUTPUT_PORT(0, FilenameOut, String);
     HAS_DYNAMIC_PORTS
 
     MODULE_TRAITS_AND_INFO(ModuleFlags::ModuleHasUI)

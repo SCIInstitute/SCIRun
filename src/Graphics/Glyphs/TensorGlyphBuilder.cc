@@ -255,9 +255,11 @@ TensorGlyphBuilder::TensorGlyphBuilder(const Dyadic3DTensor& t, const Point& cen
   center_ = Point(center);
 }
 
+// Scale eigenvalues rather than entries, so a degenerate tensor (e.g. the
+// bounding box widget's corners) keeps its eigenframe instead of re-solving.
 void TensorGlyphBuilder::scaleTensor(double scale)
 {
-  t_ = t_ * scale;
+  t_.setEigens(t_.getEigenvectors(), t_.getEigenvalues() * scale);
 }
 
 void TensorGlyphBuilder::setShowNormals(bool showNormals)

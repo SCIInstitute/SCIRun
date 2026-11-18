@@ -381,7 +381,12 @@ void ViewScene::execute()
     // The dialog releases this once it has rendered the new geometry. A dialog
     // that cannot paint (unexposed window) used to hold it forever and stall the
     // whole network (#2760); now we go on without the screenshot.
-    std::unique_lock<std::timed_mutex> lock(ViewSceneLockManager::get(get_state().get())->screenShotMutex(), std::chrono::seconds(10));
+    auto locks = ViewSceneLockManager::get(get_state().get());
+    std::unique_lock<std::timed_mutex> lock(locks->screenShotMutex(), std::defer_lock);
+    if (locks->waitForFrameIndefinitely())
+      lock.lock();
+    else
+      lock.try_lock_for(std::chrono::seconds(10));
     if (!lock.owns_lock())
     {
       warning("ViewScene window did not render within 10 s (hidden or minimized?); continuing without screenshot data.");

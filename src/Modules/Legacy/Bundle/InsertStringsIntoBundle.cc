@@ -91,10 +91,9 @@ void InsertStringsIntoBundle::execute()
     for (int i = 0; i < strings.size(); ++i)
     {
       auto str = strings[i];
-      auto stateName = state->getValue(Name((*stringPortNameIterator++)->internalId().toString())).toString();
+      auto name = dynamicPortLabel(*state, (*stringPortNameIterator++)->internalId());
       if (str)
       {
-        auto name = !stateName.empty() ? stateName : ("string" + boost::lexical_cast<std::string>(i));
         auto replaceStr = i < replace.size() ? replace[i].toBool() : true;
         if (replaceStr || !bundle->isString(name))
         {
