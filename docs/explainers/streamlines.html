@@ -96,6 +96,7 @@ table.cmp tbody th{font-weight:600;width:22%}
 .hero .over p{color:#b6c1d6;font-size:18px}
 .hero .over .btn{pointer-events:auto}
 .hero .chapter{color:#8fb2ff}
+.hero .over p.disclaimer{font-size:13px;color:#7b87a1;border-left:2px solid #3a4560;padding-left:10px;margin-top:18px}
 .cap{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:30;width:min(920px,calc(100% - 32px));display:flex;align-items:center;gap:10px;background:rgba(10,14,24,.92);color:#eef2fa;border-radius:14px;padding:10px 12px;box-shadow:0 14px 50px -10px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.08)}
 .cap .txt{flex:1;font-size:15px;line-height:1.4;min-height:2.8em;display:flex;align-items:center}
 .cap button{background:rgba(255,255,255,.08);color:#eef2fa;border:1px solid rgba(255,255,255,.14);border-radius:8px;width:36px;height:36px;display:grid;place-items:center;flex:none}
@@ -126,7 +127,9 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:14px;border-top:1px soli
       <div class="chapter">An explainer · visualizing current density</div>
       <h1>Following the current</h1>
       <p>When the quantity you care about is <b>current density</b>, the clearest picture of current is a streamline. SCIRun and VTK can both draw streamlines, but they store the geometry very differently. This page covers how each one works, where they disagree, and what we should build.</p>
+      <p><b>Purpose:</b> give SCIRun developers and users a shared picture of why streamlines lose their identity on the way to the VTK renderer, and why current through thin tissue layers is hard to trace, so the follow-up work in #2819 can be agreed on before anyone writes code.</p>
       <p style="margin-top:22px"><button class="btn primary" id="heroPlay">▶ Play the tour</button> <span style="color:#7b87a1;font-size:14px;margin-left:8px">or scroll; every scene is interactive</span></p>
+      <p class="disclaimer">AI-generated (drafted with Claude) for conceptual understanding only. The animations are schematic, not SCIRun output. Check the linked source before relying on a detail.</p>
     </div>
   </div>
 </section>
@@ -225,7 +228,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:14px;border-top:1px soli
 <section class="scene" id="recon" data-title="The rebuild">
   <div class="chapter">05 · What the VTK renderer does today</div>
   <h2>Rebuilding lines SCIRun already knew</h2>
-  <p class="lede"><code>VtkGeometryBuilder::addStreamline</code> receives an edge list and needs polylines to give <code>vtkTubeFilter</code>. It recovers them with a graph search. This runs for every <code>CurveMesh</code> that reaches the VTK renderer, not only streamlines.</p>
+  <p class="lede"><code>VtkGeometryBuilder::addStreamline</code> receives an edge list, but VTK draws a line as an ordered polyline cell. It recovers the order with a graph search. This runs for every <code>CurveMesh</code> that reaches the VTK renderer, not only streamlines.</p>
   <div class="grid2">
     <div>
       <div class="stage"><canvas id="reconCanvas"></canvas><span class="tag" id="reconTag"></span></div>
@@ -241,8 +244,9 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:14px;border-top:1px soli
         <li><b>Find connected components.</b><br><span class="mono">boost::connected_components</span></li>
         <li><b>Order each component.</b><br><span class="mono">undirected_dfs + FindPath()</span></li>
         <li><b>One vtkPolyLine per component.</b><br><span class="mono">lines-&gt;InsertNextCell(polyLine)</span></li>
-        <li><b>Tube it.</b><br><span class="mono">vtkTubeFilter · 16 sides</span></li>
+        <li><b>Draw it (renderer).</b><br><span class="mono">VtkRenderer::renderStreamlines · vtkTubeFilter</span></li>
       </ol>
+      <p class="note">The geometry handed to the renderer is plain polylines; the tube is added at draw time. Today <code>VtkRenderer</code> always tubes, but drawing the same polylines as lines needs no filter and should be a display option.</p>
       <p class="note warn" id="reconWarn" style="display:none">At a node with three or more edges, <code>FindPath</code> skips the third edge and everything behind it (the source says <code>// TODO: deal with branching streamlines</code>). <code>GenerateStreamLines</code> never produces branches, but other curve meshes such as wire networks and electrode leads can.</p>
     </div>
   </div>
@@ -321,19 +325,20 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:14px;border-top:1px soli
   <p class="lede">Tracked in <a href="https://github.com/SCIInstitute/SCIRun/issues/2819">SCIInstitute/SCIRun#2819</a>.</p>
   <div class="cards4">
     <div class="card road"><span class="n">01 · SMALL</span><h3>Keep the line id</h3><p>Store a per-node streamline id, or emit the ordering next to the field. <code>VtkGeometryBuilder</code> then builds polylines directly and the Boost graph code goes away.</p><span class="pill">ShowFieldVtk</span><span class="pill">GenerateStreamLines</span></div>
-    <div class="card road"><span class="n">02 · FOR CURRENT</span><h3>J = −σ∇φ network</h3><p>An example network that computes the gradient, weights it by conductivity on a tet mesh, and seeds at the electrodes. Render tubes colored by |J|.</p><span class="pill">example net</span></div>
+    <div class="card road"><span class="n">02 · FOR CURRENT</span><h3>J = −σ∇φ network</h3><p>An example network that computes the gradient, weights it by conductivity on a tet mesh, and seeds at the electrodes. Render as lines or tubes, colored by |J|.</p><span class="pill">example net</span></div>
     <div class="card road"><span class="n">03 · BLOCKER</span><h3>Fix CellWalk</h3><p>Order-0 current through thin layers needs element-by-element tracing. Fix <a href="https://github.com/SCIInstitute/SCIRun/issues/872">#872</a> and add tests (<a href="https://github.com/SCIInstitute/SCIRun/issues/932">#932</a>).</p><span class="pill">#872</span><span class="pill">#932</span></div>
     <div class="card road"><span class="n">04 · DECIDE</span><h3>vtkStreamTracer?</h3><p>Wrap VTK's tracer only if RKF turns out to be the weak point. It brings termination reasons, integration time and vorticity, at the cost of a field-to-<code>vtkUnstructuredGrid</code> conversion.</p><span class="pill">optional</span></div>
   </div>
   <div class="card" style="margin-top:16px">
     <h3>Not proposed</h3>
-    <p>Replacing <code>CurveMesh</code> with a VTK type. The data structure is fine. What it lacks is one integer per node.</p>
+    <p>Replacing <code>CurveMesh</code> with a VTK type. The mesh already stores every point and edge correctly. What streamlines need from it is their identity: which nodes belong to which streamline, in what order, and somewhere to keep per-line data such as the seed and why integration stopped. <code>GenerateStreamLines</code> knows all of that and throws it away. Keeping it (item 01) needs a small addition to the output, not a new data type.</p>
   </div>
   <footer>
     Source references: <a href="https://github.com/SCIInstitute/SCIRun/blob/master/src/Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.cc">GenerateStreamLines.cc</a> ·
     <a href="https://github.com/SCIInstitute/SCIRun/blob/master/src/Core/Algorithms/Visualization/VtkGeometryBuilder.cc">VtkGeometryBuilder.cc</a> ·
     <a href="https://github.com/SCIInstitute/SCIRun/blob/master/src/Interface/Modules/Render/Vtk/VtkRenderer.cc">VtkRenderer.cc</a>.
     Every animation on this page is computed live in your browser. The figures are schematic, not SCIRun output.
+    This page was AI-generated (drafted with Claude) for conceptual understanding.
   </footer>
 </section>
 
@@ -747,7 +752,7 @@ const DEMO = (() => {
     $("#dataPanel").innerHTML = h;
     $("#dataNote").innerHTML = mode === "scirun"
       ? `<b>Why this shape?</b> A <code>CurveMesh</code> is a general 1-D mesh. It can hold a wire network or a branching vessel tree as easily as a streamline, and any Field module can take it as input. The cost is that a sequence has to be rebuilt by walking connectivity.`
-      : `<b>Why this shape?</b> A polyline cell is a sequence. Renderers like <code>vtkTubeFilter</code> need a sequence so they can orient each ring of the tube along the line. Data per line (seed, termination reason) has a cell to attach to.`;
+      : `<b>Why this shape?</b> A polyline cell is a sequence. Anything that draws a line in order needs a sequence, whether a plain line strip or a <code>vtkTubeFilter</code> orienting each ring along it. Data per line (seed, termination reason) has a cell to attach to.`;
   }
   scenes.data = {
     resize() { st.resize(); draw(); },
@@ -810,7 +815,7 @@ const DEMO = (() => {
   function draw() {
     const { nodes, edges, paths, ncomp } = G, col = CELLC();
     st.clear(); electrodes(st);
-    $("#reconTag").textContent = ["vtkPoints + Values", "EdgeVector · " + edges.length + " edges", G.comps.length + " components", "DFS order", G.paths.length + " vtkPolyLine cells", "vtkTubeFilter"][step];
+    $("#reconTag").textContent = ["vtkPoints + Values", "EdgeVector · " + edges.length + " edges", G.comps.length + " components", "DFS order", G.paths.length + " vtkPolyLine cells", "draw: tubes or lines"][step];
     $$("#reconSteps li").forEach((li, i) => { li.classList.toggle("on", i === step); li.classList.toggle("done", i < step); });
     $("#reconWarn").style.display = branch && step >= 3 ? "" : "none";
     if (step <= 2) {
@@ -967,9 +972,9 @@ const TOUR = [
   ["recon", 2600, "…collects every edge into a Boost graph…", () => S.recon.go(1)],
   ["recon", 2800, "…splits the graph into connected components…", () => S.recon.go(2)],
   ["recon", 3200, "…walks each component with a DFS to recover the order…", () => S.recon.go(3)],
-  ["recon", 2800, "…and emits one polyline per component, which then gets tubed.", () => S.recon.go(5)],
+  ["recon", 2800, "…and emits one polyline per component. The renderer draws those, today always as tubes, though plain lines would work from the same data.", () => S.recon.go(5)],
   ["recon", 6500, "When a curve branches, FindPath skips the third edge and drops everything behind it. The source has a TODO for this case.", () => { S.recon.setBranch(true); S.recon.go(3); }],
-  ["compare", 7000, "Verdict: don't switch data types. CurveMesh works with every Field module. What's missing is one integer per node, the line id.", () => S.recon.setBranch(false)],
+  ["compare", 7000, "Verdict: don't switch data types. CurveMesh works with every Field module. What's missing is streamline identity: which nodes form which line, in order. GenerateStreamLines knows it and should keep it.", () => S.recon.setBranch(false)],
   ["tissue", 7500, "For current in tissue, the harder problem is physics. Current bends at tissue boundaries, and through a skull-like layer it crosses almost straight.", () => S.tissue.set({ v: -1.52, n: 1, th: 28 })],
   ["tissue", 7000, "If per-element J is averaged to nodes before tracing, a thin layer gets blended away. Inside the skull the solid lines run sideways, with many times the true tangential current.", () => S.tissue.set({ n: 1 })],
   ["tissue", 6000, "Refining the mesh helps but never fixes it. The exact method for order-0 J is CellWalk, and that's the unstable one, #872.", () => S.tissue.set({ n: 6 })],
