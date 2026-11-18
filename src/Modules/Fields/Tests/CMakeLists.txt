@@ -50,6 +50,7 @@ SET(Modules_Fields_Tests_SRCS
   RemoveUnusedNodesTests.cc
   CleanupTetMeshTests.cc
   GenerateSinglePointProbeFromFieldTests.cc
+  EditMeshBoundingBoxTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

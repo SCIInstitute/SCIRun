@@ -24,6 +24,10 @@ name: nightly-slack
 #    run's `test-results-*` artifacts. A green job with failing tests is flagged
 #    yellow rather than green.
 #
+#  * regression-tests also gets a coverage line from mac-coverage's
+#    `coverage-report-*` artifact, with the delta against the previous nightly
+#    and the directories with the most uncovered lines.
+#
 #  * Filtered to `event == 'schedule'`: only the nightly cron pings Slack. Master
 #    pushes and workflow_dispatch runs do not (pushes still get GitHub's default
 #    failure email). To also notify on-demand runs, add
@@ -81,6 +85,31 @@ jobs:
           echo "Downloaded artifacts:"
           ls -R artifacts 2>/dev/null || echo "(none)"
 
+      - name: Download coverage reports (best effort)
+        if: ${{ github.event.workflow_run.name == 'regression-tests' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WF_ID: ${{ github.event.workflow_run.id }}
+          WF_WORKFLOW_ID: ${{ github.event.workflow_run.workflow_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh run download "$WF_ID" --repo "$REPO" \
+            --dir coverage --pattern 'coverage-report-*' || true
+
+          # Previous nightly, for the trend. Older runs only (a re-run of an
+          # old nightly must not compare against a newer one); first one that
+          # still has its artifact wins.
+          for prev in $(gh api \
+              "repos/${REPO}/actions/workflows/${WF_WORKFLOW_ID}/runs?event=schedule&branch=master&status=completed&per_page=10" \
+              -q ".workflow_runs[] | select(.id < ${WF_ID}) | .id" 2>/dev/null); do
+            if gh run download "$prev" --repo "$REPO" \
+                --dir coverage-prev --pattern 'coverage-report-*'; then
+              echo "Trend baseline: run $prev"
+              break
+            fi
+          done
+          find coverage coverage-prev -name summary.txt 2>/dev/null || true
+
       - name: Build Slack payload
         env:
           GH_TOKEN: ${{ github.token }}
@@ -125,7 +154,18 @@ jobs:
           fi
           export WF_INSTALLER_URL
 
-          python3 scripts/ci/slack_test_summary.py artifacts > payload.json
+          WF_COVERAGE_URL=""
+          if [ "$WF_NAME" = "regression-tests" ]; then
+            cov_id="$(gh api "repos/${REPO}/actions/runs/${WF_ID}/artifacts" \
+              -q '[.artifacts[] | select(.name | startswith("coverage-report-")) | .id][0] // empty' \
+              2>/dev/null || true)"
+            if [ -n "$cov_id" ]; then
+              WF_COVERAGE_URL="https://github.com/${REPO}/actions/runs/${WF_ID}/artifacts/${cov_id}"
+            fi
+          fi
+          export WF_COVERAGE_URL
+
+          python3 scripts/ci/slack_test_summary.py artifacts coverage coverage-prev > payload.json
           echo "Payload:"
           cat payload.json
 

@@ -40,6 +40,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/VTK/VtkGeometry.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/Widget.h>
 
 #include <algorithm>
 #include <atomic>
@@ -59,19 +60,37 @@ const AlgorithmOutputName ConvertGeometryToVtkAlgo::VtkGeometry("VtkGeometry");
 #ifdef WITH_VTK
 namespace
 {
-  // Composites only expose their children through addToList, one level at a time.
-  void flatten(const GeometryBaseHandle& geom, std::vector<GeometryHandle>& out)
+  struct FlattenedGeometry
   {
+    GeometryHandle geom;
+    std::string groupId;
+  };
+  
+  using FlattenedGeometryList = std::vector<FlattenedGeometry>;
+  // Composites only expose their children through addToList, one level at a time.
+  void flatten(const GeometryBaseHandle& geom, FlattenedGeometryList& out, const std::string& currentGroup)
+  {
+    std::string group = currentGroup;
+
+    if (auto composite = std::dynamic_pointer_cast<CompositeGeometryObject>(geom))
+    {
+      group = composite->uniqueID();
+    }
+
     GeomList children;
     geom->addToList(geom, children);
+
     if (children.size() == 1 && *children.begin() == geom)
     {
       if (auto spire = std::dynamic_pointer_cast<GeometryObjectSpire>(geom))
-        out.push_back(spire);
+      {
+        out.push_back({spire, group});
+      }
       return;
     }
+
     for (const auto& child : children)
-      flatten(child, out);
+      flatten(child, out, group);
   }
 
   struct VertexLayout
@@ -341,7 +360,9 @@ namespace
     }
   }
 
-  VtkGeometryObjectHandle convertPass(const SpireSubPass& pass, std::string& skipReason)
+  VtkGeometryObjectHandle convertPass(
+      const GeometryHandle& leaf,
+      const SpireSubPass& pass, std::string& skipReason)
   {
     const auto layout = layoutOf(pass.vbo);
     if (auto reason = whyUnconvertible(pass, layout))
@@ -353,6 +374,8 @@ namespace
     const auto* colorMap = colorMapTextureOf(pass, layout);
     const bool transparent = isTransparent(pass.renderState);
     auto obj = std::make_shared<VtkGeometryObject>();
+    obj->setObjectName(leaf->uniqueID());
+    obj->widget = std::dynamic_pointer_cast<Graphics::Datatypes::WidgetBase>(leaf);
     obj->material = materialOf(pass, transparent, colorMap != nullptr);
 
     const size_t numVerts = pass.vbo.data->getBufferSize() / layout.stride;
@@ -389,21 +412,22 @@ AlgorithmOutput ConvertGeometryToVtkAlgo::run([[maybe_unused]] const AlgorithmIn
   auto geom = input.get<GeometryObject>(Geometry);
   ENSURE_ALGORITHM_INPUT_NOT_NULL(geom, "Geometry input");
 
-  std::vector<GeometryHandle> leaves;
-  flatten(geom, leaves);
+  FlattenedGeometryList leaves;
+  flatten(geom, leaves, geom->uniqueID());
 
   static std::atomic<uint64_t> versionNumber{0};
   std::vector<VtkGeometryObjectHandle> converted;
   size_t skipped = 0;
   for (const auto& leaf : leaves)
   {
-    for (const auto& pass : leaf->passes())
+    for (const auto& pass : leaf.geom->passes())
     {
       std::string reason;
-      auto obj = convertPass(pass, reason);
+      auto obj = convertPass(leaf.geom, pass, reason);
       if (obj)
       {
         obj->version = ++versionNumber;
+        obj->widgetGroupId = leaf.groupId;
         converted.push_back(obj);
       }
       else
