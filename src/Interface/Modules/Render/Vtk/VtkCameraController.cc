@@ -126,9 +126,42 @@ namespace Render {
   {
     if (!camera_) return;
 
-    double factor = std::pow(1.01, amount * zoomSpeed_);
+    if (camera_->GetParallelProjection())
+    {
+      double scale = camera_->GetParallelScale();
+      scale /= std::pow(1.0 + zoomSpeed_, amount);
+      camera_->SetParallelScale(scale);
+      camera_->Modified();
+      return;
+    }
 
-    camera_->Dolly(factor);
+    double factor = std::pow(1.0 + zoomSpeed_, amount);
+    double distance = camera_->GetDistance();
+    const double minDistance = 1.0; // Minimum distance to maintain to focal point
+
+    // If zooming in would put us too close to the focal point, shift the focal point forward
+    if (factor > 1.0 && (distance / factor) < minDistance)
+    {
+      double pos[3], fp[3], dop[3];
+      camera_->GetPosition(pos);
+      camera_->GetFocalPoint(fp);
+      camera_->GetDirectionOfProjection(dop);
+
+      // Move camera forward by a step proportional to minDistance
+      double step = minDistance * (factor - 1.0);
+      for (int i = 0; i < 3; ++i)
+      {
+        pos[i] += dop[i] * step;
+        fp[i] = pos[i] + dop[i] * minDistance;
+      }
+
+      camera_->SetPosition(pos);
+      camera_->SetFocalPoint(fp);
+    }
+    else
+    {
+      camera_->Dolly(factor);
+    }
 
     camera_->Modified();
   }

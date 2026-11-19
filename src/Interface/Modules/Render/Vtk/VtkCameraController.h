@@ -80,7 +80,7 @@ class VtkCameraController
 
         float rotationSpeed_{0.5f};
         float panSpeed_{0.01f};
-        float zoomSpeed_{0.15f};
+        float zoomSpeed_{0.001f};
       };
 
     }
