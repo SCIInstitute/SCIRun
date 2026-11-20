@@ -34,8 +34,10 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(CalculateGradients, ChangeFieldData, SCIRun)
+
 CalculateGradients::CalculateGradients()
-  : Module(ModuleLookupInfo("CalculateGradients", "ChangeFieldData", "SCIRun"), false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(ScalarField);
   INITIALIZE_PORT(VectorField);

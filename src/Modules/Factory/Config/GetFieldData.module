@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetFieldData",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/GetFieldData.h"
+  },
+  "algorithm": {
+    "name": "GetFieldDataAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

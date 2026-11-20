@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertQuadSurfToTriSurf",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h"
+  },
+  "algorithm": {
+    "name": "ConvertMeshToTriSurfMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

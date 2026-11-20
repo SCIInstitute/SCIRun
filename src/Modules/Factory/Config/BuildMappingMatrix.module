@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildMappingMatrix",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/BuildMappingMatrix.h"
+  },
+  "algorithm": {
+    "name": "BuildMappingMatrixAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h"
+  },
+  "UI": {
+    "name": "BuildMappingMatrixDialog",
+    "header": "Interface/Modules/Fields/BuildMappingMatrixDialog.h"
+  }
+}

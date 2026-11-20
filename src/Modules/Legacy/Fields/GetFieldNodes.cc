@@ -36,8 +36,10 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(GetFieldNodes, ChangeMesh, SCIRun)
+
 GetFieldNodes::GetFieldNodes()
-  : Module(ModuleLookupInfo("GetFieldNodes", "ChangeMesh", "SCIRun"), false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(MatrixNodes);

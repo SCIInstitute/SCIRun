@@ -36,7 +36,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun;
 
-AppendMatrix::AppendMatrix() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun"))
+MODULE_INFO_DEF(AppendMatrix, Math, SCIRun)
+
+AppendMatrix::AppendMatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(FirstMatrix);
   INITIALIZE_PORT(SecondMatrix);

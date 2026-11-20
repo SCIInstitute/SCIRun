@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "MapFieldDataOntoElements",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/MapFieldDataOntoElems.h"
+  },
+  "algorithm": {
+    "name": "MapFieldDataOntoElemsAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h"
+  },
+  "UI": {
+    "name": "MapFieldDataOntoElemsDialog",
+    "header": "Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h"
+  }
+}

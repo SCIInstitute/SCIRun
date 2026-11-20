@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SelectSubMatrix",
+    "namespace": "Math",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Math/SelectSubMatrix.h"
+  },
+  "algorithm": {
+    "name": "SelectSubMatrixAlgorithm",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/SelectSubMatrix.h"
+  },
+  "UI": {
+    "name": "SelectSubMatrixDialog",
+    "header": "Interface/Modules/Math/SelectSubMatrixDialog.h"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SetFieldDataToConstantValue",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/SetFieldDataToConstantValue.h"
+  },
+  "algorithm": {
+    "name": "SetFieldDataToConstantValueAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h"
+  },
+  "UI": {
+    "name": "SetFieldDataToConstantValueDialog",
+    "header": "Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h"
+  }
+}

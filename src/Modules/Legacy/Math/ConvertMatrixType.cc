@@ -36,7 +36,9 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-ConvertMatrixType::ConvertMatrixType() : Module(ModuleLookupInfo("ConvertMatrixType", "Math", "SCIRun"))
+MODULE_INFO_DEF(ConvertMatrixType, Math, SCIRun)
+
+ConvertMatrixType::ConvertMatrixType() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(ResultMatrix);
