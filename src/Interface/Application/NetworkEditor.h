@@ -390,7 +390,7 @@ namespace Gui {
     void defaultNotePositionChanged(NotePosition position);
     void defaultNoteSizeChanged(int size);
     void snapToModules();
-    void highlightPorts(int state);
+    void highlightPorts(bool state);
     void zoomLevelChanged(int zoom);
     void disableWidgetDisabling();
     void reenableWidgetDisabling();
