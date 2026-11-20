@@ -28,6 +28,7 @@
 
 #include <Modules/Visualization/TextBuilder.h>
 
+#include <algorithm>
 #include <sstream>
 #include <vector>
 
@@ -74,6 +75,7 @@ void TextBuilder::initFreeType(const std::string &libName, size_t size)
   if (!ftInit_) return;
 
   libName_ = libName;
+  atlas_.reset();
   auto fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
 
   err = FT_New_Face(ftLib_, fontPath.c_str(), 0, &ftFace_);
@@ -106,6 +108,7 @@ void TextBuilder::loadNewFace(const std::string &libName, size_t size)
   }
 
   libName_ = libName;
+  atlas_.reset();
   auto fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
 
   err = FT_New_Face(ftLib_, fontPath.c_str(), 0, &ftFace_);
@@ -125,6 +128,7 @@ void TextBuilder::setFaceSize(size_t size)
     return;
 
   ftSize_ = size;
+  atlas_.reset();
   FT_Set_Pixel_Sizes(ftFace_, 0, size);
 }
 
@@ -134,12 +138,116 @@ void TextBuilder::setFSStrings(const std::string &root, const std::string &separ
   mFSSeparator = separator;
 }
 
-std::string TextBuilder::getUniqueFontString(char p, double x,
-  double y, double z, double w, double h) const
+const TextBuilder::Atlas& TextBuilder::atlas() const
 {
-  std::stringstream ss;
-  ss << libName_ << p << x << y << z << w << h;
-  return ss.str();
+  if (atlas_)
+    return *atlas_;
+
+  // Printable ASCII on a 16-column grid. The 1-pixel gutter keeps linear
+  // filtering from bleeding between neighbours.
+  static const int first = 32, last = 126, columns = 16, pad = 1;
+  auto atlas = std::make_shared<Atlas>();
+
+  int cellW = 0, cellH = 0;
+  for (int c = first; c <= last; ++c)
+  {
+    if (FT_Load_Char(ftFace_, c, FT_LOAD_RENDER))
+      continue;
+    cellW = std::max(cellW, static_cast<int>(ftFace_->glyph->bitmap.width));
+    cellH = std::max(cellH, static_cast<int>(ftFace_->glyph->bitmap.rows));
+  }
+  cellW += 2 * pad;
+  cellH += 2 * pad;
+  const int rowCount = (last - first) / columns + 1;
+  const int width = columns * cellW, height = rowCount * cellH;
+
+  auto& tex = atlas->texture;
+  tex.name = "atlas" + libName_ + std::to_string(ftSize_);
+  tex.width = width;
+  tex.height = height;
+  tex.bitmap.assign(static_cast<size_t>(width) * height, 0);
+
+  for (int c = first; c <= last; ++c)
+  {
+    if (FT_Load_Char(ftFace_, c, FT_LOAD_RENDER))
+      continue;
+    const auto g = ftFace_->glyph;
+    const auto& bm = g->bitmap;
+    const int x = ((c - first) % columns) * cellW + pad;
+    const int y = ((c - first) / columns) * cellH + pad;
+    for (unsigned int row = 0; row < bm.rows; ++row)
+      std::copy_n(bm.buffer + row * bm.pitch, bm.width, tex.bitmap.begin() + (y + row) * width + x);
+
+    Glyph glyph;
+    glyph.u0 = static_cast<float>(x) / width;
+    glyph.v0 = static_cast<float>(y) / height;
+    glyph.u1 = static_cast<float>(x + bm.width) / width;
+    glyph.v1 = static_cast<float>(y + bm.rows) / height;
+    glyph.width = bm.width;
+    glyph.rows = bm.rows;
+    glyph.left = g->bitmap_left;
+    glyph.top = g->bitmap_top;
+    glyph.advance = g->advance.x >> 6;
+    atlas->glyphs[static_cast<char>(c)] = glyph;
+  }
+
+  atlas_ = atlas;
+  return *atlas_;
+}
+
+std::vector<TextBuilder::Quad> TextBuilder::layout(const std::string& oneline, const Vector& shiftPxlSpc) const
+{
+  const auto& glyphs = atlas().glyphs;
+  std::vector<Quad> quads;
+  quads.reserve(oneline.size());
+  auto penX = static_cast<float>(shiftPxlSpc.x());
+  const auto penY = static_cast<float>(shiftPxlSpc.y());
+  for (const auto c : oneline)
+  {
+    const auto it = glyphs.find(c);
+    if (it == glyphs.end())
+      continue;
+    const auto& g = it->second;
+    if (g.width > 0 && g.rows > 0)
+    {
+      const float x = penX + g.left, top = penY + g.top;
+      quads.push_back({ x, top, x + g.width, top - g.rows, g.u0, g.v0, g.u1, g.v1 });
+    }
+    penX += g.advance;
+  }
+  return quads;
+}
+
+namespace
+{
+  void writeQuadIndices(spire::VarBuffer& ibo, uint32_t firstVertex)
+  {
+    for (const uint32_t i : { 0, 1, 2, 2, 1, 3 })
+      ibo.write(firstVertex + i);
+  }
+
+  void addTextPass(GeometryObjectSpire& geom, const std::string& name, const std::string& shader,
+    const std::vector<SpireVBO::AttributeData>& attribs,
+    std::shared_ptr<spire::VarBuffer> vboBuffer, std::shared_ptr<spire::VarBuffer> iboBuffer,
+    size_t numVertices, const BBox& bbox,
+    const std::vector<SpireSubPass::Uniform>& uniforms, const SpireText& texture)
+  {
+    const auto vboName = name + "VBO", iboName = name + "IBO";
+    SpireVBO geomVBO(vboName, attribs, vboBuffer, static_cast<int64_t>(numVertices), bbox, true);
+    geom.vbos().push_back(geomVBO);
+    SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBuffer);
+    geom.ibos().push_back(geomIBO);
+
+    RenderState renState;
+    renState.set(RenderState::ActionFlags::USE_COLORMAP, false);
+    renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
+    renState.set(RenderState::ActionFlags::IS_TEXT, true);
+
+    SpireSubPass pass(name + "Pass", vboName, iboName, shader,
+      ColorScheme::COLOR_MAP, renState, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, texture);
+    for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+    geom.passes().push_back(pass);
+  }
 }
 
 void TextBuilder::printString(const std::string& oneline,
@@ -149,114 +257,86 @@ void TextBuilder::printString(const std::string& oneline,
   if (!ftValid_)
     return;
 
-  std::vector<Vector> points;
-  std::vector<uint32_t> indices;
-  std::vector<Vector> txt_coords;
-  auto pos = shiftPxlSpc;
+  const auto quads = layout(oneline, shiftPxlSpc);
+  if (quads.empty())
+    return;
 
-  for (const auto& p : oneline)
+  const auto z = static_cast<float>(shiftPxlSpc.z());
+  auto vbo = std::make_shared<spire::VarBuffer>(quads.size() * 4 * 5 * sizeof(float));
+  auto ibo = std::make_shared<spire::VarBuffer>(quads.size() * 6 * sizeof(uint32_t));
+  uint32_t vertex = 0;
+  for (const auto& q : quads)
   {
-    points.clear();
-    indices.clear();
-    txt_coords.clear();
-
-    if (FT_Load_Char(ftFace_, p, FT_LOAD_RENDER))
-      continue;
-    auto g = ftFace_->glyph;
-
-    double x = pos.x() + g->bitmap_left;
-    double y = -pos.y() - g->bitmap_top;
-    double z = pos.z();
-    double w = g->bitmap.width;
-    double h = g->bitmap.rows;
-
-    //triangle 1
-    points.push_back(Vector(x, -y, z));
-    points.push_back(Vector(x + w, -y, z));
-    points.push_back(Vector(x, -y - h, z));
-    //triangle 2
-    points.push_back(Vector(x, -y - h, z));
-    points.push_back(Vector(x + w, -y, z));
-    points.push_back(Vector(x + w, -y - h, z));
-    //triangle 1
-    txt_coords.push_back(Vector(0.0, 0.0, 0.0));
-    txt_coords.push_back(Vector(1.0, 0.0, 0.0));
-    txt_coords.push_back(Vector(0.0, 1.0, 0.0));
-    //triangle 2
-    txt_coords.push_back(Vector(0.0, 1.0, 0.0));
-    txt_coords.push_back(Vector(1.0, 0.0, 0.0));
-    txt_coords.push_back(Vector(1.0, 1.0, 0.0));
-    //triangle 1
-    indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(2);
-    //triangle 2
-    indices.push_back(3);
-    indices.push_back(4);
-    indices.push_back(5);
-
-    pos += Vector(g->advance.x >> 6, g->advance.y >> 6, 0.0);
-
-    int32_t numVBOElements = static_cast<uint32_t>(points.size());
-
-    // IBO/VBOs and sizes
-    uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
-    uint32_t vboSize = sizeof(float) * 5 * static_cast<uint32_t>(points.size());
-
-    auto iboBufferSPtr2 = std::make_shared<spire::VarBuffer>(vboSize);
-    auto vboBufferSPtr2 = std::make_shared<spire::VarBuffer>(iboSize);
-
-    spire::VarBuffer* iboBuffer2 = iboBufferSPtr2.get();
-    spire::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();
-
-    for (auto a : indices) iboBuffer2->write(a);
-    for (size_t i = 0; i < points.size(); i++) {
-      vboBuffer2->write(static_cast<float>(points[i].x()));
-      vboBuffer2->write(static_cast<float>(points[i].y()));
-      vboBuffer2->write(static_cast<float>(points[i].z()));
-      vboBuffer2->write(static_cast<float>(txt_coords[i].x()));
-      vboBuffer2->write(static_cast<float>(txt_coords[i].y()));
-    }
-
-    //add the actual points and colors
-    auto uniqueFontStr = getUniqueFontString(p, x, y, z, w, h);
-    auto uniqueNodeID = id + "colorMapLegendTextFont" + uniqueFontStr;
-    auto vboName = uniqueNodeID + "VBO";
-    auto iboName = uniqueNodeID + "IBO";
-    auto passName = uniqueNodeID + "Pass";
-
-    // Construct VBO.
-    std::string shader = "Shaders/TextBuilder";
-    std::vector<SpireVBO::AttributeData> attribs;
-    attribs.emplace_back("aPos", 3 * sizeof(float));
-    attribs.emplace_back("aTexCoord", 2 * sizeof(float));
-    std::vector<SpireSubPass::Uniform> uniforms;
-    uniforms.emplace_back("uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0));
-    uniforms.emplace_back("uColor", color_);
-    auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
-      numVBOElements, BBox(Point{}, Point{}), true);
-
-    geom.vbos().push_back(geomVBO);
-
-    // Construct IBO.
-
-    SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
-    geom.ibos().push_back(geomIBO);
-    RenderState renState;
-    renState.set(RenderState::ActionFlags::USE_COLORMAP, false);
-    renState.set(RenderState::ActionFlags::USE_TRANSPARENCY, false);
-    renState.set(RenderState::ActionFlags::IS_TEXT, true);
-    char c[2] = { p, 0 };
-    SpireText text(c, ftFace_);
-
-    SpireSubPass pass2(passName, vboName, iboName, shader,
-                       ColorScheme::COLOR_MAP, renState, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
-
-    // Add all uniforms generated above to the pass.
-    for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
-
-    geom.passes().push_back(pass2);
+    for (const float v : { q.x0, q.y0, z, q.u0, q.v0,   q.x1, q.y0, z, q.u1, q.v0,
+                           q.x0, q.y1, z, q.u0, q.v1,   q.x1, q.y1, z, q.u1, q.v1 })
+      vbo->write(v);
+    writeQuadIndices(*ibo, vertex);
+    vertex += 4;
   }
+
+  // Callers reuse one id for several strings, so the name carries the rest.
+  std::stringstream name;
+  name << id << "colorMapLegendTextFont" << libName_ << ftSize_ << oneline
+    << startNrmSpc.x() << startNrmSpc.y() << shiftPxlSpc.x() << shiftPxlSpc.y() << shiftPxlSpc.z();
+
+  addTextPass(geom, name.str(), "Shaders/TextBuilder",
+    { { "aPos", 3 * sizeof(float) }, { "aTexCoord", 2 * sizeof(float) } },
+    vbo, ibo, vertex, BBox(Point{}, Point{}),
+    { { "uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0) }, { "uColor", color_ } },
+    atlas().texture);
+}
+
+void TextBuilder::printStringsInWorld(const std::vector<WorldLabel>& labels,
+  const Vector &shiftPxlSpc, bool alwaysVisible,
+  const std::string& id, GeometryObjectSpire& geom) const
+{
+  if (!ftValid_ || labels.empty())
+    return;
+
+  // Anchor, normal and color are per label, so they ride along as attributes.
+  static const size_t floatsPerVertex = 2 + 2 + 3 + 4 + 4;
+  size_t numChars = 0;
+  for (const auto& label : labels)
+    numChars += label.text.size();
+  auto vbo = std::make_shared<spire::VarBuffer>(numChars * 4 * floatsPerVertex * sizeof(float));
+  auto ibo = std::make_shared<spire::VarBuffer>(numChars * 6 * sizeof(uint32_t));
+
+  BBox bbox;
+  uint32_t vertex = 0;
+  for (const auto& label : labels)
+  {
+    const auto& p = label.position;
+    bbox.extend(p);
+    // aNormal.w flags whether there is a normal to cull against.
+    const auto n = label.normal
+      ? glm::vec4(label.normal->x(), label.normal->y(), label.normal->z(), 1.0)
+      : glm::vec4(0.0);
+    for (const auto& q : layout(label.text, shiftPxlSpc))
+    {
+      const float corners[4][4] = { { q.x0, q.y0, q.u0, q.v0 }, { q.x1, q.y0, q.u1, q.v0 },
+                                    { q.x0, q.y1, q.u0, q.v1 }, { q.x1, q.y1, q.u1, q.v1 } };
+      for (const auto& corner : corners)
+      {
+        for (const float v : corner)
+          vbo->write(v);
+        for (const double v : { p.x(), p.y(), p.z() })
+          vbo->write(static_cast<float>(v));
+        for (const float v : { n.x, n.y, n.z, n.w, label.color.r, label.color.g, label.color.b, label.color.a })
+          vbo->write(v);
+      }
+      writeQuadIndices(*ibo, vertex);
+      vertex += 4;
+    }
+  }
+  if (vertex == 0)
+    return;
+
+  addTextPass(geom, id + "worldText" + libName_ + std::to_string(ftSize_), "Shaders/TextBuilderWorld",
+    { { "aPos", 2 * sizeof(float) }, { "aTexCoord", 2 * sizeof(float) }, { "aAnchor", 3 * sizeof(float) },
+      { "aNormal", 4 * sizeof(float) }, { "aColor", 4 * sizeof(float) } },
+    vbo, ibo, vertex, bbox,
+    { { "uAlwaysVisible", alwaysVisible ? 1.0f : 0.0f } },
+    atlas().texture);
 }
 
 std::tuple<double, double> TextBuilder::getStringDims(const std::string& oneline) const
