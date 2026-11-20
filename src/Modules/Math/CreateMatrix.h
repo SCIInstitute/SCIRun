@@ -39,6 +39,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Math {
         ALGORITHM_PARAMETER_DECL(TextEntry);
+        ALGORITHM_PARAMETER_DECL(MatrixTextDelimiter);
       }
     }
   }
