@@ -1003,6 +1003,11 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
 #ifndef __linux__
                     "QCheckBox,QLabel,QRadioButton{background-color:transparent}"
 #endif
+#ifdef _WIN32
+                    // The native style paints tabs light, under the white text set above.
+                    "QTabBar::tab{background-color:rgb(66,66,69);border:1px solid black;padding:3px 8px}"
+                    "QTabBar::tab:selected{background-color:rgb(96,96,100)}"
+#endif
                     "QLineEdit{border:1px solid white}"
                     "QToolBar{"
                     "border:1px solid black;"
