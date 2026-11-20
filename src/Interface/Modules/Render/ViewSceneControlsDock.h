@@ -37,6 +37,7 @@
 #include "Interface/Modules/Render/ui_InputControls.h"
 #include "Interface/Modules/Render/ui_LightControls.h"
 #include "Interface/Modules/Render/ui_Materials.h"
+#include "Interface/Modules/Render/ui_MovieRecord.h"
 #include "Interface/Modules/Render/ui_ObjectSelection.h"
 #include "Interface/Modules/Render/ui_OrientationAxes.h"
 #include "Interface/Modules/Render/ui_ScaleBar.h"
@@ -211,6 +212,18 @@ namespace Gui {
    private:
     void setSliderDefaultPos();
     void setSliderCenterPos();
+  };
+
+  /// Movie recording controls. Start and stop are separate buttons rather than
+  /// SCIRun 4's radio group with a "stop" entry (issue #279).
+  class SCISHARE MovieRecordControls : public ViewSceneControlPopupWidget, public Ui::MovieRecord
+  {
+    Q_OBJECT
+
+   public:
+    explicit MovieRecordControls(ViewSceneDialog* parent);
+    void setRecordingState(bool recording);
+    void setStatus(const QString& text);
   };
 
   struct SCISHARE ScaleBarData
