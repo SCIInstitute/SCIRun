@@ -32,7 +32,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,21 +42,21 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckableButtonManager(noTranslationRadioButton_, EditMeshBoundingBoxModule::NoTranslation);
-  addCheckableButtonManager(xyzTranslationRadioButton_, EditMeshBoundingBoxModule::XYZTranslation);
-  addCheckableButtonManager(rdiTranslationRadioButton_, EditMeshBoundingBoxModule::RDITranslation);
-  addDoubleSpinBoxManager(outputCenterXSpinBox_, EditMeshBoundingBoxModule::OutputCenterX);
-  addDoubleSpinBoxManager(outputCenterYSpinBox_, EditMeshBoundingBoxModule::OutputCenterY);
-  addDoubleSpinBoxManager(outputCenterZSpinBox_, EditMeshBoundingBoxModule::OutputCenterZ);
-  addDoubleSpinBoxManager(outputSizeXSpinBox_, EditMeshBoundingBoxModule::OutputSizeX);
-  addDoubleSpinBoxManager(outputSizeYSpinBox_, EditMeshBoundingBoxModule::OutputSizeY);
-  addDoubleSpinBoxManager(outputSizeZSpinBox_, EditMeshBoundingBoxModule::OutputSizeZ);
-  addDynamicLabelManager(inputCenterXLabel_, EditMeshBoundingBoxModule::InputCenterX);
-  addDynamicLabelManager(inputCenterYLabel_, EditMeshBoundingBoxModule::InputCenterY);
-  addDynamicLabelManager(inputCenterZLabel_, EditMeshBoundingBoxModule::InputCenterZ);
-  addDynamicLabelManager(inputSizeXLabel_, EditMeshBoundingBoxModule::InputSizeX);
-  addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
-  addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
+  addCheckableButtonManager(noTranslationRadioButton_, Parameters::NoTranslation);
+  addCheckableButtonManager(xyzTranslationRadioButton_, Parameters::XYZTranslation);
+  addCheckableButtonManager(rdiTranslationRadioButton_, Parameters::RDITranslation);
+  addDoubleSpinBoxManager(outputCenterXSpinBox_, Parameters::OutputCenterX);
+  addDoubleSpinBoxManager(outputCenterYSpinBox_, Parameters::OutputCenterY);
+  addDoubleSpinBoxManager(outputCenterZSpinBox_, Parameters::OutputCenterZ);
+  addDoubleSpinBoxManager(outputSizeXSpinBox_, Parameters::OutputSizeX);
+  addDoubleSpinBoxManager(outputSizeYSpinBox_, Parameters::OutputSizeY);
+  addDoubleSpinBoxManager(outputSizeZSpinBox_, Parameters::OutputSizeZ);
+  addDynamicLabelManager(inputCenterXLabel_, Parameters::InputCenterX);
+  addDynamicLabelManager(inputCenterYLabel_, Parameters::InputCenterY);
+  addDynamicLabelManager(inputCenterZLabel_, Parameters::InputCenterZ);
+  addDynamicLabelManager(inputSizeXLabel_, Parameters::InputSizeX);
+  addDynamicLabelManager(inputSizeYLabel_, Parameters::InputSizeY);
+  addDynamicLabelManager(inputSizeZLabel_, Parameters::InputSizeZ);
 
   connect(upScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleUpPush);
   connect(doubleUpScaleToolButton_, &QPushButton::clicked, this, &EditMeshBoundingBoxDialog::scaleDoubleUpPush);
@@ -92,10 +92,10 @@ void EditMeshBoundingBoxDialog::moduleExecuted()
 
 void EditMeshBoundingBoxDialog::adjustScale(float scaleFactor)
 {
-  auto scale = state_->getValue(EditMeshBoundingBoxModule::Scale).toDouble();
+  auto scale = state_->getValue(Parameters::Scale).toDouble();
   scale *= scaleFactor;
-  state_->setValue(EditMeshBoundingBoxModule::Scale, scale);
-  state_->setTransientValue(EditMeshBoundingBoxModule::ScaleChanged, true);
+  state_->setValue(Parameters::Scale, scale);
+  state_->setTransientValue(Parameters::ScaleChanged, true);
 }
 
 void EditMeshBoundingBoxDialog::scaleUpPush(){ adjustScale(upScale_); }
@@ -108,22 +108,22 @@ void EditMeshBoundingBoxDialog::userSetWidget()
   auto button = sender()->objectName();
   if (button.startsWith("setCenter"))
   {
-    state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputCenter, true);
+    state_->setTransientValue(Parameters::SetOutputCenter, true);
   }
   else if (button.startsWith("resetCenter"))
   {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
+    state_->setTransientValue(Parameters::ResetCenter, true);
   }
   else if (button.startsWith("setSize"))
   {
-    state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputSize, true);
+    state_->setTransientValue(Parameters::SetOutputSize, true);
   }
   else if (button.startsWith("resetSize"))
   {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
+    state_->setTransientValue(Parameters::ResetSize, true);
   }
   else if (button.startsWith("resetAll"))
   {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetToInput, true);
+    state_->setTransientValue(Parameters::ResetToInput, true);
   }
 }

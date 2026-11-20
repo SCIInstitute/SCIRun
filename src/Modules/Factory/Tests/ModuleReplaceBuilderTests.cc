@@ -50,11 +50,11 @@ class ModuleReplaceTests : public ModuleTest
 };
 
 #ifdef BUILD_TESTING
-const int NUM_MODULES = 207;
+const int NUM_MODULES = 215;
 #else
 const int NUM_MODULES = 179;
 #endif
-const int NUM_ALGORITHMS = 93;
+const int NUM_ALGORITHMS = 101;
 
 const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
 

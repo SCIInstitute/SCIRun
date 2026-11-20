@@ -54,3 +54,13 @@ void ConvertGeometryToVtk::execute()
     sendOutputFromAlgorithm(VtkGeometry, output);
   }
 }
+
+void ConvertGeometryToVtk::setStateDefaults()
+{
+  getOutputPort(VtkGeometry)->
+      connectConnectionFeedbackListener(
+          [this](const ModuleFeedback& f)
+          {
+              sendFeedbackUpstreamAlongIncomingConnections(f);
+          });
+}

@@ -29,6 +29,13 @@ name: pr
 # nightly -- not on every pull request. Use the `workflow_dispatch` trigger on
 # those workflows to run the full matrix against a risky branch on demand.
 #
+# windows-gui-qt6 alone also joins when the PR diff *adds* an
+# `#include <Modules/...>` line to a src/**/Tests/*.cc (see `windows_risk`
+# below). Module Tests dirs inherit -DBUILD_<lib>, so SCISHARE is dllexport in
+# the test TU and touching a module's static members fails to link on MSVC
+# only (#2743, #2882). It matches added lines, not file names: of 87 PRs merged
+# 2026-08-17..11-17, two would have fired.
+#
 # To opt a single PR into mac-gui and windows-gui-qt6 regardless of paths, add
 # the `full-matrix` label. Labeling or unlabeling re-runs this workflow.
 
@@ -50,6 +57,7 @@ jobs:
     outputs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
       platform_risk: ${{ steps.filter.outputs.platform_risk }}
+      windows_risk: ${{ steps.filter.outputs.windows_risk }}
       vtk: ${{ steps.filter.outputs.vtk }}
     steps:
       - name: Classify changed paths
@@ -112,12 +120,31 @@ jobs:
             vtk=false
           fi
 
+          # Windows-only tier: a test TU that newly includes a module header.
+          # Per-file patches, not `gh pr diff`, which fails outright on large
+          # diffs. A test file whose patch GitHub omits (too big) counts as a hit.
+          windows_risk=$platform_risk
+          if [ "$windows_risk" = false ]; then
+            hits=$(gh api --paginate \
+                     "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+                     --jq '.[] | select(.filename | test("^src/.*/Tests/[^/]*\\.cc$"))
+                           | if .patch == null then "\(.filename): <patch omitted>"
+                             else (.patch | split("\n")[] | select(test("^\\+#include <Modules/"))) end')
+            if [ -n "$hits" ]; then
+              echo "Test files add module includes:"
+              echo "$hits"
+              windows_risk=true
+            fi
+          fi
+
           echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
           echo "vtk=$vtk" >> "$GITHUB_OUTPUT"
           echo "vtk=$vtk"
           echo "platform_risk=$platform_risk" >> "$GITHUB_OUTPUT"
           echo "docs_only=$docs_only"
           echo "platform_risk=$platform_risk"
+          echo "windows_risk=$windows_risk" >> "$GITHUB_OUTPUT"
+          echo "windows_risk=$windows_risk"
 
   linux-gui:
     needs: changes
@@ -174,7 +201,7 @@ jobs:
 
   windows-gui-qt6:
     needs: [changes, linux-unit-tests]
-    if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.platform_risk == 'true'
+    if: needs.changes.outputs.docs_only == 'false' && needs.changes.outputs.windows_risk == 'true'
     uses: ./.github/workflows/reusable-build.yml
     with:
       runner: windows-2022
