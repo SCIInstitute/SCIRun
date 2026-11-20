@@ -1362,14 +1362,15 @@ find_closest_elem(double& pdist,
 
   double ii = r.x();
   double jj = r.y();
-  const double nii = static_cast<double>(this->ni_-2);
-  const double njj = static_cast<double>(this->nj_-2);
+  // Clamp to the last node, not the last element, or the far row of cells is unreachable.
+  const double nii = static_cast<double>(this->ni_-1);
+  const double njj = static_cast<double>(this->nj_-1);
 
   if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
   if (jj < 0.0) jj = 0.0; if (jj > njj) jj = njj;
 
-  const double fi = floor(ii);
-  const double fj = floor(jj);
+  double fi = floor(ii); if (fi == nii) fi--;
+  double fj = floor(jj); if (fj == njj) fj--;
 
   const index_type i = static_cast<index_type>(fi);
   const index_type j = static_cast<index_type>(fj);

@@ -913,16 +913,17 @@ const TypeDescription *get_type_description() const override;
 
     double ii = r.x();
     double jj = r.y();
-    const double nii = static_cast<double>(ni_-2);
-    const double njj = static_cast<double>(nj_-2);
+    // Clamp to the last node, not the last element, or the far row of cells is unreachable.
+    const double nii = static_cast<double>(ni_-1);
+    const double njj = static_cast<double>(nj_-1);
 
     if (ii < 0.0) ii = 0.0;
     if (ii > nii) ii = nii;
     if (jj < 0.0) jj = 0.0;
     if (jj > njj) jj = njj;
 
-    const double fi = floor(ii);
-    const double fj = floor(jj);
+    double fi = floor(ii); if (fi == nii) fi--;
+    double fj = floor(jj); if (fj == njj) fj--;
 
     elem.i_ = static_cast<index_type>(fi);
     elem.j_ = static_cast<index_type>(fj);
