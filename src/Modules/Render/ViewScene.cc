@@ -387,18 +387,24 @@ void ViewScene::execute()
       lock.lock();
     else
       lock.try_lock_for(std::chrono::seconds(10));
+    RGBMatrices screenshotData;
     if (!lock.owns_lock())
     {
       warning("ViewScene window did not render within 10 s (hidden or minimized?); continuing without screenshot data.");
     }
     else
     {
-      const auto screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
-      const auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
-      if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
-      if (screenshotData.green) sendOutput(ScreenshotDataGreen, screenshotData.green);
-      if (screenshotData.blue) sendOutput(ScreenshotDataBlue, screenshotData.blue);
+      screenshotData = transient_value_cast<RGBMatrices>(state->getTransientValue(Parameters::ScreenshotData));
+      // Only when something consumes the outputs: most networks run with the window closed.
+      if (!screenshotData.red && (oport_connected(ScreenshotDataRed) || oport_connected(ScreenshotDataGreen) || oport_connected(ScreenshotDataBlue)))
+        warning("ViewScene has not rendered this geometry (window not open?); sending empty screenshot data. Open the window and re-execute to get a screenshot.");
     }
+
+    // Downstream modules error on a port with no data (#1412).
+    const auto orEmpty = [](const DenseMatrixHandle& matrix) { return matrix ? matrix : makeShared<DenseMatrix>(0, 0); };
+    sendOutput(ScreenshotDataRed, orEmpty(screenshotData.red));
+    sendOutput(ScreenshotDataGreen, orEmpty(screenshotData.green));
+    sendOutput(ScreenshotDataBlue, orEmpty(screenshotData.blue));
   }
 #endif
   state->setValue(Parameters::HasNewGeometry, true);
