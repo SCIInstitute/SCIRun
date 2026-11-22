@@ -31,6 +31,7 @@ SET(Core_Datatypes_VTK_SRCS
 )
 
 SET(Core_Datatypes_VTK_HEADERS
+  VtkIncludes.h
   VtkGeometry.h
   share.h
   )

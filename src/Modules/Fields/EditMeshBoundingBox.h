@@ -34,9 +34,53 @@
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+        ALGORITHM_PARAMETER_DECL(ScaleTransformMatrix);
+        ALGORITHM_PARAMETER_DECL(RotationTransformMatrix);
+        ALGORITHM_PARAMETER_DECL(TranslationPoint);
+        ALGORITHM_PARAMETER_DECL(InverseFieldTransformMatrix);
+        ALGORITHM_PARAMETER_DECL(ResetToInput);
+        ALGORITHM_PARAMETER_DECL(ResetSize);
+        ALGORITHM_PARAMETER_DECL(ResetCenter);
+        ALGORITHM_PARAMETER_DECL(DataSaved);
+        ALGORITHM_PARAMETER_DECL(InputCenterX);
+        ALGORITHM_PARAMETER_DECL(InputCenterY);
+        ALGORITHM_PARAMETER_DECL(InputCenterZ);
+        ALGORITHM_PARAMETER_DECL(InputSizeX);
+        ALGORITHM_PARAMETER_DECL(InputSizeY);
+        ALGORITHM_PARAMETER_DECL(InputSizeZ);
+        ALGORITHM_PARAMETER_DECL(SetOutputCenter);
+        ALGORITHM_PARAMETER_DECL(SetOutputSize);
+        ALGORITHM_PARAMETER_DECL(OutputCenterX);
+        ALGORITHM_PARAMETER_DECL(OutputCenterY);
+        ALGORITHM_PARAMETER_DECL(OutputCenterZ);
+        ALGORITHM_PARAMETER_DECL(OutputSizeX);
+        ALGORITHM_PARAMETER_DECL(OutputSizeY);
+        ALGORITHM_PARAMETER_DECL(OutputSizeZ);
+        ALGORITHM_PARAMETER_DECL(Scale);
+        ALGORITHM_PARAMETER_DECL(OldScale);
+        ALGORITHM_PARAMETER_DECL(ScaleChanged);
+        ALGORITHM_PARAMETER_DECL(NoTranslation);
+        ALGORITHM_PARAMETER_DECL(XYZTranslation);
+        ALGORITHM_PARAMETER_DECL(RDITranslation);
+        ALGORITHM_PARAMETER_DECL(RestrictX);
+        ALGORITHM_PARAMETER_DECL(RestrictY);
+        ALGORITHM_PARAMETER_DECL(RestrictZ);
+        ALGORITHM_PARAMETER_DECL(RestrictR);
+        ALGORITHM_PARAMETER_DECL(RestrictD);
+        ALGORITHM_PARAMETER_DECL(RestrictI);
+        ALGORITHM_PARAMETER_DECL(BoxMode);
+        ALGORITHM_PARAMETER_DECL(BoxRealScale);
+      }
+    }
+  }
+
   namespace Modules {
     namespace Fields {
 
@@ -51,49 +95,6 @@ namespace SCIRun {
         EditMeshBoundingBox();
         void execute() override;
         void setStateDefaults() override;
-
-        static const Core::Algorithms::AlgorithmParameterName FieldTransformMatrix;
-        static const Core::Algorithms::AlgorithmParameterName ScaleTransformMatrix;
-        static const Core::Algorithms::AlgorithmParameterName RotationTransformMatrix;
-        static const Core::Algorithms::AlgorithmParameterName TranslationPoint;
-        static const Core::Algorithms::AlgorithmParameterName InverseFieldTransformMatrix;
-
-        static const Core::Algorithms::AlgorithmParameterName ResetToInput;
-        static const Core::Algorithms::AlgorithmParameterName ResetSize;
-        static const Core::Algorithms::AlgorithmParameterName ResetCenter;
-        static const Core::Algorithms::AlgorithmParameterName DataSaved;
-        //Input Field Attributes
-        static const Core::Algorithms::AlgorithmParameterName InputCenterX;
-        static const Core::Algorithms::AlgorithmParameterName InputCenterY;
-        static const Core::Algorithms::AlgorithmParameterName InputCenterZ;
-        static const Core::Algorithms::AlgorithmParameterName InputSizeX;
-        static const Core::Algorithms::AlgorithmParameterName InputSizeY;
-        static const Core::Algorithms::AlgorithmParameterName InputSizeZ;
-        //Output Field Atributes
-        static const Core::Algorithms::AlgorithmParameterName SetOutputCenter;
-        static const Core::Algorithms::AlgorithmParameterName SetOutputSize;
-        static const Core::Algorithms::AlgorithmParameterName OutputCenterX;
-        static const Core::Algorithms::AlgorithmParameterName OutputCenterY;
-        static const Core::Algorithms::AlgorithmParameterName OutputCenterZ;
-        static const Core::Algorithms::AlgorithmParameterName OutputSizeX;
-        static const Core::Algorithms::AlgorithmParameterName OutputSizeY;
-        static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
-        //Widget Scale/Mode
-        static const Core::Algorithms::AlgorithmParameterName Scale;
-        static const Core::Algorithms::AlgorithmParameterName OldScale;
-        static const Core::Algorithms::AlgorithmParameterName ScaleChanged;
-        static const Core::Algorithms::AlgorithmParameterName NoTranslation;
-        static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
-        static const Core::Algorithms::AlgorithmParameterName RDITranslation;
-        static const Core::Algorithms::AlgorithmParameterName RestrictX;
-        static const Core::Algorithms::AlgorithmParameterName RestrictY;
-        static const Core::Algorithms::AlgorithmParameterName RestrictZ;
-        static const Core::Algorithms::AlgorithmParameterName RestrictR;
-        static const Core::Algorithms::AlgorithmParameterName RestrictD;
-        static const Core::Algorithms::AlgorithmParameterName RestrictI;
-
-        static const Core::Algorithms::AlgorithmParameterName BoxMode;
-        static const Core::Algorithms::AlgorithmParameterName BoxRealScale;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, OutputField, Field);
