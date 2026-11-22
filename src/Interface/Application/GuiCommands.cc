@@ -230,8 +230,10 @@ namespace
   QPointF centroidOfPointRange(PointIter begin, PointIter end)
   {
     QPointF sum = std::accumulate(begin, end, QPointF(), [](const QPointF& acc, const typename PointIter::value_type& point) { return acc + QPointF(point.first, point.second); });
-    size_t num = std::distance(begin, end);
-    return sum / num;
+    const auto num = std::distance(begin, end);
+    if (num == 0)
+      return {};
+    return sum / static_cast<qreal>(num);
   }
 
   QPointF findCenterOfNetworkFile(const NetworkFile& file)
