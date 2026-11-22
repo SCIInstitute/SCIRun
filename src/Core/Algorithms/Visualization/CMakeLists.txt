@@ -28,6 +28,7 @@
 
 SET(Algorithms_Visualization_SRCS
   ConvertGeometryToVtkAlgo.cc
+  FieldTextLabels.cc
   OsprayDataAlgorithm.cc
   VtkDataAlgorithm.cc
   VtkGeometryBuilder.cc
@@ -35,6 +36,7 @@ SET(Algorithms_Visualization_SRCS
 
 SET(Algorithms_Visualization_HEADERS
   ConvertGeometryToVtkAlgo.h
+  FieldTextLabels.h
   OsprayDataAlgorithm.h
   VtkDataAlgorithm.h
   VtkGeometryBuilder.h
