@@ -159,6 +159,14 @@ ENDIF()
 IF(RUN_BASIC_REGRESSION_TESTS)
   MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
 
+  # In-app regression timeout (seconds). Debug and coverage builds run the
+  # heaviest nets 1.5-2x slower than Release and blew past 60 s (#2963). Keep
+  # it under CI's ctest --timeout 300 so a genuine hang still fails cleanly.
+  SET(SCIRUN_REGRESSION_TIMEOUT 60)
+  IF(ENABLE_COVERAGE OR CMAKE_BUILD_TYPE STREQUAL "Debug")
+    SET(SCIRUN_REGRESSION_TIMEOUT 180)
+  ENDIF()
+
   # Run all the possible .srn5 files in src/ExampleNets
   FILE(GLOB_RECURSE scirun_srns_modules "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Modules/*.srn5")
   FILE(GLOB_RECURSE scirun_srns_network "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Network/*.srn5")
@@ -187,10 +195,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
     SET(test_name ".Test.ExampleNetwork.${srn_name}_srn")
-    # In-app regression timeout (seconds). 60 gives the heaviest networks
-    # headroom when the machine is under parallel load; genuine hangs are still
-    # bounded by the ctest --timeout passed in CI.
-    ADD_TEST(NAME "${test_name}" COMMAND ${EXE_LOC} -E ${srn} --no_splash --regression 60 ${scirun_test_data_args})
+    ADD_TEST(NAME "${test_name}" COMMAND ${EXE_LOC} -E ${srn} --no_splash --regression ${SCIRUN_REGRESSION_TIMEOUT} ${scirun_test_data_args})
 
     IF(WIN32)
       SET_TESTS_PROPERTIES("${test_name}" PROPERTIES ENVIRONMENT "${SCIRUN_TEST_DLL_ENVIRONMENT}")
