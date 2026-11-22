@@ -193,6 +193,16 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="0" colspan="3">
+       <widget class="QCheckBox" name="keepOnMeshCheckBox_">
+        <property name="toolTip">
+         <string>After the probe is moved, project it to the closest point on the input mesh</string>
+        </property>
+        <property name="text">
+         <string>Keep probe on input mesh</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="2">
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -319,6 +329,7 @@
   <tabstop>snapToNodeCheckBox_</tabstop>
   <tabstop>fieldElemSpinBox_</tabstop>
   <tabstop>snapToElementCheckBox_</tabstop>
+  <tabstop>keepOnMeshCheckBox_</tabstop>
   <tabstop>sizeDoubleSpinBox_</tabstop>
   <tabstop>bboxScaleCheckBox_</tabstop>
   <tabstop>bboxScaleDoubleSpinBox_</tabstop>

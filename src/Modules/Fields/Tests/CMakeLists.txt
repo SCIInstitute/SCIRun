@@ -49,6 +49,7 @@ SET(Modules_Fields_Tests_SRCS
   ClipVolumeByIsovalueTests.cc
   RemoveUnusedNodesTests.cc
   CleanupTetMeshTests.cc
+  GenerateSinglePointProbeFromFieldTests.cc
   EditMeshBoundingBoxTests.cc
 )
 
