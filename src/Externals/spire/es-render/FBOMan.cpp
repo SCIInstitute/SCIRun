@@ -46,6 +46,17 @@ namespace shaders = spire;
 
 namespace ren {
 
+  namespace
+  {
+    // Unsized GL_DEPTH_COMPONENT may get 16 bits, which z-fights distant widget
+    // parts in the selection pass and skews the depth used to start a drag.
+#ifdef USE_OPENGL_ES
+    constexpr GLint kDepthInternalFormat = GL_DEPTH_COMPONENT;
+#else
+    constexpr GLint kDepthInternalFormat = GL_DEPTH_COMPONENT24;
+#endif
+  }
+
   FBOMan::FBOMan()
   {
   }
@@ -89,7 +100,7 @@ namespace ren {
       texData.att = GL_DEPTH_ATTACHMENT;
       texData.texName = "FBO:Texture:Depth";
       tex = textureMan->createTexture(
-        texData.texName, npixelx, npixely, GL_DEPTH_COMPONENT,
+        texData.texName, npixelx, npixely, kDepthInternalFormat,
         GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST);
       entityID = getEntityIDForName(texData.texName);
       core.addComponent(entityID, tex);
@@ -256,10 +267,12 @@ namespace ren {
       return false;
 
     ren::Texture tex = *compTex.first;
-    GL(glReadPixels(posx, tex.textureHeight - posy, width, height,
+    // posy is a top-down row index, so its GL row is height - 1 - posy.
+    const GLint glY = tex.textureHeight - 1 - posy;
+    GL(glReadPixels(posx, glY, width, height,
       tex.format, tex.type, value));
     if (depth)
-      GL(glReadPixels(posx, tex.textureHeight - posy, width, height,
+      GL(glReadPixels(posx, glY, width, height,
         GL_DEPTH_COMPONENT, GL_FLOAT, depth));
     return true;
   }
