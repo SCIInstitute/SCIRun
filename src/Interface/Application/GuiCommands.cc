@@ -231,7 +231,6 @@ namespace
   {
     QPointF sum = std::accumulate(begin, end, QPointF(), [](const QPointF& acc, const typename PointIter::value_type& point) { return acc + QPointF(point.first, point.second); });
     const auto num = std::distance(begin, end);
-    // Empty network: QPointF / 0 trips Q_ASSERT in Debug (#2963).
     if (num == 0)
       return {};
     return sum / static_cast<qreal>(num);
