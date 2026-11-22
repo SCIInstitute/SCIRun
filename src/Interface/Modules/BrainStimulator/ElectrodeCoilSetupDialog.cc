@@ -67,13 +67,13 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   addCheckBoxManager(InterpolateElectrodeShapeCheckbox_, Parameters::InterpolateElectrodeShapeCheckbox);
   addDoubleSpinBoxManager(electrodethicknessSpinBox_, Parameters::ElectrodethicknessSpinBox);
   connect(electrode_coil_tableWidget, &QTableWidget::cellChanged, this, &ElectrodeCoilSetupDialog::validateCell);
-  connect(AllInputsTDCS_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::updateStimTypeColumn);
-  connect(invertNormalsCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::updateInvertNormals);
-  connect(ProtoTypeInputCheckbox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::togglePrototypeColumnReadOnly);
+  connect(AllInputsTDCS_, &QCheckBox::toggled, this, &ElectrodeCoilSetupDialog::updateStimTypeColumn);
+  connect(invertNormalsCheckBox_, &QCheckBox::toggled, this, &ElectrodeCoilSetupDialog::updateInvertNormals);
+  connect(ProtoTypeInputCheckbox_, &QCheckBox::toggled, this, &ElectrodeCoilSetupDialog::togglePrototypeColumnReadOnly);
   connect(ProtoTypeInputComboBox_, qOverload<int>(&QComboBox::currentIndexChanged), this, &ElectrodeCoilSetupDialog::updatePrototypeColumnValues);
 
-  connect(PutElectrodesOnScalpCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
-  connect(electrodethicknessCheckBox_, &QCheckBox::stateChanged, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
+  connect(PutElectrodesOnScalpCheckBox_, &QCheckBox::toggled, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
+  connect(electrodethicknessCheckBox_, &QCheckBox::toggled, this, &ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly);
 
   connect(electrodethicknessSpinBox_, qOverload<double>(&QDoubleSpinBox::valueChanged), this, &ElectrodeCoilSetupDialog::updateThicknessColumnValues);
 }
@@ -349,9 +349,9 @@ void ElectrodeCoilSetupDialog::pullSpecial()
       // one-time table update from shortcut buttons.
       pushTableFlag_ = false;
       if (!comboBoxesSetup_ && UseThisPrototypeButton)
-        togglePrototypeColumnReadOnly(1);
+        togglePrototypeColumnReadOnly(true);
       if (!comboBoxesSetup_ && state_->getValue(Parameters::ElectrodethicknessCheckBox).toBool())
-        toggleThicknessColumnReadOnly(1);
+        toggleThicknessColumnReadOnly(true);
       if (!comboBoxesSetup_ && AllTDCSInputsButton)
         updateStimTypeColumn();
 
@@ -403,9 +403,9 @@ void ElectrodeCoilSetupDialog::updatePrototypeColumnValues(int index)
     push();
 }
 
-void ElectrodeCoilSetupDialog::togglePrototypeColumnReadOnly(int state)
+void ElectrodeCoilSetupDialog::togglePrototypeColumnReadOnly(bool state)
 {
-  const bool UseThisPrototypeButton = state != 0;
+  const bool UseThisPrototypeButton = state;
 
   for (int i=0; i<inputPortsVector_.size(); i++)
   {
@@ -441,9 +441,9 @@ void ElectrodeCoilSetupDialog::updateThicknessColumnValues(double value)
     pushTable();
 }
 
-void ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly(int state)
+void ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly(bool state)
 {
-  const bool ElectrodethicknessCheckBoxButton = state != 0;
+  const bool ElectrodethicknessCheckBoxButton = state;
 
   for (int i=0; i<electrode_coil_tableWidget->rowCount(); i++)
   {

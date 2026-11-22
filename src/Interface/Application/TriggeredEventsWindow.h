@@ -57,7 +57,7 @@ public:
 private Q_SLOTS:
   void updateScriptEditor();
   void updateScripts();
-  void enableStateChanged(int state);
+  void enableStateChanged(bool state);
 private:
   void push();
   CodeEditor* scriptPlainTextEdit_;

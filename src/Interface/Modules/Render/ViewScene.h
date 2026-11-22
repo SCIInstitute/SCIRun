@@ -128,7 +128,7 @@ namespace SCIRun {
       void printToString() const {std::cout << toString("");}
       void sendBugReport();
       void adjustZoomSpeed(int value);
-      void saveNewGeometryChanged(int state);
+      void saveNewGeometryChanged(bool state);
       void invertZoomClicked(bool value);
       void menuMouseControlChanged(int index);
       void adaptToFullScreenView(bool fullScreen) override;
