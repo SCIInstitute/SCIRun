@@ -112,3 +112,30 @@ TEST(NaNVaribleTests, CanHandleNaNValues)
   str = nan1.toString();
   EXPECT_EQ("NaN", str);
 }
+
+TEST(NumericVariableTests, ToIntTruncatesDoubleValues)
+{
+  AlgorithmParameter p(Name("x"), 2.75);
+  EXPECT_EQ(2, p.toInt());
+  p.setValue(-2.75);
+  EXPECT_EQ(-2, p.toInt());
+  p.setValue(1e300);
+  EXPECT_EQ(0, p.toInt());
+  p.setValue(std::numeric_limits<double>::infinity());
+  EXPECT_EQ(0, p.toInt());
+}
+
+TEST(NumericVariableTests, ToIntReadsBoolValues)
+{
+  AlgorithmParameter p(Name("x"), true);
+  EXPECT_EQ(1, p.toInt());
+  EXPECT_EQ(1.0, p.toDouble());
+  p.setValue(false);
+  EXPECT_EQ(0, p.toInt());
+}
+
+TEST(NumericVariableTests, ToDoubleReadsIntValues)
+{
+  AlgorithmParameter p(Name("x"), 3);
+  EXPECT_EQ(3.0, p.toDouble());
+}

@@ -99,10 +99,17 @@ public:
 
   Variable::Value operator()(const bool&) const
   {
-    if (getClassName(object_) == "bool")
+    const auto classname = getClassName(object_);
+    if (classname == "bool")
     {
       py::extract<bool> e(object_);
       return e();
+    }
+    // Older networks saved some checkboxes as 0/1 ints.
+    if (classname == "int")
+    {
+      py::extract<int> e(object_);
+      return e() != 0;
     }
     else
       THROW_INVALID_ARGUMENT("The input python object is not a boolean.");
@@ -129,14 +136,22 @@ public:
   {
     if (getClassName(object_) == "list")
     {
-      const auto firstVal = v[0];
       const py::extract<py::list> e(object_);
       auto pyList = e();
       auto gil = PyGILState_Ensure();
-      Variable::List newList(py::len(pyList));
-      for (auto i = 0; i < py::len(pyList); ++i)
-        newList[i] = Variable(firstVal.name(),
-                              boost::apply_visitor(ValueVisitor(pyList[i]), firstVal.value()));
+      const auto n = py::len(pyList);
+      Variable::List newList(n);
+      for (auto i = 0; i < n; ++i)
+      {
+        // Type each element from its counterpart in the current list; an empty list has no types to borrow.
+        if (v.empty())
+          newList[i] = convertPythonObjectToVariable(pyList[i]);
+        else
+        {
+          const auto& like = v[std::min<size_t>(i, v.size() - 1)];
+          newList[i] = Variable(like.name(), boost::apply_visitor(ValueVisitor(pyList[i]), like.value()));
+        }
+      }
       PyGILState_Release(gil);
       return newList;
     }
@@ -151,34 +166,28 @@ public:
     {
       py::extract<int> e(object_);
       const auto objectVal = e();
-      switch (returnType)
-      {
-      case NumberType::Int: return objectVal;
-      case NumberType::Double: return static_cast<int>(objectVal);
-      }
+      if (returnType == NumberType::Double)
+        return static_cast<double>(objectVal);
+      return objectVal;
     }
-    else if (classname == "float")
+    if (classname == "float")
     {
-      py::extract<float> e(object_);
-      const auto objectVal = e();
-      switch (returnType)
-      {
-      case NumberType::Int: return static_cast<int>(objectVal);
-      case NumberType::Double: return static_cast<double>(objectVal);
-      }
-    }
-    else if (classname == "double")
-    {
+      // A float stays a double even in an int state: several modules default a double
+      // parameter to int 0, and int readers truncate it through toInt() (#1671).
       py::extract<double> e(object_);
-      const auto objectVal = e();
-      switch (returnType)
-      {
-      case NumberType::Int: return static_cast<double>(objectVal);
-      case NumberType::Double: return objectVal;
-      }
+      return e();
     }
-    else
-      THROW_INVALID_ARGUMENT("The input python object is not a number.");
+    if (classname == "bool")
+    {
+      const bool b = py::extract<bool>(object_)();
+      if (returnType == NumberType::Double)
+        return b ? 1.0 : 0.0;
+      return b ? 1 : 0;
+    }
+    // State stores a NaN double as the string "NaN"; accept that form back.
+    if (classname == "str" && py::extract<std::string>(object_)() == "NaN")
+      return std::string("NaN");
+    THROW_INVALID_ARGUMENT("The input python object is not a number.");
   }
 };
 
@@ -580,6 +589,9 @@ const std::string SCIRun::Core::Python::getClassName(const py::object& object)
 
 Variable SCIRun::Core::Python::convertPythonObjectToVariable(const py::object& object)
 {
+  // Before int: python's bool is an int subclass, so the int extractor accepts True.
+  if (PyBool_Check(object.ptr()))
+    return makeVariable("bool", object.ptr() == Py_True);
   {
     py::extract<int> e(object);
     if (e.check())
