@@ -71,6 +71,18 @@ Please see the [GitHub help page](https://help.github.com) for more information.
 
 **This section describes the files need to create a module in SCIRun. Each file is described and a template example provided. These template files are all included in the source code in the template directories.**
 
+> **Note (maintenance).** The worked examples below (`TestModuleSimple`,
+> `SortMatrix`) now live under `src/Modules/Examples/`,
+> `src/Interface/Modules/Examples/`, and `src/Core/Algorithms/Examples/` — some
+> include paths in the example code still cite their old `Modules/String/` and
+> `Modules/Math/` locations. The module boilerplate itself (the info macro and
+> the input/output port declarations) is also being unified by the
+> `module-descriptors-metaprogram` branch (C++20 variadic ports, a 4-arg
+> `MODULE_TRAITS_AND_INFO` replacing `MODULE_INFO_DEF`). These example code
+> blocks will be refreshed against that final form once it merges; until then
+> they still build, and the current live pattern to copy is any active module in
+> `src/Modules/Legacy/<Domain>/`.
+
 ### Overview of Files Needed for each Module
 
 There are only three files required to create a module, though more may be needed depending on the function of the module.
@@ -1325,6 +1337,25 @@ If this or another module is not behaving as expected, change the output of some
 
 **This chapter will walk through the steps necessary to convert a module from SCIRun 4 to SCIRun 5. Converting a module is very similar to creating a new module, as expected. However, there are additional considerations that will be described in this chapter, including a list of common build errors and a list of common changes in code needed for the conversion.**
 
+> A condensed checklist version of this chapter is in `src/Documentation/Manuals/ModuleConversionSteps.md`. If you are working with Claude Code, the `convert-scirun-module` skill (in `.claude/skills/`) packages this workflow together with a generated backlog manifest, a frequency-ranked v4→v5 idiom translation table, and the verification policy in machine-runnable form.
+
+### Where the modules are (the backlog)
+
+The SCIRun 4 module source already lives in the repository under
+`src/Modules/Legacy/<Domain>/`. Unported modules are present as `.cc` files that
+are **commented out** in that directory's `CMakeLists.txt` (for example
+`#PadRegularMesh.cc`). Converting a module is, at its core, uncommenting that
+line and making the module build and run. A dormant file is recognizable by its
+SCIRun 4 idioms: `class Foo : public Module`, `virtual void execute();`, and
+`DECLARE_MAKER(Foo)`.
+
+Some commented entries have no `.cc` on disk (mostly the `Teem/Tend` set and the
+Visualization `Show*Texture*` modules). Those are new-module work rather than a
+mechanical port, and should be scoped separately.
+
+The master tracking list of modules to convert is
+[issue #1746](https://github.com/SCIInstitute/SCIRun/issues/1746).
+
 ### Strategy
 
 The strategy for converting a module from SCIRun 4 to SCIRun 5 is very similar to the strategy of making a new module, which is to start with the basics, and add all the necessary parts piece by piece. This is demonstrated in our previous examples, especially in  [Simple Module Without UI](#example-simple-module-without-ui) & [Simple Module With UI](#example-simple-module-with-ui).
@@ -1404,7 +1435,30 @@ If there is a UI for the module, the state variables defaults need to be set. Th
 
 When converting the module code, it may be easier to start on the more standardized code, then work toward the more specific code, as we have been doing through this tutorial. For example, it may be easier to get the input and output calls working (as in [Simple Module Without UI](#example-simple-module-without-ui)), and then work on making the output what it needs to. Then, if there is algorithm code for the module, start by getting the algorithm call in the module code working with the algorithm code commented out, then work on the algorithm code. See [Common Function Changes](#common-function-changes) & [Common Build Errors](#common-build-errors) for ideas to convert and fix specific functions and pieces of code. Commit all changes to the local branch.
 
+#### Legacy Network Import Mapping
+
+SCIRun 4 network files (`.srn`) are imported into SCIRun 5 using a name/state
+mapping in `src/Interface/Application/Resources/LegacyModuleImporter.xml`. Each
+`<module name="...">` entry maps the module's old SCIRun 4 GUI/state variable
+names to the new SCIRun 5 state variable names, with a conversion `<type>`
+(`toInt`, `toString`, `toPercent`, `data_at`, ...). When you convert a module,
+**add or verify its entry here**, mapping every state variable the SCIRun 4
+version used. Without this, any SCIRun 4 network that uses the module will import
+with missing or incorrect state. Keeping these mappings correct is tracked by
+[issue #2532](https://github.com/SCIInstitute/SCIRun/issues/2532).
+
 #### Module Testing
+
+The acceptance ground truth for a converted module is the **SCIRun 4 example
+network corpus run through the network-import regression tests.** These v4
+networks live in the SCIRunTestData repository under `Other/v4nets/` (resolved
+via `SCIRUN_TEST_RESOURCE_DIR`); import is exercised by
+`src/Dataflow/Serialization/Network/Tests/LegacyNetworkFileImporterTests.cc` and
+the GUI-mode legacy-import regression suite (`scripts/run-regression-tests.sh`).
+After converting a module, find the v4 network(s) that reference it and confirm
+they import **and** execute. If a referencing network points to data that is not
+present, note it for follow-up rather than fabricating data. If **no** v4 network
+exercises the module, build a new regression network from available data.
 
 Testing for a new module should occur intermittently while converting the code to make debugging easier, as we described in earlier steps. As you are trying to convert the module, test the module regularly to make sure that the output of module is as expected. Before finishing and submitting the module, test several types of inputs to make sure that the module behaves as intended. Since the module is converted from SCIRun 4, compare the outputs of the different versions.  
 
@@ -1419,6 +1473,13 @@ Make sure your module is documented properly in the Git commits and code in addi
 With the module fully completed, we can now submit it to be included in the main release of SCIRun using a pull request. Since there was a branch created for the new module, there should be regular commits as the module is ported. For the the pull request, make sure all the changes have been committed to the branch meant for the new module. Now make sure that the branch is up to date with the latest changes in the main branch of SCIRun. To do this, sync your fork and merge the SCIRun master branch as shown in [Creating Your SCIRun Fork](#creating-your-scirun-fork). Make sure the module branch is merge with the master branch and make sure that your local changes are pushed to GitHub. To make a pull request, there is usually a short cut on the main GitHub page of the SCIRun or you can check out the [GitHub help page about it](https://help.github.com/articles/using-pull-requests/). Add some comments to the developers to know what to look for when reviewing the code. If you have changes to make, either that you noticed or requested by the developer, just commit it to the same branch and push it GitHub and the pull request will track the changes until it is merged.  
 
 ### Common Function Changes
+
+A small sample of common SCIRun 4 → SCIRun 5 code changes is below. A much
+larger, frequency-ranked translation table — mined from the already-converted
+modules and covering ports, GUI-state/`GuiVar` migration, logging,
+handle/field APIs, and dynamic-compilation removal — is maintained in the
+`convert-scirun-module` skill at
+`.claude/skills/convert-scirun-module/reference/translation-table.md`.
 
 ```{list-table}
 :name: table-function-changes
