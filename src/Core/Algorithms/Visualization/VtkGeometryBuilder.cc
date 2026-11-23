@@ -195,7 +195,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStreamline(FieldHandle field, Col
 
 #ifdef WITH_VTK
   obj->type = GeometryType::STREAMLINE;
-  obj->radius = static_cast<float>(algorithm_.get(Parameters::Radius).toDouble());
+  obj->radius = static_cast<float>(algorithm_.get(Parameters::EdgeRadius).toDouble());
 
   //----------------------------------
   // VTK polydata
@@ -960,7 +960,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addCylinder(FieldHandle field, Color
 
 #ifdef WITH_VTK
   obj->type = GeometryType::CYLINDER;
-  obj->radius = static_cast<float>(algorithm_.get(Parameters::Radius).toDouble());
+  obj->radius = static_cast<float>(algorithm_.get(Parameters::EdgeRadius).toDouble());
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
   auto points = vtkSmartPointer<vtkPoints>::New();
@@ -1077,7 +1077,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
 
 #ifdef WITH_VTK
   obj->type = GeometryType::SPHERE;
-  obj->radius = static_cast<float>(algorithm_.get(Parameters::Radius).toDouble());
+  obj->radius = static_cast<float>(algorithm_.get(Parameters::NodeRadius).toDouble());
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
   auto points = vtkSmartPointer<vtkPoints>::New();

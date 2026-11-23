@@ -44,7 +44,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(DefaultColorG);
         ALGORITHM_PARAMETER_DECL(DefaultColorB);
         ALGORITHM_PARAMETER_DECL(DefaultColorA);
-        ALGORITHM_PARAMETER_DECL(Radius);
+        ALGORITHM_PARAMETER_DECL(NodeRadius);
+        ALGORITHM_PARAMETER_DECL(EdgeRadius);
         ALGORITHM_PARAMETER_DECL(UseNormals);
         ALGORITHM_PARAMETER_DECL(ShowNodes);
         ALGORITHM_PARAMETER_DECL(ShowEdges);
