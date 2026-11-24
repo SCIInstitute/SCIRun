@@ -75,6 +75,7 @@ public:
     {
       Geometry::Point position;
       std::string text;
+      double scalar{1.0};
     };
 
     struct TextStyle
@@ -109,6 +110,7 @@ public:
     Material material;
     TransferFunc tfn;
     double radius{1.0};
+    int resolution{10};
 
     Core::Geometry::BBox box;
 

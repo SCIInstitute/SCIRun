@@ -45,7 +45,9 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(DefaultColorB);
         ALGORITHM_PARAMETER_DECL(DefaultColorA);
         ALGORITHM_PARAMETER_DECL(NodeRadius);
+        ALGORITHM_PARAMETER_DECL(NodeResolution);
         ALGORITHM_PARAMETER_DECL(EdgeRadius);
+        ALGORITHM_PARAMETER_DECL(EdgeResolution);
         ALGORITHM_PARAMETER_DECL(UseNormals);
         ALGORITHM_PARAMETER_DECL(ShowNodes);
         ALGORITHM_PARAMETER_DECL(ShowEdges);
@@ -57,6 +59,12 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ShowEdgeIndices);
         ALGORITHM_PARAMETER_DECL(ShowFaceIndices);
         ALGORITHM_PARAMETER_DECL(ShowCellIndices);
+        ALGORITHM_PARAMETER_DECL(NodesColoring);
+        ALGORITHM_PARAMETER_DECL(EdgesColoring);
+        ALGORITHM_PARAMETER_DECL(FacesColoring);
+        ALGORITHM_PARAMETER_DECL(VolumeColoring);
+        ALGORITHM_PARAMETER_DECL(TextColoring);
+        ALGORITHM_PARAMETER_DECL(TextSize);
         ALGORITHM_PARAMETER_DECL(ModuleID);
       }
 

@@ -63,7 +63,9 @@ void ShowFieldVtk::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::DefaultColorB);
   setStateDoubleFromAlgo(Parameters::DefaultColorA);
   setStateDoubleFromAlgo(Parameters::NodeRadius);
+  setStateIntFromAlgo(Parameters::NodeResolution);
   setStateDoubleFromAlgo(Parameters::EdgeRadius);
+  setStateIntFromAlgo(Parameters::EdgeResolution);
   setStateBoolFromAlgo(Parameters::UseNormals);
   setStateBoolFromAlgo(Parameters::ShowNodes);
   setStateBoolFromAlgo(Parameters::ShowFaces);
@@ -76,6 +78,12 @@ void ShowFieldVtk::setStateDefaults()
   setStateBoolFromAlgo(Parameters::ShowFaceIndices);
   setStateBoolFromAlgo(Parameters::ShowCellIndices);
   setStateIntFromAlgo(Parameters::ModuleID);
+  setStateIntFromAlgo(Parameters::NodesColoring);
+  setStateIntFromAlgo(Parameters::EdgesColoring);
+  setStateIntFromAlgo(Parameters::FacesColoring);
+  setStateIntFromAlgo(Parameters::VolumeColoring);
+  setStateIntFromAlgo(Parameters::TextColoring);
+  setStateIntFromAlgo(Parameters::TextSize);
 }
 
 ShowFieldVtk::ShowFieldVtk() : Module(staticInfo_)
@@ -102,7 +110,9 @@ void ShowFieldVtk::execute()
     setAlgoDoubleFromState(Parameters::DefaultColorB);
     setAlgoDoubleFromState(Parameters::DefaultColorA);
     setAlgoDoubleFromState(Parameters::NodeRadius);
+    setAlgoIntFromState(Parameters::NodeResolution);
     setAlgoDoubleFromState(Parameters::EdgeRadius);
+    setAlgoIntFromState(Parameters::EdgeResolution);
     setAlgoBoolFromState(Parameters::UseNormals);
     setAlgoBoolFromState(Parameters::ShowNodes);
     setAlgoBoolFromState(Parameters::ShowFaces);
@@ -114,6 +124,12 @@ void ShowFieldVtk::execute()
     setAlgoBoolFromState(Parameters::ShowEdgeIndices);
     setAlgoBoolFromState(Parameters::ShowFaceIndices);
     setAlgoBoolFromState(Parameters::ShowCellIndices);
+    setAlgoIntFromState(Parameters::NodesColoring);
+    setAlgoIntFromState(Parameters::EdgesColoring);
+    setAlgoIntFromState(Parameters::FacesColoring);
+    setAlgoIntFromState(Parameters::VolumeColoring);
+    setAlgoIntFromState(Parameters::TextColoring);
+    setAlgoIntFromState(Parameters::TextSize);
 
     // this is mostly for user feedback for now.
     auto state = get_state();

@@ -1076,7 +1076,7 @@ void VtkRenderer::renderCylinders(vtkPolyData* poly, const VtkGeometryObjectHand
   auto tube = vtkSmartPointer<vtkTubeFilter>::New();
   tube->SetInputData(poly);
   tube->SetRadius(geo->radius);
-  tube->SetNumberOfSides(20);
+  tube->SetNumberOfSides(geo->resolution);
   tube->CappingOn();
   tube->Update();
 
@@ -1124,7 +1124,7 @@ void VtkRenderer::renderStreamlines(vtkPolyData* poly, const VtkGeometryObjectHa
   auto tube = vtkSmartPointer<vtkTubeFilter>::New();
   tube->SetInputData(poly);
   tube->SetRadius(geo->radius);
-  tube->SetNumberOfSides(16);
+  tube->SetNumberOfSides(geo->resolution);
   tube->CappingOff();
   tube->Update();
 
@@ -1165,8 +1165,8 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
 
   auto sphere = vtkSmartPointer<vtkSphereSource>::New();
   sphere->SetRadius(geo->radius);
-  sphere->SetThetaResolution(16);
-  sphere->SetPhiResolution(16);
+  sphere->SetThetaResolution(geo->resolution);
+  sphere->SetPhiResolution(geo->resolution);
 
   double range[2];
   poly->GetScalarRange(range);
@@ -1204,6 +1204,55 @@ void VtkRenderer::renderSpheres(vtkPolyData* poly, const VtkGeometryObjectHandle
   }
 }
 
+namespace {
+
+void sampleColorMap(const VtkGeometryObject::TransferFunc& tfn, double scalar, double& r, double& g, double& b)
+{
+  const auto numColors = tfn.colors.size() / 3;
+
+  if (numColors == 0)
+  {
+    r = g = b = 1.0;
+    return;
+  }
+
+  if (numColors == 1)
+  {
+    r = tfn.colors[0];
+    g = tfn.colors[1];
+    b = tfn.colors[2];
+    return;
+  }
+
+  const double minValue = tfn.range[0];
+  const double maxValue = tfn.range[1];
+
+  double t = 0.0;
+
+  if (maxValue > minValue)
+  {
+    t = (scalar - minValue) / (maxValue - minValue);
+  }
+
+  t = std::clamp(t, 0.0, 1.0);
+
+  const double pos = t * (numColors - 1);
+
+  const int i0 = static_cast<int>(std::floor(pos));
+  const int i1 = std::min(i0 + 1, static_cast<int>(numColors - 1));
+
+  const double frac = pos - i0;
+
+  const int c0 = i0 * 3;
+  const int c1 = i1 * 3;
+
+  r = tfn.colors[c0] * (1.0 - frac) + tfn.colors[c1] * frac;
+  g = tfn.colors[c0 + 1] * (1.0 - frac) + tfn.colors[c1 + 1] * frac;
+  b = tfn.colors[c0 + 2] * (1.0 - frac) + tfn.colors[c1 + 2] * frac;
+}
+
+}
+
 void VtkRenderer::renderTextLabels(const VtkGeometryObjectHandle& geo)
 {
   for (const auto& label : geo->textLabels)
@@ -1218,7 +1267,19 @@ void VtkRenderer::renderTextLabels(const VtkGeometryObjectHandle& geo)
 
     prop->SetFontSize(static_cast<int>(geo->textStyle.size));
 
-    prop->SetColor(geo->textStyle.color[0], geo->textStyle.color[1], geo->textStyle.color[2]);
+    if (geo->tfn.fromColorMap)
+    {
+      double scalar = label.scalar;
+
+      double r, g, b;
+      sampleColorMap(geo->tfn, scalar, r, g, b);
+
+      prop->SetColor(r, g, b);
+    }
+    else
+    {
+      prop->SetColor(geo->textStyle.color[0], geo->textStyle.color[1], geo->textStyle.color[2]);
+    }
 
     renderer_->AddActor(actor);
 

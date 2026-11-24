@@ -196,6 +196,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStreamline(FieldHandle field, Col
 #ifdef WITH_VTK
   obj->type = GeometryType::STREAMLINE;
   obj->radius = static_cast<float>(algorithm_.get(Parameters::EdgeRadius).toDouble());
+  obj->resolution = algorithm_.get(Parameters::EdgeResolution).toInt();
+  int coloring = algorithm_.get(Parameters::EdgesColoring).toInt();
 
   //----------------------------------
   // VTK polydata
@@ -325,7 +327,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStreamline(FieldHandle field, Col
 
   obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
 
-  if (colorMap)
+  if (coloring == 1 && colorMap)
   {
     obj->tfn.fromColorMap = true;
     ColorMap_OSP_helper cmp(colorMap);
@@ -444,6 +446,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addTriSurface(FieldHandle field, Col
 
 #ifdef WITH_VTK
   obj->type = GeometryType::TRI_SURFACE;
+  int coloring = algorithm_.get(Parameters::FacesColoring).toInt();
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
   auto points = vtkSmartPointer<vtkPoints>::New();
@@ -557,7 +560,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addTriSurface(FieldHandle field, Col
 
   obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
 
-  if (colorMap)
+  if (coloring == 1 && colorMap)
   {
     obj->tfn.fromColorMap = true;
     ColorMap_OSP_helper cmp(colorMap);
@@ -585,6 +588,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addQuadSurface(FieldHandle field, Co
 
 #ifdef WITH_VTK
   obj->type = GeometryType::QUAD_SURFACE;
+  int coloring = algorithm_.get(Parameters::FacesColoring).toInt();
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
   auto points = vtkSmartPointer<vtkPoints>::New();
@@ -702,7 +706,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addQuadSurface(FieldHandle field, Co
 
   obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
 
-  if (colorMap)
+  if (coloring == 1 && colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap);
 
@@ -730,6 +734,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
   bool showAllFaces = algorithm_.get(Parameters::ShowAllFaces).toBool();
   bool showVolume = algorithm_.get(Parameters::ShowVolume).toBool();
   bool showPolyData = showFaces || showAllFaces;
+  int faceColoring = algorithm_.get(Parameters::FacesColoring).toInt();
+  int volumeColoring = algorithm_.get(Parameters::VolumeColoring).toInt();
 
   auto volumeObj = showVolume ? makeObject(field) : nullptr;
   auto meshObj = showPolyData ? makeObject(field) : nullptr;
@@ -746,7 +752,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     volumeObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
     volumeObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
     volumeObj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
-    if (colorMap)
+    if (volumeColoring == 1 && colorMap)
     {
       ColorMap_OSP_helper cmp(colorMap);
 
@@ -780,7 +786,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addStructVol(FieldHandle field, Colo
     meshObj->material.color[2] = static_cast<float>(algorithm_.get(Parameters::DefaultColorB).toDouble());
     meshObj->material.opacity = static_cast<float>(algorithm_.get(Parameters::DefaultColorA).toDouble());
     meshObj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
-    if (colorMap)
+    if (faceColoring == 1 && colorMap)
     {
       ColorMap_OSP_helper cmp(colorMap);
 
@@ -820,6 +826,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addUnstructVol(FieldHandle field, Co
 
 #ifdef WITH_VTK
   obj->type = GeometryType::UNSTRUCTURED_VOLUME;
+  int coloring = algorithm_.get(Parameters::VolumeColoring).toInt();
 
   auto grid = vtkSmartPointer<vtkUnstructuredGrid>::New();
 
@@ -927,7 +934,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addUnstructVol(FieldHandle field, Co
 
   obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
 
-  if (colorMap)
+  if (coloring == 1 && colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap);
 
@@ -961,6 +968,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addCylinder(FieldHandle field, Color
 #ifdef WITH_VTK
   obj->type = GeometryType::CYLINDER;
   obj->radius = static_cast<float>(algorithm_.get(Parameters::EdgeRadius).toDouble());
+  obj->resolution = algorithm_.get(Parameters::EdgeResolution).toInt();
+  int coloring = algorithm_.get(Parameters::EdgesColoring).toInt();
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
   auto points = vtkSmartPointer<vtkPoints>::New();
@@ -1049,7 +1058,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addCylinder(FieldHandle field, Color
 
   obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
 
-  if (colorMap)
+  if (coloring == 1 && colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap);
 
@@ -1078,6 +1087,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
 #ifdef WITH_VTK
   obj->type = GeometryType::SPHERE;
   obj->radius = static_cast<float>(algorithm_.get(Parameters::NodeRadius).toDouble());
+  obj->resolution = algorithm_.get(Parameters::NodeResolution).toInt();
+  int coloring = algorithm_.get(Parameters::NodesColoring).toInt();
 
   auto poly = vtkSmartPointer<vtkPolyData>::New();
   auto points = vtkSmartPointer<vtkPoints>::New();
@@ -1144,7 +1155,7 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addSphere(FieldHandle field, ColorMa
 
   obj->tfn.range = {static_cast<float>(range[0]), static_cast<float>(range[1])};
 
-  if (colorMap)
+  if (coloring == 1 && colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap);
 
@@ -1170,9 +1181,14 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addDataValues(FieldHandle field, Col
 {
   auto obj = makeObject(field);
   obj->type = GeometryType::TEXT_LABELS;
+  obj->textStyle.size = algorithm_.get(Parameters::TextSize).toInt();
+  int coloring = algorithm_.get(Parameters::TextColoring).toInt();
 
   auto facade = field->mesh()->getFacade();
   auto vfield = field->vfield();
+
+  double minValue = std::numeric_limits<double>::max();
+  double maxValue = std::numeric_limits<double>::lowest();
 
   for (const auto& node : facade->nodes())
   {
@@ -1182,9 +1198,34 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addDataValues(FieldHandle field, Col
       vfield->get_value(value, node.index());
     }
 
+    minValue = std::min(minValue, value);
+    maxValue = std::max(maxValue, value);
+
     Point p = node.point();
 
-    obj->textLabels.push_back({p, std::to_string(value)});
+    obj->textLabels.push_back({p, std::to_string(value), value});
+  }
+
+  if (coloring == 1 && colorMap)
+  {
+    ColorMap_OSP_helper cmp(colorMap);
+
+    obj->tfn.fromColorMap = true;
+    obj->tfn.colors = cmp.colorList_;
+    obj->tfn.opacities = cmp.opacityList_;
+    obj->tfn.range = {static_cast<float>(minValue), static_cast<float>(maxValue)};
+
+    if (obj->tfn.opacities.empty())
+    {
+      obj->tfn.opacities.push_back(obj->material.opacity);
+    }
+  }
+  else
+  {
+    obj->tfn.fromColorMap = false;
+    obj->tfn.colors = {obj->material.color[0], obj->material.color[1], obj->material.color[2]};
+
+    obj->tfn.opacities = {obj->material.opacity};
   }
 
   return obj;
@@ -1194,6 +1235,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addNodeLabels(FieldHandle field, Col
 {
   auto obj = makeObject(field);
   obj->type = GeometryType::NODE_LABELS;
+  obj->textStyle.size = algorithm_.get(Parameters::TextSize).toInt();
+  int coloring = algorithm_.get(Parameters::TextColoring).toInt();
 
   auto vmesh = field->vmesh();
 
@@ -1212,6 +1255,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addEdgeLabels(FieldHandle field, Col
 {
   auto obj = makeObject(field);
   obj->type = GeometryType::EDGE_LABELS;
+  obj->textStyle.size = algorithm_.get(Parameters::TextSize).toInt();
+  int coloring = algorithm_.get(Parameters::TextColoring).toInt();
 
   auto vmesh = field->vmesh();
   vmesh->synchronize(Mesh::EDGES_E);
@@ -1231,6 +1276,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addFaceLabels(FieldHandle field, Col
 {
   auto obj = makeObject(field);
   obj->type = GeometryType::FACE_LABELS;
+  obj->textStyle.size = algorithm_.get(Parameters::TextSize).toInt();
+  int coloring = algorithm_.get(Parameters::TextColoring).toInt();
 
   auto vmesh = field->vmesh();
   vmesh->synchronize(Mesh::FACES_E);
@@ -1250,6 +1297,8 @@ VtkGeometryObjectHandle VtkGeometryBuilder::addCellLabels(FieldHandle field, Col
 {
   auto obj = makeObject(field);
   obj->type = GeometryType::CELL_LABELS;
+  obj->textStyle.size = algorithm_.get(Parameters::TextSize).toInt();
+  int coloring = algorithm_.get(Parameters::TextColoring).toInt();
 
   auto vmesh = field->vmesh();
 

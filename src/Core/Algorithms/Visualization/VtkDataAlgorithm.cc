@@ -49,7 +49,9 @@ ALGORITHM_PARAMETER_DEF(VtkVisualization, DefaultColorG);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, DefaultColorB);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, NodeRadius);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, NodeResolution);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, EdgeRadius);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, EdgeResolution);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, UseNormals);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowNodes);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowEdges);
@@ -62,6 +64,12 @@ ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowEdgeIndices);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowFaceIndices);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ShowCellIndices);
 ALGORITHM_PARAMETER_DEF(VtkVisualization, ModuleID);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, NodesColoring);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, EdgesColoring);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, FacesColoring);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, VolumeColoring);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, TextColoring);
+ALGORITHM_PARAMETER_DEF(VtkVisualization, TextSize);
 
 static uint32_t getNewVersionNumber()
 {
@@ -76,7 +84,9 @@ VtkDataAlgorithm::VtkDataAlgorithm()
   addParameter(Parameters::DefaultColorB, 0.5);
   addParameter(Parameters::DefaultColorA, 1.0);
   addParameter(Parameters::NodeRadius, 0.1);
+  addParameter(Parameters::NodeResolution, 6);
   addParameter(Parameters::EdgeRadius, 0.1);
+  addParameter(Parameters::EdgeResolution, 20);
   addParameter(Parameters::UseNormals, true);
   addParameter(Parameters::ShowNodes, false);
   addParameter(Parameters::ShowEdges, false);
@@ -88,6 +98,12 @@ VtkDataAlgorithm::VtkDataAlgorithm()
   addParameter(Parameters::ShowEdgeIndices, false);
   addParameter(Parameters::ShowFaceIndices, false);
   addParameter(Parameters::ShowCellIndices, false);
+  addParameter(Parameters::NodesColoring, 1);
+  addParameter(Parameters::EdgesColoring, 1);
+  addParameter(Parameters::FacesColoring, 1);
+  addParameter(Parameters::VolumeColoring, 1);
+  addParameter(Parameters::TextColoring, 1);
+  addParameter(Parameters::TextSize, 8);
   addParameter(Parameters::ModuleID, 0);
 }
 

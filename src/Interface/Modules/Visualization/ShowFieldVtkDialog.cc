@@ -54,7 +54,9 @@ ShowFieldVtkDialog::ShowFieldVtkDialog(const std::string& name, ModuleStateHandl
   addDoubleSpinBoxManager(defaultColorBDoubleSpinBox_, DefaultColorB);
   addDoubleSpinBoxManager(defaultColorADoubleSpinBox_, DefaultColorA);
   addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, NodeRadius);
+  addSpinBoxManager(sphereResolutionSpinBox, NodeResolution);
   addDoubleSpinBoxManager(scaleEdgeDoubleSpinBox_, EdgeRadius);
+  addSpinBoxManager(cylinder_res_spin, EdgeResolution);
   addCheckBoxManager(useFaceNormalsCheckBox_, UseNormals);
   addCheckBoxManager(showNodesCheckBox_, ShowNodes);
   addCheckBoxManager(showFacesCheckBox_, ShowFaces);
@@ -66,4 +68,10 @@ ShowFieldVtkDialog::ShowFieldVtkDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(showEdgeIndicesCheckBox_, ShowEdgeIndices);
   addCheckBoxManager(showFaceIndicesCheckBox_, ShowFaceIndices);
   addCheckBoxManager(showCellIndicesCheckBox_, ShowCellIndices);
+  addRadioButtonGroupManager({ defaultNodeColoringButton_, colormapLookupNodeColoringButton_ }, NodesColoring);
+  addRadioButtonGroupManager({ defaultEdgeColoringButton_, colormapLookupEdgeColoringButton_ }, EdgesColoring);
+  addRadioButtonGroupManager({ defaultFaceColoringButton_, colormapLookupFaceColoringButton_ }, FacesColoring);
+  addRadioButtonGroupManager({ defaultVolumeColoringButton_, colormapLookupVolumeColoringButton_ }, VolumeColoring);
+  addRadioButtonGroupManager({ textColoringRadioButton_, colormapLookupTextRadioButton_ }, TextColoring);
+  addSpinBoxManager(textSizeSpinBox_, TextSize);
 }
