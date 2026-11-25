@@ -899,22 +899,26 @@ static auto eventPos(QDropEvent* event)
 #endif
 }
 
+static QString networkFileFromUrls(const QMimeData* data)
+{
+  const auto urls = data->urls();
+  if (urls.isEmpty())
+    return {};
+  const auto file = urls[0].toLocalFile();
+  return QFileInfo(file).isFile() && file.endsWith("srn5") ? file : QString();
+}
+
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
-  auto data = event->mimeData();
-  if (data->hasUrls())
+  if (event->mimeData()->hasUrls())
   {
-    auto urls = data->urls();
-    if (!urls.isEmpty())
-    {
-      auto file = urls[0].toLocalFile();
-      QFileInfo check_file(file);
-      if (check_file.exists() && check_file.isFile() && file.endsWith("srn5"))
-      {
-        Q_EMIT requestLoadNetwork(file);
-        return;
-      }
-    }
+    // A dropped file must never fall through to adding the selected module.
+    const auto file = networkFileFromUrls(event->mimeData());
+    if (!file.isEmpty())
+      Q_EMIT requestLoadNetwork(file);
+    else
+      event->ignore();
+    return;
   }
 
   if (moduleSelectionGetter_->isModule())
@@ -959,7 +963,10 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 {
-  event->acceptProposedAction();
+  if (event->mimeData()->hasUrls() && networkFileFromUrls(event->mimeData()).isEmpty())
+    event->ignore();
+  else
+    event->acceptProposedAction();
 }
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
