@@ -646,51 +646,47 @@ function Copy-RuntimeDLL([string]$buildDir, [string]$buildType) {
         return
     }
 
-    # Prefer windeployqt -- it resolves the full transitive Qt dependency graph.
     if ($script:qtFoundPath -ne "") {
-        $wdq = "$($script:qtFoundPath)\bin\windeployqt.exe"
-        if (Test-Path $wdq) {
-            $exe = "$outputDir\SCIRun.exe"
-            if (Test-Path $exe) {
-                Write-Info "Running windeployqt..."
-                & $wdq "--$($buildType.ToLower())" "$exe"
-                if ($LASTEXITCODE -eq 0) {
-                    Write-OK "Qt DLLs deployed via windeployqt."
-                } else {
-                    Write-Warn "windeployqt returned $LASTEXITCODE. Qt DLLs may be incomplete."
-                }
+        $qtBin = "$($script:qtFoundPath)\bin"
+        $wdq   = "$qtBin\windeployqt.exe"
+        # windeployqt rejects SCIRun.exe ("not a Qt executable"): Qt only arrives
+        # through Interface_Application.dll, so deploy from that instead.
+        $qtEntry = "$outputDir\Interface_Application.dll"
+        if ((Test-Path $wdq) -and (Test-Path $qtEntry)) {
+            Write-Info "Running windeployqt on Interface_Application.dll..."
+            & $wdq "--$($buildType.ToLower())" --no-translations --no-compiler-runtime --dir $outputDir $qtEntry | Out-Null
+            if ($LASTEXITCODE -eq 0) {
+                Write-OK "Qt DLLs and plugins deployed via windeployqt."
             } else {
-                Write-Warn "SCIRun.exe not found at $exe -- skipping windeployqt."
+                Write-Warn "windeployqt returned $LASTEXITCODE. Qt DLLs may be incomplete."
             }
         } else {
-            # Manual fallback: copy known Qt DLLs and the platforms plugin
-            Write-Info "windeployqt not found; copying Qt DLLs manually..."
-            $qtBin = "$($script:qtFoundPath)\bin"
-            $major = $QtVersion.Split(".")[0]
-            $dlls  = @("Qt${major}Core", "Qt${major}Gui", "Qt${major}Network",
-                       "Qt${major}OpenGL", "Qt${major}PrintSupport", "Qt${major}Svg",
-                       "Qt${major}Widgets", "Qt${major}Concurrent")
-            foreach ($dll in $dlls) {
-                $src = "$qtBin\$dll.dll"
-                if (Test-Path $src) {
-                    Copy-Item $src $outputDir -Force
-                    Write-Info "  Copied $dll.dll"
-                } else {
-                    Write-Warn "  Not found: $src"
-                }
-            }
-
-            # Qt platform plugin (qwindows.dll) -- required at startup
+            Write-Info "windeployqt or Interface_Application.dll not found; copying Qt manually..."
             $platformsDst = "$outputDir\platforms"
-            if (-not (Test-Path $platformsDst)) {
-                New-Item -ItemType Directory -Path $platformsDst | Out-Null
-            }
+            New-Item -ItemType Directory -Path $platformsDst -Force | Out-Null
             $platformsSrc = "$($script:qtFoundPath)\plugins\platforms"
             if (Test-Path $platformsSrc) {
                 Copy-Item "$platformsSrc\*" $platformsDst -Recurse -Force
                 Write-OK "Qt platform plugins copied."
             }
         }
+
+        # Top up any Qt module the binaries import that windeployqt didn't pick up
+        # (or all of them, on the manual path). Repeat so Qt-to-Qt imports
+        # (OpenGLWidgets -> OpenGL) are followed too.
+        do {
+            $copied = 0
+            $qtImports = Get-ChildItem -Path "$outputDir\*" -Include *.dll, *.exe -File |
+                ForEach-Object { [regex]::Matches([IO.File]::ReadAllText($_.FullName, [Text.Encoding]::ASCII), 'Qt\d\w+\.dll') } |
+                ForEach-Object Value | Sort-Object -Unique
+            foreach ($dll in $qtImports) {
+                if (-not (Test-Path "$outputDir\$dll") -and (Test-Path "$qtBin\$dll")) {
+                    Copy-Item "$qtBin\$dll" $outputDir -Force
+                    Write-Info "  Copied $dll"
+                    $copied++
+                }
+            }
+        } while ($copied -gt 0)
     }
 
     # Qwt (SCIRun's plotting library, built by the Superbuild)
@@ -700,9 +696,11 @@ function Copy-RuntimeDLL([string]$buildDir, [string]$buildType) {
         Write-OK "Copied qwt.dll"
     }
 
-    # Python DLL -- version varies, search with a wildcard
+    # Python DLL -- version varies, search with a wildcard. PCbuild holds both
+    # flavors; take only the _d ones for Debug and only the plain ones otherwise.
     $pythonDlls = Get-ChildItem "$buildDir\Externals\Source\Python_external\PCbuild\amd64\python3*.dll" `
-                    -ErrorAction SilentlyContinue
+                    -ErrorAction SilentlyContinue |
+                  Where-Object { ($_.BaseName -like '*_d') -eq ($buildType -eq 'Debug') }
     foreach ($pdll in $pythonDlls) {
         Copy-Item $pdll.FullName $outputDir -Force
         Write-OK "Copied $($pdll.Name)"

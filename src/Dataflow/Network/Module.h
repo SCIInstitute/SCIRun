@@ -132,6 +132,7 @@ namespace Networks {
     bool executionDisabled() const override final;
     void setExecutionDisabled(bool disable) override final;
     bool isImplementationDisabled() const override { return false; }
+    std::string requiredBuildFlag() const override { return {}; }
     void setProgrammableInputPortEnabled(bool enable) override final;
     bool checkForVirtualConnection(const ModuleInterface&) const override { return false; }
     std::string description() const override;
@@ -213,6 +214,11 @@ namespace Networks {
     friend class ModuleImpl;
     SharedPointer<class ModuleImpl> impl_;
   };
+
+  // User-visible name for a dynamic input port, keyed in state by the port id
+  // ("InputFields:0"). The dialog writes a default when it builds its table;
+  // headless runs have no dialog, so fall back to the same default here.
+  SCISHARE std::string dynamicPortLabel(const ModuleStateInterface& state, const PortId& port);
 
   // ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/ModuleTemplateImpl.h>

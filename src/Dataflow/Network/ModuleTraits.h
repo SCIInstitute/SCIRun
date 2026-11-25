@@ -30,6 +30,7 @@
 #define DATAFLOW_NETWORK_MODULETRAITS_H
 
 #include <boost/static_assert.hpp>
+#include <sci_defs/build_flags.h>
 
 namespace SCIRun {
 namespace Modules
@@ -83,7 +84,8 @@ namespace Modules
   #define CONVERTED_VERSION_OF_MODULE(modName) public: std::string legacyModuleName() const override { return #modName; }
   #define NEW_HELP_WEBPAGE_ONLY public: std::string helpPageUrl() const override { return newHelpPageUrl(); }
   #define DEPRECATED_MODULE_REPLACE_WITH(modName) public: bool isDeprecated() const override { return true; } std::string replacementModuleName() const override { return #modName; }
-  #define DISABLED_WITHOUT_ABOVE_COMPILE_FLAG public: bool isImplementationDisabled() const override { return true; }
+  // Use unconditionally, never under #ifdef: flag is a SCIRun::BuildFlags member (#2682).
+  #define REQUIRES_BUILD_FLAG(flag) public: bool isImplementationDisabled() const override { return !::SCIRun::BuildFlags::flag.enabled; } std::string requiredBuildFlag() const override { return ::SCIRun::BuildFlags::flag.name; }
 }
 }
 

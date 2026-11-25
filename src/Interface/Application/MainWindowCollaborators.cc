@@ -1003,7 +1003,9 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
 #ifndef __linux__
                     "QCheckBox,QLabel,QRadioButton{background-color:transparent}"
 #endif
-                    "QLineEdit{border:1px solid white}"
+                    // A border makes Qt paint these itself; the macOS 26 native bezel is white (#2912).
+                    "QLineEdit,QAbstractSpinBox{border:1px solid white}"
+                    "QAbstractSpinBox:disabled{color:gray;border-color:gray}"
                     "QToolBar{"
                     "border:1px solid black;"
                     "color:black;}"

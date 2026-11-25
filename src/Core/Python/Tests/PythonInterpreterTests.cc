@@ -59,11 +59,24 @@ protected:
   #ifndef DEBUG
     PythonInterpreter::Instance().initialize(false, "Core_Python_Tests", boost::filesystem::current_path().string());
     PythonInterpreter::Instance().importSCIRunLibrary();
+    // initialize() releases the GIL; test bodies use boost::python directly (#2708).
+    gil_ = PyGILState_Ensure();
   #endif
   #else
     Py_Initialize();
   #endif
   }
+
+  void TearDown() override
+  {
+  #ifdef WIN32
+  #ifndef DEBUG
+    PyGILState_Release(gil_);
+  #endif
+  #endif
+  }
+
+  PyGILState_STATE gil_ {};
 
   static FieldHandle roundTripThroughMatlabConverter(FieldHandle field)
   {

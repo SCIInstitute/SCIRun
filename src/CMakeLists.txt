@@ -27,6 +27,14 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.9 FATAL_ERROR)
 
+# Same macOS floor as Superbuild/CMakeLists.txt; see the comment there. The
+# superbuild passes its value in through SCIRUN_CACHE_ARGS, which pre-populates
+# the cache, so this default only takes effect on a direct src/ configure.
+IF(CMAKE_HOST_APPLE AND NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+  SET(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING
+      "Minimum macOS version SCIRun targets")
+ENDIF()
+
 PROJECT(SCIRun)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -63,6 +71,20 @@ MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 IF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 ENDIF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
+
+########################################################################
+# MSBuild otherwise compiles one file at a time per project (#2771).
+# Multi-ToolTask runs a cl per file; the cross-build cap keeps /m:N from
+# multiplying that into N^2 compilers and exhausting memory.
+
+IF(CMAKE_GENERATOR MATCHES "Visual Studio")
+  IF(NOT CMAKE_VS_GLOBALS MATCHES "(^|;)UseMultiToolTask=")
+    LIST(APPEND CMAKE_VS_GLOBALS UseMultiToolTask=true)
+  ENDIF()
+  IF(NOT CMAKE_VS_GLOBALS MATCHES "(^|;)EnforceProcessCountAcrossBuilds=")
+    LIST(APPEND CMAKE_VS_GLOBALS EnforceProcessCountAcrossBuilds=true)
+  ENDIF()
+ENDIF()
 
 ########################################################################
 # Git revision details
@@ -599,7 +621,7 @@ INCLUDE_DIRECTORIES(
 # SYSTEM: header-only externals (Eigen above all) otherwise diagnose inside our
 # translation units, which is what broke -Werror on Apple (#2432) and is ~43%
 # of CI warning volume. Boost is not here: it arrives as the Boost::headers
-# imported target (already SYSTEM) or via Superbuild/UseBoost.cmake (#2197).
+# imported target (already SYSTEM) from BoostConfig.cmake (#2197).
 INCLUDE_DIRECTORIES(SYSTEM
   ${SCI_TEEM_INCLUDE}
   ${GLM_DIR}
@@ -639,7 +661,10 @@ MACRO(SCIRUN_ADD_LIBRARY library)
   else()
     # TODO:
     if(APPLE)
-      target_compile_options(${library} PRIVATE -Wall  -Wunused-parameter -Winfinite-recursion)
+      # -Wunguarded-availability-new flags availability-annotated APIs newer
+      # than CMAKE_OSX_DEPLOYMENT_TARGET that are used without an @available
+      # guard — the build-time signal for the dyld failures behind #2564/#2565.
+      target_compile_options(${library} PRIVATE -Wall  -Wunused-parameter -Winfinite-recursion -Wunguarded-availability-new)
           # TODO: put back -Werror
           #eventually: -Wall -Wextra -pedantic -Werror)
     else()

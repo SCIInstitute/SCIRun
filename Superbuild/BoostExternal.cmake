@@ -194,6 +194,7 @@ ExternalProject_Add(Boost_external
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${CMAKE_OSX_DEPLOYMENT_TARGET}
     -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
 
     # Boost's own CMake build (run by ExternalProject_Add's standard configure
@@ -230,9 +231,11 @@ SET(_B2_BOOTSTRAP_ARGS)
 SET(_B2_TOOLSET_ARG)
 IF(WIN32)
   SET(_B2_CMD ${SOURCE_DIR}/b2.exe)
-  # Full path: with NoDefaultCurrentDirectoryInExePath=1 (set by some shells)
-  # cmd does not search the working directory for a bare "bootstrap.bat".
+  # With NoDefaultCurrentDirectoryInExePath=1 (set by some shells) cmd does not
+  # search the working directory for bare names, and b2's engine scripts call
+  # each other that way (#2791). Full path for ours, unset it for theirs.
   FILE(TO_NATIVE_PATH "${SOURCE_DIR}/bootstrap.bat" _B2_BOOTSTRAP_CMD)
+  SET(_B2_BOOTSTRAP_ENV ${CMAKE_COMMAND} -E env --unset=NoDefaultCurrentDirectoryInExePath)
   # b2 auto-detects the newest MSVC on the machine, not the one CMake is
   # generating for, and its bootstrap dies with "Unknown toolset: vcunk" when
   # that is newer than it knows (#2657). Pin both to CMake's instance/toolset.
@@ -242,8 +245,7 @@ IF(WIN32)
     SET(_B2_TOOLSET_ARG "toolset=msvc-14.${CMAKE_MATCH_1}")
   ENDIF()
   IF(CMAKE_GENERATOR_INSTANCE)
-    SET(_B2_BOOTSTRAP_ENV ${CMAKE_COMMAND} -E env
-        "B2_TOOLSET_ROOT=${CMAKE_GENERATOR_INSTANCE}/VC/")
+    LIST(APPEND _B2_BOOTSTRAP_ENV "B2_TOOLSET_ROOT=${CMAKE_GENERATOR_INSTANCE}/VC/")
   ENDIF()
 ELSE()
   SET(_B2_CMD ${SOURCE_DIR}/b2)
@@ -333,6 +335,13 @@ if(WIN32)
 else()
   set(_BOOST_CXXFLAGS cxxflags=-fPIC)
 endif()
+# The actual Boost compile happens in the b2 build_libs step below, not the
+# CMake configure, so the deployment target must also be passed to b2 itself.
+if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET)
+  list(APPEND _BOOST_CXXFLAGS
+    cxxflags=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}
+    linkflags=-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
+endif()
 # ------------------------------------------------------------------
 # Boost.Python debug ABI (Windows requires this for python313_d + 'y')
 # ------------------------------------------------------------------
@@ -421,27 +430,12 @@ ExternalProject_Add_Step(Boost_external build_libs
 # ------------------------------------------------------------------------------
 # Export Boost library info
 # ------------------------------------------------------------------------------
+# Both are substituted into BoostConfig.cmake.in below.
 SET(SCI_BOOST_INCLUDE ${INSTALL_DIR}/include)
 SET(SCI_BOOST_LIBRARY_DIR ${SOURCE_DIR}/stage/lib)
-#SET(SCI_BOOST_USE_FILE ${INSTALL_DIR}/UseBoost.cmake)
-
-SET(BOOST_PREFIX "boost_")
-SET(THREAD_POSTFIX "")
-
-#SET(SCI_BOOST_LIBRARY)
-#FOREACH(lib ${boost_Libraries})
-#  IF(lib STREQUAL "python")
-#    # Python library is versioned: e.g., boost_python313
-#    LIST(APPEND SCI_BOOST_LIBRARY "${BOOST_PREFIX}${lib}${SCI_PYTHON_VERSION_SHORT_WIN32}")
-#  ELSE()
-#    LIST(APPEND SCI_BOOST_LIBRARY "${BOOST_PREFIX}${lib}${THREAD_POSTFIX}")
-#  ENDIF()
-#ENDFOREACH()
 
 CONFIGURE_FILE(${SUPERBUILD_DIR}/BoostConfig.cmake.in
                ${INSTALL_DIR}/BoostConfig.cmake @ONLY)
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/UseBoost.cmake
-#               ${SCI_BOOST_USE_FILE} COPYONLY)
 
 SET(Boost_DIR ${INSTALL_DIR} CACHE PATH "")
 MESSAGE(STATUS "Boost_DIR: ${Boost_DIR}")

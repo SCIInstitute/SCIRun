@@ -255,9 +255,11 @@ TensorGlyphBuilder::TensorGlyphBuilder(const Dyadic3DTensor& t, const Point& cen
   center_ = Point(center);
 }
 
+// Scale eigenvalues rather than entries, so a degenerate tensor (e.g. the
+// bounding box widget's corners) keeps its eigenframe instead of re-solving.
 void TensorGlyphBuilder::scaleTensor(double scale)
 {
-  t_ = t_ * scale;
+  t_.setEigens(t_.getEigenvectors(), t_.getEigenvalues() * scale);
 }
 
 void TensorGlyphBuilder::setShowNormals(bool showNormals)
@@ -355,8 +357,6 @@ void TensorGlyphBuilder::generateEllipsoid(GlyphConstructor& constructor, bool h
   computeTransforms();
   postScaleTransforms();
   computeSinCosTable(half);
-  auto eigvals = t_.getEigenvalues();
-  eigvals.inverse();
   EllipsoidPointParams params;
 
   for (int v = 0; v < nv_ - 1; ++v)

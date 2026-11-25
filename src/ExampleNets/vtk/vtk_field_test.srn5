@@ -319,7 +319,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>12</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -407,22 +407,22 @@
 							</item>
 							<item>
 								<first>
-									<name>ShowEdges</name>
+									<name>ShowAllFaces</name>
 								</first>
 								<second>
-									<name>ShowEdges</name>
+									<name>ShowAllFaces</name>
 									<value object_id="_28">
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>ShowFaces</name>
+									<name>ShowEdges</name>
 								</first>
 								<second>
-									<name>ShowFaces</name>
+									<name>ShowEdges</name>
 									<value object_id="_29">
 										<which>3</which>
 										<value>0</value>
@@ -431,11 +431,23 @@
 							</item>
 							<item>
 								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value object_id="_30">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowNodes</name>
 								</first>
 								<second>
 									<name>ShowNodes</name>
-									<value object_id="_30">
+									<value object_id="_31">
 										<which>3</which>
 										<value>0</value>
 									</value>
@@ -447,9 +459,9 @@
 								</first>
 								<second>
 									<name>ShowVolume</name>
-									<value object_id="_31">
+									<value object_id="_32">
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -459,7 +471,7 @@
 								</first>
 								<second>
 									<name>UseNormals</name>
-									<value object_id="_32">
+									<value object_id="_33">
 										<which>3</which>
 										<value>1</value>
 									</value>
@@ -479,7 +491,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>38</count>
+							<count>62</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -487,9 +499,21 @@
 								</first>
 								<second>
 									<name>AOSamples</name>
-									<value object_id="_33">
+									<value object_id="_34">
 										<which>0</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Ambient</name>
+								</first>
+								<second>
+									<name>Ambient</name>
+									<value object_id="_35">
+										<which>1</which>
+										<value>2.00000000000000011e-01</value>
 									</value>
 								</second>
 							</item>
@@ -499,7 +523,7 @@
 								</first>
 								<second>
 									<name>AmbientLightColor</name>
-									<value object_id="_34">
+									<value object_id="_36">
 										<which>2</which>
 										<value>Color(1,1,1)</value>
 									</value>
@@ -511,7 +535,7 @@
 								</first>
 								<second>
 									<name>AmbientLightIntensity</name>
-									<value object_id="_35">
+									<value object_id="_37">
 										<which>1</which>
 										<value>1.00000000000000006e-01</value>
 									</value>
@@ -523,7 +547,7 @@
 								</first>
 								<second>
 									<name>AutoRotationRate</name>
-									<value object_id="_36">
+									<value object_id="_38">
 										<which>1</which>
 										<value>2.50000000000000014e-02</value>
 									</value>
@@ -535,7 +559,7 @@
 								</first>
 								<second>
 									<name>BackgroundColor</name>
-									<value object_id="_37">
+									<value object_id="_39">
 										<which>2</which>
 										<value>Color(0,0,0)</value>
 									</value>
@@ -547,30 +571,6 @@
 								</first>
 								<second>
 									<name>CameraViewAtX</name>
-									<value object_id="_38">
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewAtY</name>
-								</first>
-								<second>
-									<name>CameraViewAtY</name>
-									<value object_id="_39">
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewAtZ</name>
-								</first>
-								<second>
-									<name>CameraViewAtZ</name>
 									<value object_id="_40">
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
@@ -579,24 +579,48 @@
 							</item>
 							<item>
 								<first>
-									<name>CameraViewFromX</name>
+									<name>CameraViewAtY</name>
 								</first>
 								<second>
-									<name>CameraViewFromX</name>
+									<name>CameraViewAtY</name>
 									<value object_id="_41">
 										<which>1</which>
-										<value>1.00000000000000000e+01</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>CameraViewFromY</name>
+									<name>CameraViewAtZ</name>
 								</first>
 								<second>
-									<name>CameraViewFromY</name>
+									<name>CameraViewAtZ</name>
 									<value object_id="_42">
 										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewFromX</name>
+								</first>
+								<second>
+									<name>CameraViewFromX</name>
+									<value object_id="_43">
+										<which>1</which>
+										<value>1.00000000000000000e+01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewFromY</name>
+								</first>
+								<second>
+									<name>CameraViewFromY</name>
+									<value object_id="_44">
+										<which>1</which>
 										<value>1.00000000000000000e+01</value>
 									</value>
 								</second>
@@ -607,30 +631,6 @@
 								</first>
 								<second>
 									<name>CameraViewFromZ</name>
-									<value object_id="_43">
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewUpX</name>
-								</first>
-								<second>
-									<name>CameraViewUpX</name>
-									<value object_id="_44">
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewUpY</name>
-								</first>
-								<second>
-									<name>CameraViewUpY</name>
 									<value object_id="_45">
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
@@ -639,11 +639,47 @@
 							</item>
 							<item>
 								<first>
+									<name>CameraViewUpX</name>
+								</first>
+								<second>
+									<name>CameraViewUpX</name>
+									<value object_id="_46">
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewUpY</name>
+								</first>
+								<second>
+									<name>CameraViewUpY</name>
+									<value object_id="_47">
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>CameraViewUpZ</name>
 								</first>
 								<second>
 									<name>CameraViewUpZ</name>
-									<value object_id="_46">
+									<value object_id="_48">
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Diffuse</name>
+								</first>
+								<second>
+									<name>Diffuse</name>
+									<value object_id="_49">
 										<which>1</which>
 										<value>1.00000000000000000e+00</value>
 									</value>
@@ -655,7 +691,7 @@
 								</first>
 								<second>
 									<name>DirectionalLightAzimuth</name>
-									<value object_id="_47">
+									<value object_id="_50">
 										<which>0</which>
 										<value>80</value>
 									</value>
@@ -667,7 +703,7 @@
 								</first>
 								<second>
 									<name>DirectionalLightColor</name>
-									<value object_id="_48">
+									<value object_id="_51">
 										<which>2</which>
 										<value>Color(1,1,1)</value>
 									</value>
@@ -679,7 +715,7 @@
 								</first>
 								<second>
 									<name>DirectionalLightElevation</name>
-									<value object_id="_49">
+									<value object_id="_52">
 										<which>0</which>
 										<value>65</value>
 									</value>
@@ -691,9 +727,69 @@
 								</first>
 								<second>
 									<name>DirectionalLightIntensity</name>
-									<value object_id="_50">
+									<value object_id="_53">
 										<which>1</which>
 										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Emission</name>
+								</first>
+								<second>
+									<name>Emission</name>
+									<value object_id="_54">
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FogColor</name>
+								</first>
+								<second>
+									<name>FogColor</name>
+									<value object_id="_55">
+										<which>2</which>
+										<value>Color(0,0,255)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FogEnd</name>
+								</first>
+								<second>
+									<name>FogEnd</name>
+									<value object_id="_56">
+										<which>1</which>
+										<value>7.09999999999999964e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FogOn</name>
+								</first>
+								<second>
+									<name>FogOn</name>
+									<value object_id="_57">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FogStart</name>
+								</first>
+								<second>
+									<name>FogStart</name>
+									<value object_id="_58">
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -703,7 +799,7 @@
 								</first>
 								<second>
 									<name>FrameWriterFilename</name>
-									<value object_id="_51">
+									<value object_id="_59">
 										<which>2</which>
 										<value>frames.png</value>
 									</value>
@@ -715,9 +811,21 @@
 								</first>
 								<second>
 									<name>InvertZoom</name>
-									<value object_id="_52">
+									<value object_id="_60">
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ObjectsOnly</name>
+								</first>
+								<second>
+									<name>ObjectsOnly</name>
+									<value object_id="_61">
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -727,7 +835,7 @@
 								</first>
 								<second>
 									<name>ProbeX</name>
-									<value object_id="_53">
+									<value object_id="_62">
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
 									</value>
@@ -739,7 +847,7 @@
 								</first>
 								<second>
 									<name>ProbeY</name>
-									<value object_id="_54">
+									<value object_id="_63">
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
 									</value>
@@ -751,7 +859,7 @@
 								</first>
 								<second>
 									<name>ProbeZ</name>
-									<value object_id="_55">
+									<value object_id="_64">
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
 									</value>
@@ -763,7 +871,7 @@
 								</first>
 								<second>
 									<name>ProgrammableInputPortEnabled</name>
-									<value object_id="_56">
+									<value object_id="_65">
 										<which>3</which>
 										<value>0</value>
 									</value>
@@ -775,7 +883,7 @@
 								</first>
 								<second>
 									<name>RendererChoice</name>
-									<value object_id="_57">
+									<value object_id="_66">
 										<which>2</which>
 										<value>scivis</value>
 									</value>
@@ -787,7 +895,7 @@
 								</first>
 								<second>
 									<name>SamplesPerPixel</name>
-									<value object_id="_58">
+									<value object_id="_67">
 										<which>0</which>
 										<value>1</value>
 									</value>
@@ -795,119 +903,311 @@
 							</item>
 							<item>
 								<first>
-									<name>SeparateModelPerObject</name>
+									<name>ScaleBarFontSize</name>
 								</first>
 								<second>
-									<name>SeparateModelPerObject</name>
-									<value object_id="_59">
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowAmbientLight</name>
-								</first>
-								<second>
-									<name>ShowAmbientLight</name>
-									<value object_id="_60">
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowDirectionalLight</name>
-								</first>
-								<second>
-									<name>ShowDirectionalLight</name>
-									<value object_id="_61">
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowFrameRate</name>
-								</first>
-								<second>
-									<name>ShowFrameRate</name>
-									<value object_id="_62">
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowPlane</name>
-								</first>
-								<second>
-									<name>ShowPlane</name>
-									<value object_id="_63">
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowProbe</name>
-								</first>
-								<second>
-									<name>ShowProbe</name>
-									<value object_id="_64">
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowRenderAnnotations</name>
-								</first>
-								<second>
-									<name>ShowRenderAnnotations</name>
-									<value object_id="_65">
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowShadows</name>
-								</first>
-								<second>
-									<name>ShowShadows</name>
-									<value object_id="_66">
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>SubsampleDuringInteraction</name>
-								</first>
-								<second>
-									<name>SubsampleDuringInteraction</name>
-									<value object_id="_67">
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ViewerHeight</name>
-								</first>
-								<second>
-									<name>ViewerHeight</name>
+									<name>ScaleBarFontSize</name>
 									<value object_id="_68">
+										<which>0</which>
+										<value>8</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleBarHeight</name>
+								</first>
+								<second>
+									<name>ScaleBarHeight</name>
+									<value object_id="_69">
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleBarLength</name>
+								</first>
+								<second>
+									<name>ScaleBarLength</name>
+									<value object_id="_70">
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleBarLineColor</name>
+								</first>
+								<second>
+									<name>ScaleBarLineColor</name>
+									<value object_id="_71">
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleBarLineWidth</name>
+								</first>
+								<second>
+									<name>ScaleBarLineWidth</name>
+									<value object_id="_72">
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleBarMultiplier</name>
+								</first>
+								<second>
+									<name>ScaleBarMultiplier</name>
+									<value object_id="_73">
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleBarNumTicks</name>
+								</first>
+								<second>
+									<name>ScaleBarNumTicks</name>
+									<value object_id="_74">
+										<which>0</which>
+										<value>11</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScaleBarUnitValue</name>
+								</first>
+								<second>
+									<name>ScaleBarUnitValue</name>
+									<value object_id="_75">
+										<which>2</which>
+										<value>mm</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScreenshotDirectory</name>
+								</first>
+								<second>
+									<name>ScreenshotDirectory</name>
+									<value object_id="_76">
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SeparateModelPerObject</name>
+								</first>
+								<second>
+									<name>SeparateModelPerObject</name>
+									<value object_id="_77">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Shine</name>
+								</first>
+								<second>
+									<name>Shine</name>
+									<value object_id="_78">
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowAmbientLight</name>
+								</first>
+								<second>
+									<name>ShowAmbientLight</name>
+									<value object_id="_79">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowDirectionalLight</name>
+								</first>
+								<second>
+									<name>ShowDirectionalLight</name>
+									<value object_id="_80">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFrameRate</name>
+								</first>
+								<second>
+									<name>ShowFrameRate</name>
+									<value object_id="_81">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowPlane</name>
+								</first>
+								<second>
+									<name>ShowPlane</name>
+									<value object_id="_82">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowProbe</name>
+								</first>
+								<second>
+									<name>ShowProbe</name>
+									<value object_id="_83">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowRenderAnnotations</name>
+								</first>
+								<second>
+									<name>ShowRenderAnnotations</name>
+									<value object_id="_84">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowScaleBar</name>
+								</first>
+								<second>
+									<name>ShowScaleBar</name>
+									<value object_id="_85">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowShadows</name>
+								</first>
+								<second>
+									<name>ShowShadows</name>
+									<value object_id="_86">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Specular</name>
+								</first>
+								<second>
+									<name>Specular</name>
+									<value object_id="_87">
+										<which>1</which>
+										<value>2.99999999999999989e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SubsampleDuringInteraction</name>
+								</first>
+								<second>
+									<name>SubsampleDuringInteraction</name>
+									<value object_id="_88">
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ToolBarAdvancedPosition</name>
+								</first>
+								<second>
+									<name>ToolBarAdvancedPosition</name>
+									<value object_id="_89">
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ToolBarMainPosition</name>
+								</first>
+								<second>
+									<name>ToolBarMainPosition</name>
+									<value object_id="_90">
+										<which>0</which>
+										<value>4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ToolBarRenderPosition</name>
+								</first>
+								<second>
+									<name>ToolBarRenderPosition</name>
+									<value object_id="_91">
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>UseBGColor</name>
+								</first>
+								<second>
+									<name>UseBGColor</name>
+									<value object_id="_92">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ViewerHeight</name>
+								</first>
+								<second>
+									<name>ViewerHeight</name>
+									<value object_id="_93">
 										<which>0</which>
 										<value>600</value>
 									</value>
@@ -919,7 +1219,7 @@
 								</first>
 								<second>
 									<name>ViewerWidth</name>
-									<value object_id="_69">
+									<value object_id="_94">
 										<which>0</which>
 										<value>800</value>
 									</value>
@@ -931,7 +1231,7 @@
 								</first>
 								<second>
 									<name>ZoomSpeed</name>
-									<value object_id="_70">
+									<value object_id="_95">
 										<which>1</which>
 										<value>1.00000000000000000e+00</value>
 									</value>

@@ -45,6 +45,7 @@ using namespace Modules::Fields;
 using namespace Core::Datatypes;
 using namespace Dataflow::Networks;
 using namespace Core::Algorithms;
+using namespace Core::Algorithms::Fields::Parameters;
 using namespace Core::Geometry;
 using namespace Graphics;
 using namespace Datatypes;
@@ -116,6 +117,10 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& feedbackT
 
 void EditMeshBoundingBox::setOutputParameters()
 {
+  // Scale drags and saved networks only carry widgetScale_; its columns are half the box.
+  const auto halfAxes = widgetScale_.get_transformation_vectors();
+  size_ = Vector(halfAxes[0].length(), halfAxes[1].length(), halfAxes[2].length()) / HALF_SCALE_;
+
   auto state = get_state();
   state->setValue(OutputCenterX, widgetTranslation_.x());
   state->setValue(OutputCenterY, widgetTranslation_.y());
@@ -268,7 +273,6 @@ void EditMeshBoundingBox::setOutputCenter()
   widgetTranslation_ = Point(state->getValue(OutputCenterX).toDouble(),
                              state->getValue(OutputCenterY).toDouble(),
                              state->getValue(OutputCenterZ).toDouble());
-
 }
 
 void EditMeshBoundingBox::resetOutputCenter()
@@ -392,46 +396,39 @@ void EditMeshBoundingBox::saveToParameters()
   state->setValue(DataSaved, true);
 }
 
-const AlgorithmParameterName EditMeshBoundingBox::ScaleTransformMatrix("ScaleTransformMatrix");
-const AlgorithmParameterName
-EditMeshBoundingBox::RotationTransformMatrix("RotationTransformMatrix");
-const AlgorithmParameterName
-EditMeshBoundingBox::TranslationPoint("TranslationPoint");
-const AlgorithmParameterName
-EditMeshBoundingBox::InverseFieldTransformMatrix("InverseFieldTransformMatrix");
-const AlgorithmParameterName EditMeshBoundingBox::ResetToInput("ResetToInput");
-const AlgorithmParameterName EditMeshBoundingBox::ResetCenter("ResetCenter");
-const AlgorithmParameterName EditMeshBoundingBox::ResetSize("ResetSize");
-const AlgorithmParameterName EditMeshBoundingBox::DataSaved("DataSaved");
-
-const AlgorithmParameterName EditMeshBoundingBox::InputCenterX("InputCenterX");
-const AlgorithmParameterName EditMeshBoundingBox::InputCenterY("InputCenterY");
-const AlgorithmParameterName EditMeshBoundingBox::InputCenterZ("InputCenterZ");
-const AlgorithmParameterName EditMeshBoundingBox::InputSizeX("InputSizeX");
-const AlgorithmParameterName EditMeshBoundingBox::InputSizeY("InputSizeY");
-const AlgorithmParameterName EditMeshBoundingBox::InputSizeZ("InputSizeZ");
- //Output Field Atributes
-const AlgorithmParameterName EditMeshBoundingBox::SetOutputCenter("SetOutputCenter");
-const AlgorithmParameterName EditMeshBoundingBox::SetOutputSize("SetOutputSize");
-const AlgorithmParameterName EditMeshBoundingBox::OutputCenterX("OutputCenterX");
-const AlgorithmParameterName EditMeshBoundingBox::OutputCenterY("OutputCenterY");
-const AlgorithmParameterName EditMeshBoundingBox::OutputCenterZ("OutputCenterZ");
-const AlgorithmParameterName EditMeshBoundingBox::OutputSizeX("OutputSizeX");
-const AlgorithmParameterName EditMeshBoundingBox::OutputSizeY("OutputSizeY");
-const AlgorithmParameterName EditMeshBoundingBox::OutputSizeZ("OutputSizeZ");
-//Widget Scale/Mode
-const AlgorithmParameterName EditMeshBoundingBox::Scale("Scale");
-const AlgorithmParameterName EditMeshBoundingBox::OldScale("OldScale");
-const AlgorithmParameterName EditMeshBoundingBox::ScaleChanged("ScaleChanged");
-const AlgorithmParameterName EditMeshBoundingBox::NoTranslation("NoTranslation");
-const AlgorithmParameterName EditMeshBoundingBox::XYZTranslation("XYZTranslation");
-const AlgorithmParameterName EditMeshBoundingBox::RDITranslation("RDITranslation");
-const AlgorithmParameterName EditMeshBoundingBox::RestrictX("RestrictX");
-const AlgorithmParameterName EditMeshBoundingBox::RestrictY("RestrictY");
-const AlgorithmParameterName EditMeshBoundingBox::RestrictZ("RestrictZ");
-const AlgorithmParameterName EditMeshBoundingBox::RestrictR("RestrictR");
-const AlgorithmParameterName EditMeshBoundingBox::RestrictD("RestrictD");
-const AlgorithmParameterName EditMeshBoundingBox::RestrictI("RestrictI");
-
-const AlgorithmParameterName EditMeshBoundingBox::BoxMode("BoxMode");
-const AlgorithmParameterName EditMeshBoundingBox::BoxRealScale("BoxRealScale");
+ALGORITHM_PARAMETER_DEF(Fields, ScaleTransformMatrix);
+ALGORITHM_PARAMETER_DEF(Fields, RotationTransformMatrix);
+ALGORITHM_PARAMETER_DEF(Fields, TranslationPoint);
+ALGORITHM_PARAMETER_DEF(Fields, InverseFieldTransformMatrix);
+ALGORITHM_PARAMETER_DEF(Fields, ResetToInput);
+ALGORITHM_PARAMETER_DEF(Fields, ResetSize);
+ALGORITHM_PARAMETER_DEF(Fields, ResetCenter);
+ALGORITHM_PARAMETER_DEF(Fields, DataSaved);
+ALGORITHM_PARAMETER_DEF(Fields, InputCenterX);
+ALGORITHM_PARAMETER_DEF(Fields, InputCenterY);
+ALGORITHM_PARAMETER_DEF(Fields, InputCenterZ);
+ALGORITHM_PARAMETER_DEF(Fields, InputSizeX);
+ALGORITHM_PARAMETER_DEF(Fields, InputSizeY);
+ALGORITHM_PARAMETER_DEF(Fields, InputSizeZ);
+ALGORITHM_PARAMETER_DEF(Fields, SetOutputCenter);
+ALGORITHM_PARAMETER_DEF(Fields, SetOutputSize);
+ALGORITHM_PARAMETER_DEF(Fields, OutputCenterX);
+ALGORITHM_PARAMETER_DEF(Fields, OutputCenterY);
+ALGORITHM_PARAMETER_DEF(Fields, OutputCenterZ);
+ALGORITHM_PARAMETER_DEF(Fields, OutputSizeX);
+ALGORITHM_PARAMETER_DEF(Fields, OutputSizeY);
+ALGORITHM_PARAMETER_DEF(Fields, OutputSizeZ);
+ALGORITHM_PARAMETER_DEF(Fields, Scale);
+ALGORITHM_PARAMETER_DEF(Fields, OldScale);
+ALGORITHM_PARAMETER_DEF(Fields, ScaleChanged);
+ALGORITHM_PARAMETER_DEF(Fields, NoTranslation);
+ALGORITHM_PARAMETER_DEF(Fields, XYZTranslation);
+ALGORITHM_PARAMETER_DEF(Fields, RDITranslation);
+ALGORITHM_PARAMETER_DEF(Fields, RestrictX);
+ALGORITHM_PARAMETER_DEF(Fields, RestrictY);
+ALGORITHM_PARAMETER_DEF(Fields, RestrictZ);
+ALGORITHM_PARAMETER_DEF(Fields, RestrictR);
+ALGORITHM_PARAMETER_DEF(Fields, RestrictD);
+ALGORITHM_PARAMETER_DEF(Fields, RestrictI);
+ALGORITHM_PARAMETER_DEF(Fields, BoxMode);
+ALGORITHM_PARAMETER_DEF(Fields, BoxRealScale);

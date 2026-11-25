@@ -473,6 +473,36 @@ TEST(DyadicTensorTest, EigenSolver)
       ASSERT_NEAR(expected[i][j], eigvecs[i][j], 0.00001);
 }
 
+// A degenerate tensor's eigenframe can't be re-solved, so assignment must carry it.
+TEST(DyadicTensorTest, AssignmentKeepsEigenframeOfDegenerateTensor)
+{
+  const double s = std::sqrt(0.5);
+  std::vector<Eigen::Vector3d> frame = {Eigen::Vector3d(s, s, 0), Eigen::Vector3d(-s, s, 0),
+      Eigen::Vector3d(0, 0, 1)};
+  const Dyadic3DTensor t(frame[0], frame[1], frame[2]);
+  Dyadic3DTensor copy;
+  copy = t;
+
+  auto eigvecs = copy.getEigenvectors();
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
+      ASSERT_NEAR(frame[i][j], eigvecs[i][j], 1e-12);
+}
+
+TEST(DyadicTensorTest, AssignmentReplacesCachedEigens)
+{
+  Dyadic3DTensor t(getEigvecs());
+  t.getEigenvalues();
+  Eigen::Matrix3d m;
+  m << 1, 0, 0, 0, 2, 0, 0, 0, 3;
+  t = Dyadic3DTensor(m);
+
+  auto eigvals = t.getEigenvalues();
+  ASSERT_NEAR(3, eigvals[0], 1e-12);
+  ASSERT_NEAR(2, eigvals[1], 1e-12);
+  ASSERT_NEAR(1, eigvals[2], 1e-12);
+}
+
 //TODO--fails on Mac
 TEST(DyadicTensorTest, DISABLED_NonSymmetricTestFail)
 {

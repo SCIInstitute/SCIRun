@@ -88,6 +88,7 @@ namespace Networks {
     virtual bool executionDisabled() const = 0;
     virtual void setExecutionDisabled(bool disable) = 0;
     virtual bool isImplementationDisabled() const = 0;
+    virtual std::string requiredBuildFlag() const = 0;
     virtual void setProgrammableInputPortEnabled(bool enable) = 0;
     virtual bool checkForVirtualConnection(const ModuleInterface& downstream) const = 0;
     virtual void disconnectStateListeners() = 0;

@@ -42,6 +42,7 @@
 #include <Interface/Application/ModuleOptionsDialogConfiguration.h>
 #include <Interface/Modules/Base/ModuleLogWindow.h>
 #include <Interface/Application/ModuleWidget.h>
+#include <Interface/Application/FloatingDockWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PortWidgetManager.h>
@@ -1262,7 +1263,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
   if (isFloating)
   {
-    dockable_->setWindowFlags(Qt::Window);
+    FloatingDockWindow::applyFlags(dockable_);
     dockable_->show();
     Q_EMIT showUIrequested(dialogManager_.options());
   }
@@ -1308,7 +1309,7 @@ void ModuleWidget::toggleOptionsDialog()
 {
   if (dialogManager_.hasOptions())
   {
-    if (dockable_->isHidden())
+    if (FloatingDockWindow::isClosed(dockable_))
     {
       if (firstTimeShown_)
       {
@@ -1326,6 +1327,7 @@ void ModuleWidget::toggleOptionsDialog()
         }
         positions_.append(dockable_->pos());
       }
+      FloatingDockWindow::restoreIfMinimized(dockable_);
       dockable_->show();
       Q_EMIT showUIrequested(dialogManager_.options());
       dockable_->raise();
@@ -1458,6 +1460,7 @@ void ModuleWidget::showUI()
 {
   if (dockable_)
   {
+    FloatingDockWindow::restoreIfMinimized(dockable_);
     dockable_->show();
     dialogManager_.options()->expand();
     Q_EMIT showUIrequested(dialogManager_.options());

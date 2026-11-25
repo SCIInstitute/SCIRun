@@ -40,7 +40,7 @@ SCIRUN_ADD_UNIT_TEST(Core_Python_Tests
 #TARGET_LINK_LIBRARIES(example
 #  Core_Python
 #  ${SCI_PYTHON_LIBRARY}
-#  ${SCI_BOOST_LIBRARY}
+#  Boost::headers
 #  gtest_main
 #  gtest
 #  gmock

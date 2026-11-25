@@ -28,6 +28,7 @@
 
 #include <memory>
 #include <numeric>
+#include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <chrono>
 #include <atomic>
@@ -1232,4 +1233,18 @@ NetworkInterface* Module::network() const
 void Module::setNetwork(NetworkInterface* net)
 {
   impl_->network_ = net;
+}
+
+std::string SCIRun::Dataflow::Networks::dynamicPortLabel(const ModuleStateInterface& state, const PortId& port)
+{
+  const AlgorithmParameterName key(port.toString());
+  if (state.containsKey(key))
+  {
+    auto label = state.getValue(key).toString();
+    if (!label.empty())
+      return label;
+  }
+  // Same rule as ModuleDialogGeneric::syncTableRowsWithDynamicPort: "InputFields" -> "fieldsInput1"
+  auto type = boost::algorithm::to_lower_copy(boost::algorithm::erase_first_copy(port.name, "Input"));
+  return type + "Input" + std::to_string(port.id + 1);
 }
