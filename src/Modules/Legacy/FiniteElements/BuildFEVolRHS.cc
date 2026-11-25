@@ -51,8 +51,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(BuildFEVolRHS, FiniteElements, SCIRun)
+
 BuildFEVolRHS::BuildFEVolRHS()
-  : Module(ModuleLookupInfo("BuildFEVolRHS", "FiniteElements", "SCIRun"),false)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Mesh);
   INITIALIZE_PORT(RHS);

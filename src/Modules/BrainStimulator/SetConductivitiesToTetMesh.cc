@@ -43,7 +43,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-SetConductivitiesToMesh::SetConductivitiesToMesh() : Module(ModuleLookupInfo("SetConductivitiesToMesh", "BrainStimulator", "SCIRun"))
+MODULE_INFO_DEF(SetConductivitiesToMesh, BrainStimulator, SCIRun)
+
+SetConductivitiesToMesh::SetConductivitiesToMesh() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);

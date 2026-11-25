@@ -46,6 +46,8 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 
+MODULE_INFO_DEF(ReadField, DataIO, SCIRun)
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 class ReadField : public GenericReader<FieldHandle> {
   protected:
@@ -55,7 +57,7 @@ class ReadField : public GenericReader<FieldHandle> {
 #endif
 
 ReadField::ReadField()
-  : my_base("ReadField", "DataIO", "SCIRun", "Field")
+  : my_base(staticInfo_, "Field")
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)

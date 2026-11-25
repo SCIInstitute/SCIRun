@@ -40,8 +40,10 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(EvaluateLinearAlgebraUnary, Math, SCIRun)
+
 EvaluateLinearAlgebraUnary::EvaluateLinearAlgebraUnary() :
-  Module(ModuleLookupInfo("EvaluateLinearAlgebraUnary", "Math", "SCIRun"))
+  Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(Result);

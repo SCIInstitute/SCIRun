@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "FlipSurfaceNormals",
+    "namespace": "Fields",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/FlipSurfaceNormals.h"
+  },
+  "algorithm": {
+    "name": "FlipSurfaceNormalsAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

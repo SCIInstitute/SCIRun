@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "AlignMeshBoundingBoxes",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/AlignMeshBoundingBoxes.h"
+  },
+  "algorithm": {
+    "name": "AlignMeshBoundingBoxesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

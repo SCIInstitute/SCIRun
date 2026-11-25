@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ProjectPointsOntoMesh",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ProjectPointsOntoMesh.h"
+  },
+  "algorithm": {
+    "name": "ProjectPointsOntoMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h"
+  },
+  "UI": {
+    "name": "ProjectPointsOntoMeshDialog",
+    "header": "Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h"
+  }
+}

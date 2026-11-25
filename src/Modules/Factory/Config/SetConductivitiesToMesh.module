@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SetConductivitiesToMesh",
+    "namespace": "BrainStimulator",
+    "status": "New module",
+    "description": " Sets conveniently conductivity profile for tetrahedral mesh ",
+    "header": "Modules/BrainStimulator/SetConductivitiesToTetMesh.h"
+  },
+  "algorithm": {
+    "name": "SetConductivitiesToMeshAlgorithm",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h"
+  },
+  "UI": {
+    "name": "SetConductivitiesToTetMeshDialog",
+    "header": "Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h"
+  }
+}

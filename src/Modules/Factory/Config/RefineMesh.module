@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "RefineMesh",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/RefineMesh.h"
+  },
+  "algorithm": {
+    "name": "RefineMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h"
+  },
+  "UI": {
+    "name": "RefineMeshDialog",
+    "header": "Interface/Modules/Fields/RefineMeshDialog.h"
+  }
+}

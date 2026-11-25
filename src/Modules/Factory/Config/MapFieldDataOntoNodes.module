@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "MapFieldDataOntoNodes",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/MapFieldDataOntoNodes.h"
+  },
+  "algorithm": {
+    "name": "MapFieldDataOntoNodesAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h"
+  },
+  "UI": {
+    "name": "MapFieldDataOntoNodesDialog",
+    "header": "Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h"
+  }
+}

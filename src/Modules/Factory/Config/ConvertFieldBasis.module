@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertFieldBasis",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ConvertFieldBasis.h"
+  },
+  "algorithm": {
+    "name": "ConvertFieldBasisTypeAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h"
+  },
+  "UI": {
+    "name": "ConvertFieldBasisDialog",
+    "header": "Interface/Modules/Fields/ConvertFieldBasisDialog.h"
+  }
+}

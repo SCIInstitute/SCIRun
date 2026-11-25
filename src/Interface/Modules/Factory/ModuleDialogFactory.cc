@@ -28,80 +28,19 @@
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/Base/ModuleDialogBasic.h>
-#include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
-#include <Interface/Modules/DataIO/ReadBundleDialog.h>
-#include <Interface/Modules/DataIO/WriteMatrixDialog.h>
-#include <Interface/Modules/DataIO/ReadFieldDialog.h>
 #include <Interface/Modules/DataIO/ReadNrrdDialog.h>
-#include <Interface/Modules/DataIO/WriteFieldDialog.h>
-#include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
-#include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraGeneralDialog.h>
-#include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
-#include <Interface/Modules/Math/CreateMatrixDialog.h>
-#include <Interface/Modules/Math/AppendMatrixDialog.h>
-#include <Interface/Modules/Math/SolveLinearSystemDialog.h>
-#include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
-#include <Interface/Modules/Math/SelectSubMatrixDialog.h>
-#include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
-#include <Interface/Modules/Math/GetMatrixSliceDialog.h>
-#include <Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h>
-#include <Interface/Modules/Math/CollectMatricesDialog.h>
-#include <Interface/Modules/String/CreateStringDialog.h>
-#include <Interface/Modules/String/NetworkNotesDialog.h>
-#include <Interface/Modules/String/PrintDatatypeDialog.h>
-#include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
-#include <Interface/Modules/Fields/EditMeshBoundingBoxDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
-#include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
-#include <Interface/Modules/Fields/JoinFieldsDialog.h>
-#include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
-#include <Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h>
-#include <Interface/Modules/Fields/SetFieldDataDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
-#include <Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h>
-#include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
-#include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
-#include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
-#include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
-#include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
-#include <Interface/Modules/Fields/FairMeshDialog.h>
-#include <Interface/Modules/Fields/InterfaceWithTetGenDialog.h>
-#include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
-#include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
-#include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
-#include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
-#include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
-#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
-#include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
-#include <Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h>
-#include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
-#include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
-#include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
-#include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
-#include <Interface/Modules/Visualization/ShowStringDialog.h>
-#include <Interface/Modules/Visualization/ShowFieldDialog.h>
-#include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
-#include <Interface/Modules/Visualization/CreateStandardColorMapDialog.h>
-#include <Interface/Modules/Visualization/ShowColorMapDialog.h>
-#include <Interface/Modules/Visualization/RescaleColorMapDialog.h>
 #include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
-#include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
-#include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
-#include <Interface/Modules/Bundle/ReportBundleInfoDialog.h>
 #include <Interface/Modules/Teem/ReportNrrdInfoDialog.h>
 #include <Interface/Modules/Teem/ConvertNrrdToFieldDialog.h>
 #include <Interface/Modules/Teem/ConvertNrrdToMatrixDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
-#include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <Core/Application/Application.h>
 #include <boost/assign.hpp>
 
@@ -125,74 +64,9 @@ ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse,
 void ModuleDialogFactory::addDialogsToMakerMap1()
 {
   insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixClassicDialog)
-    ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
-    ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
-    ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
-    ADD_MODULE_DIALOG(ReadBundle, ReadBundleDialog)
-    ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
-    ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
-    ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
-    ADD_MODULE_DIALOG(ShowField, ShowFieldDialog)
-    ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
-    ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
-    ADD_MODULE_DIALOG(CreateMatrix, CreateMatrixDialog)
-    ADD_MODULE_DIALOG(CreateString, CreateStringDialog)
-    ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)
-    ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
-    ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
-    ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
-    ADD_MODULE_DIALOG(ReportBundleInfo, ReportBundleInfoDialog)
-    ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
-    ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
-    ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
-    ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
-    ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
-    ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
-    ADD_MODULE_DIALOG(CalculateFieldData, CalculateFieldDataDialog)
-    ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
-    ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
-    ADD_MODULE_DIALOG(GetMatrixSlice, GetMatrixSliceDialog)
-    ADD_MODULE_DIALOG(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeDialog)
-    ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
-    ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
-    ADD_MODULE_DIALOG(ConvertMatrixType, ConvertMatrixTypeDialog)
-    ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
-    ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
-    ADD_MODULE_DIALOG(FairMesh, FairMeshDialog)
-    ADD_MODULE_DIALOG(BuildBEMatrix, BuildBEMatrixDialog)
-    ADD_MODULE_DIALOG(ApplyFEMCurrentSource, ApplyFEMCurrentSourceDialog)
-    ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
-    ADD_MODULE_DIALOG(InterfaceWithTetGen, InterfaceWithTetGenDialog)
-    ADD_MODULE_DIALOG(MapFieldDataOntoElements, MapFieldDataOntoElemsDialog)
-    ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
-    ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
-    ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
-    ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
-    ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
-    ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
-    ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
-    ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
-    ADD_MODULE_DIALOG(BuildNoiseColumnMatrix, BuildNoiseColumnMatrixDialog)
-    ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
-    ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
-    ADD_MODULE_DIALOG(CollectMatrices, CollectMatricesDialog)
-    ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
-    ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
-    ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
-    ADD_MODULE_DIALOG(GeneratePointSamplesFromFieldOrWidget, GeneratePointSamplesFromFieldOrWidgetDialog)
-    ADD_MODULE_DIALOG(GetSliceFromStructuredFieldByIndices, GetSliceFromStructuredFieldByIndicesDialog)
-    ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
-    ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
-    ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
-    ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
-    ADD_MODULE_DIALOG(ExtractIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
-    ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
-    ADD_MODULE_DIALOG(ClipVolumeByIsovalue, ClipVolumeByIsovalueDialog)
-    ADD_MODULE_DIALOG(RefineTetMeshLocally, RefineTetMeshLocallyDialog)
   ;
 }
 

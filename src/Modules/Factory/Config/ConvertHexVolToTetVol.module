@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertHexVolToTetVol",
+    "namespace": "Fields",
+    "status": "Real ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/ConvertHexVolToTetVol.h"
+  },
+  "algorithm": {
+    "name": "ConvertMeshToTetVolMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

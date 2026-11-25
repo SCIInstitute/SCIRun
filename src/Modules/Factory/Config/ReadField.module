@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReadField",
+    "namespace": "DataIO",
+    "status": "Functional, needs GUI and algorithm work.",
+    "description": "...",
+    "header": "Modules/DataIO/ReadField.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ReadFieldDialog",
+    "header": "Interface/Modules/DataIO/ReadFieldDialog.h"
+  }
+}

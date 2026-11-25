@@ -40,7 +40,9 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-BuildNoiseColumnMatrix::BuildNoiseColumnMatrix() : Module(ModuleLookupInfo("BuildNoiseColumnMatrix","Math","SCIRun"))
+MODULE_INFO_DEF(BuildNoiseColumnMatrix, Math, SCIRun)
+
+BuildNoiseColumnMatrix::BuildNoiseColumnMatrix() : Module(staticInfo_)
 {
 	INITIALIZE_PORT(InputMatrix);
 	INITIALIZE_PORT(ResultMatrix);
