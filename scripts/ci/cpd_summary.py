@@ -21,7 +21,8 @@ def is_test(path):
 def main():
     if len(sys.argv) != 3:
         sys.exit(__doc__)
-    root = ET.parse(sys.argv[1]).getroot()
+    # Trusted input: CPD wrote this file earlier in the same job.
+    root = ET.parse(sys.argv[1]).getroot()  # nosec B314
     scanned = len(root.findall("c:file", NS))
     # A wrong path or namespace would otherwise read as "no duplication".
     if scanned == 0:
