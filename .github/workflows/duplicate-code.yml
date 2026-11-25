@@ -1,0 +1,64 @@
+name: Duplicate code report
+
+# Report-only (#2965): duplication never fails the job, but a failure of CPD
+# itself does. Counts go to the run summary, the full report to an artifact.
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+  pull_request:
+    # Sanity-check the report when it changes.
+    paths:
+      - 'scripts/ci/cpd_summary.py'
+      - '.github/workflows/duplicate-code.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PMD_VERSION: 7.25.0
+  PMD_SHA256: 1fceb3005ebfd580cc9afa5242e07df74826eedeb225f239f503083845d77fc2
+
+jobs:
+  cpd:
+    # Forks don't need the nightly.
+    if: github.event_name != 'schedule' || github.repository == 'SCIInstitute/SCIRun'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install PMD
+        working-directory: ${{ runner.temp }}
+        run: |
+          curl -fsSL --retry 3 -o pmd.zip \
+            "https://github.com/pmd/pmd/releases/download/pmd_releases/${PMD_VERSION}/pmd-dist-${PMD_VERSION}-bin.zip"
+          echo "${PMD_SHA256}  pmd.zip" | sha256sum -c -
+          unzip -q pmd.zip
+          echo "${PWD}/pmd-bin-${PMD_VERSION}/bin" >> "$GITHUB_PATH"
+
+      - name: Run CPD
+        run: |
+          mkdir -p cpd-report
+          pmd cpd --language=cpp --minimum-tokens=100 --skip-lexical-errors \
+            --no-fail-on-violation --dir src --exclude src/Externals \
+            --format xml --report-file cpd-report/cpd.xml \
+            2> cpd-report/cpd.log || { rc=$?; cat cpd-report/cpd.log; exit $rc; }
+
+      - name: Summarize
+        run: |
+          python3 scripts/ci/cpd_summary.py cpd-report/cpd.xml cpd-report/cpd.log > cpd-report/summary.md
+          cat cpd-report/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: cpd-report
+          path: cpd-report/
+          if-no-files-found: warn
