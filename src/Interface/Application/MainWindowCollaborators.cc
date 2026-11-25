@@ -59,17 +59,26 @@ void TextEditAppender::log4(const std::string& message) const
   log(QString::fromStdString(message));
 }
 
+QTreeWidgetItem* TreeViewActiveModuleItem::currentItem() const
+{
+  // No tree is active until the user first clicks an item in one.
+  return activeTree_ ? activeTree_->currentItem() : nullptr;
+}
+
 QString TreeViewActiveModuleItem::text() const
 {
-  auto clip = activeTree_->currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
+  auto current = currentItem();
+  if (!current)
+    return {};
+  auto clip = current->data(0, SCIRunMainWindow::clipboardKey).toString();
   if (!clip.isEmpty())
     return clip;
-  return activeTree_->currentItem()->text(0);
+  return current->text(0);
 }
 
 bool TreeViewActiveModuleItem::isModule() const
 {
-  auto current = activeTree_->currentItem();
+  auto current = currentItem();
   return current
     && current->childCount() == 0
     && current->parent()
@@ -79,12 +88,13 @@ bool TreeViewActiveModuleItem::isModule() const
 
 QString TreeViewActiveModuleItem::clipboardXML() const
 {
-  return activeTree_->currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
+  auto current = currentItem();
+  return current ? current->data(0, SCIRunMainWindow::clipboardKey).toString() : QString();
 }
 
 bool TreeViewActiveModuleItem::isClipboardXML() const
 {
-  auto current = activeTree_->currentItem();
+  auto current = currentItem();
   return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->foreground(0) == CLIPBOARD_COLOR);
 }
 

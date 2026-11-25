@@ -45,6 +45,7 @@
 
 class QTextEdit;
 class QTreeWidget;
+class QTreeWidgetItem;
 class QComboBox;
 class QStatusBar;
 
@@ -74,6 +75,7 @@ namespace Gui {
     bool isModule() const override;
     bool isClipboardXML() const override;
   private:
+    QTreeWidgetItem* currentItem() const;
     QTreeWidget* activeTree_ {nullptr};
   };
 
